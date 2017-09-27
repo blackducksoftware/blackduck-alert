@@ -13,6 +13,7 @@ plugins {
     id 'eclipse'
     id 'maven'
     id 'org.springframework.boot' version '1.5.2.RELEASE'
+    id 'application'
 }
 
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
@@ -21,6 +22,11 @@ tasks.withType(GroovyCompile) { options.encoding = 'UTF-8' }
 group = 'com.blackducksoftware.integration'
 version = '0.0.1-SNAPSHOT'
 description = ''
+
+mainClassName = 'com.blackducksoftware.integration.hub.notification.Application'
+applicationDefaultJvmArgs = [
+    '-DAPP_HOME=APP_HOME_VAR_TOKEN'
+]
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -43,3 +49,31 @@ dependencies {
 }
 
 springBoot { mainClass = 'com.blackducksoftware.integration.hub.notification.Application' }
+
+jar {
+    sourceSets {
+        main {
+            resources {
+                exclude 'application.properties'
+            }
+        }
+    }
+}
+
+startScripts {
+    doLast {
+        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
+        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
+        unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
+        windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
+    }
+}
+
+distributions {
+    main {
+        contents {
+            from('src/main/resources/notification_engine.sh') {into 'bin/'}
+            from('src/main/resources/application.properties') {into 'config/'}
+        }
+    }
+}
