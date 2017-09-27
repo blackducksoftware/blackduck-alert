@@ -1,0 +1,45 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'maven'
+    id 'org.springframework.boot' version '1.5.2.RELEASE'
+}
+
+tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
+tasks.withType(GroovyCompile) { options.encoding = 'UTF-8' }
+
+group = 'com.blackducksoftware.integration'
+version = '0.0.1-SNAPSHOT'
+description = ''
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+}
+
+dependencies {
+    compile 'com.blackducksoftware.integration:hub-common:16.0.0'
+    compile 'org.springframework.boot:spring-boot-starter'
+
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
+
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+springBoot { mainClass = 'com.blackducksoftware.integration.hub.notification.Application' }
