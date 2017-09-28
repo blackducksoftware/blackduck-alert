@@ -1,9 +1,11 @@
 package com.blackducksoftware.integration.hub.notification;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
+@EnableConfigurationProperties
 public class EngineProperties {
     @Value("${blackduck.hub.url}")
     private String hubUrl;
@@ -31,6 +33,9 @@ public class EngineProperties {
 
     @Value("${blackduck.hub.always.trust.cert}")
     private Boolean hubAlwaysTrustCertificate;
+
+    @Value("${notification.accumulator.cron}")
+    private String accumulatorCron;
 
     public String getHubUrl() {
         return hubUrl;
@@ -102,5 +107,13 @@ public class EngineProperties {
 
     public void setHubAlwaysTrustCertificate(final Boolean hubAlwaysTrustCertificate) {
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
+    }
+
+    public String getAccumulatorCron() {
+        return accumulatorCron;
+    }
+
+    public void setAccumulatorCron(final String accumulatorCron) {
+        this.accumulatorCron = accumulatorCron;
     }
 }

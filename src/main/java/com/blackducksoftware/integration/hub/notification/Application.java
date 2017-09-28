@@ -40,6 +40,7 @@ public class Application {
             final HubVersionRequestService versionRequestService = hubServiceWrapper.getHubServicesFactory().createHubVersionRequestService();
             final String hubVersion = versionRequestService.getHubVersion();
             logger.info("Hub Version: {}", hubVersion);
+            logger.info("Cron Expression: {}", engineProperties.getAccumulatorCron());
         } catch (final IntegrationException ex) {
             logger.error("Error occurred initializing the notfication engine", ex);
         }
