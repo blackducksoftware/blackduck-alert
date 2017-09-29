@@ -40,6 +40,7 @@ repositories {
 dependencies {
     compile 'com.blackducksoftware.integration:hub-common:16.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
 
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'

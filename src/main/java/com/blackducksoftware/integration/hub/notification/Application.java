@@ -5,13 +5,19 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
 
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class, BatchAutoConfiguration.class })
 @SpringBootApplication
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.notification" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
