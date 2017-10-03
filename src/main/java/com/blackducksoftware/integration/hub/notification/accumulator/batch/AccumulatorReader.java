@@ -2,6 +2,8 @@ package com.blackducksoftware.integration.hub.notification.accumulator.batch;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
@@ -43,17 +45,23 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
     @Override
     public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         logger.info("Accumulator Reader Called");
-        final Date endDate = new Date();
-        Date startDate = endDate;
+        ZonedDateTime zonedEndDate = ZonedDateTime.now();
+        zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
+        ZonedDateTime zonedStartDate = zonedEndDate;
+        final Date endDate = Date.from(zonedEndDate.toInstant());
+        Date startDate = Date.from(zonedStartDate.toInstant());
         try {
             final File lastRunFile = new File(lastRunPath);
             if (lastRunFile.exists()) {
                 final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
-                startDate = RestConnection.parseDateString(lastRunValue);
-                startDate = new Date(startDate.getTime());
+                final Date startTime = RestConnection.parseDateString(lastRunValue);
+                zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
-                startDate = endDate;
+                zonedStartDate = zonedEndDate;
             }
+            zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
+            startDate = Date.from(zonedStartDate.toInstant());
             FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
         } catch (final Exception e) {
             logger.error("Error creating date range", e);

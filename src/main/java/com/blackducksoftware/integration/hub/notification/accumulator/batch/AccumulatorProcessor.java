@@ -14,6 +14,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
 
     @Override
     public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
-        return notificationAccumulatorProcessor.process(notificationData.getNotificationContentItems());
+        final DBStoreEvent storeEvent = notificationAccumulatorProcessor.process(notificationData.getNotificationContentItems());
+        return storeEvent;
     }
 }
