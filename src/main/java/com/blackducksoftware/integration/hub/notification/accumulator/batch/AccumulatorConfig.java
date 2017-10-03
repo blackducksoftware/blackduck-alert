@@ -1,7 +1,5 @@
 package com.blackducksoftware.integration.hub.notification.accumulator.batch;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -18,15 +16,21 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.blackducksoftware.integration.hub.api.item.MetaService;
+import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.notification.EngineProperties;
 import com.blackducksoftware.integration.hub.notification.HubServiceWrapper;
-import com.blackducksoftware.integration.hub.notification.exception.NotificationEngineException;
+import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
+import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.service.HubResponseService;
 
 @Configuration
 @EnableBatchProcessing
 public class AccumulatorConfig {
-    private final static Logger logger = LoggerFactory.getLogger(AccumulatorConfig.class);
+
+    private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
+    private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
     @Autowired
     private SimpleJobLauncher jobLauncher;
@@ -43,9 +47,12 @@ public class AccumulatorConfig {
     @Autowired
     private EngineProperties engineProperties;
 
+    @Autowired
+    private HubServiceWrapper hubServiceWrapper;
+
     @Scheduled(cron = "#{@accumulatorCronExpression}")
     public JobExecution perform() throws Exception {
-        final JobParameters param = new JobParametersBuilder().addString("JobID", String.valueOf(System.currentTimeMillis())).toJobParameters();
+        final JobParameters param = new JobParametersBuilder().addString(CommonBatchConfig.JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
         final JobExecution execution = jobLauncher.run(accumulatorJob(), param);
         return execution;
     }
@@ -55,45 +62,32 @@ public class AccumulatorConfig {
         return engineProperties.getAccumulatorCron();
     }
 
-    @Bean
     public Job accumulatorJob() {
-        return jobBuilderFactory.get("accumulatorJob").incrementer(new RunIdIncrementer()).listener(getAccumulatorListener()).flow(accumulatorStep()).end().build();
+        return jobBuilderFactory.get(ACCUMULATOR_JOB_NAME).incrementer(new RunIdIncrementer()).flow(accumulatorStep()).end().build();
     }
 
-    @Bean
     public Step accumulatorStep() {
-        return stepBuilderFactory.get("accumulatorStep").<NotificationResults, NotificationResults> chunk(1).reader(getAccumulatorReader()).processor(getAccumulatorProcessor()).writer(getAccumulatorWriter()).taskExecutor(taskExecutor)
-                .build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(getAccumulatorReader()).processor(getAccumulatorProcessor()).writer(getAccumulatorWriter()).taskExecutor(taskExecutor).build();
     }
 
-    @Bean
-    public HubServiceWrapper hubServiceWrapper() {
-        final HubServiceWrapper wrapper = new HubServiceWrapper(engineProperties);
-        try {
-            wrapper.init();
-        } catch (final NotificationEngineException ex) {
-            logger.error("Error initializing the service wrapper", ex);
-        }
-        return wrapper;
-    }
-
-    @Bean
     public AccumulatorReader getAccumulatorReader() {
-        return new AccumulatorReader(hubServiceWrapper());
+        return new AccumulatorReader(hubServiceWrapper);
     }
 
-    @Bean
     public AccumulatorWriter getAccumulatorWriter() {
         return new AccumulatorWriter();
     }
 
-    @Bean
     public AccumulatorProcessor getAccumulatorProcessor() {
-        return new AccumulatorProcessor();
+        return new AccumulatorProcessor(getNotificationProcessor());
     }
 
-    @Bean
-    public AccumulatorListener getAccumulatorListener() {
-        return new AccumulatorListener();
+    public NotificationAccumulatorProcessor getNotificationProcessor() {
+        final HubResponseService hubResponseService = hubServiceWrapper.getHubServicesFactory().createHubResponseService();
+        final MetaService metaService = hubServiceWrapper.getHubServicesFactory().createMetaService();
+        final VulnerabilityRequestService vulnerabilityRequestService = hubServiceWrapper.getHubServicesFactory().createVulnerabilityRequestService();
+        final NotificationAccumulatorProcessor notificationProcessor = new NotificationAccumulatorProcessor(hubResponseService, vulnerabilityRequestService, metaService);
+        return notificationProcessor;
     }
+
 }

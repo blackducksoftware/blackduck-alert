@@ -62,7 +62,11 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
         final NotificationDataService notificationDataService = hubServiceWrapper.getHubServicesFactory().createNotificationDataService();
         final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
-        return null;
+        if (notificationResults.getNotificationContentItems().isEmpty()) {
+            return null;
+        }
+
+        return notificationResults;
     }
 
 }

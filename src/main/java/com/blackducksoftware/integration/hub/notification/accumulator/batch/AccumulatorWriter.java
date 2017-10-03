@@ -6,16 +6,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
 
-public class AccumulatorWriter implements ItemWriter<NotificationResults> {
+public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
 
     @Override
-    public void write(final List<? extends NotificationResults> itemList) throws Exception {
+    public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
         itemList.forEach(item -> {
-            logger.info("Writing item {}", item);
+            logger.info("Writing items: {} {}", item.getNotificationList());
         });
     }
-
 }
