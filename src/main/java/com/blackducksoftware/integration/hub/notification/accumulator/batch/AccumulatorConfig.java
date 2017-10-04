@@ -22,6 +22,7 @@ import com.blackducksoftware.integration.hub.dataservice.notification.Notificati
 import com.blackducksoftware.integration.hub.notification.EngineProperties;
 import com.blackducksoftware.integration.hub.notification.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
+import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.service.HubResponseService;
 
@@ -50,6 +51,9 @@ public class AccumulatorConfig {
     @Autowired
     private HubServiceWrapper hubServiceWrapper;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Scheduled(cron = "#{@accumulatorCronExpression}")
     public JobExecution perform() throws Exception {
         final JobParameters param = new JobParametersBuilder().addString(CommonBatchConfig.JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
@@ -75,7 +79,7 @@ public class AccumulatorConfig {
     }
 
     public AccumulatorWriter getAccumulatorWriter() {
-        return new AccumulatorWriter();
+        return new AccumulatorWriter(notificationRepository);
     }
 
     public AccumulatorProcessor getAccumulatorProcessor() {

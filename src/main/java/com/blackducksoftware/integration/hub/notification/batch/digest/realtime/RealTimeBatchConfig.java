@@ -15,6 +15,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
+import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 
 @Configuration
 public class RealTimeBatchConfig {
@@ -33,6 +34,9 @@ public class RealTimeBatchConfig {
     @Autowired
     private TaskExecutor taskExecutor;
 
+    @Autowired
+    NotificationRepository notificationRepository;
+
     @Scheduled(cron = "0 0/1 * 1/1 * *")
     public JobExecution perform() throws Exception {
         final JobParameters param = new JobParametersBuilder().addString(CommonBatchConfig.JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
@@ -49,7 +53,7 @@ public class RealTimeBatchConfig {
     }
 
     public RealTimeItemReader getReader() {
-        return new RealTimeItemReader();
+        return new RealTimeItemReader(notificationRepository);
     }
 
     public RealTimeItemWriter getWriter() {
