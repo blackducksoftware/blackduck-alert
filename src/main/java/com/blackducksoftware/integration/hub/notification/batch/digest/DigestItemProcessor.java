@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.batch.digest.realtime;
+package com.blackducksoftware.integration.hub.notification.batch.digest;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
 
-public class RealTimeItemProcessor implements ItemProcessor<List<NotificationEntity>, Object> {
+public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, Object> {
     private final static Logger logger = LoggerFactory.getLogger(RealTimeItemReader.class);
 
     @Override

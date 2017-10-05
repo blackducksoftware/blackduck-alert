@@ -1,7 +1,5 @@
-package com.blackducksoftware.integration.hub.notification.batch.digest.realtime;
+package com.blackducksoftware.integration.hub.notification.batch.digest;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,12 +13,12 @@ import org.springframework.batch.item.UnexpectedInputException;
 import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 
-public class RealTimeItemReader implements ItemReader<List<NotificationEntity>> {
-    private final static Logger logger = LoggerFactory.getLogger(RealTimeItemReader.class);
+public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationRepository notificationRepository;
     private boolean hasRead;
 
-    public RealTimeItemReader(final NotificationRepository notificationRepository) {
+    public DigestItemReader(final NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
         hasRead = false;
     }
@@ -30,13 +28,10 @@ public class RealTimeItemReader implements ItemReader<List<NotificationEntity>> 
         if (hasRead) {
             return null;
         } else {
-            ZonedDateTime currentTime = ZonedDateTime.now();
-            currentTime = currentTime.withZoneSameInstant(ZoneOffset.UTC);
-            currentTime = currentTime.withSecond(0).withNano(0);
-            final ZonedDateTime zonedEndDate = currentTime.minusMinutes(1);
-            final ZonedDateTime zonedStartDate = currentTime.minusMinutes(2);
-            final Date startDate = Date.from(zonedStartDate.toInstant());
-            final Date endDate = Date.from(zonedEndDate.toInstant());
+            logger.debug("Digest Item Reader called...");
+            final DateRange dateRange = getDateRange();
+            final Date startDate = dateRange.getStart();
+            final Date endDate = dateRange.getEnd();
             final List<NotificationEntity> entityList = notificationRepository.findByCreatedAtBetween(startDate, endDate);
             hasRead = true;
             if (entityList.isEmpty()) {
@@ -46,4 +41,7 @@ public class RealTimeItemReader implements ItemReader<List<NotificationEntity>> 
             }
         }
     }
+
+    public abstract DateRange getDateRange();
+
 }

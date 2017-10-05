@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.batch.digest.realtime;
+package com.blackducksoftware.integration.hub.notification.batch.digest;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ import com.blackducksoftware.integration.hub.notification.datasource.entity.even
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 
 @Configuration
-public class RealTimeBatchConfig {
-    private static final String ACCUMULATOR_STEP_NAME = "RealTimeBatchStep";
-    private static final String ACCUMULATOR_JOB_NAME = "RealTimeBatchJob";
+public class DailyBatchConfig {
+    private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
+    private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
     private final SimpleJobLauncher jobLauncher;
     private final JobBuilderFactory jobBuilderFactory;
@@ -34,8 +34,8 @@ public class RealTimeBatchConfig {
     private final PlatformTransactionManager transactionManager;
 
     @Autowired
-    public RealTimeBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager) {
+    public DailyBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
+            final PlatformTransactionManager transactionManager) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
@@ -44,7 +44,8 @@ public class RealTimeBatchConfig {
         this.transactionManager = transactionManager;
     }
 
-    @Scheduled(cron = "0 0/1 * 1/1 * *")
+    // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
+    @Scheduled(cron = "0 0/5 * 1/1 * *", zone = "UTC")
     public JobExecution perform() throws Exception {
         final JobParameters param = new JobParametersBuilder().addString(CommonBatchConfig.JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
         final JobExecution execution = jobLauncher.run(accumulatorJob(), param);
@@ -60,15 +61,16 @@ public class RealTimeBatchConfig {
                 .build();
     }
 
-    public RealTimeItemReader getReader() {
-        return new RealTimeItemReader(notificationRepository);
+    public DailyItemReader getReader() {
+        return new DailyItemReader(notificationRepository);
     }
 
-    public RealTimeItemWriter getWriter() {
-        return new RealTimeItemWriter();
+    public DigestItemWriter getWriter() {
+        return new DigestItemWriter();
     }
 
-    public RealTimeItemProcessor getProcessor() {
-        return new RealTimeItemProcessor();
+    public DigestItemProcessor getProcessor() {
+        return new DigestItemProcessor();
     }
+
 }
