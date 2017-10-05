@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
@@ -33,26 +34,28 @@ public class AccumulatorConfig {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
-    @Autowired
-    private SimpleJobLauncher jobLauncher;
+    private final SimpleJobLauncher jobLauncher;
+    private final JobBuilderFactory jobBuilderFactory;
+    private final StepBuilderFactory stepBuilderFactory;
+    private final TaskExecutor taskExecutor;
+    private final NotificationRepository notificationRepository;
+    private final PlatformTransactionManager transactionManager;
+    private final EngineProperties engineProperties;
+    private final HubServiceWrapper hubServiceWrapper;
 
     @Autowired
-    private JobBuilderFactory jobBuilderFactory;
+    public AccumulatorConfig(final EngineProperties engineProperties, final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
+            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper) {
+        this.jobLauncher = jobLauncher;
+        this.jobBuilderFactory = jobBuilderFactory;
+        this.stepBuilderFactory = stepBuilderFactory;
+        this.taskExecutor = taskExecutor;
+        this.notificationRepository = notificationRepository;
+        this.transactionManager = transactionManager;
+        this.engineProperties = engineProperties;
+        this.hubServiceWrapper = hubServiceWrapper;
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    private TaskExecutor taskExecutor;
-
-    @Autowired
-    private EngineProperties engineProperties;
-
-    @Autowired
-    private HubServiceWrapper hubServiceWrapper;
-
-    @Autowired
-    private NotificationRepository notificationRepository;
+    }
 
     @Scheduled(cron = "#{@accumulatorCronExpression}")
     public JobExecution perform() throws Exception {
@@ -71,7 +74,8 @@ public class AccumulatorConfig {
     }
 
     public Step accumulatorStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(getAccumulatorReader()).processor(getAccumulatorProcessor()).writer(getAccumulatorWriter()).taskExecutor(taskExecutor).build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(getAccumulatorReader()).processor(getAccumulatorProcessor()).writer(getAccumulatorWriter()).taskExecutor(taskExecutor)
+                .transactionManager(transactionManager).build();
     }
 
     public AccumulatorReader getAccumulatorReader() {

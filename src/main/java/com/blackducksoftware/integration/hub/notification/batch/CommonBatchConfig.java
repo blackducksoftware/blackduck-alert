@@ -25,8 +25,12 @@ public class CommonBatchConfig {
 
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
+    private final EngineProperties engineProperties;
+
     @Autowired
-    private EngineProperties engineProperties;
+    public CommonBatchConfig(final EngineProperties engineProperties) {
+        this.engineProperties = engineProperties;
+    }
 
     @Bean
     public PlatformTransactionManager transactionManager() {

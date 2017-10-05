@@ -40,9 +40,6 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
                 final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName);
                 notificationRepository.save(entity);
-                logger.info("Writing items: {} ", notification);
-                final Iterable<NotificationEntity> entities = notificationRepository.findAll();
-                logger.info("Entities: {}", entities);
             });
         });
     }

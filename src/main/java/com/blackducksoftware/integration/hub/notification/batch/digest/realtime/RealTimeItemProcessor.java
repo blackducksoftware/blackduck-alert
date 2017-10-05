@@ -1,15 +1,19 @@
 package com.blackducksoftware.integration.hub.notification.batch.digest.realtime;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-public class RealTimeItemProcessor implements ItemProcessor<Object, Object> {
+import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+
+public class RealTimeItemProcessor implements ItemProcessor<List<NotificationEntity>, Object> {
     private final static Logger logger = LoggerFactory.getLogger(RealTimeItemReader.class);
 
     @Override
-    public Object process(final Object notificationData) throws Exception {
-        logger.info("Real Time Item Processor Called");
+    public Object process(final List<NotificationEntity> notificationData) throws Exception {
+        logger.info("Notification Entity Count: {}", notificationData.size());
         return null;
     }
 }

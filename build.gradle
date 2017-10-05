@@ -42,7 +42,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
-    compile 'com.h2database:h2'
+    runtime 'com.h2database:h2'
     
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
