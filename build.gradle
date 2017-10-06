@@ -44,7 +44,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
     runtime 'com.h2database:h2'
     
-    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.0'
+    compile 'org.springframework.boot:spring-boot-starter-activemq'
+    compile 'org.apache.activemq:activemq-broker'
+    compile 'org.apache.activemq:activemq-kahadb-store:5.14.5'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0'
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
 

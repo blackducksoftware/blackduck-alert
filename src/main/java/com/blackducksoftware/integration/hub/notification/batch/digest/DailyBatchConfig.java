@@ -14,12 +14,14 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
 import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
 
 @Configuration
 public class DailyBatchConfig {
@@ -32,16 +34,18 @@ public class DailyBatchConfig {
     private final TaskExecutor taskExecutor;
     private final NotificationRepository notificationRepository;
     private final PlatformTransactionManager transactionManager;
+    private final JmsTemplate notificationJmsTemplate;
 
     @Autowired
     public DailyBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager) {
+            final PlatformTransactionManager transactionManager, final JmsTemplate notificationJmsTemplate) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.taskExecutor = taskExecutor;
         this.notificationRepository = notificationRepository;
         this.transactionManager = transactionManager;
+        this.notificationJmsTemplate = notificationJmsTemplate;
     }
 
     // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
@@ -57,8 +61,8 @@ public class DailyBatchConfig {
     }
 
     public Step accumulatorStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, Object> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                .build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
+                .transactionManager(transactionManager).build();
     }
 
     public DailyItemReader getReader() {
@@ -66,7 +70,7 @@ public class DailyBatchConfig {
     }
 
     public DigestItemWriter getWriter() {
-        return new DigestItemWriter();
+        return new DigestItemWriter(notificationJmsTemplate);
     }
 
     public DigestItemProcessor getProcessor() {
