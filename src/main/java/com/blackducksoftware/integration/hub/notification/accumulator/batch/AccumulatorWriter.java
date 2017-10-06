@@ -1,7 +1,10 @@
 package com.blackducksoftware.integration.hub.notification.accumulator.batch;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.batch.item.ItemWriter;
 
@@ -10,6 +13,7 @@ import com.blackducksoftware.integration.hub.notification.datasource.entity.even
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.notification.processor.PolicyViolationProcessor;
+import com.blackducksoftware.integration.hub.notification.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 import com.blackducksoftware.integration.hub.report.api.PolicyRule;
 
@@ -34,8 +38,9 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final String componentName = content.getComponentName();
                 final String componentVersion = content.getComponentVersion().versionName;
                 final String policyRuleName = getPolicyRule(notification);
+                final Collection<String> vulnerabilityList = getVulnerabilities(notification);
 
-                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName);
+                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, vulnerabilityList);
                 notificationRepository.save(entity);
             });
         });
@@ -48,6 +53,16 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
             return rule.getName();
         } else {
             return "";
+        }
+    }
+
+    private Collection<String> getVulnerabilities(final NotificationEvent notification) {
+        final String key = VulnerabilityCache.VULNERABILITY_ID_SET;
+        if (notification.getDataSet().containsKey(key)) {
+            final Set<String> vulnerabilitySet = (Set<String>) notification.getDataSet().get(key);
+            return vulnerabilitySet;
+        } else {
+            return new HashSet<>();
         }
     }
 }
