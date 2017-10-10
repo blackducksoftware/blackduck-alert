@@ -9,5 +9,6 @@ CREATE TABLE notification_events (
     project_version VARCHAR,
     component_name VARCHAR,
     component_version VARCHAR,
-    policy_rule_name VARCHAR
+    policy_rule_name VARCHAR,
+    vulnerabilty_list VARCHAR
 );

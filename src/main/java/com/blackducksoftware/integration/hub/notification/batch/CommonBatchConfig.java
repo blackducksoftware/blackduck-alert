@@ -17,6 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.notification.EngineProperties;
 import com.blackducksoftware.integration.hub.notification.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.notification.exception.NotificationEngineException;
+import com.google.gson.Gson;
 
 @Configuration
 @EnableScheduling
@@ -71,6 +72,11 @@ public class CommonBatchConfig {
             logger.error("Error initializing the service wrapper", ex);
         }
         return wrapper;
+    }
+
+    @Bean
+    public Gson gson(final HubServiceWrapper hubServiceWrapper) {
+        return hubServiceWrapper.getHubServicesFactory().getRestConnection().gson;
     }
 
 }

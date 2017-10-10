@@ -1,10 +1,9 @@
 package com.blackducksoftware.integration.hub.notification.datasource.entity.event;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,7 +13,8 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "notification_events", schema = "notification")
-public class NotificationEntity {
+public class NotificationEntity implements Serializable {
+    private static final long serialVersionUID = -1194014350183607831L;
 
     @Id
     @GeneratedValue
@@ -27,6 +27,7 @@ public class NotificationEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
+
     @Column(name = "notification_type")
     private String notificationType;
 
@@ -45,15 +46,14 @@ public class NotificationEntity {
     @Column(name = "policy_rule_name")
     private String policyRuleName;
 
-    @ElementCollection
     @Column(name = "vulnerabilty_list")
-    private Collection<String> vulnerabilityList;
+    private String vulnerabilityList;
 
     public NotificationEntity() {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,
-            final String policyRuleName, final Collection<String> vulnerabilityList) {
+            final String policyRuleName, final String vulnerabilityList) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -101,7 +101,7 @@ public class NotificationEntity {
         return policyRuleName;
     }
 
-    public Collection<String> getVulnerabilityList() {
+    public String getVulnerabilityList() {
         return vulnerabilityList;
     }
 

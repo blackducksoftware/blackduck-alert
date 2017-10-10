@@ -9,14 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
+import com.google.gson.Gson;
 
 public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemWriter.class);
     private final JmsTemplate notificationJmsTemplate;
+    private final Gson gson;
 
     @Autowired
-    public DigestItemWriter(final JmsTemplate notificatioJmsTemplate) {
+    public DigestItemWriter(final JmsTemplate notificatioJmsTemplate, final Gson gson) {
         this.notificationJmsTemplate = notificatioJmsTemplate;
+        this.gson = gson;
     }
 
     @Override
@@ -24,7 +27,8 @@ public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> 
         logger.info("Real Time Item Writer called");
         eventList.forEach(channelEventList -> {
             channelEventList.forEach(event -> {
-                notificationJmsTemplate.convertAndSend(event.getTopic(), event);
+                final String jsonMessage = gson.toJson(event);
+                notificationJmsTemplate.convertAndSend(event.getTopic(), jsonMessage);
             });
         });
     }

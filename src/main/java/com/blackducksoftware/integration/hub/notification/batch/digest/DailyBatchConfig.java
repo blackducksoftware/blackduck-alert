@@ -22,6 +22,7 @@ import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfi
 import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
+import com.google.gson.Gson;
 
 @Configuration
 public class DailyBatchConfig {
@@ -35,10 +36,11 @@ public class DailyBatchConfig {
     private final NotificationRepository notificationRepository;
     private final PlatformTransactionManager transactionManager;
     private final JmsTemplate notificationJmsTemplate;
+    private final Gson gson;
 
     @Autowired
     public DailyBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager, final JmsTemplate notificationJmsTemplate) {
+            final PlatformTransactionManager transactionManager, final JmsTemplate notificationJmsTemplate, final Gson gson) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
@@ -46,6 +48,7 @@ public class DailyBatchConfig {
         this.notificationRepository = notificationRepository;
         this.transactionManager = transactionManager;
         this.notificationJmsTemplate = notificationJmsTemplate;
+        this.gson = gson;
     }
 
     // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
@@ -70,11 +73,10 @@ public class DailyBatchConfig {
     }
 
     public DigestItemWriter getWriter() {
-        return new DigestItemWriter(notificationJmsTemplate);
+        return new DigestItemWriter(notificationJmsTemplate, gson);
     }
 
     public DigestItemProcessor getProcessor() {
         return new DigestItemProcessor();
     }
-
 }

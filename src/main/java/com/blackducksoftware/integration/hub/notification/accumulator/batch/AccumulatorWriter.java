@@ -1,11 +1,10 @@
 package com.blackducksoftware.integration.hub.notification.accumulator.batch;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
@@ -38,7 +37,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final String componentName = content.getComponentName();
                 final String componentVersion = content.getComponentVersion().versionName;
                 final String policyRuleName = getPolicyRule(notification);
-                final Collection<String> vulnerabilityList = getVulnerabilities(notification);
+                final String vulnerabilityList = getVulnerabilities(notification);
 
                 final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, vulnerabilityList);
                 notificationRepository.save(entity);
@@ -56,13 +55,13 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         }
     }
 
-    private Collection<String> getVulnerabilities(final NotificationEvent notification) {
+    private String getVulnerabilities(final NotificationEvent notification) {
         final String key = VulnerabilityCache.VULNERABILITY_ID_SET;
         if (notification.getDataSet().containsKey(key)) {
             final Set<String> vulnerabilitySet = (Set<String>) notification.getDataSet().get(key);
-            return vulnerabilitySet;
+            return StringUtils.join(vulnerabilitySet, ",");
         } else {
-            return new HashSet<>();
+            return "";
         }
     }
 }
