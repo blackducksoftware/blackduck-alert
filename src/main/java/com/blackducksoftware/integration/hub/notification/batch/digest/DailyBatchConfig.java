@@ -14,11 +14,11 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
+import com.blackducksoftware.integration.hub.notification.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
@@ -35,19 +35,19 @@ public class DailyBatchConfig {
     private final TaskExecutor taskExecutor;
     private final NotificationRepository notificationRepository;
     private final PlatformTransactionManager transactionManager;
-    private final JmsTemplate notificationJmsTemplate;
+    private final List<AbstractJmsTemplate> jmsTemplateList;
     private final Gson gson;
 
     @Autowired
     public DailyBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager, final JmsTemplate notificationJmsTemplate, final Gson gson) {
+            final PlatformTransactionManager transactionManager, final List<AbstractJmsTemplate> jmsTemplateList, final Gson gson) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.taskExecutor = taskExecutor;
         this.notificationRepository = notificationRepository;
         this.transactionManager = transactionManager;
-        this.notificationJmsTemplate = notificationJmsTemplate;
+        this.jmsTemplateList = jmsTemplateList;
         this.gson = gson;
     }
 
@@ -73,7 +73,7 @@ public class DailyBatchConfig {
     }
 
     public DigestItemWriter getWriter() {
-        return new DigestItemWriter(notificationJmsTemplate, gson);
+        return new DigestItemWriter(jmsTemplateList, gson);
     }
 
     public DigestItemProcessor getProcessor() {
