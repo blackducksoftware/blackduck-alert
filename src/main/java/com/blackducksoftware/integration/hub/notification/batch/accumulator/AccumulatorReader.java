@@ -71,9 +71,10 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
         final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
         if (notificationResults.getNotificationContentItems().isEmpty()) {
+            logger.debug("Read Notification Count: 0");
             return null;
         }
-
+        logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
         return notificationResults;
     }
 
