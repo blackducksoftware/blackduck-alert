@@ -8,31 +8,32 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.hub.notification.channel.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.notification.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
 public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemWriter.class);
-    private final List<AbstractJmsTemplate> jmsTemplateList;
+    private final ChannelTemplateManager channelTemplateManager;
     private final Gson gson;
 
     @Autowired
-    public DigestItemWriter(final List<AbstractJmsTemplate> jmsTemplateList, final Gson gson) {
-        this.jmsTemplateList = jmsTemplateList;
+    public DigestItemWriter(final ChannelTemplateManager channelTemplateManager, final Gson gson) {
+        this.channelTemplateManager = channelTemplateManager;
         this.gson = gson;
     }
 
     @Override
     public void write(final List<? extends List<AbstractChannelEvent>> eventList) throws Exception {
-        logger.info("Real Time Item Writer called");
+        logger.info("Digest Item Writer called");
         eventList.forEach(channelEventList -> {
             channelEventList.forEach(event -> {
-                final String jsonMessage = gson.toJson(event);
-                jmsTemplateList.forEach(template -> {
-                    if (template.getDestinationName().equals(event.getTopic())) {
-                        template.convertAndSend(event.getTopic(), jsonMessage);
-                    }
-                });
+                final String destination = event.getTopic();
+                if (channelTemplateManager.hasTemplate(destination)) {
+                    final String jsonMessage = gson.toJson(event);
+                    final AbstractJmsTemplate template = channelTemplateManager.getTemplate(destination);
+                    template.convertAndSend(destination, jsonMessage);
+                }
             });
         });
     }

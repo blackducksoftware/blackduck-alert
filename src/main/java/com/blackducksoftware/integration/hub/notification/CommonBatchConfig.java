@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.notification;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -14,6 +16,8 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.blackducksoftware.integration.hub.notification.channel.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.notification.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.notification.exception.NotificationEngineException;
 import com.google.gson.Gson;
 
@@ -77,4 +81,12 @@ public class CommonBatchConfig {
         return hubServiceWrapper.getHubServicesFactory().getRestConnection().gson;
     }
 
+    @Bean
+    public ChannelTemplateManager channelTemplateManager(final List<AbstractJmsTemplate> templateList) {
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager();
+        templateList.forEach(jmsTemplate -> {
+            channelTemplateManager.addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
+        });
+        return channelTemplateManager;
+    }
 }
