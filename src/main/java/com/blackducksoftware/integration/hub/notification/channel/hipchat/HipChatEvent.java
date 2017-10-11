@@ -1,6 +1,6 @@
 package com.blackducksoftware.integration.hub.notification.channel.hipchat;
 
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
 
 public class HipChatEvent extends AbstractChannelEvent {

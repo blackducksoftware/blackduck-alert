@@ -9,7 +9,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.notification.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.notification.channel.hipchat.HipChatEvent;
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.event.AbstractChannelEvent;
 
 public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {

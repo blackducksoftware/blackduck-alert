@@ -1,6 +1,6 @@
 package com.blackducksoftware.integration.hub.notification.event;
 
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 
 public abstract class AbstractChannelEvent extends AbstractEvent {
     private final NotificationEntity notificationEntity;

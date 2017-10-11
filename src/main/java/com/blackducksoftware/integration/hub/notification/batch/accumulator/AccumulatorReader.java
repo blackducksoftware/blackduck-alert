@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.accumulator.batch;
+package com.blackducksoftware.integration.hub.notification.batch.accumulator;
 
 import java.io.File;
 import java.io.IOException;

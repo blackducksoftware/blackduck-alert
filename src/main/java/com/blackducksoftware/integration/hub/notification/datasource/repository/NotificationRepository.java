@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 
 @Transactional
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {

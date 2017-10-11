@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.batch;
+package com.blackducksoftware.integration.hub.notification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.notification.EngineProperties;
-import com.blackducksoftware.integration.hub.notification.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.notification.exception.NotificationEngineException;
 import com.google.gson.Gson;
 

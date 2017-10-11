@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.datasource.entity.event;
+package com.blackducksoftware.integration.hub.notification.datasource.entity;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.accumulator.batch;
+package com.blackducksoftware.integration.hub.notification;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -20,11 +20,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.notification.EngineProperties;
-import com.blackducksoftware.integration.hub.notification.HubServiceWrapper;
-import com.blackducksoftware.integration.hub.notification.batch.CommonBatchConfig;
+import com.blackducksoftware.integration.hub.notification.batch.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.notification.batch.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.notification.batch.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.service.HubResponseService;
 
 @Configuration
@@ -90,11 +91,11 @@ public class AccumulatorConfig {
         return new AccumulatorProcessor(getNotificationProcessor());
     }
 
-    public NotificationAccumulatorProcessor getNotificationProcessor() {
+    public NotificationItemProcessor getNotificationProcessor() {
         final HubResponseService hubResponseService = hubServiceWrapper.getHubServicesFactory().createHubResponseService();
         final MetaService metaService = hubServiceWrapper.getHubServicesFactory().createMetaService();
         final VulnerabilityRequestService vulnerabilityRequestService = hubServiceWrapper.getHubServicesFactory().createVulnerabilityRequestService();
-        final NotificationAccumulatorProcessor notificationProcessor = new NotificationAccumulatorProcessor(hubResponseService, vulnerabilityRequestService, metaService);
+        final NotificationItemProcessor notificationProcessor = new NotificationItemProcessor(hubResponseService, vulnerabilityRequestService, metaService);
         return notificationProcessor;
     }
 

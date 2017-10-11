@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.datasource;
+package com.blackducksoftware.integration.hub.notification;
 
 import javax.sql.DataSource;
 

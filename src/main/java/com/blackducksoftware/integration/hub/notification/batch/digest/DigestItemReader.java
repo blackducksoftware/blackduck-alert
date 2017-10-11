@@ -10,7 +10,7 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 
 public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {

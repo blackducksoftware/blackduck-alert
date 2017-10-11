@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.notification.accumulator.batch;
+package com.blackducksoftware.integration.hub.notification.batch.accumulator;
 
 import java.util.Date;
 import java.util.List;
@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.datasource.entity.event.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.notification.processor.PolicyViolationProcessor;
