@@ -1,9 +1,12 @@
 package com.blackducksoftware.integration.hub.notification.datasource.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -46,14 +49,18 @@ public class NotificationEntity implements Serializable {
     @Column(name = "policy_rule_name")
     private String policyRuleName;
 
-    @Column(name = "vulnerabilty_list")
-    private String vulnerabilityList;
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(name = "vulnerabilty_list")
+    private Collection<String> vulnerabilityList;
+
+    @Column(name = "vulnerability_operation")
+    private String vulnerabilityOperation;
 
     public NotificationEntity() {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,
-            final String policyRuleName, final String vulnerabilityList) {
+            final String policyRuleName, final Collection<String> vulnerabilityList, final String vulnerabilityOperation) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -63,6 +70,7 @@ public class NotificationEntity implements Serializable {
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
         this.vulnerabilityList = vulnerabilityList;
+        this.vulnerabilityOperation = vulnerabilityOperation;
     }
 
     public Long getId() {
@@ -101,8 +109,12 @@ public class NotificationEntity implements Serializable {
         return policyRuleName;
     }
 
-    public String getVulnerabilityList() {
+    public Collection<String> getVulnerabilityList() {
         return vulnerabilityList;
+    }
+
+    public String getVulnerabilityOperation() {
+        return vulnerabilityOperation;
     }
 
     @Override
@@ -119,6 +131,7 @@ public class NotificationEntity implements Serializable {
         result = prime * result + ((projectName == null) ? 0 : projectName.hashCode());
         result = prime * result + ((projectVersion == null) ? 0 : projectVersion.hashCode());
         result = prime * result + ((vulnerabilityList == null) ? 0 : vulnerabilityList.hashCode());
+        result = prime * result + ((vulnerabilityOperation == null) ? 0 : vulnerabilityOperation.hashCode());
         return result;
     }
 
@@ -204,12 +217,19 @@ public class NotificationEntity implements Serializable {
         } else if (!vulnerabilityList.equals(other.vulnerabilityList)) {
             return false;
         }
+        if (vulnerabilityOperation == null) {
+            if (other.vulnerabilityOperation != null) {
+                return false;
+            }
+        } else if (!vulnerabilityOperation.equals(other.vulnerabilityOperation)) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
         return "NotificationEntity [id=" + id + ", eventKey=" + eventKey + ", createdAt=" + createdAt + ", notificationType=" + notificationType + ", projectName=" + projectName + ", projectVersion=" + projectVersion + ", componentName="
-                + componentName + ", componentVersion=" + componentVersion + ", policyRuleName=" + policyRuleName + ", vulnerabilityList=" + vulnerabilityList + "]";
+                + componentName + ", componentVersion=" + componentVersion + ", policyRuleName=" + policyRuleName + ", vulnerabilityList=" + vulnerabilityList + ", vulnerabilityOperation=" + vulnerabilityOperation + "]";
     }
 }
