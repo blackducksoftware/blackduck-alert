@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class EngineProperties {
+public class AlertProperties {
     private String hubUrl = "";
     private Integer hubTimeout = 5000;
     private String hubUsername = "";

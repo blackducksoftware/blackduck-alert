@@ -21,12 +21,12 @@
 # under the License.
 #*******************************************************************************
 
-PID_FILE=hub_notification_engine.pid
-TITLE="Hub Notification Engine"
+PID_FILE=hub_alert.pid
+TITLE="Hub Alert"
 MAX_ATTEMPTS=20
 PROGRAM="$0"
 DIR=`dirname "$PROGRAM"`
-DIRECTORY_NAME="hub-notification-engine"
+DIRECTORY_NAME="hub-alert"
 
 checkIsRunning() {
   if [ -f $DIR/$PID_FILE ]; then

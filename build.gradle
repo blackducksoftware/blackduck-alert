@@ -78,7 +78,7 @@ startScripts {
 distributions {
     main {
         contents {
-            from('src/main/resources/notification_engine.sh') {into 'bin/'}
+            from('src/main/resources/alert.sh') {into 'bin/'}
             from('src/main/resources/application.properties') {into 'config/'}
         }
     }
