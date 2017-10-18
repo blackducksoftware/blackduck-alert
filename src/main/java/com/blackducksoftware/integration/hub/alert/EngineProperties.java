@@ -22,42 +22,20 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties
 public class EngineProperties {
-    @Value("${blackduck.hub.url}")
-    private String hubUrl;
-
-    @Value("${blackduck.hub.timeout}")
-    private Integer hubTimeout;
-
-    @Value("${blackduck.hub.username}")
-    private String hubUsername;
-
-    @Value("${blackduck.hub.password}")
-    private String hubPassword;
-
-    @Value("${blackduck.hub.proxy.host}")
-    private String hubProxyHost;
-
-    @Value("${blackduck.hub.proxy.port}")
-    private String hubProxyPort;
-
-    @Value("${blackduck.hub.proxy.username}")
-    private String hubProxyUsername;
-
-    @Value("${blackduck.hub.proxy.password}")
-    private String hubProxyPassword;
-
-    @Value("${blackduck.hub.always.trust.cert}")
-    private Boolean hubAlwaysTrustCertificate;
-
-    @Value("${alert.accumulator.cron}")
-    private String accumulatorCron;
+    private String hubUrl = "";
+    private Integer hubTimeout = 5000;
+    private String hubUsername = "";
+    private String hubPassword = "";
+    private String hubProxyHost = "";
+    private String hubProxyPort = "";
+    private String hubProxyUsername = "";
+    private String hubProxyPassword = "";
+    private Boolean hubAlwaysTrustCertificate = false;
+    private String accumulatorCron = "0 0/1 * 1/1 * *";
 
     public String getHubUrl() {
         return hubUrl;

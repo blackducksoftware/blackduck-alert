@@ -34,6 +34,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
@@ -69,7 +70,7 @@ public class Application {
             logger.info("Hub Version: {}", hubVersion);
             logger.info("Cron Expression: {}", engineProperties.getAccumulatorCron());
         } catch (final IntegrationException ex) {
-            logger.error("Error occurred initializing the notfication engine", ex);
+            logger.error("Error occurred initializing hub connection", ex);
         }
     }
 

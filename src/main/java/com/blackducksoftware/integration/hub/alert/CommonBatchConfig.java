@@ -41,7 +41,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.exception.NotificationEngineException;
+import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Configuration
 @EnableScheduling
@@ -100,7 +102,11 @@ public class CommonBatchConfig {
 
     @Bean
     public Gson gson(final HubServiceWrapper hubServiceWrapper) {
-        return hubServiceWrapper.getHubServicesFactory().getRestConnection().gson;
+        if (hubServiceWrapper.getHubServicesFactory() != null) {
+            return hubServiceWrapper.getHubServicesFactory().getRestConnection().gson;
+        }
+
+        return new GsonBuilder().setPrettyPrinting().create();
     }
 
     @Bean

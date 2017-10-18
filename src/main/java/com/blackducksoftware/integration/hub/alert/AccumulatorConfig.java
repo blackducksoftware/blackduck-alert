@@ -44,6 +44,7 @@ import com.blackducksoftware.integration.hub.alert.batch.accumulator.Accumulator
 import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;

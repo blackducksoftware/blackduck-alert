@@ -20,12 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.hub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
+import com.blackducksoftware.integration.hub.alert.EngineProperties;
 import com.blackducksoftware.integration.hub.alert.exception.NotificationEngineException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
