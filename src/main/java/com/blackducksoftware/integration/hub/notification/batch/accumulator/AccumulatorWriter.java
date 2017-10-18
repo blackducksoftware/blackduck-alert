@@ -1,8 +1,8 @@
 package com.blackducksoftware.integration.hub.notification.batch.accumulator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +10,7 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.notification.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.notification.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.notification.processor.PolicyViolationProcessor;
@@ -38,10 +39,9 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final String componentName = content.getComponentName();
                 final String componentVersion = content.getComponentVersion().versionName;
                 final String policyRuleName = getPolicyRule(notification);
-                final Collection<String> vulnerabilityList = getVulnerabilities(notification);
-                final String vulnerabilityOperation = getVulnerabilityOperation(notification);
+                final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, vulnerabilityList, vulnerabilityOperation);
+                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, vulnerabilityList);
                 notificationRepository.save(entity);
             });
         });
@@ -57,22 +57,21 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         }
     }
 
-    private Collection<String> getVulnerabilities(final NotificationEvent notification) {
-        final String key = VulnerabilityCache.VULNERABILITY_ID_SET;
-        if (notification.getDataSet().containsKey(key)) {
-            final Set<String> vulnerabilitySet = (Set<String>) notification.getDataSet().get(key);
-            return vulnerabilitySet;
-        } else {
-            return new HashSet<>();
-        }
-    }
-
-    private String getVulnerabilityOperation(final NotificationEvent notification) {
+    private Collection<VulnerabilityEntity> getVulnerabilities(final NotificationEvent notification) {
+        final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
         final String key = VulnerabilityCache.VULNERABILITY_OPERATION;
         if (notification.getDataSet().containsKey(key)) {
-            return (String) notification.getDataSet().get(key);
-        } else {
-            return "";
+            final String operationName = (String) notification.getDataSet().get(key);
+            final Set<String> vulnerabilitySet = (Set<String>) notification.getDataSet().get(VulnerabilityCache.VULNERABILITY_ID_SET);
+
+            if (!vulnerabilitySet.isEmpty()) {
+                vulnerabilitySet.forEach(vulnerability -> {
+                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, operationName);
+                    vulnerabilityList.add(vulnerabilityEntity);
+                });
+            }
         }
+
+        return vulnerabilityList;
     }
 }

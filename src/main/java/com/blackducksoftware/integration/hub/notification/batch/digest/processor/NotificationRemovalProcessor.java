@@ -1,14 +1,20 @@
 package com.blackducksoftware.integration.hub.notification.batch.digest.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.blackducksoftware.integration.hub.notification.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.notification.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.processor.VulnerabilityOperation;
 
 public class NotificationRemovalProcessor {
     private Map<String, NotificationEntity> entityCache;
+    private Map<String, Set<String>> vulnerabilityCache;
 
     public List<NotificationEntity> process(final List<NotificationEntity> notificationList) {
         final List<NotificationEntity> resultList = new ArrayList<>();
@@ -42,6 +48,31 @@ public class NotificationRemovalProcessor {
     }
 
     private boolean processVulnerabilityNotifications(final NotificationEntity entity) {
+        final String eventKey = entity.getEventKey();
+        final Collection<VulnerabilityEntity> vulnerabilities = entity.getVulnerabilityList();
+        final Set<String> vulnerabilityIds = vulnerabilityCache.containsKey(eventKey) ? vulnerabilityCache.get(eventKey) : new HashSet<>();
+
+        if (!vulnerabilities.isEmpty()) {
+            vulnerabilities.forEach(vulnerabilityEntity -> {
+                final String operation = vulnerabilityEntity.getOperation();
+                final String id = vulnerabilityEntity.getVulnerabilityId();
+                if (VulnerabilityOperation.DELETE.name().equals(operation)) {
+                    vulnerabilityIds.remove(id);
+                } else {
+                    vulnerabilityIds.add(id);
+                }
+            });
+        }
+
+        if (vulnerabilityIds.isEmpty()) {
+            vulnerabilityCache.remove(eventKey);
+            entityCache.remove(eventKey);
+        } else {
+            vulnerabilityCache.put(eventKey, vulnerabilityIds);
+            if (!entityCache.containsKey(eventKey)) {
+                entityCache.put(eventKey, entity);
+            }
+        }
         return false;
     }
 }
