@@ -16,7 +16,7 @@ import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestServ
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.notification" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);

@@ -34,7 +34,7 @@ public class EngineProperties {
     @Value("${blackduck.hub.always.trust.cert}")
     private Boolean hubAlwaysTrustCertificate;
 
-    @Value("${notification.accumulator.cron}")
+    @Value("${alert.accumulator.cron}")
     private String accumulatorCron;
 
     public String getHubUrl() {
