@@ -40,7 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.exception.NotificationEngineException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.google.gson.Gson;
 
 @Configuration
@@ -50,11 +50,11 @@ public class CommonBatchConfig {
 
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
-    private final EngineProperties engineProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
-    public CommonBatchConfig(final EngineProperties engineProperties) {
-        this.engineProperties = engineProperties;
+    public CommonBatchConfig(final AlertProperties alertProperties) {
+        this.alertProperties = alertProperties;
     }
 
     @Bean
@@ -89,10 +89,10 @@ public class CommonBatchConfig {
 
     @Bean
     public HubServiceWrapper hubServiceWrapper() {
-        final HubServiceWrapper wrapper = new HubServiceWrapper(engineProperties);
+        final HubServiceWrapper wrapper = new HubServiceWrapper(alertProperties);
         try {
             wrapper.init();
-        } catch (final NotificationEngineException ex) {
+        } catch (final AlertException ex) {
             logger.error("Error initializing the service wrapper", ex);
         }
         return wrapper;

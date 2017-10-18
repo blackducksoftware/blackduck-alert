@@ -63,11 +63,11 @@ public class AccumulatorConfig {
     private final TaskExecutor taskExecutor;
     private final NotificationRepository notificationRepository;
     private final PlatformTransactionManager transactionManager;
-    private final EngineProperties engineProperties;
+    private final AlertProperties alertProperties;
     private final HubServiceWrapper hubServiceWrapper;
 
     @Autowired
-    public AccumulatorConfig(final EngineProperties engineProperties, final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
+    public AccumulatorConfig(final AlertProperties alertProperties, final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
@@ -75,7 +75,7 @@ public class AccumulatorConfig {
         this.taskExecutor = taskExecutor;
         this.notificationRepository = notificationRepository;
         this.transactionManager = transactionManager;
-        this.engineProperties = engineProperties;
+        this.alertProperties = alertProperties;
         this.hubServiceWrapper = hubServiceWrapper;
 
     }
@@ -89,7 +89,7 @@ public class AccumulatorConfig {
 
     @Bean
     public String accumulatorCronExpression() {
-        return engineProperties.getAccumulatorCron();
+        return alertProperties.getAccumulatorCron();
     }
 
     public Job accumulatorJob() {

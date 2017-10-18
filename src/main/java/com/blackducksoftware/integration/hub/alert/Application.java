@@ -44,32 +44,32 @@ public class Application {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
-    private EngineProperties engineProperties;
+    private AlertProperties alertProperties;
 
     @Autowired
     private HubServiceWrapper hubServiceWrapper;
 
     @PostConstruct
     void init() {
-        logger.info("Notification Engine Starting...");
-        logger.info("Engine Configuration: ");
-        logger.info("Hub URL:            {}", engineProperties.getHubUrl());
-        logger.info("Hub Username:       {}", engineProperties.getHubUsername());
+        logger.info("Hub Alert Starting...");
+        logger.info("Alert Configuration: ");
+        logger.info("Hub URL:            {}", alertProperties.getHubUrl());
+        logger.info("Hub Username:       {}", alertProperties.getHubUsername());
         logger.info("Hub Password:       **********");
-        logger.info("Hub Timeout:        {}", engineProperties.getHubTimeout());
-        logger.info("Hub Proxy Host:     {}", engineProperties.getHubProxyHost());
-        logger.info("Hub Proxy Port:     {}", engineProperties.getHubProxyPort());
-        logger.info("Hub Proxy User:     {}", engineProperties.getHubProxyUsername());
-        logger.info("Hub Proxy Password: **********", engineProperties.getHubUrl());
+        logger.info("Hub Timeout:        {}", alertProperties.getHubTimeout());
+        logger.info("Hub Proxy Host:     {}", alertProperties.getHubProxyHost());
+        logger.info("Hub Proxy Port:     {}", alertProperties.getHubProxyPort());
+        logger.info("Hub Proxy User:     {}", alertProperties.getHubProxyUsername());
+        logger.info("Hub Proxy Password: **********");
 
         try {
             hubServiceWrapper.init();
             final HubVersionRequestService versionRequestService = hubServiceWrapper.getHubServicesFactory().createHubVersionRequestService();
             final String hubVersion = versionRequestService.getHubVersion();
             logger.info("Hub Version: {}", hubVersion);
-            logger.info("Cron Expression: {}", engineProperties.getAccumulatorCron());
+            logger.info("Cron Expression: {}", alertProperties.getAccumulatorCron());
         } catch (final IntegrationException ex) {
-            logger.error("Error occurred initializing the notfication engine", ex);
+            logger.error("Error occurred initializing hub alert", ex);
         }
     }
 

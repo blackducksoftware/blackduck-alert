@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties
-public class EngineProperties {
+public class AlertProperties {
     @Value("${blackduck.hub.url}")
     private String hubUrl;
 

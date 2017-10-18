@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
-import com.blackducksoftware.integration.hub.alert.exception.NotificationEngineException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -37,23 +37,23 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 public class HubServiceWrapper {
     private final Logger logger = LoggerFactory.getLogger(HubServiceWrapper.class);
 
-    private final EngineProperties engineProperties;
+    private final AlertProperties alertProperties;
 
-    public HubServiceWrapper(final EngineProperties engineProperties) {
-        this.engineProperties = engineProperties;
+    public HubServiceWrapper(final AlertProperties alertProperties) {
+        this.alertProperties = alertProperties;
     }
 
     private Slf4jIntLogger slf4jIntLogger;
     private HubServerConfig hubServerConfig;
     private HubServicesFactory hubServicesFactory;
 
-    public void init() throws NotificationEngineException {
+    public void init() throws AlertException {
         try {
             slf4jIntLogger = new Slf4jIntLogger(logger);
             hubServerConfig = createHubServerConfig(slf4jIntLogger);
             hubServicesFactory = createHubServicesFactory(slf4jIntLogger, hubServerConfig);
         } catch (IllegalStateException | EncryptionException e) {
-            throw new NotificationEngineException("Not able to initialize Hub connection: ", e);
+            throw new AlertException("Not able to initialize Hub connection: ", e);
         }
     }
 
@@ -64,17 +64,17 @@ public class HubServiceWrapper {
 
     private HubServerConfig createHubServerConfig(final IntLogger slf4jIntLogger) {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(engineProperties.getHubUrl());
-        hubServerConfigBuilder.setTimeout(engineProperties.getHubTimeout());
-        hubServerConfigBuilder.setUsername(engineProperties.getHubUsername());
-        hubServerConfigBuilder.setPassword(engineProperties.getHubPassword());
+        hubServerConfigBuilder.setHubUrl(alertProperties.getHubUrl());
+        hubServerConfigBuilder.setTimeout(alertProperties.getHubTimeout());
+        hubServerConfigBuilder.setUsername(alertProperties.getHubUsername());
+        hubServerConfigBuilder.setPassword(alertProperties.getHubPassword());
 
-        hubServerConfigBuilder.setProxyHost(engineProperties.getHubProxyHost());
-        hubServerConfigBuilder.setProxyPort(engineProperties.getHubProxyPort());
-        hubServerConfigBuilder.setProxyUsername(engineProperties.getHubProxyUsername());
-        hubServerConfigBuilder.setProxyPassword(engineProperties.getHubProxyPassword());
+        hubServerConfigBuilder.setProxyHost(alertProperties.getHubProxyHost());
+        hubServerConfigBuilder.setProxyPort(alertProperties.getHubProxyPort());
+        hubServerConfigBuilder.setProxyUsername(alertProperties.getHubProxyUsername());
+        hubServerConfigBuilder.setProxyPassword(alertProperties.getHubProxyPassword());
 
-        hubServerConfigBuilder.setAlwaysTrustServerCertificate(engineProperties.getHubAlwaysTrustCertificate());
+        hubServerConfigBuilder.setAlwaysTrustServerCertificate(alertProperties.getHubAlwaysTrustCertificate());
         hubServerConfigBuilder.setLogger(slf4jIntLogger);
 
         return hubServerConfigBuilder.build();
