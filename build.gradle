@@ -23,7 +23,7 @@ group = 'com.blackducksoftware.integration'
 version = '0.0.1-SNAPSHOT'
 description = ''
 
-mainClassName = 'com.blackducksoftware.integration.hub.notification.Application'
+mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 applicationDefaultJvmArgs = [
     '-DAPP_HOME=APP_HOME_VAR_TOKEN'
 ]
@@ -53,7 +53,7 @@ dependencies {
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
-springBoot { mainClass = 'com.blackducksoftware.integration.hub.notification.Application' }
+springBoot { mainClass = 'com.blackducksoftware.integration.hub.alert.Application' }
 
 jar {
     sourceSets {
