@@ -20,15 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+import java.util.List;
 
-public class HipChatChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "hipchat_channel";
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
-    public HipChatChannelConfig() {
-        super(CHANNEL_NAME);
-    }
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
 
+@Transactional
+public interface HipChatRepository extends JpaRepository<HipChatConfigEntity, Long> {
+    @Query("select entity from HipChatConfigEntity entity")
+    List<HipChatConfigEntity> getAllConfigurations();
 }

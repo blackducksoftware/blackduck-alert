@@ -20,17 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.web.controller;
 
-public class ChannelConfig {
-    private final String channelName;
+import java.util.Collections;
+import java.util.List;
 
-    public ChannelConfig(final String channelName) {
-        this.channelName = channelName;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-    }
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
 
-    public String getChannelName() {
-        return channelName;
+@Controller
+@RequestMapping("/hipchat")
+public class HipChatConfigController {
+    @RequestMapping
+    public @ResponseBody List<HipChatConfigEntity> getConfig() {
+        // TODO
+        return Collections.emptyList();
     }
 }

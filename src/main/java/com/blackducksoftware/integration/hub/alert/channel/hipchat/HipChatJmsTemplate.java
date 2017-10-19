@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 
 @Component
 public class HipChatJmsTemplate extends AbstractJmsTemplate {
@@ -39,7 +40,7 @@ public class HipChatJmsTemplate extends AbstractJmsTemplate {
 
     @Override
     public String getDestinationName() {
-        return HipChatChannelConfig.CHANNEL_NAME;
+        return SupportedChannels.HIPCHAT;
     }
 
 }
