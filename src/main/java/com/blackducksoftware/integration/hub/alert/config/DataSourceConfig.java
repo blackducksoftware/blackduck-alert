@@ -35,7 +35,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableJpaRepositories
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.datasource.repository" })
 @EnableTransactionManagement
 public class DataSourceConfig {
 

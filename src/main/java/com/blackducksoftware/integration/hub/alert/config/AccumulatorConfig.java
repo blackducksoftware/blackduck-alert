@@ -29,13 +29,11 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorProcessor;
 import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorReader;
@@ -54,14 +52,12 @@ public class AccumulatorConfig extends CommonConfig {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
-    private final AlertProperties alertProperties;
     private final HubServiceWrapper hubServiceWrapper;
 
     @Autowired
-    public AccumulatorConfig(final AlertProperties alertProperties, final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper) {
+    public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
+            final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
-        this.alertProperties = alertProperties;
         this.hubServiceWrapper = hubServiceWrapper;
 
     }
@@ -70,11 +66,6 @@ public class AccumulatorConfig extends CommonConfig {
     @Scheduled(cron = "#{@accumulatorCronExpression}")
     public JobExecution perform() throws Exception {
         return super.perform();
-    }
-
-    @Bean
-    public String accumulatorCronExpression() {
-        return alertProperties.getAccumulatorCron();
     }
 
     @Override
