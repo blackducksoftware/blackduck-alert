@@ -33,9 +33,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -51,9 +49,7 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-@EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
 @SpringBootApplication
-// @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
