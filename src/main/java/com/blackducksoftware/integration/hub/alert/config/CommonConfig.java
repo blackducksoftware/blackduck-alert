@@ -34,7 +34,6 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -50,7 +49,6 @@ public abstract class CommonConfig {
     protected final NotificationRepository notificationRepository;
     protected final PlatformTransactionManager transactionManager;
 
-    @Autowired
     public CommonConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
             final PlatformTransactionManager transactionManager) {
         this.jobLauncher = jobLauncher;
