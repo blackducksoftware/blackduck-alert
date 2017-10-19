@@ -66,38 +66,43 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
 
     @Override
     public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        logger.info("Accumulator Reader Called");
-        ZonedDateTime zonedEndDate = ZonedDateTime.now();
-        zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
-        zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
-        ZonedDateTime zonedStartDate = zonedEndDate;
-        final Date endDate = Date.from(zonedEndDate.toInstant());
-        Date startDate = Date.from(zonedStartDate.toInstant());
-        try {
-            final File lastRunFile = new File(lastRunPath);
-            if (lastRunFile.exists()) {
-                final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
-                final Date startTime = RestConnection.parseDateString(lastRunValue);
-                zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
-            } else {
-                zonedStartDate = zonedEndDate;
+        if (hubServiceWrapper.isConnected()) {
+            logger.info("Accumulator Reader Called");
+            ZonedDateTime zonedEndDate = ZonedDateTime.now();
+            zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
+            zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
+            ZonedDateTime zonedStartDate = zonedEndDate;
+            final Date endDate = Date.from(zonedEndDate.toInstant());
+            Date startDate = Date.from(zonedStartDate.toInstant());
+            try {
+                final File lastRunFile = new File(lastRunPath);
+                if (lastRunFile.exists()) {
+                    final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
+                    final Date startTime = RestConnection.parseDateString(lastRunValue);
+                    zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
+                } else {
+                    zonedStartDate = zonedEndDate;
+                }
+                zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
+                startDate = Date.from(zonedStartDate.toInstant());
+                FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
+            } catch (final Exception e) {
+                logger.error("Error creating date range", e);
             }
-            zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
-            startDate = Date.from(zonedStartDate.toInstant());
-            FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
-        } catch (final Exception e) {
-            logger.error("Error creating date range", e);
-        }
 
-        final NotificationDataService notificationDataService = hubServiceWrapper.getHubServicesFactory().createNotificationDataService();
-        final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
+            final NotificationDataService notificationDataService = hubServiceWrapper.getHubServicesFactory().createNotificationDataService();
+            final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
-        if (notificationResults.getNotificationContentItems().isEmpty()) {
-            logger.debug("Read Notification Count: 0");
+            if (notificationResults.getNotificationContentItems().isEmpty()) {
+                logger.debug("Read Notification Count: 0");
+                return null;
+            }
+            logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
+            return notificationResults;
+        } else {
+            logger.warn("Not connected to hub when calling Accumulator Reader");
             return null;
         }
-        logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
-        return notificationResults;
     }
 
 }

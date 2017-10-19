@@ -102,10 +102,6 @@ public class CommonBatchConfig {
 
     @Bean
     public Gson gson(final HubServiceWrapper hubServiceWrapper) {
-        if (hubServiceWrapper.getHubServicesFactory() != null) {
-            return hubServiceWrapper.getHubServicesFactory().getRestConnection().gson;
-        }
-
         return new GsonBuilder().setPrettyPrinting().create();
     }
 

@@ -40,6 +40,8 @@ public class HubServiceWrapper {
 
     private final AlertProperties alertProperties;
 
+    private boolean isHubConnectionValid = false;
+
     public HubServiceWrapper(final AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
@@ -78,10 +80,16 @@ public class HubServiceWrapper {
         hubServerConfigBuilder.setAlwaysTrustServerCertificate(alertProperties.getHubAlwaysTrustCertificate());
         hubServerConfigBuilder.setLogger(slf4jIntLogger);
 
+        isHubConnectionValid = hubServerConfigBuilder.isValid();
+
         return hubServerConfigBuilder.build();
     }
 
     public HubServicesFactory getHubServicesFactory() {
         return hubServicesFactory;
+    }
+
+    public boolean isConnected() {
+        return isHubConnectionValid;
     }
 }

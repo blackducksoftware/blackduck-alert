@@ -31,7 +31,9 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
@@ -40,7 +42,8 @@ import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestServ
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert" })
-public class Application {
+@EnableWebMvc
+public class Application extends SpringBootServletInitializer {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
