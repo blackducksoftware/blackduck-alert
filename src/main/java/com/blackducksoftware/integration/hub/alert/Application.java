@@ -46,10 +46,9 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -88,13 +87,10 @@ public class Application {
 
         try {
             hubServiceWrapper.init();
-            final HubVersionRequestService versionRequestService = hubServiceWrapper.getHubServicesFactory().createHubVersionRequestService();
-            final String hubVersion = versionRequestService.getHubVersion();
-            logger.info("Hub Version: {}", hubVersion);
-            logger.info("Cron Expression: {}", alertProperties.getAccumulatorCron());
-        } catch (final IntegrationException ex) {
-            logger.error("Error occurred initializing hub alert", ex);
+        } catch (final AlertException ex) {
+            logger.error("Error initializing the service wrapper", ex);
         }
+
     }
 
     public static void main(final String[] args) {
@@ -134,12 +130,6 @@ public class Application {
     public TaskExecutor taskExecutor() {
         final TaskExecutor executor = new SyncTaskExecutor();
         return executor;
-    }
-
-    @Bean
-    public HubServiceWrapper hubServiceWrapper() {
-        final HubServiceWrapper wrapper = new HubServiceWrapper(alertProperties);
-        return wrapper;
     }
 
     @Bean

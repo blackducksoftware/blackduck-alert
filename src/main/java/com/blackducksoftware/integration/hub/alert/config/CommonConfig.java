@@ -60,7 +60,7 @@ public abstract class CommonConfig {
     }
 
     public JobExecution createJobExecution() throws Exception {
-        final JobParameters param = new JobParametersBuilder().addString(JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
+        final JobParameters param = new JobParametersBuilder().addString(JOB_ID_PROPERTY_NAME, getJobName()).toJobParameters();
         final JobExecution execution = jobLauncher.run(createJob(), param);
         return execution;
     }
