@@ -63,12 +63,12 @@ public class DailyDigestBatchConfig extends CommonConfig {
     // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
     @Override
     @Scheduled(cron = "0 0/5 * 1/1 * *", zone = "UTC")
-    public JobExecution perform() throws Exception {
-        return super.perform();
+    public JobExecution createJobExecution() throws Exception {
+        return super.createJobExecution();
     }
 
     @Override
-    public Step accumulatorStep() {
+    public Step createStep() {
         return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }

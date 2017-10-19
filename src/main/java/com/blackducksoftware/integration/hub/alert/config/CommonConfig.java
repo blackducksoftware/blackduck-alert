@@ -59,17 +59,17 @@ public abstract class CommonConfig {
         this.transactionManager = transactionManager;
     }
 
-    public JobExecution perform() throws Exception {
+    public JobExecution createJobExecution() throws Exception {
         final JobParameters param = new JobParametersBuilder().addString(JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
-        final JobExecution execution = jobLauncher.run(accumulatorJob(), param);
+        final JobExecution execution = jobLauncher.run(createJob(), param);
         return execution;
     }
 
-    public Job accumulatorJob() {
-        return jobBuilderFactory.get(getJobName()).incrementer(new RunIdIncrementer()).flow(accumulatorStep()).end().build();
+    public Job createJob() {
+        return jobBuilderFactory.get(getJobName()).incrementer(new RunIdIncrementer()).flow(createStep()).end().build();
     }
 
-    public abstract Step accumulatorStep();
+    public abstract Step createStep();
 
     public abstract ItemReader getReader();
 

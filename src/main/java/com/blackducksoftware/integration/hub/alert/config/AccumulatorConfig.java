@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -47,7 +46,6 @@ import com.blackducksoftware.integration.hub.dataservice.notification.Notificati
 import com.blackducksoftware.integration.hub.service.HubResponseService;
 
 @Configuration
-@EnableBatchProcessing
 public class AccumulatorConfig extends CommonConfig {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
@@ -64,12 +62,12 @@ public class AccumulatorConfig extends CommonConfig {
 
     @Override
     @Scheduled(cron = "#{@accumulatorCronExpression}")
-    public JobExecution perform() throws Exception {
-        return super.perform();
+    public JobExecution createJobExecution() throws Exception {
+        return super.createJobExecution();
     }
 
     @Override
-    public Step accumulatorStep() {
+    public Step createStep() {
         return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor).transactionManager(transactionManager)
                 .build();
     }

@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
@@ -40,20 +41,25 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.datasource.repository" })
+@EnableTransactionManagement
+@EnableBatchProcessing
+@EnableJms
 @SpringBootApplication
-// @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
@@ -133,11 +139,6 @@ public class Application {
     @Bean
     public HubServiceWrapper hubServiceWrapper() {
         final HubServiceWrapper wrapper = new HubServiceWrapper(alertProperties);
-        try {
-            wrapper.init();
-        } catch (final AlertException ex) {
-            logger.error("Error initializing the service wrapper", ex);
-        }
         return wrapper;
     }
 
