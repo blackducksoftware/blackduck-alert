@@ -37,24 +37,6 @@ public class EmailProperties {
 
     public final static String EMAIL_REPLY_TO_ADDRESS_KEY = "email.reply.to.address";
 
-    public final static String HUB_SERVER_URL_KEY = "hub.server.url";
-
-    public final static String HUB_SERVER_USER_KEY = "hub.server.user";
-
-    public final static String HUB_SERVER_PASSWORD_KEY = "hub.server.password";
-
-    public final static String HUB_SERVER_TIMEOUT_KEY = "hub.server.timeout";
-
-    public final static String HUB_PROXY_HOST_KEY = "hub.proxy.host";
-
-    public final static String HUB_PROXY_PORT_KEY = "hub.proxy.port";
-
-    public final static String HUB_PROXY_USER_KEY = "hub.proxy.user";
-
-    public final static String HUB_PROXY_PASSWORD_KEY = "hub.proxy.password";
-
-    public final static String HUB_PROXY_NOHOST_KEY = "hub.proxy.nohost";
-
     public final static String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_INTERVAL_KEY = "email.service.dispatcher.notification.interval";
 
     public final static String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_DELAY_KEY = "email.service.dispatcher.notification.delay";
@@ -74,15 +56,7 @@ public class EmailProperties {
     // auto-parsing for javamail properties to get the password
     public static final String JAVAMAIL_PASSWORD_KEY = "mail.smtp.password";
 
-    // keys for extension descriptor data.
-    public static final String EXTENSION_URL_KEY = "url";
-
-    public static final String EXTENSION_NAME_KEY = "name";
-
-    public static final String EXTENSION_DESCRIPTION_KEY = "description";
-
-    public static final String EXTENSION_VERSION_KEY = "version";
-
+    // keys for alert descriptor data.
     public static final String JAVAMAIL_CONFIG_PREFIX = "hub.email.javamail.config.";
 
     public static final String TEMPLATE_VARIABLE_PREFIX = "hub.email.template.variable.";
@@ -97,15 +71,15 @@ public class EmailProperties {
 
     public static final String NOTIFIER_VARIABLE_PREFIX = "hub.email.notifier.variable.";
 
-    public static final String EXTENSION_PREFIX = "hub.extension.";
+    public static final String ALERT_PREFIX = "hub.alert.";
 
-    public static final String EXTENSION_SSL_KEYSTORE_PATH = "hub.extension.ssl.keyStorePath";
+    public static final String ALERT_SSL_KEYSTORE_PATH = "hub.alert.ssl.keyStorePath";
 
-    public static final String EXTENSION_SSL_KEYSTORE_PASSWORD = "hub.extension.ssl.keyStorePassword";
+    public static final String ALERT_SSL_KEYSTORE_PASSWORD = "hub.alert.ssl.keyStorePassword";
 
-    public static final String EXTENSION_SSL_KEY_PASSWORD = "hub.extension.ssl.keyPassword";
+    public static final String ALERT_SSL_KEY_PASSWORD = "hub.alert.ssl.keyPassword";
 
-    public static final String EXTENSION_SSL_KEYSTORE_TYPE = "hub.extension.ssl.keyStoreType";
+    public static final String ALERT_SSL_KEYSTORE_TYPE = "hub.alert.ssl.keyStoreType";
 
     private final Map<String, String> suppliedJavamailConfigProperties = new HashMap<>();
 
@@ -117,7 +91,7 @@ public class EmailProperties {
 
     private final Map<String, String> notifierVariableProperties = new HashMap<>();
 
-    private final Map<String, String> extensionProperties = new HashMap<>();
+    private final Map<String, String> alertProperties = new HashMap<>();
 
     private final Properties appProperties;
 
@@ -150,9 +124,9 @@ public class EmailProperties {
                 final String value = properties.getProperty(key);
                 if (StringUtils.isNotBlank(value)) {
                     appProperties.put(key, value);
-                    if (key.startsWith(EXTENSION_PREFIX)) {
-                        final String cleanedKey = key.replace(EXTENSION_PREFIX, "");
-                        extensionProperties.put(cleanedKey, value);
+                    if (key.startsWith(ALERT_PREFIX)) {
+                        final String cleanedKey = key.replace(ALERT_PREFIX, "");
+                        alertProperties.put(cleanedKey, value);
                     } else if (key.startsWith(JAVAMAIL_CONFIG_PREFIX)) {
                         final String cleanedKey = key.replace(JAVAMAIL_CONFIG_PREFIX, "");
                         suppliedJavamailConfigProperties.put(cleanedKey, value);
@@ -213,42 +187,6 @@ public class EmailProperties {
         return appProperties.getProperty(EMAIL_REPLY_TO_ADDRESS_KEY);
     }
 
-    public String getHubServerUrl() {
-        return appProperties.getProperty(HUB_SERVER_URL_KEY);
-    }
-
-    public String getHubServerUser() {
-        return appProperties.getProperty(HUB_SERVER_USER_KEY);
-    }
-
-    public String getHubServerPassword() {
-        return appProperties.getProperty(HUB_SERVER_PASSWORD_KEY);
-    }
-
-    public String getHubServerTimeout() {
-        return appProperties.getProperty(HUB_SERVER_TIMEOUT_KEY);
-    }
-
-    public String getHubProxyHost() {
-        return appProperties.getProperty(HUB_PROXY_HOST_KEY);
-    }
-
-    public String getHubProxyPort() {
-        return appProperties.getProperty(HUB_PROXY_PORT_KEY);
-    }
-
-    public String getHubProxyUser() {
-        return appProperties.getProperty(HUB_PROXY_USER_KEY);
-    }
-
-    public String getHubProxyPassword() {
-        return appProperties.getProperty(HUB_PROXY_PASSWORD_KEY);
-    }
-
-    public String getHubProxyNoHost() {
-        return appProperties.getProperty(HUB_PROXY_NOHOST_KEY);
-    }
-
     public String getNotificationInterval() {
         return appProperties.getProperty(EMAIL_SERVICE_DISPATCHER_NOTIFICATION_INTERVAL_KEY);
     }
@@ -277,39 +215,23 @@ public class EmailProperties {
         return notifierVariableProperties;
     }
 
-    public String getExtensionVersion() {
-        return extensionProperties.get(EXTENSION_VERSION_KEY);
-    }
-
-    public String getExtensionName() {
-        return extensionProperties.get(EXTENSION_NAME_KEY);
-    }
-
-    public String getExtensionDescription() {
-        return extensionProperties.get(EXTENSION_DESCRIPTION_KEY);
-    }
-
-    public String getExtensionBaseUrl() {
-        return extensionProperties.get(EXTENSION_URL_KEY);
-    }
-
     public Properties getAppProperties() {
         return appProperties;
     }
 
     public String getSSLKeyStorePath() {
-        return appProperties.getProperty(EXTENSION_SSL_KEYSTORE_PATH);
+        return appProperties.getProperty(ALERT_SSL_KEYSTORE_PATH);
     }
 
     public String getSSLKeyStorePassword() {
-        return appProperties.getProperty(EXTENSION_SSL_KEYSTORE_PASSWORD);
+        return appProperties.getProperty(ALERT_SSL_KEYSTORE_PASSWORD);
     }
 
     public String getSSLKeyPassword() {
-        return appProperties.getProperty(EXTENSION_SSL_KEY_PASSWORD);
+        return appProperties.getProperty(ALERT_SSL_KEY_PASSWORD);
     }
 
     public String getSSLKeyStoreType() {
-        return appProperties.getProperty(EXTENSION_SSL_KEYSTORE_TYPE);
+        return appProperties.getProperty(ALERT_SSL_KEYSTORE_TYPE);
     }
 }

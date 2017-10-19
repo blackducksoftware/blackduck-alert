@@ -47,5 +47,10 @@ public class EmailChannel extends DistributionChannel<String> {
         logger.info("Received email event message: {}", message);
         final EmailEvent emailEvent = gson.fromJson(message, EmailEvent.class);
         logger.info("Email event {}", emailEvent);
+
+        // email.from.address=jrichard@blackducksoftware.com
+        // hub.email.javamail.config.mail.smtp.host=mailrelay.dc2.lan
+        // hub.email.template.directory=src/main/resources/templates
+
     }
 }
