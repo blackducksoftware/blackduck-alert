@@ -45,15 +45,13 @@ import com.google.gson.Gson;
 
 @Configuration
 @EnableScheduling
-public class CommonBatchConfig {
-    private final static Logger logger = LoggerFactory.getLogger(CommonBatchConfig.class);
-
-    public static final String JOB_ID_PROPERTY_NAME = "JobID";
+public class BeanProvider {
+    private final static Logger logger = LoggerFactory.getLogger(BeanProvider.class);
 
     private final AlertProperties alertProperties;
 
     @Autowired
-    public CommonBatchConfig(final AlertProperties alertProperties) {
+    public BeanProvider(final AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }
 

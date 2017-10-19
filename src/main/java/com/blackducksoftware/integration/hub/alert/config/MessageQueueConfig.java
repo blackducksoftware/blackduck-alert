@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
