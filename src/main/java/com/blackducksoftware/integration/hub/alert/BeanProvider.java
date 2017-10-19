@@ -99,7 +99,7 @@ public class BeanProvider {
     }
 
     @Bean
-    public Gson gson(final HubServiceWrapper hubServiceWrapper) {
+    public Gson gson() {
         return new GsonBuilder().setPrettyPrinting().create();
     }
 

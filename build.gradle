@@ -45,6 +45,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework.data:spring-data-commons:2.0.0.RELEASE'
     compile 'javax.servlet:jstl:1.2'
     
     runtime 'com.h2database:h2'
