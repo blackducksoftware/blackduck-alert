@@ -20,13 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.config;
+package com.blackducksoftware.integration.hub.alert.ui.repository;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.jms.annotation.EnableJms;
+import org.springframework.data.repository.CrudRepository;
 
-@Configuration
-@EnableJms
-public class MessageQueueConfig {
+import com.blackducksoftware.integration.hub.alert.ui.model.Setting;
+
+public interface SettingRepository extends CrudRepository<Setting, Long> {
 
 }

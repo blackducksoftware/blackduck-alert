@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.model;
+package com.blackducksoftware.integration.hub.alert.ui.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

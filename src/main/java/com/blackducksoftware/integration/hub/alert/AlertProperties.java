@@ -36,6 +36,8 @@ public class AlertProperties {
     private String hubProxyPassword = "";
     private Boolean hubAlwaysTrustCertificate = false;
     private String accumulatorCron = "0 0/1 * 1/1 * *";
+    private String dailyDigestCron = "0 0 0 1/1 * ?";
+    private String realTimeDigestCron = "0 0/1 * 1/1 * *";
 
     public String getHubUrl() {
         return hubUrl;
@@ -116,4 +118,21 @@ public class AlertProperties {
     public void setAccumulatorCron(final String accumulatorCron) {
         this.accumulatorCron = accumulatorCron;
     }
+
+    public String getDailyDigestCron() {
+        return dailyDigestCron;
+    }
+
+    public void setDailyDigestCron(final String dailyDigestCron) {
+        this.dailyDigestCron = dailyDigestCron;
+    }
+
+    public String getRealTimeDigestCron() {
+        return realTimeDigestCron;
+    }
+
+    public void setRealTimeDigestCron(final String realTimeDigestCron) {
+        this.realTimeDigestCron = realTimeDigestCron;
+    }
+
 }

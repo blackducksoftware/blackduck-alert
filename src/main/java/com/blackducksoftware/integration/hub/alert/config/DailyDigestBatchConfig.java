@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
 @Configuration
-public class DailyDigestBatchConfig extends CommonConfig {
+public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
@@ -60,31 +60,30 @@ public class DailyDigestBatchConfig extends CommonConfig {
         this.gson = gson;
     }
 
-    // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
     @Override
-    @Scheduled(cron = "0 0/5 * 1/1 * *", zone = "UTC")
-    public JobExecution perform() throws Exception {
-        return super.perform();
+    @Scheduled(cron = "#{@dailyDigestCronExpression}", zone = "UTC")
+    public JobExecution createJobExecution() throws Exception {
+        return super.createJobExecution();
     }
 
     @Override
-    public Step accumulatorStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
+    public Step createStep(final DailyItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }
 
     @Override
-    public DailyItemReader getReader() {
+    public DailyItemReader reader() {
         return new DailyItemReader(notificationRepository);
     }
 
     @Override
-    public DigestItemWriter getWriter() {
+    public DigestItemWriter writer() {
         return new DigestItemWriter(channelTemplateManager, gson);
     }
 
     @Override
-    public DigestItemProcessor getProcessor() {
+    public DigestItemProcessor processor() {
         return new DigestItemProcessor();
     }
 
