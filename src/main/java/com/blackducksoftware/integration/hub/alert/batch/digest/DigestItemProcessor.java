@@ -36,7 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
-    private final static Logger logger = LoggerFactory.getLogger(RealTimeItemReader.class);
+    private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
 
     @Override
     public List<AbstractChannelEvent> process(final List<NotificationEntity> notificationData) throws Exception {

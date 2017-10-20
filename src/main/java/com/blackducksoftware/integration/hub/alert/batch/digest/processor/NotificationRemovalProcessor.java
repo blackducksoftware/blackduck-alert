@@ -24,6 +24,7 @@ package com.blackducksoftware.integration.hub.alert.batch.digest.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,13 @@ import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityOperat
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 public class NotificationRemovalProcessor {
-    private Map<String, NotificationEntity> entityCache;
-    private Map<String, Set<String>> vulnerabilityCache;
+    private final Map<String, NotificationEntity> entityCache;
+    private final Map<String, Set<String>> vulnerabilityCache;
+
+    public NotificationRemovalProcessor() {
+        entityCache = new HashMap<>();
+        vulnerabilityCache = new HashMap<>();
+    }
 
     public List<NotificationEntity> process(final List<NotificationEntity> notificationList) {
         final List<NotificationEntity> resultList = new ArrayList<>();
