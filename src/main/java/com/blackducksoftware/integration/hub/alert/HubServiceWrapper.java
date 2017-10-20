@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -34,11 +36,13 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
+@Component
 public class HubServiceWrapper {
     private final Logger logger = LoggerFactory.getLogger(HubServiceWrapper.class);
 
     private final AlertProperties alertProperties;
 
+    @Autowired
     public HubServiceWrapper(final AlertProperties alertProperties) {
         this.alertProperties = alertProperties;
     }

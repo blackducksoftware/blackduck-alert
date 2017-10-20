@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
 @Configuration
-public class RealTimeDigestBatchConfig extends CommonConfig {
+public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "RealTimeBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "RealTimeBatchJob";
 
@@ -61,29 +61,29 @@ public class RealTimeDigestBatchConfig extends CommonConfig {
     }
 
     @Override
-    @Scheduled(cron = "0 0/1 * 1/1 * *", zone = "UTC")
-    public JobExecution perform() throws Exception {
-        return super.perform();
+    @Scheduled(cron = "#{@realtimeDigestCronExpression}", zone = "UTC")
+    public JobExecution createJobExecution() throws Exception {
+        return super.createJobExecution();
     }
 
     @Override
-    public Step accumulatorStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
+    public Step createStep(final RealTimeItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }
 
     @Override
-    public RealTimeItemReader getReader() {
+    public RealTimeItemReader reader() {
         return new RealTimeItemReader(notificationRepository);
     }
 
     @Override
-    public DigestItemWriter getWriter() {
+    public DigestItemWriter writer() {
         return new DigestItemWriter(channelTemplateManager, gson);
     }
 
     @Override
-    public DigestItemProcessor getProcessor() {
+    public DigestItemProcessor processor() {
         return new DigestItemProcessor();
     }
 
