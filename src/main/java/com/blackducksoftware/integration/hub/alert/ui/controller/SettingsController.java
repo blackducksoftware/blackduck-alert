@@ -28,8 +28,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class SettingsController {
 
-    @RequestMapping("/")
+    @RequestMapping(value = "/gavin")
     public String index() {
-        return "templates/index.html";
+        return "index.html";
     }
+
+    // @RequestMapping(value = "/gavin")
+    // public String gavin() {
+    // return "index";
+    // }
 }

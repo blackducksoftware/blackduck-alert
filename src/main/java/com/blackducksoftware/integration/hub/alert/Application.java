@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
@@ -48,7 +47,6 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
@@ -67,8 +65,7 @@ import com.google.gson.GsonBuilder;
 @EnableJms
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
-@EnableWebMvc
-public class Application extends SpringBootServletInitializer {
+public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 

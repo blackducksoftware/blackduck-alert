@@ -43,10 +43,14 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
-    compile 'org.springframework.data:spring-data-rest-webmvc'
-    compile 'org.springframework.boot:spring-boot-starter-tomcat'
-    compile 'javax.servlet:jstl:1.2'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-devtools'
+//    compile 'org.springframework.data:spring-data-rest-webmvc'
+//    compile 'org.springframework.boot:spring-boot-starter-tomcat'
+//    compile 'javax.servlet:jstl:1.2'
+//    compile 'javax.servlet:javax.servlet-api'
     
+//    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     runtime 'com.h2database:h2'
     
     compile 'org.springframework.boot:spring-boot-starter-activemq'
@@ -87,6 +91,10 @@ distributions {
         }
     }
 }
+//
+//bootRun {
+//    addResources = true
+//}
 
 license {
     header = file('HEADER')
