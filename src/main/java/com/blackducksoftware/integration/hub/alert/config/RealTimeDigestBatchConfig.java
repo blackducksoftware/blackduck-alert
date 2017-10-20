@@ -29,8 +29,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -44,15 +42,15 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-@Configuration
-public class RealTimeDigestBatchConfig extends CommonConfig {
+//@Configuration
+public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "RealTimeBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "RealTimeBatchJob";
 
     private final ChannelTemplateManager channelTemplateManager;
     private final Gson gson;
 
-    @Autowired
+    // @Autowired
     public RealTimeDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final ChannelTemplateManager channelTemplateManager, final Gson gson) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
@@ -61,29 +59,29 @@ public class RealTimeDigestBatchConfig extends CommonConfig {
     }
 
     @Override
-    @Scheduled(cron = "0 0/1 * 1/1 * *", zone = "UTC")
+    @Scheduled(cron = "#{@realtimeDigestCronExpression}", zone = "UTC")
     public JobExecution createJobExecution() throws Exception {
         return super.createJobExecution();
     }
 
     @Override
-    public Step createStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
+    public Step createStep(final RealTimeItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }
 
     @Override
-    public RealTimeItemReader getReader() {
+    public RealTimeItemReader reader() {
         return new RealTimeItemReader(notificationRepository);
     }
 
     @Override
-    public DigestItemWriter getWriter() {
+    public DigestItemWriter writer() {
         return new DigestItemWriter(channelTemplateManager, gson);
     }
 
     @Override
-    public DigestItemProcessor getProcessor() {
+    public DigestItemProcessor processor() {
         return new DigestItemProcessor();
     }
 

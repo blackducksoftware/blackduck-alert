@@ -39,10 +39,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -57,8 +59,10 @@ import com.google.gson.GsonBuilder;
 @EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.datasource.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
+@EnableScheduling
 @EnableJms
 @SpringBootApplication
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
@@ -75,6 +79,7 @@ public class Application {
     @PostConstruct
     void init() {
         logger.info("Hub Alert Starting...");
+        logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Hub URL:            {}", alertProperties.getHubUrl());
         logger.info("Hub Username:       {}", alertProperties.getHubUsername());
@@ -84,6 +89,10 @@ public class Application {
         logger.info("Hub Proxy Port:     {}", alertProperties.getHubProxyPort());
         logger.info("Hub Proxy User:     {}", alertProperties.getHubProxyUsername());
         logger.info("Hub Proxy Password: **********");
+        logger.info("----------------------------------------");
+        logger.info("Accumulator Cron Expression:      {}", alertProperties.getAccumulatorCron());
+        logger.info("Real Time Digest Cron Expression: {}", alertProperties.getRealTimeDigestCron());
+        logger.info("Daily Digest Cron Expression:     {}", alertProperties.getDailyDigestCron());
 
         try {
             hubServiceWrapper.init();
@@ -100,6 +109,16 @@ public class Application {
     @Bean
     public String accumulatorCronExpression() {
         return alertProperties.getAccumulatorCron();
+    }
+
+    @Bean
+    public String dailyDigestCronExpression() {
+        return alertProperties.getDailyDigestCron();
+    }
+
+    @Bean
+    public String realtimeDigestCronExpression() {
+        return alertProperties.getRealTimeDigestCron();
     }
 
     @Bean

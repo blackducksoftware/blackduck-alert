@@ -29,8 +29,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -44,15 +42,15 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-@Configuration
-public class DailyDigestBatchConfig extends CommonConfig {
+//@Configuration
+public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
     private final ChannelTemplateManager channelTemplateManager;
     private final Gson gson;
 
-    @Autowired
+    // @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final ChannelTemplateManager channelTemplateManager, final Gson gson) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
@@ -62,29 +60,29 @@ public class DailyDigestBatchConfig extends CommonConfig {
 
     // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
     @Override
-    @Scheduled(cron = "0 0/5 * 1/1 * *", zone = "UTC")
+    @Scheduled(cron = "#{@dailyDigestCronExpression}", zone = "UTC")
     public JobExecution createJobExecution() throws Exception {
         return super.createJobExecution();
     }
 
     @Override
-    public Step createStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor)
+    public Step createStep(final DailyItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }
 
     @Override
-    public DailyItemReader getReader() {
+    public DailyItemReader reader() {
         return new DailyItemReader(notificationRepository);
     }
 
     @Override
-    public DigestItemWriter getWriter() {
+    public DigestItemWriter writer() {
         return new DigestItemWriter(channelTemplateManager, gson);
     }
 
     @Override
-    public DigestItemProcessor getProcessor() {
+    public DigestItemProcessor processor() {
         return new DigestItemProcessor();
     }
 
