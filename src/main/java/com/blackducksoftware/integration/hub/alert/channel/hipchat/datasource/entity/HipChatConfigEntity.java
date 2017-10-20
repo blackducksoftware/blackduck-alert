@@ -28,27 +28,32 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "hipchat_config", schema = "configuration")
 public class HipChatConfigEntity implements Serializable {
     private static final long serialVersionUID = 9172607945030111585L;
 
     @Id
     @GeneratedValue
     @Column(name = "id")
-    private final Long id;
+    private Long id;
 
     @Column(name = "api_key")
-    private final String apiKey;
+    private String apiKey;
 
     @Column(name = "room_id")
-    private final Integer roomId;
+    private Integer roomId;
 
     @Column(name = "notify")
-    private final Boolean notify;
+    private Boolean notify;
 
     @Column(name = "color")
-    private final String color;
+    private String color;
+
+    protected HipChatConfigEntity() {
+    }
 
     public HipChatConfigEntity(final Long id, final String apiKey, final Integer room_id, final Boolean notify, final String color) {
         this.id = id;

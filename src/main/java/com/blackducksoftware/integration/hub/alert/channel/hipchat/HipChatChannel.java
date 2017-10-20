@@ -22,16 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.persistence.Table;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +37,10 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
-import com.blackducksoftware.integration.log.LogLevel;
-import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -56,17 +50,18 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-@Table(name = "hipchat_config", schema = "notification")
 public class HipChatChannel extends DistributionChannel<String> {
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     public static final String HIP_CHAT_FROM_NAME = "Hub Alert";
 
     private static final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
     private final Gson gson;
+    private final HipChatRepository hipChatRepository;
 
     @Autowired
-    public HipChatChannel(final Gson gson) {
+    public HipChatChannel(final Gson gson, final HipChatRepository hipChatRepository) {
         this.gson = gson;
+        this.hipChatRepository = hipChatRepository;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -81,20 +76,22 @@ public class HipChatChannel extends DistributionChannel<String> {
 
     public void handleEvent(final HipChatEvent event) {
         final String notificationMessage = event.getNotificationEntity().toString();
-        // TODO get latest configuration entities
-        // final List<HipChatConfigEntity> configurations = hipChatRepository.getAllConfigurations();
-        final List<HipChatConfigEntity> configurations = new ArrayList<>();
-        configurations.add(new HipChatConfigEntity(new Long(0), "<MY_API_KEY>", new Integer(4239222), Boolean.FALSE, "random"));
+        final JsonObject card = formatNotificationEntity(event.getNotificationEntity());
+
+        // TODO only read from the DB (i.e. remove this)
+        final HipChatConfigEntity entity = hipChatRepository.save(new HipChatConfigEntity(new Long(0), "<MY_API_KEY>", new Integer(4239222), Boolean.FALSE, "random"));
+        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
+        configurations.add(entity);
         for (final HipChatConfigEntity configEntity : configurations) {
-            sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
+            sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, card, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
         }
     }
 
-    public void sendHipChatMessage(final String apiUrl, final String authToken, final Integer roomId, final String message, final String from, final boolean notify, final String color) {
-        final URL url = getUrlFromString(apiUrl);
-        final RestConnection connection = getRestConnection(url);
+    public void sendHipChatMessage(final String apiUrl, final String authToken, final Integer roomId, final String message, final JsonObject card, final String from, final boolean notify, final String color) {
+        // TODO find a better way to inject this
+        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
-            final String jsonString = getJsonString(message, from, notify, color);
+            final String jsonString = getJsonString(message, card, from, notify, color);
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", roomId.toString(), "notification");
@@ -104,7 +101,7 @@ public class HipChatChannel extends DistributionChannel<String> {
             map.put("Authorization", "Bearer " + authToken);
             map.put("Content-Type", "application/json");
 
-            final Request request = createHipChatMessageRequest(httpUrl, map, body);
+            final Request request = connection.createPostRequest(httpUrl, map, body);
             try {
                 logger.info("Attempting to send a HipChat message...");
                 final Response response = connection.handleExecuteClientCall(request);
@@ -118,48 +115,41 @@ public class HipChatChannel extends DistributionChannel<String> {
         }
     }
 
-    private URL getUrlFromString(final String apiUrl) {
-        URL url = null;
-        try {
-            url = new URL(apiUrl);
-        } catch (final MalformedURLException e) {
-            logger.error("Problem generating the URL", e);
-        }
-        return url;
+    public JsonObject formatNotificationEntity(final NotificationEntity entity) {
+        final StringBuilder descriptionBuilder = new StringBuilder();
+        descriptionBuilder.append("Type: ");
+        descriptionBuilder.append(entity.getNotificationType());
+        descriptionBuilder.append("\nRule: ");
+        descriptionBuilder.append(entity.getPolicyRuleName());
+        descriptionBuilder.append("\nComponent Name: ");
+        descriptionBuilder.append(entity.getComponentName());
+        descriptionBuilder.append("\nComponent Version: ");
+        descriptionBuilder.append(entity.getComponentVersion());
+
+        final JsonObject card = new JsonObject();
+        final JsonObject description = new JsonObject();
+
+        description.addProperty("value", descriptionBuilder.toString());
+        description.addProperty("format", "text");
+        card.add("description", description);
+        card.addProperty("style", "media");
+        card.addProperty("format", "medium");
+        card.addProperty("title", entity.getProjectName() + " > " + entity.getProjectVersion());
+        card.addProperty("id", entity.getId().toString());
+
+        return card;
     }
 
-    private RestConnection getRestConnection(final URL url) {
-        final RestConnection connection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.err, LogLevel.TRACE), url, 300000);
-        try {
-            connection.connect();
-            return connection;
-        } catch (final IntegrationException e) {
-            logger.error("Could not connect to " + url.toString(), e);
-            return null;
-        }
-    }
-
-    private String getJsonString(final String message, final String from, final boolean notify, final String color) {
+    private String getJsonString(final String message, final JsonObject card, final String from, final boolean notify, final String color) {
         final JsonObject json = new JsonObject();
         json.addProperty("message", message);
+        if (card != null) {
+            json.add("card", card);
+        }
         json.addProperty("from", from);
         json.addProperty("notify", notify);
         json.addProperty("color", color);
 
         return json.toString();
-    }
-
-    private Request createHipChatMessageRequest(final HttpUrl url, final Map<String, String> headers, final RequestBody body) {
-        return getRequestBuilder(headers).url(url).post(body).build();
-    }
-
-    private Request.Builder getRequestBuilder(final Map<String, String> headers) {
-        final Request.Builder builder = new Request.Builder();
-        if (headers != null) {
-            for (final Entry<String, String> header : headers.entrySet()) {
-                builder.addHeader(header.getKey(), header.getValue());
-            }
-        }
-        return builder;
     }
 }

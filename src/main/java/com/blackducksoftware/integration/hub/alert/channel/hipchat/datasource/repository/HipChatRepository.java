@@ -22,16 +22,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository;
 
-import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
 
 @Transactional
 public interface HipChatRepository extends JpaRepository<HipChatConfigEntity, Long> {
-    @Query("select entity from HipChatConfigEntity entity")
-    List<HipChatConfigEntity> getAllConfigurations();
 }

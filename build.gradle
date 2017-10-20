@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:18.0.1'
+    compile 'com.blackducksoftware.integration:hub-common:18.3.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'

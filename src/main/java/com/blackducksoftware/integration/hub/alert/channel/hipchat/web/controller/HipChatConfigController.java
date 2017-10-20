@@ -22,21 +22,26 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.web.controller;
 
-import java.util.Collections;
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
 
 @Controller
-@RequestMapping("/hipchat")
 public class HipChatConfigController {
-    @RequestMapping
-    public @ResponseBody List<HipChatConfigEntity> getConfig() {
-        // TODO
-        return Collections.emptyList();
+    private final HipChatRepository hipChatRepository;
+
+    @Autowired
+    HipChatConfigController(final HipChatRepository hipChatRepository) {
+        this.hipChatRepository = hipChatRepository;
+    }
+
+    @RequestMapping(value = "/config/hipchat", method = RequestMethod.GET)
+    public @ResponseBody String getConfig() {
+        // TODO return as json
+        return hipChatRepository.findAll().toString();
     }
 }
