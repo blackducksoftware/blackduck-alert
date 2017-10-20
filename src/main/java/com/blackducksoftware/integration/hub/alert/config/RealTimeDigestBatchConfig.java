@@ -29,6 +29,8 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -42,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-//@Configuration
+@Configuration
 public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "RealTimeBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "RealTimeBatchJob";
@@ -50,7 +52,7 @@ public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, 
     private final ChannelTemplateManager channelTemplateManager;
     private final Gson gson;
 
-    // @Autowired
+    @Autowired
     public RealTimeDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final ChannelTemplateManager channelTemplateManager, final Gson gson) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);

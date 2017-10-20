@@ -29,6 +29,8 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -42,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-//@Configuration
+@Configuration
 public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
@@ -50,7 +52,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
     private final ChannelTemplateManager channelTemplateManager;
     private final Gson gson;
 
-    // @Autowired
+    @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final ChannelTemplateManager channelTemplateManager, final Gson gson) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
@@ -58,7 +60,6 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
         this.gson = gson;
     }
 
-    // @Scheduled(cron = "0 0 0 1/1 * ?") // daily
     @Override
     @Scheduled(cron = "#{@dailyDigestCronExpression}", zone = "UTC")
     public JobExecution createJobExecution() throws Exception {
