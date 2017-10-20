@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
+import com.blackducksoftware.integration.hub.alert.batch.digest.processor.NotificationRemovalProcessor;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
@@ -51,12 +52,13 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
     }
 
     private List<AbstractChannelEvent> processNotifications(final List<NotificationEntity> notificationList) {
-
+        final NotificationRemovalProcessor removalProcessor = new NotificationRemovalProcessor();
+        final List<NotificationEntity> processedNotificationList = removalProcessor.process(notificationList);
         if (notificationList == null) {
             return new ArrayList<>(0);
         } else {
-            final List<AbstractChannelEvent> events = new ArrayList<>(notificationList.size());
-            notificationList.forEach(notification -> {
+            final List<AbstractChannelEvent> events = new ArrayList<>(processedNotificationList.size());
+            processedNotificationList.forEach(notification -> {
                 events.add(new EmailEvent(notification));
                 events.add(new HipChatEvent(notification));
             });
