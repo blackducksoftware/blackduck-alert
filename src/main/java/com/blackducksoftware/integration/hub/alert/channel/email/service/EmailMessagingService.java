@@ -133,7 +133,7 @@ public class EmailMessagingService {
     }
 
     private String getResolvedSubjectLine(final Map<String, Object> model) throws IOException, TemplateException {
-        String subjectLine = (String) model.get("subject_line");
+        String subjectLine = (String) model.get(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE);
         if (StringUtils.isBlank(subjectLine)) {
             subjectLine = "Default Subject Line - please define one";
         }

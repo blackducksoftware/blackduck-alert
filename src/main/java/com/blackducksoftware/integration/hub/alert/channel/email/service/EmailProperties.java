@@ -81,6 +81,30 @@ public class EmailProperties {
 
     public static final String ALERT_SSL_KEYSTORE_TYPE = "hub.alert.ssl.keyStoreType";
 
+    public static final String TEMPLATE_KEY_HUB_SERVER_URL = "hub_server_url";
+
+    public static final String TEMPLATE_KEY_SUBJECT_LINE = "subject_line";
+
+    public static final String TEMPLATE_KEY_TOPICS_LIST = "topicsList";
+
+    public static final String TEMPLATE_KEY_START_DATE = "startDate";
+
+    public static final String TEMPLATE_KEY_END_DATE = "endDate";
+
+    public static final String TEMPLATE_KEY_TOTAL_NOTIFICATIONS = "totalNotifications";
+
+    public static final String TEMPLATE_KEY_TOTAL_POLICY_VIOLATIONS = "totalPolicyViolations";
+
+    public static final String TEMPLATE_KEY_TOTAL_POLICY_OVERRIDES = "totalPolicyOverrides";
+
+    public static final String TEMPLATE_KEY_TOTAL_VULNERABILITIES = "totalVulnerabilities";
+
+    public static final String TEMPLATE_KEY_EMAIL_CATEGORY = "emailCategory";
+
+    public static final String TEMPLATE_KEY_USER_FIRST_NAME = "user_first_name";
+
+    public static final String TEMPLATE_KEY_USER_LAST_NAME = "user_last_name";
+
     private final Map<String, String> suppliedJavamailConfigProperties = new HashMap<>();
 
     private final Map<String, String> suppliedTemplateVariableProperties = new HashMap<>();

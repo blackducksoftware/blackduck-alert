@@ -1,7 +1,6 @@
-/**
- * Copyright (C) 2017 Black Duck Software, Inc.
+/*******************************************************************************
+ * Copyright (C) 2016 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
@@ -19,28 +18,27 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *******************************************************************************/
 package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import java.util.List;
 import java.util.Map;
 
-public class ProjectsDigest {
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-    private final Map<String, String> totalsMap;
+public class ItemData {
+    private final Map<String, Object> dataSet;
 
-    private final List<ProjectDigest> projectList;
-
-    public ProjectsDigest(final Map<String, String> totalsMap, final List<ProjectDigest> projectList) {
-        this.totalsMap = totalsMap;
-        this.projectList = projectList;
+    public ItemData(final Map<String, Object> dataMap) {
+        this.dataSet = dataMap;
     }
 
-    public Map<String, String> getTotalsMap() {
-        return totalsMap;
+    public Map<String, Object> getDataSet() {
+        return dataSet;
     }
 
-    public List<ProjectDigest> getProjectList() {
-        return projectList;
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }
