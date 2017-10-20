@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
@@ -47,8 +46,7 @@ import com.blackducksoftware.integration.hub.dataservice.notification.Notificati
 import com.blackducksoftware.integration.hub.service.HubResponseService;
 
 @Configuration
-@EnableBatchProcessing
-public class AccumulatorConfig extends CommonConfig {
+public class AccumulatorConfig extends CommonConfig<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
@@ -63,15 +61,14 @@ public class AccumulatorConfig extends CommonConfig {
     }
 
     @Override
-    @Scheduled(cron = "#{@accumulatorCronExpression}")
-    public JobExecution perform() throws Exception {
-        return super.perform();
+    @Scheduled(cron = "#{@accumulatorCronExpression}", zone = "UTC")
+    public JobExecution createJobExecution() throws Exception {
+        return super.createJobExecution();
     }
 
     @Override
-    public Step accumulatorStep() {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(getReader()).processor(getProcessor()).writer(getWriter()).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                .build();
+    public Step createStep(final AccumulatorReader reader, final AccumulatorProcessor processor, final AccumulatorWriter writer) {
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
     }
 
     public NotificationItemProcessor getNotificationProcessor() {
@@ -83,17 +80,17 @@ public class AccumulatorConfig extends CommonConfig {
     }
 
     @Override
-    public AccumulatorReader getReader() {
+    public AccumulatorReader reader() {
         return new AccumulatorReader(hubServiceWrapper);
     }
 
     @Override
-    public AccumulatorWriter getWriter() {
+    public AccumulatorWriter writer() {
         return new AccumulatorWriter(notificationRepository);
     }
 
     @Override
-    public AccumulatorProcessor getProcessor() {
+    public AccumulatorProcessor processor() {
         return new AccumulatorProcessor(getNotificationProcessor());
     }
 
