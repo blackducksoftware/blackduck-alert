@@ -22,19 +22,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.ui.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class SettingsController {
 
-    @RequestMapping(value = "/gavin")
+    @GetMapping("/settings")
     public String index() {
-        return "index.html";
+        return "Hello World";
     }
-
-    // @RequestMapping(value = "/gavin")
-    // public String gavin() {
-    // return "index";
-    // }
 }

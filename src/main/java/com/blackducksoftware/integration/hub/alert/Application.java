@@ -64,7 +64,7 @@ import com.google.gson.GsonBuilder;
 @EnableScheduling
 @EnableJms
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config", "com.blackducksoftware.integration.hub.alert.ui.controller" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
