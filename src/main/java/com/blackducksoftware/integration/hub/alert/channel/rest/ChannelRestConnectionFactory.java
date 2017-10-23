@@ -32,8 +32,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.log.LogLevel;
-import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 public class ChannelRestConnectionFactory {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
@@ -44,7 +43,7 @@ public class ChannelRestConnectionFactory {
     }
 
     public static RestConnection createUnauthenticatedRestConnection(final URL url) {
-        return createUnauthenticatedRestConnection(url, new PrintStreamIntLogger(System.out, LogLevel.INFO), 5 * 60 * 1000);
+        return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), 5 * 60 * 1000);
     }
 
     public static RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {

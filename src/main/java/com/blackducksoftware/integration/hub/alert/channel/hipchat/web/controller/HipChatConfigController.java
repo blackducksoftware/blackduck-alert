@@ -22,15 +22,27 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
 
-@Controller
+@RestController
+// TODO create an error response class
 public class HipChatConfigController {
     private final HipChatRepository hipChatRepository;
 
@@ -39,9 +51,46 @@ public class HipChatConfigController {
         this.hipChatRepository = hipChatRepository;
     }
 
-    @RequestMapping(value = "/config/hipchat", method = RequestMethod.GET)
-    public @ResponseBody String getConfig() {
-        // TODO return as json
-        return hipChatRepository.findAll().toString();
+    @GetMapping(value = "/configuration/hipchat")
+    public List<HipChatConfigEntity> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+        if (id != null) {
+            final HipChatConfigEntity foundEntity = hipChatRepository.findOne(id);
+            if (foundEntity != null) {
+                return Arrays.asList(foundEntity);
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        return hipChatRepository.findAll();
+    }
+
+    @PostMapping(value = "/configuration/hipchat")
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatEntity", required = true) @RequestBody final HipChatConfigEntity hipChatEntity) {
+        if (hipChatEntity.getId() == null || !hipChatRepository.exists(hipChatEntity.getId())) {
+            URI uri;
+            try {
+                uri = new URI("/configuration/hipchat");
+            } catch (final URISyntaxException e) {
+                return ResponseEntity.status(500).body(e.getMessage());
+            }
+            final HipChatConfigEntity createdEntity = hipChatRepository.save(hipChatEntity);
+            return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
+        }
+        return ResponseEntity.status(409).body("Invalid id");
+    }
+
+    @PutMapping(value = "/configuration/hipchat")
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatEntity", required = true) @RequestBody final HipChatConfigEntity hipChatEntity) {
+        if (hipChatEntity.getId() != null && hipChatRepository.exists(hipChatEntity.getId())) {
+            URI uri;
+            try {
+                uri = new URI("/configuration/hipchat");
+            } catch (final URISyntaxException e) {
+                return ResponseEntity.status(500).body("error: " + e.getMessage());
+            }
+            hipChatRepository.save(hipChatEntity);
+            return ResponseEntity.created(uri).build();
+        }
+        return ResponseEntity.badRequest().body("No configuration with id " + hipChatEntity.getId());
     }
 }

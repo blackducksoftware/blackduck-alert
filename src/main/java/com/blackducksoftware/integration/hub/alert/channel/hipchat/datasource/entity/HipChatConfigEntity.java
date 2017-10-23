@@ -30,6 +30,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 @Entity
 @Table(name = "hipchat_config", schema = "configuration")
 public class HipChatConfigEntity implements Serializable {
@@ -89,69 +94,19 @@ public class HipChatConfigEntity implements Serializable {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((apiKey == null) ? 0 : apiKey.hashCode());
-        result = prime * result + ((color == null) ? 0 : color.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((notify == null) ? 0 : notify.hashCode());
-        result = prime * result + ((roomId == null) ? 0 : roomId.hashCode());
-        return result;
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final HipChatConfigEntity other = (HipChatConfigEntity) obj;
-        if (apiKey == null) {
-            if (other.apiKey != null) {
-                return false;
-            }
-        } else if (!apiKey.equals(other.apiKey)) {
-            return false;
-        }
-        if (color == null) {
-            if (other.color != null) {
-                return false;
-            }
-        } else if (!color.equals(other.color)) {
-            return false;
-        }
-        if (id == null) {
-            if (other.id != null) {
-                return false;
-            }
-        } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (notify == null) {
-            if (other.notify != null) {
-                return false;
-            }
-        } else if (!notify.equals(other.notify)) {
-            return false;
-        }
-        if (roomId == null) {
-            if (other.roomId != null) {
-                return false;
-            }
-        } else if (!roomId.equals(other.roomId)) {
-            return false;
-        }
-        return true;
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public String toString() {
-        return "HipChatConfigEntity [id=" + id + ", apiKey=<NOT_SHOWN>, room_id=" + roomId + ", notify=" + notify + ", color=" + color + "]";
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
+        return reflectionToStringBuilder.toString();
     }
 
 }
