@@ -39,10 +39,12 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationEn
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationRepository notificationRepository;
     private boolean hasRead;
+    private final String readerName;
 
-    public DigestItemReader(final NotificationRepository notificationRepository) {
+    public DigestItemReader(final String readerName, final NotificationRepository notificationRepository) {
         this.notificationRepository = notificationRepository;
         hasRead = false;
+        this.readerName = readerName;
     }
 
     @Override
@@ -50,7 +52,7 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationEn
         if (hasRead) {
             return null;
         } else {
-            logger.debug("Digest Item Reader called...");
+            logger.debug("{} Digest Item Reader called...", readerName);
             final DateRange dateRange = getDateRange();
             final Date startDate = dateRange.getStart();
             final Date endDate = dateRange.getEnd();

@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 public class RealTimeItemReader extends DigestItemReader {
 
     public RealTimeItemReader(final NotificationRepository notificationRepository) {
-        super(notificationRepository);
+        super(RealTimeItemReader.class.getName(), notificationRepository);
     }
 
     @Override
