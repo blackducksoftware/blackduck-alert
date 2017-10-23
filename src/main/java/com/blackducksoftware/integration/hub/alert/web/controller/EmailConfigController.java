@@ -11,7 +11,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.lang.reflect.Type;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 @Controller
 public class EmailConfigController {
@@ -38,9 +36,7 @@ public class EmailConfigController {
 
     @RequestMapping(value = "/config/email", method = RequestMethod.GET)
     public @ResponseBody String getConfig() {
-        final Type listOfEmailConfigEntity = new TypeToken<List<EmailConfigEntity>>() {
-        }.getType();
         final List<EmailConfigEntity> configurations = emailRepository.findAll();
-        return gson.toJson(configurations, listOfEmailConfigEntity);
+        return gson.toJson(configurations);
     }
 }
