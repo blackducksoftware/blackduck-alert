@@ -20,12 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.ui.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.blackducksoftware.integration.hub.alert.ui.model.Setting;
 
-public interface SettingRepository extends CrudRepository<Setting, Long> {
+@Repository
+public interface SettingRepository extends JpaRepository<Setting, Long> {
 
 }

@@ -32,6 +32,9 @@ import javax.persistence.Table;
 @Table(name = "settings", schema = "configuration")
 public class Setting {
 
+    // public interface Repository extends CrudRepository<Setting, Long> {
+    // }
+
     @Id
     @GeneratedValue
     @Column(name = "id")

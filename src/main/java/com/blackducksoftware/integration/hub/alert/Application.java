@@ -39,7 +39,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -64,7 +63,7 @@ import com.google.gson.GsonBuilder;
 @EnableScheduling
 @EnableJms
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config", "com.blackducksoftware.integration.hub.alert.ui.controller" })
+// @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config", "com.blackducksoftware.integration.hub.alert.ui.controller" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);

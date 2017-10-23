@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE'
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
     }
 }
 
@@ -44,7 +44,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.springframework.boot:spring-boot-starter-parent:1.5.8.RELEASE'
+//    compile 'org.springframework.boot:spring-boot-starter-jpa'
+    compile 'org.springframework.boot:spring-boot-starter-data-rest'
 //    compile 'org.springframework.boot:spring-boot-devtools'
 //    compile 'org.springframework.data:spring-data-rest-webmvc'
 //    compile 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -54,6 +55,7 @@ dependencies {
 //    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     runtime 'com.h2database:h2'
     runtime 'org.springframework.boot:spring-boot-devtools'
+    runtime 'org.springframework.boot:spring-boot-starter-tomcat'
     
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
@@ -93,10 +95,10 @@ distributions {
         }
     }
 }
-//
-//bootRun {
-//    addResources = true
-//}
+
+bootRun {
+    addResources = true
+}
 
 license {
     header = file('HEADER')
