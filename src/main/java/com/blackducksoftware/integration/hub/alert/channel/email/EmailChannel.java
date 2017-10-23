@@ -22,13 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import javax.mail.MessagingException;
 
@@ -38,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
@@ -47,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.model.ProjectDa
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
@@ -56,11 +55,16 @@ import freemarker.template.TemplateException;
 @Component
 public class EmailChannel extends DistributionChannel<String> {
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
+
+    private final AlertProperties alertProperties;
     private final Gson gson;
+    private final EmailRepository emailRepository;
 
     @Autowired
-    public EmailChannel(final Gson gson) {
+    public EmailChannel(final AlertProperties alertProperties, final Gson gson, final EmailRepository emailRepository) {
+        this.alertProperties = alertProperties;
         this.gson = gson;
+        this.emailRepository = emailRepository;
     }
 
     @JmsListener(destination = EmailChannelConfig.CHANNEL_NAME)
@@ -73,16 +77,21 @@ public class EmailChannel extends DistributionChannel<String> {
     }
 
     private void handleEvent(final EmailEvent emailEvent) {
-        final Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
+        final List<EmailConfigEntity> configurations = emailRepository.findAll();
+        for (final EmailConfigEntity configuration : configurations) {
+            sendEmail(emailEvent, configuration, "");
+        }
+    }
 
-            final EmailMessagingService emailService = new EmailMessagingService(new EmailProperties(properties));
+    public void sendEmail(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity, final String emailToAddress) {
+        try {
+            final EmailProperties emailProperties = new EmailProperties(emailConfigEntity);
+            final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, "Test email. Values hard coded");
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, NotificationCategoryEnum.POLICY_VIOLATION.toString());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, properties.get("blackduck.hub.url"));
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
 
             final List<ProjectData> dataList = notificationToData(emailEvent.getNotificationEntity());
             model.put(EmailProperties.TEMPLATE_KEY_TOPICS_LIST, dataList);
@@ -92,7 +101,7 @@ public class EmailChannel extends DistributionChannel<String> {
             model.put(EmailProperties.TEMPLATE_KEY_USER_FIRST_NAME, "First");
             model.put(EmailProperties.TEMPLATE_KEY_USER_LAST_NAME, "Last Name");
 
-            final EmailTarget emailTarget = new EmailTarget(properties.getProperty("email.to.address"), "digest.ftl", model);
+            final EmailTarget emailTarget = new EmailTarget(emailToAddress, "digest.ftl", model);
 
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {

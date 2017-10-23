@@ -42,6 +42,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +112,7 @@ public class EmailMessagingService {
 
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        populateModelWithAdditionalProperties(emailProperties, model, templateName, contentIdsToFilePaths);
+        addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, emailProperties.getEmailTemplateLogoImage());
         final String html = getResolvedTemplate(model, templateName);
 
         final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
@@ -143,50 +144,21 @@ public class EmailMessagingService {
         return stringWriter.toString();
     }
 
-    private void populateModelWithAdditionalProperties(final EmailProperties customerProperties, final Map<String, Object> model, final String templateName, final Map<String, String> contentIdsToFilePaths) {
-        for (final Map.Entry<String, String> entry : customerProperties.getSuppliedTemplateVariableProperties().entrySet()) {
-            final String key = entry.getKey();
-            final String value = entry.getValue();
-            manageKey(model, templateName, contentIdsToFilePaths, key, value);
-        }
+    private void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
+        final String cid = generateContentId(key);
+        model.put(cleanForFreemarker(key), cid);
+        contentIdsToFilePaths.put("<" + cid + ">", value);
     }
 
-    private void manageKey(final Map<String, Object> model, final String templateName, final Map<String, String> contentIdsToFilePaths, String key, final String value) {
-        boolean shouldAddToModel = false;
-        if (key.contains("all.templates.")) {
-            shouldAddToModel = true;
-            key = key.replace("all.templates.", "");
-
-            // if we've already added a value for this key using the template
-            // name, assume it overrides the 'all.templates' value
-            if (model.containsKey(cleanForFreemarker(key))) {
-                shouldAddToModel = false;
-            }
-        } else if (key.contains(templateName + ".")) {
-            shouldAddToModel = true;
-            key = key.replace(templateName + ".", "");
-        }
-
-        if (shouldAddToModel) {
-            if (key.endsWith(".image")) {
-                final String cid = generateContentId(key);
-                model.put(cleanForFreemarker(key), cid);
-                contentIdsToFilePaths.put("<" + cid + ">", value);
-            } else {
-                model.put(cleanForFreemarker(key), value);
-            }
-        }
-    }
-
-    private Session createMailSession(final EmailProperties customerProperties) {
-        final Map<String, String> sessionProps = customerProperties.getPropertiesForSession();
+    private Session createMailSession(final EmailProperties emailProperties) {
+        final Map<String, String> sessionProps = emailProperties.getJavamailConfigProperties();
         final Properties props = new Properties();
         props.putAll(sessionProps);
 
         return Session.getInstance(props);
     }
 
-    private Message createMessage(final String emailAddress, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties properties) throws MessagingException {
+    private Message createMessage(final String emailAddress, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties) throws MessagingException {
         final List<InternetAddress> addresses = new ArrayList<>();
         try {
             addresses.add(new InternetAddress(emailAddress));
@@ -201,26 +173,26 @@ public class EmailMessagingService {
         final Message message = new MimeMessage(session);
         message.setContent(mimeMultipart);
 
-        message.setFrom(new InternetAddress(properties.getEmailFromAddress()));
+        message.setFrom(new InternetAddress(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_FROM_KEY)));
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSubject(subjectLine);
 
         return message;
     }
 
-    public void sendMessage(final EmailProperties customerProperties, final Session session, final Message message) throws MessagingException {
-        if (customerProperties.isAuth()) {
-            sendAuthenticated(customerProperties, message, session);
+    public void sendMessage(final EmailProperties emailProperties, final Session session, final Message message) throws MessagingException {
+        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_AUTH_KEY))) {
+            sendAuthenticated(emailProperties, message, session);
         } else {
             Transport.send(message);
         }
     }
 
-    private void sendAuthenticated(final EmailProperties customerProperties, final Message message, final Session session) throws MessagingException {
-        final String host = customerProperties.getHost();
-        final int port = customerProperties.getPort();
-        final String username = customerProperties.getUsername();
-        final String password = customerProperties.getPassword();
+    private void sendAuthenticated(final EmailProperties emailProperties, final Message message, final Session session) throws MessagingException {
+        final String host = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_HOST_KEY);
+        final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_PORT_KEY));
+        final String username = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_USER_KEY);
+        final String password = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_PASSWORD_KEY);
 
         final Transport transport = session.getTransport("smtp");
         try {

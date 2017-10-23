@@ -41,7 +41,7 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
         final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-notification-schema.sql").addScript("db/create-notification-db.sql").build();
+        final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-notification-schema.sql").addScript("db/create-notification-db.sql").addScript("db/email/create-tables.sql").build();
         return dataSource;
     }
 
