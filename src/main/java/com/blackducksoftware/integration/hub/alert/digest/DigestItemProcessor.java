@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest;
+package com.blackducksoftware.integration.hub.alert.digest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,14 +37,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.CategoryDataBuilder;
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ItemData;
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectDataBuilder;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataBuilder;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;

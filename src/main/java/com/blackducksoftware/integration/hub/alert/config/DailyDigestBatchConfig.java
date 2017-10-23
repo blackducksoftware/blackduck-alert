@@ -35,12 +35,12 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.batch.digest.DailyItemReader;
-import com.blackducksoftware.integration.hub.alert.batch.digest.DigestItemProcessor;
-import com.blackducksoftware.integration.hub.alert.batch.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
+import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
+import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 

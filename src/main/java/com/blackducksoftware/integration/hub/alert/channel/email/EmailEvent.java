@@ -22,7 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class EmailEvent extends AbstractChannelEvent {

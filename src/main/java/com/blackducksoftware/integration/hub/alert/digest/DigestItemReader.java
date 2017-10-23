@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest;
+package com.blackducksoftware.integration.hub.alert.digest;
 
 import java.util.Date;
 import java.util.List;

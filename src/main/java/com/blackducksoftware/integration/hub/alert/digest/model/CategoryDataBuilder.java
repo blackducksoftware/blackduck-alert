@@ -20,37 +20,60 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest.model;
+package com.blackducksoftware.integration.hub.alert.digest.model;
 
+import java.util.LinkedList;
 import java.util.List;
 
-public class CategoryData {
-    private final String categoryKey;
+public class CategoryDataBuilder {
+    private String categoryKey;
 
     private final List<ItemData> itemList;
 
-    private final int itemCount;
+    private int itemCount;
 
-    public CategoryData(final String categoryKey, final List<ItemData> itemList, final int itemCount) {
-        this.categoryKey = categoryKey;
-        this.itemList = itemList;
-        this.itemCount = itemCount;
+    public CategoryDataBuilder() {
+        this.itemList = new LinkedList<>();
+        this.itemCount = 0;
+    }
+
+    public void addItem(final ItemData item) {
+        itemList.add(item);
+    }
+
+    public void removeItem(final ItemData item) {
+        itemList.remove(item);
+    }
+
+    public void incrementItemCount(final int itemCount) {
+        this.itemCount += itemCount;
+    }
+
+    public void decrementItemCount(final int itemCount) {
+        this.itemCount -= itemCount;
     }
 
     public String getCategoryKey() {
         return categoryKey;
     }
 
-    public List<ItemData> getItemList() {
-        return itemList;
+    public void setCategoryKey(final String categoryKey) {
+        this.categoryKey = categoryKey;
     }
 
     public int getItemCount() {
         return itemCount;
     }
 
-    @Override
-    public String toString() {
-        return "CategoryData [categoryKey=" + categoryKey + ", itemList=" + itemList + ", itemCount=" + itemCount + "]";
+    public void setItemCount(final int itemCount) {
+        this.itemCount = itemCount;
+    }
+
+    public List<ItemData> getItemList() {
+        return itemList;
+    }
+
+    public CategoryData build() {
+        return new CategoryData(categoryKey, itemList, itemCount);
     }
 }

@@ -22,7 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
 public abstract class AbstractChannelEvent extends AbstractEvent {
     private final ProjectData projectData;
