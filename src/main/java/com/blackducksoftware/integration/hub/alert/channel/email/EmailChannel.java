@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,19 +74,15 @@ public class EmailChannel extends DistributionChannel<String> {
 
     private void handleEvent(final EmailEvent emailEvent) {
         final Properties properties = new Properties();
-        properties.put(EmailProperties.EMAIL_FROM_ADDRESS_KEY, "jrichard@blackducksoftware.com");
-        properties.put(EmailProperties.EMAIL_REPLY_TO_ADDRESS_KEY, "jrichard@blackducksoftware.com");
-        properties.put(EmailProperties.JAVAMAIL_CONFIG_PREFIX + EmailProperties.JAVAMAIL_HOST_KEY, "mailrelay.dc2.lan");
-        properties.put(EmailProperties.EMAIL_TEMPLATE_DIRECTORY, "src/main/resources/email/templates");
-        properties.put(EmailProperties.TEMPLATE_VARIABLE_PREFIX + "all.templates.logo.image", "src/main/resources/email/images/Ducky-80.png");
-
         try {
+            properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
+
             final EmailMessagingService emailService = new EmailMessagingService(new EmailProperties(properties));
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, "HI!");
+            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, "Test email. Values hard coded");
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, NotificationCategoryEnum.POLICY_VIOLATION.toString());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, "Hub server URL");
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, properties.get("blackduck.hub.url"));
 
             final List<ProjectData> dataList = notificationToData(emailEvent.getNotificationEntity());
             model.put(EmailProperties.TEMPLATE_KEY_TOPICS_LIST, dataList);
@@ -94,7 +92,7 @@ public class EmailChannel extends DistributionChannel<String> {
             model.put(EmailProperties.TEMPLATE_KEY_USER_FIRST_NAME, "First");
             model.put(EmailProperties.TEMPLATE_KEY_USER_LAST_NAME, "Last Name");
 
-            final EmailTarget emailTarget = new EmailTarget("jrichard@blackducksoftware.com", "digest.ftl", model);
+            final EmailTarget emailTarget = new EmailTarget(properties.getProperty("email.to.address"), "digest.ftl", model);
 
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {
