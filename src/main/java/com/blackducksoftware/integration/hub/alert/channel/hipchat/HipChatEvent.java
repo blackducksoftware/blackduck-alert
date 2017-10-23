@@ -22,13 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class HipChatEvent extends AbstractChannelEvent {
 
-    public HipChatEvent(final NotificationEntity notificationEntity) {
-        super(notificationEntity);
+    public HipChatEvent(final ProjectData projectData) {
+        super(projectData);
     }
 
     @Override

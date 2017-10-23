@@ -20,19 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.batch.digest.model;
 
-import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import java.util.Map;
 
-public class EmailEvent extends AbstractChannelEvent {
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-    public EmailEvent(final ProjectData projectData) {
-        super(projectData);
+public class ItemData {
+    private final Map<String, Object> dataSet;
+
+    public ItemData(final Map<String, Object> dataMap) {
+        this.dataSet = dataMap;
+    }
+
+    public Map<String, Object> getDataSet() {
+        return dataSet;
     }
 
     @Override
-    public String getTopic() {
-        return EmailChannelConfig.CHANNEL_NAME;
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }
