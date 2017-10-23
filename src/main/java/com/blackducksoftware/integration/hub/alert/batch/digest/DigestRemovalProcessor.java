@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest.processor;
+package com.blackducksoftware.integration.hub.alert.batch.digest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,11 +35,11 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Vulnerabili
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityOperation;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
-public class NotificationRemovalProcessor {
+public class DigestRemovalProcessor {
     private final Map<String, Map<String, NotificationEntity>> entityCache;
     private final Map<String, Map<String, Set<String>>> vulnerabilityCache;
 
-    public NotificationRemovalProcessor() {
+    public DigestRemovalProcessor() {
         entityCache = new HashMap<>();
         vulnerabilityCache = new HashMap<>();
     }

@@ -41,7 +41,6 @@ import com.blackducksoftware.integration.hub.alert.batch.digest.model.CategoryDa
 import com.blackducksoftware.integration.hub.alert.batch.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.batch.digest.model.ProjectDataBuilder;
-import com.blackducksoftware.integration.hub.alert.batch.digest.processor.NotificationRemovalProcessor;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
@@ -68,7 +67,7 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
     }
 
     private List<AbstractChannelEvent> processNotifications(final List<NotificationEntity> notificationList) {
-        final NotificationRemovalProcessor removalProcessor = new NotificationRemovalProcessor();
+        final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
         final List<NotificationEntity> processedNotificationList = removalProcessor.process(notificationList);
         if (notificationList == null) {
             return new ArrayList<>(0);

@@ -34,6 +34,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.processor.PolicyViolationProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
@@ -71,7 +72,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     }
 
     private String getPolicyRule(final NotificationEvent notification) {
-        final String key = ItemTypeEnum.RULE.name();
+        final String key = PolicyViolationProcessor.POLICY_RULE;
         if (notification.getDataSet().containsKey(key)) {
             final PolicyRule rule = (PolicyRule) notification.getDataSet().get(key);
             return rule.getName();
