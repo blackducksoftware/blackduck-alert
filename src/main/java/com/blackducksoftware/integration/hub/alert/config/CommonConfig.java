@@ -39,7 +39,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 
-public abstract class CommonConfig {
+public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> {
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
     protected final SimpleJobLauncher jobLauncher;
@@ -59,23 +59,27 @@ public abstract class CommonConfig {
         this.transactionManager = transactionManager;
     }
 
-    public JobExecution perform() throws Exception {
-        final JobParameters param = new JobParametersBuilder().addString(JOB_ID_PROPERTY_NAME, String.valueOf(System.currentTimeMillis())).toJobParameters();
-        final JobExecution execution = jobLauncher.run(accumulatorJob(), param);
+    public JobExecution createJobExecution() throws Exception {
+        final JobParameters param = new JobParametersBuilder().addString(JOB_ID_PROPERTY_NAME, createJobID()).toJobParameters();
+        final JobExecution execution = jobLauncher.run(createJob(reader(), processor(), writer()), param);
         return execution;
     }
 
-    public Job accumulatorJob() {
-        return jobBuilderFactory.get(getJobName()).incrementer(new RunIdIncrementer()).flow(accumulatorStep()).end().build();
+    public Job createJob(final R reader, final P processor, final W writer) {
+        return jobBuilderFactory.get(getJobName()).incrementer(new RunIdIncrementer()).flow(createStep(reader, processor, writer)).end().build();
     }
 
-    public abstract Step accumulatorStep();
+    public String createJobID() {
+        return String.format("%s-%d", getJobName(), System.currentTimeMillis());
+    }
 
-    public abstract ItemReader getReader();
+    public abstract Step createStep(R reader, P processor, W writer);
 
-    public abstract ItemWriter getWriter();
+    public abstract R reader();
 
-    public abstract ItemProcessor getProcessor();
+    public abstract W writer();
+
+    public abstract P processor();
 
     public abstract String getJobName();
 

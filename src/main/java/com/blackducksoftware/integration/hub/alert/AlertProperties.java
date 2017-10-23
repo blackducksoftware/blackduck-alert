@@ -59,6 +59,12 @@ public class AlertProperties {
     @Value("${alert.accumulator.cron}")
     private String accumulatorCron;
 
+    @Value("${alert.digest.daily.cron}")
+    private String dailyDigestCron;
+
+    @Value("${alert.digest.realtime.cron}")
+    private String realTimeDigestCron;
+
     public String getHubUrl() {
         return hubUrl;
     }
@@ -138,4 +144,21 @@ public class AlertProperties {
     public void setAccumulatorCron(final String accumulatorCron) {
         this.accumulatorCron = accumulatorCron;
     }
+
+    public String getDailyDigestCron() {
+        return dailyDigestCron;
+    }
+
+    public void setDailyDigestCron(final String dailyDigestCron) {
+        this.dailyDigestCron = dailyDigestCron;
+    }
+
+    public String getRealTimeDigestCron() {
+        return realTimeDigestCron;
+    }
+
+    public void setRealTimeDigestCron(final String realTimeDigestCron) {
+        this.realTimeDigestCron = realTimeDigestCron;
+    }
+
 }
