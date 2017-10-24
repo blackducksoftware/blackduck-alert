@@ -20,28 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.accumulator;
+package com.blackducksoftware.integration.hub.alert.channel;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
-
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
-import com.google.gson.Gson;
-
-@Component
-public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
-
-    @Autowired
-    public RealTimeListener(final Gson gson) {
-        super(gson, RealTimeEvent.class);
-    }
-
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
-    @Override
-    public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
-    }
+public class SupportedChannels {
+    public final static String EMAIL = "email_channel";
+    public final static String HIPCHAT = "hipchat_channel";
 
 }

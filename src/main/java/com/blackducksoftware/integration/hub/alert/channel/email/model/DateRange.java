@@ -20,14 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+import java.util.Date;
 
-public class EmailChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "email_channel";
+public class DateRange {
 
-    public EmailChannelConfig() {
-        super(CHANNEL_NAME);
+    private final Date start;
+
+    private final Date end;
+
+    public DateRange(final Date start, final Date end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getEnd() {
+        return end;
     }
 }

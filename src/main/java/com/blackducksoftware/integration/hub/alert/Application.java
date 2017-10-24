@@ -49,13 +49,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.datasource.repository" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
@@ -74,6 +75,9 @@ public class Application {
 
     @Autowired
     private List<AbstractJmsTemplate> templateList;
+
+    @Autowired
+    private EmailRepository emailRepository;
 
     @PostConstruct
     void init() {
@@ -98,7 +102,6 @@ public class Application {
         } catch (final AlertException ex) {
             logger.error("Error initializing the service wrapper", ex);
         }
-
     }
 
     public static void main(final String[] args) {

@@ -20,28 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.accumulator;
+package com.blackducksoftware.integration.hub.alert;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
+public class AlertConstants {
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
-import com.google.gson.Gson;
+    public static final String CONFIG_KEY_EMAIL_OPT_IN = "optIn";
 
-@Component
-public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
+    public static final String CONFIG_KEY_EMAIL_FREQUENCY = "emailFrequency";
 
-    @Autowired
-    public RealTimeListener(final Gson gson) {
-        super(gson, RealTimeEvent.class);
+    public static final String CONFIG_KEY_EMAIL_TEMPLATE_NAME = "templateName";
+
+    public static final String CONFIG_KEY_EMAIL_TRIGGERS = "emailTriggers";
+
+    public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
+
+    public static final String CONTEXT_ATTRIBUTE_KEY_EMAIL_TEST_NOTIFIER = "blackduck-test-email-notifier";
+
+    private AlertConstants() throws InstantiationException {
+        throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
     }
-
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
-    @Override
-    public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
-    }
-
 }

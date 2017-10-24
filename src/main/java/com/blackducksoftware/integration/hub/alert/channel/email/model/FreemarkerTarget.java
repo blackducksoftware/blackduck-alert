@@ -20,15 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+import java.util.ArrayList;
+import java.util.Map;
 
-public class HipChatChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "hipchat_channel";
-
-    public HipChatChannelConfig() {
-        super(CHANNEL_NAME);
-    }
+public class FreemarkerTarget extends ArrayList<Map<String, String>> {
+    private static final long serialVersionUID = 9127715639930741374L;
 
 }

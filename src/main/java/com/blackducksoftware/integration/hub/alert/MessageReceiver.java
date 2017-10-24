@@ -22,9 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
 
-public abstract class MessageReceiver<E> {
+public abstract class MessageReceiver<E extends AbstractEvent> {
     private final Gson gson;
     private final Class<E> clazz;
 

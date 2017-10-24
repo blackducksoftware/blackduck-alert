@@ -22,26 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
-import com.google.gson.Gson;
-
-@Component
-public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
-
-    @Autowired
-    public RealTimeListener(final Gson gson) {
-        super(gson, RealTimeEvent.class);
-    }
-
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
-    @Override
-    public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
-    }
+public class RealTimeConfigEntity extends ChannelDatabaseEntity {
+    private static final long serialVersionUID = -321092107565025868L;
 
 }

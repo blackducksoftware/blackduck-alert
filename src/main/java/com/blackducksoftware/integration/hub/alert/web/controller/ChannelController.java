@@ -20,28 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.accumulator;
+package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
-import org.springframework.stereotype.Component;
+import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
-import com.google.gson.Gson;
+import org.springframework.http.ResponseEntity;
 
-@Component
-public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
+import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 
-    @Autowired
-    public RealTimeListener(final Gson gson) {
-        super(gson, RealTimeEvent.class);
-    }
+public interface ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
+    public List<R> getConfig(final Long id);
 
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
-    @Override
-    public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
-    }
+    public ResponseEntity<String> postConfig(R restModel);
 
+    public ResponseEntity<String> putConfig(R restModel);
+
+    // TODO TEST, DELETE
+
+    public D restModelToDatabaseModel(R restModel);
+
+    public R databaseModelToRestModel(D databaseModel);
+
+    public List<R> databaseModelsToRestModels(final List<D> databaseModels);
 }

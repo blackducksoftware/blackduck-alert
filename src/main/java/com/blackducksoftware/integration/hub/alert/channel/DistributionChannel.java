@@ -22,15 +22,19 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-public class ChannelConfig {
-    private final String channelName;
+import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.google.gson.Gson;
 
-    public ChannelConfig(final String channelName) {
-        this.channelName = channelName;
+public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
 
+    public DistributionChannel(final Gson gson, final Class<E> clazz) {
+        super(gson, clazz);
     }
 
-    public String getChannelName() {
-        return channelName;
-    }
+    public abstract void sendMessage(final E event, final C config);
+
+    public abstract void testMessage(final E event, final C config);
+
 }
