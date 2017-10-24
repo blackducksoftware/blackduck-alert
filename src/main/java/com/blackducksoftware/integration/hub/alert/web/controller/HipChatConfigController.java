@@ -24,6 +24,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,8 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChat
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigModel;
 
 @RestController
-// TODO create an error response class
-public class HipChatConfigController {
+public class HipChatConfigController implements ChannelController<HipChatConfigEntity, HipChatConfigModel> {
     private final HipChatRepository hipChatRepository;
 
     @Autowired
@@ -53,19 +53,21 @@ public class HipChatConfigController {
         this.hipChatRepository = hipChatRepository;
     }
 
+    @Override
     @GetMapping(value = "/configuration/hipchat")
-    public List<HipChatConfigEntity> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<HipChatConfigModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         if (id != null) {
             final HipChatConfigEntity foundEntity = hipChatRepository.findOne(id);
             if (foundEntity != null) {
-                return Arrays.asList(foundEntity);
+                return Arrays.asList(databaseModelToRestModel(foundEntity));
             } else {
                 return Collections.emptyList();
             }
         }
-        return hipChatRepository.findAll();
+        return databaseModelsToRestModels(hipChatRepository.findAll());
     }
 
+    @Override
     @PostMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigModel hipChatModel) {
         final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
@@ -82,6 +84,7 @@ public class HipChatConfigController {
         return ResponseEntity.status(409).body("Invalid id");
     }
 
+    @Override
     @PutMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigModel hipChatModel) {
         final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
@@ -107,11 +110,22 @@ public class HipChatConfigController {
         return ResponseEntity.badRequest().body("No configuration with id " + hipChatModel.getId());
     }
 
+    @Override
     public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigModel model) {
         return new HipChatConfigEntity(model.getId(), model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
     }
 
+    @Override
     public HipChatConfigModel databaseModelToRestModel(final HipChatConfigEntity entity) {
         return new HipChatConfigModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
+    }
+
+    @Override
+    public List<HipChatConfigModel> databaseModelsToRestModels(final List<HipChatConfigEntity> databaseModels) {
+        final List<HipChatConfigModel> restModels = new ArrayList<>();
+        for (final HipChatConfigEntity databaseModel : databaseModels) {
+            restModels.add(new HipChatConfigModel(databaseModel.getId(), databaseModel.getApiKey(), databaseModel.getRoomId(), databaseModel.getNotify(), databaseModel.getColor()));
+        }
+        return restModels;
     }
 }

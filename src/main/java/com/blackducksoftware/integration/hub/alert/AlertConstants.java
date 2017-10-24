@@ -20,17 +20,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+public class AlertConstants {
 
-public abstract class DistributionChannel<T, E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> {
+    public static final String CONFIG_KEY_EMAIL_OPT_IN = "optIn";
 
-    public abstract void recieveMessage(T message);
+    public static final String CONFIG_KEY_EMAIL_FREQUENCY = "emailFrequency";
 
-    public abstract void sendMessage(final E event, final C config);
+    public static final String CONFIG_KEY_EMAIL_TEMPLATE_NAME = "templateName";
 
-    public abstract void testMessage(final E event, final C config);
+    public static final String CONFIG_KEY_EMAIL_TRIGGERS = "emailTriggers";
 
+    public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
+
+    public static final String CONTEXT_ATTRIBUTE_KEY_EMAIL_TEST_NOTIFIER = "blackduck-test-email-notifier";
+
+    private AlertConstants() throws InstantiationException {
+        throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
+    }
 }

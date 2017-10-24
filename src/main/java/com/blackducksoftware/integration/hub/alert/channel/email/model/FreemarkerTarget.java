@@ -20,17 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import java.util.ArrayList;
+import java.util.Map;
 
-public abstract class DistributionChannel<T, E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> {
-
-    public abstract void recieveMessage(T message);
-
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
+public class FreemarkerTarget extends ArrayList<Map<String, String>> {
+    private static final long serialVersionUID = 9127715639930741374L;
 
 }

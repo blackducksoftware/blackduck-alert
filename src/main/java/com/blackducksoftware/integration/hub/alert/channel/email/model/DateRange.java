@@ -20,17 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import java.util.Date;
 
-public abstract class DistributionChannel<T, E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> {
+public class DateRange {
 
-    public abstract void recieveMessage(T message);
+    private final Date start;
 
-    public abstract void sendMessage(final E event, final C config);
+    private final Date end;
 
-    public abstract void testMessage(final E event, final C config);
+    public DateRange(final Date start, final Date end) {
+        this.start = start;
+        this.end = end;
+    }
 
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
 }

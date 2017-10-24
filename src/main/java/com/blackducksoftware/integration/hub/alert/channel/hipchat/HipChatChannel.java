@@ -54,7 +54,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class HipChatChannel extends DistributionChannel<String> {
+public class HipChatChannel extends DistributionChannel<String, HipChatEvent, HipChatConfigEntity> {
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     public static final String HIP_CHAT_FROM_NAME = "Hub Alert";
 
@@ -79,26 +79,25 @@ public class HipChatChannel extends DistributionChannel<String> {
     }
 
     public void handleEvent(final HipChatEvent event) {
-        final String notificationMessage = getMessage(event.getProjectData());
-
         final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
         for (final HipChatConfigEntity configEntity : configurations) {
-            sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
+            sendMessage(event, configEntity);
         }
     }
 
-    public void sendHipChatMessage(final String apiUrl, final String authToken, final Integer roomId, final String message, final String from, final boolean notify, final String color) {
+    @Override
+    public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
         // TODO find a better way to inject this
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (connection != null) {
-            final String jsonString = getJsonString(message, from, notify, color);
+            final String jsonString = getJsonString(getMessage(event.getProjectData()), HIP_CHAT_FROM_NAME, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
-            final List<String> urlSegments = Arrays.asList("v2", "room", roomId.toString(), "notification");
+            final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
             final HttpUrl httpUrl = connection.createHttpUrl(urlSegments);
 
             final Map<String, String> map = new HashMap<>();
-            map.put("Authorization", "Bearer " + authToken);
+            map.put("Authorization", "Bearer " + config.getApiKey());
             map.put("Content-Type", "application/json");
 
             final Request request = connection.createPostRequest(httpUrl, map, body);
@@ -113,6 +112,11 @@ public class HipChatChannel extends DistributionChannel<String> {
                 logger.error("Failed to send a HipChat message", e);
             }
         }
+    }
+
+    @Override
+    public void testMessage(final HipChatEvent event, final HipChatConfigEntity config) {
+        // TODO Auto-generated method stub
     }
 
     private String getMessage(final ProjectData projectData) {
