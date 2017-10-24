@@ -20,21 +20,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import java.util.Map;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+public class EmailTarget {
+    private final String emailAddress;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
+    private final String templateName;
+
+    private final Map<String, Object> model;
+
+    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model) {
+        this.emailAddress = emailAddress;
+        this.templateName = templateName;
+        this.model = model;
     }
 
-    public abstract void sendMessage(final E event, final C config);
+    public String getEmailAddress() {
+        return emailAddress;
+    }
 
-    public abstract void testMessage(final E event, final C config);
+    public String getTemplateName() {
+        return templateName;
+    }
 
+    public Map<String, Object> getModel() {
+        return model;
+    }
 }

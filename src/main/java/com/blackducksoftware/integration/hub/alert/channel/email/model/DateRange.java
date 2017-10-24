@@ -20,15 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+import java.util.Date;
 
-public class HipChatChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "hipchat_channel";
+public class DateRange {
 
-    public HipChatChannelConfig() {
-        super(CHANNEL_NAME);
+    private final Date start;
+
+    private final Date end;
+
+    public DateRange(final Date start, final Date end) {
+        this.start = start;
+        this.end = end;
     }
 
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
 }

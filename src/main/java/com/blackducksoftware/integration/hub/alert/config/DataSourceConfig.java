@@ -42,7 +42,7 @@ public class DataSourceConfig {
     public DataSource dataSource() {
         final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
         final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-notification-schema.sql").addScript("db/create-notification-db.sql").addScript("db/create-configuration-schema.sql")
-                .addScript("db/create-configuration-db.sql").build();
+                .addScript("db/create-configuration-db.sql").addScript("db/email/create-tables.sql").addScript("db/hipchat/create-tables.sql").build();
         return dataSource;
     }
 

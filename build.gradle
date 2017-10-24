@@ -40,25 +40,22 @@ repositories {
 }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:18.0.1'
+    compile 'com.blackducksoftware.integration:hub-common:18.3.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     compile 'org.projectlombok:lombok'
-//    compile 'org.springframework.boot:spring-boot-starter-jpa'
     compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-devtools'
-//    compile 'org.springframework.data:spring-data-rest-webmvc'
-//    compile 'org.springframework.boot:spring-boot-starter-tomcat'
-//    compile 'javax.servlet:jstl:1.2'
-//    compile 'javax.servlet:javax.servlet-api'
-    
-//    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
+
     runtime 'com.h2database:h2'
-//    runtime 'org.springframework.boot:spring-boot-devtools'
-//    runtime 'org.springframework.boot:spring-boot-starter-tomcat'
+    
+    compile 'org.jsoup:jsoup:1.9.2'
+    compile 'javax.mail:mail:1.4.7'
+    compile 'org.freemarker:freemarker:2.3.25-incubating'
     
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
@@ -90,10 +87,6 @@ startScripts {
     }
 }
 
-task installDeps(type: Exec) {
-    tasks.npmInstall
-}
-
 distributions {
     main {
         contents {
@@ -102,24 +95,6 @@ distributions {
         }
     }
 }
-
-//bootRun {
-//    addResources = true
-//}
-
-//task installExpress(type: NpmTask) {
-//  args = ['install']
-//}
-
-//
-//webpack {
-//    inputs.file("package-lock.json")
-//    inputs.dir("js")
-//    // NOTE: Add inputs.file("webpack.config.js") for projects that have it
-//    outputs.dir("$buildDir/js")
-//
-//    commandLine "$projectDir/node_modules/.bin/webpack", "app/index.js", "$buildDir/js/bundle.js"
-//}
 
 task webpack(type: Exec) {
     inputs.file("package-lock.json")
@@ -143,3 +118,13 @@ license {
 }
 
 tasks.licenseMain.dependsOn(licenseFormatMain)
+
+
+distributions {
+    main {
+        contents {
+            from('src/main/resources/email/images/') {into 'images/'}
+            from('src/main/resources/email/templates/') {into 'templates/'}
+        }
+    }
+}

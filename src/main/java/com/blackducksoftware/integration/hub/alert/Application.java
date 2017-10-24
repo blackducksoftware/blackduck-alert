@@ -48,8 +48,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -57,7 +57,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.datasource.repository" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
@@ -76,6 +76,9 @@ public class Application {
 
     @Autowired
     private List<AbstractJmsTemplate> templateList;
+
+    @Autowired
+    private EmailRepository emailRepository;
 
     @PostConstruct
     void init() {
@@ -104,7 +107,6 @@ public class Application {
         } catch (final IntegrationException ex) {
             logger.error("Error occurred initializing hub connection", ex);
         }
-
     }
 
     public static void main(final String[] args) {

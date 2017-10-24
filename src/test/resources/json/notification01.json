@@ -1,0 +1,16 @@
+{
+   "eventId" : "event_id",
+   "notificationEntity" : 
+   {
+      "id" : 1, 
+      "eventKey" : "event_key",
+      "createdAt" : "2010-10-10T10:10:10.100Z",
+      "notificationType" : "notification_type",
+      "projectName" : "project_name",
+      "projectVersion" : "project_version",
+      "componentName" : "component_name",
+      "componentVersion" : "component_version",
+      "policyRuleName" : "policy_rule_name",
+      "vulnerabilityList" : []
+    }
+}

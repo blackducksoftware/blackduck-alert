@@ -26,19 +26,15 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
-public class DBStoreEvent extends AbstractEvent {
-    private final List<NotificationEvent> notificationList;
+public class DBStoreEvent extends AbstractNotificationEvent {
+    public static String TOPIC_NAME = "DB_STORE_EVENT";
 
     public DBStoreEvent(final List<NotificationEvent> notificationList) {
-        this.notificationList = notificationList;
+        super(notificationList);
     }
 
     @Override
     public String getTopic() {
-        return "DB_STORE_EVENT";
-    }
-
-    public List<NotificationEvent> getNotificationList() {
-        return notificationList;
+        return TOPIC_NAME;
     }
 }

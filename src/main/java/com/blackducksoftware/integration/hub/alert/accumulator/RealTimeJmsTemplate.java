@@ -20,21 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import javax.jms.ConnectionFactory;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
+import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+
+@Component
+public class RealTimeJmsTemplate extends AbstractJmsTemplate {
+
+    @Autowired
+    public RealTimeJmsTemplate(final ConnectionFactory connectionFactory) {
+        super(connectionFactory);
     }
 
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
-
+    @Override
+    public String getDestinationName() {
+        return RealTimeEvent.TOPIC_NAME;
+    }
 }

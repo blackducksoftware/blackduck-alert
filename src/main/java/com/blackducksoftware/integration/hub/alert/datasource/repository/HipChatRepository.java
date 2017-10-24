@@ -20,14 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public class EmailChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "email_channel";
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 
-    public EmailChannelConfig() {
-        super(CHANNEL_NAME);
-    }
+@Transactional
+public interface HipChatRepository extends JpaRepository<HipChatConfigEntity, Long> {
 }

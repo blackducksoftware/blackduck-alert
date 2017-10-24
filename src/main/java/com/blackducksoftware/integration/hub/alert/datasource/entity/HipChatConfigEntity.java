@@ -35,41 +35,63 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+
 @Entity
-@Table(name = "vulnerabilities", schema = "notification")
-public class VulnerabilityEntity implements Serializable {
-    private static final long serialVersionUID = -6316482235842086632L;
+@Table(name = "hipchat_config", schema = "configuration")
+public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serializable {
+    private static final long serialVersionUID = 9172607945030111585L;
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "vulnerability_id")
-    private String vulnerabilityId;
+    @Column(name = "api_key")
+    private String apiKey;
 
-    @Column(name = "operation")
-    private String operation;
+    @Column(name = "room_id")
+    private Integer roomId;
 
-    protected VulnerabilityEntity() {
+    @Column(name = "notify")
+    private Boolean notify;
 
+    @Column(name = "color")
+    private String color;
+
+    protected HipChatConfigEntity() {
     }
 
-    public VulnerabilityEntity(final String vulnerabilityId, final String vulnerabilityOperation) {
-        this.vulnerabilityId = vulnerabilityId;
-        this.operation = vulnerabilityOperation;
+    public HipChatConfigEntity(final Long id, final String apiKey, final Integer room_id, final Boolean notify, final String color) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.roomId = room_id;
+        this.notify = notify;
+        this.color = color;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getVulnerabilityId() {
-        return vulnerabilityId;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public String getOperation() {
-        return operation;
+    public Integer getRoomId() {
+        return roomId;
+    }
+
+    public Boolean getNotify() {
+        return notify;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
@@ -84,6 +106,9 @@ public class VulnerabilityEntity implements Serializable {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
+        return reflectionToStringBuilder.toString();
     }
+
 }
