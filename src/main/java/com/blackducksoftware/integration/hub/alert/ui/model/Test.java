@@ -28,9 +28,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name = "settings", schema = "configuration")
-public class Setting {
+public class Test {
 
     // public interface Repository extends CrudRepository<Setting, Long> {
     // }
@@ -49,7 +52,7 @@ public class Setting {
     @Column(name = "setting_type")
     private String settingType;
 
-    public Setting(final String settingName, final String settingValue, final String settingType) {
+    public Test(final String settingName, final String settingValue, final String settingType) {
         super();
         this.settingName = settingName;
         this.settingValue = settingValue;
@@ -78,7 +81,7 @@ public class Setting {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Setting other = (Setting) obj;
+        final Test other = (Test) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

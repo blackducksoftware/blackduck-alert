@@ -15,6 +15,7 @@ plugins {
     id 'org.springframework.boot' version '1.5.8.RELEASE'
     id 'application'
     id 'com.github.hierynomus.license' version '0.14.0'
+    id 'com.moowork.node' version '1.2.0'
 }
 
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
@@ -44,9 +45,11 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.projectlombok:lombok'
 //    compile 'org.springframework.boot:spring-boot-starter-jpa'
     compile 'org.springframework.boot:spring-boot-starter-data-rest'
-//    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springframework.boot:spring-boot-devtools'
 //    compile 'org.springframework.data:spring-data-rest-webmvc'
 //    compile 'org.springframework.boot:spring-boot-starter-tomcat'
 //    compile 'javax.servlet:jstl:1.2'
@@ -54,8 +57,8 @@ dependencies {
     
 //    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     runtime 'com.h2database:h2'
-    runtime 'org.springframework.boot:spring-boot-devtools'
-    runtime 'org.springframework.boot:spring-boot-starter-tomcat'
+//    runtime 'org.springframework.boot:spring-boot-devtools'
+//    runtime 'org.springframework.boot:spring-boot-starter-tomcat'
     
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
@@ -87,6 +90,10 @@ startScripts {
     }
 }
 
+task installDeps(type: Exec) {
+    tasks.npmInstall
+}
+
 distributions {
     main {
         contents {
@@ -96,8 +103,32 @@ distributions {
     }
 }
 
-bootRun {
-    addResources = true
+//bootRun {
+//    addResources = true
+//}
+
+//task installExpress(type: NpmTask) {
+//  args = ['install']
+//}
+
+//
+//webpack {
+//    inputs.file("package-lock.json")
+//    inputs.dir("js")
+//    // NOTE: Add inputs.file("webpack.config.js") for projects that have it
+//    outputs.dir("$buildDir/js")
+//
+//    commandLine "$projectDir/node_modules/.bin/webpack", "app/index.js", "$buildDir/js/bundle.js"
+//}
+
+task webpack(type: Exec) {
+    inputs.file("package-lock.json")
+    inputs.file("webpack.config.js")
+    inputs.dir("app")
+    
+    outputs.dir("$buildDir/js")
+    
+    commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
 }
 
 license {

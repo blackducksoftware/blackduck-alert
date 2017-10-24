@@ -22,12 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.blackducksoftware.integration.hub.alert.ui.model.Setting;
+import com.blackducksoftware.integration.hub.alert.ui.model.Test;
 
 @Repository
-public interface SettingRepository extends JpaRepository<Setting, Long> {
+public interface TestRepository extends CrudRepository<Test, Long> {
 
 }
