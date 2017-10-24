@@ -20,19 +20,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.digest.model;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import java.util.List;
 
-public class HipChatEvent extends AbstractChannelEvent {
+public class CategoryData {
+    private final String categoryKey;
 
-    public HipChatEvent(final ProjectData projectData) {
-        super(projectData);
+    private final List<ItemData> itemList;
+
+    private final int itemCount;
+
+    public CategoryData(final String categoryKey, final List<ItemData> itemList, final int itemCount) {
+        this.categoryKey = categoryKey;
+        this.itemList = itemList;
+        this.itemCount = itemCount;
+    }
+
+    public String getCategoryKey() {
+        return categoryKey;
+    }
+
+    public List<ItemData> getItemList() {
+        return itemList;
+    }
+
+    public int getItemCount() {
+        return itemCount;
     }
 
     @Override
-    public String getTopic() {
-        return HipChatChannelConfig.CHANNEL_NAME;
+    public String toString() {
+        return "CategoryData [categoryKey=" + categoryKey + ", itemList=" + itemList + ", itemCount=" + itemCount + "]";
     }
 }

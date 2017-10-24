@@ -22,13 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class EmailEvent extends AbstractChannelEvent {
 
-    public EmailEvent(final NotificationEntity notificationEntity) {
-        super(notificationEntity);
+    public EmailEvent(final ProjectData projectData) {
+        super(projectData);
     }
 
     @Override
