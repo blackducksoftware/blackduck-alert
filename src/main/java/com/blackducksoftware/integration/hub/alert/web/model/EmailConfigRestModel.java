@@ -54,6 +54,7 @@ public class EmailConfigRestModel implements Serializable {
     private String emailTemplateLogoImage;
 
     protected EmailConfigRestModel() {
+
     }
 
     public EmailConfigRestModel(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
@@ -86,136 +87,68 @@ public class EmailConfigRestModel implements Serializable {
         return id;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     public String getMailSmtpHost() {
         return mailSmtpHost;
-    }
-
-    public void setMailSmtpHost(final String mailSmtpHost) {
-        this.mailSmtpHost = mailSmtpHost;
     }
 
     public String getMailSmtpUser() {
         return mailSmtpUser;
     }
 
-    public void setMailSmtpUser(final String mailSmtpUser) {
-        this.mailSmtpUser = mailSmtpUser;
-    }
-
     public String getMailSmtpPassword() {
         return mailSmtpPassword;
-    }
-
-    public void setMailSmtpPassword(final String mailSmtpPassword) {
-        this.mailSmtpPassword = mailSmtpPassword;
     }
 
     public Integer getMailSmtpPort() {
         return mailSmtpPort;
     }
 
-    public void setMailSmtpPort(final Integer mailSmtpPort) {
-        this.mailSmtpPort = mailSmtpPort;
-    }
-
     public Integer getMailSmtpConnectionTimeout() {
         return mailSmtpConnectionTimeout;
-    }
-
-    public void setMailSmtpConnectionTimeout(final Integer mailSmtpConnectionTimeout) {
-        this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
     }
 
     public Integer getMailSmtpTimeout() {
         return mailSmtpTimeout;
     }
 
-    public void setMailSmtpTimeout(final Integer mailSmtpTimeout) {
-        this.mailSmtpTimeout = mailSmtpTimeout;
-    }
-
     public String getMailSmtpFrom() {
         return mailSmtpFrom;
-    }
-
-    public void setMailSmtpFrom(final String mailSmtpFrom) {
-        this.mailSmtpFrom = mailSmtpFrom;
     }
 
     public String getMailSmtpLocalhost() {
         return mailSmtpLocalhost;
     }
 
-    public void setMailSmtpLocalhost(final String mailSmtpLocalhost) {
-        this.mailSmtpLocalhost = mailSmtpLocalhost;
-    }
-
     public Boolean getMailSmtpEhlo() {
         return mailSmtpEhlo;
-    }
-
-    public void setMailSmtpEhlo(final Boolean mailSmtpEhlo) {
-        this.mailSmtpEhlo = mailSmtpEhlo;
     }
 
     public Boolean getMailSmtpAuth() {
         return mailSmtpAuth;
     }
 
-    public void setMailSmtpAuth(final Boolean mailSmtpAuth) {
-        this.mailSmtpAuth = mailSmtpAuth;
-    }
-
     public String getMailSmtpDnsNotify() {
         return mailSmtpDnsNotify;
-    }
-
-    public void setMailSmtpDnsNotify(final String mailSmtpDnsNotify) {
-        this.mailSmtpDnsNotify = mailSmtpDnsNotify;
     }
 
     public String getMailSmtpDsnRet() {
         return mailSmtpDsnRet;
     }
 
-    public void setMailSmtpDsnRet(final String mailSmtpDsnRet) {
-        this.mailSmtpDsnRet = mailSmtpDsnRet;
-    }
-
     public Boolean getMailSmtpAllow8bitmime() {
         return mailSmtpAllow8bitmime;
-    }
-
-    public void setMailSmtpAllow8bitmime(final Boolean mailSmtpAllow8bitmime) {
-        this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
     }
 
     public Boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
     }
 
-    public void setMailSmtpSendPartial(final Boolean mailSmtpSendPartial) {
-        this.mailSmtpSendPartial = mailSmtpSendPartial;
-    }
-
     public String getEmailTemplateDirectory() {
         return emailTemplateDirectory;
     }
 
-    public void setEmailTemplateDirectory(final String emailTemplateDirectory) {
-        this.emailTemplateDirectory = emailTemplateDirectory;
-    }
-
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
-    }
-
-    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
     }
 
     @Override

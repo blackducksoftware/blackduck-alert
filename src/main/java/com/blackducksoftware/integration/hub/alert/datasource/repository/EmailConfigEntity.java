@@ -43,57 +43,61 @@ public class EmailConfigEntity implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "id")
-    private final Long id;
+    private Long id;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     @Column(name = "mail_smtp_host")
-    private final String mailSmtpHost;
+    private String mailSmtpHost;
 
     @Column(name = "mail_smtp_user")
-    private final String mailSmtpUser;
+    private String mailSmtpUser;
 
     // not a javamail property, but we are going to piggy-back to get the smtp password
     @Column(name = "mail_smtp_password")
-    private final String mailSmtpPassword;
+    private String mailSmtpPassword;
 
     @Column(name = "mail_smtp_port")
-    private final Integer mailSmtpPort;
+    private Integer mailSmtpPort;
 
     @Column(name = "mail_smtp_connection_timeout")
-    private final Integer mailSmtpConnectionTimeout;
+    private Integer mailSmtpConnectionTimeout;
 
     @Column(name = "mail_smtp_timeout")
-    private final Integer mailSmtpTimeout;
+    private Integer mailSmtpTimeout;
 
     @Column(name = "mail_smtp_from")
-    private final String mailSmtpFrom;
+    private String mailSmtpFrom;
 
     @Column(name = "mail_smtp_localhost")
-    private final String mailSmtpLocalhost;
+    private String mailSmtpLocalhost;
 
     @Column(name = "mail_smtp_ehlo")
-    private final Boolean mailSmtpEhlo;
+    private Boolean mailSmtpEhlo;
 
     @Column(name = "mail_smtp_auth")
-    private final Boolean mailSmtpAuth;
+    private Boolean mailSmtpAuth;
 
     @Column(name = "mail_smtp_dsn_notify")
-    private final String mailSmtpDnsNotify;
+    private String mailSmtpDnsNotify;
 
     @Column(name = "mail_smtp_dsn_ret")
-    private final String mailSmtpDsnRet;
+    private String mailSmtpDsnRet;
 
     @Column(name = "mail_smtp_allow_8_bitmime")
-    private final Boolean mailSmtpAllow8bitmime;
+    private Boolean mailSmtpAllow8bitmime;
 
     @Column(name = "mail_smtp_send_partial")
-    private final Boolean mailSmtpSendPartial;
+    private Boolean mailSmtpSendPartial;
 
     @Column(name = "email_template_directory")
-    private final String emailTemplateDirectory;
+    private String emailTemplateDirectory;
 
     @Column(name = "email_template_logo_image")
-    private final String emailTemplateLogoImage;
+    private String emailTemplateLogoImage;
+
+    protected EmailConfigEntity() {
+
+    }
 
     public EmailConfigEntity(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final Boolean mailSmtpAllow8bitmime,
