@@ -72,6 +72,9 @@ public class NotificationEntity implements Serializable {
     @Column(name = "policy_rule_name")
     private String policyRuleName;
 
+    @Column(name = "person")
+    private String person;
+
     @ElementCollection(targetClass = VulnerabilityEntity.class)
     @OneToMany(cascade = CascadeType.ALL)
     private Collection<VulnerabilityEntity> vulnerabilityList;
@@ -80,7 +83,7 @@ public class NotificationEntity implements Serializable {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,
-            final String policyRuleName, final Collection<VulnerabilityEntity> vulnerabilityList) {
+            final String policyRuleName, final String person, final Collection<VulnerabilityEntity> vulnerabilityList) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -89,6 +92,7 @@ public class NotificationEntity implements Serializable {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
+        this.person = person;
         this.vulnerabilityList = vulnerabilityList;
     }
 
@@ -126,6 +130,10 @@ public class NotificationEntity implements Serializable {
 
     public String getPolicyRuleName() {
         return policyRuleName;
+    }
+
+    public String getPerson() {
+        return person;
     }
 
     public Collection<VulnerabilityEntity> getVulnerabilityList() {

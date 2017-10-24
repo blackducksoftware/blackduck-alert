@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest;
+package com.blackducksoftware.integration.hub.alert.digest;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.Notific
 public class RealTimeItemReader extends DigestItemReader {
 
     public RealTimeItemReader(final NotificationRepository notificationRepository) {
-        super(notificationRepository);
+        super(RealTimeItemReader.class.getName(), notificationRepository);
     }
 
     @Override

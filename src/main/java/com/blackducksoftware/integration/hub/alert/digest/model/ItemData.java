@@ -20,24 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.digest;
+package com.blackducksoftware.integration.hub.alert.digest.model;
 
-import java.util.Date;
+import java.util.Map;
 
-public class DateRange {
-    private final Date start;
-    private final Date end;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-    public DateRange(final Date start, final Date end) {
-        this.start = start;
-        this.end = end;
+public class ItemData {
+    private final Map<String, Object> dataSet;
+
+    public ItemData(final Map<String, Object> dataMap) {
+        this.dataSet = dataMap;
     }
 
-    public Date getStart() {
-        return start;
+    public Map<String, Object> getDataSet() {
+        return dataSet;
     }
 
-    public Date getEnd() {
-        return end;
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }

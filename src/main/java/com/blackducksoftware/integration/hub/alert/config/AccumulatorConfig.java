@@ -33,9 +33,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorProcessor;
-import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorReader;
-import com.blackducksoftware.integration.hub.alert.batch.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;

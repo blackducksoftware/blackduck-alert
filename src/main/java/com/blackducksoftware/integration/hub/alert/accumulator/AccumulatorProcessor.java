@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.accumulator;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import org.springframework.batch.item.ItemProcessor;
 

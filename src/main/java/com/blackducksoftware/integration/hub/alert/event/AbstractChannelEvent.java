@@ -22,17 +22,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
 public abstract class AbstractChannelEvent extends AbstractEvent {
-    private final NotificationEntity notificationEntity;
+    private final ProjectData projectData;
 
-    public AbstractChannelEvent(final NotificationEntity notificationEntity) {
+    public AbstractChannelEvent(final ProjectData projectData) {
         super();
-        this.notificationEntity = notificationEntity;
+        this.projectData = projectData;
     }
 
-    public NotificationEntity getNotificationEntity() {
-        return notificationEntity;
+    public ProjectData getProjectData() {
+        return projectData;
     }
 }
