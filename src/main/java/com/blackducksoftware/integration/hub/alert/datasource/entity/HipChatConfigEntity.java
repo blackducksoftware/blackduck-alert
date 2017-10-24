@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import java.io.Serializable;
 

@@ -57,24 +57,12 @@ public class HipChatChannelTestIT {
     }
 
     @Test
-    public void recieveMessageWithoutConfigTestIT() throws IOException {
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
-        final String message = resourceLoader.loadJsonResource("json/notification01.json");
-
-        hipChatChannel.recieveMessage(message);
-
-        final String errorLine = getLineContainingText("ERROR");
-
-        assertTrue(errorLine.contains("Failed to send a HipChat message"));
-    }
-
-    @Test
     public void sendMessageTestIT() throws IOException {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
         final String authToken = properties.getProperty("hipchat.api.key");
         final Integer roomId = Integer.parseInt(properties.getProperty("hipchat.room.id"));
 
-        hipChatChannel.sendHipChatMessage("https://api.hipchat.com", authToken, roomId, "Integration Test", null, "Integration Test", false, "random");
+        hipChatChannel.sendHipChatMessage("https://api.hipchat.com", authToken, roomId, "Integration Test", "Integration Test", false, "random");
 
         final String responseLine = getLineContainingText("Successfully sent a HipChat message!");
 

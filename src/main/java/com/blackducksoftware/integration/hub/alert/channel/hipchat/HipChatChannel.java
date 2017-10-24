@@ -36,11 +36,13 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
@@ -77,20 +79,19 @@ public class HipChatChannel extends DistributionChannel<String> {
     }
 
     public void handleEvent(final HipChatEvent event) {
-        final String notificationMessage = event.getProjectData().toString();
-        final JsonObject card = formatProjectData(event.getProjectData());
+        final String notificationMessage = getMessage(event.getProjectData());
 
         final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
         for (final HipChatConfigEntity configEntity : configurations) {
-            sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, card, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
+            sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
         }
     }
 
-    public void sendHipChatMessage(final String apiUrl, final String authToken, final Integer roomId, final String message, final JsonObject card, final String from, final boolean notify, final String color) {
+    public void sendHipChatMessage(final String apiUrl, final String authToken, final Integer roomId, final String message, final String from, final boolean notify, final String color) {
         // TODO find a better way to inject this
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
-            final String jsonString = getJsonString(message, card, from, notify, color);
+            final String jsonString = getJsonString(message, from, notify, color);
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", roomId.toString(), "notification");
@@ -114,44 +115,37 @@ public class HipChatChannel extends DistributionChannel<String> {
         }
     }
 
-    public JsonObject formatProjectData(final ProjectData projectData) {
-        final StringBuilder descriptionBuilder = new StringBuilder();
+    private String getMessage(final ProjectData projectData) {
+        final StringBuilder htmlBuilder = new StringBuilder();
+        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
 
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
         if (categoryMap != null) {
             for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
                 final CategoryData data = categoryMap.get(category);
                 if (data != null) {
-                    descriptionBuilder.append("Type: " + data.getCategoryKey());
-                    descriptionBuilder.append("\nNumber of Changes: " + data.getItemCount());
-                    descriptionBuilder.append("\nItem List: " + data.getItemList().toString());
-                    descriptionBuilder.append("\n");
+                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
+                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
+                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
+                    for (final ItemData item : data.getItemList()) {
+                        final Map<String, Object> dataSet = item.getDataSet();
+                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()) + "</p>");
+                        htmlBuilder.append("<p>  Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
+                    }
                 }
             }
         } else {
-            descriptionBuilder.append("A notification was received, but it was empty.");
+            htmlBuilder.append("<i>A notification was received, but it was empty.</i>");
         }
 
-        final JsonObject card = new JsonObject();
-        final JsonObject description = new JsonObject();
-
-        description.addProperty("value", descriptionBuilder.toString());
-        description.addProperty("format", "text");
-        card.add("description", description);
-        card.addProperty("style", "media");
-        card.addProperty("format", "medium");
-        card.addProperty("title", projectData.getProjectName() + " > " + projectData.getProjectVersion());
-        card.addProperty("id", String.valueOf(projectData.hashCode()));
-
-        return card;
+        return htmlBuilder.toString();
     }
 
-    private String getJsonString(final String message, final JsonObject card, final String from, final boolean notify, final String color) {
+    private String getJsonString(final String message, final String from, final boolean notify, final String color) {
         final JsonObject json = new JsonObject();
+        json.addProperty("message_format", "html");
         json.addProperty("message", message);
-        if (card != null) {
-            json.add("card", card);
-        }
         json.addProperty("from", from);
         json.addProperty("notify", notify);
         json.addProperty("color", color);

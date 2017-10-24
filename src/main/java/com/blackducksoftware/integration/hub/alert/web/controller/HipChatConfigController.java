@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,8 +39,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigModel;
 
 @RestController
 // TODO create an error response class
@@ -65,7 +67,8 @@ public class HipChatConfigController {
     }
 
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatEntity", required = true) @RequestBody final HipChatConfigEntity hipChatEntity) {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigModel hipChatModel) {
+        final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
         if (hipChatEntity.getId() == null || !hipChatRepository.exists(hipChatEntity.getId())) {
             URI uri;
             try {
@@ -80,7 +83,8 @@ public class HipChatConfigController {
     }
 
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatEntity", required = true) @RequestBody final HipChatConfigEntity hipChatEntity) {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigModel hipChatModel) {
+        final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
         if (hipChatEntity.getId() != null && hipChatRepository.exists(hipChatEntity.getId())) {
             URI uri;
             try {
@@ -92,5 +96,22 @@ public class HipChatConfigController {
             return ResponseEntity.created(uri).build();
         }
         return ResponseEntity.badRequest().body("No configuration with id " + hipChatEntity.getId());
+    }
+
+    @DeleteMapping(value = "/configuration/hipchat")
+    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigModel hipChatModel) {
+        if (hipChatModel.getId() != null && hipChatRepository.exists(hipChatModel.getId())) {
+            hipChatRepository.delete(hipChatModel.getId());
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().body("No configuration with id " + hipChatModel.getId());
+    }
+
+    public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigModel model) {
+        return new HipChatConfigEntity(model.getId(), model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
+    }
+
+    public HipChatConfigModel databaseModelToRestModel(final HipChatConfigEntity entity) {
+        return new HipChatConfigModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
     }
 }
