@@ -20,27 +20,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.ui.controller;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.repository.SettingRepository;
 import com.blackducksoftware.integration.hub.alert.ui.model.SettingModel;
 
-@Component
-public class DatabaseLoader implements CommandLineRunner {
-    private final SettingRepository repository;
+@RestController
+public class SettingController {
+    private final SettingRepository settingRepository;
 
     @Autowired
-    public DatabaseLoader(final SettingRepository repository) {
-        this.repository = repository;
+    public SettingController(final SettingRepository settingRepository) {
+        this.settingRepository = settingRepository;
     }
 
-    @Override
-    public void run(final String... args) throws Exception {
-        this.repository.save(new SettingModel("test", "true", "boolean"));
+    @GetMapping("/setting/{id}")
+    public SettingModel getSetting(@RequestParam(value = "id", required = false) final Long id) {
+        return settingRepository.findOne(id);
     }
 
+    @GetMapping("/setting")
+    public List<SettingModel> getAllSettings() {
+        return (List<SettingModel>) settingRepository.findAll();
+    }
+
+    public void addSetting() {
+    }
+
+    public void updateSetting() {
+    }
 }

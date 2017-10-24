@@ -39,6 +39,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -47,11 +48,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
-import com.blackducksoftware.integration.hub.api.nonpublic.HubVersionRequestService;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -63,7 +63,7 @@ import com.google.gson.GsonBuilder;
 @EnableScheduling
 @EnableJms
 @SpringBootApplication
-// @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config", "com.blackducksoftware.integration.hub.alert.ui.controller" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config", "com.blackducksoftware.integration.hub.alert.ui.controller" })
 public class Application {
 
     private final Logger logger = LoggerFactory.getLogger(Application.class);
@@ -100,12 +100,8 @@ public class Application {
 
         try {
             hubServiceWrapper.init();
-            final HubVersionRequestService versionRequestService = hubServiceWrapper.getHubServicesFactory().createHubVersionRequestService();
-            final String hubVersion = versionRequestService.getHubVersion();
-            logger.info("Hub Version: {}", hubVersion);
-            logger.info("Cron Expression: {}", alertProperties.getAccumulatorCron());
-        } catch (final IntegrationException ex) {
-            logger.error("Error occurred initializing hub connection", ex);
+        } catch (final AlertException ex) {
+            logger.error("Error initializing the service wrapper", ex);
         }
     }
 

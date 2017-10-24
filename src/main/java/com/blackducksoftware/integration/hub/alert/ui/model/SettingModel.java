@@ -33,7 +33,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "settings", schema = "configuration")
-public class Test {
+public class SettingModel {
 
     // public interface Repository extends CrudRepository<Setting, Long> {
     // }
@@ -52,7 +52,7 @@ public class Test {
     @Column(name = "setting_type")
     private String settingType;
 
-    public Test(final String settingName, final String settingValue, final String settingType) {
+    public SettingModel(final String settingName, final String settingValue, final String settingType) {
         super();
         this.settingName = settingName;
         this.settingValue = settingValue;
@@ -81,7 +81,7 @@ public class Test {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Test other = (Test) obj;
+        final SettingModel other = (SettingModel) obj;
         if (id == null) {
             if (other.id != null) {
                 return false;

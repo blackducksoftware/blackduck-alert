@@ -20,16 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.ui.controller;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-@Controller
-public class TestController {
+import com.blackducksoftware.integration.hub.alert.ui.model.SettingModel;
 
-    @RequestMapping("/")
-    public String index() {
-        return "index";
-    }
+@Repository
+public interface SettingRepository extends CrudRepository<SettingModel, Long> {
+
 }
