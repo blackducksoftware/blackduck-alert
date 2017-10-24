@@ -20,29 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.google.gson.Gson;
 
-public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
+@Component
+public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
 
-    public ChannelTemplateManager() {
-        jmsTemplateMap = new HashMap<>();
+    @Autowired
+    public RealTimeListener(final Gson gson) {
+        super(gson, RealTimeEvent.class);
     }
 
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
-    }
+    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
+    @Override
+    public void receiveMessage(final String message) {
 
-    public AbstractJmsTemplate getTemplate(final String destination) {
-        return jmsTemplateMap.get(destination);
-    }
-
-    public void addTemplate(final String destination, final AbstractJmsTemplate template) {
-        jmsTemplateMap.put(destination, template);
     }
 }

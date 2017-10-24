@@ -20,29 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
-public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
+public abstract class AbstractNotificationEvent extends AbstractEvent {
+    private final List<NotificationEvent> notificationList;
 
-    public ChannelTemplateManager() {
-        jmsTemplateMap = new HashMap<>();
+    public AbstractNotificationEvent(final List<NotificationEvent> notificationList) {
+        this.notificationList = notificationList;
     }
 
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
-    }
-
-    public AbstractJmsTemplate getTemplate(final String destination) {
-        return jmsTemplateMap.get(destination);
-    }
-
-    public void addTemplate(final String destination, final AbstractJmsTemplate template) {
-        jmsTemplateMap.put(destination, template);
+    public List<NotificationEvent> getNotificationList() {
+        return notificationList;
     }
 }

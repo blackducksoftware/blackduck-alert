@@ -27,7 +27,7 @@ import javax.jms.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 
 @Component
 public class EmailJmsTemplate extends AbstractJmsTemplate {

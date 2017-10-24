@@ -20,10 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
-public abstract class DistributionChannel<T> {
+import javax.jms.ConnectionFactory;
 
-    public abstract void recieveMessage(T message);
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+
+@Component
+public class RealTimeJmsTemplate extends AbstractJmsTemplate {
+
+    @Autowired
+    public RealTimeJmsTemplate(final ConnectionFactory connectionFactory) {
+        super(connectionFactory);
+    }
+
+    @Override
+    public String getDestinationName() {
+        return RealTimeEvent.TOPIC_NAME;
+    }
 }

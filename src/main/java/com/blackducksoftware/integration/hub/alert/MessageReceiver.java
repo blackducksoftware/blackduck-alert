@@ -20,29 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.Gson;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+public abstract class MessageReceiver<E> {
+    private final Gson gson;
+    private final Class<E> clazz;
 
-public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
-
-    public ChannelTemplateManager() {
-        jmsTemplateMap = new HashMap<>();
+    public MessageReceiver(final Gson gson, final Class<E> clazz) {
+        this.gson = gson;
+        this.clazz = clazz;
     }
 
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
+    public Gson getGson() {
+        return gson;
     }
 
-    public AbstractJmsTemplate getTemplate(final String destination) {
-        return jmsTemplateMap.get(destination);
-    }
+    public abstract void receiveMessage(String message);
 
-    public void addTemplate(final String destination, final AbstractJmsTemplate template) {
-        jmsTemplateMap.put(destination, template);
+    public E getEvent(final String message) {
+        final E event = getGson().fromJson(message, clazz);
+        return event;
     }
 }
