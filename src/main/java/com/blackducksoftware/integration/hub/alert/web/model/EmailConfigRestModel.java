@@ -20,82 +20,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-@Entity
-@Table(name = "email_config", schema = "configuration")
-public class EmailConfigEntity implements Serializable {
+public class EmailConfigRestModel implements Serializable {
     private static final long serialVersionUID = 9172607945030111585L;
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private final Long id;
+    private Long id;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
-    @Column(name = "mail_smtp_host")
-    private final String mailSmtpHost;
-
-    @Column(name = "mail_smtp_user")
-    private final String mailSmtpUser;
-
+    private String mailSmtpHost;
+    private String mailSmtpUser;
     // not a javamail property, but we are going to piggy-back to get the smtp password
-    @Column(name = "mail_smtp_password")
-    private final String mailSmtpPassword;
+    private String mailSmtpPassword;
+    private Integer mailSmtpPort;
+    private Integer mailSmtpConnectionTimeout;
+    private Integer mailSmtpTimeout;
+    private String mailSmtpFrom;
+    private String mailSmtpLocalhost;
+    private Boolean mailSmtpEhlo;
+    private Boolean mailSmtpAuth;
+    private String mailSmtpDnsNotify;
+    private String mailSmtpDsnRet;
+    private Boolean mailSmtpAllow8bitmime;
+    private Boolean mailSmtpSendPartial;
+    private String emailTemplateDirectory;
+    private String emailTemplateLogoImage;
 
-    @Column(name = "mail_smtp_port")
-    private final Integer mailSmtpPort;
+    protected EmailConfigRestModel() {
+    }
 
-    @Column(name = "mail_smtp_connection_timeout")
-    private final Integer mailSmtpConnectionTimeout;
-
-    @Column(name = "mail_smtp_timeout")
-    private final Integer mailSmtpTimeout;
-
-    @Column(name = "mail_smtp_from")
-    private final String mailSmtpFrom;
-
-    @Column(name = "mail_smtp_localhost")
-    private final String mailSmtpLocalhost;
-
-    @Column(name = "mail_smtp_ehlo")
-    private final Boolean mailSmtpEhlo;
-
-    @Column(name = "mail_smtp_auth")
-    private final Boolean mailSmtpAuth;
-
-    @Column(name = "mail_smtp_dsn_notify")
-    private final String mailSmtpDnsNotify;
-
-    @Column(name = "mail_smtp_dsn_ret")
-    private final String mailSmtpDsnRet;
-
-    @Column(name = "mail_smtp_allow_8_bitmime")
-    private final Boolean mailSmtpAllow8bitmime;
-
-    @Column(name = "mail_smtp_send_partial")
-    private final Boolean mailSmtpSendPartial;
-
-    @Column(name = "email_template_directory")
-    private final String emailTemplateDirectory;
-
-    @Column(name = "email_template_logo_image")
-    private final String emailTemplateLogoImage;
-
-    public EmailConfigEntity(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
+    public EmailConfigRestModel(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final Boolean mailSmtpAllow8bitmime,
             final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage) {
         this.id = id;
@@ -125,68 +86,136 @@ public class EmailConfigEntity implements Serializable {
         return id;
     }
 
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
     public String getMailSmtpHost() {
         return mailSmtpHost;
+    }
+
+    public void setMailSmtpHost(final String mailSmtpHost) {
+        this.mailSmtpHost = mailSmtpHost;
     }
 
     public String getMailSmtpUser() {
         return mailSmtpUser;
     }
 
+    public void setMailSmtpUser(final String mailSmtpUser) {
+        this.mailSmtpUser = mailSmtpUser;
+    }
+
     public String getMailSmtpPassword() {
         return mailSmtpPassword;
+    }
+
+    public void setMailSmtpPassword(final String mailSmtpPassword) {
+        this.mailSmtpPassword = mailSmtpPassword;
     }
 
     public Integer getMailSmtpPort() {
         return mailSmtpPort;
     }
 
+    public void setMailSmtpPort(final Integer mailSmtpPort) {
+        this.mailSmtpPort = mailSmtpPort;
+    }
+
     public Integer getMailSmtpConnectionTimeout() {
         return mailSmtpConnectionTimeout;
+    }
+
+    public void setMailSmtpConnectionTimeout(final Integer mailSmtpConnectionTimeout) {
+        this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
     }
 
     public Integer getMailSmtpTimeout() {
         return mailSmtpTimeout;
     }
 
+    public void setMailSmtpTimeout(final Integer mailSmtpTimeout) {
+        this.mailSmtpTimeout = mailSmtpTimeout;
+    }
+
     public String getMailSmtpFrom() {
         return mailSmtpFrom;
+    }
+
+    public void setMailSmtpFrom(final String mailSmtpFrom) {
+        this.mailSmtpFrom = mailSmtpFrom;
     }
 
     public String getMailSmtpLocalhost() {
         return mailSmtpLocalhost;
     }
 
-    public Boolean isMailSmtpEhlo() {
+    public void setMailSmtpLocalhost(final String mailSmtpLocalhost) {
+        this.mailSmtpLocalhost = mailSmtpLocalhost;
+    }
+
+    public Boolean getMailSmtpEhlo() {
         return mailSmtpEhlo;
     }
 
-    public Boolean isMailSmtpAuth() {
+    public void setMailSmtpEhlo(final Boolean mailSmtpEhlo) {
+        this.mailSmtpEhlo = mailSmtpEhlo;
+    }
+
+    public Boolean getMailSmtpAuth() {
         return mailSmtpAuth;
+    }
+
+    public void setMailSmtpAuth(final Boolean mailSmtpAuth) {
+        this.mailSmtpAuth = mailSmtpAuth;
     }
 
     public String getMailSmtpDnsNotify() {
         return mailSmtpDnsNotify;
     }
 
+    public void setMailSmtpDnsNotify(final String mailSmtpDnsNotify) {
+        this.mailSmtpDnsNotify = mailSmtpDnsNotify;
+    }
+
     public String getMailSmtpDsnRet() {
         return mailSmtpDsnRet;
     }
 
-    public Boolean isMailSmtpAllow8bitmime() {
+    public void setMailSmtpDsnRet(final String mailSmtpDsnRet) {
+        this.mailSmtpDsnRet = mailSmtpDsnRet;
+    }
+
+    public Boolean getMailSmtpAllow8bitmime() {
         return mailSmtpAllow8bitmime;
     }
 
-    public Boolean isMailSmtpSendPartial() {
+    public void setMailSmtpAllow8bitmime(final Boolean mailSmtpAllow8bitmime) {
+        this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
+    }
+
+    public Boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
+    }
+
+    public void setMailSmtpSendPartial(final Boolean mailSmtpSendPartial) {
+        this.mailSmtpSendPartial = mailSmtpSendPartial;
     }
 
     public String getEmailTemplateDirectory() {
         return emailTemplateDirectory;
     }
 
+    public void setEmailTemplateDirectory(final String emailTemplateDirectory) {
+        this.emailTemplateDirectory = emailTemplateDirectory;
+    }
+
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
+    }
+
+    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
     }
 
     @Override

@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
@@ -76,6 +77,9 @@ public class Application {
     @Autowired
     private List<AbstractJmsTemplate> templateList;
 
+    @Autowired
+    private EmailRepository emailRepository;
+
     @PostConstruct
     void init() {
         logger.info("Hub Alert Starting...");
@@ -99,7 +103,6 @@ public class Application {
         } catch (final AlertException ex) {
             logger.error("Error initializing the service wrapper", ex);
         }
-
     }
 
     public static void main(final String[] args) {

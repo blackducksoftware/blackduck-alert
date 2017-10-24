@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
 
 public class EmailProperties {
     // property keys
@@ -55,7 +55,7 @@ public class EmailProperties {
     // keys for alert descriptor data.
     public static final String TEMPLATE_KEY_HUB_SERVER_URL = "hub_server_url";
     public static final String TEMPLATE_KEY_SUBJECT_LINE = "subject_line";
-    public static final String TEMPLATE_KEY_TOPICS_LIST = "topicsList";
+    public static final String TEMPLATE_KEY_TOPIC = "topic";
     public static final String TEMPLATE_KEY_START_DATE = "startDate";
     public static final String TEMPLATE_KEY_END_DATE = "endDate";
     public static final String TEMPLATE_KEY_TOTAL_NOTIFICATIONS = "totalNotifications";
@@ -87,12 +87,12 @@ public class EmailProperties {
         addJavaMailOption(JAVAMAIL_TIMEOUT_KEY, emailConfigEntity.getMailSmtpTimeout());
         addJavaMailOption(JAVAMAIL_FROM_KEY, emailConfigEntity.getMailSmtpFrom());
         addJavaMailOption(JAVAMAIL_LOCALHOST_KEY, emailConfigEntity.getMailSmtpLocalhost());
-        addJavaMailOption(JAVAMAIL_EHLO_KEY, emailConfigEntity.isMailSmtpEhlo());
-        addJavaMailOption(JAVAMAIL_AUTH_KEY, emailConfigEntity.isMailSmtpAuth());
+        addJavaMailOption(JAVAMAIL_EHLO_KEY, emailConfigEntity.getMailSmtpEhlo());
+        addJavaMailOption(JAVAMAIL_AUTH_KEY, emailConfigEntity.getMailSmtpAuth());
         addJavaMailOption(JAVAMAIL_DSN_NOTIFY_KEY, emailConfigEntity.getMailSmtpDnsNotify());
         addJavaMailOption(JAVAMAIL_DSN_RET_KEY, emailConfigEntity.getMailSmtpLocalhost());
-        addJavaMailOption(JAVAMAIL_ALLOW_8_BITMIME_KEY, emailConfigEntity.isMailSmtpAllow8bitmime());
-        addJavaMailOption(JAVAMAIL_SEND_PARTIAL_KEY, emailConfigEntity.isMailSmtpSendPartial());
+        addJavaMailOption(JAVAMAIL_ALLOW_8_BITMIME_KEY, emailConfigEntity.getMailSmtpAllow8bitmime());
+        addJavaMailOption(JAVAMAIL_SEND_PARTIAL_KEY, emailConfigEntity.getMailSmtpSendPartial());
 
         this.mailSmtpPassword = emailConfigEntity.getMailSmtpPassword();
         this.emailTemplateDirectory = emailConfigEntity.getEmailTemplateDirectory();

@@ -43,6 +43,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     runtime 'com.h2database:h2'
     

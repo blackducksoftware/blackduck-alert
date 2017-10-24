@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -37,16 +36,12 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.channel.email.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
-import com.blackducksoftware.integration.hub.alert.channel.email.model.ItemData;
-import com.blackducksoftware.integration.hub.alert.channel.email.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.channel.email.model.ProjectDataBuilder;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
@@ -93,8 +88,8 @@ public class EmailChannel extends DistributionChannel<String> {
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, NotificationCategoryEnum.POLICY_VIOLATION.toString());
             model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
 
-            final List<ProjectData> dataList = notificationToData(emailEvent.getNotificationEntity());
-            model.put(EmailProperties.TEMPLATE_KEY_TOPICS_LIST, dataList);
+            final ProjectData data = emailEvent.getProjectData();
+            model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 
             model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
             model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
@@ -107,29 +102,6 @@ public class EmailChannel extends DistributionChannel<String> {
         } catch (final IOException | MessagingException | TemplateException e) {
             logger.error(e.getMessage(), e);
         }
-    }
-
-    private List<ProjectData> notificationToData(final NotificationEntity notificationEntity) {
-        final List<ProjectData> dataList = new ArrayList<>();
-
-        final HashMap<String, Object> itemModel = new HashMap<>();
-        itemModel.put(ItemTypeEnum.COMPONENT.toString(), notificationEntity.getComponentName());
-        itemModel.put(ItemTypeEnum.VERSION.toString(), notificationEntity.getComponentVersion());
-        itemModel.put(ItemTypeEnum.RULE.toString(), notificationEntity.getPolicyRuleName());
-        final ItemData data = new ItemData(itemModel);
-        final CategoryDataBuilder categoryBuilder = new CategoryDataBuilder();
-        categoryBuilder.addItem(data);
-        categoryBuilder.incrementItemCount(1);
-        categoryBuilder.setCategoryKey(NotificationCategoryEnum.POLICY_VIOLATION.toString());
-
-        final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
-        projectDataBuilder.setProjectName(notificationEntity.getProjectName());
-        projectDataBuilder.setProjectVersion(notificationEntity.getProjectVersion());
-
-        projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
-        dataList.add(projectDataBuilder.build());
-
-        return dataList;
     }
 
 }
