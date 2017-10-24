@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 
 @Component
 public class EmailJmsTemplate extends AbstractJmsTemplate {
@@ -39,6 +40,6 @@ public class EmailJmsTemplate extends AbstractJmsTemplate {
 
     @Override
     public String getDestinationName() {
-        return EmailChannelConfig.CHANNEL_NAME;
+        return SupportedChannels.EMAIL;
     }
 }
