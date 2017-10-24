@@ -159,8 +159,8 @@ public class Application {
     }
 
     @Bean
-    public ChannelTemplateManager channelTemplateManager() {
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager();
+    public ChannelTemplateManager channelTemplateManager(final Gson gson) {
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson);
         templateList.forEach(jmsTemplate -> {
             channelTemplateManager.addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
         });
