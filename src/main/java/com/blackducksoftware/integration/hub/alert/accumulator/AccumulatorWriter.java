@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.batch.accumulator;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,11 +34,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.alert.processor.PolicyViolationProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
+import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
-import com.blackducksoftware.integration.hub.report.api.PolicyRule;
 
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final NotificationRepository notificationRepository;
@@ -61,19 +60,30 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final String componentName = content.getComponentName();
                 final String componentVersion = content.getComponentVersion().versionName;
                 final String policyRuleName = getPolicyRule(notification);
+                final String person = getPerson(notification);
                 final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, vulnerabilityList);
+                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
                 notificationRepository.save(entity);
             });
         });
     }
 
     private String getPolicyRule(final NotificationEvent notification) {
-        final String key = PolicyViolationProcessor.POLICY_RULE;
+        final String key = ItemTypeEnum.RULE.name();
         if (notification.getDataSet().containsKey(key)) {
-            final PolicyRule rule = (PolicyRule) notification.getDataSet().get(key);
-            return rule.getName();
+            final String rule = (String) notification.getDataSet().get(key);
+            return rule;
+        } else {
+            return "";
+        }
+    }
+
+    private String getPerson(final NotificationEvent notification) {
+        final String key = ItemTypeEnum.PERSON.name();
+        if (notification.getDataSet().containsKey(key)) {
+            final String person = (String) notification.getDataSet().get(key);
+            return person;
         } else {
             return "";
         }

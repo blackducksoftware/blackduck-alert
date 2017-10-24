@@ -11,8 +11,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -26,10 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 // TODO write actual integration tests instead of garbage
 public class HipChatChannelTestIT {
@@ -84,33 +79,6 @@ public class HipChatChannelTestIT {
         final String responseLine = getLineContainingText("Successfully sent a HipChat message!");
 
         assertTrue(!responseLine.equals(""));
-    }
-
-    @Test
-    public void formatNotificationEntityTest() throws IOException {
-        final String json = resourceLoader.loadJsonResource("json/notification01.json");
-        final HipChatEvent event = gson.fromJson(json, HipChatEvent.class);
-        final NotificationEntity entity = event.getNotificationEntity();
-
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
-        final JsonObject card = hipChatChannel.formatNotificationEntity(entity);
-
-        final JsonElement idElement = card.get("id");
-        final JsonElement titleElement = card.get("title");
-        final JsonElement formatElement = card.get("format");
-        final JsonObject descriptionElement = (JsonObject) card.get("description");
-
-        assertEquals(1, idElement.getAsInt());
-        assertEquals("project_name > project_version", titleElement.getAsString());
-        assertEquals("medium", formatElement.getAsString());
-
-        assertNotNull(descriptionElement);
-
-        final JsonElement valueElement = descriptionElement.get("value");
-        final JsonElement descriptionFormatElement = descriptionElement.get("format");
-
-        assertNotNull(valueElement);
-        assertEquals("text", descriptionFormatElement.getAsString());
     }
 
     private String getLineContainingText(final String text) throws IOException {

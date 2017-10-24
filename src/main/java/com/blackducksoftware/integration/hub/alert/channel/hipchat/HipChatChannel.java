@@ -39,7 +39,9 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -75,13 +77,10 @@ public class HipChatChannel extends DistributionChannel<String> {
     }
 
     public void handleEvent(final HipChatEvent event) {
-        final String notificationMessage = event.getNotificationEntity().toString();
-        final JsonObject card = formatNotificationEntity(event.getNotificationEntity());
+        final String notificationMessage = event.getProjectData().toString();
+        final JsonObject card = formatProjectData(event.getProjectData());
 
-        // TODO only read from the DB (i.e. remove this)
-        final HipChatConfigEntity entity = hipChatRepository.save(new HipChatConfigEntity(new Long(0), "<MY_API_KEY>", new Integer(4239222), Boolean.FALSE, "random"));
         final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
-        configurations.add(entity);
         for (final HipChatConfigEntity configEntity : configurations) {
             sendHipChatMessage(HIP_CHAT_API, configEntity.getApiKey(), configEntity.getRoomId(), notificationMessage, card, HIP_CHAT_FROM_NAME, configEntity.getNotify(), configEntity.getColor());
         }
@@ -115,16 +114,23 @@ public class HipChatChannel extends DistributionChannel<String> {
         }
     }
 
-    public JsonObject formatNotificationEntity(final NotificationEntity entity) {
+    public JsonObject formatProjectData(final ProjectData projectData) {
         final StringBuilder descriptionBuilder = new StringBuilder();
-        descriptionBuilder.append("Type: ");
-        descriptionBuilder.append(entity.getNotificationType());
-        descriptionBuilder.append("\nRule: ");
-        descriptionBuilder.append(entity.getPolicyRuleName());
-        descriptionBuilder.append("\nComponent Name: ");
-        descriptionBuilder.append(entity.getComponentName());
-        descriptionBuilder.append("\nComponent Version: ");
-        descriptionBuilder.append(entity.getComponentVersion());
+
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
+        if (categoryMap != null) {
+            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
+                final CategoryData data = categoryMap.get(category);
+                if (data != null) {
+                    descriptionBuilder.append("Type: " + data.getCategoryKey());
+                    descriptionBuilder.append("\nNumber of Changes: " + data.getItemCount());
+                    descriptionBuilder.append("\nItem List: " + data.getItemList().toString());
+                    descriptionBuilder.append("\n");
+                }
+            }
+        } else {
+            descriptionBuilder.append("A notification was received, but it was empty.");
+        }
 
         final JsonObject card = new JsonObject();
         final JsonObject description = new JsonObject();
@@ -134,8 +140,8 @@ public class HipChatChannel extends DistributionChannel<String> {
         card.add("description", description);
         card.addProperty("style", "media");
         card.addProperty("format", "medium");
-        card.addProperty("title", entity.getProjectName() + " > " + entity.getProjectVersion());
-        card.addProperty("id", entity.getId().toString());
+        card.addProperty("title", projectData.getProjectName() + " > " + projectData.getProjectVersion());
+        card.addProperty("id", String.valueOf(projectData.hashCode()));
 
         return card;
     }
