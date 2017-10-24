@@ -20,15 +20,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+public class HipChatConfigModel {
+    private Long id;
+    private String apiKey;
+    private Integer roomId;
+    private Boolean notify;
+    private String color;
 
-public class HipChatChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "hipchat_channel";
-
-    public HipChatChannelConfig() {
-        super(CHANNEL_NAME);
+    protected HipChatConfigModel() {
     }
 
+    public HipChatConfigModel(final Long id, final String apiKey, final Integer roomId, final Boolean notify, final String color) {
+        this.id = id;
+        this.apiKey = apiKey;
+        this.roomId = roomId;
+        this.notify = notify;
+        this.color = color;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public Integer getRoomId() {
+        return roomId;
+    }
+
+    public Boolean getNotify() {
+        return notify;
+    }
+
+    public String getColor() {
+        return color;
+    }
 }

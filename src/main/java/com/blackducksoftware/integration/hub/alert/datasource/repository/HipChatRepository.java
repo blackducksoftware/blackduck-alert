@@ -20,17 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-public class ChannelConfig {
-    private final String channelName;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-    public ChannelConfig(final String channelName) {
-        this.channelName = channelName;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
+@Transactional
+public interface HipChatRepository extends JpaRepository<HipChatConfigEntity, Long> {
 }

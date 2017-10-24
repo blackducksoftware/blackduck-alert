@@ -20,14 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.channel;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelConfig;
+public class SupportedChannels {
+    public final static String EMAIL = "email_channel";
+    public final static String HIPCHAT = "hipchat_channel";
 
-public class EmailChannelConfig extends ChannelConfig {
-    public final static String CHANNEL_NAME = "email_channel";
-
-    public EmailChannelConfig() {
-        super(CHANNEL_NAME);
-    }
 }

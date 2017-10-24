@@ -29,6 +29,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.google.gson.Gson;
 
 @Component
@@ -41,7 +42,7 @@ public class EmailChannel extends DistributionChannel<String> {
         this.gson = gson;
     }
 
-    @JmsListener(destination = EmailChannelConfig.CHANNEL_NAME)
+    @JmsListener(destination = SupportedChannels.EMAIL)
     @Override
     public void recieveMessage(final String message) {
         logger.info("Received email event message: {}", message);
