@@ -43,7 +43,6 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailPr
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
@@ -89,12 +88,13 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final EmailProperties emailProperties = new EmailProperties(emailConfigEntity);
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
 
+            final ProjectData data = emailEvent.getProjectData();
+
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, "Test email. Values hard coded");
-            model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, NotificationCategoryEnum.POLICY_VIOLATION.toString());
+            model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
             model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
 
-            final ProjectData data = emailEvent.getProjectData();
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 
             model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));

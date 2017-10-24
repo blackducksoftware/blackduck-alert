@@ -38,6 +38,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.digest.DailyDigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
@@ -84,7 +85,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public DigestItemProcessor processor() {
-        return new DigestItemProcessor();
+        return new DailyDigestItemProcessor();
     }
 
     @Override

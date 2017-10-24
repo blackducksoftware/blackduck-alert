@@ -40,6 +40,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
+import com.blackducksoftware.integration.hub.alert.digest.RealTimeDigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.RealTimeItemReader;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
@@ -84,7 +85,7 @@ public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, 
 
     @Override
     public DigestItemProcessor processor() {
-        return new DigestItemProcessor();
+        return new RealTimeDigestItemProcessor();
     }
 
     @Override

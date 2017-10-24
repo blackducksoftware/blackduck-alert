@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Test;
+
 import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -21,7 +24,7 @@ import com.google.gson.Gson;
 public class EmailChannelTest {
 
     // TODO fix NPE
-    // @Test
+    @Test
     public void sendEmailTest() throws Exception {
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
         final VulnerabilityEntity vulnerability = new VulnerabilityEntity("Vuln ID", "Vuln Operation");
@@ -40,7 +43,7 @@ public class EmailChannelTest {
         final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
         projectDataBuilder.setProjectName("Manual Test Project");
         projectDataBuilder.setProjectVersion("Manual Test Project Version");
-
+        projectDataBuilder.setDigestType(DigestTypeEnum.REAL_TIME);
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 

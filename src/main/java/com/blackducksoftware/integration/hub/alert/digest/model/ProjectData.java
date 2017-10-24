@@ -24,23 +24,29 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 public class ProjectData {
+    private final DigestTypeEnum digestType;
     private final String projectKey;
-
     private final String projectName;
-
     private final String projectVersion;
-
     private final Map<NotificationCategoryEnum, CategoryData> categoryMap;
 
-    public ProjectData(final String projectName, final String projectVersion,
-            final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
+    public ProjectData(final DigestTypeEnum digestType, final String projectName, final String projectVersion, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
+        this.digestType = digestType;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
         this.categoryMap = categoryMap;
         this.projectKey = projectName + projectVersion;
+    }
+
+    public DigestTypeEnum getDigestType() {
+        return digestType;
     }
 
     public String getProjectKey() {
@@ -61,7 +67,6 @@ public class ProjectData {
 
     @Override
     public String toString() {
-        return "ProjectData [projectKey=" + projectKey + ", projectName=" + projectName + ", projectVersion=" + projectVersion + ", categoryMap=" + categoryMap
-                + "]";
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.DEFAULT_STYLE);
     }
 }
