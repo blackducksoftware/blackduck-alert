@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRe
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController {
+public class EmailConfigController implements ChannelController<EmailConfigEntity, EmailConfigRestModel> {
     private final EmailRepository emailRepository;
 
     @Autowired
@@ -41,6 +41,7 @@ public class EmailConfigController {
         this.emailRepository = emailRepository;
     }
 
+    @Override
     @GetMapping(value = "/configuration/email")
     public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         if (id != null) {
@@ -54,6 +55,7 @@ public class EmailConfigController {
         return databaseModelsToRestModels(emailRepository.findAll());
     }
 
+    @Override
     @PostMapping(value = "/configuration/email")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         if (emailConfig.getId() == null || !emailRepository.exists(emailConfig.getId())) {
@@ -69,6 +71,7 @@ public class EmailConfigController {
         return ResponseEntity.status(409).body("Invalid id");
     }
 
+    @Override
     @PutMapping(value = "/configuration/email")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         if (emailConfig.getId() != null && emailRepository.exists(emailConfig.getId())) {
@@ -84,14 +87,16 @@ public class EmailConfigController {
         return ResponseEntity.badRequest().body("No configuration with id " + emailConfig.getId());
     }
 
-    private EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
+    @Override
+    public EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
         final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getId(), restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(),
                 restModel.getMailSmtpConnectionTimeout(), restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(),
                 restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(), restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage());
         return databaseModel;
     }
 
-    private EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
+    @Override
+    public EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
         final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getId(), databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
                 databaseModel.getMailSmtpConnectionTimeout(), databaseModel.getMailSmtpTimeout(), databaseModel.getMailSmtpFrom(), databaseModel.getMailSmtpLocalhost(), databaseModel.getMailSmtpEhlo(), databaseModel.getMailSmtpAuth(),
                 databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
@@ -99,7 +104,8 @@ public class EmailConfigController {
         return restModel;
     }
 
-    private List<EmailConfigRestModel> databaseModelsToRestModels(final List<EmailConfigEntity> databaseModels) {
+    @Override
+    public List<EmailConfigRestModel> databaseModelsToRestModels(final List<EmailConfigEntity> databaseModels) {
         final List<EmailConfigRestModel> restModels = new ArrayList<>();
         for (final EmailConfigEntity databaseModel : databaseModels) {
             restModels.add(databaseModelToRestModel(databaseModel));
@@ -107,4 +113,5 @@ public class EmailConfigController {
         return restModels;
 
     }
+
 }

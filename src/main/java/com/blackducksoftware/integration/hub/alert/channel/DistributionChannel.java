@@ -22,8 +22,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-public abstract class DistributionChannel<T> {
+import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+
+public abstract class DistributionChannel<T, E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> {
 
     public abstract void recieveMessage(T message);
+
+    public abstract void sendMessage(final E event, final C config);
+
+    public abstract void testMessage(final E event, final C config);
 
 }

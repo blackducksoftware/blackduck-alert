@@ -48,7 +48,7 @@ import com.google.gson.Gson;
 import freemarker.template.TemplateException;
 
 @Component
-public class EmailChannel extends DistributionChannel<String> {
+public class EmailChannel extends DistributionChannel<String, EmailEvent, EmailConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
     private final AlertProperties alertProperties;
@@ -74,11 +74,17 @@ public class EmailChannel extends DistributionChannel<String> {
     private void handleEvent(final EmailEvent emailEvent) {
         final List<EmailConfigEntity> configurations = emailRepository.findAll();
         for (final EmailConfigEntity configuration : configurations) {
-            sendEmail(emailEvent, configuration, "");
+            sendMessage(emailEvent, configuration);
         }
     }
 
-    public void sendEmail(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity, final String emailToAddress) {
+    @Override
+    public void testMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
+        sendMessage(emailEvent, emailConfigEntity);
+    }
+
+    @Override
+    public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
         try {
             final EmailProperties emailProperties = new EmailProperties(emailConfigEntity);
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
@@ -96,7 +102,7 @@ public class EmailChannel extends DistributionChannel<String> {
             model.put(EmailProperties.TEMPLATE_KEY_USER_FIRST_NAME, "First");
             model.put(EmailProperties.TEMPLATE_KEY_USER_LAST_NAME, "Last Name");
 
-            final EmailTarget emailTarget = new EmailTarget(emailToAddress, "digest.ftl", model);
+            final EmailTarget emailTarget = new EmailTarget("", "digest.ftl", model);
 
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {

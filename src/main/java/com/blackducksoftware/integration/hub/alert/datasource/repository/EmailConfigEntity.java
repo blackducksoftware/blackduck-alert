@@ -22,28 +22,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
 @Table(name = "email_config", schema = "configuration")
-public class EmailConfigEntity implements Serializable {
+public class EmailConfigEntity extends ChannelDatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     @Column(name = "mail_smtp_host")
@@ -102,7 +91,7 @@ public class EmailConfigEntity implements Serializable {
     public EmailConfigEntity(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final Boolean mailSmtpAllow8bitmime,
             final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage) {
-        this.id = id;
+        super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -123,10 +112,6 @@ public class EmailConfigEntity implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getMailSmtpHost() {
@@ -191,16 +176,6 @@ public class EmailConfigEntity implements Serializable {
 
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override

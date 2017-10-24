@@ -22,17 +22,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import java.io.Serializable;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class EmailConfigRestModel implements Serializable {
+public class EmailConfigRestModel extends ChannelRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
-
-    private Long id;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     private String mailSmtpHost;
@@ -60,7 +54,7 @@ public class EmailConfigRestModel implements Serializable {
     public EmailConfigRestModel(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final Boolean mailSmtpAllow8bitmime,
             final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage) {
-        this.id = id;
+        super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -81,10 +75,6 @@ public class EmailConfigRestModel implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getMailSmtpHost() {
@@ -149,16 +139,6 @@ public class EmailConfigRestModel implements Serializable {
 
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override

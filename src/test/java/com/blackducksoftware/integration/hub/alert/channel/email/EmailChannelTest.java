@@ -57,7 +57,7 @@ public class EmailChannelTest {
         final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(null, testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
                 null, testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"));
 
-        emailChannel.sendEmail(event, emailConfigEntity, testProperties.getProperty("email.to.address"));
+        emailChannel.sendMessage(event, emailConfigEntity);
     }
 
 }
