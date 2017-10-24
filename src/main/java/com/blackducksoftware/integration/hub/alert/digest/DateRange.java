@@ -20,19 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.digest;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import java.util.Date;
 
-public class HipChatEvent extends AbstractChannelEvent {
+public class DateRange {
+    private final Date start;
+    private final Date end;
 
-    public HipChatEvent(final ProjectData projectData) {
-        super(projectData);
+    public DateRange(final Date start, final Date end) {
+        this.start = start;
+        this.end = end;
     }
 
-    @Override
-    public String getTopic() {
-        return HipChatChannelConfig.CHANNEL_NAME;
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getEnd() {
+        return end;
     }
 }
