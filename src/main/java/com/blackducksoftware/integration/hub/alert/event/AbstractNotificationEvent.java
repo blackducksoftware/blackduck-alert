@@ -20,21 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.event;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import java.util.List;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
+public abstract class AbstractNotificationEvent extends AbstractEvent {
+    private final List<NotificationEvent> notificationList;
+
+    public AbstractNotificationEvent(final List<NotificationEvent> notificationList) {
+        this.notificationList = notificationList;
     }
 
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
-
+    public List<NotificationEvent> getNotificationList() {
+        return notificationList;
+    }
 }

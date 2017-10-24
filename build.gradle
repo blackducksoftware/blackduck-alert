@@ -39,11 +39,18 @@ repositories {
 }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:18.0.1'
+    compile 'com.blackducksoftware.integration:hub-common:18.3.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     runtime 'com.h2database:h2'
+    
+    compile 'org.jsoup:jsoup:1.9.2'
+    compile 'javax.mail:mail:1.4.7'
+    compile 'org.freemarker:freemarker:2.3.25-incubating'
     
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
@@ -96,3 +103,13 @@ license {
 }
 
 tasks.licenseMain.dependsOn(licenseFormatMain)
+
+
+distributions {
+    main {
+        contents {
+            from('src/main/resources/email/images/') {into 'images/'}
+            from('src/main/resources/email/templates/') {into 'templates/'}
+        }
+    }
+}

@@ -20,17 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.email.model;
 
-public class ChannelConfig {
-    private final String channelName;
+import java.util.ArrayList;
+import java.util.Map;
 
-    public ChannelConfig(final String channelName) {
-        this.channelName = channelName;
+public class FreemarkerTarget extends ArrayList<Map<String, String>> {
+    private static final long serialVersionUID = 9127715639930741374L;
 
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
 }

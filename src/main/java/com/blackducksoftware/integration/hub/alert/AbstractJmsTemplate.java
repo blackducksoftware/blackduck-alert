@@ -20,21 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import javax.jms.ConnectionFactory;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+import org.springframework.jms.core.JmsTemplate;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
+public abstract class AbstractJmsTemplate extends JmsTemplate {
+
+    public AbstractJmsTemplate(final ConnectionFactory connectionFactory) {
+        super();
+        this.setConnectionFactory(connectionFactory);
+        this.setDefaultDestinationName(getDestinationName());
+        this.setExplicitQosEnabled(true);
+        // Give the messages two minutes before setting them expired
+        this.setTimeToLive(1000l * 60 * 2);
     }
 
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
-
+    public abstract String getDestinationName();
 }

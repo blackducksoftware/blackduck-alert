@@ -20,21 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+
 import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+public interface ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
+    public List<R> getConfig(final Long id);
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
-    }
+    public ResponseEntity<String> postConfig(R restModel);
 
-    public abstract void sendMessage(final E event, final C config);
+    public ResponseEntity<String> putConfig(R restModel);
 
-    public abstract void testMessage(final E event, final C config);
+    // TODO TEST, DELETE
 
+    public D restModelToDatabaseModel(R restModel);
+
+    public R databaseModelToRestModel(D databaseModel);
+
+    public List<R> databaseModelsToRestModels(final List<D> databaseModels);
 }

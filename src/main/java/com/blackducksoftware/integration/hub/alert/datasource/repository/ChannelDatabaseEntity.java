@@ -20,29 +20,45 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
-public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-    public ChannelTemplateManager() {
-        jmsTemplateMap = new HashMap<>();
+@MappedSuperclass
+public abstract class ChannelDatabaseEntity implements Serializable {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private Long id;
+
+    protected ChannelDatabaseEntity() {
+
     }
 
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
+    public ChannelDatabaseEntity(final Long id) {
+        this.id = id;
     }
 
-    public AbstractJmsTemplate getTemplate(final String destination) {
-        return jmsTemplateMap.get(destination);
+    public Long getId() {
+        return id;
     }
 
-    public void addTemplate(final String destination, final AbstractJmsTemplate template) {
-        jmsTemplateMap.put(destination, template);
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

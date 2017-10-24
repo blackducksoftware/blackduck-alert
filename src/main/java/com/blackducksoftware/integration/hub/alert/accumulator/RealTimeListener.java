@@ -20,22 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import javax.jms.ConnectionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
 
-import org.springframework.jms.core.JmsTemplate;
+import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.google.gson.Gson;
 
-public abstract class AbstractJmsTemplate extends JmsTemplate {
+@Component
+public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
 
-    public AbstractJmsTemplate(final ConnectionFactory connectionFactory) {
-        super();
-        this.setConnectionFactory(connectionFactory);
-        this.setDefaultDestinationName(getDestinationName());
-        this.setExplicitQosEnabled(true);
-        // Give the messages two minutes before setting them expired
-        this.setTimeToLive(1000l * 60 * 2);
+    @Autowired
+    public RealTimeListener(final Gson gson) {
+        super(gson, RealTimeEvent.class);
     }
 
-    public abstract String getDestinationName();
+    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
+    @Override
+    public void receiveMessage(final String message) {
+        final RealTimeEvent event = getEvent(message);
+    }
+
 }

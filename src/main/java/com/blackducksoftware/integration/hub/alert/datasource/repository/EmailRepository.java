@@ -20,21 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import javax.transaction.Transactional;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
-    }
-
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
+@Transactional
+public interface EmailRepository extends JpaRepository<EmailConfigEntity, Long> {
 
 }

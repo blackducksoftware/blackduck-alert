@@ -22,19 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
-
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
-
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
-    }
-
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract void testMessage(final E event, final C config);
+public class SupportedChannels {
+    public final static String EMAIL = "email_channel";
+    public final static String HIPCHAT = "hipchat_channel";
 
 }

@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
@@ -33,6 +34,6 @@ public class HipChatEvent extends AbstractChannelEvent {
 
     @Override
     public String getTopic() {
-        return HipChatChannelConfig.CHANNEL_NAME;
+        return SupportedChannels.HIPCHAT;
     }
 }
