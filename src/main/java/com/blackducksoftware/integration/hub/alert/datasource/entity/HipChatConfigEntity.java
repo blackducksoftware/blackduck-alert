@@ -49,7 +49,8 @@ public class HipChatConfigEntity extends DatabaseEntity {
     protected HipChatConfigEntity() {
     }
 
-    public HipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
+    public HipChatConfigEntity(final Long id, final String apiKey, final Integer room_id, final Boolean notify, final String color) {
+        super(id);
         this.apiKey = apiKey;
         this.roomId = room_id;
         this.notify = notify;

@@ -87,10 +87,15 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     @Override
     public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
+        final String htmlMessage = createHtmlMessage(event.getProjectData());
+        sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
+    }
+
+    private int sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) {
         // TODO find a better way to inject this
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
+        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
-            final String jsonString = getJsonString(getMessage(event.getProjectData()), AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+            final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
@@ -108,18 +113,24 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
                 }
+                return response.code();
             } catch (final IntegrationException e) {
                 logger.error("Failed to send a HipChat message", e);
+                return 400;
             }
+        } else {
+            logger.warn("No message will be sent because a connection was not established.");
         }
+        return 500;
     }
 
     @Override
-    public void testMessage(final HipChatEvent event, final HipChatConfigEntity config) {
-        // TODO Auto-generated method stub
+    public String testMessage(final HipChatConfigEntity config) {
+        final int responseCode = sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
+        return String.valueOf(responseCode);
     }
 
-    private String getMessage(final ProjectData projectData) {
+    private String createHtmlMessage(final ProjectData projectData) {
         final StringBuilder htmlBuilder = new StringBuilder();
         htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
 
@@ -133,23 +144,22 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
                     htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
                     for (final ItemData item : data.getItemList()) {
                         final Map<String, Object> dataSet = item.getDataSet();
-                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()) + "</p>");
-                        htmlBuilder.append("<p>  Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
                         htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
                     }
                 }
             }
         } else {
-            htmlBuilder.append("<i>A notification was received, but it was empty.</i>");
+            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
         }
-
         return htmlBuilder.toString();
     }
 
-    private String getJsonString(final String message, final String from, final boolean notify, final String color) {
+    private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
         final JsonObject json = new JsonObject();
         json.addProperty("message_format", "html");
-        json.addProperty("message", message);
+        json.addProperty("message", htmlMessage);
         json.addProperty("from", from);
         json.addProperty("notify", notify);
         json.addProperty("color", color);
