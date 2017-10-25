@@ -32,7 +32,6 @@ import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
@@ -61,7 +60,7 @@ public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, 
     }
 
     @Override
-    @Scheduled(cron = "#{@realtimeDigestCronExpression}", zone = "UTC")
+    // @Scheduled(cron = "#{@realtimeDigestCronExpression}", zone = "UTC")
     public JobExecution createJobExecution() throws Exception {
         return super.createJobExecution();
     }
@@ -79,7 +78,7 @@ public class RealTimeDigestBatchConfig extends CommonConfig<RealTimeItemReader, 
 
     @Override
     public DigestItemWriter writer() {
-        return new DigestItemWriter(channelTemplateManager, gson);
+        return new DigestItemWriter(channelTemplateManager);
     }
 
     @Override

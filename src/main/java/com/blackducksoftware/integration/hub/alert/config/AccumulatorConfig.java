@@ -37,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
@@ -51,12 +52,14 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
     private final HubServiceWrapper hubServiceWrapper;
+    private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper) {
+            final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper, final ChannelTemplateManager channelTemplateManager) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
         this.hubServiceWrapper = hubServiceWrapper;
+        this.channelTemplateManager = channelTemplateManager;
 
     }
 
@@ -86,7 +89,7 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Override
     public AccumulatorWriter writer() {
-        return new AccumulatorWriter(notificationRepository);
+        return new AccumulatorWriter(notificationRepository, channelTemplateManager);
     }
 
     @Override

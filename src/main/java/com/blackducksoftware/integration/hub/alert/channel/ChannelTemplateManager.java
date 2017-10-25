@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
 
 public class ChannelTemplateManager {
@@ -51,7 +51,7 @@ public class ChannelTemplateManager {
         jmsTemplateMap.put(destination, template);
     }
 
-    public void sendEvents(final List<AbstractChannelEvent> eventList) {
+    public void sendEvents(final List<? extends AbstractEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(event -> {
                 sendEvent(event);
@@ -60,7 +60,7 @@ public class ChannelTemplateManager {
         }
     }
 
-    public boolean sendEvent(final AbstractChannelEvent event) {
+    public boolean sendEvent(final AbstractEvent event) {
         final String destination = event.getTopic();
         if (hasTemplate(destination)) {
             final String jsonMessage = gson.toJson(event);

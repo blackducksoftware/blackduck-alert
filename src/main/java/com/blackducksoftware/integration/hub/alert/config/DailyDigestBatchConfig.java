@@ -79,7 +79,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public DigestItemWriter writer() {
-        return new DigestItemWriter(channelTemplateManager, gson);
+        return new DigestItemWriter(channelTemplateManager);
     }
 
     @Override
