@@ -20,21 +20,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+public class ResponseBodyBuilder {
+    JsonObject map;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
-        super(gson, clazz);
+    public ResponseBodyBuilder(final Long id, final String message) {
+        this.map = new JsonObject();
+        map.addProperty("id", id);
+        map.addProperty("message", message);
     }
 
-    public abstract void sendMessage(final E event, final C config);
+    public ResponseBodyBuilder put(final String key, final Boolean value) {
+        map.addProperty(key, value);
+        return this;
+    }
 
-    public abstract String testMessage(final C config);
+    public ResponseBodyBuilder put(final String key, final Number value) {
+        map.addProperty(key, value);
+        return this;
+    }
 
+    public ResponseBodyBuilder put(final String key, final String value) {
+        map.addProperty(key, value);
+        return this;
+    }
+
+    public String build() {
+        return toString();
+    }
+
+    @Override
+    public String toString() {
+        return map.toString();
+    }
 }

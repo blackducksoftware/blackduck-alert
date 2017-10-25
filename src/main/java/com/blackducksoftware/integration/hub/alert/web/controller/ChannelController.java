@@ -22,27 +22,75 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
-public interface ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
-    public List<R> getConfig(final Long id);
+public abstract class ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
+    protected final JpaRepository<D, Long> repository;
 
-    public ResponseEntity<String> postConfig(final R restModel);
+    @Autowired
+    public ChannelController(final JpaRepository<D, Long> repository) {
+        this.repository = repository;
+    }
 
-    public ResponseEntity<String> putConfig(final R restModel);
+    public List<R> getConfig(final Long id) {
+        if (id != null) {
+            final D foundEntity = repository.findOne(id);
+            if (foundEntity != null) {
+                return Arrays.asList(databaseModelToRestModel(foundEntity));
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        return databaseModelsToRestModels(repository.findAll());
+    }
 
-    public ResponseEntity<String> deleteConfig(final R restModel);
+    public ResponseEntity<String> postConfig(final R restModel) {
+        final D databaseEntity = restModelToDatabaseModel(restModel);
+        if (databaseEntity.getId() == null || !repository.exists(databaseEntity.getId())) {
+            final D createdEntity = repository.save(databaseEntity);
+            return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+        }
+        return createResponse(HttpStatus.CONFLICT, databaseEntity.getId(), "Invalid id.");
+    }
 
-    public ResponseEntity<String> testConfig(final R restModel);
+    public ResponseEntity<String> putConfig(final R restModel) {
+        final D databaseEntity = restModelToDatabaseModel(restModel);
+        if (databaseEntity.getId() != null && repository.exists(databaseEntity.getId())) {
+            repository.save(databaseEntity);
+            return createResponse(HttpStatus.CREATED, databaseEntity.getId(), "Updated.");
+        }
+        return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+    }
 
-    public D restModelToDatabaseModel(final R restModel);
+    public ResponseEntity<String> deleteConfig(final R restModel) {
+        if (restModel.getId() != null && repository.exists(restModel.getId())) {
+            repository.delete(restModel.getId());
+            return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "Deleted.");
+        }
+        return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+    }
 
-    public R databaseModelToRestModel(final D databaseModel);
+    public abstract ResponseEntity<String> testConfig(final R restModel);
 
-    public List<R> databaseModelsToRestModels(final List<D> databaseModels);
+    public abstract D restModelToDatabaseModel(final R restModel);
+
+    public abstract R databaseModelToRestModel(final D databaseModel);
+
+    public abstract List<R> databaseModelsToRestModels(final List<D> databaseModels);
+
+    protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
+        final String responseBody = new ResponseBodyBuilder(id, message).build();
+        return new ResponseEntity<>(responseBody, status);
+    }
 }
