@@ -20,15 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.repository;
+package com.blackducksoftware.integration.hub.alert.digest;
 
-import javax.transaction.Transactional;
+public enum DigestTypeEnum {
+    DAILY("Daily Digest"),
+    REAL_TIME("Real Time Digest");
 
-import org.springframework.data.jpa.repository.JpaRepository;
+    private final String name;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+    private DigestTypeEnum(final String name) {
+        this.name = name;
+    }
 
-@Transactional
-public interface EmailRepository extends JpaRepository<EmailConfigEntity, Long> {
-
+    public String getName() {
+        return name;
+    }
 }

@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.google.gson.Gson;
@@ -51,7 +52,7 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     @Override
     public void receiveMessage(final String message) {
         final RealTimeEvent event = getEvent(message);
-        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(event.getNotificationList());
+        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(DigestTypeEnum.REAL_TIME, event.getNotificationList());
         channelTemplateManager.sendEvents(events);
     }
 }

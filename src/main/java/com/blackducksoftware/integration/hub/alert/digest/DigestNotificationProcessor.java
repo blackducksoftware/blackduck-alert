@@ -51,7 +51,7 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 @Component
 public class DigestNotificationProcessor {
 
-    public List<AbstractChannelEvent> processNotifications(final List<NotificationEntity> notificationList) {
+    public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
         final List<NotificationEntity> processedNotificationList = removalProcessor.process(notificationList);
         if (notificationList == null) {

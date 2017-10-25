@@ -46,6 +46,7 @@ public class EmailConfigRestModel extends ChannelRestModel {
     private Boolean mailSmtpSendPartial;
     private String emailTemplateDirectory;
     private String emailTemplateLogoImage;
+    private String emailSubjectLine;
 
     protected EmailConfigRestModel() {
 
@@ -53,7 +54,7 @@ public class EmailConfigRestModel extends ChannelRestModel {
 
     public EmailConfigRestModel(final Long id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final Boolean mailSmtpAllow8bitmime,
-            final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage) {
+            final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
@@ -71,6 +72,7 @@ public class EmailConfigRestModel extends ChannelRestModel {
         this.mailSmtpSendPartial = mailSmtpSendPartial;
         this.emailTemplateDirectory = emailTemplateDirectory;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public static long getSerialversionuid() {
@@ -139,6 +141,10 @@ public class EmailConfigRestModel extends ChannelRestModel {
 
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
     }
 
     @Override

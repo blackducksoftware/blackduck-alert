@@ -17,5 +17,6 @@ CREATE TABLE email_config (
     mail_smtp_allow_8_bitmime BOOLEAN,
     mail_smtp_send_partial BOOLEAN,
     email_template_directory VARCHAR,
-    email_template_logo_image VARCHAR
+    email_template_logo_image VARCHAR,
+    email_subject_line VARCHAR
 ); 

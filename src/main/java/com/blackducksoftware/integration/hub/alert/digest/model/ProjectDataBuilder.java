@@ -25,11 +25,12 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 public class ProjectDataBuilder {
+    private DigestTypeEnum digestType;
     private String projectName;
-
     private String projectVersion;
 
     private final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
@@ -48,6 +49,14 @@ public class ProjectDataBuilder {
 
     public Map<NotificationCategoryEnum, CategoryDataBuilder> getCategoryBuilderMap() {
         return categoryBuilderMap;
+    }
+
+    public DigestTypeEnum getDigestType() {
+        return digestType;
+    }
+
+    public void setDigestType(final DigestTypeEnum digestType) {
+        this.digestType = digestType;
     }
 
     public String getProjectName() {
@@ -71,6 +80,6 @@ public class ProjectDataBuilder {
         for (final Map.Entry<NotificationCategoryEnum, CategoryDataBuilder> entry : categoryBuilderMap.entrySet()) {
             categoryMap.put(entry.getKey(), entry.getValue().build());
         }
-        return new ProjectData(projectName, projectVersion, categoryMap);
+        return new ProjectData(digestType, projectName, projectVersion, categoryMap);
     }
 }

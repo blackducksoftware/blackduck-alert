@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -30,27 +29,18 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
 @Table(name = "notification_events", schema = "notification")
-public class NotificationEntity implements Serializable {
+public class NotificationEntity extends DatabaseEntity {
     private static final long serialVersionUID = -1194014350183607831L;
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "event_key")
     private String eventKey;
@@ -101,10 +91,6 @@ public class NotificationEntity implements Serializable {
         this.vulnerabilityList = vulnerabilityList;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public String getEventKey() {
         return eventKey;
     }
@@ -143,16 +129,6 @@ public class NotificationEntity implements Serializable {
 
     public Collection<VulnerabilityEntity> getVulnerabilityList() {
         return vulnerabilityList;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override

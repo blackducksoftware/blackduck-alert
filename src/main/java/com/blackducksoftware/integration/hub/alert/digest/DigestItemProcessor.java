@@ -31,7 +31,7 @@ import org.springframework.batch.item.ItemProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
-public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
+public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
 
     private final DigestNotificationProcessor notificationProcessor;
@@ -43,7 +43,7 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
     @Override
     public List<AbstractChannelEvent> process(final List<NotificationEntity> notificationData) throws Exception {
         logger.info("Notification Entity Count: {}", notificationData.size());
-        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(notificationData);
+        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationData);
         if (events.isEmpty()) {
             return null;
         } else {
@@ -51,4 +51,5 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
         }
     }
 
+    public abstract DigestTypeEnum getDigestType();
 }
