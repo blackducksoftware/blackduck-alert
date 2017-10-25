@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,12 +100,4 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
         return new HipChatConfigRestModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
     }
 
-    @Override
-    public List<HipChatConfigRestModel> databaseModelsToRestModels(final List<HipChatConfigEntity> databaseModels) {
-        final List<HipChatConfigRestModel> restModels = new ArrayList<>();
-        for (final HipChatConfigEntity databaseModel : databaseModels) {
-            restModels.add(new HipChatConfigRestModel(databaseModel.getId(), databaseModel.getApiKey(), databaseModel.getRoomId(), databaseModel.getNotify(), databaseModel.getColor()));
-        }
-        return restModels;
-    }
 }

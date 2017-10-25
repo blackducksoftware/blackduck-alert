@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,15 +97,6 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
                 databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
                 databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());
         return restModel;
-    }
-
-    @Override
-    public List<EmailConfigRestModel> databaseModelsToRestModels(final List<EmailConfigEntity> databaseModels) {
-        final List<EmailConfigRestModel> restModels = new ArrayList<>();
-        for (final EmailConfigEntity databaseModel : databaseModels) {
-            restModels.add(databaseModelToRestModel(databaseModel));
-        }
-        return restModels;
     }
 
 }

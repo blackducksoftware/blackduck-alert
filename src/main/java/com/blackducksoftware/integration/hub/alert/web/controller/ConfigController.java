@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -85,7 +86,13 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Chann
 
     public abstract R databaseModelToRestModel(final D databaseModel);
 
-    public abstract List<R> databaseModelsToRestModels(final List<D> databaseModels);
+    public List<R> databaseModelsToRestModels(final List<D> databaseModels) {
+        final List<R> restModels = new ArrayList<>();
+        for (final D databaseModel : databaseModels) {
+            restModels.add(databaseModelToRestModel(databaseModel));
+        }
+        return restModels;
+    }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
         final String responseBody = new ResponseBodyBuilder(id, message).build();
