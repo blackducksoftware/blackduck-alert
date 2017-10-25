@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -48,7 +46,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -72,9 +69,6 @@ public class Application {
 
     @Autowired
     private HubServiceWrapper hubServiceWrapper;
-
-    @Autowired
-    private List<AbstractJmsTemplate> templateList;
 
     @Autowired
     private EmailRepository emailRepository;
@@ -157,14 +151,4 @@ public class Application {
     public Gson gson() {
         return new GsonBuilder().setDateFormat(RestConnection.JSON_DATE_FORMAT).create();
     }
-
-    @Bean
-    public ChannelTemplateManager channelTemplateManager(final Gson gson) {
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson);
-        templateList.forEach(jmsTemplate -> {
-            channelTemplateManager.addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
-        });
-        return channelTemplateManager;
-    }
-
 }

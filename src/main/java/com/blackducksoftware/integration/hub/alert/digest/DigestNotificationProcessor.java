@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
@@ -47,6 +48,7 @@ import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
+@Component
 public class DigestNotificationProcessor {
 
     public List<AbstractChannelEvent> processNotifications(final List<NotificationEntity> notificationList) {

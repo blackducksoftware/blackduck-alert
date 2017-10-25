@@ -34,11 +34,16 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
 
+    private final DigestNotificationProcessor notificationProcessor;
+
+    public DigestItemProcessor(final DigestNotificationProcessor notificationProcessor) {
+        this.notificationProcessor = notificationProcessor;
+    }
+
     @Override
     public List<AbstractChannelEvent> process(final List<NotificationEntity> notificationData) throws Exception {
         logger.info("Notification Entity Count: {}", notificationData.size());
-        final DigestNotificationProcessor entityProcessor = new DigestNotificationProcessor();
-        final List<AbstractChannelEvent> events = entityProcessor.processNotifications(notificationData);
+        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(notificationData);
         if (events.isEmpty()) {
             return null;
         } else {

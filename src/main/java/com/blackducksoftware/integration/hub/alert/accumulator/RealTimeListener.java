@@ -34,26 +34,24 @@ import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProc
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 
 @Component
 public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     private final ChannelTemplateManager channelTemplateManager;
-    private final JsonParser jsonParser;
+    private final DigestNotificationProcessor notificationProcessor;
 
     @Autowired
-    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager) {
+    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor) {
         super(gson, RealTimeEvent.class);
         this.channelTemplateManager = channelTemplateManager;
-        this.jsonParser = new JsonParser();
+        this.notificationProcessor = notificationProcessor;
     }
 
     @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
     public void receiveMessage(final String message) {
         final RealTimeEvent event = getEvent(message);
-        final DigestNotificationProcessor entityProcessor = new DigestNotificationProcessor();
-        final List<AbstractChannelEvent> events = entityProcessor.processNotifications(event.getNotificationList());
+        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(event.getNotificationList());
         channelTemplateManager.sendEvents(events);
     }
 }

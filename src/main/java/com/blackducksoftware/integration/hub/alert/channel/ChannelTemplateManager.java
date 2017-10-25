@@ -26,17 +26,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.stereotype.Component;
+
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
 
+@Component
 public class ChannelTemplateManager {
     private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
     private final Gson gson;
+    private final List<AbstractJmsTemplate> templateList;
 
-    public ChannelTemplateManager(final Gson gson) {
+    public ChannelTemplateManager(final Gson gson, final List<AbstractJmsTemplate> templateList) {
         jmsTemplateMap = new HashMap<>();
         this.gson = gson;
+        this.templateList = templateList;
+    }
+
+    @PostConstruct
+    public void init() {
+        templateList.forEach(jmsTemplate -> {
+            addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
+        });
     }
 
     public boolean hasTemplate(final String destination) {
