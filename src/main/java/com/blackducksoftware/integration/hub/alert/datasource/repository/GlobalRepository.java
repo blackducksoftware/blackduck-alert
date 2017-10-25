@@ -29,6 +29,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 
 @Transactional
-public interface GlobalRepository extends JpaRepository<GlobalConfigEntity, Long> {
+public abstract class GlobalRepository implements JpaRepository<GlobalConfigEntity, Long> {
 
 }
