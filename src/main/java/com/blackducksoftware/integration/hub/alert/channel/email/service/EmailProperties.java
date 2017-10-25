@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 
 public class EmailProperties {
     // property keys
@@ -63,8 +63,6 @@ public class EmailProperties {
     public static final String TEMPLATE_KEY_TOTAL_POLICY_OVERRIDES = "totalPolicyOverrides";
     public static final String TEMPLATE_KEY_TOTAL_VULNERABILITIES = "totalVulnerabilities";
     public static final String TEMPLATE_KEY_EMAIL_CATEGORY = "emailCategory";
-    public static final String TEMPLATE_KEY_USER_FIRST_NAME = "user_first_name";
-    public static final String TEMPLATE_KEY_USER_LAST_NAME = "user_last_name";
 
     private String mailSmtpPassword;
     private String emailTemplateDirectory;

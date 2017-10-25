@@ -50,7 +50,7 @@ import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
-public class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
+public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
 
     @Override
@@ -91,6 +91,7 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
             Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
             if (!projectDataMap.containsKey(projectKey)) {
                 final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
+                projectBuilder.setDigestType(getDigestType());
                 projectBuilder.setProjectName(entry.getProjectName());
                 projectBuilder.setProjectVersion(entry.getProjectVersion());
                 projectDataMap.put(projectKey, projectBuilder);
@@ -134,6 +135,8 @@ public class DigestItemProcessor implements ItemProcessor<List<NotificationEntit
         }
         return dataList;
     }
+
+    public abstract DigestTypeEnum getDigestType();
 
     private Set<String> getVulnerabilityIdSet(final NotificationEntity entity) {
         final Collection<VulnerabilityEntity> vulnerabilityList = entity.getVulnerabilityList();

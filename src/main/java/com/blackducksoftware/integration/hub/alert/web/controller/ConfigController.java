@@ -26,21 +26,23 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 
-public interface ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
+public interface ConfigController<D extends DatabaseEntity, R extends ChannelRestModel> {
     public List<R> getConfig(final Long id);
 
-    public ResponseEntity<String> postConfig(R restModel);
+    public ResponseEntity<String> postConfig(final R restModel);
 
-    public ResponseEntity<String> putConfig(R restModel);
+    public ResponseEntity<String> putConfig(final R restModel);
 
-    // TODO TEST, DELETE
+    public ResponseEntity<String> deleteConfig(final R restModel);
 
-    public D restModelToDatabaseModel(R restModel);
+    public ResponseEntity<String> testConfig(final R restModel);
 
-    public R databaseModelToRestModel(D databaseModel);
+    public D restModelToDatabaseModel(final R restModel);
+
+    public R databaseModelToRestModel(final D databaseModel);
 
     public List<R> databaseModelsToRestModels(final List<D> databaseModels);
 }

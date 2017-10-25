@@ -20,46 +20,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-public class HipChatConfigModel extends ChannelRestModel {
-    private static final long serialVersionUID = 8852683250883814613L;
+import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+@MappedSuperclass
+public abstract class DatabaseEntity implements Serializable {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
     private Long id;
-    private String apiKey;
-    private Integer roomId;
-    private Boolean notify;
-    private String color;
 
-    protected HipChatConfigModel() {
+    protected DatabaseEntity() {
+
     }
 
-    public HipChatConfigModel(final Long id, final String apiKey, final Integer roomId, final Boolean notify, final String color) {
-        this.id = id;
-        this.apiKey = apiKey;
-        this.roomId = roomId;
-        this.notify = notify;
-        this.color = color;
-    }
-
-    @Override
     public Long getId() {
         return id;
     }
 
-    public String getApiKey() {
-        return apiKey;
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    public Integer getRoomId() {
-        return roomId;
-    }
-
-    public Boolean getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 }

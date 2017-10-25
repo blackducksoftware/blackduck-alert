@@ -20,11 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.accumulator;
+package com.blackducksoftware.integration.hub.alert.digest;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+public enum DigestTypeEnum {
+    DAILY("Daily Digest"),
+    REAL_TIME("Real Time Digest");
 
-public class RealTimeConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -321092107565025868L;
+    private final String name;
 
+    private DigestTypeEnum(final String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

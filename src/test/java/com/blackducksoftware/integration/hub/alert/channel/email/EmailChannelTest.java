@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Properties;
 
 import com.blackducksoftware.integration.hub.alert.AlertProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -40,7 +41,7 @@ public class EmailChannelTest {
         final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
         projectDataBuilder.setProjectName("Manual Test Project");
         projectDataBuilder.setProjectVersion("Manual Test Project Version");
-
+        projectDataBuilder.setDigestType(DigestTypeEnum.REAL_TIME);
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 
@@ -53,8 +54,8 @@ public class EmailChannelTest {
         final EmailChannel emailChannel = new EmailChannel(alertProperties, gson, null);
         final EmailEvent event = new EmailEvent(projectData);
 
-        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(null, testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
-                null, testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"));
+        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
+                testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"), "Test Subject Line");
 
         emailChannel.sendMessage(event, emailConfigEntity);
     }

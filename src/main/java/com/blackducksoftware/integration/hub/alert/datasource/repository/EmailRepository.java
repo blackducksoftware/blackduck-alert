@@ -26,6 +26,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+
 @Transactional
 public interface EmailRepository extends JpaRepository<EmailConfigEntity, Long> {
 

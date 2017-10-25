@@ -23,11 +23,11 @@
 package com.blackducksoftware.integration.hub.alert.channel;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends ChannelDatabaseEntity> extends MessageReceiver<E> {
+public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
 
     public DistributionChannel(final Gson gson, final Class<E> clazz) {
         super(gson, clazz);
