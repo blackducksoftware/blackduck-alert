@@ -57,7 +57,7 @@ public class DigestNotificationProcessor {
         if (notificationList == null) {
             return new ArrayList<>(0);
         } else {
-            final Collection<ProjectData> projectDataList = createCateoryDataMap(processedNotificationList);
+            final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
             final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
             projectDataList.forEach(projectData -> {
                 events.add(new EmailEvent(projectData));
@@ -67,7 +67,7 @@ public class DigestNotificationProcessor {
         }
     }
 
-    private Collection<ProjectData> createCateoryDataMap(final Collection<NotificationEntity> eventMap) {
+    private Collection<ProjectData> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> eventMap) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationEntity entry : eventMap) {
             final String projectKey = entry.getEventKey();
@@ -76,6 +76,7 @@ public class DigestNotificationProcessor {
             Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
             if (!projectDataMap.containsKey(projectKey)) {
                 final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
+                projectBuilder.setDigestType(digestType);
                 projectBuilder.setProjectName(entry.getProjectName());
                 projectBuilder.setProjectVersion(entry.getProjectVersion());
                 projectDataMap.put(projectKey, projectBuilder);
