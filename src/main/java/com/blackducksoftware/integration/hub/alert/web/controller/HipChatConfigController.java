@@ -92,12 +92,12 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
 
     @Override
     public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigRestModel model) {
-        return new HipChatConfigEntity(model.getId(), model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
+        return new HipChatConfigEntity(model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
     }
 
     @Override
     public HipChatConfigRestModel databaseModelToRestModel(final HipChatConfigEntity entity) {
-        return new HipChatConfigRestModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
+        return new HipChatConfigRestModel(entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
     }
 
 }

@@ -40,11 +40,6 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -128,32 +123,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     public String testMessage(final HipChatConfigEntity config) {
         final int responseCode = sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
         return String.valueOf(responseCode);
-    }
-
-    private String createHtmlMessage(final ProjectData projectData) {
-        final StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
-
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
-        if (categoryMap != null) {
-            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-                final CategoryData data = categoryMap.get(category);
-                if (data != null) {
-                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
-                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
-                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
-                    for (final ItemData item : data.getItemList()) {
-                        final Map<String, Object> dataSet = item.getDataSet();
-                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
-                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
-                    }
-                }
-            }
-        } else {
-            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
-        }
-        return htmlBuilder.toString();
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {

@@ -25,21 +25,25 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 public class SlackConfigRestModel extends ChannelRestModel {
     private static final long serialVersionUID = -2360827976516988339L;
 
-    private String slackChannelName;
+    private String channelName;
     private String username;
+    private String webhook;
 
-    public SlackConfigRestModel(final String slackChannelName, final String username) {
-        super();
-        this.slackChannelName = slackChannelName;
+    protected SlackConfigRestModel() {
+    }
+
+    public SlackConfigRestModel(final String channelName, final String username, final String webhook) {
+        this.channelName = channelName;
         this.username = username;
+        this.webhook = webhook;
     }
 
-    public String getSlackChannelName() {
-        return slackChannelName;
+    public String getChannelName() {
+        return channelName;
     }
 
-    public void setSlackChannelName(final String slackChannelName) {
-        this.slackChannelName = slackChannelName;
+    public void setChannelName(final String channelName) {
+        this.channelName = channelName;
     }
 
     public String getUsername() {
@@ -48,6 +52,14 @@ public class SlackConfigRestModel extends ChannelRestModel {
 
     public void setUsername(final String username) {
         this.username = username;
+    }
+
+    public String getWebhook() {
+        return webhook;
+    }
+
+    public void setWebhook(final String webhook) {
+        this.webhook = webhook;
     }
 
 }

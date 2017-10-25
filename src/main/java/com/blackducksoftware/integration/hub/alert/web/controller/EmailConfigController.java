@@ -83,16 +83,15 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
 
     @Override
     public EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
-        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getId(), restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(),
-                restModel.getMailSmtpConnectionTimeout(), restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(),
-                restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(), restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(),
-                restModel.getEmailSubjectLine());
+        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(), restModel.getMailSmtpConnectionTimeout(),
+                restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(), restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(),
+                restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(), restModel.getEmailSubjectLine());
         return databaseModel;
     }
 
     @Override
     public EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
-        final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getId(), databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
+        final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
                 databaseModel.getMailSmtpConnectionTimeout(), databaseModel.getMailSmtpTimeout(), databaseModel.getMailSmtpFrom(), databaseModel.getMailSmtpLocalhost(), databaseModel.getMailSmtpEhlo(), databaseModel.getMailSmtpAuth(),
                 databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
                 databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());

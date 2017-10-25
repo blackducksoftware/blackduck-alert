@@ -40,16 +40,15 @@ public abstract class DatabaseEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    public DatabaseEntity(final Long id) {
-        this.id = id;
-    }
-
-    protected DatabaseEntity() {
-
+    public DatabaseEntity() {
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

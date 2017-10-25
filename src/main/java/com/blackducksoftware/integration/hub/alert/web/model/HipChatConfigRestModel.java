@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 public class HipChatConfigRestModel extends ChannelRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
-    private Long id;
     private String apiKey;
     private Integer roomId;
     private Boolean notify;
@@ -34,17 +33,11 @@ public class HipChatConfigRestModel extends ChannelRestModel {
     protected HipChatConfigRestModel() {
     }
 
-    public HipChatConfigRestModel(final Long id, final String apiKey, final Integer roomId, final Boolean notify, final String color) {
-        this.id = id;
+    public HipChatConfigRestModel(final String apiKey, final Integer roomId, final Boolean notify, final String color) {
         this.apiKey = apiKey;
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
     }
 
     public String getApiKey() {

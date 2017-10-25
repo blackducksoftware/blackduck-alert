@@ -31,16 +31,15 @@ public abstract class ChannelRestModel implements Serializable {
 
     private Long id;
 
-    protected ChannelRestModel() {
-
-    }
-
-    public ChannelRestModel(final Long id) {
-        this.id = id;
+    public ChannelRestModel() {
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

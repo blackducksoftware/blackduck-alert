@@ -22,9 +22,18 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringEscapeUtils;
+
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
 public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
@@ -36,5 +45,36 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
     public abstract void sendMessage(final E event, final C config);
 
     public abstract String testMessage(final C config);
+
+    protected String createHtmlMessage(final ProjectData projectData) {
+        final StringBuilder htmlBuilder = new StringBuilder();
+        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
+
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
+        if (categoryMap != null) {
+            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
+                final CategoryData data = categoryMap.get(category);
+                if (data != null) {
+                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
+                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
+                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
+                    for (final ItemData item : data.getItemList()) {
+                        final Map<String, Object> dataSet = item.getDataSet();
+                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
+                    }
+                }
+            }
+        } else {
+            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
+        }
+        return htmlBuilder.toString();
+    }
+
+    protected String createPlaintextMessage(final ProjectData projectData) {
+        final String htmlMessage = createHtmlMessage(projectData);
+        return StringEscapeUtils.escapeHtml4(htmlMessage);
+    }
 
 }

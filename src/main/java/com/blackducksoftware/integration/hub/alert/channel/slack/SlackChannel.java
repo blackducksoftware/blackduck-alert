@@ -22,13 +22,29 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import okhttp3.HttpUrl;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
+    private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
     @Autowired
     public SlackChannel(final Gson gson) {
@@ -37,8 +53,40 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public void sendMessage(final SlackEvent event, final SlackConfigEntity config) {
-        // TODO Auto-generated method stub
+        final ProjectData projectData = event.getProjectData();
+        final String slackUrl = config.getWebhook();
+        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
+        if (connection != null) {
+            final String htmlMessage = createHtmlMessage(projectData);
+            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getUsername());
+            final RequestBody body = connection.createJsonRequestBody(jsonString);
 
+            final Map<String, String> requestProperties = new HashMap<>();
+            requestProperties.put("Content-Type", "application/json");
+
+            final HttpUrl httpUrl = connection.createHttpUrl(slackUrl);
+            final Request request = connection.createPostRequest(httpUrl, requestProperties, body);
+
+            try {
+                logger.info("Attempting to send a HipChat message...");
+                final Response response = connection.handleExecuteClientCall(request);
+                logger.info("Successfully sent a HipChat message!");
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Response: " + response.toString());
+                }
+            } catch (final IntegrationException e) {
+                logger.error("Failed to send a HipChat message", e);
+            }
+        }
+    }
+
+    private String getJsonString(final String htmlMessage, final String channel, final String username) {
+        final JsonObject json = new JsonObject();
+        json.addProperty("text", htmlMessage);
+        json.addProperty("channel", channel);
+        json.addProperty("username", username);
+
+        return json.toString();
     }
 
     @Override
