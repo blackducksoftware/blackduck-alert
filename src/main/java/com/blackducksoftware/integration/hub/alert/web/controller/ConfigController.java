@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 
-public interface ChannelController<D extends DatabaseEntity, R extends ChannelRestModel> {
+public interface ConfigController<D extends DatabaseEntity, R extends ChannelRestModel> {
     public List<R> getConfig(final Long id);
 
     public ResponseEntity<String> postConfig(final R restModel);
