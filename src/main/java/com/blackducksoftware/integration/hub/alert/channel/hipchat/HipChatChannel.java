@@ -34,6 +34,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
@@ -58,7 +59,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
-    public static final String HIP_CHAT_FROM_NAME = "Hub Alert";
 
     private final HipChatRepository hipChatRepository;
 
@@ -90,7 +90,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
         // TODO find a better way to inject this
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (connection != null) {
-            final String jsonString = getJsonString(getMessage(event.getProjectData()), HIP_CHAT_FROM_NAME, config.getNotify(), config.getColor());
+            final String jsonString = getJsonString(getMessage(event.getProjectData()), AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");

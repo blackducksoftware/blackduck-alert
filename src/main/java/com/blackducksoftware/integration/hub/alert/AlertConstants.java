@@ -36,6 +36,8 @@ public class AlertConstants {
 
     public static final String CONTEXT_ATTRIBUTE_KEY_EMAIL_TEST_NOTIFIER = "blackduck-test-email-notifier";
 
+    public static final String ALERT_APPLICATION_NAME = "Hub Alert";
+
     private AlertConstants() throws InstantiationException {
         throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
     }
