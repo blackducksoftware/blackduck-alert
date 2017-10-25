@@ -23,7 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.channel;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 

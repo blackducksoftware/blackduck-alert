@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 
 public interface ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {

@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

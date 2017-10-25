@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 
 public class EmailProperties {
     // property keys

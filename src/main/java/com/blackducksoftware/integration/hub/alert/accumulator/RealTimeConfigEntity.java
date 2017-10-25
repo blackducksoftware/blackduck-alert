@@ -22,7 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
 
 public class RealTimeConfigEntity extends ChannelDatabaseEntity {
     private static final long serialVersionUID = -321092107565025868L;

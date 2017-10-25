@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;

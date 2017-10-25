@@ -35,8 +35,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.ChannelDatabaseEntity;
-
 @Entity
 @Table(name = "hipchat_config", schema = "configuration")
 public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serializable {
