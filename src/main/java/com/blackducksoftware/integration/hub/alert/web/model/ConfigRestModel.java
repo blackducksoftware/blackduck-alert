@@ -27,15 +27,15 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public abstract class ChannelRestModel implements Serializable {
+public abstract class ConfigRestModel implements Serializable {
 
     private Long id;
 
-    protected ChannelRestModel() {
+    protected ConfigRestModel() {
 
     }
 
-    public ChannelRestModel(final Long id) {
+    public ConfigRestModel(final Long id) {
         this.id = id;
     }
 

@@ -22,12 +22,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.ui.model.SettingModel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.SettingEntity;
 
-@Repository
-public interface SettingRepository extends CrudRepository<SettingModel, Long> {
-
+@Transactional
+public interface SettingRepository extends JpaRepository<SettingEntity, Long> {
 }
