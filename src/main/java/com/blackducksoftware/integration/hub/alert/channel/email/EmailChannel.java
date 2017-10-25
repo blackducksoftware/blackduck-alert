@@ -91,7 +91,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final ProjectData data = emailEvent.getProjectData();
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, "Test email. Values hard coded");
+            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, emailConfigEntity.getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
             model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
 
@@ -99,8 +99,6 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
             model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
             model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
-            model.put(EmailProperties.TEMPLATE_KEY_USER_FIRST_NAME, "First");
-            model.put(EmailProperties.TEMPLATE_KEY_USER_LAST_NAME, "Last Name");
 
             final EmailTarget emailTarget = new EmailTarget("", "digest.ftl", model);
 

@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
@@ -24,7 +22,7 @@ import com.google.gson.Gson;
 public class EmailChannelTest {
 
     // TODO fix NPE
-    //@Test
+    // @Test
     public void sendEmailTest() throws Exception {
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
         final VulnerabilityEntity vulnerability = new VulnerabilityEntity("Vuln ID", "Vuln Operation");
@@ -57,7 +55,7 @@ public class EmailChannelTest {
         final EmailEvent event = new EmailEvent(projectData);
 
         final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(null, testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
-                null, testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"));
+                null, testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"), "Test Subject Line");
 
         emailChannel.sendMessage(event, emailConfigEntity);
     }
