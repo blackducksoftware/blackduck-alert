@@ -1,70 +1,51 @@
-/*
- * Copyright (C) 2017 Black Duck Software Inc.
+/**
+ * Copyright (C) 2017 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- * All rights reserved.
  *
- * This software is the confidential and proprietary information of
- * Black Duck Software ("Confidential Information"). You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Black Duck Software.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.util.List;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
-public class SlackConfigController implements ConfigController<SlackConfigEntity, SlackConfigRestModel> {
+public class SlackConfigController extends ConfigController<SlackConfigEntity, SlackConfigRestModel> {
 
-    @Override
-    public List<SlackConfigRestModel> getConfig(final Long id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> postConfig(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> putConfig(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> deleteConfig(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
+    public SlackConfigController(final JpaRepository<SlackConfigEntity, Long> repository) {
+        super(repository);
     }
 
     @Override
     public ResponseEntity<String> testConfig(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public SlackConfigEntity restModelToDatabaseModel(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public SlackConfigRestModel databaseModelToRestModel(final SlackConfigEntity databaseModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<SlackConfigRestModel> databaseModelsToRestModels(final List<SlackConfigEntity> databaseModels) {
-        // TODO Auto-generated method stub
         return null;
     }
 
