@@ -24,16 +24,26 @@ package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
-public class AlertProperties {
+public class GlobalProperties {
 
     private final GlobalRepository globalRepository;
 
-    public AlertProperties(final GlobalRepository globalRepository) {
+    @Autowired
+    public GlobalProperties(final GlobalRepository globalRepository) {
         this.globalRepository = globalRepository;
     }
 
@@ -51,6 +61,38 @@ public class AlertProperties {
         final List<GlobalConfigEntity> configs = globalRepository.findAll();
         if (configs != null && !configs.isEmpty()) {
             return configs.get(0);
+        }
+        return null;
+    }
+
+    public HubServicesFactory createHubServicesFactory(final Logger logger) throws EncryptionException {
+        final IntLogger intLogger = new Slf4jIntLogger(logger);
+        final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
+        if (hubServerConfig != null) {
+            final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
+            return new HubServicesFactory(restConnection);
+        }
+        return null;
+    }
+
+    public HubServerConfig createHubServerConfig(final IntLogger logger) {
+        final GlobalConfigEntity globalConfigEntity = getConfig();
+        if (globalConfigEntity != null) {
+            final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+            hubServerConfigBuilder.setHubUrl(globalConfigEntity.getHubUrl());
+            hubServerConfigBuilder.setTimeout(globalConfigEntity.getHubTimeout());
+            hubServerConfigBuilder.setUsername(globalConfigEntity.getHubUsername());
+            hubServerConfigBuilder.setPassword(globalConfigEntity.getHubPassword());
+
+            hubServerConfigBuilder.setProxyHost(globalConfigEntity.getHubProxyHost());
+            hubServerConfigBuilder.setProxyPort(globalConfigEntity.getHubProxyPort());
+            hubServerConfigBuilder.setProxyUsername(globalConfigEntity.getHubProxyUsername());
+            hubServerConfigBuilder.setProxyPassword(globalConfigEntity.getHubProxyPassword());
+
+            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalConfigEntity.getHubAlwaysTrustCertificate());
+            hubServerConfigBuilder.setLogger(logger);
+
+            return hubServerConfigBuilder.build();
         }
         return null;
     }

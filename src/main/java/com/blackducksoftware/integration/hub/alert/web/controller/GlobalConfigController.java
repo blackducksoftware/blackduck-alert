@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,6 +41,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
+import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.RealTimeDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
@@ -47,10 +51,16 @@ import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestMod
 @RestController
 public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final GlobalRepository globalRepository;
+    private final AccumulatorConfig accumulatorConfig;
+    private final RealTimeDigestBatchConfig realTimeDigestBatchConfig;
+    private final DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @Autowired
-    GlobalConfigController(final GlobalRepository globalRepository) {
+    GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final RealTimeDigestBatchConfig realTimeDigestBatchConfig, final DailyDigestBatchConfig dailyDigestBatchConfig) {
         this.globalRepository = globalRepository;
+        this.accumulatorConfig = accumulatorConfig;
+        this.realTimeDigestBatchConfig = realTimeDigestBatchConfig;
+        this.dailyDigestBatchConfig = dailyDigestBatchConfig;
     }
 
     @Override
@@ -70,33 +80,61 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     @Override
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        if (globalConfig.getId() == null || !globalRepository.exists(globalConfig.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/global");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body(e.getMessage());
+        final List<GlobalConfigEntity> configs = globalRepository.findAll();
+        if (configs != null && !configs.isEmpty()) {
+            for (final GlobalConfigEntity config : configs) {
+                globalRepository.delete(config);
             }
-            final GlobalConfigEntity createdEntity = globalRepository.save(restModelToDatabaseModel(globalConfig));
-            return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
         }
-        return ResponseEntity.status(409).body("Invalid id");
+        URI uri;
+        try {
+            uri = new URI("/configuration/global");
+        } catch (final URISyntaxException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+        final GlobalConfigEntity createdEntity = globalRepository.save(restModelToDatabaseModel(globalConfig));
+        if (globalConfig != null) {
+            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
+                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
+                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
+                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            }
+        }
+        return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        if (globalConfig.getId() != null && globalRepository.exists(globalConfig.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/global");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body("error: " + e.getMessage());
+        final List<GlobalConfigEntity> configs = globalRepository.findAll();
+        if (configs != null && !configs.isEmpty()) {
+            for (final GlobalConfigEntity config : configs) {
+                globalRepository.delete(config);
             }
-            globalRepository.save(restModelToDatabaseModel(globalConfig));
-            return ResponseEntity.created(uri).build();
         }
-        return ResponseEntity.badRequest().body("No configuration with id " + globalConfig.getId());
+        URI uri;
+        try {
+            uri = new URI("/configuration/global");
+        } catch (final URISyntaxException e) {
+            return ResponseEntity.status(500).body("error: " + e.getMessage());
+        }
+        globalRepository.save(restModelToDatabaseModel(globalConfig));
+        if (globalConfig != null) {
+            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
+                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
+                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
+                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            }
+        }
+        return ResponseEntity.created(uri).build();
     }
 
     @Override

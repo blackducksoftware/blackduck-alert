@@ -36,7 +36,7 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.alert.HubServiceWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -44,11 +44,11 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 public class AccumulatorReader implements ItemReader<NotificationResults> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
 
-    private final HubServiceWrapper hubServiceWrapper;
+    private final GlobalProperties globalProperties;
     private final String lastRunPath;
 
-    public AccumulatorReader(final HubServiceWrapper hubServiceWrapper) {
-        this.hubServiceWrapper = hubServiceWrapper;
+    public AccumulatorReader(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
         lastRunPath = findLastRunFilePath();
     }
 
@@ -89,7 +89,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
             logger.error("Error creating date range", e);
         }
 
-        final NotificationDataService notificationDataService = hubServiceWrapper.getHubServicesFactory().createNotificationDataService();
+        final NotificationDataService notificationDataService = globalProperties.createHubServicesFactory(logger).createNotificationDataService();
         final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
         if (notificationResults.getNotificationContentItems().isEmpty()) {

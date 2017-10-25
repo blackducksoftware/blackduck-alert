@@ -11,10 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.AlertProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
 
-public class TestAlertProperties extends AlertProperties {
+public class TestAlertProperties extends GlobalProperties {
 
     private String hubUrl;
     private Integer hubTimeout;

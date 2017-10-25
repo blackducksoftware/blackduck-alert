@@ -22,22 +22,32 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
+import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
-    private final NotificationItemProcessor notificationAccumulatorProcessor;
+    private final Logger logger = LoggerFactory.getLogger(Application.class);
+    private final GlobalProperties globalProperties;
 
-    public AccumulatorProcessor(final NotificationItemProcessor notificationAccumulatorProcessor) {
-        this.notificationAccumulatorProcessor = notificationAccumulatorProcessor;
+    public AccumulatorProcessor(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
     }
 
     @Override
     public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
-        final DBStoreEvent storeEvent = notificationAccumulatorProcessor.process(notificationData.getNotificationContentItems());
+        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
+
+        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(),
+                hubServicesFactory.createMetaService());
+        final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
         return storeEvent;
     }
 }

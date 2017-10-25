@@ -22,6 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.util.TimeZone;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -35,11 +39,14 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 
-public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> {
+public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(AccumulatorConfig.class);
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
     protected final SimpleJobLauncher jobLauncher;
@@ -48,15 +55,31 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     protected final TaskExecutor taskExecutor;
     protected final NotificationRepository notificationRepository;
     protected final PlatformTransactionManager transactionManager;
+    private final TaskScheduler taskScheduler;
 
     public CommonConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager) {
+            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.taskExecutor = taskExecutor;
         this.notificationRepository = notificationRepository;
         this.transactionManager = transactionManager;
+        this.taskScheduler = taskScheduler;
+    }
+
+    public void scheduleJobExecution(final String cron) {
+        taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
+    }
+
+    @Override
+    public void run() {
+        try {
+            final JobExecution execution = createJobExecution();
+            logger.info("Job finished with status : " + execution.getExitStatus().getExitDescription() + ", code : " + execution.getExitStatus().getExitCode());
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public JobExecution createJobExecution() throws Exception {

@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarg
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.AlertProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
@@ -51,11 +51,11 @@ import freemarker.template.TemplateException;
 public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
-    private final AlertProperties alertProperties;
+    private final GlobalProperties alertProperties;
     private final EmailRepository emailRepository;
 
     @Autowired
-    public EmailChannel(final AlertProperties alertProperties, final Gson gson, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties alertProperties, final Gson gson, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.alertProperties = alertProperties;
         this.emailRepository = emailRepository;
