@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRe
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController extends ChannelController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
 
     @Autowired
     EmailConfigController(final EmailRepository repository) {

@@ -33,19 +33,19 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @MappedSuperclass
-public abstract class ChannelDatabaseEntity implements Serializable {
+public abstract class DatabaseEntity implements Serializable {
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
 
-    protected ChannelDatabaseEntity() {
-
+    public DatabaseEntity(final Long id) {
+        this.id = id;
     }
 
-    public ChannelDatabaseEntity(final Long id) {
-        this.id = id;
+    protected DatabaseEntity() {
+
     }
 
     public Long getId() {

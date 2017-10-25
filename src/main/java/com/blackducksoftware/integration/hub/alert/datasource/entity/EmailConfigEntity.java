@@ -31,7 +31,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
 @Table(name = "email_config", schema = "configuration")
-public class EmailConfigEntity extends ChannelDatabaseEntity {
+public class EmailConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html

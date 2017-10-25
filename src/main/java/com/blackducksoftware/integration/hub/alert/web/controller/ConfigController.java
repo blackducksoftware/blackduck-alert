@@ -31,15 +31,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.ChannelDatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
-public abstract class ChannelController<D extends ChannelDatabaseEntity, R extends ChannelRestModel> {
+public abstract class ConfigController<D extends DatabaseEntity, R extends ChannelRestModel> {
     protected final JpaRepository<D, Long> repository;
 
     @Autowired
-    public ChannelController(final JpaRepository<D, Long> repository) {
+    public ConfigController(final JpaRepository<D, Long> repository) {
         this.repository = repository;
     }
 
@@ -56,19 +56,17 @@ public abstract class ChannelController<D extends ChannelDatabaseEntity, R exten
     }
 
     public ResponseEntity<String> postConfig(final R restModel) {
-        final D databaseEntity = restModelToDatabaseModel(restModel);
-        if (databaseEntity.getId() == null || !repository.exists(databaseEntity.getId())) {
-            final D createdEntity = repository.save(databaseEntity);
+        if (restModel.getId() == null || !repository.exists(restModel.getId())) {
+            final D createdEntity = repository.save(restModelToDatabaseModel(restModel));
             return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
         }
-        return createResponse(HttpStatus.CONFLICT, databaseEntity.getId(), "Invalid id.");
+        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Invalid id.");
     }
 
     public ResponseEntity<String> putConfig(final R restModel) {
-        final D databaseEntity = restModelToDatabaseModel(restModel);
-        if (databaseEntity.getId() != null && repository.exists(databaseEntity.getId())) {
-            repository.save(databaseEntity);
-            return createResponse(HttpStatus.CREATED, databaseEntity.getId(), "Updated.");
+        if (restModel.getId() != null && repository.exists(restModel.getId())) {
+            final D updatedEntity = repository.save(restModelToDatabaseModel(restModel));
+            return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
