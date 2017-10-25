@@ -112,7 +112,7 @@ public class HipChatConfigController implements ChannelController<HipChatConfigE
 
     @Override
     public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigModel model) {
-        return new HipChatConfigEntity(model.getId(), model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
+        return new HipChatConfigEntity(model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
     }
 
     @Override

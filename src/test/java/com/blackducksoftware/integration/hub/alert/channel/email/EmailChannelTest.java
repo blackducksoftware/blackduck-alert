@@ -54,8 +54,8 @@ public class EmailChannelTest {
         final EmailChannel emailChannel = new EmailChannel(alertProperties, gson, null);
         final EmailEvent event = new EmailEvent(projectData);
 
-        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(null, testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
-                null, testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"), "Test Subject Line");
+        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
+                testProperties.getProperty("hub.email.template.directory"), testProperties.getProperty("logo.image"), "Test Subject Line");
 
         emailChannel.sendMessage(event, emailConfigEntity);
     }

@@ -22,28 +22,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
 @Table(name = "hipchat_config", schema = "configuration")
-public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serializable {
+public class HipChatConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
 
     @Column(name = "api_key")
     private String apiKey;
@@ -60,8 +49,7 @@ public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serial
     protected HipChatConfigEntity() {
     }
 
-    public HipChatConfigEntity(final Long id, final String apiKey, final Integer room_id, final Boolean notify, final String color) {
-        this.id = id;
+    public HipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
         this.apiKey = apiKey;
         this.roomId = room_id;
         this.notify = notify;
@@ -70,10 +58,6 @@ public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serial
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getApiKey() {
@@ -90,16 +74,6 @@ public class HipChatConfigEntity extends ChannelDatabaseEntity implements Serial
 
     public String getColor() {
         return color;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
