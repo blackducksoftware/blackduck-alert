@@ -30,10 +30,12 @@ import java.util.Set;
 
 import org.springframework.batch.item.ItemWriter;
 
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
@@ -41,15 +43,18 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final NotificationRepository notificationRepository;
+    private final ChannelTemplateManager channelTemplateManager;
 
-    public AccumulatorWriter(final NotificationRepository notificationRepository) {
+    public AccumulatorWriter(final NotificationRepository notificationRepository, final ChannelTemplateManager channelTemplateManager) {
         this.notificationRepository = notificationRepository;
+        this.channelTemplateManager = channelTemplateManager;
     }
 
     @Override
     public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
         itemList.forEach(item -> {
             final List<NotificationEvent> notificationList = item.getNotificationList();
+            final List<NotificationEntity> entityList = new ArrayList<>();
             notificationList.forEach(notification -> {
                 final String eventKey = notification.getEventKey();
                 final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
@@ -64,8 +69,11 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
                 final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+                entityList.add(entity);
                 notificationRepository.save(entity);
             });
+            final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
+            channelTemplateManager.sendEvent(realTimeEvent);
         });
     }
 

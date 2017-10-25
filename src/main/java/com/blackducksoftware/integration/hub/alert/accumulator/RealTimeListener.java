@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,32 +30,30 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 
 @Component
 public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     private final ChannelTemplateManager channelTemplateManager;
+    private final JsonParser jsonParser;
 
     @Autowired
     public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager) {
         super(gson, RealTimeEvent.class);
         this.channelTemplateManager = channelTemplateManager;
+        this.jsonParser = new JsonParser();
     }
 
     @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
     public void receiveMessage(final String message) {
         final RealTimeEvent event = getEvent(message);
-        final List<AbstractChannelEvent> eventList = process(event.getNotificationList());
-        channelTemplateManager.sendEvents(eventList);
+        final DigestNotificationProcessor entityProcessor = new DigestNotificationProcessor();
+        final List<AbstractChannelEvent> events = entityProcessor.processNotifications(event.getNotificationList());
+        channelTemplateManager.sendEvents(events);
     }
-
-    public List<AbstractChannelEvent> process(final List<NotificationEvent> notificationList) {
-        final List<AbstractChannelEvent> eventList = new ArrayList<>();
-        return eventList;
-    }
-
 }
