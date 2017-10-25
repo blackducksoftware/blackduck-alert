@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChat
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController implements ChannelController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
     private final HipChatRepository hipChatRepository;
 
     @Autowired

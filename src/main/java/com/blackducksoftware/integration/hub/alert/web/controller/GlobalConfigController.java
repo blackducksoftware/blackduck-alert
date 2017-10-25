@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalR
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController implements ChannelController<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final GlobalRepository globalRepository;
 
     @Autowired
