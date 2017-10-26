@@ -22,51 +22,39 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
-import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.HubServiceWrapper;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.service.HubResponseService;
 
-@Configuration
+@Component
 public class AccumulatorConfig extends CommonConfig<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
-    private final HubServiceWrapper hubServiceWrapper;
     private final ChannelTemplateManager channelTemplateManager;
+    private final GlobalProperties globalProperties;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager, final HubServiceWrapper hubServiceWrapper, final ChannelTemplateManager channelTemplateManager) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager);
-        this.hubServiceWrapper = hubServiceWrapper;
+            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager) {
+        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
+        this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;
-
-    }
-
-    @Override
-    @Scheduled(cron = "#{@accumulatorCronExpression}", zone = "UTC")
-    public JobExecution createJobExecution() throws Exception {
-        return super.createJobExecution();
     }
 
     @Override
@@ -74,17 +62,9 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
         return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
     }
 
-    public NotificationItemProcessor getNotificationProcessor() {
-        final HubResponseService hubResponseService = hubServiceWrapper.getHubServicesFactory().createHubResponseService();
-        final MetaService metaService = hubServiceWrapper.getHubServicesFactory().createMetaService();
-        final VulnerabilityRequestService vulnerabilityRequestService = hubServiceWrapper.getHubServicesFactory().createVulnerabilityRequestService();
-        final NotificationItemProcessor notificationProcessor = new NotificationItemProcessor(hubResponseService, vulnerabilityRequestService, metaService);
-        return notificationProcessor;
-    }
-
     @Override
     public AccumulatorReader reader() {
-        return new AccumulatorReader(hubServiceWrapper);
+        return new AccumulatorReader(globalProperties);
     }
 
     @Override
@@ -94,7 +74,7 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Override
     public AccumulatorProcessor processor() {
-        return new AccumulatorProcessor(getNotificationProcessor());
+        return new AccumulatorProcessor(globalProperties);
     }
 
     @Override

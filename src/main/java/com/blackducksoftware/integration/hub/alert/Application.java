@@ -42,12 +42,16 @@ import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
+import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -61,60 +65,46 @@ import com.google.gson.GsonBuilder;
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
 public class Application {
-
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
-    private AlertProperties alertProperties;
-
+    private GlobalProperties globalProperties;
     @Autowired
-    private HubServiceWrapper hubServiceWrapper;
-
+    private AccumulatorConfig accumulatorConfig;
     @Autowired
-    private EmailRepository emailRepository;
+    private DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @PostConstruct
     void init() {
         logger.info("Hub Alert Starting...");
-        logger.info("----------------------------------------");
-        logger.info("Alert Configuration: ");
-        logger.info("Hub URL:            {}", alertProperties.getHubUrl());
-        logger.info("Hub Username:       {}", alertProperties.getHubUsername());
-        logger.info("Hub Password:       **********");
-        logger.info("Hub Timeout:        {}", alertProperties.getHubTimeout());
-        logger.info("Hub Proxy Host:     {}", alertProperties.getHubProxyHost());
-        logger.info("Hub Proxy Port:     {}", alertProperties.getHubProxyPort());
-        logger.info("Hub Proxy User:     {}", alertProperties.getHubProxyUsername());
-        logger.info("Hub Proxy Password: **********");
-        logger.info("----------------------------------------");
-        logger.info("Accumulator Cron Expression:      {}", alertProperties.getAccumulatorCron());
-        logger.info("Real Time Digest Cron Expression: {}", alertProperties.getRealTimeDigestCron());
-        logger.info("Daily Digest Cron Expression:     {}", alertProperties.getDailyDigestCron());
+        final GlobalConfigEntity globalConfig = globalProperties.getConfig();
+        if (globalConfig != null) {
+            logger.info("----------------------------------------");
+            logger.info("Alert Configuration: ");
+            logger.info("Hub URL:            {}", globalConfig.getHubUrl());
+            logger.info("Hub Username:       {}", globalConfig.getHubUsername());
+            logger.info("Hub Password:       **********");
+            logger.info("Hub Timeout:        {}", globalConfig.getHubTimeout());
+            logger.info("Hub Proxy Host:     {}", globalConfig.getHubProxyHost());
+            logger.info("Hub Proxy Port:     {}", globalConfig.getHubProxyPort());
+            logger.info("Hub Proxy User:     {}", globalConfig.getHubProxyUsername());
+            logger.info("Hub Proxy Password: **********");
+            logger.info("----------------------------------------");
+            logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
+            logger.info("Real Time Digest Cron Expression: {}", globalConfig.getRealTimeDigestCron());
+            logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
 
-        try {
-            hubServiceWrapper.init();
-        } catch (final AlertException ex) {
-            logger.error("Error initializing the service wrapper", ex);
+            accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+        } else {
+            logger.info("----------------------------------------");
+            logger.info("Alert Configuration: No global configuration");
+            logger.info("----------------------------------------");
         }
     }
 
     public static void main(final String[] args) {
         new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
-    }
-
-    @Bean
-    public String accumulatorCronExpression() {
-        return alertProperties.getAccumulatorCron();
-    }
-
-    @Bean
-    public String dailyDigestCronExpression() {
-        return alertProperties.getDailyDigestCron();
-    }
-
-    @Bean
-    public String realtimeDigestCronExpression() {
-        return alertProperties.getRealTimeDigestCron();
     }
 
     @Bean
@@ -139,6 +129,11 @@ public class Application {
         final SimpleJobLauncher launcher = new SimpleJobLauncher();
         launcher.setJobRepository(jobRepository());
         return launcher;
+    }
+
+    @Bean
+    public TaskScheduler taskScheduler() throws Exception {
+        return new ThreadPoolTaskScheduler();
     }
 
     @Bean

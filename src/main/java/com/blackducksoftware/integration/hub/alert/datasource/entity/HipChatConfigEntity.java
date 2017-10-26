@@ -32,7 +32,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 @Table(name = "hipchat_config", schema = "configuration")
 public class HipChatConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 9172607945030111585L;
+    private static final long serialVersionUID = 2791949172564090134L;
 
     @Column(name = "api_key")
     private String apiKey;

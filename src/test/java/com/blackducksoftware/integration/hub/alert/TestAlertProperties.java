@@ -1,70 +1,39 @@
-/**
- * Copyright (C) 2017 Black Duck Software, Inc.
+/*
+ * Copyright (C) 2017 Black Duck Software Inc.
  * http://www.blackducksoftware.com/
+ * All rights reserved.
  *
- *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * This software is the confidential and proprietary information of
+ * Black Duck Software ("Confidential Information"). You shall not
+ * disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Black Duck Software.
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
 
-@Configuration
-@EnableConfigurationProperties
-public class AlertProperties {
-    @Value("${blackduck.hub.url}")
+public class TestAlertProperties extends GlobalProperties {
+
     private String hubUrl;
-
-    @Value("${blackduck.hub.timeout}")
     private Integer hubTimeout;
-
-    @Value("${blackduck.hub.username}")
     private String hubUsername;
-
-    @Value("${blackduck.hub.password}")
     private String hubPassword;
-
-    @Value("${blackduck.hub.proxy.host}")
     private String hubProxyHost;
-
-    @Value("${blackduck.hub.proxy.port}")
     private String hubProxyPort;
-
-    @Value("${blackduck.hub.proxy.username}")
     private String hubProxyUsername;
-
-    @Value("${blackduck.hub.proxy.password}")
     private String hubProxyPassword;
-
-    @Value("${blackduck.hub.always.trust.cert}")
     private Boolean hubAlwaysTrustCertificate;
-
-    @Value("${alert.accumulator.cron}")
     private String accumulatorCron;
-
-    @Value("${alert.digest.daily.cron}")
     private String dailyDigestCron;
-
-    @Value("${alert.digest.realtime.cron}")
     private String realTimeDigestCron;
 
+    public TestAlertProperties(final GlobalRepository globalRepository) {
+        super(globalRepository);
+    }
+
+    @Override
     public String getHubUrl() {
         return hubUrl;
     }
@@ -73,6 +42,7 @@ public class AlertProperties {
         this.hubUrl = hubUrl;
     }
 
+    @Override
     public Integer getHubTimeout() {
         return hubTimeout;
     }
@@ -81,6 +51,7 @@ public class AlertProperties {
         this.hubTimeout = hubTimeout;
     }
 
+    @Override
     public String getHubUsername() {
         return hubUsername;
     }
@@ -89,6 +60,7 @@ public class AlertProperties {
         this.hubUsername = hubUsername;
     }
 
+    @Override
     public String getHubPassword() {
         return hubPassword;
     }
@@ -97,6 +69,7 @@ public class AlertProperties {
         this.hubPassword = hubPassword;
     }
 
+    @Override
     public String getHubProxyHost() {
         return hubProxyHost;
     }
@@ -105,6 +78,7 @@ public class AlertProperties {
         this.hubProxyHost = hubProxyHost;
     }
 
+    @Override
     public String getHubProxyPort() {
         return hubProxyPort;
     }
@@ -113,6 +87,7 @@ public class AlertProperties {
         this.hubProxyPort = hubProxyPort;
     }
 
+    @Override
     public String getHubProxyUsername() {
         return hubProxyUsername;
     }
@@ -121,6 +96,7 @@ public class AlertProperties {
         this.hubProxyUsername = hubProxyUsername;
     }
 
+    @Override
     public String getHubProxyPassword() {
         return hubProxyPassword;
     }
@@ -129,6 +105,7 @@ public class AlertProperties {
         this.hubProxyPassword = hubProxyPassword;
     }
 
+    @Override
     public Boolean getHubAlwaysTrustCertificate() {
         return hubAlwaysTrustCertificate;
     }
@@ -137,6 +114,7 @@ public class AlertProperties {
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
     }
 
+    @Override
     public String getAccumulatorCron() {
         return accumulatorCron;
     }
@@ -145,6 +123,7 @@ public class AlertProperties {
         this.accumulatorCron = accumulatorCron;
     }
 
+    @Override
     public String getDailyDigestCron() {
         return dailyDigestCron;
     }
@@ -153,6 +132,7 @@ public class AlertProperties {
         this.dailyDigestCron = dailyDigestCron;
     }
 
+    @Override
     public String getRealTimeDigestCron() {
         return realTimeDigestCron;
     }
