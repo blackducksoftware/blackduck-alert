@@ -41,7 +41,7 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
     public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
+        getEvent(message);
     }
 
 }

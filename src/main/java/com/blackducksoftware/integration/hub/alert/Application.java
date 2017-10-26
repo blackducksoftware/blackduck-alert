@@ -49,7 +49,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
@@ -75,9 +74,6 @@ public class Application {
 
     @Autowired
     private List<AbstractJmsTemplate> templateList;
-
-    @Autowired
-    private EmailRepository emailRepository;
 
     @PostConstruct
     void init() {
