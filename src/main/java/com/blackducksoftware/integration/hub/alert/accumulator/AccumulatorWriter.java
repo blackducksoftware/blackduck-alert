@@ -97,6 +97,8 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         }
     }
 
+    // The dataset contains string keys and object values. Therefore we need to type cast because the contents are various types.
+    @SuppressWarnings("unchecked")
     private Collection<VulnerabilityEntity> getVulnerabilities(final NotificationEvent notification) {
         final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
         final String key = VulnerabilityCache.VULNERABILITY_OPERATION;
