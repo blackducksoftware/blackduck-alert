@@ -41,8 +41,8 @@ import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarg
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
@@ -53,13 +53,13 @@ import freemarker.template.TemplateException;
 public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
-    private final GlobalProperties alertProperties;
+    private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties alertProperties, final Gson gson, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
-        this.alertProperties = alertProperties;
+        this.globalProperties = globalProperties;
         this.emailRepository = emailRepository;
     }
 
@@ -97,7 +97,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, emailConfigEntity.getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, globalProperties.getHubUrl());
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 

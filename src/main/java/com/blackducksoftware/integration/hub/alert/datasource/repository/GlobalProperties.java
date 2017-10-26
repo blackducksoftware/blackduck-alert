@@ -67,10 +67,24 @@ public class GlobalProperties {
 
     public HubServicesFactory createHubServicesFactory(final Logger logger) throws EncryptionException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
+        return createHubServicesFactory(intLogger);
+    }
+
+    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws EncryptionException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
             final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
             return new HubServicesFactory(restConnection);
+        }
+        return null;
+    }
+
+    public HubServicesFactory createHubServicesFactoryAndLogErrors(final Logger logger) throws EncryptionException {
+        final IntLogger intLogger = new Slf4jIntLogger(logger);
+        try {
+            return createHubServicesFactory(intLogger);
+        } catch (final Exception e) {
+            intLogger.error(e.getMessage(), e);
         }
         return null;
     }
