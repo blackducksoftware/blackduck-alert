@@ -11,16 +11,26 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
 // TODO write actual integration tests instead of garbage
@@ -51,20 +61,25 @@ public class HipChatChannelTestIT {
         loggerOutput.close();
         System.setOut(new PrintStream(systemOut));
         System.setErr(new PrintStream(systemErr));
+        printLoggerOutput();
     }
 
-    // TODO rewrite once functionality is solidified
-    // @Test
+    @Test
     public void sendMessageTestIT() throws IOException {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
-        final String authToken = properties.getProperty("hipchat.api.key");
-        final Integer roomId = Integer.parseInt(properties.getProperty("hipchat.room.id"));
 
-        // hipChatChannel.sendHipChatMessage("https://api.hipchat.com", authToken, roomId, "Integration Test", "Integration Test", false, "random");
+        final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
+        map.put(NotificationCategoryEnum.POLICY_VIOLATION, new CategoryData("category_key", Collections.emptyList(), 0));
 
-        // final String responseLine = getLineContainingText("Successfully sent a HipChat message!");
+        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Integration Test Project Name", "Integration Test Project Version Name", null);
+        final HipChatEvent event = new HipChatEvent(data);
+        final HipChatConfigEntity config = new HipChatConfigEntity(properties.getProperty("hipchat.api.key"), Integer.parseInt(properties.getProperty("hipchat.room.id")), false, "random");
 
-        // assertTrue(!responseLine.equals(""));
+        hipChatChannel.sendMessage(event, config);
+
+        final String responseLine = getLineContainingText("Successfully sent a HipChat message!");
+
+        assertTrue(!responseLine.isEmpty());
     }
 
     private String getLineContainingText(final String text) throws IOException {
@@ -79,5 +94,18 @@ public class HipChatChannelTestIT {
             }
         }
         return lineContainingText;
+    }
+
+    // For ease of debugging
+    private void printLoggerOutput() {
+        try {
+            loggerOutput.flush();
+        } catch (final IOException e) {
+            // Irrelevant to the test
+        }
+        final String[] consoleLines = loggerOutput.toString().split("\n");
+        for (final String line : consoleLines) {
+            System.out.println(line);
+        }
     }
 }
