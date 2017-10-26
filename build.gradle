@@ -12,9 +12,10 @@ plugins {
     id 'java'
     id 'eclipse'
     id 'maven'
-    id 'org.springframework.boot' version '1.5.2.RELEASE'
+    id 'org.springframework.boot' version '1.5.8.RELEASE'
     id 'application'
     id 'com.github.hierynomus.license' version '0.14.0'
+    id 'com.moowork.node' version '1.2.0'
 }
 
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
@@ -42,8 +43,10 @@ dependencies {
     compile 'com.blackducksoftware.integration:hub-common:18.3.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    compile 'org.springframework.boot:spring-boot-starter-batch:1.5.4.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-batch'
     compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     runtime 'com.h2database:h2'
@@ -90,6 +93,16 @@ distributions {
         }
     }
 }
+
+task webpack(type: Exec) {
+        inputs.file("package-lock.json")
+        inputs.file("webpack.config.js")
+        inputs.dir("app")
+    
+        outputs.dir("$buildDir/js")
+    
+        commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
+    }
 
 license {
     header = file('HEADER')
