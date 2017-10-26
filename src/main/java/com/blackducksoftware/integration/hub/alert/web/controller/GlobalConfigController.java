@@ -87,6 +87,12 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
         return createResponse(HttpStatus.BAD_REQUEST, globalConfig.getId(), "No configuration with the specified id.");
     }
 
+    @Override
+    public ResponseEntity<String> validateConfig(final GlobalConfigRestModel globalConfig) {
+        // TODO
+        return null;
+    }
+
     private void scheduleCronJobs(final GlobalConfigRestModel globalConfig) {
         if (globalConfig != null) {
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
