@@ -23,6 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailPr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
 
@@ -78,8 +80,10 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     }
 
     @Override
-    public void testMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
-        sendMessage(emailEvent, emailConfigEntity);
+    public String testMessage(final EmailConfigEntity emailConfigEntity) {
+        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
+        sendMessage(new EmailEvent(data), emailConfigEntity);
+        return "Attempted to send message with the given configuration.";
     }
 
     @Override

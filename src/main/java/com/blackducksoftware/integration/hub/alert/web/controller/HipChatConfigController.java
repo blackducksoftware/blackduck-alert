@@ -22,14 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,82 +36,58 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
-    private final HipChatRepository hipChatRepository;
+public class HipChatConfigController extends ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
 
     @Autowired
-    HipChatConfigController(final HipChatRepository hipChatRepository) {
-        this.hipChatRepository = hipChatRepository;
+    public HipChatConfigController(final HipChatRepository repository) {
+        super(repository);
     }
 
     @Override
     @GetMapping(value = "/configuration/hipchat")
     public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        if (id != null) {
-            final HipChatConfigEntity foundEntity = hipChatRepository.findOne(id);
-            if (foundEntity != null) {
-                return Arrays.asList(databaseModelToRestModel(foundEntity));
-            } else {
-                return Collections.emptyList();
-            }
-        }
-        return databaseModelsToRestModels(hipChatRepository.findAll());
+        return super.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigRestModel hipChatModel) {
-        final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
-        if (hipChatEntity.getId() == null || !hipChatRepository.exists(hipChatEntity.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/hipchat");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body(e.getMessage());
-            }
-            final HipChatConfigEntity createdEntity = hipChatRepository.save(hipChatEntity);
-            return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
-        }
-        return ResponseEntity.status(409).body("Invalid id");
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+        return super.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigRestModel hipChatModel) {
-        final HipChatConfigEntity hipChatEntity = restModelToDatabaseModel(hipChatModel);
-        if (hipChatEntity.getId() != null && hipChatRepository.exists(hipChatEntity.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/hipchat");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body("error: " + e.getMessage());
-            }
-            hipChatRepository.save(hipChatEntity);
-            return ResponseEntity.created(uri).build();
-        }
-        return ResponseEntity.badRequest().body("No configuration with id " + hipChatEntity.getId());
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+        return super.putConfig(hipChatConfig);
     }
 
     @Override
     @DeleteMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigRestModel hipChatModel) {
-        if (hipChatModel.getId() != null && hipChatRepository.exists(hipChatModel.getId())) {
-            hipChatRepository.delete(hipChatModel.getId());
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("No configuration with id " + hipChatModel.getId());
+    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+        return super.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatModel", required = true) @RequestBody final HipChatConfigRestModel hipChatModel) {
-        // TODO implement method for testing the configuration
-        return ResponseEntity.notFound().build();
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+        final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) repository);
+        final String responseMessage = channel.testMessage(restModelToDatabaseModel(hipChatConfig));
+        try {
+            final int intResponse = Integer.parseInt(responseMessage);
+            final HttpStatus status = HttpStatus.valueOf(intResponse);
+            if (status != null) {
+                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send a test message.");
+            }
+        } catch (final IllegalArgumentException e) {
+            return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());
+        }
+        return super.createResponse(HttpStatus.BAD_REQUEST, hipChatConfig.getId(), "Failure.");
     }
 
     @Override
@@ -128,12 +100,4 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
         return new HipChatConfigRestModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
     }
 
-    @Override
-    public List<HipChatConfigRestModel> databaseModelsToRestModels(final List<HipChatConfigEntity> databaseModels) {
-        final List<HipChatConfigRestModel> restModels = new ArrayList<>();
-        for (final HipChatConfigEntity databaseModel : databaseModels) {
-            restModels.add(new HipChatConfigRestModel(databaseModel.getId(), databaseModel.getApiKey(), databaseModel.getRoomId(), databaseModel.getNotify(), databaseModel.getColor()));
-        }
-        return restModels;
-    }
 }

@@ -22,15 +22,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,15 +45,14 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalR
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
-    private final GlobalRepository globalRepository;
+public class GlobalConfigController extends ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final AccumulatorConfig accumulatorConfig;
     private final RealTimeDigestBatchConfig realTimeDigestBatchConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @Autowired
     GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final RealTimeDigestBatchConfig realTimeDigestBatchConfig, final DailyDigestBatchConfig dailyDigestBatchConfig) {
-        this.globalRepository = globalRepository;
+        super(globalRepository);
         this.accumulatorConfig = accumulatorConfig;
         this.realTimeDigestBatchConfig = realTimeDigestBatchConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -66,55 +61,31 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     @Override
     @GetMapping(value = "/configuration/global")
     public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        if (id != null) {
-            final GlobalConfigEntity foundEntity = globalRepository.findOne(id);
-            if (foundEntity != null) {
-                return Arrays.asList(databaseModelToRestModel(foundEntity));
-            } else {
-                return Collections.emptyList();
-            }
-        }
-        return databaseModelsToRestModels(globalRepository.findAll());
+        return super.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        final List<GlobalConfigEntity> configs = globalRepository.findAll();
-        if (configs != null && !configs.isEmpty()) {
-            for (final GlobalConfigEntity config : configs) {
-                globalRepository.delete(config);
-            }
+        if (globalConfig.getId() == null || !repository.exists(globalConfig.getId())) {
+            final GlobalConfigEntity createdEntity = repository.save(restModelToDatabaseModel(globalConfig));
+            scheduleCronJobs(globalConfig);
+            return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
         }
-        URI uri;
-        try {
-            uri = new URI("/configuration/global");
-        } catch (final URISyntaxException e) {
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
-        final GlobalConfigEntity createdEntity = globalRepository.save(restModelToDatabaseModel(globalConfig));
-        scheduleCronJobs(globalConfig);
-        return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
+        return createResponse(HttpStatus.CONFLICT, globalConfig.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        final List<GlobalConfigEntity> configs = globalRepository.findAll();
-        if (configs != null && !configs.isEmpty()) {
-            for (final GlobalConfigEntity config : configs) {
-                globalRepository.delete(config);
-            }
+        if (globalConfig.getId() != null && repository.exists(globalConfig.getId())) {
+            final GlobalConfigEntity modelEntity = restModelToDatabaseModel(globalConfig);
+            modelEntity.setId(globalConfig.getId());
+            final GlobalConfigEntity updatedEntity = repository.save(modelEntity);
+            scheduleCronJobs(globalConfig);
+            return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
         }
-        URI uri;
-        try {
-            uri = new URI("/configuration/global");
-        } catch (final URISyntaxException e) {
-            return ResponseEntity.status(500).body("error: " + e.getMessage());
-        }
-        globalRepository.save(restModelToDatabaseModel(globalConfig));
-        scheduleCronJobs(globalConfig);
-        return ResponseEntity.created(uri).build();
+        return createResponse(HttpStatus.BAD_REQUEST, globalConfig.getId(), "No configuration with the specified id.");
     }
 
     private void scheduleCronJobs(final GlobalConfigRestModel globalConfig) {
@@ -134,11 +105,7 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     @Override
     @DeleteMapping(value = "/configuration/global")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        if (globalConfig.getId() != null && globalRepository.exists(globalConfig.getId())) {
-            globalRepository.delete(globalConfig.getId());
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("No configuration with id " + globalConfig.getId());
+        return super.deleteConfig(globalConfig);
     }
 
     @Override
@@ -161,15 +128,6 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
                 databaseModel.getHubProxyPort(), databaseModel.getHubProxyUsername(), databaseModel.getHubProxyPassword(), databaseModel.getHubAlwaysTrustCertificate(), databaseModel.getAccumulatorCron(), databaseModel.getDailyDigestCron(),
                 databaseModel.getRealTimeDigestCron());
         return restModel;
-    }
-
-    @Override
-    public List<GlobalConfigRestModel> databaseModelsToRestModels(final List<GlobalConfigEntity> databaseModels) {
-        final List<GlobalConfigRestModel> restModels = new ArrayList<>();
-        for (final GlobalConfigEntity databaseModel : databaseModels) {
-            restModels.add(databaseModelToRestModel(databaseModel));
-        }
-        return restModels;
     }
 
 }

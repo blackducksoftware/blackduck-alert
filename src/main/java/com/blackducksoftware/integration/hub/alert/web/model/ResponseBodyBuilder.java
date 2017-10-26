@@ -20,46 +20,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import java.io.Serializable;
+import com.google.gson.JsonObject;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+public class ResponseBodyBuilder {
+    JsonObject map;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-@MappedSuperclass
-public abstract class DatabaseEntity implements Serializable {
-    private static final long serialVersionUID = 1728368541964985729L;
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
-
-    protected DatabaseEntity() {
-
+    public ResponseBodyBuilder(final Long id, final String message) {
+        this.map = new JsonObject();
+        map.addProperty("id", id);
+        map.addProperty("message", message);
     }
 
-    public Long getId() {
-        return id;
+    public ResponseBodyBuilder put(final String key, final Boolean value) {
+        map.addProperty(key, value);
+        return this;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
+    public ResponseBodyBuilder put(final String key, final Number value) {
+        map.addProperty(key, value);
+        return this;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public ResponseBodyBuilder put(final String key, final String value) {
+        map.addProperty(key, value);
+        return this;
+    }
+
+    public String build() {
+        return toString();
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+    public String toString() {
+        return map.toString();
     }
 }
