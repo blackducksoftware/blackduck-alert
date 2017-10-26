@@ -24,6 +24,7 @@ package com.blackducksoftware.integration.hub.alert.digest;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -54,8 +55,8 @@ public class DigestNotificationProcessor {
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
         final List<NotificationEntity> processedNotificationList = removalProcessor.process(notificationList);
-        if (notificationList == null) {
-            return new ArrayList<>(0);
+        if (processedNotificationList.isEmpty()) {
+            return Collections.emptyList();
         } else {
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
             final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
