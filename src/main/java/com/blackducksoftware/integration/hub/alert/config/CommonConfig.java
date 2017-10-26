@@ -48,7 +48,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 
 public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> implements Runnable {
-    private final Logger logger = LoggerFactory.getLogger(AccumulatorConfig.class);
+    private final Logger logger = LoggerFactory.getLogger(CommonConfig.class);
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
     protected final SimpleJobLauncher jobLauncher;
