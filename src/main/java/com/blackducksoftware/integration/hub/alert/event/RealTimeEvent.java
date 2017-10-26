@@ -24,13 +24,18 @@ package com.blackducksoftware.integration.hub.alert.event;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 
-public class RealTimeEvent extends AbstractNotificationEvent {
+public class RealTimeEvent extends AbstractEvent {
     public final static String TOPIC_NAME = "REAL_TIME_EVENT";
+    private final List<NotificationEntity> notificationList;
 
-    public RealTimeEvent(final List<NotificationEvent> notificationList) {
-        super(notificationList);
+    public RealTimeEvent(final List<NotificationEntity> notificationList) {
+        this.notificationList = notificationList;
+    }
+
+    public List<NotificationEntity> getNotificationList() {
+        return notificationList;
     }
 
     @Override

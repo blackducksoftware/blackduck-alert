@@ -23,15 +23,34 @@
 package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import javax.annotation.PostConstruct;
 
+import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
+import com.google.gson.Gson;
+
+@Component
 public class ChannelTemplateManager {
     private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
+    private final Gson gson;
+    private final List<AbstractJmsTemplate> templateList;
 
-    public ChannelTemplateManager() {
+    public ChannelTemplateManager(final Gson gson, final List<AbstractJmsTemplate> templateList) {
         jmsTemplateMap = new HashMap<>();
+        this.gson = gson;
+        this.templateList = templateList;
+    }
+
+    @PostConstruct
+    public void init() {
+        templateList.forEach(jmsTemplate -> {
+            addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
+        });
     }
 
     public boolean hasTemplate(final String destination) {
@@ -44,5 +63,26 @@ public class ChannelTemplateManager {
 
     public void addTemplate(final String destination, final AbstractJmsTemplate template) {
         jmsTemplateMap.put(destination, template);
+    }
+
+    public void sendEvents(final List<? extends AbstractEvent> eventList) {
+        if (!eventList.isEmpty()) {
+            eventList.forEach(event -> {
+                sendEvent(event);
+
+            });
+        }
+    }
+
+    public boolean sendEvent(final AbstractEvent event) {
+        final String destination = event.getTopic();
+        if (hasTemplate(destination)) {
+            final String jsonMessage = gson.toJson(event);
+            final AbstractJmsTemplate template = getTemplate(destination);
+            template.convertAndSend(destination, jsonMessage);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

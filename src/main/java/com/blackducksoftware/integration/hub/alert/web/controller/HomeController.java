@@ -20,11 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.accumulator;
+package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public class RealTimeConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -321092107565025868L;
+@Controller
+public class HomeController {
 
+    @RequestMapping("/")
+    public String index() {
+        return "index";
+    }
 }
