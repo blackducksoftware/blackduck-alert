@@ -9,7 +9,7 @@
     "data",
     "react"
   ],
-  "author": "Brian Mandel",
+  "author": "Blackduck Software Integrations",
   "license": "Apache-2.0",
   "homepage": "https://github.com/blackducksoftware/hub-alert.git",
   "dependencies": {
