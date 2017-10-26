@@ -74,11 +74,16 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
 
     public void scheduleJobExecution(final String cron) {
         if (StringUtils.isNotBlank(cron)) {
-            if (future != null) {
-                future.cancel(false);
+            try {
+                final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
+                if (future != null) {
+                    future.cancel(false);
+                }
+                logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
+                future = taskScheduler.schedule(this, cronTrigger);
+            } catch (final IllegalArgumentException e) {
+                logger.error(e.getMessage(), e);
             }
-            logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
-            future = taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
         }
     }
 
