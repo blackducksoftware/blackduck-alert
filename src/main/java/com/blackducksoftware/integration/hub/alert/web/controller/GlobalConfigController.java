@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,15 +89,9 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
 
     private void scheduleCronJobs(final GlobalConfigRestModel globalConfig) {
         if (globalConfig != null) {
-            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
-                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
-                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
-                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
-            }
+            accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
+            dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
         }
     }
 

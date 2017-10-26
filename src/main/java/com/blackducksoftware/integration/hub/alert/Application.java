@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -103,15 +102,9 @@ public class Application {
             logger.info("Real Time Digest Cron Expression: {}", globalConfig.getRealTimeDigestCron());
             logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
 
-            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
-                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
-                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
-                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
-            }
+            accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
+            dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
         } else {
             logger.info("----------------------------------------");
             logger.info("Alert Configuration: No global configuration");

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.config;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -72,10 +73,12 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     }
 
     public void scheduleJobExecution(final String cron) {
-        if (future != null) {
-            future.cancel(false);
+        if (StringUtils.isNotBlank(cron)) {
+            if (future != null) {
+                future.cancel(false);
+            }
+            future = taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
         }
-        future = taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
     }
 
     @Override
