@@ -23,6 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.config;
 
 import java.util.TimeZone;
+import java.util.concurrent.ScheduledFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,8 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     protected final PlatformTransactionManager transactionManager;
     private final TaskScheduler taskScheduler;
 
+    private ScheduledFuture<?> future;
+
     public CommonConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
             final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         this.jobLauncher = jobLauncher;
@@ -69,7 +72,10 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     }
 
     public void scheduleJobExecution(final String cron) {
-        taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
+        if (future != null) {
+            future.cancel(false);
+        }
+        future = taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
     }
 
     @Override

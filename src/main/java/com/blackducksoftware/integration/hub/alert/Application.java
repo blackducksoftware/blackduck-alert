@@ -26,6 +26,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -51,6 +52,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
+import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.RealTimeDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -68,10 +74,29 @@ public class Application {
 
     @Autowired
     private List<AbstractJmsTemplate> templateList;
+    @Autowired
+    private GlobalProperties globalProperties;
+    @Autowired
+    private AccumulatorConfig accumulatorConfig;
+    @Autowired
+    private RealTimeDigestBatchConfig realTimeDigestBatchConfig;
+    @Autowired
+    private DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @PostConstruct
     void init() {
-
+        final GlobalConfigEntity globalConfig = globalProperties.getConfig();
+        if (globalConfig != null) {
+            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
+                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
+                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
+            }
+            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
+                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            }
+        }
     }
 
     public static void main(final String[] args) {

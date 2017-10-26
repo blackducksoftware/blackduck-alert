@@ -93,17 +93,7 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
             return ResponseEntity.status(500).body(e.getMessage());
         }
         final GlobalConfigEntity createdEntity = globalRepository.save(restModelToDatabaseModel(globalConfig));
-        if (globalConfig != null) {
-            if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
-                accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getRealTimeDigestCron())) {
-                realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
-            }
-            if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
-                dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
-            }
-        }
+        scheduleCronJobs(globalConfig);
         return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
     }
 
@@ -123,6 +113,11 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
             return ResponseEntity.status(500).body("error: " + e.getMessage());
         }
         globalRepository.save(restModelToDatabaseModel(globalConfig));
+        scheduleCronJobs(globalConfig);
+        return ResponseEntity.created(uri).build();
+    }
+
+    private void scheduleCronJobs(final GlobalConfigRestModel globalConfig) {
         if (globalConfig != null) {
             if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
                 accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
@@ -134,7 +129,6 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
                 dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
             }
         }
-        return ResponseEntity.created(uri).build();
     }
 
     @Override
