@@ -10,3 +10,4 @@ log/
 src/test/resources/application.properties
 /activemq-data/
 *-lastrun.txt
+node_modules
