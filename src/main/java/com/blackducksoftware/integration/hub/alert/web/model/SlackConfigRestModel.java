@@ -22,7 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-public class SlackConfigRestModel extends ChannelRestModel {
+public class SlackConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -2360827976516988339L;
 
     private String channelName;

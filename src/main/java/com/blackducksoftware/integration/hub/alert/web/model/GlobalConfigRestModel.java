@@ -44,9 +44,8 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     protected GlobalConfigRestModel() {
     }
 
-    public GlobalConfigRestModel(final Long id, final String hubUrl, final Integer hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
+    public GlobalConfigRestModel(final String hubUrl, final Integer hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
             final String hubProxyPassword, final Boolean hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String realTimeDigestCron) {
-        super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;

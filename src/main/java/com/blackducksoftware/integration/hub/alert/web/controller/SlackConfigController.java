@@ -92,6 +92,12 @@ public class SlackConfigController extends ConfigController<SlackConfigEntity, S
     }
 
     @Override
+    public ResponseEntity<String> validateConfig(final SlackConfigRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
     public SlackConfigEntity restModelToDatabaseModel(final SlackConfigRestModel restModel) {
         return new SlackConfigEntity(restModel.getChannelName(), restModel.getUsername(), restModel.getWebhook());
     }
