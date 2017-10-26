@@ -69,7 +69,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
             final D modelEntity = restModelToDatabaseModel(restModel);
             modelEntity.setId(restModel.getId());
             final D updatedEntity = repository.save(modelEntity);
-            return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
+            return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
@@ -77,7 +77,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
     public ResponseEntity<String> deleteConfig(final R restModel) {
         if (restModel.getId() != null && repository.exists(restModel.getId())) {
             repository.delete(restModel.getId());
-            return createResponse(HttpStatus.CREATED, restModel.getId(), "Deleted.");
+            return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
