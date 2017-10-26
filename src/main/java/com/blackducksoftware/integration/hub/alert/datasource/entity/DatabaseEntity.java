@@ -34,15 +34,12 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @MappedSuperclass
 public abstract class DatabaseEntity implements Serializable {
+    private static final long serialVersionUID = 1728368541964985729L;
 
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
-
-    public DatabaseEntity(final Long id) {
-        this.id = id;
-    }
 
     protected DatabaseEntity() {
 
@@ -50,6 +47,10 @@ public abstract class DatabaseEntity implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

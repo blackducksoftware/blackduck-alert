@@ -82,7 +82,7 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
             final int intResponse = Integer.parseInt(responseMessage);
             final HttpStatus status = HttpStatus.valueOf(intResponse);
             if (status != null) {
-                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send test message.");
+                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send a test message.");
             }
         } catch (final IllegalArgumentException e) {
             return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());
@@ -92,7 +92,7 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
 
     @Override
     public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigRestModel model) {
-        return new HipChatConfigEntity(model.getId(), model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
+        return new HipChatConfigEntity(model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
     }
 
     @Override

@@ -61,12 +61,14 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Chann
             final D createdEntity = repository.save(restModelToDatabaseModel(restModel));
             return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
         }
-        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Invalid id.");
+        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
     public ResponseEntity<String> putConfig(final R restModel) {
         if (restModel.getId() != null && repository.exists(restModel.getId())) {
-            final D updatedEntity = repository.save(restModelToDatabaseModel(restModel));
+            final D modelEntity = restModelToDatabaseModel(restModel);
+            modelEntity.setId(restModel.getId());
+            final D updatedEntity = repository.save(modelEntity);
             return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
@@ -75,7 +77,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Chann
     public ResponseEntity<String> deleteConfig(final R restModel) {
         if (restModel.getId() != null && repository.exists(restModel.getId())) {
             repository.delete(restModel.getId());
-            return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "Deleted.");
+            return createResponse(HttpStatus.CREATED, restModel.getId(), "Deleted.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }

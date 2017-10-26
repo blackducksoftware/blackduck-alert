@@ -83,10 +83,9 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
 
     @Override
     public EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
-        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getId(), restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(),
-                restModel.getMailSmtpConnectionTimeout(), restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(),
-                restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(), restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(),
-                restModel.getEmailSubjectLine());
+        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(), restModel.getMailSmtpConnectionTimeout(),
+                restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(), restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(),
+                restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(), restModel.getEmailSubjectLine());
         return databaseModel;
     }
 
