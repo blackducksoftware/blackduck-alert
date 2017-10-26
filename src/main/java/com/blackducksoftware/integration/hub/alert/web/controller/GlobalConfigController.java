@@ -124,9 +124,9 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
 
     @Override
     public GlobalConfigRestModel databaseModelToRestModel(final GlobalConfigEntity databaseModel) {
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel(databaseModel.getHubUrl(), databaseModel.getHubTimeout(), databaseModel.getHubUsername(), databaseModel.getHubPassword(), databaseModel.getHubProxyHost(),
-                databaseModel.getHubProxyPort(), databaseModel.getHubProxyUsername(), databaseModel.getHubProxyPassword(), databaseModel.getHubAlwaysTrustCertificate(), databaseModel.getAccumulatorCron(), databaseModel.getDailyDigestCron(),
-                databaseModel.getRealTimeDigestCron());
+        final GlobalConfigRestModel restModel = new GlobalConfigRestModel(databaseModel.getId(), databaseModel.getHubUrl(), databaseModel.getHubTimeout(), databaseModel.getHubUsername(), databaseModel.getHubPassword(),
+                databaseModel.getHubProxyHost(), databaseModel.getHubProxyPort(), databaseModel.getHubProxyUsername(), databaseModel.getHubProxyPassword(), databaseModel.getHubAlwaysTrustCertificate(), databaseModel.getAccumulatorCron(),
+                databaseModel.getDailyDigestCron(), databaseModel.getRealTimeDigestCron());
         return restModel;
     }
 
