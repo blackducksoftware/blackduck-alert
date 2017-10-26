@@ -36,19 +36,20 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.alert.hub.HubServiceWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 public class AccumulatorReader implements ItemReader<NotificationResults> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
 
-    private final HubServiceWrapper hubServiceWrapper;
+    private final GlobalProperties globalProperties;
     private final String lastRunPath;
 
-    public AccumulatorReader(final HubServiceWrapper hubServiceWrapper) {
-        this.hubServiceWrapper = hubServiceWrapper;
+    public AccumulatorReader(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
         lastRunPath = findLastRunFilePath();
     }
 
@@ -66,7 +67,8 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
 
     @Override
     public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (hubServiceWrapper.isConnected()) {
+        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
+        if (hubServicesFactory != null) {
             logger.info("Accumulator Reader Called");
             ZonedDateTime zonedEndDate = ZonedDateTime.now();
             zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
@@ -90,7 +92,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 logger.error("Error creating date range", e);
             }
 
-            final NotificationDataService notificationDataService = hubServiceWrapper.getHubServicesFactory().createNotificationDataService();
+            final NotificationDataService notificationDataService = hubServicesFactory.createNotificationDataService();
             final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
             if (notificationResults.getNotificationContentItems().isEmpty()) {
@@ -99,10 +101,8 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
             }
             logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
             return notificationResults;
-        } else {
-            logger.warn("Not connected to hub when calling Accumulator Reader");
-            return null;
         }
+        return null;
     }
 
 }

@@ -23,6 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.AlertProperties;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
@@ -42,6 +42,8 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMe
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
 
@@ -51,13 +53,13 @@ import freemarker.template.TemplateException;
 public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
-    private final AlertProperties alertProperties;
+    private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
 
     @Autowired
-    public EmailChannel(final AlertProperties alertProperties, final Gson gson, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
-        this.alertProperties = alertProperties;
+        this.globalProperties = globalProperties;
         this.emailRepository = emailRepository;
     }
 
@@ -78,8 +80,10 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     }
 
     @Override
-    public void testMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
-        sendMessage(emailEvent, emailConfigEntity);
+    public String testMessage(final EmailConfigEntity emailConfigEntity) {
+        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
+        sendMessage(new EmailEvent(data), emailConfigEntity);
+        return "Attempted to send message with the given configuration.";
     }
 
     @Override
@@ -93,7 +97,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, emailConfigEntity.getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, alertProperties.getHubUrl());
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, globalProperties.getHubUrl());
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 

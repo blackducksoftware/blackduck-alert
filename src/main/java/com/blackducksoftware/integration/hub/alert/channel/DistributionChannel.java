@@ -35,6 +35,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
 
     public abstract void sendMessage(final E event, final C config);
 
-    public abstract void testMessage(final E event, final C config);
+    public abstract String testMessage(final C config);
 
 }

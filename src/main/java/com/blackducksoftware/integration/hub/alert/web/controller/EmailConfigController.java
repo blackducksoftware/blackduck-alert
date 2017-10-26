@@ -22,14 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,80 +36,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
-    private final EmailRepository emailRepository;
+public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
 
     @Autowired
-    EmailConfigController(final EmailRepository emailRepository) {
-        this.emailRepository = emailRepository;
+    EmailConfigController(final EmailRepository repository) {
+        super(repository);
     }
 
     @Override
     @GetMapping(value = "/configuration/email")
     public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        if (id != null) {
-            final EmailConfigEntity foundEntity = emailRepository.findOne(id);
-            if (foundEntity != null) {
-                return Arrays.asList(databaseModelToRestModel(foundEntity));
-            } else {
-                return Collections.emptyList();
-            }
-        }
-        return databaseModelsToRestModels(emailRepository.findAll());
+        return super.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/email")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        if (emailConfig.getId() == null || !emailRepository.exists(emailConfig.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/email");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body(e.getMessage());
-            }
-            final EmailConfigEntity createdEntity = emailRepository.save(restModelToDatabaseModel(emailConfig));
-            return ResponseEntity.created(uri).body("\"id\" : " + createdEntity.getId());
-        }
-        return ResponseEntity.status(409).body("Invalid id");
+        return super.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        if (emailConfig.getId() != null && emailRepository.exists(emailConfig.getId())) {
-            URI uri;
-            try {
-                uri = new URI("/configuration/email");
-            } catch (final URISyntaxException e) {
-                return ResponseEntity.status(500).body("error: " + e.getMessage());
-            }
-            emailRepository.save(restModelToDatabaseModel(emailConfig));
-            return ResponseEntity.created(uri).build();
-        }
-        return ResponseEntity.badRequest().body("No configuration with id " + emailConfig.getId());
+        return super.putConfig(emailConfig);
+    }
+
+    @Override
+    public ResponseEntity<String> validateConfig(final EmailConfigRestModel emailConfig) {
+        // TODO
+        return null;
     }
 
     @Override
     @DeleteMapping(value = "/configuration/email")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        if (emailConfig.getId() != null && emailRepository.exists(emailConfig.getId())) {
-            emailRepository.delete(emailConfig.getId());
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.badRequest().body("No configuration with id " + emailConfig.getId());
+        return super.deleteConfig(emailConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/email/test")
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) {
-        // TODO implement method for testing the configuration
-        return ResponseEntity.notFound().build();
+        final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) repository);
+        final String responseMessage = channel.testMessage(restModelToDatabaseModel(emailConfig));
+        return super.createResponse(HttpStatus.OK, emailConfig.getId(), responseMessage);
     }
 
     @Override
@@ -131,15 +102,6 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
                 databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
                 databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());
         return restModel;
-    }
-
-    @Override
-    public List<EmailConfigRestModel> databaseModelsToRestModels(final List<EmailConfigEntity> databaseModels) {
-        final List<EmailConfigRestModel> restModels = new ArrayList<>();
-        for (final EmailConfigEntity databaseModel : databaseModels) {
-            restModels.add(databaseModelToRestModel(databaseModel));
-        }
-        return restModels;
     }
 
 }

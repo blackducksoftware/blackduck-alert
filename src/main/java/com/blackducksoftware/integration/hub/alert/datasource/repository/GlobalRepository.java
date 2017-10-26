@@ -22,11 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
+import javax.transaction.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SettingEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 
 @Transactional
-public interface SettingRepository extends JpaRepository<SettingEntity, Long> {
+public interface GlobalRepository extends JpaRepository<GlobalConfigEntity, Long> {
+
 }
