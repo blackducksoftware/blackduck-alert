@@ -23,6 +23,9 @@
 package com.blackducksoftware.integration.hub.alert.digest;
 
 public class DailyDigestItemProcessor extends DigestItemProcessor {
+    public DailyDigestItemProcessor(final DigestNotificationProcessor notificationProcessor) {
+        super(notificationProcessor);
+    }
 
     @Override
     public DigestTypeEnum getDigestType() {
