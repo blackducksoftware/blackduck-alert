@@ -85,8 +85,24 @@ public class Application {
 
     @PostConstruct
     void init() {
+        logger.info("Hub Alert Starting...");
         final GlobalConfigEntity globalConfig = globalProperties.getConfig();
         if (globalConfig != null) {
+            logger.info("----------------------------------------");
+            logger.info("Alert Configuration: ");
+            logger.info("Hub URL:            {}", globalConfig.getHubUrl());
+            logger.info("Hub Username:       {}", globalConfig.getHubUsername());
+            logger.info("Hub Password:       **********");
+            logger.info("Hub Timeout:        {}", globalConfig.getHubTimeout());
+            logger.info("Hub Proxy Host:     {}", globalConfig.getHubProxyHost());
+            logger.info("Hub Proxy Port:     {}", globalConfig.getHubProxyPort());
+            logger.info("Hub Proxy User:     {}", globalConfig.getHubProxyUsername());
+            logger.info("Hub Proxy Password: **********");
+            logger.info("----------------------------------------");
+            logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
+            logger.info("Real Time Digest Cron Expression: {}", globalConfig.getRealTimeDigestCron());
+            logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
+
             if (StringUtils.isNotBlank(globalConfig.getAccumulatorCron())) {
                 accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             }
@@ -96,6 +112,10 @@ public class Application {
             if (StringUtils.isNotBlank(globalConfig.getDailyDigestCron())) {
                 dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
             }
+        } else {
+            logger.info("----------------------------------------");
+            logger.info("Alert Configuration: No global configuration");
+            logger.info("----------------------------------------");
         }
     }
 
