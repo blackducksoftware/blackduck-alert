@@ -36,7 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 
 public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(DigestItemReader.class);
     private final NotificationRepository notificationRepository;
     private boolean hasRead;
     private final String readerName;

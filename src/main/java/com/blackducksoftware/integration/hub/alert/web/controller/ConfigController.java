@@ -33,10 +33,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.web.model.ChannelRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
-public abstract class ConfigController<D extends DatabaseEntity, R extends ChannelRestModel> {
+public abstract class ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
     protected final JpaRepository<D, Long> repository;
 
     @Autowired
@@ -58,24 +58,36 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Chann
 
     public ResponseEntity<String> postConfig(final R restModel) {
         if (restModel.getId() == null || !repository.exists(restModel.getId())) {
-            final D createdEntity = repository.save(restModelToDatabaseModel(restModel));
-            return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+            ResponseEntity<String> response = validateConfig(restModel);
+            if (response == null) {
+                final D createdEntity = repository.save(restModelToDatabaseModel(restModel));
+                response = createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+            }
+            return response;
         }
-        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Invalid id.");
+        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
     public ResponseEntity<String> putConfig(final R restModel) {
         if (restModel.getId() != null && repository.exists(restModel.getId())) {
-            final D updatedEntity = repository.save(restModelToDatabaseModel(restModel));
-            return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
+            final D modelEntity = restModelToDatabaseModel(restModel);
+            modelEntity.setId(restModel.getId());
+            ResponseEntity<String> response = validateConfig(restModel);
+            if (response == null) {
+                final D updatedEntity = repository.save(modelEntity);
+                response = createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated.");
+            }
+            return response;
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
+    public abstract ResponseEntity<String> validateConfig(R restModel);
+
     public ResponseEntity<String> deleteConfig(final R restModel) {
         if (restModel.getId() != null && repository.exists(restModel.getId())) {
             repository.delete(restModel.getId());
-            return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "Deleted.");
+            return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted.");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }

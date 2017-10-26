@@ -20,28 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.io.Serializable;
-
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-@MappedSuperclass
-public abstract class DatabaseEntity implements Serializable {
-    private static final long serialVersionUID = 1728368541964985729L;
+public abstract class ConfigRestModel implements Serializable {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
     private Long id;
 
-    protected DatabaseEntity() {
+    protected ConfigRestModel() {
 
     }
 

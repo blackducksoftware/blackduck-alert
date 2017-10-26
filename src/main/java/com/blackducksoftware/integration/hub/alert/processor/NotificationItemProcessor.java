@@ -41,6 +41,10 @@ import com.blackducksoftware.integration.hub.service.HubResponseService;
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
     public NotificationItemProcessor(final HubResponseService hubResponseService, final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
+        init(hubResponseService, vulnerabilityRequestService, metaService);
+    }
+
+    public void init(final HubResponseService hubResponseService, final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
         final MapProcessorCache policyCache = new MapProcessorCache();
         final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(hubResponseService, vulnerabilityRequestService, metaService);
         getCacheList().add(policyCache);

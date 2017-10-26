@@ -68,6 +68,12 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     }
 
     @Override
+    public ResponseEntity<String> validateConfig(final HipChatConfigRestModel hipChatConfig) {
+        // TODO
+        return null;
+    }
+
+    @Override
     @DeleteMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return super.deleteConfig(hipChatConfig);
@@ -82,7 +88,7 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
             final int intResponse = Integer.parseInt(responseMessage);
             final HttpStatus status = HttpStatus.valueOf(intResponse);
             if (status != null) {
-                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send test message.");
+                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send a test message.");
             }
         } catch (final IllegalArgumentException e) {
             return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());

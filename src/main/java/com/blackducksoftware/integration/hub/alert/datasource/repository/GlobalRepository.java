@@ -20,35 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.io.Serializable;
+import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public abstract class ChannelRestModel implements Serializable {
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 
-    private Long id;
+@Transactional
+public interface GlobalRepository extends JpaRepository<GlobalConfigEntity, Long> {
 
-    public ChannelRestModel() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
 }
