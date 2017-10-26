@@ -53,24 +53,12 @@ public class SlackConfigEntity extends DatabaseEntity {
         return channelName;
     }
 
-    public void setChannelName(final String channelName) {
-        this.channelName = channelName;
-    }
-
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(final String username) {
-        this.username = username;
-    }
-
     public String getWebhook() {
         return webhook;
-    }
-
-    public void setWebhook(final String webhook) {
-        this.webhook = webhook;
     }
 
 }
