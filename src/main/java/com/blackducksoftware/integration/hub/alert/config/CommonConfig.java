@@ -77,6 +77,7 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
             if (future != null) {
                 future.cancel(false);
             }
+            logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
             future = taskScheduler.schedule(this, new CronTrigger(cron, TimeZone.getTimeZone("UTC")));
         }
     }
