@@ -68,6 +68,12 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     }
 
     @Override
+    public ResponseEntity<String> validateConfig(final HipChatConfigRestModel hipChatConfig) {
+        // TODO
+        return null;
+    }
+
+    @Override
     @DeleteMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return super.deleteConfig(hipChatConfig);

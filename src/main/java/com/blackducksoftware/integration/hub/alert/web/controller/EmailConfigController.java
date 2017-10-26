@@ -68,6 +68,12 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     }
 
     @Override
+    public ResponseEntity<String> validateConfig(final EmailConfigRestModel emailConfig) {
+        // TODO
+        return null;
+    }
+
+    @Override
     @DeleteMapping(value = "/configuration/email")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         return super.deleteConfig(emailConfig);

@@ -25,8 +25,8 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class EmailConfigRestModel extends ChannelRestModel {
-    private static final long serialVersionUID = -1943548833831613475L;
+public class EmailConfigRestModel extends ConfigRestModel {
+    private static final long serialVersionUID = 9172607945030111585L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     private String mailSmtpHost;
