@@ -22,7 +22,7 @@ public class SlackChannelTestIT {
     @Test
     public void sendMessageTestIT() {
         final Gson gson = new Gson();
-        final SlackChannel slackChannel = new SlackChannel(gson);
+        final SlackChannel slackChannel = new SlackChannel(gson, null);
         final SlackConfigEntity config = new SlackConfigEntity("#alert", "webhookbot", "https://hooks.slack.com/services/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");
         final String actual = slackChannel.testMessage(config);
         final String expected = "200";

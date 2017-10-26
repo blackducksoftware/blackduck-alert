@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +37,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
 @RestController
@@ -72,8 +75,20 @@ public class SlackConfigController extends ConfigController<SlackConfigEntity, S
     }
 
     @Override
-    public ResponseEntity<String> testConfig(final SlackConfigRestModel restModel) {
-        return null;
+    @PostMapping(value = "/configuration/slack/test")
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
+        final SlackChannel channel = new SlackChannel(null, (SlackRepository) repository);
+        final String responseMessage = channel.testMessage(restModelToDatabaseModel(slackConfig));
+        try {
+            final int intResponse = Integer.parseInt(responseMessage);
+            final HttpStatus status = HttpStatus.valueOf(intResponse);
+            if (status != null) {
+                return super.createResponse(status, slackConfig.getId(), "Attempting to send test message.");
+            }
+        } catch (final IllegalArgumentException e) {
+            return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, slackConfig.getId(), e.getMessage());
+        }
+        return super.createResponse(HttpStatus.BAD_REQUEST, slackConfig.getId(), "Failure.");
     }
 
     @Override

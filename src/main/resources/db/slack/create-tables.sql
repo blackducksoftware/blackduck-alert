@@ -3,6 +3,6 @@
 CREATE TABLE slack_config (
     id INTEGER PRIMARY KEY,
     channel_name VARCHAR,
-    username INTEGER,
+    username VARCHAR,
     webhook VARCHAR
 );
