@@ -79,7 +79,7 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServicesFactory createHubServicesFactoryAndLogErrors(final Logger logger) throws EncryptionException {
+    public HubServicesFactory createHubServicesFactoryAndLogErrors(final Logger logger) {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         try {
             return createHubServicesFactory(intLogger);
