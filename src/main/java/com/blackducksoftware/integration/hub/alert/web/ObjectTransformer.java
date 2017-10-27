@@ -14,7 +14,10 @@ package com.blackducksoftware.integration.hub.alert.web;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -36,13 +39,35 @@ public class ObjectTransformer {
         if (null != object && newClass != null) {
             try {
                 final T newClassObject = newClass.newInstance();
-                for (final Field field : object.getClass().getDeclaredFields()) {
+
+                final List<Field> fields = new ArrayList<>();
+                fields.addAll(Arrays.asList(object.getClass().getDeclaredFields()));
+                if (object.getClass().getSuperclass() != null) {
+                    fields.addAll(Arrays.asList(object.getClass().getSuperclass().getDeclaredFields()));
+                }
+
+                final Map<String, Field> newFieldMap = new HashMap<>();
+                for (final Field field : newClassObject.getClass().getDeclaredFields()) {
+                    newFieldMap.put(field.getName(), field);
+                }
+                if (object.getClass().getSuperclass() != null) {
+                    for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
+                        newFieldMap.put(field.getName(), field);
+                    }
+                }
+                for (final Field field : fields) {
                     if (Modifier.isStatic(field.getModifiers())) {
                         continue;
                     }
                     field.setAccessible(true);
                     final String fieldName = field.getName();
-                    final Field newField = newClassObject.getClass().getDeclaredField(fieldName);
+                    if (fieldName.equalsIgnoreCase("id")) {
+                        System.out.println("");
+                    }
+                    final Field newField = newFieldMap.get(fieldName);
+                    if (newField == null) {
+                        throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClass.getSimpleName());
+                    }
                     newField.setAccessible(true);
                     if (String.class == field.getType()) {
                         final String oldField = (String) field.get(object);
@@ -94,7 +119,7 @@ public class ObjectTransformer {
                     }
                 }
                 return newClassObject;
-            } catch (IllegalAccessException | InstantiationException | NoSuchFieldException | SecurityException e) {
+            } catch (IllegalAccessException | InstantiationException | SecurityException | NoSuchFieldException e) {
                 throw new IntegrationException(String.format("Could not transform object %s to %s: %s", object.getClass().getSimpleName(), newClass.getSimpleName(), e.toString()));
             }
         }

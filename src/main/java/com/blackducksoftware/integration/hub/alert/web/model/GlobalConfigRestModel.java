@@ -39,13 +39,12 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     private String hubAlwaysTrustCertificate;
     private String accumulatorCron;
     private String dailyDigestCron;
-    private String realTimeDigestCron;
 
     public GlobalConfigRestModel() {
     }
 
     public GlobalConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String realTimeDigestCron) {
+            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron) {
         super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
@@ -58,7 +57,6 @@ public class GlobalConfigRestModel extends ConfigRestModel {
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
-        this.realTimeDigestCron = realTimeDigestCron;
     }
 
     public static long getSerialversionuid() {
@@ -107,10 +105,6 @@ public class GlobalConfigRestModel extends ConfigRestModel {
 
     public String getDailyDigestCron() {
         return dailyDigestCron;
-    }
-
-    public String getRealTimeDigestCron() {
-        return realTimeDigestCron;
     }
 
     @Override

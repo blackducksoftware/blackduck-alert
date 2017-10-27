@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import com.blackducksoftware.integration.hub.alert.TestAlertProperties;
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
@@ -48,10 +48,10 @@ public class EmailChannelTest {
         final Properties testProperties = new Properties();
         testProperties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
 
-        final TestAlertProperties alertProperties = new TestAlertProperties(null);
-        alertProperties.setHubUrl(testProperties.getProperty("blackduck.hub.url"));
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(null);
+        globalProperties.setHubUrl(testProperties.getProperty("blackduck.hub.url"));
         final Gson gson = new Gson();
-        final EmailChannel emailChannel = new EmailChannel(alertProperties, gson, null);
+        final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null);
         final EmailEvent event = new EmailEvent(projectData);
 
         final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(testProperties.getProperty("mail.smtp.host"), null, null, null, null, null, testProperties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
