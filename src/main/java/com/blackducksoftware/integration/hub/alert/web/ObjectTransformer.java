@@ -61,9 +61,6 @@ public class ObjectTransformer {
                     }
                     field.setAccessible(true);
                     final String fieldName = field.getName();
-                    if (fieldName.equalsIgnoreCase("id")) {
-                        System.out.println("");
-                    }
                     final Field newField = newFieldMap.get(fieldName);
                     if (newField == null) {
                         throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClass.getSimpleName());
