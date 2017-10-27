@@ -47,7 +47,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
     public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException {
         if (!configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
-            if (!validationResults.isEmpty()) {
+            if (validationResults.isEmpty()) {
                 configActions.customTriggers(restModel);
                 final D updatedEntity = configActions.saveConfig(restModel);
                 return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
@@ -63,7 +63,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
     public ResponseEntity<String> putConfig(final R restModel) throws IntegrationException {
         if (configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
-            if (!validationResults.isEmpty()) {
+            if (validationResults.isEmpty()) {
                 configActions.customTriggers(restModel);
                 final D updatedEntity = configActions.saveConfig(restModel);
                 return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated");

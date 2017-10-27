@@ -11,6 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
     @Override
     public Map<String, String> validateConfig(final EmailConfigRestModel restModel) {
         // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyMap();
     }
 
 }
