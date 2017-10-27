@@ -66,7 +66,7 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
         final Long id = objectTransformer.stringToLong(globalConfig.getId());
-        if (id != null && repository.exists(id)) {
+        if (id == null || !repository.exists(id)) {
             ResponseEntity<String> response = validateConfig(globalConfig);
             if (response == null) {
                 final GlobalConfigEntity createdEntity = repository.save(objectTransformer.tranformObject(globalConfig, this.databaseEntityClass));

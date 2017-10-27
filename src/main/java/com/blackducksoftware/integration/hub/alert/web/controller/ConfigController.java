@@ -63,7 +63,7 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
 
     public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException {
         final Long id = objectTransformer.stringToLong(restModel.getId());
-        if (id != null && repository.exists(id)) {
+        if (id == null || !repository.exists(id)) {
             ResponseEntity<String> response = validateConfig(restModel);
             if (response == null) {
                 final D createdEntity = repository.save(objectTransformer.tranformObject(restModel, databaseEntityClass));
