@@ -35,6 +35,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
@@ -45,13 +46,15 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
+    private final ChannelTemplateManager channelTemplateManager;
     private final GlobalProperties globalProperties;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
-            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler) {
+            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
+        this.channelTemplateManager = channelTemplateManager;
     }
 
     @Override
@@ -66,7 +69,7 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Override
     public AccumulatorWriter writer() {
-        return new AccumulatorWriter(notificationRepository);
+        return new AccumulatorWriter(notificationRepository, channelTemplateManager);
     }
 
     @Override

@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.hub.alert.config.RealTimeDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -48,15 +47,12 @@ import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestMod
 @RestController
 public class GlobalConfigController extends ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final AccumulatorConfig accumulatorConfig;
-    private final RealTimeDigestBatchConfig realTimeDigestBatchConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @Autowired
-    GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final RealTimeDigestBatchConfig realTimeDigestBatchConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final ObjectTransformer objectTransformer) {
+    GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final ObjectTransformer objectTransformer) {
         super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
-        this.realTimeDigestBatchConfig = realTimeDigestBatchConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
     }
 
@@ -109,7 +105,6 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
     private void scheduleCronJobs(final GlobalConfigRestModel globalConfig) {
         if (globalConfig != null) {
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
         }
     }

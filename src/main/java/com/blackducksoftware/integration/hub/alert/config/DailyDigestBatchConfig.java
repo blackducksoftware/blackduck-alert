@@ -41,8 +41,8 @@ import com.blackducksoftware.integration.hub.alert.digest.DailyDigestItemProcess
 import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
+import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.google.gson.Gson;
 
 @Component
 public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
@@ -50,14 +50,15 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
     private final ChannelTemplateManager channelTemplateManager;
-    private final Gson gson;
+    private final DigestNotificationProcessor notificationProcessor;
 
     @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final Gson gson) {
+            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
+            final DigestNotificationProcessor notificationProcessor) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;
-        this.gson = gson;
+        this.notificationProcessor = notificationProcessor;
     }
 
     @Override
@@ -73,12 +74,12 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public DigestItemWriter writer() {
-        return new DigestItemWriter(channelTemplateManager, gson);
+        return new DigestItemWriter(channelTemplateManager);
     }
 
     @Override
     public DigestItemProcessor processor() {
-        return new DailyDigestItemProcessor();
+        return new DailyDigestItemProcessor(notificationProcessor);
     }
 
     @Override

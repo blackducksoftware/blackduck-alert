@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -50,10 +48,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.hub.alert.config.RealTimeDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -72,13 +68,9 @@ public class Application {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
-    private List<AbstractJmsTemplate> templateList;
-    @Autowired
     private GlobalProperties globalProperties;
     @Autowired
     private AccumulatorConfig accumulatorConfig;
-    @Autowired
-    private RealTimeDigestBatchConfig realTimeDigestBatchConfig;
     @Autowired
     private DailyDigestBatchConfig dailyDigestBatchConfig;
 
@@ -103,7 +95,6 @@ public class Application {
             logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
 
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            realTimeDigestBatchConfig.scheduleJobExecution(globalConfig.getRealTimeDigestCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
         } else {
             logger.info("----------------------------------------");
@@ -155,14 +146,4 @@ public class Application {
     public Gson gson() {
         return new GsonBuilder().setDateFormat(RestConnection.JSON_DATE_FORMAT).create();
     }
-
-    @Bean
-    public ChannelTemplateManager channelTemplateManager() {
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager();
-        templateList.forEach(jmsTemplate -> {
-            channelTemplateManager.addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
-        });
-        return channelTemplateManager;
-    }
-
 }
