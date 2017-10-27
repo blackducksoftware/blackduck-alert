@@ -48,14 +48,14 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         if (id != null) {
             final D foundEntity = repository.findOne(id);
             if (foundEntity != null) {
-                final R restModel = objectTransformer.tranformObject(foundEntity, configRestModelClass);
+                final R restModel = objectTransformer.transformObject(foundEntity, configRestModelClass);
                 if (restModel != null) {
                     return Arrays.asList(restModel);
                 }
             }
             return Collections.emptyList();
         }
-        final List<R> restModels = objectTransformer.tranformObjects(repository.findAll(), configRestModelClass);
+        final List<R> restModels = objectTransformer.transformObjects(repository.findAll(), configRestModelClass);
         if (restModels != null) {
             return restModels;
         }
@@ -73,7 +73,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public D saveConfig(final R restModel) throws IntegrationException {
         if (restModel != null) {
             try {
-                D createdEntity = objectTransformer.tranformObject(restModel, databaseEntityClass);
+                D createdEntity = objectTransformer.transformObject(restModel, databaseEntityClass);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                 }

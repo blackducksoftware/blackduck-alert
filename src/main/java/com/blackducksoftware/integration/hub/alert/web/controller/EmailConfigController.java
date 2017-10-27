@@ -85,7 +85,7 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) throws IntegrationException {
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.tranformObject(emailConfig, this.databaseEntityClass));
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, this.databaseEntityClass));
         return super.createResponse(HttpStatus.OK, id, responseMessage);
     }
 

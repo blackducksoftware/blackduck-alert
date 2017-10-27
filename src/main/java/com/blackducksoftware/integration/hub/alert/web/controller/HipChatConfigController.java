@@ -84,7 +84,7 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
         final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.tranformObject(hipChatConfig, this.databaseEntityClass));
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, this.databaseEntityClass));
         final Long id = configActions.objectTransformer.stringToLong(hipChatConfig.getId());
         try {
             final int intResponse = Integer.parseInt(responseMessage);

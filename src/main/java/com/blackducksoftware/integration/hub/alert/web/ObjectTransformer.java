@@ -26,16 +26,16 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Component
 public class ObjectTransformer {
 
-    public <T> List<T> tranformObjects(final List<?> objects, final Class<T> newClass) throws IntegrationException {
+    public <T> List<T> transformObjects(final List<?> objects, final Class<T> newClass) throws IntegrationException {
         final List<T> newList = new ArrayList<>();
         for (final Object object : objects) {
-            final T newObject = tranformObject(object, newClass);
+            final T newObject = transformObject(object, newClass);
             newList.add(newObject);
         }
         return newList;
     }
 
-    public <T> T tranformObject(final Object object, final Class<T> newClass) throws IntegrationException {
+    public <T> T transformObject(final Object object, final Class<T> newClass) throws IntegrationException {
         if (null != object && newClass != null) {
             try {
                 final T newClassObject = newClass.newInstance();
