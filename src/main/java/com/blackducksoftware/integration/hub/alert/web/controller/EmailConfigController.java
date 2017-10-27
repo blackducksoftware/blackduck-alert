@@ -36,34 +36,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
 public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
 
     @Autowired
-    EmailConfigController(final EmailRepository repository) {
-        super(repository);
+    EmailConfigController(final EmailRepository repository, final ObjectTransformer objectTransformer) {
+        super(EmailConfigEntity.class, EmailConfigRestModel.class, repository, objectTransformer);
     }
 
     @Override
     @GetMapping(value = "/configuration/email")
-    public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
         return super.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
         return super.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
         return super.putConfig(emailConfig);
     }
 
@@ -81,27 +83,11 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) throws IntegrationException {
+        final Long id = objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) repository);
-        final String responseMessage = channel.testMessage(restModelToDatabaseModel(emailConfig));
-        return super.createResponse(HttpStatus.OK, emailConfig.getId(), responseMessage);
-    }
-
-    @Override
-    public EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
-        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(), restModel.getMailSmtpConnectionTimeout(),
-                restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(), restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(),
-                restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(), restModel.getEmailSubjectLine());
-        return databaseModel;
-    }
-
-    @Override
-    public EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
-        final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getId(), databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
-                databaseModel.getMailSmtpConnectionTimeout(), databaseModel.getMailSmtpTimeout(), databaseModel.getMailSmtpFrom(), databaseModel.getMailSmtpLocalhost(), databaseModel.getMailSmtpEhlo(), databaseModel.getMailSmtpAuth(),
-                databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
-                databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());
-        return restModel;
+        final String responseMessage = channel.testMessage(objectTransformer.tranformObject(emailConfig, this.databaseEntityClass));
+        return super.createResponse(HttpStatus.OK, id, responseMessage);
     }
 
 }

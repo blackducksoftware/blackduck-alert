@@ -29,14 +29,14 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
 
     private String hubUrl;
-    private Integer hubTimeout;
+    private String hubTimeout;
     private String hubUsername;
     private String hubPassword;
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
     private String hubProxyPassword;
-    private Boolean hubAlwaysTrustCertificate;
+    private String hubAlwaysTrustCertificate;
     private String accumulatorCron;
     private String dailyDigestCron;
     private String realTimeDigestCron;
@@ -44,8 +44,8 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     protected GlobalConfigRestModel() {
     }
 
-    public GlobalConfigRestModel(final Long id, final String hubUrl, final Integer hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final Boolean hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String realTimeDigestCron) {
+    public GlobalConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
+            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String realTimeDigestCron) {
         super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
@@ -69,7 +69,7 @@ public class GlobalConfigRestModel extends ConfigRestModel {
         return hubUrl;
     }
 
-    public Integer getHubTimeout() {
+    public String getHubTimeout() {
         return hubTimeout;
     }
 
@@ -97,7 +97,7 @@ public class GlobalConfigRestModel extends ConfigRestModel {
         return hubProxyPassword;
     }
 
-    public Boolean getHubAlwaysTrustCertificate() {
+    public String getHubAlwaysTrustCertificate() {
         return hubAlwaysTrustCertificate;
     }
 

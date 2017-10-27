@@ -36,11 +36,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.RealTimeDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
@@ -50,8 +52,9 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
 
     @Autowired
-    GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final RealTimeDigestBatchConfig realTimeDigestBatchConfig, final DailyDigestBatchConfig dailyDigestBatchConfig) {
-        super(globalRepository);
+    GlobalConfigController(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final RealTimeDigestBatchConfig realTimeDigestBatchConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
+            final ObjectTransformer objectTransformer) {
+        super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.realTimeDigestBatchConfig = realTimeDigestBatchConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -59,32 +62,42 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
 
     @Override
     @GetMapping(value = "/configuration/global")
-    public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
         return super.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/global")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        if (globalConfig.getId() == null || !repository.exists(globalConfig.getId())) {
-            final GlobalConfigEntity createdEntity = repository.save(restModelToDatabaseModel(globalConfig));
-            scheduleCronJobs(globalConfig);
-            return createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
+        final Long id = objectTransformer.stringToLong(globalConfig.getId());
+        if (id != null && repository.exists(id)) {
+            ResponseEntity<String> response = validateConfig(globalConfig);
+            if (response == null) {
+                final GlobalConfigEntity createdEntity = repository.save(objectTransformer.tranformObject(globalConfig, this.databaseEntityClass));
+                scheduleCronJobs(globalConfig);
+                response = createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+            }
+            return response;
         }
-        return createResponse(HttpStatus.CONFLICT, globalConfig.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
+        return createResponse(HttpStatus.CONFLICT, id, "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        if (globalConfig.getId() != null && repository.exists(globalConfig.getId())) {
-            final GlobalConfigEntity modelEntity = restModelToDatabaseModel(globalConfig);
-            modelEntity.setId(globalConfig.getId());
-            final GlobalConfigEntity updatedEntity = repository.save(modelEntity);
-            scheduleCronJobs(globalConfig);
-            return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
+        final Long id = objectTransformer.stringToLong(globalConfig.getId());
+        if (id != null && repository.exists(id)) {
+            final GlobalConfigEntity modelEntity = objectTransformer.tranformObject(globalConfig, this.databaseEntityClass);
+            modelEntity.setId(id);
+            ResponseEntity<String> response = validateConfig(globalConfig);
+            if (response == null) {
+                final GlobalConfigEntity updatedEntity = repository.save(modelEntity);
+                scheduleCronJobs(globalConfig);
+                response = createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated.");
+            }
+            return response;
         }
-        return createResponse(HttpStatus.BAD_REQUEST, globalConfig.getId(), "No configuration with the specified id.");
+        return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
     @Override
@@ -109,24 +122,9 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
 
     @Override
     @PostMapping(value = "/configuration/global/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "globalConfig", required = true) final GlobalConfigRestModel globalConfig) {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "globalConfig", required = true) final GlobalConfigRestModel globalConfig) throws IntegrationException {
         // TODO implement method for testing the configuration
         return ResponseEntity.notFound().build();
-    }
-
-    @Override
-    public GlobalConfigEntity restModelToDatabaseModel(final GlobalConfigRestModel restModel) {
-        final GlobalConfigEntity databaseModel = new GlobalConfigEntity(restModel.getHubUrl(), restModel.getHubTimeout(), restModel.getHubUsername(), restModel.getHubPassword(), restModel.getHubProxyHost(), restModel.getHubProxyPort(),
-                restModel.getHubProxyUsername(), restModel.getHubProxyPassword(), restModel.getHubAlwaysTrustCertificate(), restModel.getAccumulatorCron(), restModel.getDailyDigestCron(), restModel.getRealTimeDigestCron());
-        return databaseModel;
-    }
-
-    @Override
-    public GlobalConfigRestModel databaseModelToRestModel(final GlobalConfigEntity databaseModel) {
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel(databaseModel.getId(), databaseModel.getHubUrl(), databaseModel.getHubTimeout(), databaseModel.getHubUsername(), databaseModel.getHubPassword(),
-                databaseModel.getHubProxyHost(), databaseModel.getHubProxyPort(), databaseModel.getHubProxyUsername(), databaseModel.getHubProxyPassword(), databaseModel.getHubAlwaysTrustCertificate(), databaseModel.getAccumulatorCron(),
-                databaseModel.getDailyDigestCron(), databaseModel.getRealTimeDigestCron());
-        return restModel;
     }
 
 }

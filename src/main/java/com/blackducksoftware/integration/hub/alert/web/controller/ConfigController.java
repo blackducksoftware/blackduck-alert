@@ -22,56 +22,63 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
 public abstract class ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+    protected final Class<D> databaseEntityClass;
+    protected final Class<R> configRestModelClass;
     protected final JpaRepository<D, Long> repository;
+    protected final ObjectTransformer objectTransformer;
 
-    @Autowired
-    public ConfigController(final JpaRepository<D, Long> repository) {
+    public ConfigController(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
+        this.databaseEntityClass = databaseEntityClass;
+        this.configRestModelClass = configRestModelClass;
         this.repository = repository;
+        this.objectTransformer = objectTransformer;
     }
 
-    public List<R> getConfig(final Long id) {
+    public List<R> getConfig(final Long id) throws IntegrationException {
         if (id != null) {
             final D foundEntity = repository.findOne(id);
             if (foundEntity != null) {
-                return Arrays.asList(databaseModelToRestModel(foundEntity));
+                return Arrays.asList(objectTransformer.tranformObject(foundEntity, configRestModelClass));
             } else {
                 return Collections.emptyList();
             }
         }
-        return databaseModelsToRestModels(repository.findAll());
+        return objectTransformer.tranformObjects(repository.findAll(), configRestModelClass);
     }
 
-    public ResponseEntity<String> postConfig(final R restModel) {
-        if (restModel.getId() == null || !repository.exists(restModel.getId())) {
+    public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException {
+        final Long id = objectTransformer.stringToLong(restModel.getId());
+        if (id != null && repository.exists(id)) {
             ResponseEntity<String> response = validateConfig(restModel);
             if (response == null) {
-                final D createdEntity = repository.save(restModelToDatabaseModel(restModel));
+                final D createdEntity = repository.save(objectTransformer.tranformObject(restModel, databaseEntityClass));
                 response = createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
             }
             return response;
         }
-        return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
+        return createResponse(HttpStatus.CONFLICT, id, "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final R restModel) {
-        if (restModel.getId() != null && repository.exists(restModel.getId())) {
-            final D modelEntity = restModelToDatabaseModel(restModel);
-            modelEntity.setId(restModel.getId());
+    public ResponseEntity<String> putConfig(final R restModel) throws IntegrationException {
+        final Long id = objectTransformer.stringToLong(restModel.getId());
+        if (id != null && repository.exists(id)) {
+            final D modelEntity = objectTransformer.tranformObject(restModel, databaseEntityClass);
+            modelEntity.setId(id);
             ResponseEntity<String> response = validateConfig(restModel);
             if (response == null) {
                 final D updatedEntity = repository.save(modelEntity);
@@ -79,35 +86,25 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
             }
             return response;
         }
-        return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+        return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
     public abstract ResponseEntity<String> validateConfig(R restModel);
 
     public ResponseEntity<String> deleteConfig(final R restModel) {
-        if (restModel.getId() != null && repository.exists(restModel.getId())) {
-            repository.delete(restModel.getId());
-            return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted.");
+        final Long id = objectTransformer.stringToLong(restModel.getId());
+        if (id != null && repository.exists(id)) {
+            repository.delete(id);
+            return createResponse(HttpStatus.ACCEPTED, id, "Deleted.");
         }
-        return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+        return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
-    public abstract ResponseEntity<String> testConfig(final R restModel);
-
-    public abstract D restModelToDatabaseModel(final R restModel);
-
-    public abstract R databaseModelToRestModel(final D databaseModel);
-
-    public List<R> databaseModelsToRestModels(final List<D> databaseModels) {
-        final List<R> restModels = new ArrayList<>();
-        for (final D databaseModel : databaseModels) {
-            restModels.add(databaseModelToRestModel(databaseModel));
-        }
-        return restModels;
-    }
+    public abstract ResponseEntity<String> testConfig(final R restModel) throws IntegrationException;
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
         final String responseBody = new ResponseBodyBuilder(id, message).build();
         return new ResponseEntity<>(responseBody, status);
     }
+
 }
