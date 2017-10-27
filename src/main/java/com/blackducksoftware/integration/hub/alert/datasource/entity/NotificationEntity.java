@@ -74,7 +74,7 @@ public class NotificationEntity extends DatabaseEntity {
     @OneToMany(cascade = CascadeType.ALL)
     private Collection<VulnerabilityEntity> vulnerabilityList;
 
-    protected NotificationEntity() {
+    public NotificationEntity() {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,

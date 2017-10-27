@@ -41,7 +41,7 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     private String dailyDigestCron;
     private String realTimeDigestCron;
 
-    protected GlobalConfigRestModel() {
+    public GlobalConfigRestModel() {
     }
 
     public GlobalConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,

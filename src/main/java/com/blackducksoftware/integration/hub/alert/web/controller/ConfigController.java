@@ -53,12 +53,18 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
         if (id != null) {
             final D foundEntity = repository.findOne(id);
             if (foundEntity != null) {
-                return Arrays.asList(objectTransformer.tranformObject(foundEntity, configRestModelClass));
-            } else {
-                return Collections.emptyList();
+                final R restModel = objectTransformer.tranformObject(foundEntity, configRestModelClass);
+                if (restModel != null) {
+                    return Arrays.asList(restModel);
+                }
             }
+            return Collections.emptyList();
         }
-        return objectTransformer.tranformObjects(repository.findAll(), configRestModelClass);
+        final List<R> restModels = objectTransformer.tranformObjects(repository.findAll(), configRestModelClass);
+        if (restModels != null) {
+            return restModels;
+        }
+        return Collections.emptyList();
     }
 
     public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException {
@@ -66,8 +72,13 @@ public abstract class ConfigController<D extends DatabaseEntity, R extends Confi
         if (id == null || !repository.exists(id)) {
             ResponseEntity<String> response = validateConfig(restModel);
             if (response == null) {
-                final D createdEntity = repository.save(objectTransformer.tranformObject(restModel, databaseEntityClass));
-                response = createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+                D createdEntity = objectTransformer.tranformObject(restModel, databaseEntityClass);
+                if (createdEntity != null) {
+                    createdEntity = repository.save(createdEntity);
+                    response = createResponse(HttpStatus.CREATED, createdEntity.getId(), "Created.");
+                } else {
+                    response = createResponse(HttpStatus.BAD_REQUEST, null, "Could not create configuration from " + restModel.toString());
+                }
             }
             return response;
         }

@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.web;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,13 @@ public class ObjectTransformer {
             try {
                 final T newClassObject = newClass.newInstance();
                 for (final Field field : object.getClass().getDeclaredFields()) {
-                    final Field newField = newClassObject.getClass().getField(field.getName());
+                    if (Modifier.isStatic(field.getModifiers())) {
+                        continue;
+                    }
+                    field.setAccessible(true);
+                    final String fieldName = field.getName();
+                    final Field newField = newClassObject.getClass().getDeclaredField(fieldName);
+                    newField.setAccessible(true);
                     if (String.class == field.getType()) {
                         final String oldField = (String) field.get(object);
                         if (String.class == newField.getType()) {
@@ -86,8 +93,9 @@ public class ObjectTransformer {
                                 newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
                     }
                 }
+                return newClassObject;
             } catch (IllegalAccessException | InstantiationException | NoSuchFieldException | SecurityException e) {
-                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", object.getClass().getSimpleName(), newClass.getSimpleName(), e.getMessage()));
+                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", object.getClass().getSimpleName(), newClass.getSimpleName(), e.toString()));
             }
         }
         return null;

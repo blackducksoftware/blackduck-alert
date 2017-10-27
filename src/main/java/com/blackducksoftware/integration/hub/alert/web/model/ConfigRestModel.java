@@ -31,7 +31,7 @@ public abstract class ConfigRestModel implements Serializable {
     private static final long serialVersionUID = -3135264759095676355L;
     private String id;
 
-    protected ConfigRestModel() {
+    public ConfigRestModel() {
 
     }
 

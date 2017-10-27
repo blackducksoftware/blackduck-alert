@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import com.google.gson.JsonObject;
 
 public class ResponseBodyBuilder {
-    JsonObject map;
+    private final JsonObject map;
 
     public ResponseBodyBuilder(final Long id, final String message) {
         this.map = new JsonObject();

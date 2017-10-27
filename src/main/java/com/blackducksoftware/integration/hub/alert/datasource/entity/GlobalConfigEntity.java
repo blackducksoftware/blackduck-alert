@@ -70,7 +70,7 @@ public class GlobalConfigEntity extends DatabaseEntity {
     @Column(name = "alert_digest_realtime_cron")
     private String realTimeDigestCron;
 
-    protected GlobalConfigEntity() {
+    public GlobalConfigEntity() {
     }
 
     public GlobalConfigEntity(final String hubUrl, final Integer hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,

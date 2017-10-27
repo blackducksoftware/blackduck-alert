@@ -30,7 +30,7 @@ public class HipChatConfigRestModel extends ConfigRestModel {
     private String notify;
     private String color;
 
-    protected HipChatConfigRestModel() {
+    public HipChatConfigRestModel() {
     }
 
     public HipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {

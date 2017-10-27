@@ -48,8 +48,7 @@ public class EmailConfigRestModel extends ConfigRestModel {
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
 
-    protected EmailConfigRestModel() {
-
+    public EmailConfigRestModel() {
     }
 
     public EmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
