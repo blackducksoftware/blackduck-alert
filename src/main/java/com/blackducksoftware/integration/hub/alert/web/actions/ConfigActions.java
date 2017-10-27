@@ -87,6 +87,8 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public abstract Map<String, String> validateConfig(R restModel);
 
-    public abstract void customTriggers(R restModel);
+    public void customTriggers(final R restModel) {
+
+    }
 
 }

@@ -35,8 +35,4 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
         return null;
     }
 
-    @Override
-    public void customTriggers(final EmailConfigRestModel globalConfig) {
-    }
-
 }

@@ -35,8 +35,4 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
         return null;
     }
 
-    @Override
-    public void customTriggers(final HipChatConfigRestModel globalConfig) {
-    }
-
 }
