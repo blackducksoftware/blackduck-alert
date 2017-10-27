@@ -24,9 +24,9 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
-    protected final Class<D> databaseEntityClass;
-    protected final Class<R> configRestModelClass;
-    protected final JpaRepository<D, Long> repository;
+    public final Class<D> databaseEntityClass;
+    public final Class<R> configRestModelClass;
+    public final JpaRepository<D, Long> repository;
     public final ObjectTransformer objectTransformer;
 
     public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {

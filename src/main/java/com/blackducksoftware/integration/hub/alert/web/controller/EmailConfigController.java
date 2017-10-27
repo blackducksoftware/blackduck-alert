@@ -40,21 +40,20 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
 public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
 
     @Autowired
-    EmailConfigController(final EmailRepository repository, final ObjectTransformer objectTransformer) {
-        super(EmailConfigEntity.class, EmailConfigRestModel.class, repository, objectTransformer);
+    EmailConfigController(final EmailConfigActions configActions) {
+        super(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
-    @Override
     @GetMapping(value = "/configuration/email")
     public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
-        return super.getConfig(id);
+        return configActions.getConfig(id);
     }
 
     @Override
@@ -84,9 +83,9 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     @Override
     @PostMapping(value = "/configuration/email/test")
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) throws IntegrationException {
-        final Long id = objectTransformer.stringToLong(emailConfig.getId());
-        final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) repository);
-        final String responseMessage = channel.testMessage(objectTransformer.tranformObject(emailConfig, this.databaseEntityClass));
+        final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
+        final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.tranformObject(emailConfig, this.databaseEntityClass));
         return super.createResponse(HttpStatus.OK, id, responseMessage);
     }
 

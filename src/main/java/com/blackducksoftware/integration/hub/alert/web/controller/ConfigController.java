@@ -34,9 +34,9 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
 public abstract class ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
-    protected final Class<D> databaseEntityClass;
-    protected final Class<R> configRestModelClass;
-    protected final ConfigActions<D, R> configActions;
+    public final Class<D> databaseEntityClass;
+    public final Class<R> configRestModelClass;
+    public final ConfigActions<D, R> configActions;
 
     public ConfigController(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R> configActions) {
         this.databaseEntityClass = databaseEntityClass;

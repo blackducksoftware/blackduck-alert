@@ -40,21 +40,20 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
 public class HipChatConfigController extends ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
 
     @Autowired
-    public HipChatConfigController(final HipChatRepository repository, final ObjectTransformer objectTransformer) {
-        super(HipChatConfigEntity.class, HipChatConfigRestModel.class, repository, objectTransformer);
+    public HipChatConfigController(final HipChatConfigActions configActions) {
+        super(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
-    @Override
     @GetMapping(value = "/configuration/hipchat")
     public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
-        return super.getConfig(id);
+        return configActions.getConfig(id);
     }
 
     @Override
@@ -84,9 +83,9 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
-        final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) repository);
-        final String responseMessage = channel.testMessage(objectTransformer.tranformObject(hipChatConfig, this.databaseEntityClass));
-        final Long id = objectTransformer.stringToLong(hipChatConfig.getId());
+        final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.tranformObject(hipChatConfig, this.databaseEntityClass));
+        final Long id = configActions.objectTransformer.stringToLong(hipChatConfig.getId());
         try {
             final int intResponse = Integer.parseInt(responseMessage);
             final HttpStatus status = HttpStatus.valueOf(intResponse);
