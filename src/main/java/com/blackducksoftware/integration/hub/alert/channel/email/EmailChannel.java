@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -55,29 +54,17 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
     private final GlobalProperties globalProperties;
-    private final EmailRepository emailRepository;
 
     @Autowired
     public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final EmailRepository emailRepository) {
-        super(gson, EmailEvent.class);
+        super(gson, emailRepository, EmailEvent.class);
         this.globalProperties = globalProperties;
-        this.emailRepository = emailRepository;
     }
 
     @JmsListener(destination = SupportedChannels.EMAIL)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received email event message: {}", message);
-        final EmailEvent emailEvent = getEvent(message);
-        logger.info("Email event {}", emailEvent);
-        handleEvent(emailEvent);
-    }
-
-    private void handleEvent(final EmailEvent emailEvent) {
-        final List<EmailConfigEntity> configurations = emailRepository.findAll();
-        for (final EmailConfigEntity configuration : configurations) {
-            sendMessage(emailEvent, configuration);
-        }
+        super.receiveMessage(message);
     }
 
     @Override

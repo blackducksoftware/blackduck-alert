@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -51,12 +50,10 @@ import okhttp3.Response;
 @Component
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
-    private final SlackRepository slackRepository;
 
     @Autowired
     public SlackChannel(final Gson gson, final SlackRepository slackRepository) {
-        super(gson, SlackEvent.class);
-        this.slackRepository = slackRepository;
+        super(gson, slackRepository, SlackEvent.class);
     }
 
     @Override
@@ -115,18 +112,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
     @JmsListener(destination = SupportedChannels.SLACK)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received hipchat event message: {}", message);
-        final SlackEvent event = getEvent(message);
-        logger.info("HipChat event {}", event);
-
-        handleEvent(event);
-    }
-
-    public void handleEvent(final SlackEvent event) {
-        final List<SlackConfigEntity> configurations = slackRepository.findAll();
-        for (final SlackConfigEntity configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
+        super.receiveMessage(message);
     }
 
 }
