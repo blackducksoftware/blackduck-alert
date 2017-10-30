@@ -22,29 +22,48 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
+import com.google.gson.Gson;
 
 @Component
 public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailConfigRestModel> {
+    private final GlobalProperties globalProperties;
+    private final Gson gson;
 
     @Autowired
-    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer) {
+    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final Gson gson) {
         super(EmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
+        this.globalProperties = globalProperties;
+        this.gson = gson;
     }
 
     @Override
-    public Map<String, String> validateConfig(final EmailConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return Collections.emptyMap();
+    public String validateConfig(final EmailConfigRestModel restModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "";
+    }
+
+    @Override
+    public String testConfig(final EmailConfigRestModel restModel) throws IntegrationException {
+        final EmailChannel channel = new EmailChannel(globalProperties, gson, (EmailRepository) repository);
+        return channel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
     }
 
 }

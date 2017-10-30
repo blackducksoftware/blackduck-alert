@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -35,6 +36,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
 
     public abstract void sendMessage(final E event, final C config);
 
-    public abstract String testMessage(final C config);
+    public abstract String testMessage(final C config) throws IntegrationException;
 
 }
