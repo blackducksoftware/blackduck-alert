@@ -26,14 +26,15 @@ public class HipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
     private String apiKey;
-    private Integer roomId;
-    private Boolean notify;
+    private String roomId;
+    private String notify;
     private String color;
 
-    protected HipChatConfigRestModel() {
+    public HipChatConfigRestModel() {
     }
 
-    public HipChatConfigRestModel(final String apiKey, final Integer roomId, final Boolean notify, final String color) {
+    public HipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
+        super(id);
         this.apiKey = apiKey;
         this.roomId = roomId;
         this.notify = notify;
@@ -44,11 +45,11 @@ public class HipChatConfigRestModel extends ConfigRestModel {
         return apiKey;
     }
 
-    public Integer getRoomId() {
+    public String getRoomId() {
         return roomId;
     }
 
-    public Boolean getNotify() {
+    public String getNotify() {
         return notify;
     }
 

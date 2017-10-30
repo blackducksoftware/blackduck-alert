@@ -24,8 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,74 +38,84 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
+import com.google.gson.Gson;
 
 @RestController
-public class SlackConfigController extends ConfigController<SlackConfigEntity, SlackConfigRestModel> {
+public class SlackConfigController implements ConfigController<SlackConfigEntity, SlackConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
+    private final SlackConfigActions configActions;
+    private final Gson gson;
+    private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired
-    public SlackConfigController(final JpaRepository<SlackConfigEntity, Long> repository) {
-        super(repository);
+    public SlackConfigController(final SlackConfigActions configActions, final Gson gson) {
+        this.configActions = configActions;
+        this.gson = gson;
+        commonConfigController = new CommonConfigController<>(SlackConfigEntity.class, SlackConfigRestModel.class, configActions);
     }
 
     @Override
     @GetMapping(value = "/configuration/slack")
     public List<SlackConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return super.getConfig(id);
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/slack")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
-        return super.postConfig(slackConfig);
+        return commonConfigController.postConfig(slackConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/slack")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
-        return super.putConfig(slackConfig);
+        return commonConfigController.putConfig(slackConfig);
     }
 
     @Override
     @DeleteMapping(value = "/configuration/slack")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
-        return super.deleteConfig(slackConfig);
+        return commonConfigController.deleteConfig(slackConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/slack/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
-        final SlackChannel channel = new SlackChannel(null, (SlackRepository) repository);
-        final String responseMessage = channel.testMessage(restModelToDatabaseModel(slackConfig));
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final SlackConfigRestModel slackConfig) {
+        if (slackConfig == null) {
+            return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + SlackConfigRestModel.class.getSimpleName());
+        }
+        final SlackChannel channel = new SlackChannel(gson, (SlackRepository) configActions.repository);
+        String responseMessage = null;
+        try {
+            responseMessage = channel.testMessage(configActions.objectTransformer.configRestModelToDatabaseEntity(slackConfig, SlackConfigEntity.class));
+        } catch (final IntegrationException e) {
+            logger.error(e.getMessage(), e);
+            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, slackConfig.getId(), e.getMessage());
+        }
+        final Long id = configActions.objectTransformer.stringToLong(slackConfig.getId());
         try {
             final int intResponse = Integer.parseInt(responseMessage);
             final HttpStatus status = HttpStatus.valueOf(intResponse);
             if (status != null) {
-                return super.createResponse(status, slackConfig.getId(), "Attempting to send test message.");
+                return commonConfigController.createResponse(status, id, "Attempting to send a test message.");
             }
         } catch (final IllegalArgumentException e) {
-            return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, slackConfig.getId(), e.getMessage());
+            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
         }
-        return super.createResponse(HttpStatus.BAD_REQUEST, slackConfig.getId(), "Failure.");
+
+        return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, id, "Failure.");
     }
 
     @Override
     public ResponseEntity<String> validateConfig(final SlackConfigRestModel restModel) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public SlackConfigEntity restModelToDatabaseModel(final SlackConfigRestModel restModel) {
-        return new SlackConfigEntity(restModel.getChannelName(), restModel.getUsername(), restModel.getWebhook());
-    }
-
-    @Override
-    public SlackConfigRestModel databaseModelToRestModel(final SlackConfigEntity databaseModel) {
-        return new SlackConfigRestModel(databaseModel.getChannelName(), databaseModel.getUsername(), databaseModel.getWebhook());
     }
 
 }
