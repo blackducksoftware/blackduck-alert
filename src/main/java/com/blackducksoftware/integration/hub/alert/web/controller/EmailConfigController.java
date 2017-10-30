@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,11 +43,13 @@ import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+    private final EmailConfigActions configActions;
+    private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
-    @Autowired
     EmailConfigController(final EmailConfigActions configActions) {
-        super(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
+        this.configActions = configActions;
+        commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
     @GetMapping(value = "/configuration/email")
@@ -59,13 +60,13 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     @Override
     @PostMapping(value = "/configuration/email")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
-        return super.postConfig(emailConfig);
+        return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
-        return super.putConfig(emailConfig);
+        return commonConfigController.putConfig(emailConfig);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     @Override
     @DeleteMapping(value = "/configuration/email")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        return super.deleteConfig(emailConfig);
+        return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
@@ -85,8 +86,8 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) throws IntegrationException {
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, this.databaseEntityClass));
-        return super.createResponse(HttpStatus.OK, id, responseMessage);
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, EmailConfigEntity.class));
+        return commonConfigController.createResponse(HttpStatus.OK, id, responseMessage);
     }
 
 }

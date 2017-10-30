@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,11 +40,13 @@ import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActio
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController extends ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+    private final GlobalConfigActions configActions;
+    private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
-    @Autowired
-    GlobalConfigController(final GlobalConfigActions globalConfigActions) {
-        super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalConfigActions);
+    GlobalConfigController(final GlobalConfigActions configActions) {
+        this.configActions = configActions;
+        commonConfigController = new CommonConfigController<>(GlobalConfigEntity.class, GlobalConfigRestModel.class, configActions);
     }
 
     @GetMapping(value = "/configuration/global")
@@ -56,13 +57,13 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
     @Override
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
-        return super.postConfig(globalConfig);
+        return commonConfigController.postConfig(globalConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
-        return super.putConfig(globalConfig);
+        return commonConfigController.putConfig(globalConfig);
     }
 
     @Override
@@ -74,7 +75,7 @@ public class GlobalConfigController extends ConfigController<GlobalConfigEntity,
     @Override
     @DeleteMapping(value = "/configuration/global")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
-        return super.deleteConfig(globalConfig);
+        return commonConfigController.deleteConfig(globalConfig);
     }
 
     @Override

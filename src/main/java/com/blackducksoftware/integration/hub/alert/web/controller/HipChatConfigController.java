@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,11 +43,13 @@ import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActi
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController extends ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+    private final HipChatConfigActions configActions;
+    private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
-    @Autowired
     public HipChatConfigController(final HipChatConfigActions configActions) {
-        super(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
+        this.configActions = configActions;
+        commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
     @GetMapping(value = "/configuration/hipchat")
@@ -59,13 +60,13 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     @Override
     @PostMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
-        return super.postConfig(hipChatConfig);
+        return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
-        return super.putConfig(hipChatConfig);
+        return commonConfigController.putConfig(hipChatConfig);
     }
 
     @Override
@@ -77,25 +78,25 @@ public class HipChatConfigController extends ConfigController<HipChatConfigEntit
     @Override
     @DeleteMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
-        return super.deleteConfig(hipChatConfig);
+        return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
         final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, this.databaseEntityClass));
+        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, HipChatConfigEntity.class));
         final Long id = configActions.objectTransformer.stringToLong(hipChatConfig.getId());
         try {
             final int intResponse = Integer.parseInt(responseMessage);
             final HttpStatus status = HttpStatus.valueOf(intResponse);
             if (status != null) {
-                return super.createResponse(status, id, "Attempting to send a test message.");
+                return commonConfigController.createResponse(status, id, "Attempting to send a test message.");
             }
         } catch (final IllegalArgumentException e) {
-            return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
+            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
         }
-        return super.createResponse(HttpStatus.BAD_REQUEST, id, "Failure.");
+        return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, id, "Failure.");
     }
 
 }
