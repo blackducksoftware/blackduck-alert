@@ -91,7 +91,6 @@ public class Application {
             logger.info("Hub Proxy Password: **********");
             logger.info("----------------------------------------");
             logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
-            logger.info("Real Time Digest Cron Expression: {}", globalConfig.getRealTimeDigestCron());
             logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
 
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
