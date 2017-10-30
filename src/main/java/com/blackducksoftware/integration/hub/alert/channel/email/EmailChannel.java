@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,12 +83,16 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     @Override
     public String testMessage(final EmailConfigEntity emailConfigEntity) {
         final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-        sendMessage(new EmailEvent(data), emailConfigEntity);
+        sendMessage(emailConfigEntity.getMailSmtpFrom(), new EmailEvent(data), emailConfigEntity);
         return "Attempted to send message with the given configuration.";
     }
 
     @Override
     public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
+        sendMessage("", emailEvent, emailConfigEntity);
+    }
+
+    public void sendMessage(final String emailAddress, final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
         try {
             final EmailProperties emailProperties = new EmailProperties(emailConfigEntity);
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
@@ -97,14 +102,14 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, emailConfigEntity.getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, globalProperties.getHubUrl());
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 
             model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
             model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
 
-            final EmailTarget emailTarget = new EmailTarget("", "digest.ftl", model);
+            final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
 
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {

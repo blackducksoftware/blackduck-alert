@@ -22,10 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import com.google.gson.JsonObject;
 
 public class ResponseBodyBuilder {
-    JsonObject map;
+    private final JsonObject map;
 
     public ResponseBodyBuilder(final Long id, final String message) {
         this.map = new JsonObject();
@@ -45,6 +48,15 @@ public class ResponseBodyBuilder {
 
     public ResponseBodyBuilder put(final String key, final String value) {
         map.addProperty(key, value);
+        return this;
+    }
+
+    public ResponseBodyBuilder putErrors(final Map<String, String> errors) {
+        final JsonObject element = new JsonObject();
+        for (final Entry<String, String> entry : errors.entrySet()) {
+            element.addProperty(entry.getKey(), entry.getValue());
+        }
+        map.add("errors", element);
         return this;
     }
 

@@ -46,7 +46,7 @@ public class HipChatConfigEntity extends DatabaseEntity {
     @Column(name = "color")
     private String color;
 
-    protected HipChatConfigEntity() {
+    public HipChatConfigEntity() {
     }
 
     public HipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
