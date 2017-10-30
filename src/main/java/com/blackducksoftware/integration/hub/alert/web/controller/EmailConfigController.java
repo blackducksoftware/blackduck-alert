@@ -99,7 +99,7 @@ public class EmailConfigController extends ConfigController<EmailConfigEntity, E
     public EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
         final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getId(), databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
                 databaseModel.getMailSmtpConnectionTimeout(), databaseModel.getMailSmtpTimeout(), databaseModel.getMailSmtpFrom(), databaseModel.getMailSmtpLocalhost(), databaseModel.getMailSmtpEhlo(), databaseModel.getMailSmtpAuth(),
-                databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
+                databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDnsRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
                 databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());
         return restModel;
     }
