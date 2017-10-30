@@ -87,7 +87,7 @@ public class EmailConfigEntity extends DatabaseEntity {
     @Column(name = "email_subject_line")
     private String emailSubjectLine;
 
-    protected EmailConfigEntity() {
+    public EmailConfigEntity() {
 
     }
 

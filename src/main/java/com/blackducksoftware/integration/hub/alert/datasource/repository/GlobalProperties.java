@@ -199,12 +199,4 @@ public class GlobalProperties {
         return null;
     }
 
-    public String getRealTimeDigestCron() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getRealTimeDigestCron();
-        }
-        return null;
-    }
-
 }

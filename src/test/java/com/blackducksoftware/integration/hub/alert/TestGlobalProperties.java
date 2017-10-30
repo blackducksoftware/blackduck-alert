@@ -14,8 +14,7 @@ package com.blackducksoftware.integration.hub.alert;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
 
-public class TestAlertProperties extends GlobalProperties {
-
+public class TestGlobalProperties extends GlobalProperties {
     private String hubUrl;
     private Integer hubTimeout;
     private String hubUsername;
@@ -27,9 +26,8 @@ public class TestAlertProperties extends GlobalProperties {
     private Boolean hubAlwaysTrustCertificate;
     private String accumulatorCron;
     private String dailyDigestCron;
-    private String realTimeDigestCron;
 
-    public TestAlertProperties(final GlobalRepository globalRepository) {
+    public TestGlobalProperties(final GlobalRepository globalRepository) {
         super(globalRepository);
     }
 
@@ -130,15 +128,6 @@ public class TestAlertProperties extends GlobalProperties {
 
     public void setDailyDigestCron(final String dailyDigestCron) {
         this.dailyDigestCron = dailyDigestCron;
-    }
-
-    @Override
-    public String getRealTimeDigestCron() {
-        return realTimeDigestCron;
-    }
-
-    public void setRealTimeDigestCron(final String realTimeDigestCron) {
-        this.realTimeDigestCron = realTimeDigestCron;
     }
 
 }
