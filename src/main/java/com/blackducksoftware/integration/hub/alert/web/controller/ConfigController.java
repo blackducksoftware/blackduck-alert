@@ -11,21 +11,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public interface ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
-    public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException;
 
-    public ResponseEntity<String> putConfig(final R restModel) throws IntegrationException;
+    public List<R> getConfig(final Long id);
+
+    public ResponseEntity<String> postConfig(final R restModel);
+
+    public ResponseEntity<String> putConfig(final R restModel);
 
     public ResponseEntity<String> validateConfig(R restModel);
 
     public ResponseEntity<String> deleteConfig(final R restModel);
 
-    public ResponseEntity<String> testConfig(final R restModel) throws IntegrationException;
+    public ResponseEntity<String> testConfig(final R restModel);
 
 }

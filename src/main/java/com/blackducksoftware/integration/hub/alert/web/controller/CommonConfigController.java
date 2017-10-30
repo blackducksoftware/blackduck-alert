@@ -22,8 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -34,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
 public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
     public final ConfigActions<D, R> configActions;
@@ -44,13 +49,27 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         this.configActions = configActions;
     }
 
-    public ResponseEntity<String> postConfig(final R restModel) throws IntegrationException {
+    public List<R> getConfig(final Long id) {
+        try {
+            return configActions.getConfig(id);
+        } catch (final IntegrationException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return Collections.emptyList();
+    }
+
+    public ResponseEntity<String> postConfig(final R restModel) {
         if (!configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
                 configActions.customTriggers(restModel);
-                final D updatedEntity = configActions.saveConfig(restModel);
-                return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
+                try {
+                    final D updatedEntity = configActions.saveConfig(restModel);
+                    return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
+                } catch (final IntegrationException e) {
+                    logger.error(e.getMessage(), e);
+                    return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
+                }
             } else {
                 final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(validationResults);
@@ -60,13 +79,18 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final R restModel) throws IntegrationException {
+    public ResponseEntity<String> putConfig(final R restModel) {
         if (configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
                 configActions.customTriggers(restModel);
-                final D updatedEntity = configActions.saveConfig(restModel);
-                return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated");
+                try {
+                    final D updatedEntity = configActions.saveConfig(restModel);
+                    return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated");
+                } catch (final IntegrationException e) {
+                    logger.error(e.getMessage(), e);
+                    return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
+                }
             } else {
                 final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(validationResults);
@@ -76,8 +100,6 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    // public abstract ResponseEntity<String> validateConfig(R restModel);
-
     public ResponseEntity<String> deleteConfig(final R restModel) {
         if (configActions.doesConfigExist(restModel.getId())) {
             configActions.deleteConfig(restModel.getId());
@@ -85,8 +107,6 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
-
-    // public abstract ResponseEntity<String> testConfig(final R restModel) throws IntegrationException;
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
         return createResponse(status, configActions.objectTransformer.stringToLong(id), message);

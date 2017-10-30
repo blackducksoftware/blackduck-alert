@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,13 +36,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
 public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(GlobalConfigController.class);
     private final GlobalConfigActions configActions;
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
@@ -49,20 +51,21 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
         commonConfigController = new CommonConfigController<>(GlobalConfigEntity.class, GlobalConfigRestModel.class, configActions);
     }
 
+    @Override
     @GetMapping(value = "/configuration/global")
-    public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
-        return configActions.getConfig(id);
+    public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/global")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
         return commonConfigController.postConfig(globalConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) throws IntegrationException {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = true) @RequestBody final GlobalConfigRestModel globalConfig) {
         return commonConfigController.putConfig(globalConfig);
     }
 
@@ -80,7 +83,7 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
 
     @Override
     @PostMapping(value = "/configuration/global/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "globalConfig", required = true) final GlobalConfigRestModel globalConfig) throws IntegrationException {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "globalConfig", required = true) final GlobalConfigRestModel globalConfig) {
         // TODO implement method for testing the configuration
         return ResponseEntity.notFound().build();
     }

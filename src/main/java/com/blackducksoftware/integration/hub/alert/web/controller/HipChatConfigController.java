@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestMo
 
 @RestController
 public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
     private final HipChatConfigActions configActions;
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
@@ -52,20 +55,21 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
         commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
+    @Override
     @GetMapping(value = "/configuration/hipchat")
-    public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
-        return configActions.getConfig(id);
+    public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.putConfig(hipChatConfig);
     }
 
@@ -83,9 +87,15 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) throws IntegrationException {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, HipChatConfigEntity.class));
+        String responseMessage = null;
+        try {
+            responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, HipChatConfigEntity.class));
+        } catch (final IntegrationException e) {
+            logger.error(e.getMessage(), e);
+            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());
+        }
         final Long id = configActions.objectTransformer.stringToLong(hipChatConfig.getId());
         try {
             final int intResponse = Integer.parseInt(responseMessage);

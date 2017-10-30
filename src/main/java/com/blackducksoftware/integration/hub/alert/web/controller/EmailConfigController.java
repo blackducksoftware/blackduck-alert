@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestMode
 
 @RestController
 public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
     private final EmailConfigActions configActions;
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
@@ -52,20 +55,21 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
         commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
+    @Override
     @GetMapping(value = "/configuration/email")
-    public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) throws IntegrationException {
-        return configActions.getConfig(id);
+    public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) throws IntegrationException {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
     }
 
@@ -83,10 +87,16 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) throws IntegrationException {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) {
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
-        final String responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, EmailConfigEntity.class));
+        String responseMessage = null;
+        try {
+            responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, EmailConfigEntity.class));
+        } catch (final IntegrationException e) {
+            logger.error(e.getMessage(), e);
+            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, emailConfig.getId(), e.getMessage());
+        }
         return commonConfigController.createResponse(HttpStatus.OK, id, responseMessage);
     }
 
