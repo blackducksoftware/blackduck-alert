@@ -25,10 +25,12 @@ package com.blackducksoftware.integration.hub.alert.channel.slack;
 import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 
+@Component
 public class SlackJmsTemplate extends AbstractJmsTemplate {
 
     @Autowired

@@ -44,7 +44,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
     protected final JpaRepository<C, Long> repository;
 
-    public DistributionChannel(final Gson gson, final JpaRepository repository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final JpaRepository<C, Long> repository, final Class<E> clazz) {
         super(gson, clazz);
         this.repository = repository;
     }

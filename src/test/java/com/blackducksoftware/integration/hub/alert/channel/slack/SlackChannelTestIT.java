@@ -22,7 +22,7 @@ public class SlackChannelTestIT extends RestChannelTest {
     @Test
     public void sendMessageTestIT() {
         final SlackChannel slackChannel = new SlackChannel(gson, null);
-        final String roomName = properties.getProperty("slack.room.name");
+        final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
         final String webHook = properties.getProperty("slack.web.hook");
         final SlackConfigEntity config = new SlackConfigEntity(roomName, username, webHook);
