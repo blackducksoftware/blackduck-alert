@@ -42,12 +42,16 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
 
     @Override
     public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
-        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-        if (hubServicesFactory != null) {
-            final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(),
-                    hubServicesFactory.createMetaService());
-            final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
-            return storeEvent;
+        try {
+            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
+            if (hubServicesFactory != null) {
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(),
+                        hubServicesFactory.createMetaService());
+                final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
+                return storeEvent;
+            }
+        } catch (final Exception ex) {
+            logger.error("Error occurred durring processing of accumulated notifications", ex);
         }
         return null;
     }

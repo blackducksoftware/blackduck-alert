@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
@@ -42,6 +44,7 @@ import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
+    private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationRepository notificationRepository;
     private final ChannelTemplateManager channelTemplateManager;
 
@@ -52,29 +55,33 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
     @Override
     public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
-        itemList.forEach(item -> {
-            final List<NotificationEvent> notificationList = item.getNotificationList();
-            final List<NotificationEntity> entityList = new ArrayList<>();
-            notificationList.forEach(notification -> {
-                final String eventKey = notification.getEventKey();
-                final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
-                final Date createdAt = content.getCreatedAt();
-                final String notificationType = notification.getCategoryType().toString();
-                final String projectName = content.getProjectVersion().getProjectName();
-                final String projectVersion = content.getProjectVersion().getProjectVersionName();
-                final String componentName = content.getComponentName();
-                final String componentVersion = content.getComponentVersion().versionName;
-                final String policyRuleName = getPolicyRule(notification);
-                final String person = getPerson(notification);
-                final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
+        try {
+            itemList.forEach(item -> {
+                final List<NotificationEvent> notificationList = item.getNotificationList();
+                final List<NotificationEntity> entityList = new ArrayList<>();
+                notificationList.forEach(notification -> {
+                    final String eventKey = notification.getEventKey();
+                    final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
+                    final Date createdAt = content.getCreatedAt();
+                    final String notificationType = notification.getCategoryType().toString();
+                    final String projectName = content.getProjectVersion().getProjectName();
+                    final String projectVersion = content.getProjectVersion().getProjectVersionName();
+                    final String componentName = content.getComponentName();
+                    final String componentVersion = content.getComponentVersion().versionName;
+                    final String policyRuleName = getPolicyRule(notification);
+                    final String person = getPerson(notification);
+                    final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
-                entityList.add(entity);
-                notificationRepository.save(entity);
+                    final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+                    entityList.add(entity);
+                    notificationRepository.save(entity);
+                });
+                final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
+                channelTemplateManager.sendEvent(realTimeEvent);
             });
-            final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
-            channelTemplateManager.sendEvent(realTimeEvent);
-        });
+        } catch (final Exception ex) {
+            logger.error("Error occurred writing notification data", ex);
+        }
     }
 
     private String getPolicyRule(final NotificationEvent notification) {

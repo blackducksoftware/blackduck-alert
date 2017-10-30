@@ -67,40 +67,46 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
 
     @Override
     public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-        if (hubServicesFactory != null) {
-            logger.info("Accumulator Reader Called");
-            ZonedDateTime zonedEndDate = ZonedDateTime.now();
-            zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
-            zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
-            ZonedDateTime zonedStartDate = zonedEndDate;
-            final Date endDate = Date.from(zonedEndDate.toInstant());
-            Date startDate = Date.from(zonedStartDate.toInstant());
-            try {
-                final File lastRunFile = new File(lastRunPath);
-                if (lastRunFile.exists()) {
-                    final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
-                    final Date startTime = RestConnection.parseDateString(lastRunValue);
-                    zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
-                } else {
-                    zonedStartDate = zonedEndDate;
+        try {
+            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
+            if (hubServicesFactory != null) {
+                logger.debug("Accumulator Reader Starting Read Operation");
+                ZonedDateTime zonedEndDate = ZonedDateTime.now();
+                zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
+                zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
+                ZonedDateTime zonedStartDate = zonedEndDate;
+                final Date endDate = Date.from(zonedEndDate.toInstant());
+                Date startDate = Date.from(zonedStartDate.toInstant());
+                try {
+                    final File lastRunFile = new File(lastRunPath);
+                    if (lastRunFile.exists()) {
+                        final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
+                        final Date startTime = RestConnection.parseDateString(lastRunValue);
+                        zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
+                    } else {
+                        zonedStartDate = zonedEndDate;
+                    }
+                    zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
+                    startDate = Date.from(zonedStartDate.toInstant());
+                    FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
+                } catch (final Exception e) {
+                    logger.error("Error creating date range", e);
                 }
-                zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
-                startDate = Date.from(zonedStartDate.toInstant());
-                FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
-            } catch (final Exception e) {
-                logger.error("Error creating date range", e);
-            }
 
-            final NotificationDataService notificationDataService = hubServicesFactory.createNotificationDataService();
-            final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
+                final NotificationDataService notificationDataService = hubServicesFactory.createNotificationDataService();
+                final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
 
-            if (notificationResults.getNotificationContentItems().isEmpty()) {
-                logger.debug("Read Notification Count: 0");
-                return null;
+                if (notificationResults.getNotificationContentItems().isEmpty()) {
+                    logger.debug("Read Notification Count: 0");
+                    return null;
+                }
+                logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
+                return notificationResults;
             }
-            logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
-            return notificationResults;
+        } catch (final Exception ex) {
+            logger.error("Error in Accumulator Reader", ex);
+        } finally {
+            logger.debug("Accumulator Reader Finished Operation");
         }
         return null;
     }
