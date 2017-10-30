@@ -30,8 +30,8 @@ public class ObjectTransformerTest {
         final GlobalConfigRestModel restModel = createGlobalConfigRestModel();
         final GlobalConfigEntity configEntity = createGlobalConfigEntity();
 
-        final GlobalConfigEntity transformedConfigEntity = objectTransformer.transformObject(restModel, GlobalConfigEntity.class);
-        final GlobalConfigRestModel transformedConfigRestModel = objectTransformer.transformObject(configEntity, GlobalConfigRestModel.class);
+        final GlobalConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalConfigEntity.class);
+        final GlobalConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalConfigRestModel.class);
         assertEquals(restModel, transformedConfigRestModel);
         assertEquals(configEntity, transformedConfigEntity);
     }
@@ -42,8 +42,8 @@ public class ObjectTransformerTest {
         final EmailConfigRestModel restModel = createEmailConfigRestModel();
         final EmailConfigEntity configEntity = createEmailConfigEntity();
 
-        final EmailConfigEntity transformedConfigEntity = objectTransformer.transformObject(restModel, EmailConfigEntity.class);
-        final EmailConfigRestModel transformedConfigRestModel = objectTransformer.transformObject(configEntity, EmailConfigRestModel.class);
+        final EmailConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class);
+        final EmailConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, EmailConfigRestModel.class);
 
         assertEquals(restModel, transformedConfigRestModel);
         assertEquals(configEntity, transformedConfigEntity);
@@ -55,8 +55,8 @@ public class ObjectTransformerTest {
         final HipChatConfigRestModel restModel = createHipChatConfigRestModel();
         final HipChatConfigEntity configEntity = createHipChatConfigEntity();
 
-        final HipChatConfigEntity transformedConfigEntity = objectTransformer.transformObject(restModel, HipChatConfigEntity.class);
-        final HipChatConfigRestModel transformedConfigRestModel = objectTransformer.transformObject(configEntity, HipChatConfigRestModel.class);
+        final HipChatConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class);
+        final HipChatConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, HipChatConfigRestModel.class);
         assertEquals(restModel, transformedConfigRestModel);
         assertEquals(configEntity, transformedConfigEntity);
     }

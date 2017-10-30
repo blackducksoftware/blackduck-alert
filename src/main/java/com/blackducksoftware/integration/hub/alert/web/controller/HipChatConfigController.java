@@ -98,7 +98,7 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
         final HipChatChannel channel = new HipChatChannel(gson, (HipChatRepository) configActions.repository);
         String responseMessage = null;
         try {
-            responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, HipChatConfigEntity.class));
+            responseMessage = channel.testMessage(configActions.objectTransformer.configRestModelToDatabaseEntity(hipChatConfig, HipChatConfigEntity.class));
         } catch (final IntegrationException e) {
             logger.error(e.getMessage(), e);
             return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());

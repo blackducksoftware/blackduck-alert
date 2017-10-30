@@ -35,36 +35,40 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
 public class ObjectTransformer {
     private final Logger logger = LoggerFactory.getLogger(ObjectTransformer.class);
 
-    public <T> List<T> transformObjects(final List<?> objects, final Class<T> newClass) throws IntegrationException {
+    public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws IntegrationException {
         final List<T> newList = new ArrayList<>();
-        for (final Object object : objects) {
-            final T newObject = transformObject(object, newClass);
+        for (final DatabaseEntity databaseEntity : databaseEntities) {
+            final T newObject = databaseEntityToConfigRestModel(databaseEntity, newClass);
             newList.add(newObject);
         }
         return newList;
     }
 
-    public <T> T transformObject(final Object object, final Class<T> newClass) throws IntegrationException {
-        if (null != object && newClass != null) {
+    public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws IntegrationException {
+        if (null != databaseEntity && newClass != null) {
+            final String databaseEntityClassName = databaseEntity.getClass().getSimpleName();
+            final String newClassName = newClass.getSimpleName();
             try {
                 final T newClassObject = newClass.newInstance();
 
                 final List<Field> fields = new ArrayList<>();
-                fields.addAll(Arrays.asList(object.getClass().getDeclaredFields()));
-                if (object.getClass().getSuperclass() != null) {
-                    fields.addAll(Arrays.asList(object.getClass().getSuperclass().getDeclaredFields()));
+                fields.addAll(Arrays.asList(databaseEntity.getClass().getDeclaredFields()));
+                if (databaseEntity.getClass().getSuperclass() != null) {
+                    fields.addAll(Arrays.asList(databaseEntity.getClass().getSuperclass().getDeclaredFields()));
                 }
 
                 final Map<String, Field> newFieldMap = new HashMap<>();
                 for (final Field field : newClassObject.getClass().getDeclaredFields()) {
                     newFieldMap.put(field.getName(), field);
                 }
-                if (object.getClass().getSuperclass() != null) {
+                if (databaseEntity.getClass().getSuperclass() != null) {
                     for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
                         newFieldMap.put(field.getName(), field);
                     }
@@ -78,65 +82,102 @@ public class ObjectTransformer {
                         final String fieldName = field.getName();
                         final Field newField = newFieldMap.get(fieldName);
                         if (newField == null) {
-                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClass.getSimpleName());
+                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClassName);
                         }
                         newField.setAccessible(true);
                         if (String.class == field.getType()) {
-                            final String oldField = (String) field.get(object);
-                            if (String.class == newField.getType()) {
-                                newField.set(newClassObject, oldField);
-                            } else if (Integer.class == newField.getType()) {
-                                newField.set(newClassObject, stringToInteger(oldField));
-                            } else if (Long.class == newField.getType()) {
-                                newField.set(newClassObject, stringToLong(oldField));
-                            } else if (Boolean.class == newField.getType()) {
-                                newField.set(newClassObject, stringToBoolean(oldField));
-                            } else {
-                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                            }
+                            final String oldField = (String) field.get(databaseEntity);
+                            newField.set(newClassObject, oldField);
                         } else if (Integer.class == field.getType()) {
-                            final Integer oldField = (Integer) field.get(object);
-                            if (String.class == newField.getType()) {
-                                newField.set(newClassObject, objectToString(oldField));
-                            } else if (Integer.class == newField.getType()) {
-                                newField.set(newClassObject, oldField);
-                            } else {
-                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                            }
+                            final Integer oldField = (Integer) field.get(databaseEntity);
+                            newField.set(newClassObject, objectToString(oldField));
                         } else if (Long.class == field.getType()) {
-                            final Long oldField = (Long) field.get(object);
-                            if (String.class == newField.getType()) {
-                                newField.set(newClassObject, objectToString(oldField));
-                            } else if (Long.class == newField.getType()) {
-                                newField.set(newClassObject, oldField);
-                            } else {
-                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                            }
+                            final Long oldField = (Long) field.get(databaseEntity);
+                            newField.set(newClassObject, objectToString(oldField));
                         } else if (Boolean.class == field.getType()) {
-                            final Boolean oldField = (Boolean) field.get(object);
-                            if (String.class == newField.getType()) {
-                                newField.set(newClassObject, objectToString(oldField));
-                            } else if (Boolean.class == newField.getType()) {
-                                newField.set(newClassObject, oldField);
-                            } else {
-                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                            }
+                            final Boolean oldField = (Boolean) field.get(databaseEntity);
+                            newField.set(newClassObject, objectToString(oldField));
                         } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName,
+                                    field.getName(), field.getType(), newField.getType()));
                         }
                     } catch (final NoSuchFieldException e) {
-                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), object.getClass().getSimpleName(), newClass.getSimpleName()));
+                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
                         continue;
                     }
                 }
                 return newClassObject;
             } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", object.getClass().getSimpleName(), newClass.getSimpleName(), e.toString()));
+                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", databaseEntityClassName, newClassName, e.toString()));
+            }
+        }
+        return null;
+    }
+
+    public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws IntegrationException {
+        final List<T> newList = new ArrayList<>();
+        for (final ConfigRestModel configRestModel : configRestModels) {
+            final T newObject = configRestModelToDatabaseEntity(configRestModel, newClass);
+            newList.add(newObject);
+        }
+        return newList;
+    }
+
+    public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws IntegrationException {
+        if (null != configRestModel && newClass != null) {
+            final String configRestModelClassName = configRestModel.getClass().getSimpleName();
+            final String newClassName = newClass.getSimpleName();
+            try {
+                final T newClassObject = newClass.newInstance();
+
+                final List<Field> fields = new ArrayList<>();
+                fields.addAll(Arrays.asList(configRestModel.getClass().getDeclaredFields()));
+                if (configRestModel.getClass().getSuperclass() != null) {
+                    fields.addAll(Arrays.asList(configRestModel.getClass().getSuperclass().getDeclaredFields()));
+                }
+
+                final Map<String, Field> newFieldMap = new HashMap<>();
+                for (final Field field : newClassObject.getClass().getDeclaredFields()) {
+                    newFieldMap.put(field.getName(), field);
+                }
+                if (configRestModel.getClass().getSuperclass() != null) {
+                    for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
+                        newFieldMap.put(field.getName(), field);
+                    }
+                }
+                for (final Field field : fields) {
+                    try {
+                        if (Modifier.isStatic(field.getModifiers())) {
+                            continue;
+                        }
+                        field.setAccessible(true);
+                        final String fieldName = field.getName();
+                        final Field newField = newFieldMap.get(fieldName);
+                        if (newField == null) {
+                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClassName);
+                        }
+                        newField.setAccessible(true);
+                        final String oldField = (String) field.get(configRestModel);
+                        if (String.class == newField.getType()) {
+                            newField.set(newClassObject, oldField);
+                        } else if (Integer.class == newField.getType()) {
+                            newField.set(newClassObject, stringToInteger(oldField));
+                        } else if (Long.class == newField.getType()) {
+                            newField.set(newClassObject, stringToLong(oldField));
+                        } else if (Boolean.class == newField.getType()) {
+                            newField.set(newClassObject, stringToBoolean(oldField));
+                        } else {
+                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName,
+                                    field.getName(), field.getType(), newField.getType()));
+                        }
+                    } catch (final NoSuchFieldException e) {
+                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
+                        continue;
+                    }
+                }
+                return newClassObject;
+            } catch (IllegalAccessException | InstantiationException | SecurityException e) {
+                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()));
             }
         }
         return null;

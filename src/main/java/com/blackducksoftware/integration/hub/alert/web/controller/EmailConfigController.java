@@ -102,7 +102,7 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
         final EmailChannel channel = new EmailChannel(globalProperties, gson, (EmailRepository) configActions.repository);
         String responseMessage = null;
         try {
-            responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, EmailConfigEntity.class));
+            responseMessage = channel.testMessage(configActions.objectTransformer.configRestModelToDatabaseEntity(emailConfig, EmailConfigEntity.class));
         } catch (final IntegrationException e) {
             logger.error(e.getMessage(), e);
             return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, emailConfig.getId(), e.getMessage());
