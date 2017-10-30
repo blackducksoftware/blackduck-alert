@@ -43,16 +43,19 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConf
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
+import com.google.gson.Gson;
 
 @RestController
 public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
     private final HipChatConfigActions configActions;
+    private final Gson gson;
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
-    public HipChatConfigController(final HipChatConfigActions configActions) {
+    public HipChatConfigController(final HipChatConfigActions configActions, final Gson gson) {
         this.configActions = configActions;
+        this.gson = gson;
         commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
@@ -89,7 +92,10 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
-        final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
+        if (hipChatConfig == null) {
+            return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + HipChatConfigRestModel.class.getSimpleName());
+        }
+        final HipChatChannel channel = new HipChatChannel(gson, (HipChatRepository) configActions.repository);
         String responseMessage = null;
         try {
             responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(hipChatConfig, HipChatConfigEntity.class));
