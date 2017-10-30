@@ -87,7 +87,7 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
         String responseMessage = null;
