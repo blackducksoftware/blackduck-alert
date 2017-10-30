@@ -44,6 +44,7 @@ public class ObjectTransformerTest {
 
         final EmailConfigEntity transformedConfigEntity = objectTransformer.transformObject(restModel, EmailConfigEntity.class);
         final EmailConfigRestModel transformedConfigRestModel = objectTransformer.transformObject(configEntity, EmailConfigRestModel.class);
+
         assertEquals(restModel, transformedConfigRestModel);
         assertEquals(configEntity, transformedConfigEntity);
     }

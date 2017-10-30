@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,17 +42,24 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
+import com.google.gson.Gson;
 
 @RestController
 public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
     private final EmailConfigActions configActions;
+    private final GlobalProperties globalProperties;
+    private final Gson gson;
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
-    EmailConfigController(final EmailConfigActions configActions) {
+    @Autowired
+    EmailConfigController(final EmailConfigActions configActions, final GlobalProperties globalProperties, final Gson gson) {
         this.configActions = configActions;
+        this.globalProperties = globalProperties;
+        this.gson = gson;
         commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
@@ -63,13 +71,13 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
     }
 
@@ -81,15 +89,15 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @DeleteMapping(value = "/configuration/email")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
         return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
-        final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) configActions.repository);
+        final EmailChannel channel = new EmailChannel(globalProperties, gson, (EmailRepository) configActions.repository);
         String responseMessage = null;
         try {
             responseMessage = channel.testMessage(configActions.objectTransformer.transformObject(emailConfig, EmailConfigEntity.class));

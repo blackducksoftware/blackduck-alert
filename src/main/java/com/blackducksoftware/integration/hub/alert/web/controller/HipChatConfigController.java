@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +51,7 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
     private final HipChatConfigActions configActions;
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
+    @Autowired
     public HipChatConfigController(final HipChatConfigActions configActions) {
         this.configActions = configActions;
         commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
@@ -63,13 +65,13 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.putConfig(hipChatConfig);
     }
 
@@ -81,13 +83,13 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     @DeleteMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
         final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
         String responseMessage = null;
         try {

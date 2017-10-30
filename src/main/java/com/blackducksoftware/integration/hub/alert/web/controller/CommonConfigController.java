@@ -59,6 +59,9 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public ResponseEntity<String> postConfig(final R restModel) {
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
         if (!configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
@@ -80,6 +83,9 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public ResponseEntity<String> putConfig(final R restModel) {
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
         if (configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
@@ -101,6 +107,9 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public ResponseEntity<String> deleteConfig(final R restModel) {
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
         if (configActions.doesConfigExist(restModel.getId())) {
             configActions.deleteConfig(restModel.getId());
             return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");

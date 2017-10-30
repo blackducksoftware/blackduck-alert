@@ -30,12 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class ObjectTransformer {
+    private final Logger logger = LoggerFactory.getLogger(ObjectTransformer.class);
 
     public <T> List<T> transformObjects(final List<?> objects, final Class<T> newClass) throws IntegrationException {
         final List<T> newList = new ArrayList<>();
@@ -67,67 +70,72 @@ public class ObjectTransformer {
                     }
                 }
                 for (final Field field : fields) {
-                    if (Modifier.isStatic(field.getModifiers())) {
+                    try {
+                        if (Modifier.isStatic(field.getModifiers())) {
+                            continue;
+                        }
+                        field.setAccessible(true);
+                        final String fieldName = field.getName();
+                        final Field newField = newFieldMap.get(fieldName);
+                        if (newField == null) {
+                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClass.getSimpleName());
+                        }
+                        newField.setAccessible(true);
+                        if (String.class == field.getType()) {
+                            final String oldField = (String) field.get(object);
+                            if (String.class == newField.getType()) {
+                                newField.set(newClassObject, oldField);
+                            } else if (Integer.class == newField.getType()) {
+                                newField.set(newClassObject, stringToInteger(oldField));
+                            } else if (Long.class == newField.getType()) {
+                                newField.set(newClassObject, stringToLong(oldField));
+                            } else if (Boolean.class == newField.getType()) {
+                                newField.set(newClassObject, stringToBoolean(oldField));
+                            } else {
+                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
+                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                            }
+                        } else if (Integer.class == field.getType()) {
+                            final Integer oldField = (Integer) field.get(object);
+                            if (String.class == newField.getType()) {
+                                newField.set(newClassObject, objectToString(oldField));
+                            } else if (Integer.class == newField.getType()) {
+                                newField.set(newClassObject, oldField);
+                            } else {
+                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
+                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                            }
+                        } else if (Long.class == field.getType()) {
+                            final Long oldField = (Long) field.get(object);
+                            if (String.class == newField.getType()) {
+                                newField.set(newClassObject, objectToString(oldField));
+                            } else if (Long.class == newField.getType()) {
+                                newField.set(newClassObject, oldField);
+                            } else {
+                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
+                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                            }
+                        } else if (Boolean.class == field.getType()) {
+                            final Boolean oldField = (Boolean) field.get(object);
+                            if (String.class == newField.getType()) {
+                                newField.set(newClassObject, objectToString(oldField));
+                            } else if (Boolean.class == newField.getType()) {
+                                newField.set(newClassObject, oldField);
+                            } else {
+                                throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
+                                        newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                            }
+                        } else {
+                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
+                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
+                        }
+                    } catch (final NoSuchFieldException e) {
+                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), object.getClass().getSimpleName(), newClass.getSimpleName()));
                         continue;
-                    }
-                    field.setAccessible(true);
-                    final String fieldName = field.getName();
-                    final Field newField = newFieldMap.get(fieldName);
-                    if (newField == null) {
-                        throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClass.getSimpleName());
-                    }
-                    newField.setAccessible(true);
-                    if (String.class == field.getType()) {
-                        final String oldField = (String) field.get(object);
-                        if (String.class == newField.getType()) {
-                            newField.set(newClassObject, oldField);
-                        } else if (Integer.class == newField.getType()) {
-                            newField.set(newClassObject, stringToInteger(oldField));
-                        } else if (Long.class == newField.getType()) {
-                            newField.set(newClassObject, stringToLong(oldField));
-                        } else if (Boolean.class == newField.getType()) {
-                            newField.set(newClassObject, stringToBoolean(oldField));
-                        } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                        }
-                    } else if (Integer.class == field.getType()) {
-                        final Integer oldField = (Integer) field.get(object);
-                        if (String.class == newField.getType()) {
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Integer.class == newField.getType()) {
-                            newField.set(newClassObject, oldField);
-                        } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                        }
-                    } else if (Long.class == field.getType()) {
-                        final Long oldField = (Long) field.get(object);
-                        if (String.class == newField.getType()) {
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Long.class == newField.getType()) {
-                            newField.set(newClassObject, oldField);
-                        } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                        }
-                    } else if (Boolean.class == field.getType()) {
-                        final Boolean oldField = (Boolean) field.get(object);
-                        if (String.class == newField.getType()) {
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Boolean.class == newField.getType()) {
-                            newField.set(newClassObject, oldField);
-                        } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                    newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
-                        }
-                    } else {
-                        throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", object.getClass().getSimpleName(),
-                                newClass.getSimpleName(), field.getName(), field.getType(), newField.getType()));
                     }
                 }
                 return newClassObject;
-            } catch (IllegalAccessException | InstantiationException | SecurityException | NoSuchFieldException e) {
+            } catch (IllegalAccessException | InstantiationException | SecurityException e) {
                 throw new IntegrationException(String.format("Could not transform object %s to %s: %s", object.getClass().getSimpleName(), newClass.getSimpleName(), e.toString()));
             }
         }
