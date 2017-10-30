@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,10 +35,12 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.digest.filter.FilterApplier;
+import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectFilter;
+import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectVersionFilter;
+import com.blackducksoftware.integration.hub.alert.digest.filter.UserFilter;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -59,12 +60,17 @@ public class DigestNotificationProcessor {
             return Collections.emptyList();
         } else {
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
-            final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
-            projectDataList.forEach(projectData -> {
-                events.add(new EmailEvent(projectData));
-                events.add(new HipChatEvent(projectData));
-            });
-            return events;
+
+            final FilterApplier filterApplier = new FilterApplier(new UserFilter(), new ProjectFilter(), new ProjectVersionFilter());
+
+            return filterApplier.applyFilters(projectDataList);
+
+            // final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
+            // projectDataList.forEach(projectData -> {
+            // events.add(new EmailEvent(projectData));
+            // events.add(new HipChatEvent(projectData));
+            // });
+            // return events;
         }
     }
 
@@ -72,8 +78,7 @@ public class DigestNotificationProcessor {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationEntity entry : eventMap) {
             final String projectKey = entry.getEventKey();
-            // get category map from the project or create the project data if
-            // it doesn't exist
+            // get category map from the project or create the project data if it doesn't exist
             Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
             if (!projectDataMap.containsKey(projectKey)) {
                 final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
