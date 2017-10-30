@@ -34,15 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
 public class ObjectTransformer {
     private final Logger logger = LoggerFactory.getLogger(ObjectTransformer.class);
 
-    public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws IntegrationException {
+    public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
         for (final DatabaseEntity databaseEntity : databaseEntities) {
             final T newObject = databaseEntityToConfigRestModel(databaseEntity, newClass);
@@ -51,7 +51,7 @@ public class ObjectTransformer {
         return newList;
     }
 
-    public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws IntegrationException {
+    public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws AlertException {
         if (null != databaseEntity && newClass != null) {
             final String databaseEntityClassName = databaseEntity.getClass().getSimpleName();
             final String newClassName = newClass.getSimpleName();
@@ -98,8 +98,8 @@ public class ObjectTransformer {
                             final Boolean oldField = (Boolean) field.get(databaseEntity);
                             newField.set(newClassObject, objectToString(oldField));
                         } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName,
-                                    field.getName(), field.getType(), newField.getType()));
+                            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName, field.getName(),
+                                    field.getType(), newField.getType()));
                         }
                     } catch (final NoSuchFieldException e) {
                         logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
@@ -108,13 +108,13 @@ public class ObjectTransformer {
                 }
                 return newClassObject;
             } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", databaseEntityClassName, newClassName, e.toString()));
+                throw new AlertException(String.format("Could not transform object %s to %s: %s", databaseEntityClassName, newClassName, e.toString()));
             }
         }
         return null;
     }
 
-    public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws IntegrationException {
+    public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
         for (final ConfigRestModel configRestModel : configRestModels) {
             final T newObject = configRestModelToDatabaseEntity(configRestModel, newClass);
@@ -123,7 +123,7 @@ public class ObjectTransformer {
         return newList;
     }
 
-    public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws IntegrationException {
+    public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws AlertException {
         if (null != configRestModel && newClass != null) {
             final String configRestModelClassName = configRestModel.getClass().getSimpleName();
             final String newClassName = newClass.getSimpleName();
@@ -167,8 +167,8 @@ public class ObjectTransformer {
                         } else if (Boolean.class == newField.getType()) {
                             newField.set(newClassObject, stringToBoolean(oldField));
                         } else {
-                            throw new IntegrationException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName,
-                                    field.getName(), field.getType(), newField.getType()));
+                            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
+                                    field.getType(), newField.getType()));
                         }
                     } catch (final NoSuchFieldException e) {
                         logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
@@ -177,7 +177,7 @@ public class ObjectTransformer {
                 }
                 return newClassObject;
             } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new IntegrationException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()));
+                throw new AlertException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()));
             }
         }
         return null;

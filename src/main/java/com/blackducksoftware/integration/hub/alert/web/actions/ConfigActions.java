@@ -25,12 +25,13 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
@@ -55,7 +56,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return id != null && repository.exists(id);
     }
 
-    public List<R> getConfig(final Long id) throws IntegrationException {
+    public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
             final D foundEntity = repository.findOne(id);
             if (foundEntity != null) {
@@ -82,7 +83,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         repository.delete(id);
     }
 
-    public D saveConfig(final R restModel) throws IntegrationException {
+    public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
@@ -91,13 +92,15 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 }
                 return createdEntity;
             } catch (final Exception e) {
-                throw new IntegrationException();
+                throw new AlertException(e.getMessage(), e);
             }
         }
         return null;
     }
 
-    public abstract Map<String, String> validateConfig(R restModel);
+    public abstract String validateConfig(R restModel) throws AlertFieldException;
+
+    public abstract String testConfig(R restModel) throws IntegrationException;
 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden

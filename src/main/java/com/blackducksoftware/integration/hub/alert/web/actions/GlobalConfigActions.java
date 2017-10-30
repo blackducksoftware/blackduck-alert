@@ -22,22 +22,29 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import java.util.Collections;
-import java.util.Map;
-
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
+import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, GlobalConfigRestModel> {
-
+    private final Logger logger = LoggerFactory.getLogger(GlobalConfigActions.class);
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
 
@@ -49,9 +56,36 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public Map<String, String> validateConfig(final GlobalConfigRestModel restModel) {
+    public String validateConfig(final GlobalConfigRestModel restModel) throws AlertFieldException {
         // TODO Auto-generated method stub
-        return Collections.emptyMap();
+        return "";
+    }
+
+    @Override
+    public String testConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
+        if (restModel != null) {
+            final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+
+            final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+            hubServerConfigBuilder.setHubUrl(restModel.getHubUrl());
+            hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
+            hubServerConfigBuilder.setUsername(restModel.getHubUsername());
+            hubServerConfigBuilder.setPassword(restModel.getHubPassword());
+
+            hubServerConfigBuilder.setProxyHost(restModel.getHubProxyHost());
+            hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
+            hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
+            hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
+            if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
+                hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
+            }
+            hubServerConfigBuilder.setLogger(intLogger);
+            final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
+            final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
+            restConnection.connect();
+            return "Successfully connected to the Hub.";
+        }
+        throw new AlertException("No configuration provided.");
     }
 
     @Override

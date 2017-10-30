@@ -85,8 +85,7 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     @Override
     @PostMapping(value = "/configuration/global/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
-        // TODO implement method for testing the configuration
-        return ResponseEntity.notFound().build();
+        return commonConfigController.testConfig(globalConfig);
     }
 
 }

@@ -24,18 +24,19 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
 public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
@@ -52,7 +53,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
     public List<R> getConfig(final Long id) {
         try {
             return configActions.getConfig(id);
-        } catch (final IntegrationException e) {
+        } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
         }
         return Collections.emptyList();
@@ -63,19 +64,19 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
         if (!configActions.doesConfigExist(restModel.getId())) {
-            final Map<String, String> validationResults = configActions.validateConfig(restModel);
-            if (validationResults.isEmpty()) {
+            try {
+                configActions.validateConfig(restModel);
                 configActions.configurationChangeTriggers(restModel);
                 try {
                     final D updatedEntity = configActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
-                } catch (final IntegrationException e) {
+                } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
-            } else {
+            } catch (final AlertFieldException e) {
                 final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), "There were errors with the configuration.");
-                responseBuilder.putErrors(validationResults);
+                responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
         }
@@ -87,19 +88,19 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
         if (configActions.doesConfigExist(restModel.getId())) {
-            final Map<String, String> validationResults = configActions.validateConfig(restModel);
-            if (validationResults.isEmpty()) {
+            try {
+                configActions.validateConfig(restModel);
                 configActions.configurationChangeTriggers(restModel);
                 try {
                     final D updatedEntity = configActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated");
-                } catch (final IntegrationException e) {
+                } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
-            } else {
+            } catch (final AlertFieldException e) {
                 final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), "There were errors with the configuration.");
-                responseBuilder.putErrors(validationResults);
+                responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
         }
@@ -115,6 +116,22 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
             return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+    }
+
+    public ResponseEntity<String> testConfig(final R restModel) {
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
+        try {
+            final String responseMessage = configActions.testConfig(restModel);
+            return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
+        }
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
