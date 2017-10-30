@@ -44,7 +44,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public void customTriggers(final GlobalConfigRestModel globalConfig) {
+    public void configurationChangeTriggers(final GlobalConfigRestModel globalConfig) {
         if (globalConfig != null) {
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());

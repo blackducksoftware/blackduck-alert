@@ -62,7 +62,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         if (!configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
-                configActions.customTriggers(restModel);
+                configActions.configurationChangeTriggers(restModel);
                 try {
                     final D updatedEntity = configActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
@@ -83,7 +83,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         if (configActions.doesConfigExist(restModel.getId())) {
             final Map<String, String> validationResults = configActions.validateConfig(restModel);
             if (validationResults.isEmpty()) {
-                configActions.customTriggers(restModel);
+                configActions.configurationChangeTriggers(restModel);
                 try {
                     final D updatedEntity = configActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Updated");

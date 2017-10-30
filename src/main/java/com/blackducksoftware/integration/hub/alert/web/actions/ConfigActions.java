@@ -87,7 +87,10 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public abstract Map<String, String> validateConfig(R restModel);
 
-    public void customTriggers(final R restModel) {
+    /**
+     * If something needs to be triggered when the configuration is changed, this method should be overriden
+     */
+    public void configurationChangeTriggers(final R restModel) {
 
     }
 
