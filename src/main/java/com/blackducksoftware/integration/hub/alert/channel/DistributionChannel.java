@@ -22,9 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -37,9 +41,12 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.google.gson.Gson;
 
 public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
+    private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
+    protected final JpaRepository<C, Long> repository;
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final JpaRepository repository, final Class<E> clazz) {
         super(gson, clazz);
+        this.repository = repository;
     }
 
     public abstract void sendMessage(final E event, final C config);
@@ -75,6 +82,22 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
     protected String createPlaintextMessage(final ProjectData projectData) {
         final String htmlMessage = createHtmlMessage(projectData);
         return StringEscapeUtils.escapeHtml4(htmlMessage);
+    }
+
+    public void handleEvent(final E event) {
+        final List<C> configurations = repository.findAll();
+        for (final C configEntity : configurations) {
+            sendMessage(event, configEntity);
+        }
+    }
+
+    @Override
+    public void receiveMessage(final String message) {
+        logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+        final E event = getEvent(message);
+        logger.info(String.format("%s event %s", getClass().getName(), event));
+
+        handleEvent(event);
     }
 
 }

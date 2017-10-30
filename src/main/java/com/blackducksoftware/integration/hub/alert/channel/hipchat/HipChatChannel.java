@@ -55,29 +55,15 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
-    private final HipChatRepository hipChatRepository;
-
     @Autowired
     public HipChatChannel(final Gson gson, final HipChatRepository hipChatRepository) {
-        super(gson, HipChatEvent.class);
-        this.hipChatRepository = hipChatRepository;
+        super(gson, hipChatRepository, HipChatEvent.class);
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received hipchat event message: {}", message);
-        final HipChatEvent event = getEvent(message);
-        logger.info("HipChat event {}", event);
-
-        handleEvent(event);
-    }
-
-    public void handleEvent(final HipChatEvent event) {
-        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
-        for (final HipChatConfigEntity configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
+        super.receiveMessage(message);
     }
 
     @Override
