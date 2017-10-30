@@ -72,8 +72,7 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     public ResponseEntity<String> validateConfig(final EmailConfigRestModel emailConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(emailConfig);
     }
 
     @Override

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -107,6 +108,13 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
      */
     public void configurationChangeTriggers(final R restModel) {
 
+    }
+
+    public Boolean isBoolean(final String value) {
+        if (StringUtils.isBlank(value)) {
+            return false;
+        }
+        return value.equalsIgnoreCase("false") || value.equalsIgnoreCase("true");
     }
 
 }

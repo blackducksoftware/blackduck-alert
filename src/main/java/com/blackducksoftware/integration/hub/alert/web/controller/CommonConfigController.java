@@ -118,6 +118,21 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
+    public ResponseEntity<String> validateConfig(final R restModel) {
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
+        try {
+            final String responseMessage = configActions.validateConfig(restModel);
+            return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
+        } catch (final AlertFieldException e) {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), e.getMessage());
+            responseBodyBuilder.putErrors(e.getFieldErrors());
+            final String responseBody = responseBodyBuilder.build();
+            return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<String> testConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());

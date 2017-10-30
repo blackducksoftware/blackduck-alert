@@ -72,8 +72,7 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     public ResponseEntity<String> validateConfig(final HipChatConfigRestModel hipChatConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(hipChatConfig);
     }
 
     @Override

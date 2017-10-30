@@ -22,6 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +50,19 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
 
     @Override
     public String validateConfig(final HipChatConfigRestModel restModel) throws AlertFieldException {
-        // TODO Auto-generated method stub
-        return "";
+        final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isNotBlank(restModel.getRoomId()) && !StringUtils.isNumeric(restModel.getRoomId())) {
+            fieldErrors.put("roomId", "Not an Integer.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getNotify()) && isBoolean(restModel.getNotify())) {
+            fieldErrors.put("notify", "Not an Boolean.");
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
     }
 
     @Override
