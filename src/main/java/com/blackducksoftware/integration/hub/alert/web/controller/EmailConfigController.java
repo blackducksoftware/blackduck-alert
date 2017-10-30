@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -71,13 +70,13 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
     }
 
@@ -89,13 +88,16 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
 
     @Override
     @DeleteMapping(value = "/configuration/email")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = false) @RequestBody final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+        if (emailConfig == null) {
+            return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + EmailConfigRestModel.class.getSimpleName());
+        }
         final Long id = configActions.objectTransformer.stringToLong(emailConfig.getId());
         final EmailChannel channel = new EmailChannel(globalProperties, gson, (EmailRepository) configActions.repository);
         String responseMessage = null;

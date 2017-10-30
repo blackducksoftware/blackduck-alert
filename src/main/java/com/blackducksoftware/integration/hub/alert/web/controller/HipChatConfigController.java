@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,13 +64,13 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.putConfig(hipChatConfig);
     }
 
@@ -83,13 +82,13 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     @DeleteMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = false) @RequestBody final HipChatConfigRestModel hipChatConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) configActions.repository);
         String responseMessage = null;
         try {

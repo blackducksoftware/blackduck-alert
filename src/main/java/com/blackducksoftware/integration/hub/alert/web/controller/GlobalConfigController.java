@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,13 +60,13 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
 
     @Override
     @PostMapping(value = "/configuration/global")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "globalConfig", required = false) @RequestBody final GlobalConfigRestModel globalConfig) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.postConfig(globalConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/global")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "globalConfig", required = false) @RequestBody final GlobalConfigRestModel globalConfig) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.putConfig(globalConfig);
     }
 
@@ -79,13 +78,13 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
 
     @Override
     @DeleteMapping(value = "/configuration/global")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "globalConfig", required = false) @RequestBody final GlobalConfigRestModel globalConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.deleteConfig(globalConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/global/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "globalConfig", required = false) final GlobalConfigRestModel globalConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         // TODO implement method for testing the configuration
         return ResponseEntity.notFound().build();
     }
