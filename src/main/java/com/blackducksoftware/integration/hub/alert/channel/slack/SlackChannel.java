@@ -68,7 +68,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public String testMessage(final SlackConfigEntity config) {
-        final String message = "Hello from Alert application";
+        final String message = "Test from Alert application";
         return String.valueOf(sendMessage(message, config));
     }
 
