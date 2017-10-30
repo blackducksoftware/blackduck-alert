@@ -49,21 +49,26 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationEn
 
     @Override
     public List<NotificationEntity> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        if (hasRead) {
-            return null;
-        } else {
-            logger.debug("{} Digest Item Reader called...", readerName);
-            final DateRange dateRange = getDateRange();
-            final Date startDate = dateRange.getStart();
-            final Date endDate = dateRange.getEnd();
-            final List<NotificationEntity> entityList = notificationRepository.findByCreatedAtBetween(startDate, endDate);
-            hasRead = true;
-            if (entityList.isEmpty()) {
+        try {
+            if (hasRead) {
                 return null;
             } else {
-                return entityList;
+                logger.debug("{} Digest Item Reader called...", readerName);
+                final DateRange dateRange = getDateRange();
+                final Date startDate = dateRange.getStart();
+                final Date endDate = dateRange.getEnd();
+                final List<NotificationEntity> entityList = notificationRepository.findByCreatedAtBetween(startDate, endDate);
+                hasRead = true;
+                if (entityList.isEmpty()) {
+                    return null;
+                } else {
+                    return entityList;
+                }
             }
+        } catch (final Exception ex) {
+            logger.error("Error reading Digest Notification Data", ex);
         }
+        return null;
     }
 
     public abstract DateRange getDateRange();

@@ -43,9 +43,13 @@ public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> 
 
     @Override
     public void write(final List<? extends List<AbstractChannelEvent>> eventList) throws Exception {
-        logger.info("Digest Item Writer called");
-        eventList.forEach(channelEventList -> {
-            channelTemplateManager.sendEvents(channelEventList);
-        });
+        try {
+            logger.info("Digest Item Writer called");
+            eventList.forEach(channelEventList -> {
+                channelTemplateManager.sendEvents(channelEventList);
+            });
+        } catch (final Exception ex) {
+            logger.error("Error occurred writing digest notification data to channels", ex);
+        }
     }
 }

@@ -42,13 +42,18 @@ public abstract class DigestItemProcessor implements ItemProcessor<List<Notifica
 
     @Override
     public List<AbstractChannelEvent> process(final List<NotificationEntity> notificationData) throws Exception {
-        logger.info("Notification Entity Count: {}", notificationData.size());
-        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationData);
-        if (events.isEmpty()) {
-            return null;
-        } else {
-            return events;
+        try {
+            logger.info("Notification Entity Count: {}", notificationData.size());
+            final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationData);
+            if (events.isEmpty()) {
+                return null;
+            } else {
+                return events;
+            }
+        } catch (final Exception ex) {
+            logger.error("Error processing digest notifications", ex);
         }
+        return null;
     }
 
     public abstract DigestTypeEnum getDigestType();
