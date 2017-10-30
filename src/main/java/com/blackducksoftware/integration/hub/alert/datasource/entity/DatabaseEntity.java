@@ -41,8 +41,7 @@ public abstract class DatabaseEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    protected DatabaseEntity() {
-
+    public DatabaseEntity() {
     }
 
     public Long getId() {
