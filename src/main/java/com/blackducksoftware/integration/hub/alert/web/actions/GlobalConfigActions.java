@@ -22,6 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,8 +60,19 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
 
     @Override
     public String validateConfig(final GlobalConfigRestModel restModel) throws AlertFieldException {
-        // TODO Auto-generated method stub
-        return "";
+        final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
+            fieldErrors.put("getHubTimeout", "Not an Integer.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && isBoolean(restModel.getHubAlwaysTrustCertificate())) {
+            fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
     }
 
     @Override

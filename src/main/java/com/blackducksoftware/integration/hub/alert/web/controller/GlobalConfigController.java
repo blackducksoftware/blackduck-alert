@@ -72,8 +72,7 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
 
     @Override
     public ResponseEntity<String> validateConfig(final GlobalConfigRestModel globalConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(globalConfig);
     }
 
     @Override
