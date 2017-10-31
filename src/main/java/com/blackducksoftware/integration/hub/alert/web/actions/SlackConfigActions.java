@@ -22,6 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +33,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 import com.google.gson.Gson;
@@ -44,7 +49,16 @@ public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackCo
     }
 
     @Override
-    public String validateConfig(final SlackConfigRestModel restModel) {
+    public String validateConfig(final SlackConfigRestModel restModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isEmpty(restModel.getWebhook())) {
+            fieldErrors.put("webhook", "Can't be blank");
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+
         return "Valid";
     }
 
