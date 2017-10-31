@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -63,17 +64,22 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
     @Override
     public void sendMessage(final SlackEvent event, final SlackConfigEntity config) {
         final ProjectData projectData = event.getProjectData();
-        final String htmlMessage = createHtmlMessage(projectData);
-        sendMessage(htmlMessage, config);
+        final String htmlMessage = createMessage(projectData);
+        try {
+            sendMessage(htmlMessage, config);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
+            logger.error(e.getMessage(), e);
+        }
     }
 
     @Override
-    public String testMessage(final SlackConfigEntity config) {
-        final String message = "Test from Alert application";
-        return String.valueOf(sendMessage(message, config));
+    public String testMessage(final SlackConfigEntity config) throws IntegrationRestException {
+        final String message = "*Test* from _Alert_ application";
+        return sendMessage(message, config);
     }
 
-    private int sendMessage(final String htmlMessage, final SlackConfigEntity config) {
+    private String sendMessage(final String htmlMessage, final SlackConfigEntity config) throws IntegrationRestException {
         final String slackUrl = config.getWebhook();
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
@@ -89,45 +95,52 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
             try {
                 logger.info("Attempting to send message...");
                 final Response response = connection.handleExecuteClientCall(request);
-                logger.info("Successfully sent a message!");
+                logger.info("Successfully sent a slack message!");
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
                 }
-                return response.code();
+                return "Attempting to send message";
             } catch (final IntegrationException e) {
-                logger.error("Failed to send message", e);
-                return 400;
+                throw new IntegrationRestException(400, "Failed to send Slack message", e.getMessage(), e);
             }
         } else {
-            logger.warn("No message will be sent because a connection was not established.");
+            throw new IntegrationRestException(500, "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
         }
-        return 500;
     }
 
-    protected String createHtmlMessage(final ProjectData projectData) {
-        final StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
+    protected String createMessage(final ProjectData projectData) {
+        final StringBuilder messageBuilder = new StringBuilder();
+        messageBuilder.append("*");
+        messageBuilder.append(projectData.getProjectName());
+        messageBuilder.append(" ");
+        messageBuilder.append(projectData.getProjectVersion());
+        messageBuilder.append("*");
+        messageBuilder.append(System.lineSeparator());
 
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
         if (categoryMap != null) {
             for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
                 final CategoryData data = categoryMap.get(category);
                 if (data != null) {
-                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
-                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
-                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
+                    messageBuilder.append("Type: ");
+                    messageBuilder.append(data.getCategoryKey());
+                    messageBuilder.append(System.lineSeparator());
+                    messageBuilder.append("Number of Changes: ");
+                    messageBuilder.append(data.getItemCount());
                     for (final ItemData item : data.getItemList()) {
+                        messageBuilder.append(System.lineSeparator());
                         final Map<String, Object> dataSet = item.getDataSet();
-                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
-                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
+                        messageBuilder.append("Rule: _" + dataSet.get(ItemTypeEnum.RULE.toString()));
+                        messageBuilder.append("_" + System.lineSeparator());
+                        messageBuilder.append("Component: _" + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                        messageBuilder.append("_ [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
                     }
                 }
             }
         } else {
-            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
+            messageBuilder.append("_A notification was received, but it was empty._");
         }
-        return htmlBuilder.toString();
+        return messageBuilder.toString();
     }
 
     private String getJsonString(final String htmlMessage, final String channel, final String username) {
@@ -135,6 +148,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
         json.addProperty("text", htmlMessage);
         json.addProperty("channel", channel);
         json.addProperty("username", username);
+        json.addProperty("mrkdwn", true);
 
         return json.toString();
     }
