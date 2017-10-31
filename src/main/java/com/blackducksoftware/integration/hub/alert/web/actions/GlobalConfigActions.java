@@ -61,7 +61,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     public String validateConfig(final GlobalConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
-            fieldErrors.put("getHubTimeout", "Not an Integer.");
+            fieldErrors.put("hubTimeout", "Not an Integer.");
         }
 
         if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && !isBoolean(restModel.getHubAlwaysTrustCertificate())) {
