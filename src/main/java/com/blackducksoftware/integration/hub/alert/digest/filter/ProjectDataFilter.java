@@ -75,24 +75,17 @@ public class ProjectDataFilter {
     public Set<ProjectData> filterNotifications(final Collection<ProjectData> notificationData) {
         final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
         final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
+
+        // Flatten the Collection of Collections of UserViews to a Set of UserViews
         final Collection<Collection<UserView>> usersPerProject = projectToUsersMap.values();
-        final Set<UserView> allNotificationUsers = usersPerProject.stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        final Set<UserView> allNotificationUsers = usersPerProject.parallelStream().flatMap(Collection::stream).collect(Collectors.toSet());
+
         final Set<UserView> configuredUsers = getHubUsersMatchingConfiguredUsers(allNotificationUsers);
 
-        return filterNotificationsByProjectUsers(projectToNotificationMap, projectToUsersMap, configuredUsers);
+        return filterNotificationsByProjectVersionUsers(projectToNotificationMap, projectToUsersMap, configuredUsers);
     }
 
-    public Set<UserView> flatten(final Collection<Collection<UserView>> outerCollection) {
-        final Set<UserView> uniqueUsers = new HashSet<>();
-        for (final Collection<UserView> innerCollection : outerCollection) {
-            for (final UserView user : innerCollection) {
-                uniqueUsers.add(user);
-            }
-        }
-        return uniqueUsers;
-    }
-
-    public Map<ProjectVersionWrapper, ProjectData> mapProjectsToNotifications(final Collection<ProjectData> projectData) {
+    private Map<ProjectVersionWrapper, ProjectData> mapProjectsToNotifications(final Collection<ProjectData> projectData) {
         final Map<ProjectVersionWrapper, ProjectData> projects = new HashMap<>();
         projectData.forEach(item -> {
             try {
@@ -105,7 +98,7 @@ public class ProjectDataFilter {
         return projects;
     }
 
-    public Map<ProjectVersionWrapper, Collection<UserView>> mapProjectsToUsers(final Collection<ProjectVersionWrapper> projectVersions) {
+    private Map<ProjectVersionWrapper, Collection<UserView>> mapProjectsToUsers(final Collection<ProjectVersionWrapper> projectVersions) {
         final Map<ProjectVersionWrapper, Collection<UserView>> projectMap = new HashMap<>();
         projectVersions.forEach(projectVersion -> {
             try {
@@ -119,7 +112,7 @@ public class ProjectDataFilter {
         return projectMap;
     }
 
-    public Set<UserView> getHubUsersMatchingConfiguredUsers(final Collection<UserView> users) {
+    private Set<UserView> getHubUsersMatchingConfiguredUsers(final Collection<UserView> users) {
         final Set<UserView> matchingUsers = new HashSet<>();
         // TODO get users from globalConfig
         // final GlobalConfigEntity globalConfig = globalRepo.getOne(new Long(1));
@@ -132,7 +125,7 @@ public class ProjectDataFilter {
         return matchingUsers;
     }
 
-    public Set<ProjectData> filterNotificationsByProjectUsers(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
+    private Set<ProjectData> filterNotificationsByProjectVersionUsers(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
             final Collection<UserView> configuredUsers) {
         final Set<ProjectData> notificationDataFromProjects = new HashSet<>();
         projectToUsersMap.forEach((projectVersion, projectUsers) -> {
