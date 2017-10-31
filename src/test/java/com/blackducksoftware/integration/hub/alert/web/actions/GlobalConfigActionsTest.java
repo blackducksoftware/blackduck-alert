@@ -147,7 +147,7 @@ public class GlobalConfigActionsTest {
         assertNull(emailConfigEntity);
     }
 
-    @Test
+    // @Test
     public void testValidateConfig() throws Exception {
         final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
         final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, null, null, objectTransformer);
