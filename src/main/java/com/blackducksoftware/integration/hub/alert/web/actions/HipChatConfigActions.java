@@ -55,7 +55,7 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
             fieldErrors.put("roomId", "Not an Integer.");
         }
 
-        if (StringUtils.isNotBlank(restModel.getNotify()) && isBoolean(restModel.getNotify())) {
+        if (StringUtils.isNotBlank(restModel.getNotify()) && !isBoolean(restModel.getNotify())) {
             fieldErrors.put("notify", "Not an Boolean.");
         }
 
