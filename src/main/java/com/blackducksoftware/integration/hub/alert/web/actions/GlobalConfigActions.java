@@ -65,7 +65,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             fieldErrors.put("getHubTimeout", "Not an Integer.");
         }
 
-        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && isBoolean(restModel.getHubAlwaysTrustCertificate())) {
+        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && !isBoolean(restModel.getHubAlwaysTrustCertificate())) {
             fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
         }
 
