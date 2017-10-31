@@ -30,6 +30,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -121,10 +122,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
                 }
                 return "Attempting to send a test message.";
             } catch (final IntegrationException e) {
-                throw new IntegrationRestException(400, "Failed to send a HipChat message", e.getMessage(), e);
+                throw new IntegrationRestException(HttpStatus.BAD_REQUEST.value(), "Failed to send a HipChat message", e.getMessage(), e);
             }
         } else {
-            throw new IntegrationRestException(500, "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
+            throw new IntegrationRestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
         }
     }
 
