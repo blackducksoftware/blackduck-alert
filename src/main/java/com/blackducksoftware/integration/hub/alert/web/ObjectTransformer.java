@@ -44,9 +44,11 @@ public class ObjectTransformer {
 
     public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
-        for (final DatabaseEntity databaseEntity : databaseEntities) {
-            final T newObject = databaseEntityToConfigRestModel(databaseEntity, newClass);
-            newList.add(newObject);
+        if (databaseEntities != null) {
+            for (final DatabaseEntity databaseEntity : databaseEntities) {
+                final T newObject = databaseEntityToConfigRestModel(databaseEntity, newClass);
+                newList.add(newObject);
+            }
         }
         return newList;
     }

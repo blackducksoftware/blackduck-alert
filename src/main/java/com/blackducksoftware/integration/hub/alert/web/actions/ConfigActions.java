@@ -70,10 +70,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
         final List<D> databaseEntities = repository.findAll();
         final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
-        if (restModels != null) {
-            return restModels;
-        }
-        return Collections.emptyList();
+        return restModels;
     }
 
     public void deleteConfig(final String id) {
@@ -81,7 +78,9 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public void deleteConfig(final Long id) {
-        repository.delete(id);
+        if (id != null) {
+            repository.delete(id);
+        }
     }
 
     public D saveConfig(final R restModel) throws AlertException {
@@ -90,8 +89,8 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
+                    return createdEntity;
                 }
-                return createdEntity;
             } catch (final Exception e) {
                 throw new AlertException(e.getMessage(), e);
             }
@@ -114,7 +113,8 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         if (StringUtils.isBlank(value)) {
             return false;
         }
-        return value.equalsIgnoreCase("false") || value.equalsIgnoreCase("true");
+        final String trimmedValue = value.trim();
+        return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
     }
 
 }
