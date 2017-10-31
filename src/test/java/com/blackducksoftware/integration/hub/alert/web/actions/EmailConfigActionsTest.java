@@ -168,6 +168,7 @@ public class EmailConfigActionsTest {
         fieldErrors.put("mailSmtpSendPartial", "Not an Boolean.");
         try {
             response = configActions.validateConfig(restModel);
+            fail();
         } catch (final AlertFieldException e) {
             for (final Entry<String, String> entry : e.getFieldErrors().entrySet()) {
                 assertTrue(fieldErrors.containsKey(entry.getKey()));
@@ -175,6 +176,9 @@ public class EmailConfigActionsTest {
                 assertEquals(expectedValue, entry.getValue());
             }
         }
+
+        response = configActions.validateConfig(new EmailConfigRestModel());
+        assertEquals("Valid", response);
     }
 
     @Test
