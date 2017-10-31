@@ -129,7 +129,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
-            return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         }
     }
 
