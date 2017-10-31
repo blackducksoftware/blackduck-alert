@@ -33,22 +33,18 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
-import com.google.gson.Gson;
 
 @Component
 public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailConfigRestModel> {
-    private final GlobalProperties globalProperties;
-    private final Gson gson;
+    private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final Gson gson) {
+    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
         super(EmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
-        this.globalProperties = globalProperties;
-        this.gson = gson;
+        this.emailChannel = emailChannel;
     }
 
     @Override
@@ -76,7 +72,6 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
         if (StringUtils.isNotBlank(restModel.getMailSmtpSendPartial()) && !isBoolean(restModel.getMailSmtpSendPartial())) {
             fieldErrors.put("mailSmtpSendPartial", "Not an Boolean.");
         }
-
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -85,8 +80,7 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
 
     @Override
     public String testConfig(final EmailConfigRestModel restModel) throws IntegrationException {
-        final EmailChannel channel = new EmailChannel(globalProperties, gson, (EmailRepository) repository);
-        return channel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
+        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
     }
 
 }

@@ -82,9 +82,12 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public String testMessage(final EmailConfigEntity emailConfigEntity) {
-        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-        sendMessage(emailConfigEntity.getMailSmtpFrom(), new EmailEvent(data), emailConfigEntity);
-        return "Attempted to send message with the given configuration.";
+        if (emailConfigEntity != null) {
+            final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
+            sendMessage(emailConfigEntity.getMailSmtpFrom(), new EmailEvent(data), emailConfigEntity);
+            return "Attempted to send message with the given configuration.";
+        }
+        return null;
     }
 
     @Override
