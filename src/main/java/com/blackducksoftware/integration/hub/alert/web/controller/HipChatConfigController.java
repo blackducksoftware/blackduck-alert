@@ -24,86 +24,67 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController extends ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
+    private final HipChatConfigActions configActions;
+    private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
-    public HipChatConfigController(final HipChatRepository repository) {
-        super(repository);
+    public HipChatConfigController(final HipChatConfigActions configActions) {
+        this.configActions = configActions;
+        commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
     @Override
     @GetMapping(value = "/configuration/hipchat")
     public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return super.getConfig(id);
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
-        return super.postConfig(hipChatConfig);
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
+        return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
-        return super.putConfig(hipChatConfig);
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
+        return commonConfigController.putConfig(hipChatConfig);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(final HipChatConfigRestModel hipChatConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(hipChatConfig);
     }
 
     @Override
     @DeleteMapping(value = "/configuration/hipchat")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
-        return super.deleteConfig(hipChatConfig);
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
+        return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "hipChatConfig", required = true) @RequestBody final HipChatConfigRestModel hipChatConfig) {
-        final HipChatChannel channel = new HipChatChannel(null, (HipChatRepository) repository);
-        final String responseMessage = channel.testMessage(restModelToDatabaseModel(hipChatConfig));
-        try {
-            final int intResponse = Integer.parseInt(responseMessage);
-            final HttpStatus status = HttpStatus.valueOf(intResponse);
-            if (status != null) {
-                return super.createResponse(status, hipChatConfig.getId(), "Attempting to send a test message.");
-            }
-        } catch (final IllegalArgumentException e) {
-            return super.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());
-        }
-        return super.createResponse(HttpStatus.BAD_REQUEST, hipChatConfig.getId(), "Failure.");
-    }
-
-    @Override
-    public HipChatConfigEntity restModelToDatabaseModel(final HipChatConfigRestModel model) {
-        return new HipChatConfigEntity(model.getApiKey(), model.getRoomId(), model.getNotify(), model.getColor());
-    }
-
-    @Override
-    public HipChatConfigRestModel databaseModelToRestModel(final HipChatConfigEntity entity) {
-        return new HipChatConfigRestModel(entity.getId(), entity.getApiKey(), entity.getRoomId(), entity.getNotify(), entity.getColor());
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
+        return commonConfigController.testConfig(hipChatConfig);
     }
 
 }

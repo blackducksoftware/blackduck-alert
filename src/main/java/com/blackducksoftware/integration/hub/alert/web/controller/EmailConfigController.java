@@ -24,84 +24,67 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+    private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
+    private final EmailConfigActions configActions;
+    private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
     @Autowired
-    EmailConfigController(final EmailRepository repository) {
-        super(repository);
+    EmailConfigController(final EmailConfigActions configActions) {
+        this.configActions = configActions;
+        commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
     @Override
     @GetMapping(value = "/configuration/email")
     public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return super.getConfig(id);
+        return commonConfigController.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        return super.postConfig(emailConfig);
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+        return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        return super.putConfig(emailConfig);
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+        return commonConfigController.putConfig(emailConfig);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(final EmailConfigRestModel emailConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(emailConfig);
     }
 
     @Override
     @DeleteMapping(value = "/configuration/email")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "emailConfig", required = true) @RequestBody final EmailConfigRestModel emailConfig) {
-        return super.deleteConfig(emailConfig);
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+        return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestAttribute(value = "emailConfig", required = true) final EmailConfigRestModel emailConfig) {
-        final EmailChannel channel = new EmailChannel(null, null, (EmailRepository) repository);
-        final String responseMessage = channel.testMessage(restModelToDatabaseModel(emailConfig));
-        return super.createResponse(HttpStatus.OK, emailConfig.getId(), responseMessage);
-    }
-
-    @Override
-    public EmailConfigEntity restModelToDatabaseModel(final EmailConfigRestModel restModel) {
-        final EmailConfigEntity databaseModel = new EmailConfigEntity(restModel.getMailSmtpHost(), restModel.getMailSmtpUser(), restModel.getMailSmtpPassword(), restModel.getMailSmtpPort(), restModel.getMailSmtpConnectionTimeout(),
-                restModel.getMailSmtpTimeout(), restModel.getMailSmtpFrom(), restModel.getMailSmtpLocalhost(), restModel.getMailSmtpEhlo(), restModel.getMailSmtpAuth(), restModel.getMailSmtpDnsNotify(), restModel.getMailSmtpDsnRet(),
-                restModel.getMailSmtpAllow8bitmime(), restModel.getMailSmtpSendPartial(), restModel.getEmailTemplateDirectory(), restModel.getEmailTemplateLogoImage(), restModel.getEmailSubjectLine());
-        return databaseModel;
-    }
-
-    @Override
-    public EmailConfigRestModel databaseModelToRestModel(final EmailConfigEntity databaseModel) {
-        final EmailConfigRestModel restModel = new EmailConfigRestModel(databaseModel.getId(), databaseModel.getMailSmtpHost(), databaseModel.getMailSmtpUser(), databaseModel.getMailSmtpPassword(), databaseModel.getMailSmtpPort(),
-                databaseModel.getMailSmtpConnectionTimeout(), databaseModel.getMailSmtpTimeout(), databaseModel.getMailSmtpFrom(), databaseModel.getMailSmtpLocalhost(), databaseModel.getMailSmtpEhlo(), databaseModel.getMailSmtpAuth(),
-                databaseModel.getMailSmtpDnsNotify(), databaseModel.getMailSmtpDsnRet(), databaseModel.getMailSmtpAllow8bitmime(), databaseModel.getMailSmtpSendPartial(), databaseModel.getEmailTemplateDirectory(),
-                databaseModel.getEmailTemplateLogoImage(), databaseModel.getEmailSubjectLine());
-        return restModel;
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+        return commonConfigController.testConfig(emailConfig);
     }
 
 }
