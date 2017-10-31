@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
@@ -77,29 +76,30 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
 
     @Override
     public String testConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
-        if (restModel != null) {
-            final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+        final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-            final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-            hubServerConfigBuilder.setHubUrl(restModel.getHubUrl());
-            hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
-            hubServerConfigBuilder.setUsername(restModel.getHubUsername());
-            hubServerConfigBuilder.setPassword(restModel.getHubPassword());
+        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+        hubServerConfigBuilder.setHubUrl(restModel.getHubUrl());
+        hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
+        hubServerConfigBuilder.setUsername(restModel.getHubUsername());
+        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
 
-            hubServerConfigBuilder.setProxyHost(restModel.getHubProxyHost());
-            hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
-            hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
-            hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
-            if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
-                hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
-            }
-            hubServerConfigBuilder.setLogger(intLogger);
-            final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
-            final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
-            restConnection.connect();
-            return "Successfully connected to the Hub.";
+        hubServerConfigBuilder.setProxyHost(restModel.getHubProxyHost());
+        hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
+        hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
+        hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
+        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
+            hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
         }
-        throw new AlertException("No configuration provided.");
+        hubServerConfigBuilder.setLogger(intLogger);
+        final RestConnection restConnection = createRestConnection(hubServerConfigBuilder);
+        restConnection.connect();
+        return "Successfully connected to the Hub.";
+    }
+
+    public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
+        final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
+        return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
     }
 
     @Override
