@@ -64,16 +64,16 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
             fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
         }
 
-        if (StringUtils.isNotBlank(restModel.getMailSmtpEhlo()) && isBoolean(restModel.getMailSmtpEhlo())) {
+        if (StringUtils.isNotBlank(restModel.getMailSmtpEhlo()) && !isBoolean(restModel.getMailSmtpEhlo())) {
             fieldErrors.put("mailSmtpEhlo", "Not an Boolean.");
         }
-        if (StringUtils.isNotBlank(restModel.getMailSmtpAuth()) && isBoolean(restModel.getMailSmtpAuth())) {
+        if (StringUtils.isNotBlank(restModel.getMailSmtpAuth()) && !isBoolean(restModel.getMailSmtpAuth())) {
             fieldErrors.put("mailSmtpAuth", "Not an Boolean.");
         }
-        if (StringUtils.isNotBlank(restModel.getMailSmtpAllow8bitmime()) && isBoolean(restModel.getMailSmtpAllow8bitmime())) {
+        if (StringUtils.isNotBlank(restModel.getMailSmtpAllow8bitmime()) && !isBoolean(restModel.getMailSmtpAllow8bitmime())) {
             fieldErrors.put("mailSmtpAllow8bitmime", "Not an Boolean.");
         }
-        if (StringUtils.isNotBlank(restModel.getMailSmtpSendPartial()) && isBoolean(restModel.getMailSmtpSendPartial())) {
+        if (StringUtils.isNotBlank(restModel.getMailSmtpSendPartial()) && !isBoolean(restModel.getMailSmtpSendPartial())) {
             fieldErrors.put("mailSmtpSendPartial", "Not an Boolean.");
         }
 
