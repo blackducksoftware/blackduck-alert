@@ -22,29 +22,53 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
+import com.google.gson.Gson;
 
 @Component
 public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, HipChatConfigRestModel> {
+    private final Gson gson;
 
     @Autowired
-    public HipChatConfigActions(final HipChatRepository hipChatRepository, final ObjectTransformer objectTransformer) {
+    public HipChatConfigActions(final HipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final Gson gson) {
         super(HipChatConfigEntity.class, HipChatConfigRestModel.class, hipChatRepository, objectTransformer);
+        this.gson = gson;
     }
 
     @Override
-    public Map<String, String> validateConfig(final HipChatConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return Collections.emptyMap();
+    public String validateConfig(final HipChatConfigRestModel restModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isNotBlank(restModel.getRoomId()) && !StringUtils.isNumeric(restModel.getRoomId())) {
+            fieldErrors.put("roomId", "Not an Integer.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getNotify()) && !isBoolean(restModel.getNotify())) {
+            fieldErrors.put("notify", "Not an Boolean.");
+        }
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
+    }
+
+    @Override
+    public String testConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
+        final HipChatChannel channel = new HipChatChannel(gson, (HipChatRepository) repository);
+        return channel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class));
     }
 
 }

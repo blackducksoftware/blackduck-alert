@@ -27,7 +27,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,25 +36,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
-import com.google.gson.Gson;
 
 @RestController
 public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
     private final HipChatConfigActions configActions;
-    private final Gson gson;
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
-    public HipChatConfigController(final HipChatConfigActions configActions, final Gson gson) {
+    public HipChatConfigController(final HipChatConfigActions configActions) {
         this.configActions = configActions;
-        this.gson = gson;
         commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
@@ -79,8 +72,7 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
 
     @Override
     public ResponseEntity<String> validateConfig(final HipChatConfigRestModel hipChatConfig) {
-        // TODO
-        return null;
+        return commonConfigController.validateConfig(hipChatConfig);
     }
 
     @Override
@@ -92,29 +84,7 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
     @Override
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
-        if (hipChatConfig == null) {
-            return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + HipChatConfigRestModel.class.getSimpleName());
-        }
-        final HipChatChannel channel = new HipChatChannel(gson, (HipChatRepository) configActions.repository);
-        String responseMessage = null;
-        try {
-            responseMessage = channel.testMessage(configActions.objectTransformer.configRestModelToDatabaseEntity(hipChatConfig, HipChatConfigEntity.class));
-        } catch (final IntegrationException e) {
-            logger.error(e.getMessage(), e);
-            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, hipChatConfig.getId(), e.getMessage());
-        }
-        final Long id = configActions.objectTransformer.stringToLong(hipChatConfig.getId());
-        try {
-            final int intResponse = Integer.parseInt(responseMessage);
-            final HttpStatus status = HttpStatus.valueOf(intResponse);
-            if (status != null) {
-                return commonConfigController.createResponse(status, id, "Attempting to send a test message.");
-            }
-        } catch (final IllegalArgumentException e) {
-            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
-        }
-
-        return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, id, "Failure.");
+        return commonConfigController.testConfig(hipChatConfig);
     }
 
 }
