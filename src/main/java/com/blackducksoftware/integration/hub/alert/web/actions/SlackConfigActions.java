@@ -43,7 +43,7 @@ public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackCo
 
     @Override
     public Map<String, String> validateConfig(final SlackConfigRestModel restModel) {
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
 }
