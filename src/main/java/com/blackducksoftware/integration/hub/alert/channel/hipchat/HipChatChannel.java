@@ -30,6 +30,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -74,10 +76,15 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     @Override
     public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
-        sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
+        try {
+            sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
+            logger.error(e.getMessage(), e);
+        }
     }
 
-    private int sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) {
+    private String sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
         // TODO find a better way to inject this
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
@@ -99,18 +106,21 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
                 }
-                return response.code();
+                return "Attempting to send a test message.";
             } catch (final IntegrationException e) {
-                logger.error("Failed to send a HipChat message", e);
-                return 400;
+                throw new IntegrationRestException(HttpStatus.BAD_REQUEST.value(), "Failed to send a HipChat message", e.getMessage(), e);
             }
         } else {
-            logger.warn("No message will be sent because a connection was not established.");
+            throw new IntegrationRestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
         }
-        return 500;
     }
 
-    protected String createHtmlMessage(final ProjectData projectData) {
+    @Override
+    public String testMessage(final HipChatConfigEntity config) throws IntegrationException {
+        return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
+    }
+
+    private String createHtmlMessage(final ProjectData projectData) {
         final StringBuilder htmlBuilder = new StringBuilder();
         htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
 
@@ -134,12 +144,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
             htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
         }
         return htmlBuilder.toString();
-    }
-
-    @Override
-    public String testMessage(final HipChatConfigEntity config) {
-        final int responseCode = sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
-        return String.valueOf(responseCode);
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {

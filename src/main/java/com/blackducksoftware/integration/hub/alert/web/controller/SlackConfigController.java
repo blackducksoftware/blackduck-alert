@@ -27,7 +27,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,10 +37,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
 import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 import com.google.gson.Gson;
@@ -87,29 +83,7 @@ public class SlackConfigController implements ConfigController<SlackConfigEntity
     @Override
     @PostMapping(value = "/configuration/slack/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final SlackConfigRestModel slackConfig) {
-        if (slackConfig == null) {
-            return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + SlackConfigRestModel.class.getSimpleName());
-        }
-        final SlackChannel channel = new SlackChannel(gson, (SlackRepository) configActions.repository);
-        String responseMessage = null;
-        try {
-            responseMessage = channel.testMessage(configActions.objectTransformer.configRestModelToDatabaseEntity(slackConfig, SlackConfigEntity.class));
-        } catch (final IntegrationException e) {
-            logger.error(e.getMessage(), e);
-            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, slackConfig.getId(), e.getMessage());
-        }
-        final Long id = configActions.objectTransformer.stringToLong(slackConfig.getId());
-        try {
-            final int intResponse = Integer.parseInt(responseMessage);
-            final HttpStatus status = HttpStatus.valueOf(intResponse);
-            if (status != null) {
-                return commonConfigController.createResponse(status, id, "Attempting to send a test message.");
-            }
-        } catch (final IllegalArgumentException e) {
-            return commonConfigController.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
-        }
-
-        return commonConfigController.createResponse(HttpStatus.BAD_REQUEST, id, "Failure.");
+        return commonConfigController.testConfig(slackConfig);
     }
 
     @Override
