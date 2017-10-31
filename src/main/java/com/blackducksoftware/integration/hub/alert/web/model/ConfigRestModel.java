@@ -29,17 +29,17 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class ConfigRestModel implements Serializable {
     private static final long serialVersionUID = -3135264759095676355L;
-    private Long id;
+    private String id;
 
-    protected ConfigRestModel() {
+    public ConfigRestModel() {
 
     }
 
-    public ConfigRestModel(final Long id) {
+    public ConfigRestModel(final String id) {
         this.id = id;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
