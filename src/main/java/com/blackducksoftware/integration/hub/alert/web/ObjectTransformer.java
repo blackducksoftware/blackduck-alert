@@ -62,18 +62,14 @@ public class ObjectTransformer {
 
                 final List<Field> fields = new ArrayList<>();
                 fields.addAll(Arrays.asList(databaseEntity.getClass().getDeclaredFields()));
-                if (databaseEntity.getClass().getSuperclass() != null) {
-                    fields.addAll(Arrays.asList(databaseEntity.getClass().getSuperclass().getDeclaredFields()));
-                }
+                fields.addAll(Arrays.asList(databaseEntity.getClass().getSuperclass().getDeclaredFields()));
 
                 final Map<String, Field> newFieldMap = new HashMap<>();
                 for (final Field field : newClassObject.getClass().getDeclaredFields()) {
                     newFieldMap.put(field.getName(), field);
                 }
-                if (databaseEntity.getClass().getSuperclass() != null) {
-                    for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
-                        newFieldMap.put(field.getName(), field);
-                    }
+                for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
+                    newFieldMap.put(field.getName(), field);
                 }
                 for (final Field field : fields) {
                     try {
@@ -101,7 +97,7 @@ public class ObjectTransformer {
                             newField.set(newClassObject, objectToString(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName, field.getName(),
-                                    field.getType(), newField.getType()));
+                                    field.getType().getSimpleName(), newField.getType().getSimpleName()));
                         }
                     } catch (final NoSuchFieldException e) {
                         logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
@@ -118,9 +114,11 @@ public class ObjectTransformer {
 
     public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
-        for (final ConfigRestModel configRestModel : configRestModels) {
-            final T newObject = configRestModelToDatabaseEntity(configRestModel, newClass);
-            newList.add(newObject);
+        if (configRestModels != null) {
+            for (final ConfigRestModel configRestModel : configRestModels) {
+                final T newObject = configRestModelToDatabaseEntity(configRestModel, newClass);
+                newList.add(newObject);
+            }
         }
         return newList;
     }
@@ -134,18 +132,14 @@ public class ObjectTransformer {
 
                 final List<Field> fields = new ArrayList<>();
                 fields.addAll(Arrays.asList(configRestModel.getClass().getDeclaredFields()));
-                if (configRestModel.getClass().getSuperclass() != null) {
-                    fields.addAll(Arrays.asList(configRestModel.getClass().getSuperclass().getDeclaredFields()));
-                }
+                fields.addAll(Arrays.asList(configRestModel.getClass().getSuperclass().getDeclaredFields()));
 
                 final Map<String, Field> newFieldMap = new HashMap<>();
                 for (final Field field : newClassObject.getClass().getDeclaredFields()) {
                     newFieldMap.put(field.getName(), field);
                 }
-                if (configRestModel.getClass().getSuperclass() != null) {
-                    for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
-                        newFieldMap.put(field.getName(), field);
-                    }
+                for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
+                    newFieldMap.put(field.getName(), field);
                 }
                 for (final Field field : fields) {
                     try {
@@ -170,7 +164,7 @@ public class ObjectTransformer {
                             newField.set(newClassObject, stringToBoolean(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
-                                    field.getType(), newField.getType()));
+                                    field.getType().getSimpleName(), newField.getType().getSimpleName()));
                         }
                     } catch (final NoSuchFieldException e) {
                         logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
@@ -178,8 +172,10 @@ public class ObjectTransformer {
                     }
                 }
                 return newClassObject;
+            } catch (final AlertException e) {
+                throw e;
             } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new AlertException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()));
+                throw new AlertException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()), e);
             }
         }
         return null;
@@ -187,8 +183,9 @@ public class ObjectTransformer {
 
     public Integer stringToInteger(final String value) {
         if (null != value) {
+            final String trimmedValue = value.trim();
             try {
-                return Integer.valueOf(value);
+                return Integer.valueOf(trimmedValue);
             } catch (final NumberFormatException e) {
             }
         }
@@ -197,8 +194,9 @@ public class ObjectTransformer {
 
     public Long stringToLong(final String value) {
         if (null != value) {
+            final String trimmedValue = value.trim();
             try {
-                return Long.valueOf(value);
+                return Long.valueOf(trimmedValue);
             } catch (final NumberFormatException e) {
             }
         }
@@ -207,7 +205,12 @@ public class ObjectTransformer {
 
     public Boolean stringToBoolean(final String value) {
         if (null != value) {
-            return Boolean.valueOf(value);
+            final String trimmedValue = value.trim();
+            if (trimmedValue.equalsIgnoreCase("false")) {
+                return false;
+            } else if (trimmedValue.equalsIgnoreCase("true")) {
+                return true;
+            }
         }
         return null;
     }
