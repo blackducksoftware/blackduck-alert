@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.digest.filter.FilterApplier;
+import com.blackducksoftware.integration.hub.alert.digest.filter.FilterManager;
 import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectFilter;
 import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectVersionFilter;
 import com.blackducksoftware.integration.hub.alert.digest.filter.UserFilter;
@@ -61,7 +61,7 @@ public class DigestNotificationProcessor {
         } else {
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
 
-            final FilterApplier filterApplier = new FilterApplier(new UserFilter(), new ProjectFilter(), new ProjectVersionFilter());
+            final FilterManager filterApplier = new FilterManager(new UserFilter(), new ProjectFilter(), new ProjectVersionFilter());
 
             return filterApplier.applyFilters(projectDataList);
 

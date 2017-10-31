@@ -35,13 +35,13 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
  *
  * I don't think this way will be efficient at all, or work the way we want it to.
  */
-public class FilterApplier {
+public class FilterManager {
     private final List<AbstractChannelEvent> channelEvents;
     private final UserFilter userFilter;
     private final ProjectFilter projectFilter;
     private final ProjectVersionFilter projectVersionFilter;
 
-    public FilterApplier(final UserFilter userFilter, final ProjectFilter projectFilter, final ProjectVersionFilter projectVersionFilter) {
+    public FilterManager(final UserFilter userFilter, final ProjectFilter projectFilter, final ProjectVersionFilter projectVersionFilter) {
         this.channelEvents = new LinkedList<>();
         this.userFilter = userFilter;
         this.projectFilter = projectFilter;

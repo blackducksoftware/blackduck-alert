@@ -22,11 +22,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +41,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalR
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
 import com.blackducksoftware.integration.hub.api.user.UserRequestService;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.model.view.ProjectView;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
+import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
 import com.blackducksoftware.integration.hub.model.view.UserView;
 
 /*
@@ -53,71 +55,94 @@ public class ProjectDataFilter {
     private final Logger logger = LoggerFactory.getLogger(ProjectDataFilter.class);
 
     private final GlobalRepository globalRepo;
-    private final EmailRepository emailRepo;
-    private final HipChatRepository hipChatRepo;
+    private final EmailRepository emailRepo; // TODO remove unused variable
+    private final HipChatRepository hipChatRepo; // TODO remove unused variable
     private final UserRequestService userRequestService;
-    private final ProjectRequestService projectRequestService;
+    private final ProjectDataService projectDataService;
     private final MetaService metaService;
 
     @Autowired
-    public ProjectDataFilter(final GlobalRepository globalRepo, final EmailRepository emailRepo, final HipChatRepository hipChatRepo, final UserRequestService userRequestService, final ProjectRequestService projectRequestService,
+    public ProjectDataFilter(final GlobalRepository globalRepo, final EmailRepository emailRepo, final HipChatRepository hipChatRepo, final UserRequestService userRequestService, final ProjectDataService projectDataService,
             final MetaService metaService) {
         this.globalRepo = globalRepo;
         this.emailRepo = emailRepo;
         this.hipChatRepo = hipChatRepo;
         this.userRequestService = userRequestService;
-        this.projectRequestService = projectRequestService;
+        this.projectDataService = projectDataService;
         this.metaService = metaService;
     }
 
-    // Approach #2a
-    public Set<ProjectView> getProjectsFromNotifications(final Collection<ProjectData> projectData) {
-        final Set<ProjectView> projects = new HashSet<>();
+    public Set<ProjectData> filterNotifications(final Collection<ProjectData> notificationData) {
+        final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
+        final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
+        final Collection<Collection<UserView>> usersPerProject = projectToUsersMap.values();
+        final Set<UserView> allNotificationUsers = usersPerProject.stream().flatMap(Collection::stream).collect(Collectors.toSet());
+        final Set<UserView> configuredUsers = getHubUsersMatchingConfiguredUsers(allNotificationUsers);
+
+        return filterNotificationsByProjectUsers(projectToNotificationMap, projectToUsersMap, configuredUsers);
+    }
+
+    public Set<UserView> flatten(final Collection<Collection<UserView>> outerCollection) {
+        final Set<UserView> uniqueUsers = new HashSet<>();
+        for (final Collection<UserView> innerCollection : outerCollection) {
+            for (final UserView user : innerCollection) {
+                uniqueUsers.add(user);
+            }
+        }
+        return uniqueUsers;
+    }
+
+    public Map<ProjectVersionWrapper, ProjectData> mapProjectsToNotifications(final Collection<ProjectData> projectData) {
+        final Map<ProjectVersionWrapper, ProjectData> projects = new HashMap<>();
         projectData.forEach(item -> {
             try {
-                final ProjectView project = projectRequestService.getProjectByName(item.getProjectName());
-                projects.add(project);
+                final ProjectVersionWrapper projectVersion = projectDataService.getProjectVersion(item.getProjectName(), item.getProjectVersion());
+                projects.put(projectVersion, item);
             } catch (final IntegrationException e) {
-                logger.error("Something went wrong trying to get the projects from the Hub", e);
+                logger.error("Something went wrong trying to get " + item.getProjectName() + " > " + item.getProjectVersion() + " from the Hub", e);
             }
         });
         return projects;
     }
 
-    public Set<UserView> getUsersFromProjects(final Collection<ProjectView> projects) {
-        final Set<UserView> users = new HashSet<>();
-        projects.forEach(project -> {
+    public Map<ProjectVersionWrapper, Collection<UserView>> mapProjectsToUsers(final Collection<ProjectVersionWrapper> projectVersions) {
+        final Map<ProjectVersionWrapper, Collection<UserView>> projectMap = new HashMap<>();
+        projectVersions.forEach(projectVersion -> {
             try {
-                final String usersLink = metaService.getFirstLink(project, MetaService.USERS_LINK);
+                final String usersLink = metaService.getFirstLink(projectVersion.getProjectView(), MetaService.USERS_LINK);
                 final List<UserView> projectUsers = userRequestService.getAllItems(usersLink, UserView.class);
-                users.addAll(projectUsers);
+                projectMap.put(projectVersion, projectUsers);
             } catch (final IntegrationException e) {
                 logger.error("Something went wrong trying to get the users from the Hub", e);
             }
         });
-        return users;
+        return projectMap;
     }
 
-    // Approach #2b
-    public Set<UserView> getConfiguredHubUsers(final Collection<String> hubUserNames) {
-        try {
-            final List<UserView> allHubUsers = userRequestService.getAllUsers();
-            final Set<UserView> configuredUsers = new HashSet<>();
-            allHubUsers.forEach(user -> {
-                if (hubUserNames.contains(user.userName)) {
-                    configuredUsers.add(user);
+    public Set<UserView> getHubUsersMatchingConfiguredUsers(final Collection<UserView> users) {
+        final Set<UserView> matchingUsers = new HashSet<>();
+        // TODO get users from globalConfig
+        // final GlobalConfigEntity globalConfig = globalRepo.getOne(new Long(1));
+        final List<String> globalConfigUsers = new ArrayList<>();
+        users.forEach(user -> {
+            if (globalConfigUsers.contains(user.userName)) {
+                matchingUsers.add(user);
+            }
+        });
+        return matchingUsers;
+    }
+
+    public Set<ProjectData> filterNotificationsByProjectUsers(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
+            final Collection<UserView> configuredUsers) {
+        final Set<ProjectData> notificationDataFromProjects = new HashSet<>();
+        projectToUsersMap.forEach((projectVersion, projectUsers) -> {
+            projectUsers.forEach(user -> {
+                if (configuredUsers.contains(user)) {
+                    notificationDataFromProjects.add(projectToNotificationMap.get(projectVersion));
                 }
             });
-            return configuredUsers;
-        } catch (final IntegrationException e) {
-            logger.error("Something went wrong trying to get the users from the Hub", e);
-        }
-        return Collections.emptySet();
+        });
+        return notificationDataFromProjects;
     }
 
-    // TODO
-    public Set<ProjectVersionModel> getProjectsForUser(final Collection<UserView> configuredUsers) {
-        // TODO reverse the above
-        return Collections.emptySet();
-    }
 }
