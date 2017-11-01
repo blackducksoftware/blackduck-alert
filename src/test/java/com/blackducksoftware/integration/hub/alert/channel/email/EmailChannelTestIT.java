@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
@@ -24,7 +25,13 @@ import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
-public class EmailChannelTestIT {
+public class EmailChannelTestIT extends RestChannelTest {
+
+    @Before
+    public void init() throws IOException {
+        properties = new Properties();
+        properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
+    }
 
     private Properties properties;
 
