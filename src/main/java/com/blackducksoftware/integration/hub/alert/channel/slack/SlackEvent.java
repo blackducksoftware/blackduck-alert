@@ -20,41 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.model;
+package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import java.util.LinkedList;
-import java.util.List;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
-public class CategoryDataBuilder {
-    private String categoryKey;
+public class SlackEvent extends AbstractChannelEvent {
 
-    private final List<ItemData> itemList;
-
-    public CategoryDataBuilder() {
-        this.itemList = new LinkedList<>();
+    public SlackEvent(final ProjectData projectData, final Long userConfigId) {
+        super(projectData, userConfigId);
     }
 
-    public void addItem(final ItemData item) {
-        itemList.add(item);
+    @Override
+    public String getTopic() {
+        return SupportedChannels.SLACK;
     }
 
-    public void removeItem(final ItemData item) {
-        itemList.remove(item);
-    }
-
-    public String getCategoryKey() {
-        return categoryKey;
-    }
-
-    public void setCategoryKey(final String categoryKey) {
-        this.categoryKey = categoryKey;
-    }
-
-    public List<ItemData> getItemList() {
-        return itemList;
-    }
-
-    public CategoryData build() {
-        return new CategoryData(categoryKey, itemList, itemList.size());
-    }
 }

@@ -41,7 +41,7 @@ public class EmailConfigRestModel extends ConfigRestModel {
     private String mailSmtpEhlo;
     private String mailSmtpAuth;
     private String mailSmtpDnsNotify;
-    private String mailSmtpDsnRet;
+    private String mailSmtpDnsRet;
     private String mailSmtpAllow8bitmime;
     private String mailSmtpSendPartial;
     private String emailTemplateDirectory;
@@ -52,7 +52,7 @@ public class EmailConfigRestModel extends ConfigRestModel {
     }
 
     public EmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
-            final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDsnRet, final String mailSmtpAllow8bitmime,
+            final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime,
             final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
@@ -66,7 +66,7 @@ public class EmailConfigRestModel extends ConfigRestModel {
         this.mailSmtpEhlo = mailSmtpEhlo;
         this.mailSmtpAuth = mailSmtpAuth;
         this.mailSmtpDnsNotify = mailSmtpDnsNotify;
-        this.mailSmtpDsnRet = mailSmtpDsnRet;
+        this.mailSmtpDnsRet = mailSmtpDnsRet;
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
         this.emailTemplateDirectory = emailTemplateDirectory;
@@ -122,8 +122,8 @@ public class EmailConfigRestModel extends ConfigRestModel {
         return mailSmtpDnsNotify;
     }
 
-    public String getMailSmtpDsnRet() {
-        return mailSmtpDsnRet;
+    public String getMailSmtpDnsRet() {
+        return mailSmtpDnsRet;
     }
 
     public String getMailSmtpAllow8bitmime() {

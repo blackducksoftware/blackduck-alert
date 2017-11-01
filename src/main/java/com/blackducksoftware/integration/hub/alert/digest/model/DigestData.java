@@ -22,39 +22,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.model;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class CategoryDataBuilder {
-    private String categoryKey;
+public abstract class DigestData {
 
-    private final List<ItemData> itemList;
-
-    public CategoryDataBuilder() {
-        this.itemList = new LinkedList<>();
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    public void addItem(final ItemData item) {
-        itemList.add(item);
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
-    public void removeItem(final ItemData item) {
-        itemList.remove(item);
-    }
-
-    public String getCategoryKey() {
-        return categoryKey;
-    }
-
-    public void setCategoryKey(final String categoryKey) {
-        this.categoryKey = categoryKey;
-    }
-
-    public List<ItemData> getItemList() {
-        return itemList;
-    }
-
-    public CategoryData build() {
-        return new CategoryData(categoryKey, itemList, itemList.size());
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }

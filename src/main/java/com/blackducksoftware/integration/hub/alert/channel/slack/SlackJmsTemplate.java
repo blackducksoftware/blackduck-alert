@@ -20,41 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.model;
+package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.jms.ConnectionFactory;
 
-public class CategoryDataBuilder {
-    private String categoryKey;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    private final List<ItemData> itemList;
+import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 
-    public CategoryDataBuilder() {
-        this.itemList = new LinkedList<>();
+@Component
+public class SlackJmsTemplate extends AbstractJmsTemplate {
+
+    @Autowired
+    public SlackJmsTemplate(final ConnectionFactory connectionFactory) {
+        super(connectionFactory);
     }
 
-    public void addItem(final ItemData item) {
-        itemList.add(item);
+    @Override
+    public String getDestinationName() {
+        return SupportedChannels.SLACK;
     }
 
-    public void removeItem(final ItemData item) {
-        itemList.remove(item);
-    }
-
-    public String getCategoryKey() {
-        return categoryKey;
-    }
-
-    public void setCategoryKey(final String categoryKey) {
-        this.categoryKey = categoryKey;
-    }
-
-    public List<ItemData> getItemList() {
-        return itemList;
-    }
-
-    public CategoryData build() {
-        return new CategoryData(categoryKey, itemList, itemList.size());
-    }
 }

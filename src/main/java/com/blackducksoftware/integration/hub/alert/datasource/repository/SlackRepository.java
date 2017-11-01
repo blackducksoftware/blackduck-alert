@@ -20,41 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.model;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.util.LinkedList;
-import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public class CategoryDataBuilder {
-    private String categoryKey;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 
-    private final List<ItemData> itemList;
+@Transactional
+public interface SlackRepository extends JpaRepository<SlackConfigEntity, Long> {
 
-    public CategoryDataBuilder() {
-        this.itemList = new LinkedList<>();
-    }
-
-    public void addItem(final ItemData item) {
-        itemList.add(item);
-    }
-
-    public void removeItem(final ItemData item) {
-        itemList.remove(item);
-    }
-
-    public String getCategoryKey() {
-        return categoryKey;
-    }
-
-    public void setCategoryKey(final String categoryKey) {
-        this.categoryKey = categoryKey;
-    }
-
-    public List<ItemData> getItemList() {
-        return itemList;
-    }
-
-    public CategoryData build() {
-        return new CategoryData(categoryKey, itemList, itemList.size());
-    }
 }
