@@ -24,10 +24,7 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
-public class ItemData {
+public class ItemData extends DigestData {
     private final Map<String, Object> dataSet;
 
     public ItemData(final Map<String, Object> dataMap) {
@@ -36,10 +33,5 @@ public class ItemData {
 
     public Map<String, Object> getDataSet() {
         return dataSet;
-    }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }

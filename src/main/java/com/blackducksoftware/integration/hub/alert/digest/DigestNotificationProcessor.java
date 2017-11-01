@@ -111,7 +111,6 @@ public class DigestNotificationProcessor {
             dataSet.put(ItemTypeEnum.VERSION.name(), entry.getComponentVersion());
             dataSet.put(ItemTypeEnum.COUNT.name(), count);
 
-            categoryData.incrementItemCount(count);
             categoryData.addItem(new ItemData(dataSet));
         }
         // build
