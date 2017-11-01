@@ -24,7 +24,7 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 
 import java.util.List;
 
-public class CategoryData {
+public class CategoryData extends DigestData {
     private final String categoryKey;
 
     private final List<ItemData> itemList;
@@ -49,8 +49,4 @@ public class CategoryData {
         return itemCount;
     }
 
-    @Override
-    public String toString() {
-        return "CategoryData [categoryKey=" + categoryKey + ", itemList=" + itemList + ", itemCount=" + itemCount + "]";
-    }
 }
