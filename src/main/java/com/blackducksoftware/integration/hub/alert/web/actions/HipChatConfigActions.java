@@ -36,16 +36,15 @@ import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChat
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
-import com.google.gson.Gson;
 
 @Component
 public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, HipChatConfigRestModel> {
-    private final Gson gson;
+    private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatConfigActions(final HipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final Gson gson) {
+    public HipChatConfigActions(final HipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
         super(HipChatConfigEntity.class, HipChatConfigRestModel.class, hipChatRepository, objectTransformer);
-        this.gson = gson;
+        this.hipChatChannel = hipChatChannel;
     }
 
     @Override
@@ -67,8 +66,7 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
 
     @Override
     public String testConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
-        final HipChatChannel channel = new HipChatChannel(gson, (HipChatRepository) repository);
-        return channel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class));
+        return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class));
     }
 
 }

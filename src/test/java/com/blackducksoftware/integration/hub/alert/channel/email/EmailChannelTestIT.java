@@ -2,11 +2,14 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -23,8 +26,21 @@ import com.google.gson.Gson;
 
 public class EmailChannelTestIT {
 
+    private Properties properties;
+
+    @Before
+    public void init() throws IOException {
+        properties = new Properties();
+        properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
+    }
+
     @Test
     public void sendEmailTest() throws Exception {
+        Assume.assumeTrue(properties.containsKey("mail.smtp.host"));
+        Assume.assumeTrue(properties.containsKey("mail.smtp.from"));
+        Assume.assumeTrue(properties.containsKey("hub.email.template.directory"));
+        Assume.assumeTrue(properties.containsKey("logo.image"));
+
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
         final VulnerabilityEntity vulnerability = new VulnerabilityEntity("Vuln ID", "Vuln Operation");
         vulns.add(vulnerability);
@@ -46,17 +62,14 @@ public class EmailChannelTestIT {
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 
-        final Properties testProperties = new Properties();
-        testProperties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
-
         final TestGlobalProperties globalProperties = new TestGlobalProperties(null);
-        globalProperties.setHubUrl(testProperties.getProperty("blackduck.hub.url"));
+        globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
         final Gson gson = new Gson();
         final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null);
         final EmailEvent event = new EmailEvent(projectData);
 
-        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(testProperties.getProperty("mail.smtp.host", ""), null, null, null, null, null, testProperties.getProperty("mail.smtp.from", ""), null, null, null, null, null, null,
-                null, testProperties.getProperty("hub.email.template.directory", "./"), testProperties.getProperty("logo.image", ""), "Test Subject Line");
+        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(properties.getProperty("mail.smtp.host"), null, null, null, null, null, properties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
+                properties.getProperty("hub.email.template.directory"), properties.getProperty("logo.image"), "Test Subject Line");
 
         emailChannel.sendMessage(event, emailConfigEntity);
     }
