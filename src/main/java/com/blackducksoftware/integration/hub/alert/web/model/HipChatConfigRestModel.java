@@ -22,6 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 public class HipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
@@ -41,6 +44,10 @@ public class HipChatConfigRestModel extends ConfigRestModel {
         this.color = color;
     }
 
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
     public String getApiKey() {
         return apiKey;
     }
@@ -55,5 +62,12 @@ public class HipChatConfigRestModel extends ConfigRestModel {
 
     public String getColor() {
         return color;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
+        return reflectionToStringBuilder.toString();
     }
 }

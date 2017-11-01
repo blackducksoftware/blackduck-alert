@@ -40,7 +40,6 @@ public class EmailChannelTestIT extends RestChannelTest {
         final ItemData data = new ItemData(itemModel);
         final CategoryDataBuilder categoryBuilder = new CategoryDataBuilder();
         categoryBuilder.addItem(data);
-        categoryBuilder.incrementItemCount(1);
         categoryBuilder.setCategoryKey(NotificationCategoryEnum.POLICY_VIOLATION.toString());
 
         final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
