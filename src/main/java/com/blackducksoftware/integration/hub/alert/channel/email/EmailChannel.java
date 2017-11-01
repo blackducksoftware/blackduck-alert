@@ -55,11 +55,13 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
     private final GlobalProperties globalProperties;
+    private final EmailRepository emailRepository;
 
     @Autowired
     public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final EmailRepository emailRepository) {
-        super(gson, emailRepository, EmailEvent.class);
+        super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
+        this.emailRepository = emailRepository;
     }
 
     @JmsListener(destination = SupportedChannels.EMAIL)
@@ -110,7 +112,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void handleEvent(final EmailEvent event) {
-        final List<EmailConfigEntity> configurations = repository.findAll();
+        final List<EmailConfigEntity> configurations = emailRepository.findAll();
         for (final EmailConfigEntity configEntity : configurations) {
             sendMessage(event, configEntity);
         }

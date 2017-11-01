@@ -56,10 +56,12 @@ import okhttp3.Response;
 @Component
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
+    private final SlackRepository slackRepository;
 
     @Autowired
     public SlackChannel(final Gson gson, final SlackRepository slackRepository) {
-        super(gson, slackRepository, SlackEvent.class);
+        super(gson, SlackEvent.class);
+        this.slackRepository = slackRepository;
     }
 
     @Override
@@ -162,7 +164,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public void handleEvent(final SlackEvent event) {
-        final List<SlackConfigEntity> configurations = repository.findAll();
+        final List<SlackConfigEntity> configurations = slackRepository.findAll();
         for (final SlackConfigEntity configEntity : configurations) {
             sendMessage(event, configEntity);
         }
