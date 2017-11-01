@@ -86,5 +86,4 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.testConfig(globalConfig);
     }
-
 }

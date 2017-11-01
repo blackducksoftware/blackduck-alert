@@ -70,13 +70,11 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     @JmsListener(destination = SupportedChannels.EMAIL)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received email event message: {}", message);
-        final EmailEvent emailEvent = getEvent(message);
-        logger.info("Email event {}", emailEvent);
-        handleEvent(emailEvent);
+        super.receiveMessage(message);
     }
 
-    private void handleEvent(final EmailEvent emailEvent) {
+    @Override
+    public void handleEvent(final EmailEvent emailEvent) {
         final UserConfigRelation relationRow = userRelationRepository.findChannelConfig(emailEvent.getUserConfigId(), SupportedChannels.EMAIL);
         final Long configId = relationRow.getChannelConfigId();
         final EmailConfigEntity configuration = emailRepository.findOne(configId);
