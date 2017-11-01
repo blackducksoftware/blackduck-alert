@@ -39,7 +39,9 @@ import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserConfigRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.UserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -63,11 +65,13 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     public static final String HIP_CHAT_FROM_NAME = "Hub Alert";
 
     private final HipChatRepository hipChatRepository;
+    private final UserRelationRepository userRelationRepository;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final HipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final UserRelationRepository userRelationRepository, final HipChatRepository hipChatRepository) {
         super(gson, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
+        this.userRelationRepository = userRelationRepository;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -81,10 +85,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     public void handleEvent(final HipChatEvent event) {
-        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
-        for (final HipChatConfigEntity configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
+        final UserConfigRelation relationRow = userRelationRepository.findChannelConfig(event.getUserConfigId(), SupportedChannels.HIPCHAT);
+        final Long configId = relationRow.getChannelConfigId();
+        final HipChatConfigEntity configuration = hipChatRepository.findOne(configId);
+        sendMessage(event, configuration);
     }
 
     @Override
@@ -99,7 +103,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     private String sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
-        // TODO find a better way to inject this
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());

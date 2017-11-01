@@ -69,13 +69,13 @@ public class HipChatChannelTestIT {
     public void sendMessageTestIT() throws IOException {
         Assume.assumeTrue(properties.containsKey("hipchat.api.key"));
         Assume.assumeTrue(properties.containsKey("hipchat.room.id"));
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null);
 
         final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
         map.put(NotificationCategoryEnum.POLICY_VIOLATION, new CategoryData("category_key", Collections.emptyList(), 0));
 
         final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Integration Test Project Name", "Integration Test Project Version Name", null);
-        final HipChatEvent event = new HipChatEvent(data);
+        final HipChatEvent event = new HipChatEvent(data, null);
         final HipChatConfigEntity config = new HipChatConfigEntity(properties.getProperty("hipchat.api.key"), Integer.parseInt(properties.getProperty("hipchat.room.id")), false, "random");
 
         hipChatChannel.sendMessage(event, config);

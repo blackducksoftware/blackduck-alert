@@ -20,20 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class HipChatEvent extends AbstractChannelEvent {
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-    public HipChatEvent(final ProjectData projectData, final Long configurationId) {
-        super(projectData, configurationId);
+@Entity
+@Table(name = "user_config", schema = "user")
+public class UserConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -3579210806166954817L;
+
+    @Column(name = "hub_usernames")
+    private String hubUsernames;
+
+    public String getHubUsernames() {
+        return hubUsernames;
     }
 
     @Override
-    public String getTopic() {
-        return SupportedChannels.HIPCHAT;
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
     }
+
 }

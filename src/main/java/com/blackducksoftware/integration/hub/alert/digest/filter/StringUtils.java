@@ -22,17 +22,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+public class StringUtils {
 
-public class UserFilter implements NotificationFilter<ProjectData> {
-
-    @Override
-    public Set<ProjectData> getFilteredItems(final Collection<ProjectData> items) {
-        // TODO
-        return new HashSet<>(items);
+    public static List<String> formatCsv(final String csv) {
+        final List<String> valuesFromSplit = new ArrayList<>();
+        for (final String value : csv.split(",")) {
+            valuesFromSplit.add(value.trim());
+        }
+        return valuesFromSplit;
     }
+
 }

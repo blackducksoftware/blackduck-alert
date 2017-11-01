@@ -20,20 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import java.util.List;
+import java.util.Set;
+
+import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
-public class HipChatEvent extends AbstractChannelEvent {
+public class UserNotifications {
+    private final UserConfigEntity userConfigEntity;
+    private final Set<ProjectData> notifications;
 
-    public HipChatEvent(final ProjectData projectData, final Long configurationId) {
-        super(projectData, configurationId);
+    public UserNotifications(final UserConfigEntity userConfigEntity, final Set<ProjectData> notifications) {
+        this.userConfigEntity = userConfigEntity;
+        this.notifications = notifications;
     }
 
-    @Override
-    public String getTopic() {
-        return SupportedChannels.HIPCHAT;
+    public Long getUserConfigId() {
+        return userConfigEntity.getId();
     }
+
+    public List<String> getHubUsernames() {
+        return StringUtils.formatCsv(userConfigEntity.getHubUsernames());
+    }
+
+    public Set<ProjectData> getNotifications() {
+        return notifications;
+    }
+
 }

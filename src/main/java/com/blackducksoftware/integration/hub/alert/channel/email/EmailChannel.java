@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -42,8 +41,10 @@ import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarg
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserConfigRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.UserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
@@ -56,11 +57,13 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
+    private final UserRelationRepository userRelationRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final UserRelationRepository userRelationRepository, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
+        this.userRelationRepository = userRelationRepository;
         this.emailRepository = emailRepository;
     }
 
@@ -74,17 +77,17 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     }
 
     private void handleEvent(final EmailEvent emailEvent) {
-        final List<EmailConfigEntity> configurations = emailRepository.findAll();
-        for (final EmailConfigEntity configuration : configurations) {
-            sendMessage(emailEvent, configuration);
-        }
+        final UserConfigRelation relationRow = userRelationRepository.findChannelConfig(emailEvent.getUserConfigId(), SupportedChannels.EMAIL);
+        final Long configId = relationRow.getChannelConfigId();
+        final EmailConfigEntity configuration = emailRepository.findOne(configId);
+        sendMessage(emailEvent, configuration);
     }
 
     @Override
     public String testMessage(final EmailConfigEntity emailConfigEntity) {
         if (emailConfigEntity != null) {
             final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-            sendMessage(emailConfigEntity.getMailSmtpFrom(), new EmailEvent(data), emailConfigEntity);
+            sendMessage(emailConfigEntity.getMailSmtpFrom(), new EmailEvent(data, null), emailConfigEntity);
             return "Attempted to send message with the given configuration.";
         }
         return null;
@@ -92,6 +95,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
+        // TODO get the emails from the hub from the config
         sendMessage("", emailEvent, emailConfigEntity);
     }
 

@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,14 +34,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.digest.filter.FilterManager;
-import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectFilter;
-import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectVersionFilter;
-import com.blackducksoftware.integration.hub.alert.digest.filter.UserFilter;
+import com.blackducksoftware.integration.hub.alert.datasource.repository.UserConfigRepository;
+import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectDataFilter;
+import com.blackducksoftware.integration.hub.alert.digest.filter.UserNotifications;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -52,6 +55,12 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class DigestNotificationProcessor {
+    private final UserConfigRepository userRepository;
+
+    @Autowired
+    public DigestNotificationProcessor(final UserConfigRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
@@ -59,18 +68,15 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
+            final ProjectDataFilter notificationFilter = new ProjectDataFilter(userRepository, null, null, null);
+
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
+            final Collection<UserNotifications> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
 
-            final FilterManager filterApplier = new FilterManager(new UserFilter(), new ProjectFilter(), new ProjectVersionFilter());
+            final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
+            events.addAll(getChatChannelEvents(userNotifications));
 
-            return filterApplier.applyFilters(projectDataList);
-
-            // final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
-            // projectDataList.forEach(projectData -> {
-            // events.add(new EmailEvent(projectData));
-            // events.add(new HipChatEvent(projectData));
-            // });
-            // return events;
+            return events;
         }
     }
 
@@ -138,4 +144,19 @@ public class DigestNotificationProcessor {
 
         return idSet;
     }
+
+    private List<AbstractChannelEvent> getChatChannelEvents(final Collection<UserNotifications> userNotifications) {
+        final List<AbstractChannelEvent> newEvents = new ArrayList<>();
+        userNotifications.forEach(userNotification -> {
+            userNotification.getNotifications().forEach(notification -> {
+                newEvents.add(new HipChatEvent(notification, userNotification.getUserConfigId()));
+                // TODO events.add(new SlackEvent(notification, userNotification.getUserConfigId()));
+                userNotification.getHubUsernames().forEach(username -> {
+                    newEvents.add(new EmailEvent(notification, userNotification.getUserConfigId()));
+                });
+            });
+        });
+        return newEvents;
+    }
+
 }
