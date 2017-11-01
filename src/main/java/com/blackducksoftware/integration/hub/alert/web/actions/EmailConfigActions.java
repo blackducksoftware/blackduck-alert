@@ -22,29 +22,65 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @Component
 public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailConfigRestModel> {
+    private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer) {
+    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
         super(EmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
+        this.emailChannel = emailChannel;
     }
 
     @Override
-    public Map<String, String> validateConfig(final EmailConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return Collections.emptyMap();
+    public String validateConfig(final EmailConfigRestModel restModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isNotBlank(restModel.getMailSmtpPort()) && !StringUtils.isNumeric(restModel.getMailSmtpPort())) {
+            fieldErrors.put("mailSmtpPort", "Not an Integer.");
+        }
+        if (StringUtils.isNotBlank(restModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(restModel.getMailSmtpConnectionTimeout())) {
+            fieldErrors.put("mailSmtpConnectionTimeout", "Not an Integer.");
+        }
+        if (StringUtils.isNotBlank(restModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(restModel.getMailSmtpTimeout())) {
+            fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getMailSmtpEhlo()) && !isBoolean(restModel.getMailSmtpEhlo())) {
+            fieldErrors.put("mailSmtpEhlo", "Not an Boolean.");
+        }
+        if (StringUtils.isNotBlank(restModel.getMailSmtpAuth()) && !isBoolean(restModel.getMailSmtpAuth())) {
+            fieldErrors.put("mailSmtpAuth", "Not an Boolean.");
+        }
+        if (StringUtils.isNotBlank(restModel.getMailSmtpAllow8bitmime()) && !isBoolean(restModel.getMailSmtpAllow8bitmime())) {
+            fieldErrors.put("mailSmtpAllow8bitmime", "Not an Boolean.");
+        }
+        if (StringUtils.isNotBlank(restModel.getMailSmtpSendPartial()) && !isBoolean(restModel.getMailSmtpSendPartial())) {
+            fieldErrors.put("mailSmtpSendPartial", "Not an Boolean.");
+        }
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
+    }
+
+    @Override
+    public String testConfig(final EmailConfigRestModel restModel) throws IntegrationException {
+        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
     }
 
 }
