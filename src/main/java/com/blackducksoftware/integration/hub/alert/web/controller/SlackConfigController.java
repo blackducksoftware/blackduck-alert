@@ -88,8 +88,7 @@ public class SlackConfigController implements ConfigController<SlackConfigEntity
 
     @Override
     public ResponseEntity<String> validateConfig(final SlackConfigRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
+        return commonConfigController.validateConfig(restModel);
     }
 
 }
