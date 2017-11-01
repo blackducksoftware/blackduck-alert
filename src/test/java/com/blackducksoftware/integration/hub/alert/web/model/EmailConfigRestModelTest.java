@@ -53,24 +53,24 @@ public class EmailConfigRestModelTest {
 
     @Test
     public void testModel() {
-        final String emailSubjectLine = "EmailSubjectLine";
-        final String emailTemplateDirectory = "EmailTemplateDirectory";
-        final String emailTemplateLogoImage = "EmailTemplateLogoImage";
         final String id = "Id";
-        final String mailSmtpAllow8bitmime = "MailSmtpAllow8bitmime";
-        final String mailSmtpAuth = "MailSmtpAuth";
+        final String mailSmtpHost = "MailSmtpHost";
+        final String mailSmtpUser = "MailSmtpUser";
+        final String mailSmtpPassword = "MailSmtpPassword";
+        final String mailSmtpPort = "MailSmtpPort";
         final String mailSmtpConnectionTimeout = "MailSmtpConnectionTimeout";
+        final String mailSmtpTimeout = "MailSmtpTimeout";
+        final String mailSmtpFrom = "MailSmtpFrom";
+        final String mailSmtpLocalhost = "MailSmtpLocalhost";
+        final String mailSmtpEhlo = "MailSmtpEhlo";
+        final String mailSmtpAuth = "MailSmtpAuth";
         final String mailSmtpDnsNotify = "MailSmtpDnsNotify";
         final String mailSmtpDnsRet = "MailSmtpDnsRet";
-        final String mailSmtpEhlo = "MailSmtpEhlo";
-        final String mailSmtpFrom = "MailSmtpFrom";
-        final String mailSmtpHost = "MailSmtpHost";
-        final String mailSmtpLocalhost = "MailSmtpLocalhost";
-        final String mailSmtpPassword = "MailSmtpPassword";
-        final String mailSmtpPort = "mailSmtpPort";
+        final String mailSmtpAllow8bitmime = "MailSmtpAllow8bitmime";
         final String mailSmtpSendPartial = "MailSmtpSendPartial";
-        final String mailSmtpTimeout = "MailSmtpTimeout";
-        final String mailSmtpUser = "MailSmtpUser";
+        final String emailTemplateDirectory = "EmailTemplateDirectory";
+        final String emailTemplateLogoImage = "EmailTemplateLogoImage";
+        final String emailSubjectLine = "EmailSubjectLine";
 
         final EmailConfigRestModel emailConfigRestModel = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
                 mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
@@ -93,9 +93,9 @@ public class EmailConfigRestModelTest {
         assertEquals(mailSmtpTimeout, emailConfigRestModel.getMailSmtpTimeout());
         assertEquals(mailSmtpUser, emailConfigRestModel.getMailSmtpUser());
 
-        assertEquals(1376293102, emailConfigRestModel.hashCode());
+        assertEquals(866212366, emailConfigRestModel.hashCode());
 
-        final String expectedString = "{\"mailSmtpHost\":\"MailSmtpHost\",\"mailSmtpUser\":\"MailSmtpUser\",\"mailSmtpPort\":\"mailSmtpPort\",\"mailSmtpConnectionTimeout\":\"MailSmtpConnectionTimeout\",\"mailSmtpTimeout\":\"MailSmtpTimeout\",\"mailSmtpFrom\":\"MailSmtpFrom\",\"mailSmtpLocalhost\":\"MailSmtpLocalhost\",\"mailSmtpEhlo\":\"MailSmtpEhlo\",\"mailSmtpAuth\":\"MailSmtpAuth\",\"mailSmtpDnsNotify\":\"MailSmtpDnsNotify\",\"mailSmtpDnsRet\":\"MailSmtpDnsRet\",\"mailSmtpAllow8bitmime\":\"MailSmtpAllow8bitmime\",\"mailSmtpSendPartial\":\"MailSmtpSendPartial\",\"emailTemplateDirectory\":\"EmailTemplateDirectory\",\"emailTemplateLogoImage\":\"EmailTemplateLogoImage\",\"emailSubjectLine\":\"EmailSubjectLine\",\"id\":\"Id\"}";
+        final String expectedString = "{\"mailSmtpHost\":\"MailSmtpHost\",\"mailSmtpUser\":\"MailSmtpUser\",\"mailSmtpPort\":\"MailSmtpPort\",\"mailSmtpConnectionTimeout\":\"MailSmtpConnectionTimeout\",\"mailSmtpTimeout\":\"MailSmtpTimeout\",\"mailSmtpFrom\":\"MailSmtpFrom\",\"mailSmtpLocalhost\":\"MailSmtpLocalhost\",\"mailSmtpEhlo\":\"MailSmtpEhlo\",\"mailSmtpAuth\":\"MailSmtpAuth\",\"mailSmtpDnsNotify\":\"MailSmtpDnsNotify\",\"mailSmtpDnsRet\":\"MailSmtpDnsRet\",\"mailSmtpAllow8bitmime\":\"MailSmtpAllow8bitmime\",\"mailSmtpSendPartial\":\"MailSmtpSendPartial\",\"emailTemplateDirectory\":\"EmailTemplateDirectory\",\"emailTemplateLogoImage\":\"EmailTemplateLogoImage\",\"emailSubjectLine\":\"EmailSubjectLine\",\"id\":\"Id\"}";
         assertEquals(expectedString, emailConfigRestModel.toString());
 
         final EmailConfigRestModel emailConfigRestModelNew = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
