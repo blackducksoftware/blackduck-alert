@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,6 +67,8 @@ public class HipChatChannelTestIT {
 
     @Test
     public void sendMessageTestIT() throws IOException {
+        Assume.assumeTrue(properties.containsKey("hipchat.api.key"));
+        Assume.assumeTrue(properties.containsKey("hipchat.room.id"));
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
 
         final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();

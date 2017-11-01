@@ -25,12 +25,14 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
@@ -55,7 +57,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return id != null && repository.exists(id);
     }
 
-    public List<R> getConfig(final Long id) throws IntegrationException {
+    public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
             final D foundEntity = repository.findOne(id);
             if (foundEntity != null) {
@@ -68,10 +70,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
         final List<D> databaseEntities = repository.findAll();
         final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
-        if (restModels != null) {
-            return restModels;
-        }
-        return Collections.emptyList();
+        return restModels;
     }
 
     public void deleteConfig(final String id) {
@@ -79,31 +78,43 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public void deleteConfig(final Long id) {
-        repository.delete(id);
+        if (id != null) {
+            repository.delete(id);
+        }
     }
 
-    public D saveConfig(final R restModel) throws IntegrationException {
+    public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
+                    return createdEntity;
                 }
-                return createdEntity;
             } catch (final Exception e) {
-                throw new IntegrationException();
+                throw new AlertException(e.getMessage(), e);
             }
         }
         return null;
     }
 
-    public abstract Map<String, String> validateConfig(R restModel);
+    public abstract String validateConfig(R restModel) throws AlertFieldException;
+
+    public abstract String testConfig(R restModel) throws IntegrationException;
 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
     public void configurationChangeTriggers(final R restModel) {
 
+    }
+
+    public Boolean isBoolean(final String value) {
+        if (StringUtils.isBlank(value)) {
+            return false;
+        }
+        final String trimmedValue = value.trim();
+        return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
     }
 
 }
