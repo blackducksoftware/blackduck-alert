@@ -26,6 +26,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 @Entity
 @Table(name = "slack_config", schema = "configuration")
 public class SlackConfigEntity extends DatabaseEntity {
@@ -49,6 +52,10 @@ public class SlackConfigEntity extends DatabaseEntity {
         this.webhook = webhook;
     }
 
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
     public String getChannelName() {
         return channelName;
     }
@@ -59,6 +66,12 @@ public class SlackConfigEntity extends DatabaseEntity {
 
     public String getWebhook() {
         return webhook;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.toString();
     }
 
 }
