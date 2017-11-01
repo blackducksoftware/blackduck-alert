@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
@@ -31,6 +32,8 @@ public class HipChatChannelTestIT extends RestChannelTest {
 
     @Test
     public void sendMessageTestIT() throws IOException {
+        Assume.assumeTrue(properties.containsKey("hipchat.api.key"));
+        Assume.assumeTrue(properties.containsKey("hipchat.room.id"));
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null);
 
         final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
