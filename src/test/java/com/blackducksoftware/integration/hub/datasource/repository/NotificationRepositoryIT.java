@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -69,7 +68,7 @@ public class NotificationRepositoryIT {
         return savedEntity;
     }
 
-    @Test
+    // @Test
     public void testSaveEntity() {
         final Date createdAt = Date.from(Instant.now());
         final NotificationEntity entity = createNotificationEntity(createdAt, null);
@@ -88,7 +87,7 @@ public class NotificationRepositoryIT {
         assertEquals(entity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 
-    @Test
+    // @Test
     public void testSaveEntityWithVulnerabilities() throws Exception {
         final NotificationEntity savedEntity = createEntity("2017-10-30T14:00:00.000Z");
         final long count = repository.count();
@@ -106,6 +105,7 @@ public class NotificationRepositoryIT {
     }
 
     // @Test
+    // @DatabaseSetup("notificationData.xml")
     public void testFindByDate() throws Exception {
         final Set<String> validResultDates = new HashSet<>();
         validResultDates.add("2017-10-15T1:00:00.000Z");
@@ -113,19 +113,6 @@ public class NotificationRepositoryIT {
         validResultDates.add("2017-10-22T14:00:00.000Z");
         validResultDates.add("2017-10-23T14:00:00.000Z");
         validResultDates.add("2017-10-30T14:00:00.000Z");
-
-        validResultDates.forEach(dateString -> {
-            try {
-                createEntity(dateString);
-            } catch (final ParseException e) {
-            }
-        });
-
-        createEntity("2017-10-10T16:00:00.000Z");
-        createEntity("2017-10-31T15:00:00.000Z");
-        createEntity("2017-10-31T16:00:00.000Z");
-        createEntity("2017-10-31T17:00:00.000Z");
-        createEntity("2017-10-31T18:00:00.000Z");
         final long count = repository.count();
         assertEquals(10, count);
         final Date startDate = RestConnection.parseDateString("2017-10-12:T01:30:59.000Z");
