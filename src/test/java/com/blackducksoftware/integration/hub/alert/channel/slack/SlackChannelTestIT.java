@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Assume;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
@@ -32,6 +33,10 @@ public class SlackChannelTestIT extends RestChannelTest {
 
     @Test
     public void sendMessageTestIT() throws IOException {
+        Assume.assumeTrue(properties.containsKey("slack.channel.name"));
+        Assume.assumeTrue(properties.containsKey("slack.username"));
+        Assume.assumeTrue(properties.containsKey("slack.web.hook"));
+
         final SlackChannel slackChannel = new SlackChannel(gson, null);
         final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
