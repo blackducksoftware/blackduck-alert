@@ -1,15 +1,10 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 import org.junit.Assume;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -26,20 +21,6 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.google.gson.Gson;
 
 public class EmailChannelTestIT extends RestChannelTest {
-
-    @Before
-    public void init() throws IOException {
-        properties = new Properties();
-        properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
-    }
-
-    private Properties properties;
-
-    @Before
-    public void init() throws IOException {
-        properties = new Properties();
-        properties.load(new FileInputStream(new File("./src/test/resources/application.properties")));
-    }
 
     @Test
     public void sendEmailTest() throws Exception {
