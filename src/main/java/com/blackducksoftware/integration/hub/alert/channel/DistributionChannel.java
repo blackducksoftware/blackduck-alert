@@ -24,7 +24,6 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
@@ -34,11 +33,9 @@ import com.google.gson.Gson;
 
 public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
-    protected final JpaRepository<C, Long> repository;
 
-    public DistributionChannel(final Gson gson, final JpaRepository<C, Long> repository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final Class<E> clazz) {
         super(gson, clazz);
-        this.repository = repository;
     }
 
     public abstract void sendMessage(final E event, final C config);

@@ -61,10 +61,12 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
+    private final HipChatRepository hipChatRepository;
 
     @Autowired
     public HipChatChannel(final Gson gson, final HipChatRepository hipChatRepository) {
-        super(gson, hipChatRepository, HipChatEvent.class);
+        super(gson, HipChatEvent.class);
+        this.hipChatRepository = hipChatRepository;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -159,7 +161,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     @Override
     public void handleEvent(final HipChatEvent event) {
-        final List<HipChatConfigEntity> configurations = repository.findAll();
+        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
         for (final HipChatConfigEntity configEntity : configurations) {
             sendMessage(event, configEntity);
         }
