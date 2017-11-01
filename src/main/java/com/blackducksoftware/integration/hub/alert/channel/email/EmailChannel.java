@@ -67,17 +67,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     @JmsListener(destination = SupportedChannels.EMAIL)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received email event message: {}", message);
-        final EmailEvent emailEvent = getEvent(message);
-        logger.info("Email event {}", emailEvent);
-        handleEvent(emailEvent);
-    }
-
-    private void handleEvent(final EmailEvent emailEvent) {
-        final List<EmailConfigEntity> configurations = emailRepository.findAll();
-        for (final EmailConfigEntity configuration : configurations) {
-            sendMessage(emailEvent, configuration);
-        }
+        super.receiveMessage(message);
     }
 
     @Override
@@ -117,6 +107,14 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void handleEvent(final EmailEvent event) {
+        final List<EmailConfigEntity> configurations = emailRepository.findAll();
+        for (final EmailConfigEntity configEntity : configurations) {
+            sendMessage(event, configEntity);
         }
     }
 
