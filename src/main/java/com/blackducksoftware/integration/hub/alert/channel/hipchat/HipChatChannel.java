@@ -35,6 +35,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
@@ -60,8 +61,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
-    public static final String HIP_CHAT_FROM_NAME = "Hub Alert";
-
     private final HipChatRepository hipChatRepository;
 
     @Autowired
@@ -73,25 +72,14 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     @JmsListener(destination = SupportedChannels.HIPCHAT)
     @Override
     public void receiveMessage(final String message) {
-        logger.info("Received hipchat event message: {}", message);
-        final HipChatEvent event = getEvent(message);
-        logger.info("HipChat event {}", event);
-
-        handleEvent(event);
-    }
-
-    public void handleEvent(final HipChatEvent event) {
-        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
-        for (final HipChatConfigEntity configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
+        super.receiveMessage(message);
     }
 
     @Override
     public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
-            sendMessage(config, HIP_CHAT_API, htmlMessage, HIP_CHAT_FROM_NAME);
+            sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
         } catch (final IntegrationRestException e) {
             logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
             logger.error(e.getMessage(), e);
@@ -131,7 +119,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     @Override
     public String testMessage(final HipChatConfigEntity config) throws IntegrationException {
-        return sendMessage(config, HIP_CHAT_API, "Test Message", HIP_CHAT_FROM_NAME + " Tester");
+        return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
@@ -169,5 +157,13 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
         json.addProperty("color", color);
 
         return json.toString();
+    }
+
+    @Override
+    public void handleEvent(final HipChatEvent event) {
+        final List<HipChatConfigEntity> configurations = hipChatRepository.findAll();
+        for (final HipChatConfigEntity configEntity : configurations) {
+            sendMessage(event, configEntity);
+        }
     }
 }
