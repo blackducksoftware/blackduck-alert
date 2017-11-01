@@ -91,6 +91,10 @@ public class NotificationEntity extends DatabaseEntity {
         this.vulnerabilityList = vulnerabilityList;
     }
 
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
     public String getEventKey() {
         return eventKey;
     }
