@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.mail.MessagingException;
 
@@ -104,6 +105,14 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             emailService.sendEmailMessage(emailTarget);
         } catch (final IOException | MessagingException | TemplateException e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void handleEvent(final EmailEvent event) {
+        final List<EmailConfigEntity> configurations = repository.findAll();
+        for (final EmailConfigEntity configEntity : configurations) {
+            sendMessage(event, configEntity);
         }
     }
 

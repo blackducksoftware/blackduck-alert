@@ -23,6 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -157,6 +158,14 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
+    }
+
+    @Override
+    public void handleEvent(final SlackEvent event) {
+        final List<SlackConfigEntity> configurations = repository.findAll();
+        for (final SlackConfigEntity configEntity : configurations) {
+            sendMessage(event, configEntity);
+        }
     }
 
 }
