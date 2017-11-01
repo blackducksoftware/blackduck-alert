@@ -65,8 +65,8 @@ public class EmailChannelTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(null);
         globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
         final Gson gson = new Gson();
-        final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null);
-        final EmailEvent event = new EmailEvent(projectData);
+        final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null, null);
+        final EmailEvent event = new EmailEvent(projectData, null);
 
         final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(properties.getProperty("mail.smtp.host"), null, null, null, null, null, properties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
                 properties.getProperty("hub.email.template.directory"), properties.getProperty("logo.image"), "Test Subject Line");

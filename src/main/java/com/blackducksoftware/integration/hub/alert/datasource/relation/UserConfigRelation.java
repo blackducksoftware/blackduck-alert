@@ -20,19 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.Serializable;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import javax.persistence.Entity;
 
-public class ProjectVersionFilter implements NotificationFilter<ProjectData> {
+@Entity
+public class UserConfigRelation implements Serializable {
+    private Long userConfidId;
+    private Long channelConfigId;
+    private String channelName;
 
-    @Override
-    public Set<ProjectData> getFilteredItems(final Collection<ProjectData> items) {
-        // TODO
-        return new HashSet<>(items);
+    public Long getUserConfidId() {
+        return userConfidId;
     }
+
+    public Long getChannelConfigId() {
+        return channelConfigId;
+    }
+
+    public String getChannel() {
+        return channelName;
+    }
+
 }

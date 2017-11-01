@@ -20,19 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserConfigRelation;
 
-public class ProjectFilter implements NotificationFilter<ProjectData> {
-
-    @Override
-    public Set<ProjectData> getFilteredItems(final Collection<ProjectData> items) {
-        // TODO
-        return new HashSet<>(items);
-    }
+public interface UserRelationRepository extends JpaRepository<UserConfigRelation, Long> {
+    @Query("select entity from UserConfigRelation entity where entity.userConfidId = ?1 and entity.channelName ?2")
+    UserConfigRelation findChannelConfig(final Long userId, final String channelName);
 }

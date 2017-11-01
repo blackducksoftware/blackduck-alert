@@ -20,13 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.repository;
 
-import java.util.Collection;
-import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
 
-public interface NotificationFilter<T> {
-    public Set<T> getFilteredItems(final Collection<ProjectData> items);
+@Transactional
+public interface UserConfigRepository extends JpaRepository<UserConfigEntity, Long> {
 }
