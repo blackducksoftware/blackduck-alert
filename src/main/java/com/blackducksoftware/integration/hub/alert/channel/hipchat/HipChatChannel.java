@@ -156,4 +156,12 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
         return json.toString();
     }
+
+    @Override
+    public void handleEvent(final HipChatEvent event) {
+        final List<HipChatConfigEntity> configurations = repository.findAll();
+        for (final HipChatConfigEntity configEntity : configurations) {
+            sendMessage(event, configEntity);
+        }
+    }
 }

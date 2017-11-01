@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -47,12 +45,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
 
     public abstract String testMessage(final C config) throws IntegrationException;
 
-    public void handleEvent(final E event) {
-        final List<C> configurations = repository.findAll();
-        for (final C configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
-    }
+    public abstract void handleEvent(final E event);
 
     @Override
     public void receiveMessage(final String message) {
