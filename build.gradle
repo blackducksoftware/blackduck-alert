@@ -96,6 +96,19 @@ distributions {
     }
 }
 
+task cleanBundles() {
+    def bundle = new File("src/main/resources/static/built/bundle.js")
+    def bundleMap = new File("src/main/resources/static/built/bundle.js.map")
+    if(bundle.isFile()) {
+        bundle.delete();
+    }
+    if(bundleMap.isFile()) {
+        bundleMap.delete();
+    }
+}
+
+tasks.clean.dependsOn(cleanBundles)
+
 npm_run() {
     args = ['build']
 }
