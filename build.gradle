@@ -107,7 +107,7 @@ task webpack(type: Exec) {
     
         outputs.dir("$buildDir/js")
     
-        commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/app.js", "$buildDir/js/bundle.js"
+        commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
 }
 
 tasks.jar.dependsOn(webpack)
