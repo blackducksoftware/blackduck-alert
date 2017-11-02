@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.UserConfigRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.UserConfigRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.user.UserRequestService;
@@ -60,9 +60,9 @@ public class ProjectDataFilter {
         this.metaService = metaService;
     }
 
-    public Set<UserNotifications> filterUserNotifications(final Collection<ProjectData> notificationData) {
+    public Set<UserNotificationWrapper> filterUserNotifications(final Collection<ProjectData> notificationData) {
         final List<UserConfigEntity> userConfigs = userRepo.findAll();
-        final Set<UserNotifications> configNotifications = new HashSet<>();
+        final Set<UserNotificationWrapper> configNotifications = new HashSet<>();
         if (!userConfigs.isEmpty()) {
             final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
             final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
@@ -72,27 +72,14 @@ public class ProjectDataFilter {
             final Set<UserView> allNotificationUsers = usersPerProject.parallelStream().flatMap(Collection::stream).collect(Collectors.toSet());
 
             userConfigs.forEach(config -> {
-                final Set<UserView> matchedUsers = getHubUsersMatchingConfiguredUsers(allNotificationUsers, StringUtils.formatCsv(config.getHubUsernames()));
-                final Set<ProjectData> configData = filterNotificationsByProjectVersionUsers(projectToNotificationMap, projectToUsersMap, matchedUsers);
-                final UserNotifications configNotification = new UserNotifications(config, configData);
+                final UserView matchedUser = getHubUserMatchingConfiguredUser(allNotificationUsers, config.getUsername());
+                final Set<ProjectData> configData = filterNotificationsByProjectVersionUser(projectToNotificationMap, projectToUsersMap, matchedUser);
+                final UserNotificationWrapper configNotification = new UserNotificationWrapper(config.getId(), configData);
                 configNotifications.add(configNotification);
             });
         }
         return configNotifications;
     }
-
-    // private Set<ProjectData> filterNotifications(final Collection<ProjectData> notificationData) {
-    // final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
-    // final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
-    //
-    // // Flatten the Collection of Collections of UserViews to a Set of UserViews
-    // final Collection<Collection<UserView>> usersPerProject = projectToUsersMap.values();
-    // final Set<UserView> allNotificationUsers = usersPerProject.parallelStream().flatMap(Collection::stream).collect(Collectors.toSet());
-    //
-    // final Set<UserView> configuredUsers = getHubUsersMatchingConfiguredUsers(allNotificationUsers, null);
-    //
-    // return filterNotificationsByProjectVersionUsers(projectToNotificationMap, projectToUsersMap, configuredUsers);
-    // }
 
     private Map<ProjectVersionWrapper, ProjectData> mapProjectsToNotifications(final Collection<ProjectData> projectData) {
         final Map<ProjectVersionWrapper, ProjectData> projects = new HashMap<>();
@@ -121,22 +108,16 @@ public class ProjectDataFilter {
         return projectMap;
     }
 
-    private Set<UserView> getHubUsersMatchingConfiguredUsers(final Collection<UserView> hubUsers, final Collection<String> alertUsers) {
-        final Set<UserView> matchingUsers = new HashSet<>();
-        hubUsers.forEach(user -> {
-            if (alertUsers.contains(user.userName)) {
-                matchingUsers.add(user);
-            }
-        });
-        return matchingUsers;
+    private UserView getHubUserMatchingConfiguredUser(final Collection<UserView> hubUsers, final String alertUser) {
+        return hubUsers.stream().filter(user -> alertUser.equals(user.userName)).findFirst().get();
     }
 
-    private Set<ProjectData> filterNotificationsByProjectVersionUsers(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
-            final Collection<UserView> configuredUsers) {
+    private Set<ProjectData> filterNotificationsByProjectVersionUser(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
+            final UserView configuredUser) {
         final Set<ProjectData> notificationDataFromProjects = new HashSet<>();
         projectToUsersMap.forEach((projectVersion, projectUsers) -> {
             projectUsers.forEach(user -> {
-                if (configuredUsers.contains(user)) {
+                if (configuredUser.equals(user)) {
                     notificationDataFromProjects.add(projectToNotificationMap.get(projectVersion));
                 }
             });

@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;

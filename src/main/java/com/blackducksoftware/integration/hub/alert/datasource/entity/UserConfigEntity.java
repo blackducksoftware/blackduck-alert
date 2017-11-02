@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -32,13 +31,17 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 @Table(name = "user_config", schema = "user")
 public class UserConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -3579210806166954817L;
+    private static final long serialVersionUID = -7970838052348596256L;
 
-    @Column(name = "hub_usernames")
-    private String hubUsernames;
+    private final String username;
 
-    public String getHubUsernames() {
-        return hubUsernames;
+    public UserConfigEntity(final String username) {
+        super();
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     @Override

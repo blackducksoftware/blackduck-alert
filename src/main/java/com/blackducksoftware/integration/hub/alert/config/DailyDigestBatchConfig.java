@@ -36,7 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DailyDigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
