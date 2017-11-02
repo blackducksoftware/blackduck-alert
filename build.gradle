@@ -110,8 +110,8 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
 }
 
-tasks.jar.dependsOn(webpack)
 tasks.webpack.dependsOn(npm_run)
+tasks.jar.dependsOn(webpack)
 
 license {
     header = file('HEADER')
