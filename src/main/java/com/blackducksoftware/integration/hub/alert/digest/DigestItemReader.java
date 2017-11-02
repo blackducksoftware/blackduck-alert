@@ -33,7 +33,7 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 
 public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {
     private final Logger logger = LoggerFactory.getLogger(DigestItemReader.class);

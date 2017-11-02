@@ -20,28 +20,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import java.io.Serializable;
+import java.util.Set;
 
-import javax.persistence.Entity;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
-@Entity
-public class UserConfigRelation implements Serializable {
-    private Long userConfidId;
-    private Long channelConfigId;
-    private String channelName;
+public class UserNotificationWrapper {
+    private final Long userConfigId;
+    private final Set<ProjectData> notifications;
 
-    public Long getUserConfidId() {
-        return userConfidId;
+    public UserNotificationWrapper(final Long userConfigId, final Set<ProjectData> notifications) {
+        this.userConfigId = userConfigId;
+        this.notifications = notifications;
     }
 
-    public Long getChannelConfigId() {
-        return channelConfigId;
+    public Long getUserConfigId() {
+        return userConfigId;
     }
 
-    public String getChannel() {
-        return channelName;
+    public Set<ProjectData> getNotifications() {
+        return notifications;
     }
 
 }

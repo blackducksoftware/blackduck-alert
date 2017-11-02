@@ -45,7 +45,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 
 public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(CommonConfig.class);

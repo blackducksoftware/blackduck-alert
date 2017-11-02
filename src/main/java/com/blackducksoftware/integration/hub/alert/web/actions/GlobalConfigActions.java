@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;

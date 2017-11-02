@@ -20,14 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.UserConfigRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 
-public interface UserRelationRepository extends JpaRepository<UserConfigRelation, Long> {
-    @Query("select entity from UserConfigRelation entity where entity.userConfidId = ?1 and entity.channelName ?2")
-    UserConfigRelation findChannelConfig(final Long userId, final String channelName);
+@Transactional
+public interface GlobalRepository extends JpaRepository<GlobalConfigEntity, Long> {
+
 }

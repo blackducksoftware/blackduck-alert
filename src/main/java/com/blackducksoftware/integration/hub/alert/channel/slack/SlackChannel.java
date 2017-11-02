@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -37,7 +36,9 @@ import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.SlackUserRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -56,11 +57,14 @@ import okhttp3.Response;
 @Component
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
+
+    final ChannelUserRepository<SlackUserRelation> userRelationRepository;
     private final SlackRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final SlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final ChannelUserRepository<SlackUserRelation> userRelationRepository, final SlackRepository slackRepository) {
         super(gson, SlackEvent.class);
+        this.userRelationRepository = userRelationRepository;
         this.slackRepository = slackRepository;
     }
 
@@ -164,10 +168,10 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public void handleEvent(final SlackEvent event) {
-        final List<SlackConfigEntity> configurations = slackRepository.findAll();
-        for (final SlackConfigEntity configEntity : configurations) {
-            sendMessage(event, configEntity);
-        }
+        final SlackUserRelation relationRow = userRelationRepository.findChannelConfig(event.getUserConfigId());
+        final Long configId = relationRow.getChannelConfigId();
+        final SlackConfigEntity configuration = slackRepository.findOne(configId);
+        sendMessage(event, configuration);
     }
 
 }

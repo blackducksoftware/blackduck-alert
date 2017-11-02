@@ -35,7 +35,7 @@ import org.springframework.batch.item.ItemWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
