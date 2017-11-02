@@ -48,14 +48,25 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactDom = __webpack_require__(37);
+	
+	var _reactDom2 = _interopRequireDefault(_reactDom);
+	
+	var _GlobalConfiguration = __webpack_require__(184);
+	
+	var _GlobalConfiguration2 = _interopRequireDefault(_GlobalConfiguration);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var React = __webpack_require__(1);
-	var ReactDOM = __webpack_require__(37);
 	
 	var App = function (_React$Component) {
 	    _inherits(App, _React$Component);
@@ -69,49 +80,18 @@
 	    _createClass(App, [{
 	        key: 'render',
 	        value: function render() {
-	            return React.createElement(
+	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                React.createElement(
-	                    'h1',
-	                    null,
-	                    'Poo'
-	                ),
-	                React.createElement(
-	                    'h1',
-	                    null,
-	                    'Hub Alert Global Config'
-	                ),
-	                React.createElement('input', { type: 'text', name: 'hubUrl' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'hubUsername' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'password', name: 'hubPassword' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'number', name: 'hubTimeout' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'checkbox', name: 'hubAlwaysTrustCertificate' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'hubProxyHost' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'number', name: 'hubProxyPort' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'hubProxyUsername' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'hubProxyPassword' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'accumulatorCron' }),
-	                React.createElement('br', null),
-	                React.createElement('input', { type: 'text', name: 'dailyDigestCron' }),
-	                React.createElement('br', null)
+	                _react2.default.createElement(_GlobalConfiguration2.default, null)
 	            );
 	        }
 	    }]);
 	
 	    return App;
-	}(React.Component);
+	}(_react2.default.Component);
 	
-	ReactDOM.render(React.createElement(App, null), document.getElementById('react'));
+	_reactDom2.default.render(_react2.default.createElement(App, null), document.getElementById('react'));
 
 /***/ }),
 /* 1 */
@@ -21923,6 +21903,151 @@
 	
 	module.exports = ReactDOMInvalidARIAHook;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var GlobalConfiguration = function (_React$Component) {
+	    _inherits(GlobalConfiguration, _React$Component);
+	
+	    function GlobalConfiguration() {
+	        _classCallCheck(this, GlobalConfiguration);
+	
+	        return _possibleConstructorReturn(this, (GlobalConfiguration.__proto__ || Object.getPrototypeOf(GlobalConfiguration)).apply(this, arguments));
+	    }
+	
+	    _createClass(GlobalConfiguration, [{
+	        key: "render",
+	        value: function render() {
+	            return _react2.default.createElement(
+	                "div",
+	                null,
+	                _react2.default.createElement(
+	                    "h1",
+	                    null,
+	                    "Global Configuration Eh"
+	                ),
+	                _react2.default.createElement(
+	                    "h2",
+	                    null,
+	                    "Hub Configuration"
+	                ),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubUrl" },
+	                    "Url"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "hubUrl" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubUsername" },
+	                    "Username"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "hubUsername" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubPassword" },
+	                    "Password"
+	                ),
+	                _react2.default.createElement("input", { type: "password", name: "hubPassword" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubTimeout" },
+	                    "Timeout"
+	                ),
+	                _react2.default.createElement("input", { type: "number", name: "hubTimeout" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubAlwaysTrustCertificate" },
+	                    "Trust Https Certificates"
+	                ),
+	                _react2.default.createElement("input", { type: "checkbox", name: "hubAlwaysTrustCertificate" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "h2",
+	                    null,
+	                    "Proxy Configuration"
+	                ),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubProxyHost" },
+	                    "Host Name"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "hubProxyHost" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubProxyPort" },
+	                    "Port"
+	                ),
+	                _react2.default.createElement("input", { type: "number", name: "hubProxyPort" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubProxyUsername" },
+	                    "Username"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "hubProxyUsername" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "hubProxyPassword" },
+	                    "Password"
+	                ),
+	                _react2.default.createElement("input", { type: "password", name: "hubProxyPassword" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "h2",
+	                    null,
+	                    "Scheduling Configuration"
+	                ),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "accumulatorCron" },
+	                    "Accumulator Cron"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "accumulatorCron" }),
+	                _react2.default.createElement("br", null),
+	                _react2.default.createElement(
+	                    "label",
+	                    { "for": "dailyDigestCron" },
+	                    "Daily Digest Cron"
+	                ),
+	                _react2.default.createElement("input", { type: "text", name: "dailyDigestCron" }),
+	                _react2.default.createElement("br", null)
+	            );
+	        }
+	    }]);
+	
+	    return GlobalConfiguration;
+	}(_react2.default.Component);
+	
+	exports.default = GlobalConfiguration;
 
 /***/ })
 /******/ ]);
