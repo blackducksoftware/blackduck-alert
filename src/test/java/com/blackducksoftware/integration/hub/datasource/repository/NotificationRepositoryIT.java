@@ -88,7 +88,7 @@ public class NotificationRepositoryIT {
         assertEquals(entity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 
-    // @Test
+    @Test
     public void testSaveEntityWithVulnerabilities() throws Exception {
         final NotificationEntity savedEntity = createEntity("2017-10-30T14:00:00.000Z");
         final long count = repository.count();
@@ -105,19 +105,29 @@ public class NotificationRepositoryIT {
         assertEquals(savedEntity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 
-    // @Test
-    // @DatabaseSetup("notificationData.xml")
+    @Test
     public void testFindByDate() throws Exception {
         final Set<String> validResultDates = new HashSet<>();
-        validResultDates.add("2017-10-15T1:00:00.000Z");
-        validResultDates.add("2017-10-21T14:00:00.000Z");
-        validResultDates.add("2017-10-22T14:00:00.000Z");
-        validResultDates.add("2017-10-23T14:00:00.000Z");
-        validResultDates.add("2017-10-30T14:00:00.000Z");
+        NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
+        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        savedEntity = createEntity("2017-10-21T14:00:00.000Z");
+        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        savedEntity = createEntity("2017-10-22T14:00:00.000Z");
+        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        savedEntity = createEntity("2017-10-23T14:00:00.000Z");
+        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        savedEntity = createEntity("2017-10-30T14:00:00.000Z");
+        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+
+        createEntity("2017-10-10T16:00:00.000Z");
+        createEntity("2017-10-31T15:00:00.000Z");
+        createEntity("2017-10-31T16:00:00.000Z");
+        createEntity("2017-10-31T17:00:00.000Z");
+        createEntity("2017-10-31T18:00:00.000Z");
         final long count = repository.count();
         assertEquals(10, count);
-        final Date startDate = RestConnection.parseDateString("2017-10-12:T01:30:59.000Z");
-        final Date endDate = RestConnection.parseDateString("2017-10-30:T16:59:59.000Z");
+        final Date startDate = RestConnection.parseDateString("2017-10-12T01:30:59.000Z");
+        final Date endDate = RestConnection.parseDateString("2017-10-30T16:59:59.000Z");
         final List<NotificationEntity> foundEntityList = repository.findByCreatedAtBetween(startDate, endDate);
         assertEquals(5, foundEntityList.size());
 
