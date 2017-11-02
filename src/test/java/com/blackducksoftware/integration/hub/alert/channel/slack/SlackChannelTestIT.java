@@ -37,7 +37,7 @@ public class SlackChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("slack.username"));
         Assume.assumeTrue(properties.containsKey("slack.web.hook"));
 
-        final SlackChannel slackChannel = new SlackChannel(gson, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null);
         final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
         final String webHook = properties.getProperty("slack.web.hook");
