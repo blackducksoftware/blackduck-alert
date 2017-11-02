@@ -22,6 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -29,6 +32,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
 public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
+    private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     public DistributionChannel(final Gson gson, final Class<E> clazz) {
         super(gson, clazz);
@@ -37,5 +41,16 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, C exte
     public abstract void sendMessage(final E event, final C config);
 
     public abstract String testMessage(final C config) throws IntegrationException;
+
+    public abstract void handleEvent(final E event);
+
+    @Override
+    public void receiveMessage(final String message) {
+        logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+        final E event = getEvent(message);
+        logger.info(String.format("%s event %s", getClass().getName(), event));
+
+        handleEvent(event);
+    }
 
 }

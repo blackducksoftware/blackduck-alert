@@ -20,54 +20,58 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class HipChatConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = 8852683250883814613L;
+@Entity
+@Table(name = "slack_config", schema = "configuration")
+public class SlackConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 4872590789715928839L;
 
-    private String apiKey;
-    private String roomId;
-    private String notify;
-    private String color;
+    @Column(name = "channel_name")
+    private String channelName;
 
-    public HipChatConfigRestModel() {
+    @Column(name = "username")
+    private String username;
+
+    @Column(name = "webhook")
+    private String webhook;
+
+    protected SlackConfigEntity() {
     }
 
-    public HipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
-        super(id);
-        this.apiKey = apiKey;
-        this.roomId = roomId;
-        this.notify = notify;
-        this.color = color;
+    public SlackConfigEntity(final String channelName, final String username, final String webhook) {
+        this.channelName = channelName;
+        this.username = username;
+        this.webhook = webhook;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getApiKey() {
-        return apiKey;
+    public String getChannelName() {
+        return channelName;
     }
 
-    public String getRoomId() {
-        return roomId;
+    public String getUsername() {
+        return username;
     }
 
-    public String getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
+    public String getWebhook() {
+        return webhook;
     }
 
     @Override
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
         return reflectionToStringBuilder.toString();
     }
+
 }
