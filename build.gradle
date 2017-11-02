@@ -96,10 +96,8 @@ distributions {
     }
 }
 
-task npmBuild() {
-    exec {
-        commandLine "npm", "run-script", "build"
-    }
+npm_run() {
+    args = ['build']
 }
 
 task webpack(type: Exec) {
@@ -112,8 +110,8 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/app.js", "$buildDir/js/bundle.js"
 }
 
-tasks.jar.dependsOn(npmBuild)
 tasks.jar.dependsOn(webpack)
+tasks.webpack.dependsOn(npm_run)
 
 license {
     header = file('HEADER')
