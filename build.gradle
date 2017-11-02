@@ -91,8 +91,14 @@ distributions {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
             from('src/main/resources/application.properties') {into 'config/'}
+            from('src/main/resources/email/images/') {into 'images/'}
+            from('src/main/resources/email/templates/') {into 'templates/'}
         }
     }
+}
+
+npm_run() {
+    args = ['build']
 }
 
 task webpack(type: Exec) {
@@ -103,7 +109,10 @@ task webpack(type: Exec) {
         outputs.dir("$buildDir/js")
     
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
-    }
+}
+
+tasks.webpack.dependsOn(npm_run)
+tasks.jar.dependsOn(webpack)
 
 license {
     header = file('HEADER')
@@ -117,13 +126,3 @@ license {
 }
 
 tasks.licenseMain.dependsOn(licenseFormatMain)
-
-
-distributions {
-    main {
-        contents {
-            from('src/main/resources/email/images/') {into 'images/'}
-            from('src/main/resources/email/templates/') {into 'templates/'}
-        }
-    }
-}
