@@ -23,106 +23,37 @@
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.UserConfigRepository;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.user.UserRequestService;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.model.view.UserView;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class ProjectDataFilter {
-    private final Logger logger = LoggerFactory.getLogger(ProjectDataFilter.class);
+    private final Collection<ProjectData> projectDataList;
 
-    private final UserConfigRepository userRepo;
-    private final UserRequestService userRequestService;
-    private final ProjectDataService projectDataService;
-    private final MetaService metaService;
-
-    @Autowired
-    public ProjectDataFilter(final UserConfigRepository userRepo, final UserRequestService userRequestService, final ProjectDataService projectDataService, final MetaService metaService) {
-        this.userRepo = userRepo;
-        this.userRequestService = userRequestService;
-        this.projectDataService = projectDataService;
-        this.metaService = metaService;
+    public ProjectDataFilter(final Collection<ProjectData> projectDataList) {
+        this.projectDataList = projectDataList;
     }
 
-    public Set<UserNotificationWrapper> filterUserNotifications(final Collection<ProjectData> notificationData) {
-        final List<UserConfigEntity> userConfigs = userRepo.findAll();
-        final Set<UserNotificationWrapper> configNotifications = new HashSet<>();
-        if (!userConfigs.isEmpty()) {
-            final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
-            final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
-
-            // Flatten the Collection of Collections of UserViews to a Set of UserViews
-            final Collection<Collection<UserView>> usersPerProject = projectToUsersMap.values();
-            final Set<UserView> allNotificationUsers = usersPerProject.parallelStream().flatMap(Collection::stream).collect(Collectors.toSet());
-
-            userConfigs.forEach(config -> {
-                final UserView matchedUser = getHubUserMatchingConfiguredUser(allNotificationUsers, config.getUsername());
-                final Set<ProjectData> configData = filterNotificationsByProjectVersionUser(projectToNotificationMap, projectToUsersMap, matchedUser);
-                final UserNotificationWrapper configNotification = new UserNotificationWrapper(config.getId(), configData);
-                configNotifications.add(configNotification);
-            });
-        }
-        return configNotifications;
+    public Set<AbstractChannelEvent> filterNotificationsByUser() {
+        // TODO highest level transformation
+        return null;
     }
 
-    private Map<ProjectVersionWrapper, ProjectData> mapProjectsToNotifications(final Collection<ProjectData> projectData) {
-        final Map<ProjectVersionWrapper, ProjectData> projects = new HashMap<>();
-        projectData.forEach(item -> {
-            try {
-                final ProjectVersionWrapper projectVersion = projectDataService.getProjectVersion(item.getProjectName(), item.getProjectVersion());
-                projects.put(projectVersion, item);
-            } catch (final IntegrationException e) {
-                logger.error("Something went wrong trying to get " + item.getProjectName() + " > " + item.getProjectVersion() + " from the Hub", e);
-            }
-        });
-        return projects;
-    }
+    // TODO add users to project data and remove the param from this method
+    public Set<AbstractChannelEvent> filterEventsByUserNotifications(final Collection<UserNotificationWrapper> userNotificationList) {
+        final EventManager eventManager = new EventManager(userNotificationList);
 
-    private Map<ProjectVersionWrapper, Collection<UserView>> mapProjectsToUsers(final Collection<ProjectVersionWrapper> projectVersions) {
-        final Map<ProjectVersionWrapper, Collection<UserView>> projectMap = new HashMap<>();
-        projectVersions.forEach(projectVersion -> {
-            try {
-                final String usersLink = metaService.getFirstLink(projectVersion.getProjectView(), MetaService.USERS_LINK);
-                final List<UserView> projectUsers = userRequestService.getAllItems(usersLink, UserView.class);
-                projectMap.put(projectVersion, projectUsers);
-            } catch (final IntegrationException e) {
-                logger.error("Something went wrong trying to get the users from the Hub", e);
-            }
-        });
-        return projectMap;
-    }
+        final Set<EmailEvent> emailEvents = eventManager.getUserEmailEvents();
+        final Set<AbstractChannelEvent> chatChannelEvents = eventManager.getChatChannelEvents(new Long(0)); // TODO
 
-    private UserView getHubUserMatchingConfiguredUser(final Collection<UserView> hubUsers, final String alertUser) {
-        return hubUsers.stream().filter(user -> alertUser.equals(user.userName)).findFirst().get();
-    }
+        final Set<AbstractChannelEvent> events = new HashSet<>();
+        events.addAll(emailEvents);
+        events.addAll(chatChannelEvents);
 
-    private Set<ProjectData> filterNotificationsByProjectVersionUser(final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap, final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap,
-            final UserView configuredUser) {
-        final Set<ProjectData> notificationDataFromProjects = new HashSet<>();
-        projectToUsersMap.forEach((projectVersion, projectUsers) -> {
-            projectUsers.forEach(user -> {
-                if (configuredUser.equals(user)) {
-                    notificationDataFromProjects.add(projectToNotificationMap.get(projectVersion));
-                }
-            });
-        });
-        return notificationDataFromProjects;
+        return events;
     }
 
 }

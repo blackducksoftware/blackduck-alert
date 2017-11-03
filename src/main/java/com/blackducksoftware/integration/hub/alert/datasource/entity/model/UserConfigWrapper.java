@@ -24,12 +24,15 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.model;
 
 import java.util.Collection;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.EmailUserRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HipChatUserRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.ProjectVersionUserRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.SlackUserRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserEmailRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserFrequencyRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserHipChatRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserProjectVersionRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserSlackRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ProjectVersionUserRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserFrequencyRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserProjectVersionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 
 public class UserConfigWrapper {
     private final Long id;
@@ -48,27 +51,33 @@ public class UserConfigWrapper {
         return username;
     }
 
-    public String getFrequency(final Object userFrequencyRepository) {
-        // TODO
-        return null;
+    public DigestTypeEnum getFrequency(final UserFrequencyRepository userFrequencyRepository) {
+        final UserFrequencyRelation frequency = userFrequencyRepository.findOne(getId());
+        return DigestTypeEnum.getById(frequency.getFrequencyId());
     }
 
-    public Collection<ProjectVersionUserRelation> getProjectVersions(final ProjectVersionUserRepository projectVersionUserRepository) {
-        return projectVersionUserRepository.findByUserId(getId());
+    // TODO we may not need to read notifications from the database in this way
+    // public Collection<Object> getNotifications(final Object userNotificationRepository) {
+    // // unimplemented
+    // return null;
+    // }
+
+    public Collection<UserProjectVersionRelation> getProjectVersions(final UserProjectVersionRepository userProjectVersionRepository) {
+        return userProjectVersionRepository.findByUserId(getId());
     }
 
-    public Long getEmailConfigId(final ChannelUserRepository<EmailUserRelation> emailUserRepository) {
-        final EmailUserRelation emailUserRelation = emailUserRepository.findChannelConfig(getId());
+    public Long getEmailConfigId(final ChannelUserRepository<UserEmailRelation> userEmailRepository) {
+        final UserEmailRelation emailUserRelation = userEmailRepository.findChannelConfig(getId());
         return emailUserRelation != null ? emailUserRelation.getChannelConfigId() : null;
     }
 
-    public Long getHipChatConfigId(final ChannelUserRepository<HipChatUserRelation> hipChatUserRepository) {
-        final HipChatUserRelation hipChatUserRelation = hipChatUserRepository.findChannelConfig(getId());
+    public Long getHipChatConfigId(final ChannelUserRepository<UserHipChatRelation> userHipChatRepository) {
+        final UserHipChatRelation hipChatUserRelation = userHipChatRepository.findChannelConfig(getId());
         return hipChatUserRelation != null ? hipChatUserRelation.getChannelConfigId() : null;
     }
 
-    public Long getSlackConfigId(final ChannelUserRepository<SlackUserRelation> slackUserRepository) {
-        final SlackUserRelation slackUserRelation = slackUserRepository.findChannelConfig(getId());
+    public Long getSlackConfigId(final ChannelUserRepository<UserSlackRelation> userSlackRepository) {
+        final UserSlackRelation slackUserRelation = userSlackRepository.findChannelConfig(getId());
         return slackUserRelation != null ? slackUserRelation.getChannelConfigId() : null;
     }
 

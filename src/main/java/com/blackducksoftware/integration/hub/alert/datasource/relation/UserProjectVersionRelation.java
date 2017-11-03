@@ -27,19 +27,20 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "slack_user", schema = "user")
-public class SlackUserRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -5649425971831549437L;
+@Table(name = "user_project_version", schema = "user")
+public class UserProjectVersionRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 544672444719776792L;
 
-    @Column(name = "slack_config_id")
-    private final Long slackConfigId;
+    @Column(name = "project_name")
+    private final String projectName;
 
-    public SlackUserRelation(final Long userConfidId, final Long slackConfigId) {
+    @Column(name = "project_version_name")
+    private final String projectVersionName;
+
+    public UserProjectVersionRelation(final Long userConfidId, final String projectName, final String projectVersionName) {
         super(userConfidId);
-        this.slackConfigId = slackConfigId;
+        this.projectName = projectName;
+        this.projectVersionName = projectVersionName;
     }
 
-    public Long getChannelConfigId() {
-        return slackConfigId;
-    }
 }

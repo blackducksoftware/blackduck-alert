@@ -20,27 +20,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Collection;
 
-@Entity
-@Table(name = "email_user", schema = "user")
-public class EmailUserRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 8484340743447368873L;
+import javax.transaction.Transactional;
 
-    @Column(name = "email_config_id")
-    private final Long emailConfigId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-    public EmailUserRelation(final Long userConfidId, final Long emailConfigId) {
-        super(userConfidId);
-        this.emailConfigId = emailConfigId;
-    }
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserProjectVersionRelation;
 
-    public Long getChannelConfigId() {
-        return emailConfigId;
-    }
-
+@Transactional
+public interface UserProjectVersionRepository extends JpaRepository<UserProjectVersionRelation, Long> {
+    @Query("SELECT ProjectVersionUserRelation projectVersionUser FROM project_version_user WHERE projectVersionUser.id = ?1")
+    public Collection<UserProjectVersionRelation> findByUserId(final Long id);
 }

@@ -1,25 +1,31 @@
---DROP TABLE email_user IF EXISTS;
---DROP TABLE hipchat_user IF EXISTS;
---DROP TABLE slack_user IF EXISTS;
---DROP TABLE project_version_user IF EXISTS;
+--DROP TABLE user_email IF EXISTS;
+--DROP TABLE user_hipchat IF EXISTS;
+--DROP TABLE user_slack IF EXISTS;
+--DROP TABLE user_project_version IF EXISTS;
+--DROP TABLE user_frequency IF EXISTS;
 
-CREATE TABLE email_user (
+CREATE TABLE user_email (
     user_config_id INTEGER,
     email_config_id INTEGER
 );
 
-CREATE TABLE hipchat_user (
+CREATE TABLE user_hipchat (
     user_config_id INTEGER,
     slack_config_id INTEGER
 );
 
-CREATE TABLE slack_user (
+CREATE TABLE user_slack (
     user_config_id INTEGER,
     slack_config_id INTEGER
 );
 
-CREATE TABLE project_version_user (
+CREATE TABLE user_project_version (
     user_config_id INTEGER,
     project_name VARCHAR,
     project_version_name VARCHAR
+);
+
+CREATE TABLE user_frequency (
+    user_config_id INTEGER,
+    frequency_id INTEGER
 );

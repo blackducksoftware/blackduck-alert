@@ -22,24 +22,18 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+public class UserFrequencyRelation extends DatabaseRelation {
+    private static final long serialVersionUID = -5467757197683436935L;
 
-@Entity
-@Table(name = "hipchat_user", schema = "user")
-public class HipChatUserRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 4597057895951603701L;
+    private final Integer frequencyId;
 
-    @Column(name = "hipchat_config_id")
-    private final Long hipChatConfigId;
-
-    public HipChatUserRelation(final Long userConfidId, final Long hipChatConfigId) {
+    public UserFrequencyRelation(final Long userConfidId, final Integer frequencyId) {
         super(userConfidId);
-        this.hipChatConfigId = hipChatConfigId;
+        this.frequencyId = frequencyId;
     }
 
-    public Long getChannelConfigId() {
-        return hipChatConfigId;
+    public Integer getFrequencyId() {
+        return frequencyId;
     }
+
 }
