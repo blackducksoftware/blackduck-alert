@@ -34,16 +34,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.UserConfigRepository;
 import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectDataFilter;
-import com.blackducksoftware.integration.hub.alert.digest.filter.UserNotificationWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -55,12 +50,6 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class DigestNotificationProcessor {
-    private final UserConfigRepository userRepository;
-
-    @Autowired
-    public DigestNotificationProcessor(final UserConfigRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
@@ -68,14 +57,13 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            // TODO add params
-            final ProjectDataFilter notificationFilter = new ProjectDataFilter(userRepository, null, null, null);
-
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
-            final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
+            final ProjectDataFilter projectDataFilter = new ProjectDataFilter(projectDataList);
+            // final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
 
             final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
-            events.addAll(getChatChannelEvents(userNotifications));
+            events.addAll(projectDataFilter.filterNotificationsByUser());
+            // TODO events.addAll(getChatChannelEvents(userNotifications));
 
             return events;
         }
@@ -83,7 +71,7 @@ public class DigestNotificationProcessor {
 
     private Collection<ProjectData> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> eventMap) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
-        for (final NotificationEntity entry : eventMap) {
+        eventMap.forEach(entry -> {
             final String projectKey = entry.getEventKey();
             // get category map from the project or create the project data if it doesn't exist
             Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
@@ -124,7 +112,7 @@ public class DigestNotificationProcessor {
             dataSet.put(ItemTypeEnum.COUNT.name(), count);
 
             categoryData.addItem(new ItemData(dataSet));
-        }
+        });
         // build
         final Collection<ProjectData> dataList = new LinkedList<>();
         for (final ProjectDataBuilder builder : projectDataMap.values()) {
@@ -143,22 +131,6 @@ public class DigestNotificationProcessor {
         }
 
         return idSet;
-    }
-
-    private List<AbstractChannelEvent> getChatChannelEvents(final Collection<UserNotificationWrapper> userNotifications) {
-        final List<AbstractChannelEvent> newEvents = new ArrayList<>();
-        userNotifications.forEach(userNotification -> {
-            userNotification.getNotifications().forEach(notification -> {
-                newEvents.add(new HipChatEvent(notification, userNotification.getUserConfigId()));
-                newEvents.add(new SlackEvent(notification, userNotification.getUserConfigId()));
-
-                // TODO
-                // userNotification.getHubUsernames().forEach(username -> {
-                // newEvents.add(new EmailEvent(notification, userNotification.getUserConfigId()));
-                // });
-            });
-        });
-        return newEvents;
     }
 
 }

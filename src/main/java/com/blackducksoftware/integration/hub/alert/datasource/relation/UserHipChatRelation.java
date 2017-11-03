@@ -20,19 +20,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class StringUtils {
+@Entity
+@Table(name = "user_hipchat", schema = "user")
+public class UserHipChatRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 4597057895951603701L;
 
-    public static List<String> formatCsv(final String csv) {
-        final List<String> valuesFromSplit = new ArrayList<>();
-        for (final String value : csv.split(",")) {
-            valuesFromSplit.add(value.trim());
-        }
-        return valuesFromSplit;
+    @Column(name = "hipchat_config_id")
+    private final Long hipChatConfigId;
+
+    public UserHipChatRelation(final Long userConfidId, final Long hipChatConfigId) {
+        super(userConfidId);
+        this.hipChatConfigId = hipChatConfigId;
     }
 
+    public Long getChannelConfigId() {
+        return hipChatConfigId;
+    }
 }

@@ -20,24 +20,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import java.util.Collection;
-import java.util.Set;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.model.UserConfigDataService;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserFrequencyRelation;
 
-public class ProjectDataFilter2 {
-    private final UserConfigDataService userConfigDataService;
-
-    public ProjectDataFilter2(final UserConfigDataService userConfigDataService) {
-        this.userConfigDataService = userConfigDataService;
-    }
-
-    public Set<UserNotificationWrapper> filterNotificationsByUser(final Collection<ProjectData> projectData) {
-        // TODO
-        return null;
-    }
+public interface UserFrequencyRepository extends JpaRepository<UserFrequencyRelation, Long> {
 
 }

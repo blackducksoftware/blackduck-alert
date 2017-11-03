@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailPr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.EmailUserRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.UserEmailRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -57,10 +57,10 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
-    private final ChannelUserRepository<EmailUserRelation> emailUserRepository;
+    private final ChannelUserRepository<UserEmailRelation> emailUserRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final ChannelUserRepository<EmailUserRelation> emailUserRepository, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final ChannelUserRepository<UserEmailRelation> emailUserRepository, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
         this.emailUserRepository = emailUserRepository;
@@ -75,7 +75,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void handleEvent(final EmailEvent emailEvent) {
-        final EmailUserRelation relationRow = emailUserRepository.findChannelConfig(emailEvent.getUserConfigId());
+        final UserEmailRelation relationRow = emailUserRepository.findChannelConfig(emailEvent.getUserConfigId());
         final Long emailConfigId = relationRow.getChannelConfigId();
         final EmailConfigEntity configuration = emailRepository.findOne(emailConfigId);
         sendMessage(emailEvent, configuration);
