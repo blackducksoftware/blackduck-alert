@@ -5,16 +5,16 @@ class HipChatConfiguration extends React.Component {
         return (
             <div>
                 <h1>HipChat Configuration</h1>
-                <label for="apiKey">Api Key</label>
+                <label>Api Key</label>
                 <input type="text" name="apiKey"></input><br />
                 
-                <label for="roomId">Room Id</label>
+                <label>Room Id</label>
                 <input type="number" name="roomId"></input><br />
                 
-                <label for="notify">Notify</label>
+                <label>Notify</label>
                 <input type="checkbox" name="notify"></input><br />
                 
-                <label for="color">Color</label>
+                <label>Color</label>
                 <input type="text" name="color"></input><br />
             </div>
         )
