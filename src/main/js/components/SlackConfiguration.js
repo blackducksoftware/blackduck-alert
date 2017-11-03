@@ -5,13 +5,13 @@ class SlackConfiguration extends React.Component {
         return (
             <div>
                 <h1>Slack Configuration</h1>
-                <label for="channelName">Channel Name</label>
+                <label>Channel Name</label>
                 <input type="text" name="channelName"></input><br />
                 
-                <label for="username">Username</label>
+                <label>Username</label>
                 <input type="text" name="username"></input><br />
                 
-                <label for="webhook">Webhook</label>
+                <label>Webhook</label>
                 <input type="text" name="webhook"></input><br />
             </div>
         )
