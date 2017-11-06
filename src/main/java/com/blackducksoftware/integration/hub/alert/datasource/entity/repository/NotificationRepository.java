@@ -33,6 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 
 @Transactional
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
-    @Query("select entity from NotificationEntity entity where entity.createdAt between ?1 and ?2 order by created_at asc")
+    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
     List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);
 }
