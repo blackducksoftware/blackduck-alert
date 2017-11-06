@@ -20,33 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 @Entity
-@Table(name = "user_config", schema = "user")
-public class UserConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -7970838052348596256L;
+@Table(name = "hub_user_frequencies", schema = "hub_user")
+public class HubUserFrequenciesRelation extends DatabaseRelation {
+    private static final long serialVersionUID = -5467757197683436935L;
 
-    private final String username;
+    private final Integer frequencyId;
 
-    public UserConfigEntity(final String username) {
-        super();
-        this.username = username;
+    public HubUserFrequenciesRelation(final Long userConfidId, final Integer frequencyId) {
+        super(userConfidId);
+        this.frequencyId = frequencyId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
+    public Integer getFrequencyId() {
+        return frequencyId;
     }
 
 }

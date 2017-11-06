@@ -20,27 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-@Entity
-@Table(name = "user_email", schema = "user")
-public class UserEmailRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 8484340743447368873L;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 
-    @Column(name = "email_config_id")
-    private final Long emailConfigId;
-
-    public UserEmailRelation(final Long userConfidId, final Long emailConfigId) {
-        super(userConfidId);
-        this.emailConfigId = emailConfigId;
-    }
-
-    public Long getChannelConfigId() {
-        return emailConfigId;
-    }
-
+@Transactional
+public interface HubUsersRepository extends JpaRepository<HubUsersEntity, Long> {
 }

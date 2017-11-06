@@ -37,7 +37,7 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.UserSlackRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -58,11 +58,11 @@ import okhttp3.Response;
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
-    final ChannelUserRepository<UserSlackRelation> userRelationRepository;
+    final ChannelUserRepository<HubUserSlackRelation> userRelationRepository;
     private final SlackRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final ChannelUserRepository<UserSlackRelation> userRelationRepository, final SlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final ChannelUserRepository<HubUserSlackRelation> userRelationRepository, final SlackRepository slackRepository) {
         super(gson, SlackEvent.class);
         this.userRelationRepository = userRelationRepository;
         this.slackRepository = slackRepository;
@@ -168,7 +168,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public void handleEvent(final SlackEvent event) {
-        final UserSlackRelation relationRow = userRelationRepository.findChannelConfig(event.getUserConfigId());
+        final HubUserSlackRelation relationRow = userRelationRepository.findChannelConfig(event.getUserConfigId());
         final Long configId = relationRow.getChannelConfigId();
         final SlackConfigEntity configuration = slackRepository.findOne(configId);
         sendMessage(event, configuration);

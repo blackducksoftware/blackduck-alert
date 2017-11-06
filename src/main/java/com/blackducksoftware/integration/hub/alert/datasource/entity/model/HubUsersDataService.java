@@ -25,30 +25,30 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.UserConfigRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 
-public class UserConfigDataService {
-    private final UserConfigRepository userConfigRepository;
+public class HubUsersDataService {
+    private final HubUsersRepository userConfigRepository;
 
-    public UserConfigDataService(final UserConfigRepository userConfigRepository) {
+    public HubUsersDataService(final HubUsersRepository userConfigRepository) {
         this.userConfigRepository = userConfigRepository;
     }
 
-    public List<UserConfigWrapper> getAllUsers() {
-        final List<UserConfigEntity> usersInDatabase = userConfigRepository.findAll();
-        final List<UserConfigWrapper> wrappedUsers = new ArrayList<>(usersInDatabase.size());
+    public List<HubUsersWrapper> getAllUsers() {
+        final List<HubUsersEntity> usersInDatabase = userConfigRepository.findAll();
+        final List<HubUsersWrapper> wrappedUsers = new ArrayList<>(usersInDatabase.size());
         if (!usersInDatabase.isEmpty()) {
             usersInDatabase.forEach(user -> {
-                wrappedUsers.add(new UserConfigWrapper(user.getId(), user.getUsername()));
+                wrappedUsers.add(new HubUsersWrapper(user.getId(), user.getUsername()));
             });
         }
         return wrappedUsers;
     }
 
-    public UserConfigWrapper getOneUser(final Long id) {
-        final UserConfigEntity entity = userConfigRepository.getOne(id);
-        return new UserConfigWrapper(entity.getId(), entity.getUsername());
+    public HubUsersWrapper getOneUser(final Long id) {
+        final HubUsersEntity entity = userConfigRepository.getOne(id);
+        return new HubUsersWrapper(entity.getId(), entity.getUsername());
     }
 
 }

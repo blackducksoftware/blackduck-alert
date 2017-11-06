@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.UserConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.UserConfigRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.user.UserRequestService;
@@ -47,13 +47,13 @@ import com.blackducksoftware.integration.hub.model.view.UserView;
 public class ProjectDataFilter_OLD {
     private final Logger logger = LoggerFactory.getLogger(ProjectDataFilter_OLD.class);
 
-    private final UserConfigRepository userRepo;
+    private final HubUsersRepository userRepo;
     private final UserRequestService userRequestService;
     private final ProjectDataService projectDataService;
     private final MetaService metaService;
 
     @Autowired
-    public ProjectDataFilter_OLD(final UserConfigRepository userRepo, final UserRequestService userRequestService, final ProjectDataService projectDataService, final MetaService metaService) {
+    public ProjectDataFilter_OLD(final HubUsersRepository userRepo, final UserRequestService userRequestService, final ProjectDataService projectDataService, final MetaService metaService) {
         this.userRepo = userRepo;
         this.userRequestService = userRequestService;
         this.projectDataService = projectDataService;
@@ -61,7 +61,7 @@ public class ProjectDataFilter_OLD {
     }
 
     public Set<UserNotificationWrapper> filterUserNotifications(final Collection<ProjectData> notificationData) {
-        final List<UserConfigEntity> userConfigs = userRepo.findAll();
+        final List<HubUsersEntity> userConfigs = userRepo.findAll();
         final Set<UserNotificationWrapper> configNotifications = new HashSet<>();
         if (!userConfigs.isEmpty()) {
             final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
