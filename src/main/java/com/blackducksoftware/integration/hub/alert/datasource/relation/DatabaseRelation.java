@@ -32,14 +32,14 @@ public abstract class DatabaseRelation implements Serializable {
     private static final long serialVersionUID = 4000317230253976836L;
 
     @Column(name = "user_config_id")
-    private final Long userConfidId;
+    private final Long userConfigId;
 
-    public DatabaseRelation(final Long userConfidId) {
-        this.userConfidId = userConfidId;
+    public DatabaseRelation(final Long userConfigId) {
+        this.userConfigId = userConfigId;
     }
 
     public Long getUserConfidId() {
-        return userConfidId;
+        return userConfigId;
     }
 
 }

@@ -22,17 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import java.util.Collection;
-
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserFrequenciesRelation;
 
-@Transactional
-public interface UserProjectVersionRepository extends JpaRepository<HubUserProjectVersionsRelation, Long> {
-    @Query("SELECT ProjectVersionUserRelation projectVersionUser FROM project_version_user WHERE projectVersionUser.id = ?1")
-    public Collection<HubUserProjectVersionsRelation> findByUserId(final Long id);
+public interface UserFrequenciesRepository extends JpaRepository<HubUserFrequenciesRelation, Long> {
+
 }

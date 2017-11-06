@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHi
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserFrequencyRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserProjectVersionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserFrequenciesRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserProjectVersionsRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 
 public class HubUsersWrapper {
@@ -51,7 +51,7 @@ public class HubUsersWrapper {
         return username;
     }
 
-    public DigestTypeEnum getFrequency(final UserFrequencyRepository userFrequencyRepository) {
+    public DigestTypeEnum getFrequency(final UserFrequenciesRepository userFrequencyRepository) {
         final HubUserFrequenciesRelation frequency = userFrequencyRepository.findOne(getId());
         return DigestTypeEnum.getById(frequency.getFrequencyId());
     }
@@ -62,7 +62,7 @@ public class HubUsersWrapper {
     // return null;
     // }
 
-    public Collection<HubUserProjectVersionsRelation> getProjectVersions(final UserProjectVersionRepository userProjectVersionRepository) {
+    public Collection<HubUserProjectVersionsRelation> getProjectVersions(final UserProjectVersionsRepository userProjectVersionRepository) {
         return userProjectVersionRepository.findByUserId(getId());
     }
 

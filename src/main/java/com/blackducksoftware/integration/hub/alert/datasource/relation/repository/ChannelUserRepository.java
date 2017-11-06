@@ -31,6 +31,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseR
 
 @Transactional
 public interface ChannelUserRepository<R extends DatabaseRelation> extends JpaRepository<R, Long> {
-    @Query("select entity from #{#entityName} entity where entity.userConfidId = ?1")
+    // TODO verify that this works
+    @Query("SELECT entity FROM #{#entityName} entity WHERE entity.userConfigId = ?1")
     public R findChannelConfig(final Long userId);
 }
