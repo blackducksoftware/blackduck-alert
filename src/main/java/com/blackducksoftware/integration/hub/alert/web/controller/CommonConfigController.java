@@ -143,6 +143,11 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
+        } catch (final AlertFieldException e) {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), e.getMessage());
+            responseBodyBuilder.putErrors(e.getFieldErrors());
+            final String responseBody = responseBodyBuilder.build();
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());

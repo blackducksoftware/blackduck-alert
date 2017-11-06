@@ -2,10 +2,10 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import GlobalConfiguration from './components/GlobalConfiguration';
-import EmailConfiguration from './components/EmailConfiguration';
-import HipChatConfiguration from './components/HipChatConfiguration';
-import SlackConfiguration from './components/SlackConfiguration';
+import GlobalConfiguration from './component/GlobalConfiguration';
+import EmailConfiguration from './component/EmailConfiguration';
+import HipChatConfiguration from './component/HipChatConfiguration';
+import SlackConfiguration from './component/SlackConfiguration';
 
 class App extends React.Component {
     render() {
