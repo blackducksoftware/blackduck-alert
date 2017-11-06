@@ -62,6 +62,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
+    testCompile 'com.github.springtestdbunit:spring-test-dbunit:1.3.0'
 }
 
 springBoot { mainClass = 'com.blackducksoftware.integration.hub.alert.Application' }
