@@ -29,10 +29,10 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.UserProjectVersionRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
 
 @Transactional
-public interface UserProjectVersionRepository extends JpaRepository<UserProjectVersionRelation, Long> {
+public interface UserProjectVersionRepository extends JpaRepository<HubUserProjectVersionsRelation, Long> {
     @Query("SELECT ProjectVersionUserRelation projectVersionUser FROM project_version_user WHERE projectVersionUser.id = ?1")
-    public Collection<UserProjectVersionRelation> findByUserId(final Long id);
+    public Collection<HubUserProjectVersionsRelation> findByUserId(final Long id);
 }

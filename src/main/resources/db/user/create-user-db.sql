@@ -1,6 +1,6 @@
---DROP TABLE user_config IF EXISTS;
+--DROP TABLE hub_users IF EXISTS;
 
-CREATE TABLE user_config (
+CREATE TABLE hub_users (
     id INTEGER PRIMARY KEY,
     hub_username VARCHAR
 );

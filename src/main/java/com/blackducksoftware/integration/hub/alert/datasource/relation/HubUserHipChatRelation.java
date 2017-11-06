@@ -27,20 +27,19 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "user_project_version", schema = "user")
-public class UserProjectVersionRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 544672444719776792L;
+@Table(name = "hub_user_hipchat", schema = "hub_user")
+public class HubUserHipChatRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 4597057895951603701L;
 
-    @Column(name = "project_name")
-    private final String projectName;
+    @Column(name = "hipchat_config_id")
+    private final Long hipChatConfigId;
 
-    @Column(name = "project_version_name")
-    private final String projectVersionName;
-
-    public UserProjectVersionRelation(final Long userConfidId, final String projectName, final String projectVersionName) {
+    public HubUserHipChatRelation(final Long userConfidId, final Long hipChatConfigId) {
         super(userConfidId);
-        this.projectName = projectName;
-        this.projectVersionName = projectVersionName;
+        this.hipChatConfigId = hipChatConfigId;
     }
 
+    public Long getChannelConfigId() {
+        return hipChatConfigId;
+    }
 }

@@ -22,18 +22,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-public class UserFrequencyRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -5467757197683436935L;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-    private final Integer frequencyId;
+@Entity
+@Table(name = "hub_user_email", schema = "hub_user")
+public class HubUserEmailRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 8484340743447368873L;
 
-    public UserFrequencyRelation(final Long userConfidId, final Integer frequencyId) {
+    @Column(name = "email_config_id")
+    private final Long emailConfigId;
+
+    public HubUserEmailRelation(final Long userConfidId, final Long emailConfigId) {
         super(userConfidId);
-        this.frequencyId = frequencyId;
+        this.emailConfigId = emailConfigId;
     }
 
-    public Integer getFrequencyId() {
-        return frequencyId;
+    public Long getChannelConfigId() {
+        return emailConfigId;
     }
 
 }

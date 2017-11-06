@@ -1,1 +1,1 @@
-CREATE SCHEMA user;
+CREATE SCHEMA hub_user;

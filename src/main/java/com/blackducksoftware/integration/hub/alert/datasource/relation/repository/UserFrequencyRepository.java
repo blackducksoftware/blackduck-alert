@@ -24,8 +24,8 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation.reposito
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.UserFrequencyRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserFrequenciesRelation;
 
-public interface UserFrequencyRepository extends JpaRepository<UserFrequencyRelation, Long> {
+public interface UserFrequencyRepository extends JpaRepository<HubUserFrequenciesRelation, Long> {
 
 }
