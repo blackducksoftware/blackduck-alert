@@ -118,7 +118,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
                     errors.add(currentValidationResult.getMessage());
                 }
 
-                fieldErrors.put(result.getKey().toString(), StringUtils.join(errors, " , "));
+                fieldErrors.put(result.getKey().getKey(), StringUtils.join(errors, " , "));
             }
             throw new AlertFieldException("There were issues with the configuration.", fieldErrors);
         }
