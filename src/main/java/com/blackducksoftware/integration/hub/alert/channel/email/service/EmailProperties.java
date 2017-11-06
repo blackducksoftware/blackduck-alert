@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.channel.email.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 
 public class EmailProperties {
@@ -98,7 +100,7 @@ public class EmailProperties {
     }
 
     private void addJavaMailOption(final String key, final String value) {
-        if (value != null) {
+        if (StringUtils.isNotEmpty(value)) {
             javamailConfigProperties.put(key, value);
         }
     }

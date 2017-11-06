@@ -8,18 +8,18 @@ import HipChatConfiguration from './component/HipChatConfiguration';
 import SlackConfiguration from './component/SlackConfiguration';
 
 class App extends React.Component {
-    render() {
-        return (
-            <div>
-                <GlobalConfiguration />
-                <EmailConfiguration />
-                <HipChatConfiguration />
-                <SlackConfiguration />
-            </div>
-        )
-    }
+	render() {
+		return (
+				<div>
+				<GlobalConfiguration />
+				<EmailConfiguration />
+				<HipChatConfiguration />
+				<SlackConfiguration />
+				</div>
+		)
+	}
 }
 
 ReactDOM.render(
-    <App />, document.getElementById('react')
+		<App />, document.getElementById('react')
 );

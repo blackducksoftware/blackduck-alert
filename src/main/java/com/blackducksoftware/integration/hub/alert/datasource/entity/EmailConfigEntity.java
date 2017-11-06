@@ -88,7 +88,6 @@ public class EmailConfigEntity extends DatabaseEntity {
     private String emailSubjectLine;
 
     public EmailConfigEntity() {
-
     }
 
     public EmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout, final String mailSmtpFrom,
