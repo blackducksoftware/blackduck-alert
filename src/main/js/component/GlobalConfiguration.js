@@ -6,14 +6,14 @@ class GlobalConfiguration extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-				id: '',
+				id: undefined,
 				hubUrl: '',
 				hubUsername: '',
 				hubPassword: '',
-				hubTimeout: 0,
+				hubTimeout: undefined,
 				hubAlwaysTrustCertificate: false,
 				hubProxyHost: '',
-				hubProxyPort: 0,
+				hubProxyPort: undefined,
 				hubProxyUsername: '',
 				hubProxyPassword: '',
 				accumulatorCron: '',
@@ -22,11 +22,13 @@ class GlobalConfiguration extends React.Component {
 				configurationMessage: '',
 				hubUrlError: '',
 				hubUsernameError: '',
+				hubPasswordError: '',
 				hubTimeoutError: '',
 				hubAlwaysTrustCertificateError: '',
 				hubProxyHostError: '',
 				hubProxyPortError: '',
 				hubProxyUsernameError: '',
+				hubProxyPasswordError: '',
 				accumulatorCronError: '',
 				dailyDigestCronError: ''
 		};
@@ -38,11 +40,13 @@ class GlobalConfiguration extends React.Component {
 			configurationMessage: '',
 			hubUrlError: '',
 			hubUsernameError: '',
+			hubPasswordError: '',
 			hubTimeoutError: '',
 			hubAlwaysTrustCertificateError: '',
 			hubProxyHostError: '',
 			hubProxyPortError: '',
 			hubProxyUsernameError: '',
+			hubProxyPasswordError: '',
 			accumulatorCronError: '',
 			dailyDigestCronError: ''
 		});
@@ -64,21 +68,21 @@ class GlobalConfiguration extends React.Component {
 				return response.json();
 			}
 		}).then(function(body) {
-			if(body != null && body.length > 0){
-				var globalConfiguration = body[0];
+			if (body != null && body.length > 0) {
+				var configuration = body[0];
 				self.setState({
-					id: globalConfiguration.id,
-					hubUrl: globalConfiguration.hubUrl,
-					hubUsername: globalConfiguration.hubUsername,
-					hubPassword: globalConfiguration.hubPassword,
-					hubTimeout: globalConfiguration.hubTimeout,
-					hubAlwaysTrustCertificate: globalConfiguration.hubAlwaysTrustCertificate,
-					hubProxyHost: globalConfiguration.hubProxyHost,
-					hubProxyPort: globalConfiguration.hubProxyPort,
-					hubProxyUsername: globalConfiguration.hubProxyUsername,
-					hubProxyPassword: globalConfiguration.hubProxyPassword,
-					accumulatorCron: globalConfiguration.accumulatorCron,
-					dailyDigestCron: globalConfiguration.dailyDigestCron
+					id: configuration.id,
+					hubUrl: configuration.hubUrl,
+					hubUsername: configuration.hubUsername,
+					hubPassword: configuration.hubPassword,
+					hubTimeout: configuration.hubTimeout,
+					hubAlwaysTrustCertificate: configuration.hubAlwaysTrustCertificate,
+					hubProxyHost: configuration.hubProxyHost,
+					hubProxyPort: configuration.hubProxyPort,
+					hubProxyUsername: configuration.hubProxyUsername,
+					hubProxyPassword: configuration.hubProxyPassword,
+					accumulatorCron: configuration.accumulatorCron,
+					dailyDigestCron: configuration.dailyDigestCron
 				});
 			}
 		});
@@ -90,7 +94,7 @@ class GlobalConfiguration extends React.Component {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state);
 		var method = 'POST';
-		if (this.state.id){
+		if (this.state.id) {
 			method = 'PUT';
 		}
 		fetch('/configuration/global', {
@@ -102,7 +106,7 @@ class GlobalConfiguration extends React.Component {
 		}).then(function(response) {
 			return response.json().then(json => {
 				let errors = json.errors;
-				if (errors){
+				if (errors) {
 					for (var key in errors) {
 						if (errors.hasOwnProperty(key)) {
 							let name = key.concat('Error');
@@ -120,7 +124,7 @@ class GlobalConfiguration extends React.Component {
 		});
 	}
 
-	handleTestSubmit(event){
+	handleTestSubmit(event) {
 		this.resetMessageStates();
 		event.preventDefault();
 		var self = this;
@@ -134,7 +138,7 @@ class GlobalConfiguration extends React.Component {
 		}).then(function(response) {
 			return response.json().then(json => {
 				let errors = json.errors;
-				if (errors){
+				if (errors) {
 					for (var key in errors) {
 						if (errors.hasOwnProperty(key)) {
 							let name = key.concat('Error');
@@ -173,7 +177,7 @@ class GlobalConfiguration extends React.Component {
 
 				<Field label="Username" type="text" name="hubUsername" value={this.state.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.hubUsernameError}></Field>
 
-				<Field label="Password" type="password" name="hubPassword" value={this.state.hubPassword} onChange={this.handleChange} ></Field>
+				<Field label="Password" type="password" name="hubPassword" value={this.state.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.hubPasswordError}></Field>
 
 				<Field label="Timeout" type="number" name="hubTimeout" value={this.state.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.hubTimeoutError}></Field>
 
@@ -186,7 +190,7 @@ class GlobalConfiguration extends React.Component {
 
 				<Field label="Username" type="text" name="hubProxyUsername" value={this.state.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.hubProxyUsernameError}></Field>
 
-				<Field label="Password" type="text" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} ></Field>
+				<Field label="Password" type="password" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} errorName="hubProxyPasswordError" errorValue={this.state.hubProxyPasswordError}></Field>
 
 				<h2>Scheduling Configuration</h2>
 				<Field label="Accumulator Cron" type="text" name="accumulatorCron" value={this.state.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.accumulatorCronError}></Field>
