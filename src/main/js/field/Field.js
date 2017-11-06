@@ -11,7 +11,7 @@ class Field extends React.Component {
 			inputDiv = <input type={this.props.type} name={this.props.name} value={value} onChange={this.props.onChange}></input>
 		} else if (this.props.type == 'checkbox') {
 			let isChecked = false;
-			if(value != undefined && value != null && (value == true || value == 'true')){
+			if (value != undefined && value != null && (value == true || value == 'true')) {
 				isChecked = true;
 			}
 			inputDiv = <input type={this.props.type} name={this.props.name} checked={isChecked} onChange={this.props.onChange}></input>
