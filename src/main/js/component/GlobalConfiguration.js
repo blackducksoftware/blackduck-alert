@@ -32,7 +32,23 @@ class GlobalConfiguration extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 	
+	resetMessageStates() {
+		this.setState({
+			configurationMessage: '',
+            hubUrlError: '',
+            hubUsernameError: '',
+            hubTimeoutError: '',
+            hubAlwaysTrustCertificateError: '',
+            hubProxyHostError: '',
+            hubProxyPortError: '',
+            hubProxyUsernameError: '',
+            accumulatorCronError: '',
+            dailyDigestCronError: ''
+         });
+	}
+	
 	componentDidMount() {
+		this.resetMessageStates();
         var self = this;
         fetch('/configuration/global')  
         .then(function(response) {
@@ -67,6 +83,7 @@ class GlobalConfiguration extends React.Component {
 	}
 	
 	handleSubmit(event) {
+		this.resetMessageStates();
         event.preventDefault();
         var self = this;
         let jsonBody = JSON.stringify(this.state);
@@ -90,6 +107,7 @@ class GlobalConfiguration extends React.Component {
     }
 	
 	handleTestSubmit(event){
+		this.resetMessageStates();
 		event.preventDefault();
 		var self = this;
         let jsonBody = JSON.stringify(this.state);
@@ -101,6 +119,16 @@ class GlobalConfiguration extends React.Component {
             body: jsonBody
         }).then(function(response) {
             return response.json().then(json => {
+                 let errors = json.errors;
+                 for (var key in errors) {
+                     if (errors.hasOwnProperty(key)) {
+                         let name = key.concat('Error');
+                         let value = errors[key];
+                         self.setState({
+                             [name]: value
+                         });
+                     }
+                	}
                  self.setState({
                     configurationMessage: json.message
                  });
@@ -137,7 +165,7 @@ class GlobalConfiguration extends React.Component {
 	                <h2>Proxy Configuration</h2>
                     <Field label="Host Name" type="text" name="hubProxyHost" value={this.state.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.hubProxyHostError}></Field>
 	                
-	                <Field label="Port" type="number" name="hubPassword" value={this.state.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.hubProxyPortError}></Field>
+	                <Field label="Port" type="number" name="hubProxyPort" value={this.state.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.hubProxyPortError}></Field>
 	                
 	                <Field label="Username" type="text" name="hubProxyUsername" value={this.state.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.hubProxyUsernameError}></Field>
 	                

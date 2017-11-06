@@ -1,4 +1,5 @@
 import React from 'react';
+import Field from '../field/Field';
 
 class Field extends React.Component {
     render() {
@@ -16,13 +17,13 @@ class Field extends React.Component {
         
         let errorDiv = null;
         if (this.props.errorName && this.props.errorValue) {
-            errorDiv = <div name={this.props.errorName} value={this.props.errorValue}></div>;
+            errorDiv = <p name={this.props.errorName}>{this.props.errorValue}</p>;
         }
         return (
              <div>
                  <label>{this.props.label}</label>
-                 {inputDiv}<br />
-                 {errorDiv}<br />
+                 {inputDiv}
+                 {errorDiv}
              </div>
          )
     }
