@@ -20,7 +20,7 @@ class App extends React.Component {
         return (
             <div>
                 <div className={styles.header}>
-                    <h1>Blackduck Software Alert</h1>
+                    <h1>Black Duck Alert</h1>
                 </div>
                 
                 <Tabs selectedIndex={this.state.index} onSelect={index => this.setState({ index })}>
