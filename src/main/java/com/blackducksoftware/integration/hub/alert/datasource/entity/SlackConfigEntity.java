@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "slack_config", schema = "configuration")
+@Table(name = "slack_config")
 public class SlackConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 4872590789715928839L;
 

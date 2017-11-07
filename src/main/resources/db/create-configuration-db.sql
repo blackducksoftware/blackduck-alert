@@ -1,6 +1,4 @@
---DROP TABLE notification_events IF EXISTS;
-
-CREATE TABLE global_config (
+CREATE TABLE alert.global_config (
 	id INTEGER PRIMARY KEY,
 	hub_url VARCHAR,
     hub_timeout INTEGER,

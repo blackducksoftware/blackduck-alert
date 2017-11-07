@@ -29,16 +29,16 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEnt
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 
 public class HubUsersDataService {
-    private final HubUsersRepository userConfigRepository;
+    private final HubUsersRepository hubUsersRepository;
 
-    public HubUsersDataService(final HubUsersRepository userConfigRepository) {
-        this.userConfigRepository = userConfigRepository;
+    public HubUsersDataService(final HubUsersRepository hubUsersRepository) {
+        this.hubUsersRepository = hubUsersRepository;
     }
 
     public List<HubUsersWrapper> getAllUsers() {
-        final List<HubUsersEntity> usersInDatabase = userConfigRepository.findAll();
-        final List<HubUsersWrapper> wrappedUsers = new ArrayList<>(usersInDatabase.size());
-        if (!usersInDatabase.isEmpty()) {
+        final Iterable<HubUsersEntity> usersInDatabase = hubUsersRepository.findAll();
+        final List<HubUsersWrapper> wrappedUsers = new ArrayList<>();
+        if (usersInDatabase != null) {
             usersInDatabase.forEach(user -> {
                 wrappedUsers.add(new HubUsersWrapper(user.getId(), user.getUsername()));
             });
@@ -47,7 +47,7 @@ public class HubUsersDataService {
     }
 
     public HubUsersWrapper getOneUser(final Long id) {
-        final HubUsersEntity entity = userConfigRepository.getOne(id);
+        final HubUsersEntity entity = hubUsersRepository.findOne(id);
         return new HubUsersWrapper(entity.getId(), entity.getUsername());
     }
 

@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "global_config", schema = "configuration")
+@Table(name = "global_config")
 public class GlobalConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
 

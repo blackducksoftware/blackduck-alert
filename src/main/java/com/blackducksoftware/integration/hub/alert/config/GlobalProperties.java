@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.config;
 
 import java.util.List;
 
@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
