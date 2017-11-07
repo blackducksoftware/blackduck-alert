@@ -43,4 +43,12 @@ public class HubUserProjectVersionsRelation extends DatabaseRelation {
         this.projectVersionName = projectVersionName;
     }
 
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getProjectVersionName() {
+        return projectVersionName;
+    }
+
 }

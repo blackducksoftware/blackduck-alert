@@ -23,10 +23,8 @@
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
@@ -44,16 +42,8 @@ public class ProjectDataFilter {
 
     // TODO add users to project data and remove the param from this method
     public Set<AbstractChannelEvent> filterEventsByUserNotifications(final Collection<UserNotificationWrapper> userNotificationList) {
-        final EventManager eventManager = new EventManager(userNotificationList);
-
-        final Set<EmailEvent> emailEvents = eventManager.getUserEmailEvents();
-        final Set<AbstractChannelEvent> chatChannelEvents = eventManager.getChatChannelEvents(new Long(0)); // TODO
-
-        final Set<AbstractChannelEvent> events = new HashSet<>();
-        events.addAll(emailEvents);
-        events.addAll(chatChannelEvents);
-
-        return events;
+        // TODO final EventManager eventManager = new EventManager(userNotificationList, null, null, null);
+        return null; // TODO eventManager.getChannelEvents(new Long(0));
     }
 
 }

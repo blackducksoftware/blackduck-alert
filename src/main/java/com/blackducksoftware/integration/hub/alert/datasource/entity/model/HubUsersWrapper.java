@@ -30,7 +30,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHi
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserProjectVersionsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserRelationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 
 public class HubUsersWrapper {
@@ -50,7 +50,7 @@ public class HubUsersWrapper {
         return username;
     }
 
-    public DigestTypeEnum getFrequency(final UserRelationRepository<HubUserFrequenciesRelation> userFrequencyRepository) {
+    public DigestTypeEnum getFrequency(final HubUserRelationRepository<HubUserFrequenciesRelation> userFrequencyRepository) {
         final HubUserFrequenciesRelation frequency = userFrequencyRepository.findOne(getId());
         return DigestTypeEnum.getById(frequency.getFrequencyId());
     }
@@ -65,17 +65,17 @@ public class HubUsersWrapper {
         return userProjectVersionRepository.findByUserId(getId());
     }
 
-    public Long getEmailConfigId(final UserRelationRepository<HubUserEmailRelation> userEmailRepository) {
+    public Long getEmailConfigId(final HubUserRelationRepository<HubUserEmailRelation> userEmailRepository) {
         final HubUserEmailRelation emailUserRelation = userEmailRepository.findOne(getId());
         return emailUserRelation != null ? emailUserRelation.getChannelConfigId() : null;
     }
 
-    public Long getHipChatConfigId(final UserRelationRepository<HubUserHipChatRelation> userHipChatRepository) {
+    public Long getHipChatConfigId(final HubUserRelationRepository<HubUserHipChatRelation> userHipChatRepository) {
         final HubUserHipChatRelation hipChatUserRelation = userHipChatRepository.findOne(getId());
         return hipChatUserRelation != null ? hipChatUserRelation.getChannelConfigId() : null;
     }
 
-    public Long getSlackConfigId(final UserRelationRepository<HubUserSlackRelation> userSlackRepository) {
+    public Long getSlackConfigId(final HubUserRelationRepository<HubUserSlackRelation> userSlackRepository) {
         final HubUserSlackRelation slackUserRelation = userSlackRepository.findOne(getId());
         return slackUserRelation != null ? slackUserRelation.getChannelConfigId() : null;
     }
