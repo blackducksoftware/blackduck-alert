@@ -74,6 +74,9 @@ class EmailConfiguration extends React.Component {
 	componentDidMount() {
 		this.resetMessageStates();
 		var self = this;
+		self.setState({
+			configurationMessage: 'Loading...'
+		});
 		fetch('/configuration/email')  
 		.then(function(response) {
 			if (!response.ok) {
@@ -83,30 +86,33 @@ class EmailConfiguration extends React.Component {
 					});
 				});
 			} else {
-				return response.json();
-			}
-		}).then(function(body) {
-			if (body != null && body.length > 0) {
-				var configuration = body[0];
-				self.setState({
-					id: configuration.id,
-					mailSmtpHost:  configuration.mailSmtpHost,
-					mailSmtpUser:  configuration.mailSmtpUser,
-					mailSmtpPassword:  configuration.mailSmtpPassword,
-					mailSmtpPort:  configuration.mailSmtpPort,
-					mailSmtpConnectionTimeout:  configuration.mailSmtpConnectionTimeout,
-					mailSmtpTimeout:  configuration.mailSmtpTimeout,
-					mailSmtpFrom:  configuration.mailSmtpFrom,
-					mailSmtpLocalhost:  configuration.mailSmtpLocalhost,
-					mailSmtpEhlo:  configuration.mailSmtpEhlo,
-					mailSmtpAuth:  configuration.mailSmtpAuth,
-					mailSmtpDnsNotify:  configuration.mailSmtpDnsNotify,
-					mailSmtpDnsRet:  configuration.mailSmtpDnsRet,
-					mailSmtpAllow8bitmime:  configuration.mailSmtpAllow8bitmime,
-					mailSmtpSendPartial:  configuration.mailSmtpSendPartial,
-					emailTemplateDirectory:  configuration.emailTemplateDirectory,
-					emailTemplateLogoImage:  configuration.emailTemplateLogoImage,
-					emailSubjectLine:  configuration.emailSubjectLine
+				return response.json().then(jsonArray => {
+					self.setState({
+						configurationMessage: ''
+					});
+					if (jsonArray != null && jsonArray.length > 0) {
+						var configuration = jsonArray[0];
+						self.setState({
+							id: configuration.id,
+							mailSmtpHost:  configuration.mailSmtpHost,
+							mailSmtpUser:  configuration.mailSmtpUser,
+							mailSmtpPassword:  configuration.mailSmtpPassword,
+							mailSmtpPort:  configuration.mailSmtpPort,
+							mailSmtpConnectionTimeout:  configuration.mailSmtpConnectionTimeout,
+							mailSmtpTimeout:  configuration.mailSmtpTimeout,
+							mailSmtpFrom:  configuration.mailSmtpFrom,
+							mailSmtpLocalhost:  configuration.mailSmtpLocalhost,
+							mailSmtpEhlo:  configuration.mailSmtpEhlo,
+							mailSmtpAuth:  configuration.mailSmtpAuth,
+							mailSmtpDnsNotify:  configuration.mailSmtpDnsNotify,
+							mailSmtpDnsRet:  configuration.mailSmtpDnsRet,
+							mailSmtpAllow8bitmime:  configuration.mailSmtpAllow8bitmime,
+							mailSmtpSendPartial:  configuration.mailSmtpSendPartial,
+							emailTemplateDirectory:  configuration.emailTemplateDirectory,
+							emailTemplateLogoImage:  configuration.emailTemplateLogoImage,
+							emailSubjectLine:  configuration.emailSubjectLine
+						});
+					}
 				});
 			}
 		});
@@ -121,6 +127,9 @@ class EmailConfiguration extends React.Component {
 		if (this.state.id) {
 			method = 'PUT';
 		}
+		self.setState({
+			configurationMessage: 'Saving...'
+		});
 		fetch('/configuration/email', {
 			method: method,
 			headers: {
@@ -153,6 +162,9 @@ class EmailConfiguration extends React.Component {
 		event.preventDefault();
 		var self = this;
 		let jsonBody = JSON.stringify(this.state);
+		self.setState({
+			configurationMessage: 'Testing...'
+		});
 		fetch('/configuration/email/test', {
 			method: 'POST',
 			headers: {
