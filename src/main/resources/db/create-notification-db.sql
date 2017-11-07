@@ -1,6 +1,4 @@
---DROP TABLE notification_events IF EXISTS;
-
-CREATE TABLE notification_events (
+CREATE TABLE alert.notification_events (
 	id INTEGER PRIMARY KEY,
 	event_key VARCHAR,
     created_at TIMESTAMP,
@@ -13,7 +11,7 @@ CREATE TABLE notification_events (
     policy_rule_name VARCHAR
 );
 
-CREATE TABLE vulnerabilities (
+CREATE TABLE alert.vulnerabilities (
 	id INTEGER PRIMARY KEY,
 	vulnerability_id VARCHAR,
 	vulnerability_operation VARCHAR

@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -64,10 +64,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     private final HipChatRepository hipChatRepository;
-    private final ChannelUserRepository<HubUserHipChatRelation> userRelationRepository;
+    private final UserRelationRepository<HubUserHipChatRelation> userRelationRepository;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final ChannelUserRepository<HubUserHipChatRelation> userRelationRepository, final HipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final UserRelationRepository<HubUserHipChatRelation> userRelationRepository, final HipChatRepository hipChatRepository) {
         super(gson, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
         this.userRelationRepository = userRelationRepository;
@@ -81,7 +81,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     @Override
     public void handleEvent(final HipChatEvent event) {
-        final HubUserHipChatRelation relationRow = userRelationRepository.findChannelConfig(event.getUserConfigId());
+        final HubUserHipChatRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
         final Long configId = relationRow.getChannelConfigId();
         final HipChatConfigEntity configuration = hipChatRepository.findOne(configId);
         sendMessage(event, configuration);

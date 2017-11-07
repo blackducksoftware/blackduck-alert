@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "hub_users", schema = "hub_user")
+@Table(name = "hub_users")
 public class HubUsersEntity extends DatabaseEntity {
     private static final long serialVersionUID = -7970838052348596256L;
 

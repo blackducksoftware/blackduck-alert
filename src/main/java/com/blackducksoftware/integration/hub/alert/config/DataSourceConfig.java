@@ -41,8 +41,8 @@ public class DataSourceConfig {
     @Bean
     public DataSource dataSource() {
         final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-notification-schema.sql").addScript("db/create-notification-db.sql").addScript("db/create-configuration-db.sql")
-                .addScript("db/create-configuration-schema.sql").addScript("db/email/create-tables.sql").addScript("db/hipchat/create-tables.sql").build();
+        final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-alert-schema.sql").addScript("db/create-notification-db.sql").addScript("db/create-configuration-db.sql")
+                .addScript("db/user/create-user-db.sql").addScript("db/user/create-user-relations.sql").addScript("db/email/create-tables.sql").addScript("db/hipchat/create-tables.sql").addScript("db/slack/create-tables.sql").build();
 
         return dataSource;
     }

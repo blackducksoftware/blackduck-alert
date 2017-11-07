@@ -26,7 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "hub_user_frequencies", schema = "hub_user")
+@Table(name = "hub_user_frequencies")
 public class HubUserFrequenciesRelation extends DatabaseRelation {
     private static final long serialVersionUID = -5467757197683436935L;
 

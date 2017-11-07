@@ -40,11 +40,11 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserEmailRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.ChannelUserRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
@@ -57,13 +57,13 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
-    private final ChannelUserRepository<HubUserEmailRelation> emailUserRepository;
+    private final UserRelationRepository<HubUserEmailRelation> hubUserEmailRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final ChannelUserRepository<HubUserEmailRelation> emailUserRepository, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final UserRelationRepository<HubUserEmailRelation> hubUserEmailRepository, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
-        this.emailUserRepository = emailUserRepository;
+        this.hubUserEmailRepository = hubUserEmailRepository;
         this.emailRepository = emailRepository;
     }
 
@@ -75,7 +75,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void handleEvent(final EmailEvent emailEvent) {
-        final HubUserEmailRelation relationRow = emailUserRepository.findChannelConfig(emailEvent.getUserConfigId());
+        final HubUserEmailRelation relationRow = hubUserEmailRepository.findOne(emailEvent.getUserConfigId());
         final Long emailConfigId = relationRow.getChannelConfigId();
         final EmailConfigEntity configuration = emailRepository.findOne(emailConfigId);
         sendMessage(emailEvent, configuration);

@@ -25,13 +25,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation.reposito
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
 
 @Transactional
-public interface ChannelUserRepository<R extends DatabaseRelation> extends JpaRepository<R, Long> {
-    // TODO verify that this works
-    @Query("SELECT entity FROM #{#entityName} entity WHERE entity.userConfigId = ?1")
-    public R findChannelConfig(final Long userId);
+public interface UserRelationRepository<R extends DatabaseRelation> extends JpaRepository<R, Long> {
 }
