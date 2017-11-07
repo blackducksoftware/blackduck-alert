@@ -27,7 +27,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -39,10 +39,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
-    public final CrudRepository<D, Long> repository;
+    public final JpaRepository<D, Long> repository;
     public final ObjectTransformer objectTransformer;
 
-    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CrudRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
+    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
         this.repository = repository;
@@ -68,7 +68,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             }
             return Collections.emptyList();
         }
-        final Iterable<D> databaseEntities = repository.findAll();
+        final List<D> databaseEntities = repository.findAll();
         final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
         return restModels;
     }
