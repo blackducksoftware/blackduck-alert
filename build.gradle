@@ -110,11 +110,11 @@ npm_run() {
 task webpack(type: Exec) {
         inputs.file("package-lock.json")
         inputs.file("webpack.config.js")
-        inputs.dir("app")
+        inputs.dir("$projectDir/src/main")
     
-        outputs.dir("$buildDir/js")
+        outputs.dir("$projectDir/src/main/resources/static/built/bundle.js")
     
-        commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$buildDir/js/bundle.js"
+        commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
 tasks.cleanBundles.finalizedBy(npm_run)

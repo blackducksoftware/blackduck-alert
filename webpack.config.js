@@ -1,10 +1,12 @@
 var path = require('path');
 
+const srcDir = path.resolve(__dirname, 'src');
+const jsDir = path.resolve(srcDir, 'main', 'js');
+const buildDir = path.resolve(__dirname, 'build');
+
 module.exports = {
-    entry: './src/main/js/App.js',
+    entry: path.resolve(jsDir, 'App'),
     devtool: 'sourcemaps',
-    cache: true,
-    debug: true,
     output: {
         path: __dirname,
         filename: './src/main/resources/static/built/bundle.js'
@@ -12,13 +14,26 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: path.join(__dirname, '.'),
+                test: /\.js$/,
                 exclude: /(node_modules)/,
-                loader: 'babel',
-                query: {
-                    cacheDirectory: true,
-                    presets: ['es2015', 'react']
-                }
+                loader: 'babel-loader',
+                query: {presets: ['es2015', 'react'] }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                            importLoaders: 1,
+                            localIdentName: '[name]__[local]___[hash:base64:5]'
+                        }
+                    }
+                ]
             }
         ]
     }
