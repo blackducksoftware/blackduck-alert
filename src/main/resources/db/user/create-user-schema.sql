@@ -1,1 +1,0 @@
-CREATE SCHEMA hub_user;

@@ -33,6 +33,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserPr
 
 @Transactional
 public interface UserProjectVersionsRepository extends JpaRepository<HubUserProjectVersionsRelation, Long> {
-    @Query("SELECT HubUserProjectVersionsRelation userProjectVersions FROM hub_user_project_versions WHERE userProjectVersions.id = ?1")
+    // TODO consider making this a JOIN because it is non one-to-one
+    @Query("SELECT userProjectVersions FROM HubUserProjectVersionsRelation userProjectVersions WHERE userProjectVersions.id = ?1")
     public Collection<HubUserProjectVersionsRelation> findByUserId(final Long id);
 }
