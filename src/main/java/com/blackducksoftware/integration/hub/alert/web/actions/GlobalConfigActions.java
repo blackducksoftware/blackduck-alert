@@ -28,11 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -74,6 +76,22 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
 
         if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && !isBoolean(restModel.getHubAlwaysTrustCertificate())) {
             fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
+            try {
+                new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
+            } catch (final IllegalArgumentException e) {
+                fieldErrors.put("accumulatorCron", e.getMessage());
+            }
+        }
+
+        if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
+            try {
+                new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
+            } catch (final IllegalArgumentException e) {
+                fieldErrors.put("dailyDigestCron", e.getMessage());
+            }
         }
 
         if (!fieldErrors.isEmpty()) {
