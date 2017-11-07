@@ -22,7 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,10 +33,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.digest.filter.EventManager;
 import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectDataFilter;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -50,6 +51,12 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class DigestNotificationProcessor {
+    private final EventManager eventManager;
+
+    @Autowired
+    public DigestNotificationProcessor(final EventManager eventManager) {
+        this.eventManager = eventManager;
+    }
 
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
@@ -57,15 +64,13 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
+            // TODO Convert Project Data to Map<User, ProjectData>
             final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
             final ProjectDataFilter projectDataFilter = new ProjectDataFilter(projectDataList);
             // final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
 
-            final List<AbstractChannelEvent> events = new ArrayList<>(projectDataList.size());
-            events.addAll(projectDataFilter.filterNotificationsByUser());
-            // TODO events.addAll(getChatChannelEvents(userNotifications));
-
-            return events;
+            // TODO pass in a collection of UserNotificationWrappers
+            return eventManager.createChannelEvents(Collections.emptyList());
         }
     }
 

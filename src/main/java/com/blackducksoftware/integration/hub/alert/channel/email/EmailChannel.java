@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserEmailRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.UserRelationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserRelationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
@@ -57,10 +57,10 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     private final GlobalProperties globalProperties;
     private final EmailRepository emailRepository;
-    private final UserRelationRepository<HubUserEmailRelation> hubUserEmailRepository;
+    private final HubUserRelationRepository<HubUserEmailRelation> hubUserEmailRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final UserRelationRepository<HubUserEmailRelation> hubUserEmailRepository, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final HubUserRelationRepository<HubUserEmailRelation> hubUserEmailRepository, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
         this.hubUserEmailRepository = hubUserEmailRepository;
