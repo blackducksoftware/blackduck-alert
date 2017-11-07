@@ -40,9 +40,9 @@ public class NotificationEntityTest {
         assertNull(notificationEntity.getProjectVersion());
         assertNull(notificationEntity.getVulnerabilityList());
 
-        assertEquals(-1130789619, notificationEntity.hashCode());
+        assertEquals(-202711751, notificationEntity.hashCode());
 
-        final String expectedString = "{\"eventKey\":null,\"createdAt\":null,\"notificationType\":null,\"projectName\":null,\"projectVersion\":null,\"componentName\":null,\"componentVersion\":null,\"policyRuleName\":null,\"person\":null,\"vulnerabilityList\":null,\"id\":null}";
+        final String expectedString = "{\"hubUser\":null,\"eventKey\":null,\"createdAt\":null,\"notificationType\":null,\"projectName\":null,\"projectVersion\":null,\"componentName\":null,\"componentVersion\":null,\"policyRuleName\":null,\"person\":null,\"projectUrl\":null,\"projectVersionUrl\":null,\"vulnerabilityList\":null,\"id\":null}";
         assertEquals(expectedString, notificationEntity.toString());
 
         final NotificationEntity notificationEntityNew = new NotificationEntity();
@@ -52,11 +52,14 @@ public class NotificationEntityTest {
     @Test
     public void testModel() {
         final Long id = 123L;
+        final String hubUser = "hubUser1";
         final String eventKey = "EventKey";
         final Date createdAt = new Date();
         final String notificationType = "NotificationType";
         final String projectName = "ProjectName";
+        final String projectUrl = "projectUrl";
         final String projectVersion = "ProjectVersion";
+        final String projectVersionUrl = "projectVersionUrl";
         final String componentName = "ComponentName";
         final String componentVersion = "ComponentVersion";
         final String policyRuleName = "PolicyRuleName";
@@ -66,28 +69,33 @@ public class NotificationEntityTest {
         final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
         vulnerabilityList.add(vulnerabilityEntity);
 
-        final NotificationEntity notificationEntity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+        final NotificationEntity notificationEntity = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName,
+                person, vulnerabilityList);
         notificationEntity.setId(id);
 
         assertEquals(componentName, notificationEntity.getComponentName());
         assertEquals(componentVersion, notificationEntity.getComponentVersion());
         assertEquals(createdAt, notificationEntity.getCreatedAt());
         assertEquals(eventKey, notificationEntity.getEventKey());
+        assertEquals(hubUser, notificationEntity.getHubUser());
         assertEquals(id, notificationEntity.getId());
         assertEquals(notificationType, notificationEntity.getNotificationType());
         assertEquals(person, notificationEntity.getPerson());
         assertEquals(policyRuleName, notificationEntity.getPolicyRuleName());
         assertEquals(projectName, notificationEntity.getProjectName());
+        assertEquals(projectUrl, notificationEntity.getProjectUrl());
         assertEquals(projectVersion, notificationEntity.getProjectVersion());
+        assertEquals(projectVersionUrl, notificationEntity.getProjectVersionUrl());
         assertEquals(vulnerabilityList, notificationEntity.getVulnerabilityList());
 
         assertEquals(HashCodeBuilder.reflectionHashCode(notificationEntity), notificationEntity.hashCode());
 
-        final String expectedString = "{\"eventKey\":\"EventKey\",\"createdAt\":\"" + createdAt.toString()
-                + "\",\"notificationType\":\"NotificationType\",\"projectName\":\"ProjectName\",\"projectVersion\":\"ProjectVersion\",\"componentName\":\"ComponentName\",\"componentVersion\":\"ComponentVersion\",\"policyRuleName\":\"PolicyRuleName\",\"person\":\"Person\",\"vulnerabilityList\":[{\"vulnerabilityId\":\"VulnerabilityId\",\"operation\":\"VulnerabilityOperation\",\"id\":null}],\"id\":123}";
+        final String expectedString = "{\"hubUser\":\"hubUser1\",\"eventKey\":\"EventKey\",\"createdAt\":\"" + createdAt.toString()
+                + "\",\"notificationType\":\"NotificationType\",\"projectName\":\"ProjectName\",\"projectVersion\":\"ProjectVersion\",\"componentName\":\"ComponentName\",\"componentVersion\":\"ComponentVersion\",\"policyRuleName\":\"PolicyRuleName\",\"person\":\"Person\",\"projectUrl\":\"projectUrl\",\"projectVersionUrl\":\"projectVersionUrl\",\"vulnerabilityList\":[{\"vulnerabilityId\":\"VulnerabilityId\",\"operation\":\"VulnerabilityOperation\",\"id\":null}],\"id\":123}";
         assertEquals(expectedString, notificationEntity.toString());
 
-        final NotificationEntity notificationEntityNew = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+        final NotificationEntity notificationEntityNew = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName,
+                person, vulnerabilityList);
         notificationEntityNew.setId(id);
 
         assertEquals(notificationEntity, notificationEntityNew);
