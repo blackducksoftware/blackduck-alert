@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class ObjectTransformer {
     private final Logger logger = LoggerFactory.getLogger(ObjectTransformer.class);
 
-    public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws AlertException {
+    public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final Iterable<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
         if (databaseEntities != null) {
             for (final DatabaseEntity databaseEntity : databaseEntities) {

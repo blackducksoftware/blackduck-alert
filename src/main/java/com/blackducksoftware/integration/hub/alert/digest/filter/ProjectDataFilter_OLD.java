@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
@@ -47,23 +46,22 @@ import com.blackducksoftware.integration.hub.model.view.UserView;
 public class ProjectDataFilter_OLD {
     private final Logger logger = LoggerFactory.getLogger(ProjectDataFilter_OLD.class);
 
-    private final HubUsersRepository userRepo;
+    private final HubUsersRepository hubUsersRepository;
     private final UserRequestService userRequestService;
     private final ProjectDataService projectDataService;
     private final MetaService metaService;
 
-    @Autowired
-    public ProjectDataFilter_OLD(final HubUsersRepository userRepo, final UserRequestService userRequestService, final ProjectDataService projectDataService, final MetaService metaService) {
-        this.userRepo = userRepo;
+    public ProjectDataFilter_OLD(final HubUsersRepository hubUsersRepository, final UserRequestService userRequestService, final ProjectDataService projectDataService, final MetaService metaService) {
+        this.hubUsersRepository = hubUsersRepository;
         this.userRequestService = userRequestService;
         this.projectDataService = projectDataService;
         this.metaService = metaService;
     }
 
     public Set<UserNotificationWrapper> filterUserNotifications(final Collection<ProjectData> notificationData) {
-        final List<HubUsersEntity> userConfigs = userRepo.findAll();
+        final Iterable<HubUsersEntity> userConfigs = hubUsersRepository.findAll();
         final Set<UserNotificationWrapper> configNotifications = new HashSet<>();
-        if (!userConfigs.isEmpty()) {
+        if (userConfigs != null) {
             final Map<ProjectVersionWrapper, ProjectData> projectToNotificationMap = mapProjectsToNotifications(notificationData);
             final Map<ProjectVersionWrapper, Collection<UserView>> projectToUsersMap = mapProjectsToUsers(projectToNotificationMap.keySet());
 

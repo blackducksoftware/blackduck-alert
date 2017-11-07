@@ -25,12 +25,17 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation;
 import java.io.Serializable;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @MappedSuperclass
 public abstract class DatabaseRelation implements Serializable {
     private static final long serialVersionUID = 4000317230253976836L;
 
+    @Id
     @Column(name = "user_config_id")
     private final Long userConfigId;
 
@@ -40,6 +45,16 @@ public abstract class DatabaseRelation implements Serializable {
 
     public Long getUserConfidId() {
         return userConfigId;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }
