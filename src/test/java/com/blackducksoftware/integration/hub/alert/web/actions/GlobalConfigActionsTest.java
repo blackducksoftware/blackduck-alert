@@ -46,6 +46,8 @@ import com.blackducksoftware.integration.hub.global.HubCredentials;
 import com.blackducksoftware.integration.hub.global.HubProxyInfo;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.validator.HubServerConfigValidator;
+import com.blackducksoftware.integration.validator.ValidationResults;
 
 public class GlobalConfigActionsTest {
     private final MockUtils mockUtils = new MockUtils();
@@ -195,6 +197,7 @@ public class GlobalConfigActionsTest {
                 return mockedRestConnection;
             }
         }).when(configActions).createRestConnection(Mockito.any(HubServerConfigBuilder.class));
+        Mockito.doNothing().when(configActions).validateHubConfiguration(Mockito.any(HubServerConfigBuilder.class));
 
         configActions.testConfig(mockUtils.createGlobalConfigRestModel());
         verify(mockedRestConnection, times(1)).connect();
@@ -203,6 +206,38 @@ public class GlobalConfigActionsTest {
         final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
         configActions.testConfig(restModel);
         verify(mockedRestConnection, times(1)).connect();
+    }
+
+    @Test
+    public void testValidateHubConfiguration() throws Exception {
+        final GlobalConfigActions configActions = new GlobalConfigActions(null, null, null, null);
+
+        final String url = "https://www.google.com/";
+        final String user = "User";
+        final String password = "Password";
+        HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
+        serverConfigBuilder.setHubUrl(url);
+        serverConfigBuilder.setUsername(user);
+        serverConfigBuilder.setUsername(password);
+
+        try {
+            configActions.validateHubConfiguration(serverConfigBuilder);
+            fail();
+        } catch (final AlertFieldException e) {
+            assertNotNull(e);
+            assertEquals("There were issues with the configuration.", e.getMessage());
+            assertTrue(!e.getFieldErrors().isEmpty());
+        }
+
+        final HubServerConfigValidator validator = Mockito.mock(HubServerConfigValidator.class);
+        serverConfigBuilder = Mockito.spy(serverConfigBuilder);
+        Mockito.when(serverConfigBuilder.createValidator()).thenReturn(validator);
+        Mockito.when(validator.assertValid()).thenReturn(new ValidationResults());
+        try {
+            configActions.validateHubConfiguration(serverConfigBuilder);
+        } catch (final AlertFieldException e) {
+            fail();
+        }
     }
 
     @Test

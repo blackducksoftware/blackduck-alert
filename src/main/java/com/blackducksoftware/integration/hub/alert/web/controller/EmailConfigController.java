@@ -43,12 +43,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestMode
 @RestController
 public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
-    private final EmailConfigActions configActions;
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
     @Autowired
     EmailConfigController(final EmailConfigActions configActions) {
-        this.configActions = configActions;
         commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
