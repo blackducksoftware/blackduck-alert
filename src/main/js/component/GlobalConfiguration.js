@@ -56,6 +56,9 @@ class GlobalConfiguration extends React.Component {
 	componentDidMount() {
 		this.resetMessageStates();
 		var self = this;
+		self.setState({
+			configurationMessage: 'Loading...'
+		});
 		fetch('/configuration/global')  
 		.then(function(response) {
 			if (!response.ok) {
@@ -65,24 +68,27 @@ class GlobalConfiguration extends React.Component {
 					});
 				});
 			} else {
-				return response.json();
-			}
-		}).then(function(body) {
-			if (body != null && body.length > 0) {
-				var configuration = body[0];
-				self.setState({
-					id: configuration.id,
-					hubUrl: configuration.hubUrl,
-					hubUsername: configuration.hubUsername,
-					hubPassword: configuration.hubPassword,
-					hubTimeout: configuration.hubTimeout,
-					hubAlwaysTrustCertificate: configuration.hubAlwaysTrustCertificate,
-					hubProxyHost: configuration.hubProxyHost,
-					hubProxyPort: configuration.hubProxyPort,
-					hubProxyUsername: configuration.hubProxyUsername,
-					hubProxyPassword: configuration.hubProxyPassword,
-					accumulatorCron: configuration.accumulatorCron,
-					dailyDigestCron: configuration.dailyDigestCron
+				return response.json().then(jsonArray => {
+					self.setState({
+						configurationMessage: ''
+					});
+					if (jsonArray != null && jsonArray.length > 0) {
+						var configuration = jsonArray[0];
+						self.setState({
+							id: configuration.id,
+							hubUrl: configuration.hubUrl,
+							hubUsername: configuration.hubUsername,
+							hubPassword: configuration.hubPassword,
+							hubTimeout: configuration.hubTimeout,
+							hubAlwaysTrustCertificate: configuration.hubAlwaysTrustCertificate,
+							hubProxyHost: configuration.hubProxyHost,
+							hubProxyPort: configuration.hubProxyPort,
+							hubProxyUsername: configuration.hubProxyUsername,
+							hubProxyPassword: configuration.hubProxyPassword,
+							accumulatorCron: configuration.accumulatorCron,
+							dailyDigestCron: configuration.dailyDigestCron
+						});
+					}
 				});
 			}
 		});
@@ -97,6 +103,9 @@ class GlobalConfiguration extends React.Component {
 		if (this.state.id) {
 			method = 'PUT';
 		}
+		self.setState({
+			configurationMessage: 'Saving...'
+		});
 		fetch('/configuration/global', {
 			method: method,
 			headers: {
@@ -129,6 +138,9 @@ class GlobalConfiguration extends React.Component {
 		event.preventDefault();
 		var self = this;
 		let jsonBody = JSON.stringify(this.state);
+		self.setState({
+			configurationMessage: 'Testing...'
+		});
 		fetch('/configuration/global/test', {
 			method: 'POST',
 			headers: {
