@@ -172,6 +172,8 @@ public class GlobalConfigActionsTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("hubTimeout", "Not an Integer.");
         fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
+        fieldErrors.put("accumulatorCron", "Cron expression must consist of 6 fields (found 1 in \"AccumulatorCron\")");
+        fieldErrors.put("dailyDigestCron", "Cron expression must consist of 6 fields (found 1 in \"DailyDigestCron\")");
         try {
             response = configActions.validateConfig(restModel);
         } catch (final AlertFieldException e) {

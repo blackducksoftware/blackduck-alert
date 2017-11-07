@@ -32,6 +32,9 @@ class SlackConfiguration extends React.Component {
 	componentDidMount() {
 		this.resetMessageStates();
 		var self = this;
+		self.setState({
+			configurationMessage: 'Loading...'
+		});
 		fetch('/configuration/slack')  
 		.then(function(response) {
 			if (!response.ok) {
@@ -41,16 +44,19 @@ class SlackConfiguration extends React.Component {
 					});
 				});
 			} else {
-				return response.json();
-			}
-		}).then(function(body) {
-			if (body != null && body.length > 0) {
-				var configuration = body[0];
-				self.setState({
-					id: configuration.id,
-					apiKchannelNameey: configuration.channelName,
-					username: configuration.username,
-					webhook: configuration.webhook
+				return response.json().then(jsonArray => {
+					self.setState({
+						configurationMessage: ''
+					});
+					if (jsonArray != null && jsonArray.length > 0) {
+						var configuration = jsonArray[0];
+						self.setState({
+							id: configuration.id,
+							apiKchannelNameey: configuration.channelName,
+							username: configuration.username,
+							webhook: configuration.webhook
+						});
+					}
 				});
 			}
 		});
@@ -65,6 +71,9 @@ class SlackConfiguration extends React.Component {
 		if (this.state.id) {
 			method = 'PUT';
 		}
+		self.setState({
+			configurationMessage: 'Saving...'
+		});
 		fetch('/configuration/slack', {
 			method: method,
 			headers: {
@@ -97,6 +106,9 @@ class SlackConfiguration extends React.Component {
 		event.preventDefault();
 		var self = this;
 		let jsonBody = JSON.stringify(this.state);
+		self.setState({
+			configurationMessage: 'Testing...'
+		});
 		fetch('/configuration/slack/test', {
 			method: 'POST',
 			headers: {
