@@ -22,16 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 
 // TODO fix SlackConfigEntity
-public class MockSlackRepository implements JpaRepository<MockSlackRepository.SlackConfigEntity, Long> {
-
-    // TODO remove this when Slack is on master
-    public class SlackConfigEntity extends DatabaseEntity {
-        private static final long serialVersionUID = 819426973456433591L;
-
-    }
+public class MockSlackRepository implements JpaRepository<SlackConfigEntity, Long> {
 
     private final Map<Long, SlackConfigEntity> mockDB;
 
