@@ -27,7 +27,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -41,6 +41,7 @@ public class NotificationRepositoryIT {
     private NotificationRepository repository;
 
     private NotificationEntity createNotificationEntity(final Date createdAt, final Collection<VulnerabilityEntity> vulnerabilityList) {
+        final String hubUser = "hubUser";
         final String eventKey = "event_key_for_notification";
         final String notificationType = "notificationType";
         final String projectName = "projectName";
@@ -49,7 +50,7 @@ public class NotificationRepositoryIT {
         final String componentVersion = "componentVersion";
         final String policyRuleName = "policyRuleName";
         final String person = "person";
-        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+        final NotificationEntity entity = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, null, projectVersion, null, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
         return entity;
     }
 

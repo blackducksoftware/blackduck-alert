@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
