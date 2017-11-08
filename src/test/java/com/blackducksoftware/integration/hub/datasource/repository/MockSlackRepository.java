@@ -24,7 +24,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 
-// TODO fix SlackConfigEntity
 public class MockSlackRepository implements JpaRepository<SlackConfigEntity, Long> {
 
     private final Map<Long, SlackConfigEntity> mockDB;

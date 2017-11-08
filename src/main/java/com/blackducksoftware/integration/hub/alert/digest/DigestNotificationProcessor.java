@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.digest.filter.EventManager;
-import com.blackducksoftware.integration.hub.alert.digest.filter.ProjectDataFilter;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -65,11 +64,9 @@ public class DigestNotificationProcessor {
             return Collections.emptyList();
         } else {
             // TODO Convert Project Data to Map<User, ProjectData>
-            final Collection<ProjectData> projectDataList = createCateoryDataMap(digestType, processedNotificationList);
-            final ProjectDataFilter projectDataFilter = new ProjectDataFilter(projectDataList);
             // final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
 
-            // TODO pass in a collection of UserNotificationWrappers
+            // FIXME pass in a collection of UserNotificationWrappers
             return eventManager.createChannelEvents(Collections.emptyList());
         }
     }

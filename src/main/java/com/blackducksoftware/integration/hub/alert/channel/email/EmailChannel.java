@@ -93,7 +93,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
-        // TODO get the emails from the hub from the config
+        // TODO get the emails from the config
         sendMessage("", emailEvent, emailConfigEntity);
     }
 
