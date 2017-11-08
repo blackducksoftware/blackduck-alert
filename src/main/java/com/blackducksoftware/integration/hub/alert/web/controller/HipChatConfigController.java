@@ -43,12 +43,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestMo
 @RestController
 public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
-    private final HipChatConfigActions configActions;
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
     public HipChatConfigController(final HipChatConfigActions configActions) {
-        this.configActions = configActions;
         commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 

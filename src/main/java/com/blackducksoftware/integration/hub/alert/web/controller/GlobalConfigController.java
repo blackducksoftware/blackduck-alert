@@ -43,12 +43,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestMod
 @RestController
 public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigController.class);
-    private final GlobalConfigActions configActions;
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
     @Autowired
     GlobalConfigController(final GlobalConfigActions configActions) {
-        this.configActions = configActions;
         commonConfigController = new CommonConfigController<>(GlobalConfigEntity.class, GlobalConfigRestModel.class, configActions);
     }
 
