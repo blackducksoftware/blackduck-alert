@@ -22,13 +22,19 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -43,6 +49,10 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.validator.AbstractValidator;
+import com.blackducksoftware.integration.validator.FieldEnum;
+import com.blackducksoftware.integration.validator.ValidationResult;
+import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
 public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, GlobalConfigRestModel> {
@@ -66,6 +76,22 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
 
         if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && !isBoolean(restModel.getHubAlwaysTrustCertificate())) {
             fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
+            try {
+                new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
+            } catch (final IllegalArgumentException e) {
+                fieldErrors.put("accumulatorCron", e.getMessage());
+            }
+        }
+
+        if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
+            try {
+                new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
+            } catch (final IllegalArgumentException e) {
+                fieldErrors.put("dailyDigestCron", e.getMessage());
+            }
         }
 
         if (!fieldErrors.isEmpty()) {
@@ -92,9 +118,28 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
         }
         hubServerConfigBuilder.setLogger(intLogger);
+        validateHubConfiguration(hubServerConfigBuilder);
         final RestConnection restConnection = createRestConnection(hubServerConfigBuilder);
         restConnection.connect();
         return "Successfully connected to the Hub.";
+    }
+
+    public void validateHubConfiguration(final HubServerConfigBuilder hubServerConfigBuilder) throws AlertFieldException {
+        final AbstractValidator validator = hubServerConfigBuilder.createValidator();
+        final ValidationResults results = validator.assertValid();
+        if (!results.getResultMap().isEmpty()) {
+            final Map<String, String> fieldErrors = new HashMap<>();
+            for (final Entry<FieldEnum, Set<ValidationResult>> result : results.getResultMap().entrySet()) {
+                final Set<ValidationResult> validationResult = result.getValue();
+                final List<String> errors = new ArrayList<>();
+                for (final ValidationResult currentValidationResult : validationResult) {
+                    errors.add(currentValidationResult.getMessage());
+                }
+
+                fieldErrors.put(result.getKey().getKey(), StringUtils.join(errors, " , "));
+            }
+            throw new AlertFieldException("There were issues with the configuration.", fieldErrors);
+        }
     }
 
     public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
