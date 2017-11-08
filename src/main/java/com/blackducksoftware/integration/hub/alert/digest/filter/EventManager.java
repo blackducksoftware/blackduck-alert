@@ -64,7 +64,6 @@ public class EventManager {
         this.slackRelationRepository = slackRelationRepository;
     }
 
-    // TODO
     public List<AbstractChannelEvent> createChannelEvents(final Collection<UserNotificationWrapper> userNotificationList) {
         final List<AbstractChannelEvent> channelEvents = new ArrayList<>();
         final Set<UserNotificationWrapper> filteredUserNotifications = new HashSet<>();
