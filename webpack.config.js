@@ -12,12 +12,25 @@ module.exports = {
         filename: './src/main/resources/static/built/bundle.js'
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 exclude: /(node_modules)/,
                 loader: 'babel-loader',
-                query: {presets: ['es2015', 'react'] }
+                query: {
+                    presets: ['es2015', 'react']
+                }
+            },
+            {
+                test: /\.(jpg|png|svg)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            name: '[path][name]-[hash:8].[ext]'
+                        }
+                    }
+                ]
             },
             {
                 test: /\.css$/,

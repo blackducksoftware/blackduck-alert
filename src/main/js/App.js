@@ -8,8 +8,13 @@ import HipChatConfiguration from './component/HipChatConfiguration';
 import SlackConfiguration from './component/SlackConfiguration';
 
 import styles from '../css/main.css';
+import logo from '../img/BDTextLogo.png';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
+const Logo = () => (
+    <img src="BDTextLogo.png" alt="logo" />
+);
 
 class App extends React.Component {
     constructor() {
@@ -24,35 +29,40 @@ class App extends React.Component {
         return (
             <div>
                 <div className={styles.header}>
-                    <h1>Black Duck Alert</h1>
+                    {<img src={logo} alt="logo" />}
+                </div>
+                <div className={styles.alertHeader}>
+                    <h1>Alert</h1>
                 </div>
                 
-                <Tabs selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
-                        <Tab className={styles.tabSpacing}>Hub settings</Tab>
-                        <Tab className={styles.tabSpacing}>Channel configuration</Tab>
+                        <Tab className={styles.configTabs}>Hub settings</Tab>
+                        <Tab className={styles.configTabs}>Channel configuration</Tab>
                     </TabList>
-                    <TabPanel className={styles.tabContent}>
-                        <GlobalConfiguration />
-                    </TabPanel>
-                    <TabPanel className={styles.tabContent}>
-                        <Tabs selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
-                            <TabList className={styles.table}>
-                                <Tab>Email</Tab>
-                                <Tab>Hipchat</Tab>
-                                <Tab>Slack</Tab>
-                            </TabList>
-                            <TabPanel>
-                                <EmailConfiguration />
-                            </TabPanel>
-                            <TabPanel>
-                                <HipChatConfiguration />
-                            </TabPanel>
-                            <TabPanel>
-                                <SlackConfiguration />
-                            </TabPanel>
-                        </Tabs>
-                    </TabPanel>
+                    <div className={styles.tableBorder}>
+                        <TabPanel className={styles.tabContent}>
+                            <GlobalConfiguration />
+                        </TabPanel>
+                        <TabPanel className={styles.tabContent}>
+                            <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
+                                <TabList className={styles.table}>
+                                    <Tab className={styles.channelTabs}>Email</Tab>
+                                    <Tab className={styles.channelTabs}>Hipchat</Tab>
+                                    <Tab className={styles.channelTabs}>Slack</Tab>
+                                </TabList>
+                                <TabPanel>
+                                    <EmailConfiguration />
+                                </TabPanel>
+                                <TabPanel>
+                                    <HipChatConfiguration />
+                                </TabPanel>
+                                <TabPanel>
+                                    <SlackConfiguration />
+                                </TabPanel>
+                            </Tabs>
+                        </TabPanel>
+                    </div>
                 </Tabs>
             </div>
         )
