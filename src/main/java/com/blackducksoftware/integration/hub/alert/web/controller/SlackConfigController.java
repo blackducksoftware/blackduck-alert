@@ -40,19 +40,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
-import com.google.gson.Gson;
 
 @RestController
 public class SlackConfigController implements ConfigController<SlackConfigEntity, SlackConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
-    private final SlackConfigActions configActions;
-    private final Gson gson;
     private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired
-    public SlackConfigController(final SlackConfigActions configActions, final Gson gson) {
-        this.configActions = configActions;
-        this.gson = gson;
+    public SlackConfigController(final SlackConfigActions configActions) {
         commonConfigController = new CommonConfigController<>(SlackConfigEntity.class, SlackConfigRestModel.class, configActions);
     }
 

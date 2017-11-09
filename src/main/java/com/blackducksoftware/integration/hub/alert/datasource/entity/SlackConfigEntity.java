@@ -43,7 +43,7 @@ public class SlackConfigEntity extends DatabaseEntity {
     @Column(name = "webhook")
     private String webhook;
 
-    protected SlackConfigEntity() {
+    public SlackConfigEntity() {
     }
 
     public SlackConfigEntity(final String channelName, final String username, final String webhook) {
