@@ -74,8 +74,8 @@ public class EventManager {
         });
 
         // Keep these ids until we support an implementation with configurations on a per-user basis
-        final Long hipChatConfigId = new Long(0);
-        final Long slackConfigId = new Long(0);
+        final Long hipChatConfigId = new Long(1);
+        final Long slackConfigId = new Long(1);
         final Set<ProjectData> hipChatProjectData = mergeUserNotifications(filteredUserNotifications, hipChatRelationRepository);
         final Set<ProjectData> slackProjectData = mergeUserNotifications(filteredUserNotifications, slackRelationRepository);
 
@@ -90,13 +90,17 @@ public class EventManager {
         final HubUsersEntity hubUser = hubUsersRepository.findOne(userNotification.getUserConfigId());
         if (hubUser != null) {
             final Set<ProjectData> notificationsForUser = userNotification.getNotifications();
-            notificationsForUser.forEach(notification -> {
-                if (!isProjectVersionConfigured(userNotification.getUserConfigId(), notification)) {
-                    notificationsForUser.remove(notification);
+            final Set<ProjectData> notificationsToRemove = new HashSet<>();
+            if (notificationsForUser != null) {
+                notificationsForUser.forEach(notification -> {
+                    if (!isProjectVersionConfigured(userNotification.getUserConfigId(), notification)) {
+                        notificationsToRemove.add(notification);
+                    }
+                });
+                notificationsForUser.removeAll(notificationsToRemove);
+                if (!notificationsForUser.isEmpty()) {
+                    return true;
                 }
-            });
-            if (!notificationsForUser.isEmpty()) {
-                return true;
             }
         }
         return false;
@@ -104,7 +108,7 @@ public class EventManager {
 
     private boolean isProjectVersionConfigured(final Long configId, final ProjectData userNotification) {
         final HubUserProjectVersionsRelation projectVersionsRelation = projectVersionRelationRepository.findOne(configId);
-        if (projectVersionsRelation.getProjectName().equals(userNotification.getProjectName())) {
+        if (projectVersionsRelation != null && projectVersionsRelation.getProjectName().equals(userNotification.getProjectName())) {
             if (projectVersionsRelation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
                 return true;
             }
