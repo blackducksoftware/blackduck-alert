@@ -28,10 +28,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public abstract class ConfigRestModel implements Serializable {
+    private static final long serialVersionUID = -3734941694720407916L;
+
     private String id;
 
     public ConfigRestModel() {
-
     }
 
     public ConfigRestModel(final String id) {

@@ -27,7 +27,6 @@ import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
-// TODO write actual integration tests instead of garbage
 public class HipChatChannelTestIT extends RestChannelTest {
 
     @Test

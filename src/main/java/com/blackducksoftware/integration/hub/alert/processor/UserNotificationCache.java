@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentRequestService;
 import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
@@ -44,11 +43,11 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
 public class UserNotificationCache extends MapProcessorCache {
-    final Logger logger = LoggerFactory.getLogger(UserNotificationCache.class);
+    private final Logger logger = LoggerFactory.getLogger(UserNotificationCache.class);
     private final ProjectRequestService projectRequestService;
-    final ProjectAssignmentRequestService projectAssignmentRequestService;
+    private final ProjectAssignmentRequestService projectAssignmentRequestService;
 
-    public UserNotificationCache(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignmentRequestService, final MetaService metaService) {
+    public UserNotificationCache(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignmentRequestService) {
         this.projectRequestService = projectRequestService;
         this.projectAssignmentRequestService = projectAssignmentRequestService;
     }

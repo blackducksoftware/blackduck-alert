@@ -105,7 +105,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(final R restModel) {
+    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
 
     }
 

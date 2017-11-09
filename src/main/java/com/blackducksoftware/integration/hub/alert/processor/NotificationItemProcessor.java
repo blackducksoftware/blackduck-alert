@@ -49,7 +49,7 @@ public class NotificationItemProcessor extends NotificationProcessor<DBStoreEven
 
     public void init(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignMentRequestService, final HubResponseService hubResponseService,
             final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
-        final MapProcessorCache policyCache = new UserNotificationCache(projectRequestService, projectAssignMentRequestService, metaService);
+        final MapProcessorCache policyCache = new UserNotificationCache(projectRequestService, projectAssignMentRequestService);
         final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectRequestService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, metaService);
         getCacheList().add(policyCache);
         getCacheList().add(vulnerabilityCache);
