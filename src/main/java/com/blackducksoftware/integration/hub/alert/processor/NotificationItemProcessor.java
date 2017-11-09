@@ -27,6 +27,8 @@ import java.util.Collection;
 
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
+import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentRequestService;
+import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
 import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
@@ -40,13 +42,15 @@ import com.blackducksoftware.integration.hub.service.HubResponseService;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
-    public NotificationItemProcessor(final HubResponseService hubResponseService, final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
-        init(hubResponseService, vulnerabilityRequestService, metaService);
+    public NotificationItemProcessor(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignMentRequestService, final HubResponseService hubResponseService,
+            final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
+        init(projectRequestService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, metaService);
     }
 
-    public void init(final HubResponseService hubResponseService, final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
-        final MapProcessorCache policyCache = new MapProcessorCache();
-        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(hubResponseService, vulnerabilityRequestService, metaService);
+    public void init(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignMentRequestService, final HubResponseService hubResponseService,
+            final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
+        final MapProcessorCache policyCache = new UserNotificationCache(projectRequestService, projectAssignMentRequestService, metaService);
+        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectRequestService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, metaService);
         getCacheList().add(policyCache);
         getCacheList().add(vulnerabilityCache);
         getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, metaService));
