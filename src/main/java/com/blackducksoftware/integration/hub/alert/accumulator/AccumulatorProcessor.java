@@ -45,8 +45,8 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
         try {
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
             if (hubServicesFactory != null) {
-                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(),
-                        hubServicesFactory.createMetaService());
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectRequestService(), hubServicesFactory.createProjectAssignmentRequestService(),
+                        hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(), hubServicesFactory.createMetaService());
                 final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
                 return storeEvent;
             }
