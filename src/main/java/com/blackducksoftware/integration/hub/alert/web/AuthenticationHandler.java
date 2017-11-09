@@ -20,16 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-public class HomeController {
+@EnableWebSecurity
+@RestController
+public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
-    @RequestMapping("/")
-    public String index() {
-        return "index.html";
+    @Override
+    protected void configure(final HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/**").permitAll().anyRequest().authenticated().and().formLogin().loginPage("/").permitAll().and().logout().logoutSuccessUrl("/").invalidateHttpSession(true).deleteCookies("JSESSIONID");
     }
+
 }
