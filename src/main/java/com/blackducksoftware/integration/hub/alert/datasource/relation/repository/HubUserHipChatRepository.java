@@ -22,18 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import java.util.Collection;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
 
 @Transactional
-public interface UserProjectVersionsRepository extends JpaRepository<HubUserProjectVersionsRelation, Long> {
-    // TODO consider making this a JOIN because it is not one-to-one
-    @Query("SELECT userProjectVersions FROM HubUserProjectVersionsRelation userProjectVersions WHERE userProjectVersions.id = ?1")
-    public Collection<HubUserProjectVersionsRelation> findByUserId(final Long id);
+public interface HubUserHipChatRepository extends JpaRepository<HubUserHipChatRelation, Long> {
 }

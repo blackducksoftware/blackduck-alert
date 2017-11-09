@@ -32,7 +32,10 @@ public class HubUserSlackRelation extends DatabaseRelation {
     private static final long serialVersionUID = -5649425971831549437L;
 
     @Column(name = "slack_config_id")
-    private final Long slackConfigId;
+    private Long slackConfigId;
+
+    public HubUserSlackRelation() {
+    }
 
     public HubUserSlackRelation(final Long userConfidId, final Long slackConfigId) {
         super(userConfidId);

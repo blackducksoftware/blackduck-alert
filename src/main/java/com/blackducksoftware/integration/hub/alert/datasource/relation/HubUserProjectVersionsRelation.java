@@ -32,10 +32,13 @@ public class HubUserProjectVersionsRelation extends DatabaseRelation {
     private static final long serialVersionUID = 544672444719776792L;
 
     @Column(name = "project_name")
-    private final String projectName;
+    private String projectName;
 
     @Column(name = "project_version_name")
-    private final String projectVersionName;
+    private String projectVersionName;
+
+    public HubUserProjectVersionsRelation() {
+    }
 
     public HubUserProjectVersionsRelation(final Long userConfidId, final String projectName, final String projectVersionName) {
         super(userConfidId);

@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.datasource.repository;
+package com.blackducksoftware.integration.hub.datasource.entity.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
