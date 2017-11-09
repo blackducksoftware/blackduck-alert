@@ -75,7 +75,6 @@ public class UserNotificationCache extends MapProcessorCache {
                 userEventList.add(userEvent);
             });
         });
-        userEventList.addAll(notificationEvents);
         return userEventList;
     }
 
