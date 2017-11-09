@@ -75,10 +75,6 @@ public class DigestNotificationProcessor {
             return Collections.emptyList();
         } else {
             final Collection<UserNotificationWrapper> userData = createCateoryDataMap(digestType, processedNotificationList);
-            // TODO Convert Project Data to Map<User, ProjectData>
-            // final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
-
-            // FIXME pass in a collection of UserNotificationWrappers
             return eventManager.createChannelEvents(userData);
         }
     }
