@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentRequestService;
 import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
@@ -61,7 +62,7 @@ public class UserNotificationCache extends MapProcessorCache {
     public Collection<NotificationEvent> addUserInformation(final Collection<NotificationEvent> notificationEvents) {
         final List<NotificationEvent> userEventList = new ArrayList<>();
 
-        final String key = "hub_user";
+        final String key = AlertConstants.DATASET_KEY_HUB_USER;
         notificationEvents.forEach(currentNotification -> {
             final NotificationContentItem notificationContentItem = (NotificationContentItem) currentNotification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
             final String projectLink = notificationContentItem.getProjectVersion().getProjectLink();

@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
@@ -61,7 +62,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final List<NotificationEntity> entityList = new ArrayList<>();
                 notificationList.forEach(notification -> {
                     // TODO: Set the key and update the processor to set the users that the event applies to.
-                    final String hubUser = (String) notification.getDataSet().get("hub_user");
+                    final String hubUser = (String) notification.getDataSet().get(AlertConstants.DATASET_KEY_HUB_USER);
                     final String eventKey = notification.getEventKey();
                     final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
                     final Date createdAt = content.getCreatedAt();
