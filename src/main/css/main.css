@@ -1,3 +1,22 @@
+html {
+    height: 100%;
+    width: 100%;
+}
+
+html, body {
+    margin: 0px;
+    padding: 0px;
+}
+
+body {
+    font-family: Verdana;
+    background-color: #F9F9F9;
+}
+
+h1 {
+    margin-top: 0;
+}
+
 button {
     position: relative;
     background: gray;
@@ -9,27 +28,41 @@ ul {
 	padding-top: 20px;
 }
 
-ul li {
-    display: inline;
-    border-radius: 15px 50px 0px 0px;
-    padding: 0px;
-    border: 1px solid black;
-    background-color: #f1f1f1;
+input label {
+    float: left;
 }
 
 label {
-    width:180px;
+    width:160px;
     clear:left;
     text-align:right;
     padding-right:10px;
 }
 
-/* input, label {
-    float:left;
-} */
-
 ul li:hover {
     background-color: #ddd;
+}
+
+.configTabs {
+    border: 3px solid #ccc;
+    background-color: #232ed3;
+    color: white;
+    display: inline;
+    border-radius: 15px 50px 1px 0px;
+    position: relative;
+    padding: 10px;
+}
+
+.channelTabs {
+    border: 3px solid #ccc;
+    background-color: #232ed3;
+    color: white;
+    float: left;
+    border-radius: 20px;
+    height: 70px;
+    line-height: 70px;
+    width: 70px;
+    padding: 20px;
 }
 
 .tabSpacing {
@@ -37,22 +70,47 @@ ul li:hover {
     width: 10%;
 }
 
+.tabSelected {
+    background-color: white;
+    color: black;
+    border-bottom: 5px solid white;
+}
+
 .header {
-    background-color: blueviolet;
-    height: 10%;
-    outline-color: solid black;
-    color: white;   
-    text-align: center; 
+    background-color: black;
+    height: 50px;
+    line-height: 50px;
+    width: 100%;  
+    text-align: left;
+    margin: 0 auto;
+    padding-left: 15px;
+    color: white;
+}
+
+.alertHeader {
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    font-size: 2.5em;
 }
 
 .tabContent {
     padding: 0px 12px 0px 12px;
-    border: 3px solid #ccc;
     border-collapse: collapse;
     text-align: center;
 }
 
 .table {
 	display: table;
-	margin: 0 auto;
+    margin: 0 auto;
+}
+
+.tableBorder {
+    border: 3px solid #ccc;
+    margin: 0 auto;
+    width: 50%;
+    padding: 10px;
+    background-color: white;
+    position: relative;
+    overflow: hidden;
 }
