@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
@@ -37,26 +38,25 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserEmailRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserRelationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserProjectVersionsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
 public class EventManager {
     private final HubUsersRepository hubUsersRepository;
-    private final HubUserRelationRepository<HubUserProjectVersionsRelation> projectVersionRelationRepository;
-    private final HubUserRelationRepository<HubUserEmailRelation> emailRelationRepository;
-    private final HubUserRelationRepository<HubUserHipChatRelation> hipChatRelationRepository;
-    private final HubUserRelationRepository<HubUserSlackRelation> slackRelationRepository;
+    private final HubUserProjectVersionsRepository projectVersionRelationRepository;
+    private final HubUserEmailRepository emailRelationRepository;
+    private final HubUserHipChatRepository hipChatRelationRepository;
+    private final HubUserSlackRepository slackRelationRepository;
 
     @Autowired
-    public EventManager(final HubUsersRepository hubUsersRepository, final HubUserRelationRepository<HubUserProjectVersionsRelation> projectVersionRelationRepository,
-            final HubUserRelationRepository<HubUserEmailRelation> emailRelationRepository, final HubUserRelationRepository<HubUserHipChatRelation> hipChatRelationRepository,
-            final HubUserRelationRepository<HubUserSlackRelation> slackRelationRepository) {
+    public EventManager(final HubUsersRepository hubUsersRepository, final HubUserProjectVersionsRepository projectVersionRelationRepository, final HubUserEmailRepository emailRelationRepository,
+            final HubUserHipChatRepository hipChatRelationRepository, final HubUserSlackRepository slackRelationRepository) {
         this.hubUsersRepository = hubUsersRepository;
         this.projectVersionRelationRepository = projectVersionRelationRepository;
         this.emailRelationRepository = emailRelationRepository;
@@ -140,7 +140,7 @@ public class EventManager {
         return events;
     }
 
-    private <R extends DatabaseRelation> Set<ProjectData> mergeUserNotifications(final Collection<UserNotificationWrapper> userNotificationList, final HubUserRelationRepository<R> repository) {
+    private <R extends DatabaseRelation> Set<ProjectData> mergeUserNotifications(final Collection<UserNotificationWrapper> userNotificationList, final JpaRepository<R, Long> repository) {
         final Set<ProjectData> mergedNotifications = new HashSet<>();
         userNotificationList.forEach(userNotification -> {
             if (repository.exists(userNotification.getUserConfigId())) {

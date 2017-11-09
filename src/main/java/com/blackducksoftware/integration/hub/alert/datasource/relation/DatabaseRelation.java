@@ -37,7 +37,10 @@ public abstract class DatabaseRelation implements Serializable {
 
     @Id
     @Column(name = "user_config_id")
-    private final Long userConfigId;
+    private Long userConfigId;
+
+    public DatabaseRelation() {
+    }
 
     public DatabaseRelation(final Long userConfigId) {
         this.userConfigId = userConfigId;

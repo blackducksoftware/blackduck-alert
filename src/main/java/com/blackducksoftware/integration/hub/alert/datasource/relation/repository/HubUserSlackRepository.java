@@ -20,30 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.transaction.Transactional;
 
-@Entity
-@Table(name = "hub_user_frequencies")
-public class HubUserFrequenciesRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -5467757197683436935L;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    @Column(name = "frequency_id")
-    private Long frequencyId;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
 
-    public HubUserFrequenciesRelation() {
-    }
-
-    public HubUserFrequenciesRelation(final Long userConfidId, final Long frequencyId) {
-        super(userConfidId);
-        this.frequencyId = frequencyId;
-    }
-
-    public Long getFrequencyId() {
-        return frequencyId;
-    }
-
+@Transactional
+public interface HubUserSlackRepository extends JpaRepository<HubUserSlackRelation, Long> {
 }

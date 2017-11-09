@@ -32,7 +32,10 @@ public class HubUserEmailRelation extends DatabaseRelation {
     private static final long serialVersionUID = 8484340743447368873L;
 
     @Column(name = "email_config_id")
-    private final Long emailConfigId;
+    private Long emailConfigId;
+
+    public HubUserEmailRelation() {
+    }
 
     public HubUserEmailRelation(final Long userConfidId, final Long emailConfigId) {
         super(userConfidId);

@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserRelationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -64,10 +64,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     private final HipChatRepository hipChatRepository;
-    private final HubUserRelationRepository<HubUserHipChatRelation> userRelationRepository;
+    private final HubUserHipChatRepository userRelationRepository;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final HubUserRelationRepository<HubUserHipChatRelation> userRelationRepository, final HipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final HubUserHipChatRepository userRelationRepository, final HipChatRepository hipChatRepository) {
         super(gson, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
         this.userRelationRepository = userRelationRepository;

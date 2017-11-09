@@ -26,6 +26,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserFrequenciesRelation;
 
-public interface UserFrequenciesRepository extends JpaRepository<HubUserFrequenciesRelation, Long> {
+public interface HubUserFrequenciesRepository extends JpaRepository<HubUserFrequenciesRelation, Long> {
 
 }

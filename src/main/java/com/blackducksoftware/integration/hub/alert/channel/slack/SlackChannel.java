@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserRelationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -58,11 +58,11 @@ import okhttp3.Response;
 public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
-    final HubUserRelationRepository<HubUserSlackRelation> userRelationRepository;
+    private final HubUserSlackRepository userRelationRepository;
     private final SlackRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final HubUserRelationRepository<HubUserSlackRelation> userRelationRepository, final SlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final HubUserSlackRepository userRelationRepository, final SlackRepository slackRepository) {
         super(gson, SlackEvent.class);
         this.userRelationRepository = userRelationRepository;
         this.slackRepository = slackRepository;

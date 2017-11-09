@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.datasource.repository;
+package com.blackducksoftware.integration.hub.datasource.relation.repository;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,33 +15,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserFrequenciesRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserFrequenciesRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class HipChatRepositoryIT {
-
+public class HubUserFrequenciesRelationIT {
     @Autowired
-    private HipChatRepository repository;
+    private HubUserFrequenciesRepository hubUserFrequenciesRepository;
 
     @Test
-    public void testSaveEntity() {
-        final String apiKey = "api_key";
-        final Integer roomId = 1;
-        final Boolean notify = true;
-        final String color = "green";
-        final HipChatConfigEntity entity = new HipChatConfigEntity(apiKey, roomId, notify, color);
-        final HipChatConfigEntity savedEntity = repository.save(entity);
-        final long count = repository.count();
+    public void addUserFrequencyTestIT() {
+        final Long userConfigId = new Long(0);
+        final Long frequencyId = new Long(27);
+        final HubUserFrequenciesRelation entity = new HubUserFrequenciesRelation(userConfigId, frequencyId);
+        final HubUserFrequenciesRelation savedEntity = hubUserFrequenciesRepository.save(entity);
+
+        final long count = hubUserFrequenciesRepository.count();
         assertEquals(1, count);
-        final HipChatConfigEntity foundEntity = repository.findOne(savedEntity.getId());
-        assertEquals(apiKey, foundEntity.getApiKey());
-        assertEquals(roomId, foundEntity.getRoomId());
-        assertEquals(notify, foundEntity.getNotify());
-        assertEquals(color, foundEntity.getColor());
+
+        final HubUserFrequenciesRelation foundEntity = hubUserFrequenciesRepository.findOne(savedEntity.getUserConfidId());
+        assertEquals(frequencyId, foundEntity.getFrequencyId());
     }
 }

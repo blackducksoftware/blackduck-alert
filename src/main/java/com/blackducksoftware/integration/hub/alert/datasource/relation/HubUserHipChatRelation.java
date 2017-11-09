@@ -32,7 +32,10 @@ public class HubUserHipChatRelation extends DatabaseRelation {
     private static final long serialVersionUID = 4597057895951603701L;
 
     @Column(name = "hipchat_config_id")
-    private final Long hipChatConfigId;
+    private Long hipChatConfigId;
+
+    public HubUserHipChatRelation() {
+    }
 
     public HubUserHipChatRelation(final Long userConfidId, final Long hipChatConfigId) {
         super(userConfidId);
