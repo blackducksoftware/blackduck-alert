@@ -29,5 +29,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
 
 @Transactional
-public interface UserRelationRepository<R extends DatabaseRelation> extends JpaRepository<R, Long> {
+public interface HubUserRelationRepository<R extends DatabaseRelation> extends JpaRepository<R, Long> {
 }
