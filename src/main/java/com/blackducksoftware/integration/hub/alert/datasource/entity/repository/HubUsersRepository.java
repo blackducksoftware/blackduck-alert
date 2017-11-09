@@ -29,4 +29,5 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEnt
 
 @Transactional
 public interface HubUsersRepository extends JpaRepository<HubUsersEntity, Long> {
+    public HubUsersEntity findByUsername(String username);
 }

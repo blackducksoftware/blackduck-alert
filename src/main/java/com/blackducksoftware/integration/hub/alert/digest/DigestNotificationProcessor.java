@@ -27,18 +27,26 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.digest.filter.EventManager;
+import com.blackducksoftware.integration.hub.alert.digest.filter.UserNotificationWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -50,11 +58,14 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class DigestNotificationProcessor {
+    private final static Logger logger = LoggerFactory.getLogger(DigestNotificationProcessor.class);
     private final EventManager eventManager;
+    private final HubUsersRepository hubUsersRepository;
 
     @Autowired
-    public DigestNotificationProcessor(final EventManager eventManager) {
+    public DigestNotificationProcessor(final EventManager eventManager, final HubUsersRepository hubUsersRepository) {
         this.eventManager = eventManager;
+        this.hubUsersRepository = hubUsersRepository;
     }
 
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
@@ -63,20 +74,31 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
+            final Collection<UserNotificationWrapper> userData = createCateoryDataMap(digestType, processedNotificationList);
             // TODO Convert Project Data to Map<User, ProjectData>
             // final Collection<UserNotificationWrapper> userNotifications = notificationFilter.filterUserNotifications(projectDataList);
 
             // FIXME pass in a collection of UserNotificationWrappers
-            return eventManager.createChannelEvents(Collections.emptyList());
+            return eventManager.createChannelEvents(userData);
         }
     }
 
-    private Collection<ProjectData> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> eventMap) {
-        final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
-        eventMap.forEach(entry -> {
+    private Collection<UserNotificationWrapper> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> notificationList) {
+        final Map<String, Map<String, ProjectDataBuilder>> userProjectMap = new LinkedHashMap<>();
+        notificationList.forEach(entry -> {
+            final String userKey = entry.getHubUser();
             final String projectKey = entry.getEventKey();
             // get category map from the project or create the project data if it doesn't exist
             Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
+
+            final Map<String, ProjectDataBuilder> projectDataMap;
+            if (userProjectMap.containsKey(userKey)) {
+                projectDataMap = userProjectMap.get(userKey);
+            } else {
+                projectDataMap = new LinkedHashMap<>();
+                userProjectMap.put(userKey, projectDataMap);
+            }
+
             if (!projectDataMap.containsKey(projectKey)) {
                 final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
                 projectBuilder.setDigestType(digestType);
@@ -116,10 +138,25 @@ public class DigestNotificationProcessor {
             categoryData.addItem(new ItemData(dataSet));
         });
         // build
-        final Collection<ProjectData> dataList = new LinkedList<>();
-        for (final ProjectDataBuilder builder : projectDataMap.values()) {
-            dataList.add(builder.build());
-        }
+        final Collection<UserNotificationWrapper> dataList = new LinkedList<>();
+        userProjectMap.entrySet().forEach(userMapEntry -> {
+            final String username = userMapEntry.getKey();
+            try {
+                final HubUsersEntity userEntity = hubUsersRepository.findByUsername(username);
+                if (userEntity != null) {
+                    final Map<String, ProjectDataBuilder> projectDataMap = userMapEntry.getValue();
+                    final Set<ProjectData> projectDataSet = new LinkedHashSet<>();
+                    projectDataMap.values().forEach(projectDataBuilder -> {
+                        projectDataSet.add(projectDataBuilder.build());
+                    });
+
+                    dataList.add(new UserNotificationWrapper(userEntity.getId(), projectDataSet));
+                }
+            } catch (final NoResultException ex) {
+                logger.debug("user {} could not be found in the configuration", username);
+                logger.debug("Cause:", ex);
+            }
+        });
         return dataList;
     }
 
