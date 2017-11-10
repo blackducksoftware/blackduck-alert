@@ -76,7 +76,7 @@ public class DigestNotificationProcessorIT {
         final String hipChatApiKey = "test_api_key";
         final Integer hipChatRoomId = 12345;
 
-        final EventManager eventManager = new EventManager(hubUsersRepository, projectVersionRelationRepository, emailRelationRepository, hipChatRelationRepository, slackRelationRepository);
+        final EventManager eventManager = new EventManager(projectVersionRelationRepository, emailRelationRepository, hipChatRelationRepository, slackRelationRepository);
         final DigestNotificationProcessor processor = new DigestNotificationProcessor(eventManager, hubUsersRepository);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
