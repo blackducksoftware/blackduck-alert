@@ -1,3 +1,4 @@
+'use strict';
 import React from 'react';
 
 class Field extends React.Component {
