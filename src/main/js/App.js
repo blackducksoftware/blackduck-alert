@@ -25,13 +25,13 @@ class App extends React.Component {
         return (
             <div>
                 <div className={styles.header}>
-                    {<img src={logo} alt="logo" />}
+                    <img src={logo} alt="logo" />
                 </div>
                 <div className={styles.alertHeader}>
                     <h1>Alert</h1>
                 </div>
                 
-                <Tabs selectedTabClassName={styles.blendTabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Hub settings</Tab>
                         <Tab className={styles.configTabs}>Channel configuration</Tab>

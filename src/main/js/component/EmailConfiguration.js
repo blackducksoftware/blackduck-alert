@@ -1,6 +1,8 @@
 import React from 'react';
 import Field from '../field/Field';
 
+import styles from '../../css/main.css';
+
 class EmailConfiguration extends React.Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
@@ -241,8 +243,12 @@ class EmailConfiguration extends React.Component {
 				<Field label="Mail Smtp Allow 8-bit Mime" type="checkbox" name="mailSmtpAllow8bitmime" value={this.state.mailSmtpAllow8bitmime} onChange={this.handleChange} errorName="mailSmtpAllow8bitmimeError" errorValue={this.state.mailSmtpAllow8bitmimeError}></Field>
 
 				<Field label="Mail Smtp Send Partial" type="checkbox" name="mailSmtpSendPartial" value={this.state.mailSmtpSendPartial} onChange={this.handleChange} errorName="mailSmtpSendPartialError" errorValue={this.state.mailSmtpSendPartialError}></Field>
-				<input type="submit" value="Save"></input>
-				<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				
+				<div className={styles.submitContainers}>
+					<input type="submit" value="Save"></input>
+					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				</div>
+
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>
