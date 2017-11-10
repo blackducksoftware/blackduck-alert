@@ -47,7 +47,7 @@ public class DigestRemovalProcessor {
     public List<NotificationEntity> process(final List<NotificationEntity> notificationList) {
         final List<NotificationEntity> resultList = new ArrayList<>();
 
-        notificationList.forEach(entity -> {
+        notificationList.stream().forEachOrdered(entity -> {
             Map<String, NotificationEntity> categoryMap;
             final String cacheKey = createCacheKey(entity);
             if (entityCache.containsKey(cacheKey)) {
@@ -57,7 +57,7 @@ public class DigestRemovalProcessor {
                 entityCache.put(cacheKey, categoryMap);
             }
 
-            final boolean processed = processPolicyNotifications(cacheKey, categoryMap, entity);
+            final boolean processed = processPolicyNotifications(categoryMap, entity);
             if (!processed) {
                 processVulnerabilityNotifications(cacheKey, categoryMap, entity);
             }
@@ -73,14 +73,16 @@ public class DigestRemovalProcessor {
         return entity.getHubUser() + entity.getEventKey();
     }
 
-    private boolean processPolicyNotifications(final String cacheKey, final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
+    private boolean processPolicyNotifications(final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
         final String notificationType = entity.getNotificationType();
         if (NotificationCategoryEnum.POLICY_VIOLATION.name().equals(notificationType)) {
-            categoryMap.put(cacheKey, entity);
+            categoryMap.put(notificationType, entity);
             return true;
         } else if (NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name().equals(notificationType) || NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name().equals(notificationType)) {
             if (categoryMap.containsKey(notificationType)) {
                 categoryMap.remove(notificationType);
+            } else if (categoryMap.containsKey(NotificationCategoryEnum.POLICY_VIOLATION.name())) {
+                categoryMap.remove(NotificationCategoryEnum.POLICY_VIOLATION.name());
             } else {
                 categoryMap.put(notificationType, entity);
             }

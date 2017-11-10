@@ -161,9 +161,9 @@ public class EventManager {
     }
 
     private Long getSlackConfigId() {
-        final List<HubUserSlackRelation> hipChatRelations = slackRelationRepository.findAll();
-        if (!hipChatRelations.isEmpty()) {
-            return hipChatRelations.get(0).getChannelConfigId();
+        final List<HubUserSlackRelation> slackRelations = slackRelationRepository.findAll();
+        if (!slackRelations.isEmpty()) {
+            return slackRelations.get(0).getChannelConfigId();
         }
         return null;
     }
