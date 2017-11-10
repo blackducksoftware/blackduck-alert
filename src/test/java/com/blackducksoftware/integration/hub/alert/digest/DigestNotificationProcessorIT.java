@@ -81,8 +81,12 @@ public class DigestNotificationProcessorIT {
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
         // TODO load this from json
-        notificationList.add(new NotificationEntity("sysadmin", "event_key", new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person",
-                Collections.emptyList()));
+        final NotificationEntity applicableNotification = new NotificationEntity("sysadmin", "event_key_1", new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
+                "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity("sysadmin", "event_key_2", new Date(), "POLICY_VIOLATION", "Project that we don't care about", "", projectVersionName, "", "Test Component",
+                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        notificationList.add(applicableNotification);
+        notificationList.add(nonApplicableNotification);
 
         hubUsersRepository.save(new HubUsersEntity("sysadmin"));
         projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName));
