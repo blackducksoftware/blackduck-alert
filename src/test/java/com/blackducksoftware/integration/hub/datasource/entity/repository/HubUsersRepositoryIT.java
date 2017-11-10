@@ -51,5 +51,5 @@ public class HubUsersRepositoryIT {
         assertEquals(username, foundEntity.getUsername());
     }
 
-    // TODO: delete on cascade test
+    // TODO: add a delete on cascade test
 }

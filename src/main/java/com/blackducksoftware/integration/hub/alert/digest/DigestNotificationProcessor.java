@@ -80,60 +80,7 @@ public class DigestNotificationProcessor {
     }
 
     private Collection<UserNotificationWrapper> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> notificationList) {
-        final Map<String, Map<String, ProjectDataBuilder>> userProjectMap = new LinkedHashMap<>();
-        notificationList.forEach(entry -> {
-            final String userKey = entry.getHubUser();
-            final String projectKey = entry.getEventKey();
-            // get category map from the project or create the project data if it doesn't exist
-            Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
-
-            final Map<String, ProjectDataBuilder> projectDataMap;
-            if (userProjectMap.containsKey(userKey)) {
-                projectDataMap = userProjectMap.get(userKey);
-            } else {
-                projectDataMap = new LinkedHashMap<>();
-                userProjectMap.put(userKey, projectDataMap);
-            }
-
-            if (!projectDataMap.containsKey(projectKey)) {
-                final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
-                projectBuilder.setDigestType(digestType);
-                projectBuilder.setProjectName(entry.getProjectName());
-                projectBuilder.setProjectVersion(entry.getProjectVersion());
-                projectDataMap.put(projectKey, projectBuilder);
-                categoryBuilderMap = projectBuilder.getCategoryBuilderMap();
-            } else {
-                final ProjectDataBuilder projectBuilder = projectDataMap.get(projectKey);
-                categoryBuilderMap = projectBuilder.getCategoryBuilderMap();
-            }
-            // get the category data object to be able to add items.
-            CategoryDataBuilder categoryData;
-            final NotificationCategoryEnum categoryKey = NotificationCategoryEnum.valueOf(entry.getNotificationType());
-            if (!categoryBuilderMap.containsKey(categoryKey)) {
-                categoryData = new CategoryDataBuilder();
-                categoryData.setCategoryKey(categoryKey.name());
-                categoryBuilderMap.put(categoryKey, categoryData);
-            } else {
-                categoryData = categoryBuilderMap.get(categoryKey);
-            }
-            int count = 1;
-            final Map<String, Object> dataSet = new HashMap<>();
-            if (categoryKey == NotificationCategoryEnum.HIGH_VULNERABILITY || categoryKey == NotificationCategoryEnum.MEDIUM_VULNERABILITY || categoryKey == NotificationCategoryEnum.LOW_VULNERABILITY) {
-                count = entry.getVulnerabilityList().size();
-                dataSet.put(VulnerabilityCache.VULNERABILITY_ID_SET, getVulnerabilityIdSet(entry));
-            }
-
-            if (StringUtils.isNotBlank(entry.getPolicyRuleName())) {
-                dataSet.put(ItemTypeEnum.RULE.name(), entry.getPolicyRuleName());
-            }
-
-            dataSet.put(ItemTypeEnum.COMPONENT.name(), entry.getComponentName());
-            dataSet.put(ItemTypeEnum.VERSION.name(), entry.getComponentVersion());
-            dataSet.put(ItemTypeEnum.COUNT.name(), count);
-
-            categoryData.addItem(new ItemData(dataSet));
-        });
-        // build
+        final Map<String, Map<String, ProjectDataBuilder>> userProjectMap = createUserProjectMap(digestType, notificationList);
         final Collection<UserNotificationWrapper> dataList = new LinkedList<>();
         userProjectMap.entrySet().forEach(userMapEntry -> {
             final String username = userMapEntry.getKey();
@@ -154,6 +101,72 @@ public class DigestNotificationProcessor {
             }
         });
         return dataList;
+    }
+
+    private Map<String, Map<String, ProjectDataBuilder>> createUserProjectMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> notificationList) {
+        final Map<String, Map<String, ProjectDataBuilder>> userProjectMap = new LinkedHashMap<>();
+        notificationList.forEach(entry -> {
+            final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap = createCategoryBuilderMap(entry, digestType, userProjectMap);
+            addCategoryData(entry, categoryBuilderMap);
+        });
+        return userProjectMap;
+    }
+
+    private Map<NotificationCategoryEnum, CategoryDataBuilder> createCategoryBuilderMap(final NotificationEntity entry, final DigestTypeEnum digestType, final Map<String, Map<String, ProjectDataBuilder>> userProjectMap) {
+        final String userKey = entry.getHubUser();
+        final String projectKey = entry.getEventKey();
+        // get category map from the project or create the project data if it doesn't exist
+        Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
+
+        final Map<String, ProjectDataBuilder> projectDataMap;
+        if (userProjectMap.containsKey(userKey)) {
+            projectDataMap = userProjectMap.get(userKey);
+        } else {
+            projectDataMap = new LinkedHashMap<>();
+            userProjectMap.put(userKey, projectDataMap);
+        }
+
+        if (!projectDataMap.containsKey(projectKey)) {
+            final ProjectDataBuilder projectBuilder = new ProjectDataBuilder();
+            projectBuilder.setDigestType(digestType);
+            projectBuilder.setProjectName(entry.getProjectName());
+            projectBuilder.setProjectVersion(entry.getProjectVersion());
+            projectDataMap.put(projectKey, projectBuilder);
+            categoryBuilderMap = projectBuilder.getCategoryBuilderMap();
+        } else {
+            final ProjectDataBuilder projectBuilder = projectDataMap.get(projectKey);
+            categoryBuilderMap = projectBuilder.getCategoryBuilderMap();
+        }
+        return categoryBuilderMap;
+    }
+
+    private void addCategoryData(final NotificationEntity entry, final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap) {
+        // get the category data object to be able to add items.
+        CategoryDataBuilder categoryData;
+        final NotificationCategoryEnum categoryKey = NotificationCategoryEnum.valueOf(entry.getNotificationType());
+        if (!categoryBuilderMap.containsKey(categoryKey)) {
+            categoryData = new CategoryDataBuilder();
+            categoryData.setCategoryKey(categoryKey.name());
+            categoryBuilderMap.put(categoryKey, categoryData);
+        } else {
+            categoryData = categoryBuilderMap.get(categoryKey);
+        }
+        int count = 1;
+        final Map<String, Object> dataSet = new HashMap<>();
+        if (categoryKey == NotificationCategoryEnum.HIGH_VULNERABILITY || categoryKey == NotificationCategoryEnum.MEDIUM_VULNERABILITY || categoryKey == NotificationCategoryEnum.LOW_VULNERABILITY) {
+            count = entry.getVulnerabilityList().size();
+            dataSet.put(VulnerabilityCache.VULNERABILITY_ID_SET, getVulnerabilityIdSet(entry));
+        }
+
+        if (StringUtils.isNotBlank(entry.getPolicyRuleName())) {
+            dataSet.put(ItemTypeEnum.RULE.name(), entry.getPolicyRuleName());
+        }
+
+        dataSet.put(ItemTypeEnum.COMPONENT.name(), entry.getComponentName());
+        dataSet.put(ItemTypeEnum.VERSION.name(), entry.getComponentVersion());
+        dataSet.put(ItemTypeEnum.COUNT.name(), count);
+
+        categoryData.addItem(new ItemData(dataSet));
     }
 
     private Set<String> getVulnerabilityIdSet(final NotificationEntity entity) {
