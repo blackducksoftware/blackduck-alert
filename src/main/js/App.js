@@ -12,10 +12,6 @@ import logo from '../img/BDTextLogo.png';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-const Logo = () => (
-    <img src="BDTextLogo.png" alt="logo" />
-);
-
 class App extends React.Component {
     constructor() {
         super();
@@ -35,7 +31,7 @@ class App extends React.Component {
                     <h1>Alert</h1>
                 </div>
                 
-                <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs selectedTabClassName={styles.blendTabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Hub settings</Tab>
                         <Tab className={styles.configTabs}>Channel configuration</Tab>
