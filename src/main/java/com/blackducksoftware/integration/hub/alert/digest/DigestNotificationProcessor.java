@@ -74,12 +74,13 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            final Collection<UserNotificationWrapper> userData = createCateoryDataMap(digestType, processedNotificationList);
+            final Collection<UserNotificationWrapper> userData = createUserNotifications(digestType, processedNotificationList);
             return eventManager.createChannelEvents(userData);
         }
     }
 
-    private Collection<UserNotificationWrapper> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> notificationList) {
+    // TODO change map of maps to be its own object (Map<String, Map<String, ProjectDataBuilder>>)
+    private Collection<UserNotificationWrapper> createUserNotifications(final DigestTypeEnum digestType, final Collection<NotificationEntity> notificationList) {
         final Map<String, Map<String, ProjectDataBuilder>> userProjectMap = createUserProjectMap(digestType, notificationList);
         final Collection<UserNotificationWrapper> dataList = new LinkedList<>();
         userProjectMap.entrySet().forEach(userMapEntry -> {
