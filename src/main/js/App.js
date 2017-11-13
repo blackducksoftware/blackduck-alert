@@ -12,10 +12,6 @@ import logo from '../img/BDTextLogo.png';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-const Logo = () => (
-    <img src="BDTextLogo.png" alt="logo" />
-);
-
 class App extends React.Component {
     constructor() {
         super();
@@ -29,7 +25,7 @@ class App extends React.Component {
         return (
             <div>
                 <div className={styles.header}>
-                    {<img src={logo} alt="logo" />}
+                    <img src={logo} alt="logo" />
                 </div>
                 <div className={styles.alertHeader}>
                     <h1>Alert</h1>
