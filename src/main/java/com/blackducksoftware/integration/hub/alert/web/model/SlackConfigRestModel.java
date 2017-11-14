@@ -32,7 +32,7 @@ public class SlackConfigRestModel extends ConfigRestModel {
     private String username;
     private String webhook;
 
-    protected SlackConfigRestModel() {
+    public SlackConfigRestModel() {
     }
 
     public SlackConfigRestModel(final String channelName, final String username, final String webhook) {
