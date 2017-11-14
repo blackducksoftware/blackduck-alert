@@ -2,20 +2,57 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Switch, Route, Router } from 'react-router';
-import { createHashHistory } from 'history'
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 
-const browserHistory = createHashHistory()
+
+class App extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+				loggedIn: false
+		};
+	}
+	
+	componentDidMount() {
+		var self = this;
+		fetch('/verify', {
+			credentials: "same-origin"
+		})  
+		.then(function(response) {
+			if (!response.ok) {
+				self.setState({
+					loggedIn: false
+				});
+			} else {
+				self.setState({
+					loggedIn: true
+				});
+			}
+		});
+	}
+	
+	render() {
+		let page = null;
+		if (this.state.loggedIn) {
+			page = <MainPage></MainPage>
+		} else {
+			page = <LoginPage></LoginPage>
+		}
+		return (
+			<div>
+				{page}
+			</div>
+		)
+	}
+	
+}
 
 ReactDOM.render(
-		<Router history={browserHistory}>
-		<Switch>
-		<Route exact path='/login' component={LoginPage} />
-		<Route exact path='/' component={MainPage} />
-		</Switch>
-		</Router>,
+		<div>
+		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+		<App></App>
+		</div>,
 		document.getElementById('react')
 );

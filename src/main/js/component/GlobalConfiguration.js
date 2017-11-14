@@ -60,7 +60,9 @@ class GlobalConfiguration extends React.Component {
 		self.setState({
 			configurationMessage: 'Loading...'
 		});
-		fetch('/configuration/global')  
+		fetch('/configuration/global',{
+			credentials: "same-origin"
+		})  
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -109,6 +111,7 @@ class GlobalConfiguration extends React.Component {
 		});
 		fetch('/configuration/global', {
 			method: method,
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -144,6 +147,7 @@ class GlobalConfiguration extends React.Component {
 		});
 		fetch('/configuration/global/test', {
 			method: 'POST',
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},

@@ -23,19 +23,18 @@
 package com.blackducksoftware.integration.hub.alert.web;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@EnableGlobalMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
 @Configuration
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/configuration/**").authenticated().antMatchers("/api/**").authenticated();
+        http.csrf().disable().authorizeRequests().anyRequest().permitAll();
+        // http.authorizeRequests().antMatchers("/configuration/**", "/api/**", "/verify").authenticated();
     }
 
 }
