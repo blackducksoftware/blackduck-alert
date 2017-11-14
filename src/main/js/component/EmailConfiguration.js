@@ -78,7 +78,9 @@ class EmailConfiguration extends React.Component {
 		self.setState({
 			configurationMessage: 'Loading...'
 		});
-		fetch('/configuration/email')  
+		fetch('/configuration/email',{
+			credentials: "same-origin"
+		})  
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -133,6 +135,7 @@ class EmailConfiguration extends React.Component {
 		});
 		fetch('/configuration/email', {
 			method: method,
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -168,6 +171,7 @@ class EmailConfiguration extends React.Component {
 		});
 		fetch('/configuration/email/test', {
 			method: 'POST',
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},

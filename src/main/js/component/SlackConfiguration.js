@@ -36,7 +36,9 @@ class SlackConfiguration extends React.Component {
 		self.setState({
 			configurationMessage: 'Loading...'
 		});
-		fetch('/configuration/slack')  
+		fetch('/configuration/slack', {
+			credentials: "same-origin"
+		})  
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -77,6 +79,7 @@ class SlackConfiguration extends React.Component {
 		});
 		fetch('/configuration/slack', {
 			method: method,
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -112,6 +115,7 @@ class SlackConfiguration extends React.Component {
 		});
 		fetch('/configuration/slack/test', {
 			method: 'POST',
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},

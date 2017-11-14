@@ -22,14 +22,23 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class HomeController {
 
-    @RequestMapping(value = { "/", "/login" })
+    @RequestMapping(value = { "/" })
     public String index() {
         return "index";
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/verify")
+    public String checkAuthentication() {
+        // TODO throws thymeleaf exception Error resolving template "Authenticated", template might not exist or might not be accessible by any of the configured Template Resolvers
+        return "Authenticated";
     }
 }

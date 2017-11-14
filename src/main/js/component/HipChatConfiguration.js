@@ -39,7 +39,9 @@ class HipChatConfiguration extends React.Component {
 		self.setState({
 			configurationMessage: 'Loading...'
 		});
-		fetch('/configuration/hipchat')  
+		fetch('/configuration/hipchat',{
+			credentials: "same-origin"
+		})  
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -81,6 +83,7 @@ class HipChatConfiguration extends React.Component {
 		});
 		fetch('/configuration/hipchat', {
 			method: method,
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -116,6 +119,7 @@ class HipChatConfiguration extends React.Component {
 		});
 		fetch('/configuration/hipchat/test', {
 			method: 'POST',
+			credentials: "same-origin",
 			headers: {
 				'Content-Type': 'application/json'
 			},
