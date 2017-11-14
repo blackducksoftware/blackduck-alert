@@ -28,8 +28,8 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class HipChatEvent extends AbstractChannelEvent {
 
-    public HipChatEvent(final ProjectData projectData) {
-        super(projectData);
+    public HipChatEvent(final ProjectData projectData, final Long configurationId) {
+        super(projectData, configurationId);
     }
 
     @Override

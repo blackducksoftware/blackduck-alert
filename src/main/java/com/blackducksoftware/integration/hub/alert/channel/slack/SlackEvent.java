@@ -28,8 +28,8 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class SlackEvent extends AbstractChannelEvent {
 
-    public SlackEvent(final ProjectData projectData) {
-        super(projectData);
+    public SlackEvent(final ProjectData projectData, final Long userConfigId) {
+        super(projectData, userConfigId);
     }
 
     @Override
