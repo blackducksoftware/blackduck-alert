@@ -105,14 +105,18 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     @Override
     public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
         final Long userId = emailEvent.getUserConfigId();
-        final HubUsersEntity entity = hubUsersRepository.findOne(userId);
-        final String username = entity.getUsername();
-        try {
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-            final String emailAddress = getEmailAddressForHubUser(hubServicesFactory.createUserRequestService(), username);
-            sendMessage(emailAddress, emailEvent, emailConfigEntity);
-        } catch (final IntegrationException e) {
-            logger.error("Could not send email to {}: Could not retrieve email address from the Hub Server.", username, e);
+        final HubUsersEntity userEntity = userId != null ? hubUsersRepository.findOne(userId) : null;
+        if (userEntity != null) {
+            final String username = userEntity.getUsername();
+            try {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
+                final String emailAddress = getEmailAddressForHubUser(hubServicesFactory.createUserRequestService(), username);
+                sendMessage(emailAddress, emailEvent, emailConfigEntity);
+            } catch (final IntegrationException e) {
+                logger.error("Could not send email to {}: Could not retrieve email address from the Hub Server.", username, e);
+            }
+        } else {
+            logger.warn("No configuration found for the user with id {}.", userId);
         }
     }
 
