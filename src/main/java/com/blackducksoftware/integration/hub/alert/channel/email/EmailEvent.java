@@ -28,8 +28,8 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class EmailEvent extends AbstractChannelEvent {
 
-    public EmailEvent(final ProjectData projectData) {
-        super(projectData);
+    public EmailEvent(final ProjectData projectData, final Long configurationId) {
+        super(projectData, configurationId);
     }
 
     @Override

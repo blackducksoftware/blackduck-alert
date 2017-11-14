@@ -1,6 +1,4 @@
---DROP TABLE email_config IF EXISTS;
-
-CREATE TABLE email_config (
+CREATE TABLE alert.email_config (
     id INTEGER PRIMARY KEY,
     mail_smtp_host VARCHAR,
     mail_smtp_user VARCHAR,

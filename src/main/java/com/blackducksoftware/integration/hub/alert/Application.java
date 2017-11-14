@@ -50,14 +50,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.repository" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.**.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling

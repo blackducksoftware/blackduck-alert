@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;

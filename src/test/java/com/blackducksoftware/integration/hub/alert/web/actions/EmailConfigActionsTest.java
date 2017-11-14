@@ -32,7 +32,7 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
