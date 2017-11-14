@@ -14,9 +14,11 @@ package com.blackducksoftware.integration.hub.alert;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestModel;
 
 public class MockUtils {
 
@@ -77,6 +79,24 @@ public class MockUtils {
         final HipChatConfigEntity configEntity = new HipChatConfigEntity("ApiKey", 11, false, "black");
         configEntity.setId(1L);
         return configEntity;
+    }
+
+    public HubUsersEntity createHubUsersEntity() {
+        return createHubUsersEntity("user");
+    }
+
+    public HubUsersEntity createHubUsersEntity(final String username) {
+        final HubUsersEntity entity = new HubUsersEntity(username);
+        entity.setId(1L);
+        return entity;
+    }
+
+    public HubUsersConfigRestModel createHubUsersRestModel() {
+        return createHubUsersRestModel("user");
+    }
+
+    public HubUsersConfigRestModel createHubUsersRestModel(final String username) {
+        return new HubUsersConfigRestModel("1", username);
     }
 
 }

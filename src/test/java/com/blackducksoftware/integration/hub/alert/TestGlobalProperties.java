@@ -11,8 +11,8 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 
 public class TestGlobalProperties extends GlobalProperties {
     private String hubUrl;

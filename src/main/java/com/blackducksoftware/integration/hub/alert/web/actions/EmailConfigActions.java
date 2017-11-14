@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
