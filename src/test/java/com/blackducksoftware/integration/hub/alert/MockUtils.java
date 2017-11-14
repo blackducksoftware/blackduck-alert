@@ -82,13 +82,21 @@ public class MockUtils {
     }
 
     public HubUsersEntity createHubUsersEntity() {
-        final HubUsersEntity entity = new HubUsersEntity("user");
+        return createHubUsersEntity("user");
+    }
+
+    public HubUsersEntity createHubUsersEntity(final String username) {
+        final HubUsersEntity entity = new HubUsersEntity(username);
         entity.setId(1L);
         return entity;
     }
 
     public HubUsersConfigRestModel createHubUsersRestModel() {
-        return new HubUsersConfigRestModel("1", "user");
+        return createHubUsersRestModel("user");
+    }
+
+    public HubUsersConfigRestModel createHubUsersRestModel(final String username) {
+        return new HubUsersConfigRestModel("1", username);
     }
 
 }

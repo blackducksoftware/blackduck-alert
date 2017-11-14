@@ -1,16 +1,23 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -21,6 +28,7 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.google.gson.Gson;
 
 public class EmailChannelTestIT extends RestChannelTest {
+    private final MockUtils mockUtils = new MockUtils();
 
     @Test
     public void sendEmailTest() throws Exception {
@@ -28,6 +36,19 @@ public class EmailChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("mail.smtp.from"));
         Assume.assumeTrue(properties.containsKey("hub.email.template.directory"));
         Assume.assumeTrue(properties.containsKey("logo.image"));
+
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.url"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.username"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.password"));
+
+        final HubUsersRepository hubUsersRepository = Mockito.mock(HubUsersRepository.class);
+        final HubUsersEntity userEntity = mockUtils.createHubUsersEntity(properties.getProperty("blackduck.hub.username"));
+        Mockito.when(hubUsersRepository.findOne(Mockito.anyLong())).thenReturn(userEntity);
+
+        final GlobalRepository globalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalConfigEntity globalConfig = new GlobalConfigEntity(properties.getProperty("blackduck.hub.url"), 300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), null, null, null,
+                null, Boolean.TRUE, "", "");
+        Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
         final VulnerabilityEntity vulnerability = new VulnerabilityEntity("Vuln ID", "Vuln Operation");
@@ -49,11 +70,11 @@ public class EmailChannelTestIT extends RestChannelTest {
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(null);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
         globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
         final Gson gson = new Gson();
-        final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null, null);
-        final EmailEvent event = new EmailEvent(projectData, null);
+        final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, hubUsersRepository, null, null);
+        final EmailEvent event = new EmailEvent(projectData, userEntity.getId());
 
         final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(properties.getProperty("mail.smtp.host"), null, null, null, null, null, properties.getProperty("mail.smtp.from"), null, null, null, null, null, null, null,
                 properties.getProperty("hub.email.template.directory"), properties.getProperty("logo.image"), "Test Subject Line");

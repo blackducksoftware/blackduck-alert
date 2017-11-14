@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 import javax.mail.MessagingException;
 
@@ -35,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
@@ -42,11 +45,17 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMe
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserEmailRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserEmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.api.user.UserRequestService;
+import com.blackducksoftware.integration.hub.model.view.UserView;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
@@ -56,13 +65,15 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
     private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
 
     private final GlobalProperties globalProperties;
-    private final EmailRepository emailRepository;
+    private final HubUsersRepository hubUsersRepository;
     private final HubUserEmailRepository hubUserEmailRepository;
+    private final EmailRepository emailRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final HubUserEmailRepository hubUserEmailRepository, final EmailRepository emailRepository) {
+    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final HubUsersRepository hubUsersRepository, final HubUserEmailRepository hubUserEmailRepository, final EmailRepository emailRepository) {
         super(gson, EmailEvent.class);
         this.globalProperties = globalProperties;
+        this.hubUsersRepository = hubUsersRepository;
         this.hubUserEmailRepository = hubUserEmailRepository;
         this.emailRepository = emailRepository;
     }
@@ -93,8 +104,16 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
 
     @Override
     public void sendMessage(final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
-        // TODO get the emails from the config
-        sendMessage("", emailEvent, emailConfigEntity);
+        final Long userId = emailEvent.getUserConfigId();
+        final HubUsersEntity entity = hubUsersRepository.findOne(userId);
+        final String username = entity.getUsername();
+        try {
+            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
+            final String emailAddress = getEmailAddressForHubUser(hubServicesFactory.createUserRequestService(), username);
+            sendMessage(emailAddress, emailEvent, emailConfigEntity);
+        } catch (final IntegrationException e) {
+            logger.error("Could not send email to {}: Could not retrieve email address from the Hub Server.", username, e);
+        }
     }
 
     public void sendMessage(final String emailAddress, final EmailEvent emailEvent, final EmailConfigEntity emailConfigEntity) {
@@ -120,6 +139,26 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
         } catch (final IOException | MessagingException | TemplateException e) {
             logger.error(e.getMessage(), e);
         }
+    }
+
+    private String getEmailAddressForHubUser(final UserRequestService userRequestService, final String hubUsername) throws AlertException {
+        try {
+            final List<UserView> users = userRequestService.getAllUsers();
+            return getEmailByUsername(users, hubUsername);
+        } catch (final IntegrationException e) {
+            throw new AlertException(e);
+        }
+    }
+
+    private String getEmailByUsername(final List<UserView> users, final String username) throws AlertException {
+        if (users != null) {
+            final Optional<UserView> foundUser = users.stream().filter(user -> user.userName.equals(username)).findFirst();
+            if (foundUser.isPresent()) {
+                return foundUser.get().email;
+            }
+            throw new AlertException("User '{}' not found on the Hub Server.");
+        }
+        throw new AlertException("No Hub users found.");
     }
 
 }
