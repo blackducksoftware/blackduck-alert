@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.hub.alert.datasource.repository.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
@@ -45,8 +45,8 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
         try {
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
             if (hubServicesFactory != null) {
-                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(),
-                        hubServicesFactory.createMetaService());
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectRequestService(), hubServicesFactory.createProjectAssignmentRequestService(),
+                        hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(), hubServicesFactory.createMetaService());
                 final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
                 return storeEvent;
             }

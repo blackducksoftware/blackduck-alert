@@ -37,7 +37,7 @@ public interface ConfigController<D extends DatabaseEntity, R extends ConfigRest
 
     public ResponseEntity<String> putConfig(final R restModel);
 
-    public ResponseEntity<String> validateConfig(R restModel);
+    public ResponseEntity<String> validateConfig(final R restModel);
 
     public ResponseEntity<String> deleteConfig(final R restModel);
 

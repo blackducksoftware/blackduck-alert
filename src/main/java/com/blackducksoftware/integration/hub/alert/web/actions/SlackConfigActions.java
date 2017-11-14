@@ -32,20 +32,19 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
-import com.google.gson.Gson;
 
 @Component
 public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackConfigRestModel> {
-    private final Gson gson;
+    final SlackChannel slackChannel;
 
     @Autowired
-    public SlackConfigActions(final SlackRepository slackRepository, final ObjectTransformer objectTransformer, final Gson gson) {
+    public SlackConfigActions(final SlackChannel slackChannel, final SlackRepository slackRepository, final ObjectTransformer objectTransformer) {
         super(SlackConfigEntity.class, SlackConfigRestModel.class, slackRepository, objectTransformer);
-        this.gson = gson;
+        this.slackChannel = slackChannel;
     }
 
     @Override
@@ -64,8 +63,7 @@ public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackCo
 
     @Override
     public String testConfig(final SlackConfigRestModel restModel) throws IntegrationException {
-        final SlackChannel channel = new SlackChannel(gson, (SlackRepository) repository);
-        return channel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, SlackConfigEntity.class));
+        return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, SlackConfigEntity.class));
     }
 
 }

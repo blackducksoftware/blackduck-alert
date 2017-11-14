@@ -29,6 +29,8 @@ public class AlertConstants {
 
     public static final String ALERT_APPLICATION_NAME = "Hub Alert";
 
+    public static final String DATASET_KEY_HUB_USER = "hub_user";
+
     private AlertConstants() throws InstantiationException {
         throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");
     }
