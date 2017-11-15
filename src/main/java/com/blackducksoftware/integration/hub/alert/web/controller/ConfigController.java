@@ -37,7 +37,7 @@ public abstract class ConfigController<R extends ConfigRestModel> {
 
     public abstract ResponseEntity<String> putConfig(final R restModel);
 
-    public abstract ResponseEntity<String> validateConfig(R restModel);
+    public abstract ResponseEntity<String> validateConfig(final R restModel);
 
     public abstract ResponseEntity<String> deleteConfig(final R restModel);
 

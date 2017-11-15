@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "email_config", schema = "configuration")
+@Table(name = "email_config")
 public class EmailConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 4122029411365267232L;
 

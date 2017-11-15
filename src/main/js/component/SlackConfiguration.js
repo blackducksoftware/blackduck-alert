@@ -2,6 +2,8 @@
 import React from 'react';
 import Field from '../field/Field';
 
+import styles from '../../css/main.css';
+
 class SlackConfiguration extends React.Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
@@ -154,7 +156,7 @@ class SlackConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>Slack Configuration</h1>
+				<h1 className={styles.alignCenter}>Slack Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
 				<Field label="Channel Name" type="text" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.state.channelNameError}></Field>
 				
@@ -162,8 +164,10 @@ class SlackConfiguration extends React.Component {
 				
 				<Field label="Webhook" type="text" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.state.webhookError}></Field>
 				
-				<input type="submit" value="Save"></input>
-				<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				<div className={styles.submitContainers}>
+					<input type="submit" value="Save"></input>
+					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				</div>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>

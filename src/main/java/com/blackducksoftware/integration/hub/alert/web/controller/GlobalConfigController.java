@@ -24,8 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,7 +41,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestMod
 
 @RestController
 public class GlobalConfigController extends ConfigController<GlobalConfigRestModel> {
-    private final Logger logger = LoggerFactory.getLogger(GlobalConfigController.class);
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
     @Autowired

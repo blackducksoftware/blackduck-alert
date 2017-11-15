@@ -30,7 +30,7 @@ import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
-@Table(name = "hipchat_config", schema = "configuration")
+@Table(name = "hipchat_config")
 public class HipChatConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 2791949172564090134L;
 

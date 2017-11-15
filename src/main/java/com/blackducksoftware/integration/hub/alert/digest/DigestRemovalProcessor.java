@@ -47,19 +47,19 @@ public class DigestRemovalProcessor {
     public List<NotificationEntity> process(final List<NotificationEntity> notificationList) {
         final List<NotificationEntity> resultList = new ArrayList<>();
 
-        notificationList.forEach(entity -> {
+        notificationList.stream().forEachOrdered(entity -> {
             Map<String, NotificationEntity> categoryMap;
-            final String eventKey = entity.getEventKey();
-            if (entityCache.containsKey(eventKey)) {
-                categoryMap = entityCache.get(eventKey);
+            final String cacheKey = createCacheKey(entity);
+            if (entityCache.containsKey(cacheKey)) {
+                categoryMap = entityCache.get(cacheKey);
             } else {
                 categoryMap = new HashMap<>();
-                entityCache.put(eventKey, categoryMap);
+                entityCache.put(cacheKey, categoryMap);
             }
 
             final boolean processed = processPolicyNotifications(categoryMap, entity);
             if (!processed) {
-                processVulnerabilityNotifications(categoryMap, entity);
+                processVulnerabilityNotifications(cacheKey, categoryMap, entity);
             }
         });
 
@@ -69,14 +69,20 @@ public class DigestRemovalProcessor {
         return resultList;
     }
 
+    private String createCacheKey(final NotificationEntity entity) {
+        return entity.getHubUser() + entity.getEventKey();
+    }
+
     private boolean processPolicyNotifications(final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
         final String notificationType = entity.getNotificationType();
         if (NotificationCategoryEnum.POLICY_VIOLATION.name().equals(notificationType)) {
-            categoryMap.put(entity.getEventKey(), entity);
+            categoryMap.put(notificationType, entity);
             return true;
         } else if (NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name().equals(notificationType) || NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name().equals(notificationType)) {
             if (categoryMap.containsKey(notificationType)) {
                 categoryMap.remove(notificationType);
+            } else if (categoryMap.containsKey(NotificationCategoryEnum.POLICY_VIOLATION.name())) {
+                categoryMap.remove(NotificationCategoryEnum.POLICY_VIOLATION.name());
             } else {
                 categoryMap.put(notificationType, entity);
             }
@@ -86,11 +92,10 @@ public class DigestRemovalProcessor {
         }
     }
 
-    private boolean processVulnerabilityNotifications(final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
-        final String eventKey = entity.getEventKey();
+    private boolean processVulnerabilityNotifications(final String cacheKey, final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
         final String notificationType = entity.getNotificationType();
         final Collection<VulnerabilityEntity> vulnerabilities = entity.getVulnerabilityList();
-        final Map<String, Set<String>> vulnerabilityCategoryMap = vulnerabilityCache.containsKey(eventKey) ? vulnerabilityCache.get(eventKey) : new HashMap<>();
+        final Map<String, Set<String>> vulnerabilityCategoryMap = vulnerabilityCache.containsKey(cacheKey) ? vulnerabilityCache.get(cacheKey) : new HashMap<>();
         Set<String> vulnerabilityIds;
         if (vulnerabilityCategoryMap.containsKey(notificationType)) {
             vulnerabilityIds = vulnerabilityCategoryMap.get(notificationType);
@@ -115,11 +120,11 @@ public class DigestRemovalProcessor {
             vulnerabilityCategoryMap.remove(notificationType);
             categoryMap.remove(notificationType);
             if (vulnerabilityCategoryMap.isEmpty()) {
-                vulnerabilityCache.remove(eventKey);
-                entityCache.remove(eventKey);
+                vulnerabilityCache.remove(cacheKey);
+                entityCache.remove(cacheKey);
             }
         } else {
-            vulnerabilityCache.put(eventKey, vulnerabilityCategoryMap);
+            vulnerabilityCache.put(cacheKey, vulnerabilityCategoryMap);
             categoryMap.put(notificationType, entity);
         }
         return false;

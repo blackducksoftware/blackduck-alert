@@ -37,7 +37,7 @@ public class SlackChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("slack.username"));
         Assume.assumeTrue(properties.containsKey("slack.web.hook"));
 
-        final SlackChannel slackChannel = new SlackChannel(gson, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null);
         final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
         final String webHook = properties.getProperty("slack.web.hook");
@@ -52,7 +52,7 @@ public class SlackChannelTestIT extends RestChannelTest {
         map.put(NotificationCategoryEnum.POLICY_VIOLATION, new CategoryData("test violation", data, 3));
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "0.0.1-TEST", map);
-        final SlackEvent event = new SlackEvent(projectData);
+        final SlackEvent event = new SlackEvent(projectData, new Long(0));
 
         slackChannel.sendMessage(event, config);
 
