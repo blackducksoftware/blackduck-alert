@@ -151,7 +151,7 @@ class SlackConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>Slack Configuration</h1>
+				<h1 className={styles.alignCenter}>Slack Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
 				<Field label="Channel Name" type="text" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.state.channelNameError}></Field>
 				

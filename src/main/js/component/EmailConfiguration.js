@@ -207,7 +207,7 @@ class EmailConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>Email Configuration</h1>
+				<h1 className={styles.alignCenter}>Email Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
 				<Field label="Email Template Directory" type="text" name="emailTemplateDirectory" value={this.state.emailTemplateDirectory} onChange={this.handleChange} errorName="emailTemplateDirectoryError" errorValue={this.state.emailTemplateDirectoryError}></Field>
 
@@ -215,7 +215,7 @@ class EmailConfiguration extends React.Component {
 
 				<Field label="Email Subject Line" type="text" name="emailSubjectLine" value={this.state.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.state.emailSubjectLineError}></Field>
 
-				<h2>Mail Smtp Configuration</h2>
+				<h2 className={styles.alignCenter}>Mail Smtp Configuration</h2>
 				<Field label="Mail Smtp Host" type="text" name="mailSmtpHost" value={this.state.mailSmtpHost} onChange={this.handleChange} errorName="mailSmtpHostError" errorValue={this.state.mailSmtpHostError}></Field>
 
 				<Field label="Mail Smtp User" type="text" name="mailSmtpUser" value={this.state.mailSmtpUser} onChange={this.handleChange} errorName="mailSmtpUserError" errorValue={this.state.mailSmtpUserError}></Field>
