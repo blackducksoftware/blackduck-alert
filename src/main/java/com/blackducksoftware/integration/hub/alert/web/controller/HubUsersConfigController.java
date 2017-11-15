@@ -33,52 +33,56 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.HubUsersConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.hub.alert.web.actions.HubUsersConfigWrapperActions;
+import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapper;
 
 @RestController
-public class HubUsersConfigController implements ConfigController<HubUsersEntity, HubUsersConfigRestModel> {
-    private final CommonConfigController<HubUsersEntity, HubUsersConfigRestModel> commonConfigController;
+public class HubUsersConfigController implements ConfigController<HubUsersConfigWrapper> {
+    private final HubUsersConfigWrapperActions configActions;
 
     @Autowired
-    HubUsersConfigController(final HubUsersConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(HubUsersEntity.class, HubUsersConfigRestModel.class, configActions);
+    HubUsersConfigController(final HubUsersConfigWrapperActions configActions) {
+        this.configActions = configActions;
     }
 
     @Override
     @GetMapping(value = "/configuration/users")
-    public List<HubUsersConfigRestModel> getConfig(@RequestBody(required = false) final Long id) {
-        return commonConfigController.getConfig(id);
+    public List<HubUsersConfigWrapper> getConfig(@RequestBody(required = false) final Long id) {
+        return configActions.getConfig(id);
     }
 
     @Override
     @PostMapping(value = "/configuration/users")
-    public ResponseEntity<String> postConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
-        return commonConfigController.postConfig(restModel);
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
+        return configActions.postConfig(restModel);
     }
 
     @Override
     @PutMapping(value = "/configuration/users")
-    public ResponseEntity<String> putConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
-        return commonConfigController.putConfig(restModel);
-    }
-
-    @Override
-    public ResponseEntity<String> validateConfig(final HubUsersConfigRestModel restModel) {
-        return commonConfigController.validateConfig(restModel);
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
+        return configActions.putConfig(restModel);
     }
 
     @Override
     @DeleteMapping(value = "/configuration/users")
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
-        return commonConfigController.deleteConfig(restModel);
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
+        return configActions.deleteConfig(restModel);
     }
 
     @Override
     @PostMapping(value = "/configuration/users/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
-        return commonConfigController.testConfig(restModel);
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
+        return configActions.postConfig(restModel);
+    }
+
+    @Override
+    public ResponseEntity<String> validateConfig(final HubUsersConfigWrapper restModel) {
+        try {
+            return configActions.validateConfig(restModel).equals("Valid") ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+        } catch (final AlertFieldException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

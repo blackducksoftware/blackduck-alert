@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActi
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController implements ConfigController<HipChatConfigRestModel> {
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired

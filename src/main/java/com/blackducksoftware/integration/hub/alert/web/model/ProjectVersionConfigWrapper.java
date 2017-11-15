@@ -20,26 +20,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.springframework.http.ResponseEntity;
+public class ProjectVersionConfigWrapper implements Serializable {
+    private static final long serialVersionUID = 4089287905513188984L;
 
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+    private String projectName;
+    private String projectVersionName;
 
-public interface ConfigController<R extends ConfigRestModel> {
+    public ProjectVersionConfigWrapper() {
 
-    public List<R> getConfig(final Long id);
+    }
 
-    public ResponseEntity<String> postConfig(final R restModel);
+    public ProjectVersionConfigWrapper(final String projectName, final String projectVersionName) {
+        this.projectName = projectName;
+        this.projectVersionName = projectVersionName;
+    }
 
-    public ResponseEntity<String> putConfig(final R restModel);
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
-    public ResponseEntity<String> validateConfig(final R restModel);
+    public String getProjectName() {
+        return projectName;
+    }
 
-    public ResponseEntity<String> deleteConfig(final R restModel);
-
-    public ResponseEntity<String> testConfig(final R restModel);
+    public String getProjectVersionName() {
+        return projectVersionName;
+    }
 
 }
