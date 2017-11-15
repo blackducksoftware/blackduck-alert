@@ -29,18 +29,18 @@ import org.springframework.http.ResponseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+public abstract class ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
 
-    public List<R> getConfig(final Long id);
+    public abstract List<R> getConfig(final Long id);
 
-    public ResponseEntity<String> postConfig(final R restModel);
+    public abstract ResponseEntity<String> postConfig(final R restModel);
 
-    public ResponseEntity<String> putConfig(final R restModel);
+    public abstract ResponseEntity<String> putConfig(final R restModel);
 
-    public ResponseEntity<String> validateConfig(R restModel);
+    public abstract ResponseEntity<String> validateConfig(R restModel);
 
-    public ResponseEntity<String> deleteConfig(final R restModel);
+    public abstract ResponseEntity<String> deleteConfig(final R restModel);
 
-    public ResponseEntity<String> testConfig(final R restModel);
+    public abstract ResponseEntity<String> testConfig(final R restModel);
 
 }

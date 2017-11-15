@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
@@ -51,18 +52,21 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/email")
     public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/email")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/email")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
@@ -74,12 +78,14 @@ public class EmailConfigController implements ConfigController<EmailConfigEntity
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/email")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/email/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
         return commonConfigController.testConfig(emailConfig);

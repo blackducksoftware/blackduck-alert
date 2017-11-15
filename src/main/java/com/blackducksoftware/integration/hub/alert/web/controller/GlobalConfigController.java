@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActio
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigController extends ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigController.class);
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
@@ -51,18 +52,21 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/global")
     public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.postConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/global")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.putConfig(globalConfig);
@@ -74,12 +78,14 @@ public class GlobalConfigController implements ConfigController<GlobalConfigEnti
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/global")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.deleteConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalConfigRestModel globalConfig) {
         return commonConfigController.testConfig(globalConfig);

@@ -40,7 +40,6 @@ public class HomeController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/verify")
     public ResponseEntity<String> checkAuthentication() {
-        // TODO throws thymeleaf exception Error resolving template "Authenticated", template might not exist or might not be accessible by any of the configured Template Resolvers
         return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.ACCEPTED);
     }
 }
