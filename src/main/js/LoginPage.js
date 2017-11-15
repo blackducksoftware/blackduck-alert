@@ -18,8 +18,6 @@ class LoginPage extends React.Component {
 				hubProxyPort: undefined,
 				hubProxyUsername: '',
 				hubProxyPassword: '',
-				accumulatorCron: '',
-				dailyDigestCron: '',
 
 				configurationMessage: '',
 				hubUrlError: '',
@@ -31,8 +29,6 @@ class LoginPage extends React.Component {
 				hubProxyPortError: '',
 				hubProxyUsernameError: '',
 				hubProxyPasswordError: '',
-				accumulatorCronError: '',
-				dailyDigestCronError: ''
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -49,8 +45,6 @@ class LoginPage extends React.Component {
 			hubProxyPortError: '',
 			hubProxyUsernameError: '',
 			hubProxyPasswordError: '',
-			accumulatorCronError: '',
-			dailyDigestCronError: ''
 		});
 	}
 
@@ -88,9 +82,7 @@ class LoginPage extends React.Component {
 							hubProxyHost: configuration.hubProxyHost,
 							hubProxyPort: configuration.hubProxyPort,
 							hubProxyUsername: configuration.hubProxyUsername,
-							hubProxyPassword: configuration.hubProxyPassword,
-							accumulatorCron: configuration.accumulatorCron,
-							dailyDigestCron: configuration.dailyDigestCron
+							hubProxyPassword: configuration.hubProxyPassword
 						});
 					}
 				});
@@ -208,11 +200,6 @@ class LoginPage extends React.Component {
 				<Field label="Username" type="text" name="hubProxyUsername" value={this.state.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.hubProxyUsernameError}></Field>
 
 				<Field label="Password" type="password" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} errorName="hubProxyPasswordError" errorValue={this.state.hubProxyPasswordError}></Field>
-
-				<h2>Scheduling Configuration</h2>
-				<Field label="Accumulator Cron" type="text" name="accumulatorCron" value={this.state.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.accumulatorCronError}></Field>
-
-				<Field label="Daily Digest Cron" type="text" name="dailyDigestCron" value={this.state.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.dailyDigestCronError}></Field>
 
 				<input type="submit" value="Save"></input>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
