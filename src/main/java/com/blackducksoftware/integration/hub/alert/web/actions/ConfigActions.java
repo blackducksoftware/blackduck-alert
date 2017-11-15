@@ -98,14 +98,14 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return null;
     }
 
-    public abstract String validateConfig(R restModel) throws AlertFieldException;
+    public abstract String validateConfig(final R restModel) throws AlertFieldException;
 
-    public abstract String testConfig(R restModel) throws IntegrationException;
+    public abstract String testConfig(final R restModel) throws IntegrationException;
 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(final R restModel) {
+    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
 
     }
 

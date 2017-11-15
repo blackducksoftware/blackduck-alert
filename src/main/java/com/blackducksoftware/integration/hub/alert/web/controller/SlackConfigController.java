@@ -24,8 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,7 +42,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestMode
 
 @RestController
 public class SlackConfigController extends ConfigController<SlackConfigRestModel> {
-    private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
     private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired

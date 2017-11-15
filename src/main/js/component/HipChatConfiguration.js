@@ -2,6 +2,8 @@
 import React from 'react';
 import Field from '../field/Field';
 
+import styles from '../../css/main.css';
+
 class HipChatConfiguration extends React.Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
@@ -158,7 +160,7 @@ class HipChatConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>HipChat Configuration</h1>
+				<h1 className={styles.alignCenter}>HipChat Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
 				<Field label="Api Key" type="text" name="apiKey" value={this.state.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.apiKeyError}></Field>
 
@@ -168,8 +170,10 @@ class HipChatConfiguration extends React.Component {
 				
 				<Field label="Color" type="text" name="color" value={this.state.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.colorError}></Field>
 				
-				<input type="submit" value="Save"></input>
-				<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				<div className={styles.submitContainers}>
+					<input type="submit" value="Save"></input>
+					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				</div>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>

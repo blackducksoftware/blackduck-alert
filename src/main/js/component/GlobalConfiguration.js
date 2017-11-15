@@ -2,6 +2,8 @@
 import React from 'react';
 import Field from '../field/Field';
 
+import styles from '../../css/main.css';
+
 class GlobalConfiguration extends React.Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
@@ -187,9 +189,9 @@ class GlobalConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>Global Configuration</h1>
+				<h1 className={styles.alignCenter}>Global Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
-				<h2>Hub Configuration</h2>
+				<h2 className={styles.alignCenter}>Hub Configuration</h2>
 				<Field label="Url" type="text" name="hubUrl" value={this.state.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.hubUrlError}></Field>
 
 				<Field label="Username" type="text" name="hubUsername" value={this.state.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.hubUsernameError}></Field>
@@ -200,7 +202,7 @@ class GlobalConfiguration extends React.Component {
 
 				<Field label="Trust Https Certificates" type="checkbox" name="hubAlwaysTrustCertificate" value={this.state.hubAlwaysTrustCertificate} onChange={this.handleChange} errorName="hubAlwaysTrustCertificateError" errorValue={this.state.hubAlwaysTrustCertificateError}></Field>
 
-				<h2>Proxy Configuration</h2>
+				<h2 className={styles.alignCenter}>Proxy Configuration</h2>
 				<Field label="Host Name" type="text" name="hubProxyHost" value={this.state.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.hubProxyHostError}></Field>
 
 				<Field label="Port" type="number" name="hubProxyPort" value={this.state.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.hubProxyPortError}></Field>
@@ -209,13 +211,16 @@ class GlobalConfiguration extends React.Component {
 
 				<Field label="Password" type="password" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} errorName="hubProxyPasswordError" errorValue={this.state.hubProxyPasswordError}></Field>
 
-				<h2>Scheduling Configuration</h2>
+				<h2 className={styles.alignCenter}>Scheduling Configuration</h2>
 				<Field label="Accumulator Cron" type="text" name="accumulatorCron" value={this.state.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.accumulatorCronError}></Field>
 
 				<Field label="Daily Digest Cron" type="text" name="dailyDigestCron" value={this.state.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.dailyDigestCronError}></Field>
 
-				<input type="submit" value="Save"></input>
-				<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				<div className={styles.submitContainers}>
+					<input type="submit" value="Save"></input>
+					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+				</div>
+				
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>

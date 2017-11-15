@@ -32,10 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
@@ -60,19 +61,24 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                 final List<NotificationEvent> notificationList = item.getNotificationList();
                 final List<NotificationEntity> entityList = new ArrayList<>();
                 notificationList.forEach(notification -> {
+                    // TODO: Set the key and update the processor to set the users that the event applies to.
+                    final String hubUser = (String) notification.getDataSet().get(AlertConstants.DATASET_KEY_HUB_USER);
                     final String eventKey = notification.getEventKey();
                     final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
                     final Date createdAt = content.getCreatedAt();
                     final String notificationType = notification.getCategoryType().toString();
                     final String projectName = content.getProjectVersion().getProjectName();
+                    final String projectUrl = content.getProjectVersion().getProjectLink();
                     final String projectVersion = content.getProjectVersion().getProjectVersionName();
+                    final String projectVersionUrl = content.getProjectVersion().getUrl();
                     final String componentName = content.getComponentName();
                     final String componentVersion = content.getComponentVersion().versionName;
                     final String policyRuleName = getPolicyRule(notification);
                     final String person = getPerson(notification);
                     final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                    final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectVersion, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+                    final NotificationEntity entity = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName,
+                            person, vulnerabilityList);
                     entityList.add(entity);
                     notificationRepository.save(entity);
                 });
