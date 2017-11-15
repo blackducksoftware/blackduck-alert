@@ -155,7 +155,7 @@ class HipChatConfiguration extends React.Component {
 	render() {
 		return (
 				<div>
-				<h1>HipChat Configuration</h1>
+				<h1 className={styles.alignCenter}>HipChat Configuration</h1>
 				<form onSubmit={this.handleSubmit.bind(this)}>
 				<Field label="Api Key" type="text" name="apiKey" value={this.state.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.apiKeyError}></Field>
 

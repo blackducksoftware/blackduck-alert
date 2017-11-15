@@ -28,10 +28,10 @@ class App extends React.Component {
                     <img src={logo} alt="logo" />
                 </div>
                 <div className={styles.alertHeader}>
-                    <h1>Black Duck Alert</h1>
+                    <h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
                 </div>
                 
-                <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs className={styles.tabContainer} selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Hub settings</Tab>
                         <Tab className={styles.configTabs}>Channel configuration</Tab>
