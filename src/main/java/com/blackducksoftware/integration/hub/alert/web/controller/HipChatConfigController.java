@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActi
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController extends ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController extends ConfigController<HipChatConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(HipChatConfigController.class);
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 

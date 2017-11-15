@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController extends ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController extends ConfigController<EmailConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(EmailConfigController.class);
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 

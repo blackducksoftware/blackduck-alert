@@ -22,15 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,20 +33,20 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.web.HubAuthenticationManager;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
-import com.google.gson.Gson;
 
 @RestController
-public class LoginController {
+public class LoginController extends ConfigController<LoginRestModel> {
 
     private final HubAuthenticationManager authenticationManager;
 
@@ -62,72 +56,70 @@ public class LoginController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(final HttpServletRequest request) {
-
+    public ResponseEntity<String> login(@RequestBody(required = false) final LoginRestModel loginRestModel) {
         final Authentication preAuthentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("Pre authenticated " + preAuthentication.isAuthenticated() + " : " + preAuthentication.getPrincipal() + " : " + preAuthentication.getCredentials());
 
-        String body = null;
-        final StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-
-        try {
-            final InputStream inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                while (bufferedReader.ready()) {
-                    stringBuilder.append(bufferedReader.readLine());
-                }
-            } else {
-                stringBuilder.append("");
-            }
-        } catch (final IOException e) {
-            // TODO handle exception
-            e.printStackTrace();
-        } finally {
-            IOUtils.closeQuietly(bufferedReader);
-        }
-        body = stringBuilder.toString();
-
-        final Gson gson = new Gson();
-        final GlobalConfigRestModel global = gson.fromJson(body, GlobalConfigRestModel.class);
-        // authenticationManager.global = global;
-        //
-        // try {
-        // request.login(global.getHubUsername(), global.getHubPassword());
-        // } catch (final ServletException e) {
-        // e.printStackTrace();
-        // }
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         try {
             final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
             serverConfigBuilder.setLogger(logger);
-            serverConfigBuilder.setHubUrl(global.getHubUrl());
-            serverConfigBuilder.setPassword(global.getHubPassword());
-            serverConfigBuilder.setUsername(global.getHubUsername());
-            serverConfigBuilder.setTimeout(global.getHubTimeout());
-            serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(global.getHubAlwaysTrustCertificate()));
-            serverConfigBuilder.setProxyHost(global.getHubProxyHost());
-            serverConfigBuilder.setProxyPort(global.getHubProxyPort());
-            serverConfigBuilder.setProxyUsername(global.getHubProxyUsername());
-            serverConfigBuilder.setProxyPassword(global.getHubProxyPassword());
+            serverConfigBuilder.setHubUrl(loginRestModel.getHubUrl());
+            serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
+            serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
+            serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
+            serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(loginRestModel.getHubAlwaysTrustCertificate()));
+            serverConfigBuilder.setProxyHost(loginRestModel.getHubProxyHost());
+            serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
+            serverConfigBuilder.setProxyUsername(loginRestModel.getHubProxyUsername());
+            serverConfigBuilder.setProxyPassword(loginRestModel.getHubProxyPassword());
             final HubServerConfig configServer = serverConfigBuilder.build();
             final CredentialsRestConnection restConnection = configServer.createCredentialsRestConnection(logger);
             restConnection.connect();
             System.out.println("Connected");
             // TODO check User's role
-            final Authentication authentication = new UsernamePasswordAuthenticationToken(global.getHubUsername(), global.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+            final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (final Exception e) {
             e.printStackTrace();
         }
         return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
+    }
 
-        // final String referrer = request.getHeader("Referer");
-        // if (referrer != null) {
-        // request.getSession().setAttribute("url_prior_login", referrer);
-        // }
-        // return "{\"message\":\"Success\"}";
+    @Override
+    public List<LoginRestModel> getConfig(final Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> postConfig(final LoginRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> putConfig(final LoginRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> validateConfig(final LoginRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> deleteConfig(final LoginRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<String> testConfig(final LoginRestModel restModel) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

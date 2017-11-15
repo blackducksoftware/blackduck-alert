@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActio
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController extends ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigController extends ConfigController<GlobalConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigController.class);
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
