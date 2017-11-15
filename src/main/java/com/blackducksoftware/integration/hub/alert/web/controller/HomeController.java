@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,8 +39,8 @@ public class HomeController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/verify")
-    public String checkAuthentication() {
+    public ResponseEntity<String> checkAuthentication() {
         // TODO throws thymeleaf exception Error resolving template "Authenticated", template might not exist or might not be accessible by any of the configured Template Resolvers
-        return "Authenticated";
+        return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.ACCEPTED);
     }
 }

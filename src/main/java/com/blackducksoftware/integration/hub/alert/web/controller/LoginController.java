@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -60,7 +62,7 @@ public class LoginController {
     }
 
     @PostMapping(value = "/login")
-    public String login(final HttpServletRequest request) {
+    public ResponseEntity<String> login(final HttpServletRequest request) {
 
         final Authentication preAuthentication = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("Pre authenticated " + preAuthentication.isAuthenticated() + " : " + preAuthentication.getPrincipal() + " : " + preAuthentication.getCredentials());
@@ -119,8 +121,7 @@ public class LoginController {
         } catch (final Exception e) {
             e.printStackTrace();
         }
-
-        return "{\"message\":\"Success\"}";
+        return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
 
         // final String referrer = request.getHeader("Referer");
         // if (referrer != null) {
