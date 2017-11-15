@@ -165,8 +165,8 @@ class SlackConfiguration extends React.Component {
 				<Field label="Webhook" type="text" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.state.webhookError}></Field>
 				
 				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+					<input className={styles.inputButton} type="submit" value="Save"></input>
+					<input className={styles.inputButton} type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
 				</div>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>

@@ -250,8 +250,8 @@ class EmailConfiguration extends React.Component {
 				<Field label="Mail Smtp Send Partial" type="checkbox" name="mailSmtpSendPartial" value={this.state.mailSmtpSendPartial} onChange={this.handleChange} errorName="mailSmtpSendPartialError" errorValue={this.state.mailSmtpSendPartialError}></Field>
 				
 				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+					<input className={styles.inputButton} type="submit" value="Save"></input>
+					<input className={styles.inputButton} type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
 				</div>
 
 				<p name="configurationMessage">{this.state.configurationMessage}</p>

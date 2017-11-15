@@ -3,6 +3,8 @@
 import React from 'react';
 import Field from './field/Field';
 
+import styles from '../css/main.css';
+
 class LoginPage extends React.Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
@@ -201,7 +203,9 @@ class LoginPage extends React.Component {
 
 				<Field label="Password" type="password" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} errorName="hubProxyPasswordError" errorValue={this.state.hubProxyPasswordError}></Field>
 
-				<input type="submit" value="Save"></input>
+				<div className={styles.submitContainers}>
+				<input className={styles.inputButton} type="submit" value="Login"></input>
+				</div>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>

@@ -11,7 +11,7 @@
     margin-bottom: 0px;
 }
 
-input[type=button], input[type=submit] {
+.inputButton {
     background: gray;
     text-align: center;
     padding: 5px 10px 5px 10px;
@@ -19,30 +19,26 @@ input[type=button], input[type=submit] {
     display: inline-block;
 }
 
-.submitContainers {
-    display: inline-block;
-    margin: 5px;
-    text-align: center;
-    width: 100%;
-}
-
-input[type=text], input[type=password] {
+.inputText{
     width: 50%;
 }
 
-input[type=number] {
-    width: 10%;
-}
-
-label {
+.inputLabel {
     text-align: right;
     padding: 10px;
     width: 30%;
     display: inline-block;
 }
 
-label:after {
+.inputLabel:after {
     content: ":"
+}
+
+.submitContainers {
+    display: inline-block;
+    margin: 5px;
+    text-align: center;
+    width: 100%;
 }
 
 .border {
