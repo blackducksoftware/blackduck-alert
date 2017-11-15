@@ -171,8 +171,8 @@ class HipChatConfiguration extends React.Component {
 				<Field label="Color" type="text" name="color" value={this.state.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.colorError}></Field>
 				
 				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+					<input className={styles.inputButton} type="submit" value="Save"></input>
+					<input className={styles.inputButton} type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
 				</div>
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>

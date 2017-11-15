@@ -6,7 +6,6 @@ import EmailConfiguration from './component/EmailConfiguration';
 import HipChatConfiguration from './component/HipChatConfiguration';
 import SlackConfiguration from './component/SlackConfiguration';
 
-import styles from '../css/main.css';
 import logo from '../img/BDTextLogo.png';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';

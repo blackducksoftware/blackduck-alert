@@ -36,11 +36,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.HubAuthenticationManager;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
@@ -80,10 +83,19 @@ public class LoginController extends ConfigController<LoginRestModel> {
             // TODO check User's role
             final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
+        } catch (final AlertFieldException e) {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), e.getMessage());
+            responseBodyBuilder.putErrors(e.getFieldErrors());
+            final String responseBody = responseBodyBuilder.build();
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
         }
-        return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
     }
 
     @Override

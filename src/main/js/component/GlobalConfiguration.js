@@ -217,8 +217,8 @@ class GlobalConfiguration extends React.Component {
 				<Field label="Daily Digest Cron" type="text" name="dailyDigestCron" value={this.state.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.dailyDigestCronError}></Field>
 
 				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
+					<input className={styles.inputButton} type="submit" value="Save"></input>
+					<input className={styles.inputButton} type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
 				</div>
 				
 				<p name="configurationMessage">{this.state.configurationMessage}</p>

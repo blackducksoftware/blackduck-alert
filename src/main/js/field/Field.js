@@ -1,6 +1,8 @@
 'use strict';
 import React from 'react';
 
+import styles from '../../css/main.css';
+
 class Field extends React.Component {
 	render() {
 		let inputDiv = null;
@@ -9,7 +11,7 @@ class Field extends React.Component {
 			if (value == null){
 				value = undefined;
 			}
-			inputDiv = <input type={this.props.type} name={this.props.name} value={value} onChange={this.props.onChange}></input>
+			inputDiv = <input className={styles.inputText} type={this.props.type} name={this.props.name} value={value} onChange={this.props.onChange}></input>
 		} else if (this.props.type == 'checkbox') {
 			let isChecked = false;
 			if (value != undefined && value != null && (value == true || value == 'true')) {
@@ -24,7 +26,7 @@ class Field extends React.Component {
 		}
 		return (
 				<div>
-				<label>{this.props.label}</label>
+				<label className={styles.inputLabel}>{this.props.label}</label>
 				{inputDiv}
 				{errorDiv}
 				</div>

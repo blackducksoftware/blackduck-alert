@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom';
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 
+import styles from '../css/main.css';
+
 
 class App extends React.Component {
 	constructor(props) {
