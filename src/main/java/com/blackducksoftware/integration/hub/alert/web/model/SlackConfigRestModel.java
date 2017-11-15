@@ -35,7 +35,8 @@ public class SlackConfigRestModel extends ConfigRestModel {
     public SlackConfigRestModel() {
     }
 
-    public SlackConfigRestModel(final String channelName, final String username, final String webhook) {
+    public SlackConfigRestModel(final String id, final String channelName, final String username, final String webhook) {
+        super(id);
         this.channelName = channelName;
         this.username = username;
         this.webhook = webhook;
