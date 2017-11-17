@@ -1,0 +1,14 @@
+.inputText{
+    width: 50%;
+}
+
+.inputLabel {
+    text-align: right;
+    padding: 10px;
+    width: 30%;
+    display: inline-block;
+}
+
+.inputLabel:after {
+    content: ":"
+}

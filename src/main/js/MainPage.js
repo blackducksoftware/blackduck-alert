@@ -5,8 +5,9 @@ import GlobalConfiguration from './component/GlobalConfiguration';
 import EmailConfiguration from './component/EmailConfiguration';
 import HipChatConfiguration from './component/HipChatConfiguration';
 import SlackConfiguration from './component/SlackConfiguration';
+import Header from './component/Header';
 
-import logo from '../img/BDTextLogo.png';
+import styles from '../css/main.css';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
@@ -22,9 +23,7 @@ class MainPage extends React.Component {
 	render() {
 		return (
 				<div className={styles.wrapper}>
-				<div className={styles.header}>
-				<img src={logo} alt="logo" />
-				</div>
+				<Header></Header>
 				<div className={styles.alertHeader}>
 				<h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
 				</div>

@@ -1,8 +1,19 @@
+.hidden {
+	display: none;
+}
 
 .wrapper {
     padding: 0px;
-    font-family: Verdana;
+    font-family: 'Verdana';
+    font-size: 13px;
     background-color: #F9F9F9;
+}
+
+.advanced {
+	cursor: pointer;
+	margin-right: 10px;
+	color: #285f8f;
+	text-align: right;
 }
 
 .alignCenter {
@@ -12,32 +23,48 @@
 }
 
 .inputButton {
-    background: gray;
+	margin-right: 10px;
+	color: #fff;
+    background: #285f8f;
     text-align: center;
     padding: 5px 10px 5px 10px;
-    font-size: 1em;
     display: inline-block;
 }
 
-.inputText{
-    width: 50%;
+.loginContainer {
+	width: 100vw; 
+	height: 100vh;
+	display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.inputLabel {
-    text-align: right;
-    padding: 10px;
-    width: 30%;
-    display: inline-block;
+.loginHeader {
+	width: 100%; 
+	background-color: #2d343e;
+    padding: 2px 15px;
+    border-bottom: 1px solid #ddd;
+    margin: 0;
 }
 
-.inputLabel:after {
-    content: ":"
+.loginBox {
+	background-color: #fff;
+    overflow: hidden;
+    z-index: 1;
+    min-height: 175px;
+    box-shadow: 0 0 5px #333;
+    max-width: 500px;
+    min-width: 300px;
+    position: fixed;
+    width: 100%;
+    border: 0;
+    margin-bottom: 20px;
 }
 
 .submitContainers {
     display: inline-block;
     margin: 5px;
-    text-align: center;
+    text-align: right;
     width: 100%;
 }
 

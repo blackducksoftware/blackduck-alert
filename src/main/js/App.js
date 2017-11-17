@@ -15,6 +15,7 @@ class App extends React.Component {
 		this.state = {
 				loggedIn: false
 		};
+		this.handleState = this.handleState.bind(this)
 	}
 	
 	componentDidMount() {
@@ -35,12 +36,18 @@ class App extends React.Component {
 		});
 	}
 	
+	handleState(name, value) {
+		this.setState({
+			[name]: value
+		});
+	}
+	
 	render() {
 		let page = null;
 		if (this.state.loggedIn) {
 			page = <MainPage></MainPage>
 		} else {
-			page = <LoginPage></LoginPage>
+			page = <LoginPage handleState={this.handleState}></LoginPage>
 		}
 		return (
 			<div>

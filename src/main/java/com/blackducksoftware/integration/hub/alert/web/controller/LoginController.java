@@ -22,9 +22,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +42,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.HubAuthenticationManager;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
@@ -43,10 +50,15 @@ import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.validator.AbstractValidator;
+import com.blackducksoftware.integration.validator.FieldEnum;
+import com.blackducksoftware.integration.validator.ValidationResult;
+import com.blackducksoftware.integration.validator.ValidationResults;
 
 @RestController
 public class LoginController extends ConfigController<LoginRestModel> {
@@ -76,8 +88,8 @@ public class LoginController extends ConfigController<LoginRestModel> {
             serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
             serverConfigBuilder.setProxyUsername(loginRestModel.getHubProxyUsername());
             serverConfigBuilder.setProxyPassword(loginRestModel.getHubProxyPassword());
-            final HubServerConfig configServer = serverConfigBuilder.build();
-            final CredentialsRestConnection restConnection = configServer.createCredentialsRestConnection(logger);
+            validateHubConfiguration(serverConfigBuilder);
+            final RestConnection restConnection = createRestConnection(serverConfigBuilder);
             restConnection.connect();
             System.out.println("Connected");
             // TODO check User's role
@@ -86,15 +98,15 @@ public class LoginController extends ConfigController<LoginRestModel> {
             return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
+            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), "1", e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.objectTransformer.stringToLong(restModel.getId()), e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(1L, e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
+            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, "1", e.getMessage());
         }
     }
 
@@ -132,6 +144,38 @@ public class LoginController extends ConfigController<LoginRestModel> {
     public ResponseEntity<String> testConfig(final LoginRestModel restModel) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    public void validateHubConfiguration(final HubServerConfigBuilder hubServerConfigBuilder) throws AlertFieldException {
+        final AbstractValidator validator = hubServerConfigBuilder.createValidator();
+        final ValidationResults results = validator.assertValid();
+        if (!results.getResultMap().isEmpty()) {
+            final Map<String, String> fieldErrors = new HashMap<>();
+            for (final Entry<FieldEnum, Set<ValidationResult>> result : results.getResultMap().entrySet()) {
+                final Set<ValidationResult> validationResult = result.getValue();
+                final List<String> errors = new ArrayList<>();
+                for (final ValidationResult currentValidationResult : validationResult) {
+                    errors.add(currentValidationResult.getMessage());
+                }
+
+                fieldErrors.put(result.getKey().getKey(), StringUtils.join(errors, " , "));
+            }
+            throw new AlertFieldException("There were issues with the configuration.", fieldErrors);
+        }
+    }
+
+    public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
+        final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
+        return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
+    }
+
+    protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
+        return createResponse(status, Long.valueOf(id), message);
+    }
+
+    protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
+        final String responseBody = new ResponseBodyBuilder(id, message).build();
+        return new ResponseEntity<>(responseBody, status);
     }
 
 }

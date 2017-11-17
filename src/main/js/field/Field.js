@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
 
-import styles from '../../css/main.css';
+import styles from '../../css/field.css';
 
 class Field extends React.Component {
 	render() {
