@@ -31,19 +31,19 @@ import javax.persistence.Table;
 public class HubUserFrequenciesRelation extends DatabaseRelation {
     private static final long serialVersionUID = -5467757197683436935L;
 
-    @Column(name = "frequency_id")
-    private Long frequencyId;
+    @Column(name = "frequency")
+    private String frequency;
 
     public HubUserFrequenciesRelation() {
     }
 
-    public HubUserFrequenciesRelation(final Long userConfidId, final Long frequencyId) {
+    public HubUserFrequenciesRelation(final Long userConfidId, final String frequency) {
         super(userConfidId);
-        this.frequencyId = frequencyId;
+        this.frequency = frequency;
     }
 
-    public Long getFrequencyId() {
-        return frequencyId;
+    public String getFrequency() {
+        return frequency;
     }
 
 }

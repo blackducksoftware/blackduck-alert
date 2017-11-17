@@ -28,7 +28,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "hub_user_slack")
-public class HubUserSlackRelation extends DatabaseRelation {
+public class HubUserSlackRelation extends DatabaseChannelRelation {
     private static final long serialVersionUID = -5649425971831549437L;
 
     @Column(name = "slack_config_id")
@@ -42,7 +42,13 @@ public class HubUserSlackRelation extends DatabaseRelation {
         this.slackConfigId = slackConfigId;
     }
 
+    @Override
     public Long getChannelConfigId() {
         return slackConfigId;
+    }
+
+    @Override
+    public void setChannelConfigId(final Long channelConfigId) {
+        this.slackConfigId = channelConfigId;
     }
 }

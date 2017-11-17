@@ -42,14 +42,13 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.manager.HubUserManager;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.ProjectVersionConfigWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 
 @Component
 public class HubUsersConfigWrapperActions {
-    private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
+    private final Logger logger = LoggerFactory.getLogger(HubUsersConfigWrapperActions.class);
     private final HubUsersRepository hubUsersRepository;
     private final HubUserManager hubUserManager;
 
@@ -93,20 +92,20 @@ public class HubUsersConfigWrapperActions {
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> postConfig(final HubUsersConfigWrapper restModel) {
-        logger.debug("Attempted to POST a user configuration {}, but that method is not allowed.", restModel);
+    public ResponseEntity<String> doNotAllowRequestMethod(final HubUsersConfigWrapper restModel, final String requestMethod) {
+        logger.debug("Attempted to {} a user configuration, but that method is not allowed: {}", requestMethod, restModel);
         return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Cannot create new user configurations.");
-    }
-
-    public ResponseEntity<String> deleteConfig(final HubUsersConfigWrapper restModel) {
-        logger.debug("Attempted to DELETE a user configuration {}, but that method is not allowed.", restModel);
-        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Cannot delete user configurations.");
     }
 
     public String validateConfig(final HubUsersConfigWrapper restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isBlank(restModel.getUsername())) {
             fieldErrors.put("username", "Cannot be blank.");
+        }
+        if (StringUtils.isBlank(restModel.getFrequency())) {
+            fieldErrors.put("frequency", "Cannot be blank.");
+        } else if (!("DAILY".equals(restModel.getFrequency()) || "REAL_TIME".equals(restModel.getFrequency()))) {
+            fieldErrors.put("frequency", "Not a valid frequency enum. Valid values: DAILY, REAL_TIME");
         }
         if (StringUtils.isNotBlank(restModel.getEmailConfigId()) && !StringUtils.isNumeric(restModel.getEmailConfigId())) {
             fieldErrors.put("emailConfigId", "Not an Integer.");
@@ -143,10 +142,10 @@ public class HubUsersConfigWrapperActions {
             final String transformedId = hubUserManager.getObjectTransformer().objectToString(id);
             final String username = entity.getUsername();
             final String frequency = hubUserManager.getHubUserFrequency(id);
-            final String emailConfigId = hubUserManager.getEmailConfigId();
-            final String hipChatConfigId = hubUserManager.getHipChatConfigId();
-            final String slackConfigId = hubUserManager.getSlackConfigId();
-            final List<ProjectVersionConfigWrapper> projectVersions = hubUserManager.getProjectVersions();
+            final String emailConfigId = hubUserManager.getEmailConfigId(id);
+            final String hipChatConfigId = hubUserManager.getHipChatConfigId(id);
+            final String slackConfigId = hubUserManager.getSlackConfigId(id);
+            final List<ProjectVersionConfigWrapper> projectVersions = hubUserManager.getProjectVersions(id);
 
             return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
         }

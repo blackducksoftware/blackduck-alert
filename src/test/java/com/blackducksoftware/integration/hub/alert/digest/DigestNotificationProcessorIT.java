@@ -90,7 +90,7 @@ public class DigestNotificationProcessorIT {
 
         final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
         final HipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new HipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
-        final HubUserHipChatRelation hipChatUserRel = hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
+        hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
         projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
@@ -106,7 +106,6 @@ public class DigestNotificationProcessorIT {
         assertEquals(1, eventsCreated.size());
         final AbstractChannelEvent event = eventsCreated.get(0);
         assertTrue(event instanceof HipChatEvent);
-        assertEquals(hipChatUserRel.getUserConfidId(), event.getUserConfigId());
     }
 
     @Test
@@ -122,7 +121,7 @@ public class DigestNotificationProcessorIT {
 
         final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
         final HipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new HipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
-        final HubUserHipChatRelation hipChatUserRel = hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
+        hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
         projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
@@ -138,7 +137,6 @@ public class DigestNotificationProcessorIT {
         assertEquals(1, eventsCreated.size());
         final AbstractChannelEvent event = eventsCreated.get(0);
         assertTrue(event instanceof HipChatEvent);
-        assertEquals(hipChatUserRel.getUserConfidId(), event.getUserConfigId());
     }
 
     @Test

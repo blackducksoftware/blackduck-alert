@@ -20,37 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+@MappedSuperclass
+public abstract class DatabaseChannelRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 6423545569884446550L;
 
-@Entity
-@Table(name = "hub_users")
-public class HubUsersEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 2565372713815698214L;
-
-    @Column(name = "hub_username")
-    private String username;
-
-    public HubUsersEntity() {
+    public DatabaseChannelRelation() {
     }
 
-    public HubUsersEntity(final String username) {
-        this.username = username;
+    public DatabaseChannelRelation(final Long userConfidId) {
+        super(userConfidId);
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public abstract Long getChannelConfigId();
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
-    }
-
+    public abstract void setChannelConfigId(final Long channelConfigId);
 }

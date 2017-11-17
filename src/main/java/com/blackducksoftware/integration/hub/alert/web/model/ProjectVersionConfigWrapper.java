@@ -24,6 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 public class ProjectVersionConfigWrapper implements Serializable {
     private static final long serialVersionUID = 4089287905513188984L;
 
@@ -49,6 +52,12 @@ public class ProjectVersionConfigWrapper implements Serializable {
 
     public String getProjectVersionName() {
         return projectVersionName;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.toString();
     }
 
 }

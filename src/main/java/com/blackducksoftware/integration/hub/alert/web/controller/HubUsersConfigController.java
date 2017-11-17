@@ -55,7 +55,7 @@ public class HubUsersConfigController implements ConfigController<HubUsersConfig
     @Override
     @PostMapping(value = "/configuration/users")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
-        return configActions.postConfig(restModel);
+        return configActions.doNotAllowRequestMethod(restModel, "POST");
     }
 
     @Override
@@ -67,13 +67,13 @@ public class HubUsersConfigController implements ConfigController<HubUsersConfig
     @Override
     @DeleteMapping(value = "/configuration/users")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
-        return configActions.deleteConfig(restModel);
+        return configActions.doNotAllowRequestMethod(restModel, "DELETE");
     }
 
     @Override
     @PostMapping(value = "/configuration/users/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HubUsersConfigWrapper restModel) {
-        return configActions.postConfig(restModel);
+        return configActions.doNotAllowRequestMethod(restModel, "POST (TEST)");
     }
 
     @Override

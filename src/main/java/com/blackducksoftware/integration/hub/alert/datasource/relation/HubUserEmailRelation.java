@@ -28,7 +28,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "hub_user_email")
-public class HubUserEmailRelation extends DatabaseRelation {
+public class HubUserEmailRelation extends DatabaseChannelRelation {
     private static final long serialVersionUID = 8484340743447368873L;
 
     @Column(name = "email_config_id")
@@ -42,8 +42,14 @@ public class HubUserEmailRelation extends DatabaseRelation {
         this.emailConfigId = emailConfigId;
     }
 
+    @Override
     public Long getChannelConfigId() {
         return emailConfigId;
+    }
+
+    @Override
+    public void setChannelConfigId(final Long channelConfigId) {
+        this.emailConfigId = channelConfigId;
     }
 
 }

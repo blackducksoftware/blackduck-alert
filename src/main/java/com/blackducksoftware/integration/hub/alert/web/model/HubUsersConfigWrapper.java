@@ -38,7 +38,6 @@ public class HubUsersConfigWrapper extends ConfigRestModel {
     private List<ProjectVersionConfigWrapper> projectVersions;
 
     public HubUsersConfigWrapper() {
-
     }
 
     public HubUsersConfigWrapper(final String id, final String username, final String frequency, final String emailConfigId, final String hipChatConfigId, final String slackConfigId,
