@@ -101,9 +101,6 @@ class LoginPage extends React.Component {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state);
 		var method = 'POST';
-//		if (this.state.id) {
-//			method = 'PUT';
-//		}
 		self.setState({
 			configurationMessage: 'Saving...'
 		});
@@ -115,25 +112,27 @@ class LoginPage extends React.Component {
 			},
 			body: jsonBody
 		}).then(function(response) {
-			return response.json().then(json => {
-				let errors = json.errors;
-				if (errors) {
-					for (var key in errors) {
-						if (errors.hasOwnProperty(key)) {
-							let name = key.concat('Error');
-							let value = errors[key];
-							self.setState({
-								[name]: value
-							});
+			if (response.ok) {
+				self.props.handleState('loggedIn', true)
+			} else {
+				return response.json().then(json => {
+					let errors = json.errors;
+					if (errors) {
+						for (var key in errors) {
+							if (errors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = errors[key];
+								self.setState({
+									[name]: value
+								});
+							}
 						}
 					}
-				} else {
-					self.props.handleState('loggedIn', true)
-				}
-				self.setState({
-					configurationMessage: json.message
+					self.setState({
+						configurationMessage: json.message
+					});
 				});
-			});
+			}
 		});
 	}
 
@@ -156,9 +155,11 @@ class LoginPage extends React.Component {
 
 	//render is part of the Component lifecycle, used to render the Html
 	render() {
+		let advancedDisplay = "Hide Advanced";
 		let advancedClass = "";
 		if (this.state.hideAdvanced) {
 			advancedClass = styles.hidden;
+			advancedDisplay = "Show Advanced";
 		}
 		return (
 				<div className={styles.wrapper}>
@@ -172,7 +173,7 @@ class LoginPage extends React.Component {
 
 				<Field label="Password" type="password" name="hubPassword" value={this.state.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.hubPasswordError}></Field>
 
-				<div className={styles.advanced} onClick={this.handleAdvancedClicked}>Advanced</div>
+				<div className={styles.advanced} onClick={this.handleAdvancedClicked}>{advancedDisplay}</div>
 				<div className={advancedClass}>
 				<Field label="Timeout" type="number" name="hubTimeout" value={this.state.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.hubTimeoutError}></Field>
 

@@ -30,8 +30,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,12 +46,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.hub.alert.web.HubAuthenticationManager;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
-import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.blackducksoftware.integration.log.IntLogger;
@@ -62,19 +62,19 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 
 @RestController
 public class LoginController extends ConfigController<LoginRestModel> {
+    @PostMapping(value = "/logout")
+    public ResponseEntity<String> logout(final HttpServletRequest request) {
+        final HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
 
-    private final HubAuthenticationManager authenticationManager;
-
-    @Autowired
-    public LoginController(final HubAuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+        return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(@RequestBody(required = false) final LoginRestModel loginRestModel) {
-        final Authentication preAuthentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Pre authenticated " + preAuthentication.isAuthenticated() + " : " + preAuthentication.getPrincipal() + " : " + preAuthentication.getCredentials());
-
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         try {
             final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();

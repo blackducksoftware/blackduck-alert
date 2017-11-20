@@ -33,7 +33,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().anyRequest().permitAll();
+        http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
         // http.authorizeRequests().antMatchers("/configuration/**", "/api/**", "/verify").authenticated();
     }
 

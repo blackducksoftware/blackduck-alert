@@ -12,8 +12,8 @@ import styles from '../css/main.css';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 class MainPage extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 				mainIndex: 0,
 				channelIndex: 0
@@ -23,7 +23,7 @@ class MainPage extends React.Component {
 	render() {
 		return (
 				<div className={styles.wrapper}>
-				<Header></Header>
+				<Header handleState={this.props.handleState} includeLogout="true"></Header>
 				<div className={styles.alertHeader}>
 				<h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
 				</div>
