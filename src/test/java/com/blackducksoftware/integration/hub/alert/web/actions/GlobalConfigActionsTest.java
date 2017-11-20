@@ -78,7 +78,7 @@ public class GlobalConfigActionsTest {
         Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalConfigEntity());
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalConfigEntity()));
 
-        final GlobalConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
+        final GlobalConfigRestModel maskedrestModel = mockUtils.createGlobalConfigMaskedRestModel();
 
         final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, null, null, objectTransformer);
         List<GlobalConfigRestModel> emailConfigsById = configActions.getConfig(1L);
@@ -89,8 +89,8 @@ public class GlobalConfigActionsTest {
 
         final GlobalConfigRestModel emailConfigById = emailConfigsById.get(0);
         final GlobalConfigRestModel emailConfig = allGlobalConfigs.get(0);
-        assertEquals(restModel, emailConfigById);
-        assertEquals(restModel, emailConfig);
+        assertEquals(maskedrestModel, emailConfigById);
+        assertEquals(maskedrestModel, emailConfig);
 
         Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(null);
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(null);

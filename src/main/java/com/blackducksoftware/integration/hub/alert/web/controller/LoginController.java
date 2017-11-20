@@ -61,7 +61,7 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @RestController
-public class LoginController extends ConfigController<LoginRestModel> {
+public class LoginController {
     @PostMapping(value = "/logout")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
         final HttpSession session = request.getSession(false);
@@ -104,52 +104,16 @@ public class LoginController extends ConfigController<LoginRestModel> {
             return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), "1", e.getHttpStatusMessage() + " : " + e.getMessage());
+            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(1L, e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(0L, e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, "1", e.getMessage());
+            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-    }
-
-    @Override
-    public List<LoginRestModel> getConfig(final Long id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> postConfig(final LoginRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> putConfig(final LoginRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> validateConfig(final LoginRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> deleteConfig(final LoginRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<String> testConfig(final LoginRestModel restModel) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public void validateHubConfiguration(final HubServerConfigBuilder hubServerConfigBuilder) throws AlertFieldException {
@@ -175,12 +139,8 @@ public class LoginController extends ConfigController<LoginRestModel> {
         return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
     }
 
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
-        return createResponse(status, Long.valueOf(id), message);
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
-        final String responseBody = new ResponseBodyBuilder(id, message).build();
+    protected ResponseEntity<String> createResponse(final HttpStatus status, final String message) {
+        final String responseBody = new ResponseBodyBuilder(0L, message).build();
         return new ResponseEntity<>(responseBody, status);
     }
 

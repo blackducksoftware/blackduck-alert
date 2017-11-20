@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -63,14 +64,27 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             if (foundEntity != null) {
                 final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
                 if (restModel != null) {
-                    return Arrays.asList(restModel);
+                    final R maskedRestModel = maskRestModel(restModel);
+                    return Arrays.asList(maskedRestModel);
                 }
             }
             return Collections.emptyList();
         }
         final List<D> databaseEntities = repository.findAll();
         final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
-        return restModels;
+        return maskRestModels(restModels);
+    }
+
+    public R maskRestModel(final R restModel) {
+        return restModel;
+    }
+
+    public List<R> maskRestModels(final List<R> restModels) {
+        final List<R> maskedRestModels = new ArrayList<>();
+        for (final R restModel : restModels) {
+            maskedRestModels.add(maskRestModel(restModel));
+        }
+        return maskedRestModels;
     }
 
     public void deleteConfig(final String id) {
@@ -78,9 +92,38 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public void deleteConfig(final Long id) {
-        if (id != null) {
+        if (null != id) {
             repository.delete(id);
         }
+    }
+
+    public D updateNewConfigWithSavedConfig(final D newConfig, final String id) {
+        if (StringUtils.isNotBlank(id)) {
+            final Long longId = objectTransformer.stringToLong(id);
+            final D savedConfig = repository.findOne(longId);
+            return updateNewConfigWithSavedConfig(newConfig, savedConfig);
+        }
+        return newConfig;
+    }
+
+    public D updateNewConfigWithSavedConfig(final D newConfig, final D savedConfig) {
+        return newConfig;
+    }
+
+    public D saveNewConfigUpdateFromStoredConfig(final String id, final R restModel) throws AlertException {
+        if (null != restModel) {
+            try {
+                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
+                createdEntity = updateNewConfigWithSavedConfig(createdEntity, id);
+                if (createdEntity != null) {
+                    createdEntity = repository.save(createdEntity);
+                    return createdEntity;
+                }
+            } catch (final Exception e) {
+                throw new AlertException(e.getMessage(), e);
+            }
+        }
+        return null;
     }
 
     public D saveConfig(final R restModel) throws AlertException {
