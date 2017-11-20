@@ -1,5 +1,6 @@
 import React from 'react';
 import Field from '../field/Field';
+import ConfigButtons from './ConfigButtons';
 
 import styles from '../../css/main.css';
 
@@ -211,10 +212,7 @@ class GlobalConfiguration extends React.Component {
 
 				<Field label="Daily Digest Cron" type="text" name="dailyDigestCron" value={this.state.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.dailyDigestCronError}></Field>
 
-				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
-				</div>
+				<ConfigButtons includeTest="true" onClick={this.handleSubmit.bind(this)} onTestClick={this.handleTestSubmit.bind(this)} />
 				
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
