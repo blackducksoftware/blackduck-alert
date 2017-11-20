@@ -57,7 +57,7 @@ class SlackConfiguration extends React.Component {
 						var configuration = jsonArray[0];
 						self.setState({
 							id: configuration.id,
-							apiKchannelNameey: configuration.channelName,
+							channelName: configuration.channelName,
 							username: configuration.username,
 							webhook: configuration.webhook
 						});

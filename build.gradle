@@ -73,7 +73,6 @@ jar {
     sourceSets {
         main {
             resources {
-                exclude 'application.properties'
             }
         }
     }
