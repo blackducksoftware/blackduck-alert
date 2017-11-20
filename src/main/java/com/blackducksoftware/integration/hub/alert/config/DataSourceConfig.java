@@ -24,27 +24,34 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
 @Configuration
 public class DataSourceConfig {
+
+    @Value("${blackduck.alertdb.url:jdbc:h2:file:./data/alertdb}")
+    String alertDbUrl;
+
+    @Value("${blackduck.alertdb.username:sa}")
+    String alertDbUsername;
+
+    @Value("${blackduck.alertdb.password:}")
+    String alertDbPassword;
+
+    @Value("${blackduck.alertdb.driver-class-name:org.h2.Driver}")
+    String alertDbDriverClassName;
 
     // USING SPRING BATCH HERE. For JPA to work need to configure the JPATransactionManager bean.
     // SEE SPRING ISSUE: https://jira.spring.io/browse/BATCH-2642
     // Stack Overflow: https://stackoverflow.com/questions/38287298/persist-issue-with-a-spring-batch-itemwriter-using-a-jpa-repository
     @Bean
     public DataSource dataSource() {
-        final EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        final EmbeddedDatabase dataSource = builder.setType(EmbeddedDatabaseType.H2).addScript("db/create-alert-schema.sql").addScript("db/create-notification-db.sql").addScript("db/create-configuration-db.sql")
-                .addScript("db/user/create-user-db.sql").addScript("db/user/create-user-relations.sql").addScript("db/email/create-tables.sql").addScript("db/hipchat/create-tables.sql").addScript("db/slack/create-tables.sql").build();
-
-        return dataSource;
+        return DataSourceBuilder.create().url(alertDbUrl).username(alertDbUsername).password(alertDbPassword).driverClassName(alertDbDriverClassName).build();
     }
 
     @Bean
