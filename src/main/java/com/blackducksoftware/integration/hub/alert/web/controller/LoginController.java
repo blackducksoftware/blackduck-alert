@@ -74,8 +74,14 @@ public class LoginController extends ConfigController<LoginRestModel> {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(@RequestBody(required = false) final LoginRestModel loginRestModel) {
+    public ResponseEntity<String> login(final HttpServletRequest request, @RequestBody(required = false) final LoginRestModel loginRestModel) {
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
+
+        final HttpSession session = request.getSession(false);
+        if (session != null) {
+            // TODO figure out timeout
+            session.setMaxInactiveInterval(300);
+        }
         try {
             final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
             serverConfigBuilder.setLogger(logger);
