@@ -45,7 +45,7 @@ class App extends React.Component {
 	render() {
 		let page = null;
 		if (this.state.loggedIn) {
-			page = <MainPage></MainPage>
+			page = <MainPage handleState={this.handleState}></MainPage>
 		} else {
 			page = <LoginPage handleState={this.handleState}></LoginPage>
 		}
