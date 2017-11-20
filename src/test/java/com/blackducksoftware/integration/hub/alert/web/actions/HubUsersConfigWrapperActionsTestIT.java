@@ -58,13 +58,14 @@ public class HubUsersConfigWrapperActionsTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         final Long longId = hubUserManager.saveConfig(configWrapper);
 
         final HubUsersConfigWrapperActions actions = new HubUsersConfigWrapperActions(hubUsersRepository, hubUserManager);
@@ -73,7 +74,7 @@ public class HubUsersConfigWrapperActionsTestIT {
 
         // We cannot predict the id in tests
         final String jsonVersion = "{\"username\":\"" + username + "\",\"frequency\":\"" + frequency + "\",\"emailConfigId\":\"" + emailConfigId + "\",\"hipChatConfigId\":\"" + hipChatConfigId + "\",\"slackConfigId\":\"" + slackConfigId
-                + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
+                + "\",\"existsOnHub\":\"" + existsOnHub + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
         assertEquals(jsonVersion, userConfigList.get(0).toString());
     }
 
@@ -84,13 +85,14 @@ public class HubUsersConfigWrapperActionsTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(null, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(null, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         hubUserManager.saveConfig(configWrapper);
 
         final HubUsersConfigWrapperActions actions = new HubUsersConfigWrapperActions(hubUsersRepository, hubUserManager);
@@ -99,7 +101,7 @@ public class HubUsersConfigWrapperActionsTestIT {
 
         // We cannot predict the id in tests
         final String jsonVersion = "{\"username\":\"" + username + "\",\"frequency\":\"" + frequency + "\",\"emailConfigId\":\"" + emailConfigId + "\",\"hipChatConfigId\":\"" + hipChatConfigId + "\",\"slackConfigId\":\"" + slackConfigId
-                + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
+                + "\",\"existsOnHub\":\"" + existsOnHub + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
         assertEquals(jsonVersion, userConfigList.get(0).toString());
     }
 }

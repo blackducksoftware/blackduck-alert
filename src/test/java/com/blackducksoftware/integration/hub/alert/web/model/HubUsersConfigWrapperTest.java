@@ -29,7 +29,7 @@ public class HubUsersConfigWrapperTest {
         assertNull(configWrapper.getId());
         assertNull(configWrapper.getUsername());
 
-        final String expectedString = "{\"username\":null,\"frequency\":null,\"emailConfigId\":null,\"hipChatConfigId\":null,\"slackConfigId\":null,\"projectVersions\":null,\"id\":null}";
+        final String expectedString = "{\"username\":null,\"frequency\":null,\"emailConfigId\":null,\"hipChatConfigId\":null,\"slackConfigId\":null,\"existsOnHub\":null,\"projectVersions\":null,\"id\":null}";
         assertEquals(expectedString, configWrapper.toString());
 
         final HubUsersConfigWrapper newModel = new HubUsersConfigWrapper();
@@ -44,22 +44,23 @@ public class HubUsersConfigWrapperTest {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
 
         assertEquals(id, configWrapper.getId());
         assertEquals(username, configWrapper.getUsername());
 
         final String expectedString = "{\"username\":\"" + username + "\",\"frequency\":\"" + frequency + "\",\"emailConfigId\":\"" + emailConfigId + "\",\"hipChatConfigId\":\"" + hipChatConfigId + "\",\"slackConfigId\":\"" + slackConfigId
-                + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + id + "\"}";
+                + "\",\"existsOnHub\":\"" + existsOnHub + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + id + "\"}";
         assertEquals(expectedString, configWrapper.toString());
 
-        final HubUsersConfigWrapper newModel = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper newModel = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         assertEquals(configWrapper, newModel);
     }
 }

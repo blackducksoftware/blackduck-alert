@@ -32,14 +32,16 @@ public class ProjectVersionConfigWrapper implements Serializable {
 
     private String projectName;
     private String projectVersionName;
+    private String enabled;
 
     public ProjectVersionConfigWrapper() {
 
     }
 
-    public ProjectVersionConfigWrapper(final String projectName, final String projectVersionName) {
+    public ProjectVersionConfigWrapper(final String projectName, final String projectVersionName, final String enabled) {
         this.projectName = projectName;
         this.projectVersionName = projectVersionName;
+        this.enabled = enabled;
     }
 
     public static long getSerialversionuid() {
@@ -52,6 +54,10 @@ public class ProjectVersionConfigWrapper implements Serializable {
 
     public String getProjectVersionName() {
         return projectVersionName;
+    }
+
+    public String getEnabled() {
+        return enabled;
     }
 
     @Override

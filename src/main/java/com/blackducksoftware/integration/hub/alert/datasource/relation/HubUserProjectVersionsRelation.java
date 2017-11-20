@@ -30,6 +30,9 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 @Entity
 @IdClass(HubUserProjectVersionsRelationPK.class)
 @Table(name = "hub_user_project_versions")
@@ -48,13 +51,17 @@ public class HubUserProjectVersionsRelation implements Serializable {
     @Column(name = "project_version_name")
     private String projectVersionName;
 
+    @Column(name = "enabled")
+    private Boolean enabled;
+
     public HubUserProjectVersionsRelation() {
     }
 
-    public HubUserProjectVersionsRelation(final Long userConfigId, final String projectName, final String projectVersionName) {
+    public HubUserProjectVersionsRelation(final Long userConfigId, final String projectName, final String projectVersionName, final Boolean enabled) {
         this.userConfigId = userConfigId;
         this.projectName = projectName;
         this.projectVersionName = projectVersionName;
+        this.enabled = enabled;
     }
 
     public Long getUserConfigId() {
@@ -67,6 +74,20 @@ public class HubUserProjectVersionsRelation implements Serializable {
 
     public String getProjectVersionName() {
         return projectVersionName;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
 }

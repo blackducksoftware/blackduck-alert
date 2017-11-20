@@ -35,12 +35,13 @@ public class HubUsersConfigWrapper extends ConfigRestModel {
     private String emailConfigId;
     private String hipChatConfigId;
     private String slackConfigId;
+    private String existsOnHub;
     private List<ProjectVersionConfigWrapper> projectVersions;
 
     public HubUsersConfigWrapper() {
     }
 
-    public HubUsersConfigWrapper(final String id, final String username, final String frequency, final String emailConfigId, final String hipChatConfigId, final String slackConfigId,
+    public HubUsersConfigWrapper(final String id, final String username, final String frequency, final String emailConfigId, final String hipChatConfigId, final String slackConfigId, final String existsOnHub,
             final List<ProjectVersionConfigWrapper> projectVersions) {
         super(id);
         this.username = username;
@@ -48,6 +49,7 @@ public class HubUsersConfigWrapper extends ConfigRestModel {
         this.emailConfigId = emailConfigId;
         this.hipChatConfigId = hipChatConfigId;
         this.slackConfigId = slackConfigId;
+        this.existsOnHub = existsOnHub;
         this.projectVersions = projectVersions;
     }
 
@@ -73,6 +75,14 @@ public class HubUsersConfigWrapper extends ConfigRestModel {
 
     public String getSlackConfigId() {
         return slackConfigId;
+    }
+
+    public String getExistsOnHub() {
+        return existsOnHub;
+    }
+
+    public void setExistsOnHub(final String existsOnHub) {
+        this.existsOnHub = existsOnHub;
     }
 
     public List<ProjectVersionConfigWrapper> getProjectVersions() {

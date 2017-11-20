@@ -86,7 +86,7 @@ public class MockUtils {
     }
 
     public HubUsersEntity createHubUsersEntity(final String username) {
-        final HubUsersEntity entity = new HubUsersEntity(username);
+        final HubUsersEntity entity = new HubUsersEntity(username, null);
         entity.setId(1L);
         return entity;
     }

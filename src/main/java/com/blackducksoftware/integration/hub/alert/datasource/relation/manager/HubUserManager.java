@@ -79,7 +79,7 @@ public class HubUserManager {
         HubUsersEntity hubUsersEntity;
         Long configId = objectTransformer.stringToLong(wrapper.getId());
         if (configId == null || !hubUsersRepository.exists(configId)) {
-            hubUsersEntity = hubUsersRepository.save(new HubUsersEntity(wrapper.getUsername()));
+            hubUsersEntity = hubUsersRepository.save(new HubUsersEntity(wrapper.getUsername(), objectTransformer.stringToBoolean(wrapper.getExistsOnHub())));
         } else {
             hubUsersEntity = hubUsersRepository.findOne(configId);
         }
@@ -161,9 +161,10 @@ public class HubUserManager {
                 key.userConfigId = id;
                 key.projectName = projectVersionWrapper.getProjectName();
                 key.projectVersionName = projectVersionWrapper.getProjectVersionName();
+                final Boolean isEnabled = objectTransformer.stringToBoolean(projectVersionWrapper.getEnabled());
                 // If the key already exists, no need to update anything
                 if (!hubUserProjectVersionsRepository.exists(key)) {
-                    hubUserProjectVersionsRepository.save(new HubUserProjectVersionsRelation(key.userConfigId, key.projectName, key.projectVersionName));
+                    hubUserProjectVersionsRepository.save(new HubUserProjectVersionsRelation(key.userConfigId, key.projectName, key.projectVersionName, isEnabled));
                 }
             });
         }
@@ -220,7 +221,8 @@ public class HubUserManager {
         final List<HubUserProjectVersionsRelation> projectVersionsRelations = hubUserProjectVersionsRepository.findByUserConfigId(hubUserConfigId);
         final List<ProjectVersionConfigWrapper> wrappers = new ArrayList<>(projectVersionsRelations.size());
         projectVersionsRelations.forEach(relation -> {
-            wrappers.add(new ProjectVersionConfigWrapper(relation.getProjectName(), relation.getProjectVersionName()));
+            final String isEnabled = objectTransformer.objectToString(relation.getEnabled());
+            wrappers.add(new ProjectVersionConfigWrapper(relation.getProjectName(), relation.getProjectVersionName(), isEnabled));
         });
         return wrappers;
     }

@@ -41,7 +41,7 @@ public class HubUsersRepositoryIT {
     @Test
     public void addUsersTestIT() {
         final String username = "username";
-        final HubUsersEntity entity = new HubUsersEntity(username);
+        final HubUsersEntity entity = new HubUsersEntity(username, null);
         final HubUsersEntity savedEntity = hubUsersRepository.save(entity);
 
         final long count = hubUsersRepository.count();
@@ -51,5 +51,4 @@ public class HubUsersRepositoryIT {
         assertEquals(username, foundEntity.getUsername());
     }
 
-    // TODO: add a delete on cascade test
 }

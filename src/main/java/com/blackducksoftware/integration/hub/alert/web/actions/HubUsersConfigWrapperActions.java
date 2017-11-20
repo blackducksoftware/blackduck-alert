@@ -94,7 +94,7 @@ public class HubUsersConfigWrapperActions {
 
     public ResponseEntity<String> doNotAllowRequestMethod(final HubUsersConfigWrapper restModel, final String requestMethod) {
         logger.debug("Attempted to {} a user configuration, but that method is not allowed: {}", requestMethod, restModel);
-        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Cannot create new user configurations.");
+        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Users must be configured through the Hub.");
     }
 
     public String validateConfig(final HubUsersConfigWrapper restModel) throws AlertFieldException {
@@ -115,6 +115,10 @@ public class HubUsersConfigWrapperActions {
         }
         if (StringUtils.isNotBlank(restModel.getSlackConfigId()) && !StringUtils.isNumeric(restModel.getSlackConfigId())) {
             fieldErrors.put("slackConfigId", "Not an Boolean.");
+        }
+        if (restModel.getExistsOnHub() != null) {
+            logger.info("Setting Hub existence to null for user {} in order to manage synchronization.", restModel.getUsername());
+            restModel.setExistsOnHub(null);
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -145,9 +149,10 @@ public class HubUsersConfigWrapperActions {
             final String emailConfigId = hubUserManager.getEmailConfigId(id);
             final String hipChatConfigId = hubUserManager.getHipChatConfigId(id);
             final String slackConfigId = hubUserManager.getSlackConfigId(id);
+            final String existsOnHub = hubUserManager.getObjectTransformer().objectToString(entity.getExistsOnHub());
             final List<ProjectVersionConfigWrapper> projectVersions = hubUserManager.getProjectVersions(id);
 
-            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         }
         return null;
     }
