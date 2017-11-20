@@ -54,7 +54,7 @@ class App extends React.Component {
                                     <HipChatConfiguration />
                                 </TabPanel>
                                 <TabPanel>
-                                    <SlackConfiguration />
+                                    <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
                                 </TabPanel>
                             </Tabs>
                         </TabPanel>

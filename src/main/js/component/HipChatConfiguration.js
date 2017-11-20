@@ -1,5 +1,6 @@
 import React from 'react';
 import Field from '../field/Field';
+import ConfigButtons from './ConfigButtons';
 
 import styles from '../../css/main.css';
 
@@ -165,10 +166,7 @@ class HipChatConfiguration extends React.Component {
 				
 				<Field label="Color" type="text" name="color" value={this.state.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.colorError}></Field>
 				
-				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
-				</div>
+				<ConfigButtons includeTest="true" onClick={this.handleSubmit.bind(this)} onTestClick={this.handleTestSubmit.bind(this)} />
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 				</div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import Field from '../field/Field';
+import ConfigButtons from './ConfigButtons';
 
 import styles from '../../css/main.css';
 
@@ -244,10 +245,7 @@ class EmailConfiguration extends React.Component {
 
 				<Field label="Mail Smtp Send Partial" type="checkbox" name="mailSmtpSendPartial" value={this.state.mailSmtpSendPartial} onChange={this.handleChange} errorName="mailSmtpSendPartialError" errorValue={this.state.mailSmtpSendPartialError}></Field>
 				
-				<div className={styles.submitContainers}>
-					<input type="submit" value="Save"></input>
-					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>
-				</div>
+				<ConfigButtons includeTest="true" onClick={this.handleSubmit.bind(this)} onTestClick={this.handleTestSubmit.bind(this)} />
 
 				<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>

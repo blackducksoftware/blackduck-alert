@@ -1,8 +1,10 @@
-
 .wrapper {
     padding: 0px;
+    height: 100%;
+    width: 100%;
     font-family: Verdana;
     background-color: #F9F9F9;
+    display: inline-block;
 }
 
 .alignCenter {
@@ -11,7 +13,7 @@
     margin-bottom: 0px;
 }
 
-input[type=button], input[type=submit] {
+.submitButtons {
     background: gray;
     text-align: center;
     padding: 5px 10px 5px 10px;
@@ -26,22 +28,22 @@ input[type=button], input[type=submit] {
     width: 100%;
 }
 
-input[type=text], input[type=password] {
+.textInput {
     width: 50%;
 }
 
-input[type=number] {
+.numberInput {
     width: 10%;
 }
 
-label {
+.fieldLabel {
     text-align: right;
     padding: 10px;
     width: 30%;
     display: inline-block;
 }
 
-label:after {
+.fieldLabel:after {
     content: ":"
 }
 
