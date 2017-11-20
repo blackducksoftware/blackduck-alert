@@ -23,7 +23,7 @@ class MainPage extends React.Component {
 	render() {
 		return (
 				<div className={styles.wrapper}>
-				<Header handleState={this.props.handleState} includeLogout="true"></Header>
+				<Header handleState={this.props.handleState} fixed="true" includeLogout="true"></Header>
 				<div className={styles.alertHeader}>
 				<h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
 				</div>

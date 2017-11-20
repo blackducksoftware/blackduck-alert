@@ -1,4 +1,4 @@
-.header {
+.header, .fixedHeader {
     background-color: #282E36;
     height: 50px;
     line-height: 50px;
@@ -7,6 +7,11 @@
     margin: 0 auto;
     padding-left: 15px;
     color: white;
+}
+
+.fixedHeader {
+    position: fixed;
+    z-index: 9999;
 }
 
 .inputButton {

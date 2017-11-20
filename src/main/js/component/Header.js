@@ -53,8 +53,13 @@ class Header extends React.Component {
 		if (this.props.includeLogout == 'true'){
 			logout = <div className={styles.submitContainers}><input className={styles.inputButton} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
 		}
+		let headerClass = styles.header;
+		if (this.props.fixed == 'true'){
+			headerClass = styles.fixedHeader;
+		}
+		
 		return (
-				<div className={styles.header}>
+				<div className={headerClass}>
 				<img src={logo} alt="logo"></img>
 				{logout}
 				</div>
