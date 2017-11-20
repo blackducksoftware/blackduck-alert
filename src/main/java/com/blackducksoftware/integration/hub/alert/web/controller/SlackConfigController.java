@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
 @RestController
-public class SlackConfigController implements ConfigController<SlackConfigEntity, SlackConfigRestModel> {
+public class SlackConfigController implements ConfigController<SlackConfigRestModel> {
     private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired

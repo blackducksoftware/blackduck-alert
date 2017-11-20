@@ -48,7 +48,7 @@ public class HubUserEmailRepositoryIT {
         final long count = emailRepository.count();
         assertEquals(1, count);
 
-        final HubUserEmailRelation foundEntity = emailRepository.findOne(savedEntity.getUserConfidId());
+        final HubUserEmailRelation foundEntity = emailRepository.findOne(savedEntity.getUserConfigId());
         assertEquals(channelConfigId, foundEntity.getChannelConfigId());
     }
 }

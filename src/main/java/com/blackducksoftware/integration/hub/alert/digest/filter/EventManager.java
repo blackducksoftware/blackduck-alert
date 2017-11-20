@@ -102,10 +102,12 @@ public class EventManager {
     }
 
     private boolean isProjectVersionConfigured(final Long configId, final ProjectData userNotification) {
-        final HubUserProjectVersionsRelation projectVersionsRelation = projectVersionRelationRepository.findOne(configId);
-        if (projectVersionsRelation != null && projectVersionsRelation.getProjectName().equals(userNotification.getProjectName())) {
-            if (projectVersionsRelation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
-                return true;
+        final List<HubUserProjectVersionsRelation> projectVersionsRelations = projectVersionRelationRepository.findByUserConfigId(configId);
+        for (final HubUserProjectVersionsRelation relation : projectVersionsRelations) {
+            if (relation != null && relation.getProjectName().equals(userNotification.getProjectName())) {
+                if (relation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
+                    return true;
+                }
             }
         }
         return false;

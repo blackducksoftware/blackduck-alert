@@ -21,5 +21,5 @@ CREATE TABLE alert.hub_user_project_versions (
 
 CREATE TABLE alert.hub_user_frequencies (
     user_config_id INTEGER,
-    frequency_id INTEGER
+    frequency VARCHAR
 );

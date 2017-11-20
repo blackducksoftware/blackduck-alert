@@ -28,7 +28,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "hub_user_hipchat")
-public class HubUserHipChatRelation extends DatabaseRelation {
+public class HubUserHipChatRelation extends DatabaseChannelRelation {
     private static final long serialVersionUID = 4597057895951603701L;
 
     @Column(name = "hipchat_config_id")
@@ -42,7 +42,13 @@ public class HubUserHipChatRelation extends DatabaseRelation {
         this.hipChatConfigId = hipChatConfigId;
     }
 
+    @Override
     public Long getChannelConfigId() {
         return hipChatConfigId;
+    }
+
+    @Override
+    public void setChannelConfigId(final Long channelConfigId) {
+        this.hipChatConfigId = channelConfigId;
     }
 }

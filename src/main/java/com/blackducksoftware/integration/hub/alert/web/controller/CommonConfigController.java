@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
-public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> implements ConfigController<R> {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
@@ -50,6 +50,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         this.configActions = configActions;
     }
 
+    @Override
     public List<R> getConfig(final Long id) {
         try {
             return configActions.getConfig(id);
@@ -59,6 +60,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return Collections.emptyList();
     }
 
+    @Override
     public ResponseEntity<String> postConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
@@ -83,6 +85,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
+    @Override
     public ResponseEntity<String> putConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
@@ -107,6 +110,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
+    @Override
     public ResponseEntity<String> deleteConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
@@ -118,6 +122,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
+    @Override
     public ResponseEntity<String> validateConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
@@ -133,6 +138,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
         }
     }
 
+    @Override
     public ResponseEntity<String> testConfig(final R restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());

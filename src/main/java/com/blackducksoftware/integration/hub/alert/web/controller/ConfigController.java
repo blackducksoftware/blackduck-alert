@@ -26,10 +26,9 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+public interface ConfigController<R extends ConfigRestModel> {
 
     public List<R> getConfig(final Long id);
 

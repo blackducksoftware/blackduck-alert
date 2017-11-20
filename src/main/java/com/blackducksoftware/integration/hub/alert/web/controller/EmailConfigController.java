@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
-public class EmailConfigController implements ConfigController<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigController implements ConfigController<EmailConfigRestModel> {
     private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
     @Autowired

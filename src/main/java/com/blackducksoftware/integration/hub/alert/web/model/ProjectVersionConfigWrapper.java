@@ -20,37 +20,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-@Entity
-@Table(name = "hub_users")
-public class HubUsersEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 2565372713815698214L;
+public class ProjectVersionConfigWrapper implements Serializable {
+    private static final long serialVersionUID = 4089287905513188984L;
 
-    @Column(name = "hub_username")
-    private String username;
+    private String projectName;
+    private String projectVersionName;
 
-    public HubUsersEntity() {
+    public ProjectVersionConfigWrapper() {
+
     }
 
-    public HubUsersEntity(final String username) {
-        this.username = username;
+    public ProjectVersionConfigWrapper(final String projectName, final String projectVersionName) {
+        this.projectName = projectName;
+        this.projectVersionName = projectVersionName;
     }
 
-    public String getUsername() {
-        return username;
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getProjectVersionName() {
+        return projectVersionName;
     }
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.toString();
     }
 
 }

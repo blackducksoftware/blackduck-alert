@@ -22,28 +22,43 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 @Entity
+@IdClass(HubUserProjectVersionsRelationPK.class)
 @Table(name = "hub_user_project_versions")
-public class HubUserProjectVersionsRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 544672444719776792L;
+public class HubUserProjectVersionsRelation implements Serializable {
+    private static final long serialVersionUID = 4060696367381771212L;
 
+    @Id
+    @Column(name = "user_config_id")
+    private Long userConfigId;
+
+    @Id
     @Column(name = "project_name")
     private String projectName;
 
+    @Id
     @Column(name = "project_version_name")
     private String projectVersionName;
 
     public HubUserProjectVersionsRelation() {
     }
 
-    public HubUserProjectVersionsRelation(final Long userConfidId, final String projectName, final String projectVersionName) {
-        super(userConfidId);
+    public HubUserProjectVersionsRelation(final Long userConfigId, final String projectName, final String projectVersionName) {
+        this.userConfigId = userConfigId;
         this.projectName = projectName;
         this.projectVersionName = projectVersionName;
+    }
+
+    public Long getUserConfigId() {
+        return userConfigId;
     }
 
     public String getProjectName() {

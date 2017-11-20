@@ -46,8 +46,12 @@ public abstract class DatabaseRelation implements Serializable {
         this.userConfigId = userConfigId;
     }
 
-    public Long getUserConfidId() {
+    public Long getUserConfigId() {
         return userConfigId;
+    }
+
+    public void setUserConfigId(final Long userConfigId) {
+        this.userConfigId = userConfigId;
     }
 
     @Override

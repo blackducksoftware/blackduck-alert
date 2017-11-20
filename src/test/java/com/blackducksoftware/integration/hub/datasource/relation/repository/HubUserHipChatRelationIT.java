@@ -48,7 +48,7 @@ public class HubUserHipChatRelationIT {
         final long count = hubUserHipChatRepository.count();
         assertEquals(1, count);
 
-        final HubUserHipChatRelation foundEntity = hubUserHipChatRepository.findOne(savedEntity.getUserConfidId());
+        final HubUserHipChatRelation foundEntity = hubUserHipChatRepository.findOne(savedEntity.getUserConfigId());
         assertEquals(channeConfiglId, foundEntity.getChannelConfigId());
     }
 }

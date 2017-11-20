@@ -30,14 +30,14 @@ public class HubUserFrequenciesRelationIT {
     @Test
     public void addUserFrequencyTestIT() {
         final Long userConfigId = new Long(0);
-        final Long frequencyId = new Long(27);
-        final HubUserFrequenciesRelation entity = new HubUserFrequenciesRelation(userConfigId, frequencyId);
+        final String frequency = "REAL_TIME";
+        final HubUserFrequenciesRelation entity = new HubUserFrequenciesRelation(userConfigId, frequency);
         final HubUserFrequenciesRelation savedEntity = hubUserFrequenciesRepository.save(entity);
 
         final long count = hubUserFrequenciesRepository.count();
         assertEquals(1, count);
 
-        final HubUserFrequenciesRelation foundEntity = hubUserFrequenciesRepository.findOne(savedEntity.getUserConfidId());
-        assertEquals(frequencyId, foundEntity.getFrequencyId());
+        final HubUserFrequenciesRelation foundEntity = hubUserFrequenciesRepository.findOne(savedEntity.getUserConfigId());
+        assertEquals(frequency, foundEntity.getFrequency());
     }
 }

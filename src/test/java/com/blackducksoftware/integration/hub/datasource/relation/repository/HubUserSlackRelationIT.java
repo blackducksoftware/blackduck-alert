@@ -48,7 +48,7 @@ public class HubUserSlackRelationIT {
         final long count = hubUserSlackRepository.count();
         assertEquals(1, count);
 
-        final HubUserSlackRelation foundEntity = hubUserSlackRepository.findOne(savedEntity.getUserConfidId());
+        final HubUserSlackRelation foundEntity = hubUserSlackRepository.findOne(savedEntity.getUserConfigId());
         assertEquals(channeConfiglId, foundEntity.getChannelConfigId());
     }
 }

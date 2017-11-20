@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActio
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
-public class GlobalConfigController implements ConfigController<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigController implements ConfigController<GlobalConfigRestModel> {
     private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
 
     @Autowired
