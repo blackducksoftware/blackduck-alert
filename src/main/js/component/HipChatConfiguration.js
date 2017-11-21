@@ -20,6 +20,7 @@ export default class HipChatConfiguration extends Configuration {
 					<Field label="Color" type="text" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.errors.colorError}></Field>
 					
 					<ConfigButtons includeTest="true" onClick={this.handleSubmit} onTestClick={this.handleTestSubmit} />
+					
 					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</div>
 		)
