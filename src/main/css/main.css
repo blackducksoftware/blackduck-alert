@@ -4,9 +4,12 @@
 
 .wrapper {
     padding: 0px;
-    font-family: 'Verdana';
     font-size: 13px;
-    background-color: #F9F9F9;
+    height: 100%;
+    width: 100%;
+    font-family: Verdana;
+    display: inline-block;
+    position: absolute;
 }
 
 .advanced {
@@ -22,6 +25,16 @@
     margin-bottom: 0px;
 }
 
+.submitButtons {
+    margin-right: 10px;
+	color: #fff;
+    background: #285f8f;
+    text-align: center;
+    padding: 5px 10px 5px 10px;
+    font-size: 1em;
+    display: inline-block;
+}
+
 .submitContainers {
     display: inline-block;
     margin: 5px;
@@ -29,17 +42,9 @@
     width: 100%;
 }
 
-.inputButton {
-	margin-right: 10px;
-	color: #fff;
-    background: #285f8f;
+.configurationError {
+    color: red;
     text-align: center;
-    padding: 5px 10px 5px 10px;
-    display: inline-block;
-    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
-    border-radius: 4px;
-    border-style: solid;
-    border-width: 1px;
 }
 
 .loginContainer {
@@ -48,14 +53,6 @@
 	display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.loginHeader {
-	width: 100%; 
-	background-color: #2d343e;
-    padding: 2px 15px;
-    border-bottom: 1px solid #ddd;
-    margin: 0;
 }
 
 .loginBox {
@@ -96,7 +93,7 @@
 .configTabs {
     composes: border tab;
     display: inline;
-    border-radius: 15px 50px 1px 0px;
+    border-radius: 15px 15px 0px 0px;
     z-index: 6;
 }
 
@@ -114,17 +111,6 @@
 
 .tabSelected {
     background-color: #235483;
-    color: white;
-}
-
-.header {
-    background-color: #282E36;
-    height: 50px;
-    line-height: 50px;
-    width: 100%;  
-    text-align: left;
-    margin: 0 auto;
-    padding-left: 15px;
     color: white;
 }
 

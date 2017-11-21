@@ -47,7 +47,7 @@ class App extends React.Component {
 		if (this.state.loggedIn) {
 			page = <MainPage handleState={this.handleState}></MainPage>
 		} else {
-			page = <LoginPage handleState={this.handleState}></LoginPage>
+			page = <LoginPage getUrl="/configuration/global" restUrl="/login" handleState={this.handleState}></LoginPage>
 		}
 		return (
 			<div>
@@ -59,7 +59,6 @@ class App extends React.Component {
 
 ReactDOM.render(
 		<div>
-		<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 		<App></App>
 		</div>,
 		document.getElementById('react')

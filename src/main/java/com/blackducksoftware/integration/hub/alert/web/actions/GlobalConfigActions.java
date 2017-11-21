@@ -150,7 +150,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
 
-        if (StringUtils.isNotBlank(restModel.getId()) && StringUtils.isBlank(restModel.getHubPassword()) || StringUtils.isBlank(restModel.getHubProxyPassword())) {
+        if (StringUtils.isNotBlank(restModel.getId()) && (StringUtils.isBlank(restModel.getHubPassword()) || StringUtils.isBlank(restModel.getHubProxyPassword()))) {
             final Long longId = objectTransformer.stringToLong(restModel.getId());
             final GlobalConfigEntity savedConfig = repository.findOne(longId);
 
