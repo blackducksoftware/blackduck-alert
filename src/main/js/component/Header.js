@@ -2,7 +2,8 @@
 
 import React from 'react';
 
-import styles from '../../css/header.css';
+import ConfigButtons from './ConfigButtons';
+import { submitButtons, submitContainers, header, fixedHeader } from '../../css/header.css';
 import logo from '../../img/BDTextLogo.png';
 
 class Header extends React.Component {
@@ -51,11 +52,11 @@ class Header extends React.Component {
 	render() {
 		let logout = "";
 		if (this.props.includeLogout == 'true'){
-			logout = <div className={styles.submitContainers}><input className={styles.inputButton} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
+			logout = <div className={submitContainers}><input className={submitButtons} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
 		}
-		let headerClass = styles.header;
+		let headerClass = header;
 		if (this.props.fixed == 'true'){
-			headerClass = styles.fixedHeader;
+			headerClass = fixedHeader;
 		}
 		
 		return (

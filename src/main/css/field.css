@@ -1,14 +1,21 @@
-.inputText{
+.textInput, .numberInput{
     width: 50%;
 }
 
-.inputLabel {
-    text-align: right;
+.fieldLabel {
+   text-align: right;
     padding: 10px;
     width: 30%;
     display: inline-block;
 }
 
-.inputLabel:after {
+.fieldLabel:after {
     content: ":"
 }
+
+
+.fieldError {
+    color: red;
+    text-align: center;
+}
+
