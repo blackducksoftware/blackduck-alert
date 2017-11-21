@@ -199,6 +199,7 @@ public class GlobalConfigActionsTest {
                 return mockedRestConnection;
             }
         }).when(configActions).createRestConnection(Mockito.any(HubServerConfigBuilder.class));
+
         Mockito.doNothing().when(configActions).validateHubConfiguration(Mockito.any(HubServerConfigBuilder.class));
 
         configActions.testConfig(mockUtils.createGlobalConfigRestModel());
