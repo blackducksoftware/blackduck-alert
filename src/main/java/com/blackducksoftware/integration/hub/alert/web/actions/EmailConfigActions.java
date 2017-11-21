@@ -124,33 +124,34 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
         if (null != restModel && StringUtils.isNotBlank(restModel.getId()) && StringUtils.isBlank(restModel.getMailSmtpPassword())) {
             final Long longId = objectTransformer.stringToLong(restModel.getId());
             final EmailConfigEntity savedConfig = repository.findOne(longId);
+            if (null != savedConfig) {
+                final String id = restModel.getId();
+                final String mailSmtpHost = restModel.getMailSmtpHost();
+                final String mailSmtpUser = restModel.getMailSmtpUser();
+                String mailSmtpPassword = "";
+                if (StringUtils.isBlank(restModel.getMailSmtpPassword())) {
+                    mailSmtpPassword = savedConfig.getMailSmtpPassword();
+                } else {
+                    mailSmtpPassword = restModel.getMailSmtpPassword();
+                }
+                final String mailSmtpPort = restModel.getMailSmtpPort();
+                final String mailSmtpConnectionTimeout = restModel.getMailSmtpConnectionTimeout();
+                final String mailSmtpTimeout = restModel.getMailSmtpTimeout();
+                final String mailSmtpFrom = restModel.getMailSmtpFrom();
+                final String mailSmtpLocalhost = restModel.getMailSmtpLocalhost();
+                final String mailSmtpEhlo = restModel.getMailSmtpEhlo();
+                final String mailSmtpAuth = restModel.getMailSmtpAuth();
+                final String mailSmtpDnsNotify = restModel.getMailSmtpDnsNotify();
+                final String mailSmtpDnsRet = restModel.getMailSmtpDnsRet();
+                final String mailSmtpAllow8bitmime = restModel.getMailSmtpAllow8bitmime();
+                final String mailSmtpSendPartial = restModel.getMailSmtpSendPartial();
+                final String emailTemplateDirectory = restModel.getEmailTemplateDirectory();
+                final String emailTemplateLogoImage = restModel.getEmailTemplateLogoImage();
+                final String emailSubjectLine = restModel.getEmailSubjectLine();
 
-            final String id = restModel.getId();
-            final String mailSmtpHost = restModel.getMailSmtpHost();
-            final String mailSmtpUser = restModel.getMailSmtpUser();
-            String mailSmtpPassword = "";
-            if (StringUtils.isBlank(restModel.getMailSmtpPassword())) {
-                mailSmtpPassword = savedConfig.getMailSmtpPassword();
-            } else {
-                mailSmtpPassword = restModel.getMailSmtpPassword();
+                testModel = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth, mailSmtpDnsNotify,
+                        mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
             }
-            final String mailSmtpPort = restModel.getMailSmtpPort();
-            final String mailSmtpConnectionTimeout = restModel.getMailSmtpConnectionTimeout();
-            final String mailSmtpTimeout = restModel.getMailSmtpTimeout();
-            final String mailSmtpFrom = restModel.getMailSmtpFrom();
-            final String mailSmtpLocalhost = restModel.getMailSmtpLocalhost();
-            final String mailSmtpEhlo = restModel.getMailSmtpEhlo();
-            final String mailSmtpAuth = restModel.getMailSmtpAuth();
-            final String mailSmtpDnsNotify = restModel.getMailSmtpDnsNotify();
-            final String mailSmtpDnsRet = restModel.getMailSmtpDnsRet();
-            final String mailSmtpAllow8bitmime = restModel.getMailSmtpAllow8bitmime();
-            final String mailSmtpSendPartial = restModel.getMailSmtpSendPartial();
-            final String emailTemplateDirectory = restModel.getEmailTemplateDirectory();
-            final String emailTemplateLogoImage = restModel.getEmailTemplateLogoImage();
-            final String emailSubjectLine = restModel.getEmailSubjectLine();
-
-            testModel = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth, mailSmtpDnsNotify,
-                    mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         }
         return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(testModel, EmailConfigEntity.class));
     }

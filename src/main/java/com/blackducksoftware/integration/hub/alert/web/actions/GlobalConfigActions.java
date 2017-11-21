@@ -153,13 +153,12 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         if (null != restModel && StringUtils.isNotBlank(restModel.getId()) && (StringUtils.isBlank(restModel.getHubPassword()) || StringUtils.isBlank(restModel.getHubProxyPassword()))) {
             final Long longId = objectTransformer.stringToLong(restModel.getId());
             final GlobalConfigEntity savedConfig = repository.findOne(longId);
-
-            if (StringUtils.isBlank(restModel.getHubPassword())) {
+            if (null != savedConfig && StringUtils.isBlank(restModel.getHubPassword())) {
                 hubServerConfigBuilder.setPassword(savedConfig.getHubPassword());
             } else {
                 hubServerConfigBuilder.setPassword(restModel.getHubPassword());
             }
-            if (StringUtils.isBlank(restModel.getHubProxyPassword())) {
+            if (null != savedConfig && StringUtils.isBlank(restModel.getHubProxyPassword())) {
                 hubServerConfigBuilder.setProxyPassword(savedConfig.getHubProxyPassword());
             } else {
                 hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
