@@ -28,17 +28,17 @@ class App extends React.Component {
                     <img src={logo} alt="logo" />
                 </div>
                 <div className={styles.alertHeader}>
-                    <h1>Black Duck Alert</h1>
+                    <h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
                 </div>
                 
-                <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs className={styles.tabContainer} selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Hub settings</Tab>
                         <Tab className={styles.configTabs}>Channel configuration</Tab>
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={styles.tabContent}>
-                            <GlobalConfiguration />
+                            <GlobalConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
                         </TabPanel>
                         <TabPanel className={styles.tabContent}>
                             <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
@@ -48,13 +48,13 @@ class App extends React.Component {
                                     <Tab className={styles.channelTabs}>Slack</Tab>
                                 </TabList>
                                 <TabPanel>
-                                    <EmailConfiguration />
+                                    <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
                                 </TabPanel>
                                 <TabPanel>
-                                    <HipChatConfiguration />
+                                    <HipChatConfiguration restUrl="/configuration/hipchat" testUrl="/configuration/hipchat/test" />
                                 </TabPanel>
                                 <TabPanel>
-                                    <SlackConfiguration />
+                                    <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
                                 </TabPanel>
                             </Tabs>
                         </TabPanel>

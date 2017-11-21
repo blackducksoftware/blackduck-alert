@@ -1,34 +1,42 @@
 import React from 'react';
 
-class Field extends React.Component {
+import CheckboxInput from './input/CheckboxInput';
+import TextInput from './input/TextInput';
+import PasswordInput from './input/PasswordInput';
+import NumberInput from './input/NumberInput';
+
+import { fieldLabel, fieldError } from '../../css/main.css';
+
+export default class Field extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+
 	render() {
 		let inputDiv = null;
-		let value = this.props.value;
-		if (this.props.type == 'text' || this.props.type == 'password' || this.props.type == 'number') {
-			if (value == null){
-				value = undefined;
-			}
-			inputDiv = <input type={this.props.type} name={this.props.name} value={value} onChange={this.props.onChange}></input>
-		} else if (this.props.type == 'checkbox') {
-			let isChecked = false;
-			if (value != undefined && value != null && (value == true || value == 'true')) {
-				isChecked = true;
-			}
-			inputDiv = <input type={this.props.type} name={this.props.name} checked={isChecked} onChange={this.props.onChange}></input>
-		}
-
 		let errorDiv = null;
 		if (this.props.errorName && this.props.errorValue) {
-			errorDiv = <p name={this.props.errorName}>{this.props.errorValue}</p>;
+			errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
+		}
+		switch (this.props.type) {
+			case "password":
+				inputDiv = <PasswordInput name={this.props.name} onChange={this.props.onChange} />;
+				break;
+			case "checkbox":
+				inputDiv = <CheckboxInput name={this.props.name} isChecked={this.props.value} onChange={this.props.onChange} />;
+				break;
+			case "number":
+				inputDiv = <NumberInput name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+				break;
+			default:
+				inputDiv = <TextInput name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
 		}
 		return (
 				<div>
-				<label>{this.props.label}</label>
-				{inputDiv}
-				{errorDiv}
+					<label className={fieldLabel}>{this.props.label}</label>
+					{inputDiv}
+					{errorDiv}
 				</div>
 		)
 	}
 }
-
-export default Field;
