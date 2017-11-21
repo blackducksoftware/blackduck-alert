@@ -121,7 +121,7 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
     @Override
     public String testConfig(final EmailConfigRestModel restModel) throws IntegrationException {
         EmailConfigRestModel testModel = restModel;
-        if (restModel != null && StringUtils.isNotBlank(restModel.getId()) && StringUtils.isBlank(restModel.getMailSmtpPassword())) {
+        if (null != restModel && StringUtils.isNotBlank(restModel.getId()) && StringUtils.isBlank(restModel.getMailSmtpPassword())) {
             final Long longId = objectTransformer.stringToLong(restModel.getId());
             final EmailConfigEntity savedConfig = repository.findOne(longId);
 
