@@ -38,7 +38,7 @@ class App extends React.Component {
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={styles.tabContent}>
-                            <GlobalConfiguration />
+                            <GlobalConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
                         </TabPanel>
                         <TabPanel className={styles.tabContent}>
                             <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
@@ -48,10 +48,10 @@ class App extends React.Component {
                                     <Tab className={styles.channelTabs}>Slack</Tab>
                                 </TabList>
                                 <TabPanel>
-                                    <EmailConfiguration />
+                                    <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
                                 </TabPanel>
                                 <TabPanel>
-                                    <HipChatConfiguration />
+                                    <HipChatConfiguration restUrl="/configuration/hipchat" testUrl="/configuration/hipchat/test" />
                                 </TabPanel>
                                 <TabPanel>
                                     <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />

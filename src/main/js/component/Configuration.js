@@ -5,27 +5,26 @@ export default class Configuration extends React.Component {
 		super(props);
         this.state = {
             id: undefined,
-            configurationMessage: ''
-        };
+			configurationMessage: '',
+			errors: {},
+			values: {}
+		};
+		this.handleChange = this.handleChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleTestSubmit = this.handleTestSubmit.bind(this);
 	}
 
-    resetMessageStates() {
+	componentWillMount() {
 		this.setState({
-			configurationMessage: ''
+			configurationMessage: 'Loading...',
+			errors: {},
+			values: {}
 		});
-	}
-
-	getState() {
-		return this.state;
 	}
 
     //componentDidMount is part of the Component lifecycle, executes after construction
 	componentDidMount() {
-		this.resetMessageStates();
 		var self = this;
-		self.setState({
-			configurationMessage: 'Loading...'
-		});
 		fetch(this.props.restUrl)  
 		.then(function(response) {
 			if (!response.ok) {
@@ -44,15 +43,17 @@ export default class Configuration extends React.Component {
 						self.setState({
 							id: configuration.id
 						});
+						var values = {};
 						for (var key in configuration) {
 							if (configuration.hasOwnProperty(key)) {
 								let name = key;
 								let value = configuration[key];
-								self.setState({
-									[name]: value
-								});
+								values[name] = value;
 							}
 						}
+						self.setState({
+							values
+						});
 					}
 				});
 			}
@@ -60,17 +61,17 @@ export default class Configuration extends React.Component {
     }
 
     handleSubmit(event) {
-		this.resetMessageStates();
+		this.setState({
+			configurationMessage: 'Saving...',
+			errors: {}
+		});
 		event.preventDefault();
 		var self = this;
-		let jsonBody = JSON.stringify(this.state);
+		let jsonBody = JSON.stringify(this.state.values);
 		var method = 'POST';
 		if (this.state.id) {
 			method = 'PUT';
 		}
-		self.setState({
-			configurationMessage: 'Saving...'
-		});
 		fetch(this.props.restUrl, {
 			method: method,
 			headers: {
@@ -79,17 +80,19 @@ export default class Configuration extends React.Component {
 			body: jsonBody
 		}).then(function(response) {
 			return response.json().then(json => {
-				let errors = json.errors;
-				if (errors) {
-					for (var key in errors) {
-						if (errors.hasOwnProperty(key)) {
+				let jsonErrors = json.errors;
+				if (jsonErrors) {
+					var errors = {};
+					for (var key in jsonErrors) {
+						if (jsonErrors.hasOwnProperty(key)) {
 							let name = key.concat('Error');
-							let value = errors[key];
-							self.setState({
-								[name]: value
-							});
+							let value = jsonErrors[key];
+							errors[name] = value;
 						}
 					}
+					self.setState({
+						errors
+					});
 				}
 				self.setState({
 					configurationMessage: json.message
@@ -99,13 +102,13 @@ export default class Configuration extends React.Component {
 	}
 
 	handleTestSubmit(event) {
-		this.resetMessageStates();
+		this.setState({
+			configurationMessage: 'Testing...',
+			errors: {}
+		});
 		event.preventDefault();
 		var self = this;
-		let jsonBody = JSON.stringify(this.state);
-		self.setState({
-			configurationMessage: 'Testing...'
-		});
+		let jsonBody = JSON.stringify(this.state.values);
 		fetch(this.props.testUrl, {
 			method: 'POST',
 			headers: {
@@ -114,17 +117,19 @@ export default class Configuration extends React.Component {
 			body: jsonBody
 		}).then(function(response) {
 			return response.json().then(json => {
-				let errors = json.errors;
-				if (errors) {
-					for (var key in errors) {
-						if (errors.hasOwnProperty(key)) {
+				let jsonErrors = json.errors;
+				if (jsonErrors) {
+					var errors = {};
+					for (var key in jsonErrors) {
+						if (jsonErrors.hasOwnProperty(key)) {
 							let name = key.concat('Error');
-							let value = errors[key];
-							self.setState({
-								[name]: value
-							});
+							let value = jsonErrors[key];
+							errors[name] = value;
 						}
 					}
+					self.setState({
+						errors
+					});
 				}
 				self.setState({
 					configurationMessage: json.message
@@ -138,8 +143,10 @@ export default class Configuration extends React.Component {
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
 
+		var values = this.state.values;
+		values[name] = value;
 		this.setState({
-			[name]: value
+			values
 		});
 	}
 }

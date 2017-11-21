@@ -5,6 +5,7 @@
     font-family: Verdana;
     background-color: #F9F9F9;
     display: inline-block;
+    position: absolute;
 }
 
 .alignCenter {
@@ -30,6 +31,16 @@
 
 .textInput {
     width: 50%;
+}
+
+.configurationError {
+    color: red;
+    text-align: center;
+}
+
+.fieldError {
+    composes: configurationError;
+    font-size: .7em;
 }
 
 .numberInput {
@@ -71,7 +82,7 @@
 .configTabs {
     composes: border tab;
     display: inline;
-    border-radius: 15px 50px 1px 0px;
+    border-radius: 15px 15px 0px 0px;
     z-index: 6;
 }
 
