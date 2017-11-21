@@ -1,11 +1,15 @@
+html, body {
+    margin: 0;
+    height: 100%;
+    background-color: #F9F9F9;
+}
+
 .wrapper {
     padding: 0px;
-    height: 100%;
     width: 100%;
+    height: 100%;
     font-family: Verdana;
-    background-color: #F9F9F9;
-    display: inline-block;
-    position: absolute;
+    position: relative;
 }
 
 .alignCenter {
@@ -77,6 +81,7 @@
 
 .tab:hover {
     background-color: #ddd;
+    color: black;
 }
 
 .configTabs {
