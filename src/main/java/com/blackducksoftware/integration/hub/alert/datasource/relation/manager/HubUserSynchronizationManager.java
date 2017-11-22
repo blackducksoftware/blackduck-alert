@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation.manager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,15 +43,16 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelationPK;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserProjectVersionsRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.ProjectVersionConfigWrapper;
-import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
+import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.api.user.UserRequestService;
-import com.blackducksoftware.integration.hub.dataservice.project.ProjectDataService;
-import com.blackducksoftware.integration.hub.model.view.AssignedUserView;
+import com.blackducksoftware.integration.hub.dataservice.user.UserDataService;
+import com.blackducksoftware.integration.hub.model.view.ProjectVersionView;
 import com.blackducksoftware.integration.hub.model.view.ProjectView;
 import com.blackducksoftware.integration.hub.model.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -101,81 +103,88 @@ public class HubUserSynchronizationManager implements Runnable {
             return;
         }
 
-        final List<ProjectView> hubServerProjects = getHubProjects(hubServicesFactory.createProjectRequestService());
-        final List<UserView> hubServerUsers = getHubServerUsernames(hubServicesFactory.createUserRequestService());
+        final List<UserView> hubServerUsers = getHubServerUsers(hubServicesFactory.createUserRequestService());
         final Map<String, HubUsersEntity> localUsernames = getLocalUsernames();
 
         hubServerUsers.forEach(serverUser -> {
-            if (localUsernames.containsKey(serverUser.userName)) {
-                final HubUsersEntity hubUsersEntity = localUsernames.get(serverUser.userName);
-                if (Boolean.TRUE.equals(serverUser.active)) {
-                    // TODO synchronizeUserWithHubServer(hubUsersEntity, hubServerProjects, hubServicesFactory.createProjectAssignmentRequestService());
-                    synchronizeUserWithHubServer(hubUsersEntity, hubServerProjects, hubServicesFactory.createProjectDataService());
-                } else if (!Boolean.FALSE.equals(hubUsersEntity.getExistsOnHub())) {
-                    final HubUsersEntity newEntity = new HubUsersEntity(hubUsersEntity.getUsername(), Boolean.FALSE);
-                    newEntity.setId(hubUsersEntity.getId());
-                    hubUsersRepository.save(newEntity);
-                }
-            } else {
-                final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, serverUser.active.toString(), null);
-                try {
-                    hubUserManager.saveConfig(newWrapper);
-                } catch (final AlertException e) {
-                    logger.error("Error saving a new Hub user configuration.", e);
-                }
+            final HubUsersEntity hubUsersEntity = getHubUsersEntityOrCreateIfNeeded(localUsernames, serverUser);
+            if (Boolean.TRUE.equals(serverUser.active)) {
+                synchronizeUserWithHubServer(hubUsersEntity, hubServicesFactory.createUserDataService(), hubServicesFactory.createProjectVersionRequestService());
+            } else if (!Boolean.FALSE.equals(hubUsersEntity.getActive())) {
+                final HubUsersEntity newEntity = new HubUsersEntity(hubUsersEntity.getUsername(), Boolean.FALSE);
+                newEntity.setId(hubUsersEntity.getId());
+                hubUsersRepository.save(newEntity);
             }
         });
-
     }
 
-    // TODO private void synchronizeUserWithHubServer(final HubUsersEntity oldEntity, final List<ProjectView> hubServerProjectList, final ProjectAssignmentRequestService projectAssignmentRequestService) {
-    private void synchronizeUserWithHubServer(final HubUsersEntity oldEntity, final List<ProjectView> hubServerProjectList, final ProjectDataService projectDataService) {
-        final List<ProjectVersionConfigWrapper> projectVersionsConfiguredForUser = hubUserManager.getProjectVersions(oldEntity.getId());
-
-        // for (final ProjectView project : hubServerProjectList) {
-        // try {
-        // final List<AssignedUserView> projectUsers = projectAssignmentRequestService.getProjectUsers(project);
-        // if (isUserConfigured(oldEntity.getUsername(), projectUsers)) {
-        // // TODO
-        // }
-        // } catch (final IntegrationException e) {
-        // logger.error("Could not get users from {}: {}", project.name, e);
-        // }
-        // }
-
-        for (final ProjectVersionConfigWrapper projectVersionWrapper : projectVersionsConfiguredForUser) {
+    private HubUsersEntity getHubUsersEntityOrCreateIfNeeded(final Map<String, HubUsersEntity> localUsernames, final UserView serverUser) {
+        if (!localUsernames.containsKey(serverUser.userName)) {
+            final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, serverUser.active.toString(), null);
             try {
-                projectDataService.getProjectVersion(projectVersionWrapper.getProjectName(), projectVersionWrapper.getProjectVersionName());
-                final List<AssignedUserView> usersList = projectDataService.getAssignedUsersToProject(projectVersionWrapper.getProjectName());
-                if (isUserConfigured(oldEntity.getUsername(), usersList)) {
-                    continue;
-                }
-            } catch (final IntegrationException e) {
-                logger.error("Could not get the project and version {} > {} from the Hub server for {}: {}", projectVersionWrapper.getProjectName(), projectVersionWrapper.getProjectVersionName(), oldEntity.getUsername(), e);
+                final Long savedId = hubUserManager.saveConfig(newWrapper);
+                return hubUsersRepository.findOne(savedId);
+            } catch (final AlertException e) {
+                logger.error("Error saving a new Hub user configuration.", e);
             }
-            deleteHubUserProjectVersionRelation(oldEntity.getId(), projectVersionWrapper);
+        }
+        return localUsernames.get(serverUser);
+    }
+
+    private void synchronizeUserWithHubServer(final HubUsersEntity oldEntity, final UserDataService userDataService, final ProjectVersionRequestService projectVersionRequestService) {
+        final List<ProjectVersionConfigWrapper> localProjectVersions = hubUserManager.getProjectVersions(oldEntity.getId());
+        final List<ProjectVersionConfigWrapper> remoteProjectVersions = getHubProjectVersionsForUser(oldEntity.getUsername(), userDataService, projectVersionRequestService);
+
+        final List<ProjectVersionConfigWrapper> staleConfigs = getItemsFromFirstListMissingFromSecondList(localProjectVersions, remoteProjectVersions);
+        staleConfigs.forEach(config -> {
+            deleteHubUserProjectVersionRelation(oldEntity.getId(), config);
+        });
+
+        if (localProjectVersions.size() != remoteProjectVersions.size()) {
+            final List<ProjectVersionConfigWrapper> missingConfigs = getItemsFromFirstListMissingFromSecondList(remoteProjectVersions, localProjectVersions);
+            missingConfigs.forEach(missingConfig -> {
+                hubUserProjectVersionsRepository.save(new HubUserProjectVersionsRelation(oldEntity.getId(), missingConfig.getProjectName(), missingConfig.getProjectVersionName(), Boolean.parseBoolean(missingConfig.getEnabled())));
+            });
         }
     }
 
-    private List<ProjectView> getHubProjects(final ProjectRequestService projectRequestService) {
+    private List<ProjectVersionConfigWrapper> getHubProjectVersionsForUser(final String username, final UserDataService userDataService, final ProjectVersionRequestService projectVersionRequestService) {
         try {
-            final List<ProjectView> hubServerProjects = projectRequestService.getAllProjects();
-            return hubServerProjects;
+            final List<ProjectView> projects = userDataService.getProjectsForUser(username);
+            final List<ProjectVersionConfigWrapper> versionWrappers = new ArrayList<>();
+
+            for (final ProjectView project : projects) {
+                final List<ProjectVersionView> projectVersions = projectVersionRequestService.getAllProjectVersions(project);
+                if (projectVersions != null) {
+                    for (final ProjectVersionView projectVersion : projectVersions) {
+                        versionWrappers.add(new ProjectVersionConfigWrapper(project.name, projectVersion.versionName, Boolean.FALSE.toString()));
+                    }
+                }
+            }
+            return versionWrappers;
         } catch (final IntegrationException e) {
-            logger.error("There was a problem getting the projects from the Hub server.", e);
+            logger.error("Unable to retrieve projects and/or versions for {}: {}", username, e);
         }
         return Collections.emptyList();
     }
 
-    private boolean isUserConfigured(final String username, final List<AssignedUserView> usersList) {
-        if (username != null) {
-            for (final AssignedUserView user : usersList) {
-                if (username.equals(user.name)) {
-                    return true;
+    private List<ProjectVersionConfigWrapper> getItemsFromFirstListMissingFromSecondList(final List<ProjectVersionConfigWrapper> firstList, final List<ProjectVersionConfigWrapper> secondList) {
+        final List<ProjectVersionConfigWrapper> missingItems = new ArrayList<>();
+        boolean found = false;
+        for (final ProjectVersionConfigWrapper firstItem : firstList) {
+            for (final ProjectVersionConfigWrapper secondItem : secondList) {
+                if (firstItem.getProjectName().equals(secondItem.getProjectName())) {
+                    if (firstItem.getProjectVersionName().equals(secondItem.getProjectVersionName())) {
+                        found = true;
+                        break;
+                    }
                 }
             }
+            if (!found) {
+                missingItems.add(firstItem);
+            }
         }
-        return false;
+        return missingItems;
     }
 
     private Map<String, HubUsersEntity> getLocalUsernames() {
@@ -187,7 +196,7 @@ public class HubUserSynchronizationManager implements Runnable {
         return map;
     }
 
-    private List<UserView> getHubServerUsernames(final UserRequestService userRequestService) {
+    private List<UserView> getHubServerUsers(final UserRequestService userRequestService) {
         List<UserView> userList;
         try {
             userList = userRequestService.getAllUsers();

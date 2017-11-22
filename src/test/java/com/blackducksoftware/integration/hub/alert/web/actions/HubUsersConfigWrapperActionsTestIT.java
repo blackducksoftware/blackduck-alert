@@ -58,14 +58,14 @@ public class HubUsersConfigWrapperActionsTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
-        final String existsOnHub = "true";
+        final String active = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
         projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
         projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
         projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, active, projectVersions);
         final Long longId = hubUserManager.saveConfig(configWrapper);
 
         final HubUsersConfigWrapperActions actions = new HubUsersConfigWrapperActions(hubUsersRepository, hubUserManager);
@@ -74,7 +74,7 @@ public class HubUsersConfigWrapperActionsTestIT {
 
         // We cannot predict the id in tests
         final String jsonVersion = "{\"username\":\"" + username + "\",\"frequency\":\"" + frequency + "\",\"emailConfigId\":\"" + emailConfigId + "\",\"hipChatConfigId\":\"" + hipChatConfigId + "\",\"slackConfigId\":\"" + slackConfigId
-                + "\",\"existsOnHub\":\"" + existsOnHub + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
+                + "\",\"active\":\"" + active + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
         assertEquals(jsonVersion, userConfigList.get(0).toString());
     }
 
@@ -85,14 +85,14 @@ public class HubUsersConfigWrapperActionsTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
-        final String existsOnHub = "true";
+        final String active = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
         projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
         projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
         projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(null, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(null, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, active, projectVersions);
         hubUserManager.saveConfig(configWrapper);
 
         final HubUsersConfigWrapperActions actions = new HubUsersConfigWrapperActions(hubUsersRepository, hubUserManager);
@@ -101,7 +101,7 @@ public class HubUsersConfigWrapperActionsTestIT {
 
         // We cannot predict the id in tests
         final String jsonVersion = "{\"username\":\"" + username + "\",\"frequency\":\"" + frequency + "\",\"emailConfigId\":\"" + emailConfigId + "\",\"hipChatConfigId\":\"" + hipChatConfigId + "\",\"slackConfigId\":\"" + slackConfigId
-                + "\",\"existsOnHub\":\"" + existsOnHub + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
+                + "\",\"active\":\"" + active + "\",\"projectVersions\":" + projectVersions + ",\"id\":\"" + userConfigList.get(0).getId() + "\"}";
         assertEquals(jsonVersion, userConfigList.get(0).toString());
     }
 }

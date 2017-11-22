@@ -99,6 +99,9 @@ public class HubUsersConfigWrapperActions {
 
     public String validateConfig(final HubUsersConfigWrapper restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isBlank(restModel.getId())) {
+            fieldErrors.put("id", "Cannot be blank.");
+        }
         if (StringUtils.isBlank(restModel.getUsername())) {
             fieldErrors.put("username", "Cannot be blank.");
         }
@@ -116,9 +119,9 @@ public class HubUsersConfigWrapperActions {
         if (StringUtils.isNotBlank(restModel.getSlackConfigId()) && !StringUtils.isNumeric(restModel.getSlackConfigId())) {
             fieldErrors.put("slackConfigId", "Not an Boolean.");
         }
-        if (restModel.getExistsOnHub() != null) {
+        if (restModel.getActive() != null) {
             logger.info("Setting Hub existence to null for user {} in order to manage synchronization.", restModel.getUsername());
-            restModel.setExistsOnHub(null);
+            restModel.setActive(null);
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -149,10 +152,10 @@ public class HubUsersConfigWrapperActions {
             final String emailConfigId = hubUserManager.getEmailConfigId(id);
             final String hipChatConfigId = hubUserManager.getHipChatConfigId(id);
             final String slackConfigId = hubUserManager.getSlackConfigId(id);
-            final String existsOnHub = hubUserManager.getObjectTransformer().objectToString(entity.getExistsOnHub());
+            final String active = hubUserManager.getObjectTransformer().objectToString(entity.getActive());
             final List<ProjectVersionConfigWrapper> projectVersions = hubUserManager.getProjectVersions(id);
 
-            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
+            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, active, projectVersions);
         }
         return null;
     }

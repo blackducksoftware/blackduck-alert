@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.log.IntLogger;
@@ -47,7 +48,8 @@ public class ChannelRestConnectionFactory {
     }
 
     public static RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
-        final RestConnection connection = new UnauthenticatedRestConnection(intLogger, url, timeout);
+        // TODO get proxy info
+        final RestConnection connection = new UnauthenticatedRestConnection(intLogger, url, timeout, new ProxyInfo(null, 0, null, null));
         try {
             connection.connect();
             return connection;

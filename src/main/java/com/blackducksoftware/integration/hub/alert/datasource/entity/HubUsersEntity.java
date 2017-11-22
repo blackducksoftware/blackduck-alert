@@ -37,23 +37,23 @@ public class HubUsersEntity extends DatabaseEntity {
     @Column(name = "hub_username")
     private String username;
 
-    @Column(name = "exists_on_hub")
-    private Boolean existsOnHub;
+    @Column(name = "active_on_hub")
+    private Boolean active;
 
     public HubUsersEntity() {
     }
 
-    public HubUsersEntity(final String username, final Boolean existsOnHub) {
+    public HubUsersEntity(final String username, final Boolean active) {
         this.username = username;
-        this.existsOnHub = existsOnHub;
+        this.active = active;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public Boolean getExistsOnHub() {
-        return existsOnHub;
+    public Boolean getActive() {
+        return active;
     }
 
     @Override
