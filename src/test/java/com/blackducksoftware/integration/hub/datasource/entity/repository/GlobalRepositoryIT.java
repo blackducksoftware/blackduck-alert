@@ -41,7 +41,9 @@ public class GlobalRepositoryIT {
         final Boolean hubAlwaysTrustCertificate = true;
         final String accumulatorCron = "accumulator_cron";
         final String dailyDigestCron = "dailyDigest_cron";
-        final GlobalConfigEntity entity = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron, dailyDigestCron);
+        final String purgeDataCron = "purgeData_cron";
+        final GlobalConfigEntity entity = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron, dailyDigestCron,
+                purgeDataCron);
         final GlobalConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
@@ -57,5 +59,6 @@ public class GlobalRepositoryIT {
         assertEquals(hubAlwaysTrustCertificate, foundEntity.getHubAlwaysTrustCertificate());
         assertEquals(accumulatorCron, foundEntity.getAccumulatorCron());
         assertEquals(dailyDigestCron, foundEntity.getDailyDigestCron());
+        assertEquals(purgeDataCron, foundEntity.getPurgeDataCron());
     }
 }

@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
@@ -73,6 +74,8 @@ public class Application {
     private AccumulatorConfig accumulatorConfig;
     @Autowired
     private DailyDigestBatchConfig dailyDigestBatchConfig;
+    @Autowired
+    private PurgeConfig purgeConfig;
 
     @PostConstruct
     void init() {
@@ -92,9 +95,11 @@ public class Application {
             logger.info("----------------------------------------");
             logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
             logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
+            logger.info("Purge Old Data Cron Expression:   {}", globalConfig.getPurgeDataCron());
 
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
         } else {
             logger.info("----------------------------------------");
             logger.info("Alert Configuration: No global configuration");

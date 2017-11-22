@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -59,12 +60,15 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigActions.class);
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
+    private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalConfigActions(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final ObjectTransformer objectTransformer) {
+    public GlobalConfigActions(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
+            final ObjectTransformer objectTransformer) {
         super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
+        this.purgeConfig = purgeConfig;
     }
 
     @Override
@@ -91,6 +95,14 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
                 new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
             } catch (final IllegalArgumentException e) {
                 fieldErrors.put("dailyDigestCron", e.getMessage());
+            }
+        }
+
+        if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
+            try {
+                new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
+            } catch (final IllegalArgumentException e) {
+                fieldErrors.put("purgeDataCron", e.getMessage());
             }
         }
 
@@ -152,6 +164,8 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         if (globalConfig != null) {
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
+
         }
     }
 

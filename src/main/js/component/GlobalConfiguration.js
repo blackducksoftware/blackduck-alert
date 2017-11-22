@@ -20,6 +20,7 @@ class GlobalConfiguration extends React.Component {
 				hubProxyPassword: '',
 				accumulatorCron: '',
 				dailyDigestCron: '',
+				purgeDataCron: '',
 
 				configurationMessage: '',
 				hubUrlError: '',
@@ -32,7 +33,8 @@ class GlobalConfiguration extends React.Component {
 				hubProxyUsernameError: '',
 				hubProxyPasswordError: '',
 				accumulatorCronError: '',
-				dailyDigestCronError: ''
+				dailyDigestCronError: '',
+				purgeDataCronError: ''
 		};
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -50,7 +52,8 @@ class GlobalConfiguration extends React.Component {
 			hubProxyUsernameError: '',
 			hubProxyPasswordError: '',
 			accumulatorCronError: '',
-			dailyDigestCronError: ''
+			dailyDigestCronError: '',
+			purgeDataCronError: ''
 		});
 	}
 
@@ -88,7 +91,8 @@ class GlobalConfiguration extends React.Component {
 							hubProxyUsername: configuration.hubProxyUsername,
 							hubProxyPassword: configuration.hubProxyPassword,
 							accumulatorCron: configuration.accumulatorCron,
-							dailyDigestCron: configuration.dailyDigestCron
+							dailyDigestCron: configuration.dailyDigestCron,
+							purgeDataCron: configuration.purgeDataCron
 						});
 					}
 				});
@@ -210,7 +214,10 @@ class GlobalConfiguration extends React.Component {
 				<Field label="Accumulator Cron" type="text" name="accumulatorCron" value={this.state.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.accumulatorCronError}></Field>
 
 				<Field label="Daily Digest Cron" type="text" name="dailyDigestCron" value={this.state.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.dailyDigestCronError}></Field>
+				
+				<Field label="Purge Data Cron" type="text" name="purgeDataCron" value={this.state.purgeDataCron} onChange={this.handleChange} errorName="purgeDataCronError" errorValue={this.state.purgeDataCronError}></Field>
 
+				
 				<div className={styles.submitContainers}>
 					<input type="submit" value="Save"></input>
 					<input type="button" value="Test" onClick={this.handleTestSubmit.bind(this)}></input>

@@ -31,12 +31,13 @@ public class MockUtils {
     }
 
     public GlobalConfigRestModel createGlobalConfigRestModel() {
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
+        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *",
+                "0 0 12 1/2 * *");
         return restModel;
     }
 
     public GlobalConfigEntity createGlobalConfigEntity() {
-        final GlobalConfigEntity configEntity = new GlobalConfigEntity("HubUrl", 11, "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
+        final GlobalConfigEntity configEntity = new GlobalConfigEntity("HubUrl", 11, "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
         configEntity.setId(1L);
         return configEntity;
     }
