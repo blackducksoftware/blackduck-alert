@@ -36,9 +36,9 @@ public class GlobalConfigEntityTest {
         assertNull(globalConfigEntity.getHubUsername());
         assertNull(globalConfigEntity.getId());
 
-        assertEquals(1110457057, globalConfigEntity.hashCode());
+        assertEquals(-1862761851, globalConfigEntity.hashCode());
 
-        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubPassword\":null,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubAlwaysTrustCertificate\":null,\"accumulatorCron\":null,\"dailyDigestCron\":null,\"id\":null}";
+        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubPassword\":null,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubAlwaysTrustCertificate\":null,\"accumulatorCron\":null,\"dailyDigestCron\":null,\"purgeDataCron\":null,\"id\":null}";
         assertEquals(expectedString, globalConfigEntity.toString());
 
         final GlobalConfigEntity globalConfigEntityNew = new GlobalConfigEntity();
@@ -59,13 +59,15 @@ public class GlobalConfigEntityTest {
         final Boolean hubAlwaysTrustCertificate = true;
         final String accumulatorCron = "AccumulatorCron";
         final String dailyDigestCron = "DailyDigestCron";
+        final String purgeDataCron = "PurgeDataCron";
 
         final GlobalConfigEntity globalConfigEntity = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron,
-                dailyDigestCron);
+                dailyDigestCron, purgeDataCron);
         globalConfigEntity.setId(id);
 
         assertEquals(accumulatorCron, globalConfigEntity.getAccumulatorCron());
         assertEquals(dailyDigestCron, globalConfigEntity.getDailyDigestCron());
+        assertEquals(purgeDataCron, globalConfigEntity.getPurgeDataCron());
         assertEquals(hubAlwaysTrustCertificate, globalConfigEntity.getHubAlwaysTrustCertificate());
         assertEquals(hubPassword, globalConfigEntity.getHubPassword());
         assertEquals(hubProxyHost, globalConfigEntity.getHubProxyHost());
@@ -77,13 +79,13 @@ public class GlobalConfigEntityTest {
         assertEquals(hubUsername, globalConfigEntity.getHubUsername());
         assertEquals(id, globalConfigEntity.getId());
 
-        assertEquals(-1100051312, globalConfigEntity.hashCode());
+        assertEquals(-1620357389, globalConfigEntity.hashCode());
 
-        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":111,\"hubUsername\":\"HubUsername\",\"hubPassword\":\"HubPassword\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubAlwaysTrustCertificate\":true,\"accumulatorCron\":\"AccumulatorCron\",\"dailyDigestCron\":\"DailyDigestCron\",\"id\":123}";
+        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":111,\"hubUsername\":\"HubUsername\",\"hubPassword\":\"HubPassword\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubAlwaysTrustCertificate\":true,\"accumulatorCron\":\"AccumulatorCron\",\"dailyDigestCron\":\"DailyDigestCron\",\"purgeDataCron\":\"PurgeDataCron\",\"id\":123}";
         assertEquals(expectedString, globalConfigEntity.toString());
 
         final GlobalConfigEntity globalConfigEntityNew = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron,
-                dailyDigestCron);
+                dailyDigestCron, purgeDataCron);
         globalConfigEntityNew.setId(id);
 
         assertEquals(globalConfigEntity, globalConfigEntityNew);
