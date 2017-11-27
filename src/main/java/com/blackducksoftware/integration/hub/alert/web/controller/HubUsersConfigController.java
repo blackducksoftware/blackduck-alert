@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.HubUsersConfigAct
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestModel;
 
 @RestController
-public class HubUsersConfigController implements ConfigController<HubUsersEntity, HubUsersConfigRestModel> {
+public class HubUsersConfigController extends ConfigController<HubUsersConfigRestModel> {
     private final CommonConfigController<HubUsersEntity, HubUsersConfigRestModel> commonConfigController;
 
     @Autowired

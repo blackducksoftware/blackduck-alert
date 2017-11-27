@@ -14,7 +14,9 @@
   "dependencies": {
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-router-dom": "^4.2.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^4.0.8",
     "react-tabs": "^2.1.0",
     "rest": "^1.3.1"
   },

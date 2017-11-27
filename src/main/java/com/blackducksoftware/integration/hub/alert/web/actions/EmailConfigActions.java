@@ -22,7 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -79,8 +81,15 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
     }
 
     @Override
-    public String testConfig(final EmailConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final EmailConfigRestModel restModel) throws IntegrationException {
         return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        final List<String> sensitiveFields = new ArrayList<>();
+        sensitiveFields.add("mailSmtpPassword");
+        return sensitiveFields;
     }
 
 }

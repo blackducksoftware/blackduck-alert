@@ -169,7 +169,7 @@ public class HubUsersConfigActionsTest {
     }
 
     @Test
-    public void testTestConfig() throws Exception {
+    public void testChannelTestConfig() throws Exception {
         // TODO test config when implemented
     }
 

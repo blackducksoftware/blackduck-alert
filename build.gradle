@@ -49,6 +49,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
+    compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
+    compile 'org.springframework.security:spring-security-config:4.2.3.RELEASE'
     runtime 'com.h2database:h2'
     
     compile 'org.jsoup:jsoup:1.9.2'

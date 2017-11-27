@@ -1,20 +1,34 @@
-body {
-    margin: 0px;
+.hidden {
+	display: none;
+}
+
+.wrapper {
     padding: 0px;
+    font-size: 13px;
+    height: 100%;
+    width: 100%;
     font-family: Verdana;
-    background-color: #F9F9F9;
+    display: inline-block;
+    position: absolute;
 }
 
-h1 {
-    margin-top: 0;
+.advanced {
+	cursor: pointer;
+	padding-right: 10px;
+	color: #285f8f;
+	text-align: right;
 }
 
-h1, h2, h3 {
+.alignCenter {
     text-align: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
-input[type=button], input[type=submit] {
-    background: gray;
+.submitButtons {
+    margin-right: 10px;
+	color: #fff;
+    background: #285f8f;
     text-align: center;
     padding: 5px 10px 5px 10px;
     font-size: 1em;
@@ -24,32 +38,35 @@ input[type=button], input[type=submit] {
 .submitContainers {
     display: inline-block;
     margin: 5px;
-    text-align: center;
+    text-align: right;
     width: 100%;
 }
 
-input[type=text], input[type=password] {
-    width: 50%;
+.configurationError {
+    color: red;
+    text-align: center;
 }
 
-input[type=number] {
-    width: 10%;
+.loginContainer {
+	width: 100vw; 
+	height: 100vh;
+	display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-label {
-    text-align: right;
-    padding: 10px;
-    width: 30%;
-    display: inline-block;
-}
-
-label:after {
-    content: ":"
-}
-
-ul {
-	list-style: none;
-	padding-top: 20px;
+.loginBox {
+	background-color: #fff;
+    overflow: hidden;
+    z-index: 1;
+    min-height: 175px;
+    box-shadow: 0 0 5px #333;
+    max-width: 500px;
+    min-width: 300px;
+    position: fixed;
+    width: 100%;
+    border: 0;
+    margin-bottom: 20px;
 }
 
 .border {
@@ -57,7 +74,7 @@ ul {
 }
 
 .tabSpacing {
-    padding: 10px 10px 0px 10px;
+    padding: 10px 10px 10px 10px;
     width: 10%;
 }
 
@@ -66,6 +83,7 @@ ul {
     background-color: white;
     color: black;
     position: relative;
+    list-style: none;
 }
 
 .tab:hover {
@@ -75,7 +93,7 @@ ul {
 .configTabs {
     composes: border tab;
     display: inline;
-    border-radius: 15px 50px 1px 0px;
+    border-radius: 15px 15px 0px 0px;
     z-index: 6;
 }
 
@@ -92,18 +110,7 @@ ul {
 }
 
 .tabSelected {
-    background-color: #232ed3;
-    color: white;
-}
-
-.header {
-    background-color: black;
-    height: 50px;
-    line-height: 50px;
-    width: 100%;  
-    text-align: left;
-    margin: 0 auto;
-    padding-left: 15px;
+    background-color: #235483;
     color: white;
 }
 
@@ -112,6 +119,16 @@ ul {
     line-height: 100px;
     text-align: center;
     font-size: 2.5em;
+    padding-top: 50px;
+}
+
+.tabContainer {
+    margin-top: 30px;
+}
+
+.alertHeaderTag {
+    margin: 0 auto;
+    padding-top: 10px;
 }
 
 .tabContent {
@@ -128,6 +145,7 @@ ul {
 .tableBorder {
     composes: border;
     margin: 0 auto;
+    margin-top: 10px;
     width: 50%;
     padding: 10px;
     background-color: white;
