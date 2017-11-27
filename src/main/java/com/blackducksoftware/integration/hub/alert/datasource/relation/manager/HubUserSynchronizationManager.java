@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,7 +39,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
@@ -98,18 +98,48 @@ public class HubUserSynchronizationManager implements Runnable {
         HubServicesFactory hubServicesFactory;
         try {
             hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-        } catch (final EncryptionException e) {
+            if (hubServicesFactory == null) {
+                throw new IntegrationException("The HubServicesFactory object was null.");
+            }
+        } catch (final IntegrationException e) {
             logger.error("Unable to create Hub services factory.", e);
             return;
         }
 
         final List<UserView> hubServerUsers = getHubServerUsers(hubServicesFactory.createUserRequestService());
-        final Map<String, HubUsersEntity> localUsernames = getLocalUsernames();
+        if (hubServerUsers != null) {
+            final Map<String, HubUsersEntity> localUsernames = getLocalUsernames();
+            synchronizeUsersWithHubServer(hubServerUsers, localUsernames, hubServicesFactory.createUserDataService(), hubServicesFactory.createProjectVersionRequestService());
+        } else {
+            logger.error("There was a problem getting the Hub Server Users. Cannot synchronize the local data with the Hub.");
+        }
+    }
 
+    public void synchronizeUsersWithHubServer(final List<UserView> hubServerUsers, final Map<String, HubUsersEntity> localUsernamesMap, final UserDataService userDataService,
+            final ProjectVersionRequestService projectVersionRequestService) {
+        final List<HubUsersEntity> usersThatDoNotExist = new ArrayList<>();
+        final List<String> hubServerUsernames = hubServerUsers.stream().map(user -> user.userName).collect(Collectors.toList());
+        localUsernamesMap.keySet().forEach(localUsername -> {
+            if (!hubServerUsernames.contains(localUsername)) {
+                usersThatDoNotExist.add(localUsernamesMap.get(localUsername));
+            }
+        });
+        // Delete users if there is no configuration for them, or deactivate them if there is.
+        usersThatDoNotExist.forEach(user -> {
+            if (!hubUserManager.hasChannelConfiguration(user.getId())) {
+                hubUserManager.deleteConfig(user.getId());
+            } else if (Boolean.TRUE.equals(user.getActive())) {
+                final HubUsersEntity newEntity = new HubUsersEntity(user.getUsername(), Boolean.FALSE);
+                newEntity.setId(user.getId());
+                hubUsersRepository.save(newEntity);
+            }
+        });
+
+        // If a Hub users is active, synchronize the local user with it, otherwise deactivate the local user (if not already inactive).
         hubServerUsers.forEach(serverUser -> {
-            final HubUsersEntity hubUsersEntity = getHubUsersEntityOrCreateIfNeeded(localUsernames, serverUser);
+            final HubUsersEntity hubUsersEntity = getHubUsersEntityOrCreateIfNeeded(localUsernamesMap, serverUser);
             if (Boolean.TRUE.equals(serverUser.active)) {
-                synchronizeUserWithHubServer(hubUsersEntity, hubServicesFactory.createUserDataService(), hubServicesFactory.createProjectVersionRequestService());
+                synchronizeUserProjectVersionsWithHubServer(hubUsersEntity, userDataService, projectVersionRequestService);
             } else if (!Boolean.FALSE.equals(hubUsersEntity.getActive())) {
                 final HubUsersEntity newEntity = new HubUsersEntity(hubUsersEntity.getUsername(), Boolean.FALSE);
                 newEntity.setId(hubUsersEntity.getId());
@@ -120,7 +150,7 @@ public class HubUserSynchronizationManager implements Runnable {
 
     private HubUsersEntity getHubUsersEntityOrCreateIfNeeded(final Map<String, HubUsersEntity> localUsernames, final UserView serverUser) {
         if (!localUsernames.containsKey(serverUser.userName)) {
-            final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, serverUser.active.toString(), null);
+            final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, hubUserManager.getObjectTransformer().objectToString(serverUser.active), null);
             try {
                 final Long savedId = hubUserManager.saveConfig(newWrapper);
                 return hubUsersRepository.findOne(savedId);
@@ -131,7 +161,7 @@ public class HubUserSynchronizationManager implements Runnable {
         return localUsernames.get(serverUser);
     }
 
-    private void synchronizeUserWithHubServer(final HubUsersEntity oldEntity, final UserDataService userDataService, final ProjectVersionRequestService projectVersionRequestService) {
+    private void synchronizeUserProjectVersionsWithHubServer(final HubUsersEntity oldEntity, final UserDataService userDataService, final ProjectVersionRequestService projectVersionRequestService) {
         final List<ProjectVersionConfigWrapper> localProjectVersions = hubUserManager.getProjectVersions(oldEntity.getId());
         final List<ProjectVersionConfigWrapper> remoteProjectVersions = getHubProjectVersionsForUser(oldEntity.getUsername(), userDataService, projectVersionRequestService);
 
@@ -202,7 +232,7 @@ public class HubUserSynchronizationManager implements Runnable {
             userList = userRequestService.getAllUsers();
         } catch (final IntegrationException e) {
             logger.error("Unable to get list of users from the hub.", e);
-            return Collections.emptyList();
+            return null;
         }
         return userList;
     }

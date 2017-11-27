@@ -99,17 +99,6 @@ public class HubUserManager {
 
     public void deleteConfig(final Long id) {
         if (doesConfigExist(id)) {
-            hubUsersRepository.delete(id);
-            hubUserFrequenciesRepository.delete(id);
-            if (hubUserEmailRepository.exists(id)) {
-                hubUserEmailRepository.delete(id);
-            }
-            if (hubUserHipChatRepository.exists(id)) {
-                hubUserHipChatRepository.delete(id);
-            }
-            if (hubUserSlackRepository.exists(id)) {
-                hubUserSlackRepository.delete(id);
-            }
             final List<HubUserProjectVersionsRelation> hubUserProjectVersions = hubUserProjectVersionsRepository.findByUserConfigId(id);
             for (final HubUserProjectVersionsRelation hubUserProjectVersion : hubUserProjectVersions) {
                 final HubUserProjectVersionsRelationPK key = new HubUserProjectVersionsRelationPK();
@@ -118,6 +107,17 @@ public class HubUserManager {
                 key.projectVersionName = hubUserProjectVersion.getProjectVersionName();
                 hubUserProjectVersionsRepository.delete(key);
             }
+            if (hubUserSlackRepository.exists(id)) {
+                hubUserSlackRepository.delete(id);
+            }
+            if (hubUserHipChatRepository.exists(id)) {
+                hubUserHipChatRepository.delete(id);
+            }
+            if (hubUserEmailRepository.exists(id)) {
+                hubUserEmailRepository.delete(id);
+            }
+            hubUserFrequenciesRepository.delete(id);
+            hubUsersRepository.delete(id);
         } else {
             logger.warn("Attempted to delete Hub User config with id {}, but it did not exist.", id);
         }
@@ -187,6 +187,10 @@ public class HubUserManager {
             }
         }
         return true;
+    }
+
+    public boolean hasChannelConfiguration(final Long id) {
+        return (hubUserEmailRepository.exists(id) || hubUserHipChatRepository.exists(id) || hubUserSlackRepository.exists(id));
     }
 
     public boolean doesConfigExist(final String id) {
