@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -75,11 +76,23 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return maskRestModels(restModels);
     }
 
-    public R maskRestModel(final R restModel) {
+    public abstract List<String> sensitiveFields();
+
+    public R maskRestModel(final R restModel) throws AlertException {
+        try {
+            final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
+            for (final String fieldName : sensitiveFields()) {
+                final Field field = restModelClass.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                field.set(restModel, "");
+            }
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
         return restModel;
     }
 
-    public List<R> maskRestModels(final List<R> restModels) {
+    public List<R> maskRestModels(final List<R> restModels) throws AlertException {
         final List<R> maskedRestModels = new ArrayList<>();
         for (final R restModel : restModels) {
             maskedRestModels.add(maskRestModel(restModel));
@@ -97,7 +110,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
     }
 
-    public D updateNewConfigWithSavedConfig(final D newConfig, final String id) {
+    public Object updateNewConfigWithSavedConfig(final Object newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
             final D savedConfig = repository.findOne(longId);
@@ -106,15 +119,33 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
-    public D updateNewConfigWithSavedConfig(final D newConfig, final D savedConfig) {
+    public Object updateNewConfigWithSavedConfig(final Object newConfig, final D savedConfig) throws AlertException {
+        try {
+            final Class newConfigClass = newConfig.getClass();
+            for (final String fieldName : sensitiveFields()) {
+                final Field field = newConfigClass.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                final String newValue = (String) field.get(newConfig);
+                if (StringUtils.isBlank(newValue) && null != savedConfig) {
+                    final Class savedConfigClass = savedConfig.getClass();
+                    final Field savedField = savedConfigClass.getDeclaredField(fieldName);
+                    savedField.setAccessible(true);
+                    final String savedValue = (String) savedField.get(savedConfig);
+                    field.set(newConfig, savedValue);
+                }
+            }
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+
         return newConfig;
     }
 
-    public D saveNewConfigUpdateFromStoredConfig(final String id, final R restModel) throws AlertException {
-        if (null != restModel) {
+    public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
+        if (null != restModel && StringUtils.isNotBlank(restModel.getId())) {
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
-                createdEntity = updateNewConfigWithSavedConfig(createdEntity, id);
+                createdEntity = (D) updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -143,12 +174,19 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public abstract String validateConfig(final R restModel) throws AlertFieldException;
 
-    public abstract String testConfig(final R restModel) throws IntegrationException;
+    public String testConfig(final R restModel) throws IntegrationException {
+        if (null != restModel && StringUtils.isNotBlank(restModel.getId())) {
+            updateNewConfigWithSavedConfig(restModel, restModel.getId());
+        }
+        return channelTestConfig(restModel);
+    }
+
+    public abstract String channelTestConfig(final R restModel) throws IntegrationException;
 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
+    public void configurationChangeTriggers(final R restModel) {
 
     }
 

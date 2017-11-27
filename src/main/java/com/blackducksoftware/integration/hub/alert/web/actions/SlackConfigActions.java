@@ -22,7 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,8 +64,13 @@ public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackCo
     }
 
     @Override
-    public String testConfig(final SlackConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final SlackConfigRestModel restModel) throws IntegrationException {
         return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, SlackConfigEntity.class));
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        return Collections.emptyList();
     }
 
 }
