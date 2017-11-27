@@ -43,8 +43,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
 @Component
 public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, PurgeWriter> {
 
-    private static final String PURGE_STEP_NAME = "PurgeStep";
-    private static final String PURGE_JOB_NAME = "PurgeJob";
+    public static final String PURGE_STEP_NAME = "PurgeStep";
+    public static final String PURGE_JOB_NAME = "PurgeJob";
 
     @Autowired
     public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,

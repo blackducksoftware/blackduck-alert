@@ -41,12 +41,16 @@ public class PurgeWriter implements ItemWriter<List<NotificationEntity>> {
 
     @Override
     public void write(final List<? extends List<NotificationEntity>> items) throws Exception {
-        logger.info("Starting purge of notifications");
-        items.forEach(entityList -> {
-            if (entityList != null && !entityList.isEmpty()) {
-                logger.info("Purging {} notifications.", entityList.size());
-                notificationRepository.deleteInBatch(entityList);
-            }
-        });
+        try {
+            logger.info("Starting purge of notifications");
+            items.forEach(entityList -> {
+                if (entityList != null && !entityList.isEmpty()) {
+                    logger.info("Purging {} notifications.", entityList.size());
+                    notificationRepository.deleteInBatch(entityList);
+                }
+            });
+        } catch (final Exception ex) {
+            logger.error("Error purging notifications", ex);
+        }
     }
 }
