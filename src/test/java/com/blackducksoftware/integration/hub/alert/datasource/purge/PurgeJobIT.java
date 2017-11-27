@@ -86,6 +86,13 @@ public class PurgeJobIT {
     }
 
     @Test
+    public void testReaderWithNullRepository() throws Exception {
+        final PurgeReader reader = new PurgeReader(null);
+        final List<NotificationEntity> entityList = reader.read();
+        assertNull(entityList);
+    }
+
+    @Test
     public void testReaderWithData() throws Exception {
         final List<NotificationEntity> entityList = new ArrayList<>();
         final String hubUser = "user1";
@@ -147,6 +154,14 @@ public class PurgeJobIT {
     @Test
     public void testWriterNoData() throws Exception {
         final List<List<NotificationEntity>> itemList = Collections.emptyList();
+        final PurgeWriter writer = purgeConfig.writer();
+        writer.write(itemList);
+        assertEquals(0, notificationRepository.count());
+    }
+
+    @Test
+    public void testWriterNullData() throws Exception {
+        final List<List<NotificationEntity>> itemList = null;
         final PurgeWriter writer = purgeConfig.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());

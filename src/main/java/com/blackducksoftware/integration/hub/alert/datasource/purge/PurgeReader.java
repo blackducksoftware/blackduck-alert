@@ -48,7 +48,7 @@ public class PurgeReader implements ItemReader<List<NotificationEntity>> {
     @Override
     public List<NotificationEntity> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
-            logger.debug("Purge Reader Starting Read Operation");
+            logger.debug("Purge Reader Starting ");
             ZonedDateTime zonedDate = ZonedDateTime.now();
             zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
             zonedDate = zonedDate.withSecond(0).withNano(0);
@@ -57,13 +57,13 @@ public class PurgeReader implements ItemReader<List<NotificationEntity>> {
             final List<NotificationEntity> notificationList = notificationRepository.findByCreatedAtBefore(date);
 
             if (notificationList == null || notificationList.isEmpty()) {
+                logger.debug("No notifications found to purge");
                 return null;
             }
+            logger.debug("Found {} notifications to purge", notificationList.size());
             return notificationList;
         } catch (final Exception ex) {
             logger.error("Error in Purge Reader", ex);
-        } finally {
-            logger.debug("Purge Reader Finished Operation");
         }
         return null;
     }
