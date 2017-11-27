@@ -22,7 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -65,8 +67,13 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
     }
 
     @Override
-    public String testConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
         return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class));
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        return Collections.emptyList();
     }
 
 }

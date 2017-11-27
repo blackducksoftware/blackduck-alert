@@ -175,13 +175,13 @@ public class HipChatConfigActionsTest {
     }
 
     @Test
-    public void testTestConfig() throws Exception {
+    public void testChannelTestConfig() throws Exception {
         final HipChatChannel mockedHipChatChannel = Mockito.mock(HipChatChannel.class);
         Mockito.when(mockedHipChatChannel.testMessage(Mockito.any())).thenReturn("");
+        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, mockedHipChatChannel);
 
-        final HipChatConfigActions configActions = new HipChatConfigActions(null, objectTransformer, mockedHipChatChannel);
-
-        configActions.testConfig(mockUtils.createHipChatConfigRestModel());
+        configActions.channelTestConfig(mockUtils.createHipChatConfigRestModel());
         verify(mockedHipChatChannel, times(1)).testMessage(Mockito.any());
     }
 

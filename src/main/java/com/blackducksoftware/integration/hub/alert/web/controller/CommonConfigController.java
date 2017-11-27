@@ -92,7 +92,7 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
                 configActions.validateConfig(restModel);
                 configActions.configurationChangeTriggers(restModel);
                 try {
-                    final D updatedEntity = configActions.saveNewConfigUpdateFromStoredConfig(restModel.getId(), restModel);
+                    final D updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);

@@ -68,43 +68,6 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public GlobalConfigRestModel maskRestModel(final GlobalConfigRestModel restModel) {
-        final GlobalConfigRestModel maskedRestModel = new GlobalConfigRestModel(restModel.getId(), restModel.getHubUrl(), restModel.getHubTimeout(), restModel.getHubUsername(), "", restModel.getHubProxyHost(), restModel.getHubProxyPort(),
-                restModel.getHubProxyUsername(), "", restModel.getHubAlwaysTrustCertificate(), restModel.getAccumulatorCron(), restModel.getDailyDigestCron());
-        return maskedRestModel;
-    }
-
-    @Override
-    public GlobalConfigEntity updateNewConfigWithSavedConfig(final GlobalConfigEntity newConfig, final GlobalConfigEntity savedConfig) {
-        final Long id = newConfig.getId();
-        final String hubUrl = newConfig.getHubUrl();
-        final Integer hubTimeout = newConfig.getHubTimeout();
-        final String hubUsername = newConfig.getHubUsername();
-        String hubPassword = "";
-        if (StringUtils.isBlank(newConfig.getHubPassword())) {
-            hubPassword = savedConfig.getHubPassword();
-        } else {
-            hubPassword = newConfig.getHubPassword();
-        }
-        final String hubProxyHost = newConfig.getHubProxyHost();
-        final String hubProxyPort = newConfig.getHubProxyPort();
-        final String hubProxyUsername = newConfig.getHubProxyUsername();
-        String hubProxyPassword = "";
-        if (StringUtils.isBlank(newConfig.getHubProxyPassword())) {
-            hubProxyPassword = savedConfig.getHubProxyPassword();
-        } else {
-            hubProxyPassword = newConfig.getHubProxyPassword();
-        }
-        final Boolean hubAlwaysTrustCertificate = newConfig.getHubAlwaysTrustCertificate();
-        final String accumulatorCron = newConfig.getAccumulatorCron();
-        final String dailyDigestCron = newConfig.getDailyDigestCron();
-        final GlobalConfigEntity globalConfigEntity = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron,
-                dailyDigestCron);
-        globalConfigEntity.setId(id);
-        return globalConfigEntity;
-    }
-
-    @Override
     public String validateConfig(final GlobalConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
@@ -138,7 +101,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public String testConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
@@ -150,23 +113,8 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
 
-        if (null != restModel && StringUtils.isNotBlank(restModel.getId()) && (StringUtils.isBlank(restModel.getHubPassword()) || StringUtils.isBlank(restModel.getHubProxyPassword()))) {
-            final Long longId = objectTransformer.stringToLong(restModel.getId());
-            final GlobalConfigEntity savedConfig = repository.findOne(longId);
-            if (null != savedConfig && StringUtils.isBlank(restModel.getHubPassword())) {
-                hubServerConfigBuilder.setPassword(savedConfig.getHubPassword());
-            } else {
-                hubServerConfigBuilder.setPassword(restModel.getHubPassword());
-            }
-            if (null != savedConfig && StringUtils.isBlank(restModel.getHubProxyPassword())) {
-                hubServerConfigBuilder.setProxyPassword(savedConfig.getHubProxyPassword());
-            } else {
-                hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
-            }
-        } else {
-            hubServerConfigBuilder.setPassword(restModel.getHubPassword());
-            hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
-        }
+        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
+        hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
 
         if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
             hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
@@ -207,6 +155,14 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
         }
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        final List<String> sensitiveFields = new ArrayList<>();
+        sensitiveFields.add("hubPassword");
+        sensitiveFields.add("hubProxyPassword");
+        return sensitiveFields;
     }
 
 }
