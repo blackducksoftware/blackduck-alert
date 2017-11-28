@@ -34,9 +34,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 public class GlobalConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
 
-    @Column(name = "hub_url")
-    private String hubUrl;
-
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
@@ -45,21 +42,6 @@ public class GlobalConfigEntity extends DatabaseEntity {
 
     @Column(name = "hub_password")
     private String hubPassword;
-
-    @Column(name = "hub_proxy_host")
-    private String hubProxyHost;
-
-    @Column(name = "hub_proxy_port")
-    private String hubProxyPort;
-
-    @Column(name = "hub_proxy_username")
-    private String hubProxyUsername;
-
-    @Column(name = "hub_proxy_password")
-    private String hubProxyPassword;
-
-    @Column(name = "hub_always_trust_cert")
-    private Boolean hubAlwaysTrustCertificate;
 
     @Column(name = "alert_accumulator_cron")
     private String accumulatorCron;
@@ -70,27 +52,16 @@ public class GlobalConfigEntity extends DatabaseEntity {
     public GlobalConfigEntity() {
     }
 
-    public GlobalConfigEntity(final String hubUrl, final Integer hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final Boolean hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron) {
-        this.hubUrl = hubUrl;
+    public GlobalConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword, final String accumulatorCron, final String dailyDigestCron) {
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
-        this.hubProxyHost = hubProxyHost;
-        this.hubProxyPort = hubProxyPort;
-        this.hubProxyUsername = hubProxyUsername;
-        this.hubProxyPassword = hubProxyPassword;
-        this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public String getHubUrl() {
-        return hubUrl;
     }
 
     public Integer getHubTimeout() {
@@ -105,26 +76,6 @@ public class GlobalConfigEntity extends DatabaseEntity {
         return hubPassword;
     }
 
-    public String getHubProxyHost() {
-        return hubProxyHost;
-    }
-
-    public String getHubProxyPort() {
-        return hubProxyPort;
-    }
-
-    public String getHubProxyUsername() {
-        return hubProxyUsername;
-    }
-
-    public String getHubProxyPassword() {
-        return hubProxyPassword;
-    }
-
-    public Boolean getHubAlwaysTrustCertificate() {
-        return hubAlwaysTrustCertificate;
-    }
-
     public String getAccumulatorCron() {
         return accumulatorCron;
     }
@@ -137,7 +88,6 @@ public class GlobalConfigEntity extends DatabaseEntity {
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
         reflectionToStringBuilder.setExcludeFieldNames("hubPassword");
-        reflectionToStringBuilder.setExcludeFieldNames("hubProxyPassword");
         return reflectionToStringBuilder.toString();
     }
 

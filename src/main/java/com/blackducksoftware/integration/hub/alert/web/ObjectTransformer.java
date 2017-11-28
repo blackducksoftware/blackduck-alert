@@ -54,7 +54,7 @@ public class ObjectTransformer {
     }
 
     public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws AlertException {
-        if (null != databaseEntity && newClass != null) {
+        if (databaseEntity != null && newClass != null) {
             final String databaseEntityClassName = databaseEntity.getClass().getSimpleName();
             final String newClassName = newClass.getSimpleName();
             try {
@@ -124,7 +124,7 @@ public class ObjectTransformer {
     }
 
     public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws AlertException {
-        if (null != configRestModel && newClass != null) {
+        if (configRestModel != null && newClass != null) {
             final String configRestModelClassName = configRestModel.getClass().getSimpleName();
             final String newClassName = newClass.getSimpleName();
             try {
@@ -182,7 +182,7 @@ public class ObjectTransformer {
     }
 
     public Integer stringToInteger(final String value) {
-        if (null != value) {
+        if (value != null) {
             final String trimmedValue = value.trim();
             try {
                 return Integer.valueOf(trimmedValue);
@@ -193,7 +193,7 @@ public class ObjectTransformer {
     }
 
     public Long stringToLong(final String value) {
-        if (null != value) {
+        if (value != null) {
             final String trimmedValue = value.trim();
             try {
                 return Long.valueOf(trimmedValue);
@@ -204,7 +204,7 @@ public class ObjectTransformer {
     }
 
     public Boolean stringToBoolean(final String value) {
-        if (null != value) {
+        if (value != null) {
             final String trimmedValue = value.trim();
             if (trimmedValue.equalsIgnoreCase("false")) {
                 return false;
@@ -216,7 +216,7 @@ public class ObjectTransformer {
     }
 
     public String objectToString(final Object value) {
-        if (null != value) {
+        if (value != null) {
             return String.valueOf(value);
         }
         return null;

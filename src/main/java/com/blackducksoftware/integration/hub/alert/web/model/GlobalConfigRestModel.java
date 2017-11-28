@@ -67,8 +67,16 @@ public class GlobalConfigRestModel extends ConfigRestModel {
         return hubUrl;
     }
 
+    public void setHubUrl(final String hubUrl) {
+        this.hubUrl = hubUrl;
+    }
+
     public String getHubTimeout() {
         return hubTimeout;
+    }
+
+    public void setHubTimeout(final String hubTimeout) {
+        this.hubTimeout = hubTimeout;
     }
 
     public String getHubUsername() {
@@ -83,20 +91,40 @@ public class GlobalConfigRestModel extends ConfigRestModel {
         return hubProxyHost;
     }
 
+    public void setHubProxyHost(final String hubProxyHost) {
+        this.hubProxyHost = hubProxyHost;
+    }
+
     public String getHubProxyPort() {
         return hubProxyPort;
+    }
+
+    public void setHubProxyPort(final String hubProxyPort) {
+        this.hubProxyPort = hubProxyPort;
     }
 
     public String getHubProxyUsername() {
         return hubProxyUsername;
     }
 
+    public void setHubProxyUsername(final String hubProxyUsername) {
+        this.hubProxyUsername = hubProxyUsername;
+    }
+
     public String getHubProxyPassword() {
         return hubProxyPassword;
     }
 
+    public void setHubProxyPassword(final String hubProxyPassword) {
+        this.hubProxyPassword = hubProxyPassword;
+    }
+
     public String getHubAlwaysTrustCertificate() {
         return hubAlwaysTrustCertificate;
+    }
+
+    public void setHubAlwaysTrustCertificate(final String hubAlwaysTrustCertificate) {
+        this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
     }
 
     public String getAccumulatorCron() {
