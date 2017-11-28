@@ -107,6 +107,7 @@ public class HubUsersConfigWrapperActions {
         }
         if (StringUtils.isBlank(restModel.getFrequency())) {
             fieldErrors.put("frequency", "Cannot be blank.");
+            // TODO get the enum values dynamically
         } else if (!("DAILY".equals(restModel.getFrequency()) || "REAL_TIME".equals(restModel.getFrequency()))) {
             fieldErrors.put("frequency", "Not a valid frequency enum. Valid values: DAILY, REAL_TIME");
         }
@@ -117,10 +118,10 @@ public class HubUsersConfigWrapperActions {
             fieldErrors.put("hipChatConfigId", "Not an Integer.");
         }
         if (StringUtils.isNotBlank(restModel.getSlackConfigId()) && !StringUtils.isNumeric(restModel.getSlackConfigId())) {
-            fieldErrors.put("slackConfigId", "Not an Boolean.");
+            fieldErrors.put("slackConfigId", "Not an Integer.");
         }
         if (restModel.getActive() != null) {
-            logger.info("Setting Hub existence to null for user {} in order to manage synchronization.", restModel.getUsername());
+            logger.debug("Setting Hub existence to null for user {} in order to manage synchronization.", restModel.getUsername());
             restModel.setActive(null);
         }
         if (!fieldErrors.isEmpty()) {

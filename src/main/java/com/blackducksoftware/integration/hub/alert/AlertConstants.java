@@ -23,12 +23,10 @@
 package com.blackducksoftware.integration.hub.alert;
 
 public class AlertConstants {
+    public static final String CRON_EXPRESSION_EVERY_MINUTE = "0 0/1 * 1/1 * *";
     public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
-
     public static final String CONTEXT_ATTRIBUTE_KEY_EMAIL_TEST_NOTIFIER = "blackduck-test-email-notifier";
-
     public static final String ALERT_APPLICATION_NAME = "Hub Alert";
-
     public static final String DATASET_KEY_HUB_USER = "hub_user";
 
     private AlertConstants() throws InstantiationException {

@@ -43,8 +43,6 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelationPK;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserProjectVersionsRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapper;
@@ -62,7 +60,7 @@ public class HubUserSynchronizationManager implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(HubUserSynchronizationManager.class);
     private final GlobalProperties globalProperties;
     private final HubUsersRepository hubUsersRepository;
-    private final HubUserProjectVersionsRepository hubUserProjectVersionsRepository;
+    final HubUserProjectVersionsRepository hubUserProjectVersionsRepository;
     private final HubUserManager hubUserManager;
     private final TaskScheduler taskScheduler;
 
@@ -102,14 +100,14 @@ public class HubUserSynchronizationManager implements Runnable {
                 throw new IntegrationException("The HubServicesFactory object was null.");
             }
         } catch (final IntegrationException e) {
-            logger.error("Unable to create Hub services factory.", e);
+            logger.error("There was a problem when creating the HubServicesFactory.", e);
             return;
         }
 
         final List<UserView> hubServerUsers = getHubServerUsers(hubServicesFactory.createUserRequestService());
         if (hubServerUsers != null) {
-            final Map<String, HubUsersEntity> localUsernames = getLocalUsernames();
-            synchronizeUsersWithHubServer(hubServerUsers, localUsernames, hubServicesFactory.createUserDataService(), hubServicesFactory.createProjectVersionRequestService());
+            final Map<String, HubUsersEntity> localUsernamesMap = getLocalUsernames();
+            synchronizeUsersWithHubServer(hubServerUsers, localUsernamesMap, hubServicesFactory.createUserDataService(), hubServicesFactory.createProjectVersionRequestService());
         } else {
             logger.error("There was a problem getting the Hub Server Users. Cannot synchronize the local data with the Hub.");
         }
@@ -124,7 +122,8 @@ public class HubUserSynchronizationManager implements Runnable {
                 usersThatDoNotExist.add(localUsernamesMap.get(localUsername));
             }
         });
-        // Delete users if there is no configuration for them, or deactivate them if there is.
+
+        // Delete local users if there is no configuration for them, or deactivate them if there is.
         usersThatDoNotExist.forEach(user -> {
             if (!hubUserManager.hasChannelConfiguration(user.getId())) {
                 hubUserManager.deleteConfig(user.getId());
@@ -150,15 +149,18 @@ public class HubUserSynchronizationManager implements Runnable {
 
     private HubUsersEntity getHubUsersEntityOrCreateIfNeeded(final Map<String, HubUsersEntity> localUsernames, final UserView serverUser) {
         if (!localUsernames.containsKey(serverUser.userName)) {
-            final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, hubUserManager.getObjectTransformer().objectToString(serverUser.active), null);
+            final String isActive = hubUserManager.getObjectTransformer().objectToString(serverUser.active);
+            final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, serverUser.userName, "DAILY", null, null, null, isActive, null);
             try {
                 final Long savedId = hubUserManager.saveConfig(newWrapper);
-                return hubUsersRepository.findOne(savedId);
+                final HubUsersEntity savedEntity = hubUsersRepository.findOne(savedId);
+                localUsernames.put(serverUser.userName, savedEntity);
+                return savedEntity;
             } catch (final AlertException e) {
                 logger.error("Error saving a new Hub user configuration.", e);
             }
         }
-        return localUsernames.get(serverUser);
+        return localUsernames.get(serverUser.userName);
     }
 
     private void synchronizeUserProjectVersionsWithHubServer(final HubUsersEntity oldEntity, final UserDataService userDataService, final ProjectVersionRequestService projectVersionRequestService) {
@@ -167,14 +169,12 @@ public class HubUserSynchronizationManager implements Runnable {
 
         final List<ProjectVersionConfigWrapper> staleConfigs = getItemsFromFirstListMissingFromSecondList(localProjectVersions, remoteProjectVersions);
         staleConfigs.forEach(config -> {
-            deleteHubUserProjectVersionRelation(oldEntity.getId(), config);
+            hubUserManager.deleteHubUserProjectVersionRelation(oldEntity.getId(), config);
         });
 
         if (localProjectVersions.size() != remoteProjectVersions.size()) {
             final List<ProjectVersionConfigWrapper> missingConfigs = getItemsFromFirstListMissingFromSecondList(remoteProjectVersions, localProjectVersions);
-            missingConfigs.forEach(missingConfig -> {
-                hubUserProjectVersionsRepository.save(new HubUserProjectVersionsRelation(oldEntity.getId(), missingConfig.getProjectName(), missingConfig.getProjectVersionName(), Boolean.parseBoolean(missingConfig.getEnabled())));
-            });
+            hubUserManager.saveProjectVersionsForUser(oldEntity.getId(), missingConfigs);
         }
     }
 
@@ -235,14 +235,6 @@ public class HubUserSynchronizationManager implements Runnable {
             return null;
         }
         return userList;
-    }
-
-    private void deleteHubUserProjectVersionRelation(final Long id, final ProjectVersionConfigWrapper projectVersionWrapper) {
-        final HubUserProjectVersionsRelationPK key = new HubUserProjectVersionsRelationPK();
-        key.userConfigId = id;
-        key.projectName = projectVersionWrapper.getProjectName();
-        key.projectVersionName = projectVersionWrapper.getProjectVersionName();
-        hubUserProjectVersionsRepository.delete(key);
     }
 
 }

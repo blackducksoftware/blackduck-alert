@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
@@ -47,13 +49,13 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.repositor
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserSlackRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.HubUsersConfigWrapperActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.ProjectVersionConfigWrapper;
 
 @Component
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class HubUserManager {
-    private final Logger logger = LoggerFactory.getLogger(HubUsersConfigWrapperActions.class);
+    private final Logger logger = LoggerFactory.getLogger(HubUserManager.class);
 
     private final HubUsersRepository hubUsersRepository;
     private final HubUserFrequenciesRepository hubUserFrequenciesRepository;
@@ -80,15 +82,13 @@ public class HubUserManager {
         Long configId = objectTransformer.stringToLong(wrapper.getId());
         if (configId == null || !hubUsersRepository.exists(configId)) {
             hubUsersEntity = hubUsersRepository.save(new HubUsersEntity(wrapper.getUsername(), objectTransformer.stringToBoolean(wrapper.getActive())));
-        } else {
-            hubUsersEntity = hubUsersRepository.findOne(configId);
+            configId = hubUsersEntity.getId();
         }
-        configId = hubUsersEntity.getId();
         saveFrequency(configId, wrapper.getFrequency());
         saveChannelId(configId, wrapper.getEmailConfigId(), hubUserEmailRepository, HubUserEmailRelation.class);
         saveChannelId(configId, wrapper.getHipChatConfigId(), hubUserHipChatRepository, HubUserHipChatRelation.class);
         saveChannelId(configId, wrapper.getSlackConfigId(), hubUserSlackRepository, HubUserSlackRelation.class);
-        saveProjectVersions(configId, wrapper.getProjectVersions());
+        saveProjectVersionsForUser(configId, wrapper.getProjectVersions());
 
         return configId;
     }
@@ -124,20 +124,23 @@ public class HubUserManager {
     }
 
     private void saveFrequency(final Long id, final String frequency) {
-        final HubUserFrequenciesRelation hubUserFrequency = hubUserFrequenciesRepository.findOne(id);
-        if (hubUserFrequency != null) {
-            final String storedFrequency = hubUserFrequency.getFrequency();
-            if (storedFrequency.equals(frequency)) {
-                // No need to update the frequency.
-                return;
+        if (frequency != null) {
+            final HubUserFrequenciesRelation hubUserFrequency = hubUserFrequenciesRepository.findOne(id);
+            if (hubUserFrequency != null) {
+                final String storedFrequency = hubUserFrequency.getFrequency();
+                if (storedFrequency.equals(frequency)) {
+                    // No need to update the frequency.
+                    return;
+                }
             }
+            hubUserFrequenciesRepository.save(new HubUserFrequenciesRelation(id, frequency));
         }
-        hubUserFrequenciesRepository.save(new HubUserFrequenciesRelation(id, frequency));
     }
 
     private <R extends DatabaseChannelRelation> void saveChannelId(final Long id, final String channelId, final JpaRepository<R, Long> repository, final Class<R> clazz) {
-        if (doesChannelConfigNeedUpdate(id, channelId, repository)) {
-            if (channelId != null) {
+        final Long channelIdLong = objectTransformer.stringToLong(channelId);
+        if (doesChannelConfigNeedUpdate(id, channelIdLong, repository)) {
+            if (channelIdLong != null) {
                 R channelRelation;
                 try {
                     channelRelation = clazz.newInstance();
@@ -146,7 +149,7 @@ public class HubUserManager {
                     return;
                 }
                 channelRelation.setUserConfigId(id);
-                channelRelation.setChannelConfigId(objectTransformer.stringToLong(channelId));
+                channelRelation.setChannelConfigId(channelIdLong);
                 repository.save(channelRelation);
             } else {
                 repository.delete(id);
@@ -154,7 +157,17 @@ public class HubUserManager {
         }
     }
 
-    private void saveProjectVersions(final Long id, final List<ProjectVersionConfigWrapper> projectVersionWrappers) {
+    public List<ProjectVersionConfigWrapper> getProjectVersions(final Long hubUserConfigId) {
+        final List<HubUserProjectVersionsRelation> projectVersionsRelations = hubUserProjectVersionsRepository.findByUserConfigId(hubUserConfigId);
+        final List<ProjectVersionConfigWrapper> wrappers = new ArrayList<>(projectVersionsRelations.size());
+        projectVersionsRelations.forEach(relation -> {
+            final String isEnabled = objectTransformer.objectToString(relation.getEnabled());
+            wrappers.add(new ProjectVersionConfigWrapper(relation.getProjectName(), relation.getProjectVersionName(), isEnabled));
+        });
+        return wrappers;
+    }
+
+    public void saveProjectVersionsForUser(final Long id, final List<ProjectVersionConfigWrapper> projectVersionWrappers) {
         if (projectVersionWrappers != null && !projectVersionWrappers.isEmpty()) {
             projectVersionWrappers.forEach(projectVersionWrapper -> {
                 final HubUserProjectVersionsRelationPK key = new HubUserProjectVersionsRelationPK();
@@ -170,23 +183,27 @@ public class HubUserManager {
         }
     }
 
-    private <R extends DatabaseChannelRelation> boolean doesChannelConfigNeedUpdate(final Long userId, final String channelConfigId, final JpaRepository<R, Long> repository) {
-        final Long channelConfigIdLong = objectTransformer.stringToLong(channelConfigId);
-        if (channelConfigIdLong != null) {
-            return doesChannelConfigNeedUpdate(userId, channelConfigIdLong, repository);
-        }
-        return repository.exists(userId);
+    public void deleteHubUserProjectVersionRelation(final Long id, final ProjectVersionConfigWrapper projectVersionWrapper) {
+        final HubUserProjectVersionsRelationPK key = new HubUserProjectVersionsRelationPK();
+        key.userConfigId = id;
+        key.projectName = projectVersionWrapper.getProjectName();
+        key.projectVersionName = projectVersionWrapper.getProjectVersionName();
+        hubUserProjectVersionsRepository.delete(key);
     }
 
     private <R extends DatabaseChannelRelation> boolean doesChannelConfigNeedUpdate(final Long userId, final Long channelConfigId, final JpaRepository<R, Long> repository) {
         final R relation = repository.findOne(userId);
         if (relation != null) {
-            final Long storedChannelConfigId = relation.getChannelConfigId();
-            if (storedChannelConfigId.equals(channelConfigId)) {
-                return false;
+            if (channelConfigId != null) {
+                final Long storedChannelConfigId = relation.getChannelConfigId();
+                if (!storedChannelConfigId.equals(channelConfigId)) {
+                    return true;
+                }
+            } else {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public boolean hasChannelConfiguration(final Long id) {
@@ -219,16 +236,6 @@ public class HubUserManager {
 
     public String getSlackConfigId(final Long hubUserConfigId) {
         return getChannelConfigIdAsString(hubUserConfigId, hubUserSlackRepository);
-    }
-
-    public List<ProjectVersionConfigWrapper> getProjectVersions(final Long hubUserConfigId) {
-        final List<HubUserProjectVersionsRelation> projectVersionsRelations = hubUserProjectVersionsRepository.findByUserConfigId(hubUserConfigId);
-        final List<ProjectVersionConfigWrapper> wrappers = new ArrayList<>(projectVersionsRelations.size());
-        projectVersionsRelations.forEach(relation -> {
-            final String isEnabled = objectTransformer.objectToString(relation.getEnabled());
-            wrappers.add(new ProjectVersionConfigWrapper(relation.getProjectName(), relation.getProjectVersionName(), isEnabled));
-        });
-        return wrappers;
     }
 
     private <R extends DatabaseChannelRelation> String getChannelConfigIdAsString(final Long userId, final JpaRepository<R, Long> repository) {

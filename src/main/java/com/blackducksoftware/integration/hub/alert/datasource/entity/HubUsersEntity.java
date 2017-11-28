@@ -32,7 +32,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 @Table(name = "hub_users")
 public class HubUsersEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 2565372713815698214L;
+    private static final long serialVersionUID = -622089604623191408L;
 
     @Column(name = "hub_username")
     private String username;
@@ -46,6 +46,10 @@ public class HubUsersEntity extends DatabaseEntity {
     public HubUsersEntity(final String username, final Boolean active) {
         this.username = username;
         this.active = active;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public String getUsername() {

@@ -52,6 +52,7 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.manager.HubUserSynchronizationManager;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -73,6 +74,8 @@ public class Application {
     private AccumulatorConfig accumulatorConfig;
     @Autowired
     private DailyDigestBatchConfig dailyDigestBatchConfig;
+    @Autowired
+    private HubUserSynchronizationManager hubUserSynchronizationManager;
 
     @PostConstruct
     void init() {
@@ -95,6 +98,7 @@ public class Application {
 
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            hubUserSynchronizationManager.scheduleJobExecution(AlertConstants.CRON_EXPRESSION_EVERY_MINUTE);
         } else {
             logger.info("----------------------------------------");
             logger.info("Alert Configuration: No global configuration");
