@@ -32,6 +32,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -75,6 +76,8 @@ public class Application {
     private AccumulatorConfig accumulatorConfig;
     @Autowired
     private DailyDigestBatchConfig dailyDigestBatchConfig;
+    @Value("${logging.level.com.blackducksoftware.integration:}")
+    String loggingLevel;
 
     @PostConstruct
     void init() {
@@ -83,6 +86,7 @@ public class Application {
         if (globalConfig != null) {
             logger.info("----------------------------------------");
             logger.info("Alert Configuration: ");
+            logger.info("Logging level: {}", loggingLevel);
             logger.info("Hub URL:            {}", globalProperties.hubUrl);
             logger.info("Hub Username:       {}", globalConfig.getHubUsername());
             logger.info("Hub Password:       **********");
