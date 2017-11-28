@@ -39,9 +39,9 @@ public class ProjectData extends DigestData {
         this.projectName = projectName;
         this.projectVersion = projectVersion;
         this.categoryMap = categoryMap;
-        if (null != projectName && null != projectVersion) {
+        if (projectName != null && projectVersion != null) {
             this.projectKey = projectName + projectVersion;
-        } else if (null == projectName) {
+        } else if (projectName == null) {
             this.projectKey = projectVersion;
         } else {
             this.projectKey = projectName;

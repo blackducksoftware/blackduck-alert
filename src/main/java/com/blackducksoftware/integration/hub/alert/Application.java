@@ -83,13 +83,13 @@ public class Application {
         if (globalConfig != null) {
             logger.info("----------------------------------------");
             logger.info("Alert Configuration: ");
-            logger.info("Hub URL:            {}", globalConfig.getHubUrl());
+            logger.info("Hub URL:            {}", globalProperties.hubUrl);
             logger.info("Hub Username:       {}", globalConfig.getHubUsername());
             logger.info("Hub Password:       **********");
             logger.info("Hub Timeout:        {}", globalConfig.getHubTimeout());
-            logger.info("Hub Proxy Host:     {}", globalConfig.getHubProxyHost());
-            logger.info("Hub Proxy Port:     {}", globalConfig.getHubProxyPort());
-            logger.info("Hub Proxy User:     {}", globalConfig.getHubProxyUsername());
+            logger.info("Hub Proxy Host:     {}", globalProperties.hubProxyHost);
+            logger.info("Hub Proxy Port:     {}", globalProperties.hubProxyPort);
+            logger.info("Hub Proxy User:     {}", globalProperties.hubProxyUsername);
             logger.info("Hub Proxy Password: **********");
             logger.info("----------------------------------------");
             logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
