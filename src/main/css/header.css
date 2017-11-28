@@ -1,0 +1,33 @@
+.header, .fixedHeader {
+    background-color: #282E36;
+    height: 50px;
+    line-height: 50px;
+    width: 100%;  
+    text-align: left;
+    margin: 0 auto;
+    padding-left: 15px;
+    color: white;
+}
+
+.fixedHeader {
+    position: fixed;
+    z-index: 9999;
+}
+
+.submitButtons {
+    margin-right: 10px;
+	color: #fff;
+    background: #285f8f;
+    text-align: center;
+    padding: 5px 10px 5px 10px;
+    font-size: 1em;
+    display: inline-block;
+}
+
+.submitContainers {
+	padding-right: 10px;
+    display: inline-block;
+    margin: 5px;
+    text-align: right;
+    float: right;
+}

@@ -36,6 +36,11 @@ public class MockUtils {
         return restModel;
     }
 
+    public GlobalConfigRestModel createGlobalConfigMaskedRestModel() {
+        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "", "HubProxyHost", "22", "HubProxyUsername", "", "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
+        return restModel;
+    }
+
     public GlobalConfigEntity createGlobalConfigEntity() {
         final GlobalConfigEntity configEntity = new GlobalConfigEntity("HubUrl", 11, "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
         configEntity.setId(1L);
@@ -53,6 +58,12 @@ public class MockUtils {
     public EmailConfigRestModel createEmailConfigRestModel() {
         final EmailConfigRestModel restModel = new EmailConfigRestModel("1", "MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", "33", "11", "22", "MailSmtpFrom", "MailSmtpLocalhost", "false", "true", "MailSmtpDnsNotify", "MailSmtpDnsRet",
                 "false", "false", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
+        return restModel;
+    }
+
+    public EmailConfigRestModel createEmailConfigMaskedRestModel() {
+        final EmailConfigRestModel restModel = new EmailConfigRestModel("1", "MailSmtpHost", "MailSmtpUser", "", "33", "11", "22", "MailSmtpFrom", "MailSmtpLocalhost", "false", "true", "MailSmtpDnsNotify", "MailSmtpDnsRet", "false",
+                "false", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
         return restModel;
     }
 

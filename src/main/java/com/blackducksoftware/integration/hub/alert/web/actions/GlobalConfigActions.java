@@ -113,19 +113,21 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public String testConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(restModel.getHubUrl());
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
         hubServerConfigBuilder.setUsername(restModel.getHubUsername());
-        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
 
         hubServerConfigBuilder.setProxyHost(restModel.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
+
+        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
         hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
+
         if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
             hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
         }
@@ -167,6 +169,14 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
 
         }
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        final List<String> sensitiveFields = new ArrayList<>();
+        sensitiveFields.add("hubPassword");
+        sensitiveFields.add("hubProxyPassword");
+        return sensitiveFields;
     }
 
 }

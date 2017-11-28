@@ -26,21 +26,21 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface ConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
+// This must be an abstract class for the security to work
+public abstract class ConfigController<R extends ConfigRestModel> {
 
-    public List<R> getConfig(final Long id);
+    public abstract List<R> getConfig(final Long id);
 
-    public ResponseEntity<String> postConfig(final R restModel);
+    public abstract ResponseEntity<String> postConfig(final R restModel);
 
-    public ResponseEntity<String> putConfig(final R restModel);
+    public abstract ResponseEntity<String> putConfig(final R restModel);
 
-    public ResponseEntity<String> validateConfig(final R restModel);
+    public abstract ResponseEntity<String> validateConfig(final R restModel);
 
-    public ResponseEntity<String> deleteConfig(final R restModel);
+    public abstract ResponseEntity<String> deleteConfig(final R restModel);
 
-    public ResponseEntity<String> testConfig(final R restModel);
+    public abstract ResponseEntity<String> testConfig(final R restModel);
 
 }

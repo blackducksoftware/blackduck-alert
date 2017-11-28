@@ -20,26 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
-@Controller
-public class HomeController {
+@EnableWebSecurity
+@Configuration
+public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
-    @RequestMapping(value = { "/" })
-    public String index() {
-        return "index";
+    @Override
+    protected void configure(final HttpSecurity http) throws Exception {
+        http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
+        // TODO: Make sure the H2 console is disabled by removing the following line of code.
+        http.headers().frameOptions().disable();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/verify")
-    public ResponseEntity<String> checkAuthentication() {
-        return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
-    }
 }

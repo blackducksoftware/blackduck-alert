@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActi
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
-public class HipChatConfigController implements ConfigController<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigController extends ConfigController<HipChatConfigRestModel> {
     private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
@@ -48,18 +49,21 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/hipchat")
     public List<HipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.putConfig(hipChatConfig);
@@ -71,12 +75,14 @@ public class HipChatConfigController implements ConfigController<HipChatConfigEn
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatConfigRestModel hipChatConfig) {
         return commonConfigController.testConfig(hipChatConfig);

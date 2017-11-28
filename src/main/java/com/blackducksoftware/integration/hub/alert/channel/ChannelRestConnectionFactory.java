@@ -62,7 +62,7 @@ public class ChannelRestConnectionFactory {
         try {
             url = new URL(apiUrl);
         } catch (final MalformedURLException e) {
-            logger.error("Problem generating the URL", e);
+            logger.error("Problem generating the URL: " + apiUrl, e);
         }
         return url;
     }
