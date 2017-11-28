@@ -22,7 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,9 +57,14 @@ public class HubUsersConfigActions extends ConfigActions<HubUsersEntity, HubUser
     }
 
     @Override
-    public String testConfig(final HubUsersConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final HubUsersConfigRestModel restModel) throws IntegrationException {
         // TODO check if user exists on the hub?
         return null;
+    }
+
+    @Override
+    public List<String> sensitiveFields() {
+        return Collections.emptyList();
     }
 
 }

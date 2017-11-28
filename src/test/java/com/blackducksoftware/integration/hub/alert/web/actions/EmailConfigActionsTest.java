@@ -67,7 +67,7 @@ public class EmailConfigActionsTest {
         Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createEmailConfigEntity());
         Mockito.when(mockedEmailRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createEmailConfigEntity()));
 
-        final EmailConfigRestModel restModel = mockUtils.createEmailConfigRestModel();
+        final EmailConfigRestModel maskedRestModel = mockUtils.createEmailConfigMaskedRestModel();
 
         final EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, null);
         List<EmailConfigRestModel> emailConfigsById = configActions.getConfig(1L);
@@ -78,8 +78,8 @@ public class EmailConfigActionsTest {
 
         final EmailConfigRestModel emailConfigById = emailConfigsById.get(0);
         final EmailConfigRestModel emailConfig = allEmailConfigs.get(0);
-        assertEquals(restModel, emailConfigById);
-        assertEquals(restModel, emailConfig);
+        assertEquals(maskedRestModel, emailConfigById);
+        assertEquals(maskedRestModel, emailConfig);
 
         Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(null);
         Mockito.when(mockedEmailRepository.findAll()).thenReturn(null);

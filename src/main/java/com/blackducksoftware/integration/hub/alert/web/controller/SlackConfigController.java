@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +41,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigAction
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
 @RestController
-public class SlackConfigController implements ConfigController<SlackConfigEntity, SlackConfigRestModel> {
+public class SlackConfigController extends ConfigController<SlackConfigRestModel> {
     private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired
@@ -49,30 +50,35 @@ public class SlackConfigController implements ConfigController<SlackConfigEntity
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/slack")
     public List<SlackConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/slack")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
         return commonConfigController.postConfig(slackConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/slack")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
         return commonConfigController.putConfig(slackConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/slack")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
         return commonConfigController.deleteConfig(slackConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/slack/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final SlackConfigRestModel slackConfig) {
         return commonConfigController.testConfig(slackConfig);

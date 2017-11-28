@@ -45,6 +45,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -63,8 +64,9 @@ import com.google.gson.GsonBuilder;
 @EnableBatchProcessing
 @EnableScheduling
 @EnableJms
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert.web.**", "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
 public class Application {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
