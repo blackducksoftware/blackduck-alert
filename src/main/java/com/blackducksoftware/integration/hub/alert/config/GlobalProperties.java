@@ -122,7 +122,9 @@ public class GlobalProperties {
             hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
             hubServerConfigBuilder.setProxyPassword(hubProxyPassword);
 
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
+            if (hubTrustCertificate != null) {
+                hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
+            }
             hubServerConfigBuilder.setLogger(logger);
 
             return hubServerConfigBuilder.build();

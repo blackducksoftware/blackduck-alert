@@ -30,31 +30,19 @@ public class GlobalRepositoryIT {
 
     @Test
     public void testSaveEntity() {
-        final String hubUrl = "hub_url";
         final Integer hubTimeout = 300;
         final String hubUsername = "hub_username";
         final String hubPassword = "hub_password";
-        final String hubProxyHost = "hubProxyHost";
-        final String hubProxyPort = "hub_proxy_port";
-        final String hubProxyUsername = "hub_proxy_username";
-        final String hubProxyPassword = "hub_proxy_password";
-        final Boolean hubAlwaysTrustCertificate = true;
         final String accumulatorCron = "accumulator_cron";
         final String dailyDigestCron = "dailyDigest_cron";
-        final GlobalConfigEntity entity = new GlobalConfigEntity(hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron, dailyDigestCron);
+        final GlobalConfigEntity entity = new GlobalConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron);
         final GlobalConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
         final GlobalConfigEntity foundEntity = repository.findOne(savedEntity.getId());
-        assertEquals(hubUrl, foundEntity.getHubUrl());
         assertEquals(hubTimeout, foundEntity.getHubTimeout());
         assertEquals(hubUsername, foundEntity.getHubUsername());
         assertEquals(hubPassword, foundEntity.getHubPassword());
-        assertEquals(hubProxyHost, foundEntity.getHubProxyHost());
-        assertEquals(hubProxyPort, foundEntity.getHubProxyPort());
-        assertEquals(hubProxyUsername, foundEntity.getHubProxyUsername());
-        assertEquals(hubProxyPassword, foundEntity.getHubProxyPassword());
-        assertEquals(hubAlwaysTrustCertificate, foundEntity.getHubAlwaysTrustCertificate());
         assertEquals(accumulatorCron, foundEntity.getAccumulatorCron());
         assertEquals(dailyDigestCron, foundEntity.getDailyDigestCron());
     }

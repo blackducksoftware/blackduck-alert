@@ -11,16 +11,29 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestModel;
 
 public class MockUtils {
+
+    public GlobalProperties createTestGlobalProperties(final GlobalRepository globalRepository) {
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
+        globalProperties.hubUrl = "HubUrl";
+        globalProperties.hubTrustCertificate = false;
+        globalProperties.hubProxyHost = "HubProxyHost";
+        globalProperties.hubProxyPort = "22";
+        globalProperties.hubProxyUsername = "HubProxyUsername";
+        globalProperties.hubProxyPassword = "HubProxyPassword";
+        return globalProperties;
+    }
 
     public String getGlobalConfigRestModelJson() {
         return "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":\"11\",\"hubUsername\":\"HubUsername\",\"hubPassword\":\"HubPassword\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"22\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubProxyPassword\":\"HubProxyPassword\",\"hubAlwaysTrustCertificate\":\"false\",\"accumulatorCron\":\"0 0/1 * 1/1 * *\",\"dailyDigestCron\":\"0 0/1 * 1/1 * *\",\"id\":\"1\"}";
@@ -36,12 +49,12 @@ public class MockUtils {
     }
 
     public GlobalConfigRestModel createGlobalConfigMaskedRestModel() {
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "", "HubProxyHost", "22", "HubProxyUsername", "", "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
+        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", null, "HubProxyHost", "22", "HubProxyUsername", null, "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
         return restModel;
     }
 
     public GlobalConfigEntity createGlobalConfigEntity() {
-        final GlobalConfigEntity configEntity = new GlobalConfigEntity("HubUrl", 11, "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
+        final GlobalConfigEntity configEntity = new GlobalConfigEntity(11, "HubUsername", "HubPassword", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *");
         configEntity.setId(1L);
         return configEntity;
     }
@@ -61,7 +74,7 @@ public class MockUtils {
     }
 
     public EmailConfigRestModel createEmailConfigMaskedRestModel() {
-        final EmailConfigRestModel restModel = new EmailConfigRestModel("1", "MailSmtpHost", "MailSmtpUser", "", "33", "11", "22", "MailSmtpFrom", "MailSmtpLocalhost", "false", "true", "MailSmtpDnsNotify", "MailSmtpDnsRet", "false",
+        final EmailConfigRestModel restModel = new EmailConfigRestModel("1", "MailSmtpHost", "MailSmtpUser", null, "33", "11", "22", "MailSmtpFrom", "MailSmtpLocalhost", "false", "true", "MailSmtpDnsNotify", "MailSmtpDnsRet", "false",
                 "false", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
         return restModel;
     }

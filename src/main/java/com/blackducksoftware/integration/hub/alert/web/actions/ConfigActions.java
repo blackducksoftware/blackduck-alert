@@ -84,7 +84,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             for (final String fieldName : sensitiveFields()) {
                 final Field field = restModelClass.getDeclaredField(fieldName);
                 field.setAccessible(true);
-                field.set(restModel, "");
+                field.set(restModel, null);
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);

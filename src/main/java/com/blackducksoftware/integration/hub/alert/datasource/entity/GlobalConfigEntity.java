@@ -88,7 +88,7 @@ public class GlobalConfigEntity extends DatabaseEntity {
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
         reflectionToStringBuilder.setExcludeFieldNames("hubPassword");
-        return reflectionToStringBuilder.toString();
+        return reflectionToStringBuilder.build();
     }
 
 }
