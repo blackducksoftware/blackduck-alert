@@ -19,9 +19,13 @@ import java.util.HashMap;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -33,7 +37,11 @@ public class HipChatChannelTestIT extends RestChannelTest {
     public void sendMessageTestIT() throws IOException {
         Assume.assumeTrue(properties.containsKey("hipchat.api.key"));
         Assume.assumeTrue(properties.containsKey("hipchat.room.id"));
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null);
+
+        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, channelRestConnectionFactory);
 
         final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
         map.put(NotificationCategoryEnum.POLICY_VIOLATION, new CategoryData("category_key", Collections.emptyList(), 0));
