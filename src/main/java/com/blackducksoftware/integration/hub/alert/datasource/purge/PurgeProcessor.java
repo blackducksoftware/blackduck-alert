@@ -20,22 +20,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.purge;
 
-import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 
-@Transactional
-public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);
+public class PurgeProcessor implements ItemProcessor<List<NotificationEntity>, List<NotificationEntity>> {
 
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBefore(final Date date);
+    @Override
+    public List<NotificationEntity> process(final List<NotificationEntity> item) throws Exception {
+        return item;
+    }
 }

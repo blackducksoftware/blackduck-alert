@@ -108,7 +108,7 @@ npm_run() {
     args = ['build']
 }
 
-task webpack(type: Exec) {
+task webpack(type: Exec, dependsOn: [npm_run]) {
         inputs.file("package-lock.json")
         inputs.file("webpack.config.js")
         inputs.dir("$projectDir/src/main")
@@ -118,7 +118,7 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
-tasks.cleanBundles.finalizedBy(npm_run)
+tasks.build.finalizedBy(webpack)
 
 license {
     header = file('HEADER')
