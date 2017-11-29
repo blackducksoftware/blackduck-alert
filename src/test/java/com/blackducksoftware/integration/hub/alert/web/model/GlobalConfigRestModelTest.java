@@ -36,9 +36,9 @@ public class GlobalConfigRestModelTest {
         assertNull(globalConfigRestModel.getHubUsername());
         assertNull(globalConfigRestModel.getId());
 
-        assertEquals(1110457057, globalConfigRestModel.hashCode());
+        assertEquals(-1862761851, globalConfigRestModel.hashCode());
 
-        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubAlwaysTrustCertificate\":null,\"accumulatorCron\":null,\"dailyDigestCron\":null,\"id\":null}";
+        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubAlwaysTrustCertificate\":null,\"accumulatorCron\":null,\"dailyDigestCron\":null,\"purgeDataCron\":null,\"id\":null}";
         assertEquals(expectedString, globalConfigRestModel.toString());
 
         final GlobalConfigRestModel globalConfigRestModelNew = new GlobalConfigRestModel();
@@ -59,11 +59,13 @@ public class GlobalConfigRestModelTest {
         final String hubAlwaysTrustCertificate = "HubAlwaysTrustCertificate";
         final String accumulatorCron = "AccumulatorCron";
         final String dailyDigestCron = "DailyDigestCron";
+        final String purgeDataCron = "PurgeDataCron";
 
         final GlobalConfigRestModel globalConfigRestModel = new GlobalConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate,
-                accumulatorCron, dailyDigestCron);
+                accumulatorCron, dailyDigestCron, purgeDataCron);
         assertEquals(accumulatorCron, globalConfigRestModel.getAccumulatorCron());
         assertEquals(dailyDigestCron, globalConfigRestModel.getDailyDigestCron());
+        assertEquals(purgeDataCron, globalConfigRestModel.getPurgeDataCron());
         assertEquals(hubAlwaysTrustCertificate, globalConfigRestModel.getHubAlwaysTrustCertificate());
         assertEquals(hubPassword, globalConfigRestModel.getHubPassword());
         assertEquals(hubProxyHost, globalConfigRestModel.getHubProxyHost());
@@ -75,13 +77,13 @@ public class GlobalConfigRestModelTest {
         assertEquals(hubUsername, globalConfigRestModel.getHubUsername());
         assertEquals(id, globalConfigRestModel.getId());
 
-        assertEquals(-1538780567, globalConfigRestModel.hashCode());
+        assertEquals(-673551280, globalConfigRestModel.hashCode());
 
-        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":\"HubTimeout\",\"hubUsername\":\"HubUsername\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubAlwaysTrustCertificate\":\"HubAlwaysTrustCertificate\",\"accumulatorCron\":\"AccumulatorCron\",\"dailyDigestCron\":\"DailyDigestCron\",\"id\":\"Id\"}";
+        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":\"HubTimeout\",\"hubUsername\":\"HubUsername\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubAlwaysTrustCertificate\":\"HubAlwaysTrustCertificate\",\"accumulatorCron\":\"AccumulatorCron\",\"dailyDigestCron\":\"DailyDigestCron\",\"purgeDataCron\":\"PurgeDataCron\",\"id\":\"Id\"}";
         assertEquals(expectedString, globalConfigRestModel.toString());
 
         final GlobalConfigRestModel globalConfigRestModelNew = new GlobalConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate,
-                accumulatorCron, dailyDigestCron);
+                accumulatorCron, dailyDigestCron, purgeDataCron);
         assertEquals(globalConfigRestModel, globalConfigRestModelNew);
     }
 }

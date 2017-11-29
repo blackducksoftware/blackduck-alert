@@ -172,4 +172,11 @@ public class GlobalProperties {
         return null;
     }
 
+    public String getPurgeDataCron() {
+        final GlobalConfigEntity globalConfig = getConfig();
+        if (globalConfig != null) {
+            return getConfig().getPurgeDataCron();
+        }
+        return null;
+    }
 }
