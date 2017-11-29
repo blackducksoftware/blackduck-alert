@@ -15,29 +15,14 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 
 public class TestGlobalProperties extends GlobalProperties {
-    private String hubUrl;
     private Integer hubTimeout;
     private String hubUsername;
     private String hubPassword;
-    private String hubProxyHost;
-    private String hubProxyPort;
-    private String hubProxyUsername;
-    private String hubProxyPassword;
-    private Boolean hubAlwaysTrustCertificate;
     private String accumulatorCron;
     private String dailyDigestCron;
 
     public TestGlobalProperties(final GlobalRepository globalRepository) {
         super(globalRepository);
-    }
-
-    @Override
-    public String getHubUrl() {
-        return hubUrl;
-    }
-
-    public void setHubUrl(final String hubUrl) {
-        this.hubUrl = hubUrl;
     }
 
     @Override
@@ -65,51 +50,6 @@ public class TestGlobalProperties extends GlobalProperties {
 
     public void setHubPassword(final String hubPassword) {
         this.hubPassword = hubPassword;
-    }
-
-    @Override
-    public String getHubProxyHost() {
-        return hubProxyHost;
-    }
-
-    public void setHubProxyHost(final String hubProxyHost) {
-        this.hubProxyHost = hubProxyHost;
-    }
-
-    @Override
-    public String getHubProxyPort() {
-        return hubProxyPort;
-    }
-
-    public void setHubProxyPort(final String hubProxyPort) {
-        this.hubProxyPort = hubProxyPort;
-    }
-
-    @Override
-    public String getHubProxyUsername() {
-        return hubProxyUsername;
-    }
-
-    public void setHubProxyUsername(final String hubProxyUsername) {
-        this.hubProxyUsername = hubProxyUsername;
-    }
-
-    @Override
-    public String getHubProxyPassword() {
-        return hubProxyPassword;
-    }
-
-    public void setHubProxyPassword(final String hubProxyPassword) {
-        this.hubProxyPassword = hubProxyPassword;
-    }
-
-    @Override
-    public Boolean getHubAlwaysTrustCertificate() {
-        return hubAlwaysTrustCertificate;
-    }
-
-    public void setHubAlwaysTrustCertificate(final Boolean hubAlwaysTrustCertificate) {
-        this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
     }
 
     @Override

@@ -89,12 +89,19 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             return Collections.emptyList();
         }
         final List<GlobalConfigEntity> databaseEntities = repository.findAll();
-        List<GlobalConfigRestModel> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
+        List<GlobalConfigRestModel> restModels = null;
+        if (databaseEntities != null && !databaseEntities.isEmpty()) {
+            restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
+        } else {
+            restModels = new ArrayList<>();
+            restModels.add(new GlobalConfigRestModel());
+        }
         restModels = updateModelsFromEnvironment(restModels);
-        return maskRestModels(restModels);
+        restModels = maskRestModels(restModels);
+        return restModels;
     }
 
-    private GlobalConfigRestModel updateModelFromEnvironment(final GlobalConfigRestModel restModel) {
+    public GlobalConfigRestModel updateModelFromEnvironment(final GlobalConfigRestModel restModel) {
         restModel.setHubUrl(globalProperties.hubUrl);
         if (globalProperties.hubTrustCertificate != null) {
             restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.hubTrustCertificate));
@@ -102,11 +109,11 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         restModel.setHubProxyHost(globalProperties.hubProxyHost);
         restModel.setHubProxyPort(globalProperties.hubProxyPort);
         restModel.setHubProxyUsername(globalProperties.hubProxyUsername);
-        // Don't set passwords on the rest model
+        // Do not send passwords going to the UI
         return restModel;
     }
 
-    private List<GlobalConfigRestModel> updateModelsFromEnvironment(final List<GlobalConfigRestModel> restModels) {
+    public List<GlobalConfigRestModel> updateModelsFromEnvironment(final List<GlobalConfigRestModel> restModels) {
         final List<GlobalConfigRestModel> updatedRestModels = new ArrayList<>();
         for (final GlobalConfigRestModel restModel : restModels) {
             updatedRestModels.add(updateModelFromEnvironment(restModel));

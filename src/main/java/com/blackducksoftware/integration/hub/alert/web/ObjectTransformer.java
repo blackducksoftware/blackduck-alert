@@ -100,7 +100,7 @@ public class ObjectTransformer {
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
                         }
                     } catch (final NoSuchFieldException e) {
-                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
+                        logger.trace(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
                         continue;
                     }
                 }
@@ -167,7 +167,7 @@ public class ObjectTransformer {
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
                         }
                     } catch (final NoSuchFieldException e) {
-                        logger.debug(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
+                        logger.trace(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
                         continue;
                     }
                 }
