@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,18 +48,21 @@ public class HubUsersConfigController extends ConfigController<HubUsersConfigRes
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/users")
     public List<HubUsersConfigRestModel> getConfig(@RequestBody(required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/users")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/users")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
         return commonConfigController.putConfig(restModel);
@@ -70,12 +74,14 @@ public class HubUsersConfigController extends ConfigController<HubUsersConfigRes
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/users")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
         return commonConfigController.deleteConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/users/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HubUsersConfigRestModel restModel) {
         return commonConfigController.testConfig(restModel);
