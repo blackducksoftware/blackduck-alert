@@ -46,7 +46,7 @@ public class EmailChannelTestIT extends RestChannelTest {
         Mockito.when(hubUsersRepository.findOne(Mockito.anyLong())).thenReturn(userEntity);
 
         final GlobalRepository globalRepository = Mockito.mock(GlobalRepository.class);
-        final GlobalConfigEntity globalConfig = new GlobalConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), "", "");
+        final GlobalConfigEntity globalConfig = new GlobalConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), "", "", "");
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
         final List<VulnerabilityEntity> vulns = new ArrayList<>();

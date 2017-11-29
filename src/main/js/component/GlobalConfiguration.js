@@ -17,6 +17,7 @@ export default class GlobalConfiguration extends Configuration {
 
 	render() {
 		return (
+				
 				<div>
 					<h1 className={alignCenter}>Global Configuration</h1>
 					
@@ -31,10 +32,10 @@ export default class GlobalConfiguration extends Configuration {
 					<TextInput label="Host Name" name="hubProxyHost" readOnly="true" value={this.state.values.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.errors.hubProxyHostError}></TextInput>
 					<NumberInput label="Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
 					<TextInput label="Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
-
 					<h2 className={alignCenter}>Scheduling Configuration</h2>
 					<TextInput label="Accumulator Cron" name="accumulatorCron" value={this.state.values.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.errors.accumulatorCronError}></TextInput>
 					<TextInput label="Daily Digest Cron" name="dailyDigestCron" value={this.state.values.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.errors.dailyDigestCronError}></TextInput>
+					<TextInput label="Purge Digest Cron" name="purgeDataCron" value={this.state.values.purgeDataCron} onChange={this.handleChange} errorName="purgeDataCronError" errorValue={this.state.errors.purgeDataCronError}></TextInput>
 					
 					<ConfigButtons includeTest="true" onClick={this.handleSubmit} onTestClick={this.handleTestSubmit} />
 					
