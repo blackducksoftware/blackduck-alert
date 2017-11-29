@@ -23,6 +23,8 @@
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +42,11 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
@@ -58,17 +62,75 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, GlobalConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigActions.class);
+    private final GlobalProperties globalProperties;
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalConfigActions(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
+    public GlobalConfigActions(final GlobalRepository globalRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
             final ObjectTransformer objectTransformer) {
         super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
+        this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
+    }
+
+    @Override
+    public List<GlobalConfigRestModel> getConfig(final Long id) throws AlertException {
+        if (id != null) {
+            final GlobalConfigEntity foundEntity = repository.findOne(id);
+            if (foundEntity != null) {
+                GlobalConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
+                restModel = updateModelFromEnvironment(restModel);
+                if (restModel != null) {
+                    final GlobalConfigRestModel maskedRestModel = maskRestModel(restModel);
+                    return Arrays.asList(maskedRestModel);
+                }
+            }
+            return Collections.emptyList();
+        }
+        final List<GlobalConfigEntity> databaseEntities = repository.findAll();
+        List<GlobalConfigRestModel> restModels = null;
+        if (databaseEntities != null && !databaseEntities.isEmpty()) {
+            restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
+        } else {
+            restModels = new ArrayList<>();
+            restModels.add(new GlobalConfigRestModel());
+        }
+        restModels = updateModelsFromEnvironment(restModels);
+        restModels = maskRestModels(restModels);
+        return restModels;
+    }
+
+    public GlobalConfigRestModel updateModelFromEnvironment(final GlobalConfigRestModel restModel) {
+        restModel.setHubUrl(globalProperties.hubUrl);
+        if (globalProperties.hubTrustCertificate != null) {
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.hubTrustCertificate));
+        }
+        restModel.setHubProxyHost(globalProperties.hubProxyHost);
+        restModel.setHubProxyPort(globalProperties.hubProxyPort);
+        restModel.setHubProxyUsername(globalProperties.hubProxyUsername);
+        // Do not send passwords going to the UI
+        return restModel;
+    }
+
+    public List<GlobalConfigRestModel> updateModelsFromEnvironment(final List<GlobalConfigRestModel> restModels) {
+        final List<GlobalConfigRestModel> updatedRestModels = new ArrayList<>();
+        for (final GlobalConfigRestModel restModel : restModels) {
+            updatedRestModels.add(updateModelFromEnvironment(restModel));
+        }
+        return restModels;
+    }
+
+    @Override
+    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalConfigEntity savedConfig) throws AlertException {
+        T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
+        if (updatedConfig instanceof GlobalConfigRestModel) {
+            updatedConfig = (T) updateModelFromEnvironment((GlobalConfigRestModel) updatedConfig);
+        }
+        return updatedConfig;
     }
 
     @Override
@@ -76,10 +138,6 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
-        }
-
-        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate()) && !isBoolean(restModel.getHubAlwaysTrustCertificate())) {
-            fieldErrors.put("hubAlwaysTrustCertificate", "Not an Boolean.");
         }
 
         if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
@@ -117,19 +175,19 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(restModel.getHubUrl());
+        hubServerConfigBuilder.setHubUrl(globalProperties.hubUrl);
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
         hubServerConfigBuilder.setUsername(restModel.getHubUsername());
 
-        hubServerConfigBuilder.setProxyHost(restModel.getHubProxyHost());
-        hubServerConfigBuilder.setProxyPort(restModel.getHubProxyPort());
-        hubServerConfigBuilder.setProxyUsername(restModel.getHubProxyUsername());
+        hubServerConfigBuilder.setProxyHost(globalProperties.hubProxyHost);
+        hubServerConfigBuilder.setProxyPort(globalProperties.hubProxyPort);
+        hubServerConfigBuilder.setProxyUsername(globalProperties.hubProxyUsername);
 
         hubServerConfigBuilder.setPassword(restModel.getHubPassword());
-        hubServerConfigBuilder.setProxyPassword(restModel.getHubProxyPassword());
+        hubServerConfigBuilder.setProxyPassword(globalProperties.hubProxyPassword);
 
-        if (StringUtils.isNotBlank(restModel.getHubAlwaysTrustCertificate())) {
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(restModel.getHubAlwaysTrustCertificate()));
+        if (globalProperties.hubTrustCertificate != null) {
+            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.hubTrustCertificate);
         }
         hubServerConfigBuilder.setLogger(intLogger);
         validateHubConfiguration(hubServerConfigBuilder);
@@ -175,7 +233,6 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     public List<String> sensitiveFields() {
         final List<String> sensitiveFields = new ArrayList<>();
         sensitiveFields.add("hubPassword");
-        sensitiveFields.add("hubProxyPassword");
         return sensitiveFields;
     }
 

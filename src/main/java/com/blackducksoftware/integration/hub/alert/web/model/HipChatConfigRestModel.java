@@ -68,6 +68,6 @@ public class HipChatConfigRestModel extends ConfigRestModel {
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
         reflectionToStringBuilder.setExcludeFieldNames("apiKey");
-        return reflectionToStringBuilder.toString();
+        return reflectionToStringBuilder.build();
     }
 }

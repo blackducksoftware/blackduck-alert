@@ -1,6 +1,8 @@
 'use strict';
 import React from 'react';
-import Field from '../field/Field';
+import CheckboxInput from '../field/input/CheckboxInput';
+import NumberInput from '../field/input/NumberInput';
+import TextInput from '../field/input/TextInput';
 import ConfigButtons from './ConfigButtons';
 import Configuration from './Configuration';
 
@@ -15,10 +17,10 @@ export default class HipChatConfiguration extends Configuration {
 		return (
 				<div>
 					<h1 className={alignCenter}>HipChat Configuration</h1>
-					<Field label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></Field>
-					<Field label="Room Id" type="number" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.state.errors.roomIdError}></Field>
-					<Field label="Notify" type="checkbox" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.state.errors.notifyError}></Field>
-					<Field label="Color" type="text" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.errors.colorError}></Field>
+					<TextInput label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></TextInput>
+					<NumberInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.state.errors.roomIdError}></NumberInput>
+					<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.state.errors.notifyError}></CheckboxInput>
+					<TextInput label="Color" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.errors.colorError}></TextInput>
 					
 					<ConfigButtons includeTest="true" onClick={this.handleSubmit} onTestClick={this.handleTestSubmit} />
 					<p name="configurationMessage">{this.state.configurationMessage}</p>

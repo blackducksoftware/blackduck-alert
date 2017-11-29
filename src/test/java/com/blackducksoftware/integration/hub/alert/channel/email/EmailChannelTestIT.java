@@ -46,8 +46,7 @@ public class EmailChannelTestIT extends RestChannelTest {
         Mockito.when(hubUsersRepository.findOne(Mockito.anyLong())).thenReturn(userEntity);
 
         final GlobalRepository globalRepository = Mockito.mock(GlobalRepository.class);
-        final GlobalConfigEntity globalConfig = new GlobalConfigEntity(properties.getProperty("blackduck.hub.url"), 300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), null, null, null,
-                null, Boolean.TRUE, "", "", "");
+        final GlobalConfigEntity globalConfig = new GlobalConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), "", "", "");
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
@@ -71,7 +70,13 @@ public class EmailChannelTestIT extends RestChannelTest {
         final ProjectData projectData = projectDataBuilder.build();
 
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
-        globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
+        globalProperties.hubUrl = properties.getProperty("blackduck.hub.url");
+
+        final String trustCert = properties.getProperty("blackduck.hub.trust.cert");
+        if (trustCert != null) {
+            globalProperties.hubTrustCertificate = Boolean.valueOf(trustCert);
+        }
+
         final Gson gson = new Gson();
         final EmailChannel emailChannel = new EmailChannel(globalProperties, gson, hubUsersRepository, null, null);
         final EmailEvent event = new EmailEvent(projectData, userEntity.getId());

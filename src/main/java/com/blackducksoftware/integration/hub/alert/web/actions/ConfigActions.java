@@ -84,7 +84,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             for (final String fieldName : sensitiveFields()) {
                 final Field field = restModelClass.getDeclaredField(fieldName);
                 field.setAccessible(true);
-                field.set(restModel, "");
+                field.set(restModel, null);
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
@@ -105,12 +105,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public void deleteConfig(final Long id) {
-        if (null != id) {
+        if (id != null) {
             repository.delete(id);
         }
     }
 
-    public Object updateNewConfigWithSavedConfig(final Object newConfig, final String id) throws AlertException {
+    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
             final D savedConfig = repository.findOne(longId);
@@ -119,14 +119,14 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
-    public Object updateNewConfigWithSavedConfig(final Object newConfig, final D savedConfig) throws AlertException {
+    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
         try {
             final Class newConfigClass = newConfig.getClass();
             for (final String fieldName : sensitiveFields()) {
                 final Field field = newConfigClass.getDeclaredField(fieldName);
                 field.setAccessible(true);
                 final String newValue = (String) field.get(newConfig);
-                if (StringUtils.isBlank(newValue) && null != savedConfig) {
+                if (StringUtils.isBlank(newValue) && savedConfig != null) {
                     final Class savedConfigClass = savedConfig.getClass();
                     final Field savedField = savedConfigClass.getDeclaredField(fieldName);
                     savedField.setAccessible(true);
@@ -142,10 +142,10 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
-        if (null != restModel && StringUtils.isNotBlank(restModel.getId())) {
+        if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
-                createdEntity = (D) updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
+                createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -175,7 +175,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public abstract String validateConfig(final R restModel) throws AlertFieldException;
 
     public String testConfig(final R restModel) throws IntegrationException {
-        if (null != restModel && StringUtils.isNotBlank(restModel.getId())) {
+        if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             updateNewConfigWithSavedConfig(restModel, restModel.getId());
         }
         return channelTestConfig(restModel);

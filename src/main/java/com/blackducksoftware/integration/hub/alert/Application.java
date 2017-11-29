@@ -32,6 +32,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -78,34 +79,36 @@ public class Application {
     private DailyDigestBatchConfig dailyDigestBatchConfig;
     @Autowired
     private PurgeConfig purgeConfig;
+    @Value("${logging.level.com.blackducksoftware.integration:}")
+    String loggingLevel;
 
     @PostConstruct
     void init() {
         logger.info("Hub Alert Starting...");
         final GlobalConfigEntity globalConfig = globalProperties.getConfig();
+        logger.info("----------------------------------------");
+        logger.info("Alert Configuration: ");
+        logger.info("Logging level: {}", loggingLevel);
+        logger.info("Hub URL:            {}", globalProperties.hubUrl);
+        logger.info("Hub Proxy Host:     {}", globalProperties.hubProxyHost);
+        logger.info("Hub Proxy Port:     {}", globalProperties.hubProxyPort);
+        logger.info("Hub Proxy User:     {}", globalProperties.hubProxyUsername);
+        logger.info("Hub Proxy Password: **********");
+
         if (globalConfig != null) {
-            logger.info("----------------------------------------");
-            logger.info("Alert Configuration: ");
-            logger.info("Hub URL:            {}", globalConfig.getHubUrl());
             logger.info("Hub Username:       {}", globalConfig.getHubUsername());
             logger.info("Hub Password:       **********");
             logger.info("Hub Timeout:        {}", globalConfig.getHubTimeout());
-            logger.info("Hub Proxy Host:     {}", globalConfig.getHubProxyHost());
-            logger.info("Hub Proxy Port:     {}", globalConfig.getHubProxyPort());
-            logger.info("Hub Proxy User:     {}", globalConfig.getHubProxyUsername());
-            logger.info("Hub Proxy Password: **********");
-            logger.info("----------------------------------------");
+        }
+        logger.info("----------------------------------------");
+
+        if (globalConfig != null) {
             logger.info("Accumulator Cron Expression:      {}", globalConfig.getAccumulatorCron());
             logger.info("Daily Digest Cron Expression:     {}", globalConfig.getDailyDigestCron());
             logger.info("Purge Old Data Cron Expression:   {}", globalConfig.getPurgeDataCron());
-
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
             purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
-        } else {
-            logger.info("----------------------------------------");
-            logger.info("Alert Configuration: No global configuration");
-            logger.info("----------------------------------------");
         }
     }
 

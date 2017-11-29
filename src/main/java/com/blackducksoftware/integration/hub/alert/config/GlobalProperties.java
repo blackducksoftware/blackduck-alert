@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
@@ -40,8 +41,25 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalProperties {
-
     private final GlobalRepository globalRepository;
+
+    @Value("${blackduck.hub.url:}")
+    public String hubUrl;
+
+    @Value("${blackduck.hub.trust.cert:}")
+    public Boolean hubTrustCertificate;
+
+    @Value("${blackduck.hub.proxy.host:}")
+    public String hubProxyHost;
+
+    @Value("${blackduck.hub.proxy.port:}")
+    public String hubProxyPort;
+
+    @Value("${blackduck.hub.proxy.username:}")
+    public String hubProxyUsername;
+
+    @Value("${blackduck.hub.proxy.password:}")
+    public String hubProxyPassword;
 
     @Autowired
     public GlobalProperties(final GlobalRepository globalRepository) {
@@ -94,28 +112,22 @@ public class GlobalProperties {
         final GlobalConfigEntity globalConfigEntity = getConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-            hubServerConfigBuilder.setHubUrl(globalConfigEntity.getHubUrl());
+            hubServerConfigBuilder.setHubUrl(hubUrl);
             hubServerConfigBuilder.setTimeout(globalConfigEntity.getHubTimeout());
             hubServerConfigBuilder.setUsername(globalConfigEntity.getHubUsername());
             hubServerConfigBuilder.setPassword(globalConfigEntity.getHubPassword());
 
-            hubServerConfigBuilder.setProxyHost(globalConfigEntity.getHubProxyHost());
-            hubServerConfigBuilder.setProxyPort(globalConfigEntity.getHubProxyPort());
-            hubServerConfigBuilder.setProxyUsername(globalConfigEntity.getHubProxyUsername());
-            hubServerConfigBuilder.setProxyPassword(globalConfigEntity.getHubProxyPassword());
+            hubServerConfigBuilder.setProxyHost(hubProxyHost);
+            hubServerConfigBuilder.setProxyPort(hubProxyPort);
+            hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
+            hubServerConfigBuilder.setProxyPassword(hubProxyPassword);
 
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalConfigEntity.getHubAlwaysTrustCertificate());
+            if (hubTrustCertificate != null) {
+                hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
+            }
             hubServerConfigBuilder.setLogger(logger);
 
             return hubServerConfigBuilder.build();
-        }
-        return null;
-    }
-
-    public String getHubUrl() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubUrl();
         }
         return null;
     }
@@ -140,46 +152,6 @@ public class GlobalProperties {
         final GlobalConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getHubPassword();
-        }
-        return null;
-    }
-
-    public String getHubProxyHost() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubProxyHost();
-        }
-        return null;
-    }
-
-    public String getHubProxyPort() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubProxyPort();
-        }
-        return null;
-    }
-
-    public String getHubProxyUsername() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubProxyUsername();
-        }
-        return null;
-    }
-
-    public String getHubProxyPassword() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubProxyPassword();
-        }
-        return null;
-    }
-
-    public Boolean getHubAlwaysTrustCertificate() {
-        final GlobalConfigEntity globalConfig = getConfig();
-        if (globalConfig != null) {
-            return getConfig().getHubAlwaysTrustCertificate();
         }
         return null;
     }
