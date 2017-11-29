@@ -130,7 +130,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, EmailConfigEnt
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, emailConfigEntity.getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.hubUrl));
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 

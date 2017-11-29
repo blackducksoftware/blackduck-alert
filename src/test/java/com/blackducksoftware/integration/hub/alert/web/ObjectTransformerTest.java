@@ -46,8 +46,26 @@ public class ObjectTransformerTest {
 
         final GlobalConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalConfigEntity.class);
         final GlobalConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalConfigRestModel.class);
-        assertEquals(restModel, transformedConfigRestModel);
-        assertEquals(configEntity, transformedConfigEntity);
+
+        assertEquals(restModel.getAccumulatorCron(), transformedConfigRestModel.getAccumulatorCron());
+        assertEquals(restModel.getDailyDigestCron(), transformedConfigRestModel.getDailyDigestCron());
+        assertNull(transformedConfigRestModel.getHubAlwaysTrustCertificate());
+        assertEquals(restModel.getHubPassword(), transformedConfigRestModel.getHubPassword());
+        assertNull(transformedConfigRestModel.getHubProxyHost());
+        assertNull(transformedConfigRestModel.getHubProxyPassword());
+        assertNull(transformedConfigRestModel.getHubProxyPort());
+        assertNull(transformedConfigRestModel.getHubProxyUsername());
+        assertEquals(restModel.getHubTimeout(), transformedConfigRestModel.getHubTimeout());
+        assertNull(transformedConfigRestModel.getHubUrl());
+        assertEquals(restModel.getHubUsername(), transformedConfigRestModel.getHubUsername());
+        assertEquals(restModel.getId(), transformedConfigRestModel.getId());
+
+        assertEquals(configEntity.getAccumulatorCron(), transformedConfigEntity.getAccumulatorCron());
+        assertEquals(configEntity.getDailyDigestCron(), transformedConfigEntity.getDailyDigestCron());
+        assertEquals(configEntity.getHubPassword(), transformedConfigEntity.getHubPassword());
+        assertEquals(configEntity.getHubTimeout(), transformedConfigEntity.getHubTimeout());
+        assertEquals(configEntity.getHubUsername(), transformedConfigEntity.getHubUsername());
+        assertEquals(configEntity.getId(), transformedConfigEntity.getId());
     }
 
     @Test
@@ -78,11 +96,11 @@ public class ObjectTransformerTest {
     @Test
     public void testTransformListsOfModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
-        final GlobalConfigEntity configEntity = mockUtils.createGlobalConfigEntity();
+        final EmailConfigRestModel restModel = mockUtils.createEmailConfigRestModel();
+        final EmailConfigEntity configEntity = mockUtils.createEmailConfigEntity();
 
-        List<GlobalConfigEntity> transformedConfigEntities = objectTransformer.configRestModelsToDatabaseEntities(Arrays.asList(restModel), GlobalConfigEntity.class);
-        List<GlobalConfigRestModel> transformedConfigRestModels = objectTransformer.databaseEntitiesToConfigRestModels(Arrays.asList(configEntity), GlobalConfigRestModel.class);
+        List<EmailConfigEntity> transformedConfigEntities = objectTransformer.configRestModelsToDatabaseEntities(Arrays.asList(restModel), EmailConfigEntity.class);
+        List<EmailConfigRestModel> transformedConfigRestModels = objectTransformer.databaseEntitiesToConfigRestModels(Arrays.asList(configEntity), EmailConfigRestModel.class);
         assertNotNull(transformedConfigEntities);
         assertNotNull(transformedConfigRestModels);
         assertTrue(transformedConfigEntities.size() == 1);
@@ -90,21 +108,21 @@ public class ObjectTransformerTest {
         assertEquals(restModel, transformedConfigRestModels.get(0));
         assertEquals(configEntity, transformedConfigEntities.get(0));
 
-        transformedConfigEntities = objectTransformer.configRestModelsToDatabaseEntities(null, GlobalConfigEntity.class);
-        transformedConfigRestModels = objectTransformer.databaseEntitiesToConfigRestModels(null, GlobalConfigRestModel.class);
+        transformedConfigEntities = objectTransformer.configRestModelsToDatabaseEntities(null, EmailConfigEntity.class);
+        transformedConfigRestModels = objectTransformer.databaseEntitiesToConfigRestModels(null, EmailConfigRestModel.class);
     }
 
     @Test
     public void testTransformNullModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
 
-        GlobalConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(null, GlobalConfigEntity.class);
-        GlobalConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(null, GlobalConfigRestModel.class);
+        EmailConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(null, EmailConfigEntity.class);
+        EmailConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(null, EmailConfigRestModel.class);
         assertNull(transformedConfigRestModel);
         assertNull(transformedConfigEntity);
 
-        transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(mockUtils.createGlobalConfigRestModel(), null);
-        transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(mockUtils.createGlobalConfigEntity(), null);
+        transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(mockUtils.createEmailConfigRestModel(), null);
+        transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(mockUtils.createEmailConfigEntity(), null);
         assertNull(transformedConfigRestModel);
         assertNull(transformedConfigEntity);
 

@@ -49,7 +49,6 @@ public class GlobalConfigController extends ConfigController<GlobalConfigRestMod
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/global")
     public List<GlobalConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);

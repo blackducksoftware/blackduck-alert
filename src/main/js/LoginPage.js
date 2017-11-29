@@ -1,7 +1,11 @@
 'use strict';
 
 import React from 'react';
-import Field from './field/Field';
+
+import CheckboxInput from './field/input/CheckboxInput';
+import NumberInput from './field/input/NumberInput';
+import PasswordInput from './field/input/PasswordInput';
+import TextInput from './field/input/TextInput';
 import ConfigButtons from './component/ConfigButtons';
 import Configuration from './component/Configuration';
 import Header from './component/Header';
@@ -76,25 +80,16 @@ class LoginPage extends Configuration {
 					<div className={styles.loginContainer}>
 						<div className={styles.loginBox}>
 							<Header></Header>
-							<Field label="Hub Url" type="text" name="hubUrl" value={this.state.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.hubUrlError}></Field>
-			
-							<Field label="Username" type="text" name="hubUsername" value={this.state.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.hubUsernameError}></Field>
-			
-							<Field label="Password" type="password" name="hubPassword" value={this.state.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.hubPasswordError}></Field>
-			
+							<TextInput label="Hub Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
+							<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.errors.hubUsernameError}></TextInput>
+							<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.hubPasswordError}></PasswordInput>
 							<div className={styles.advanced} onClick={this.handleAdvancedClicked}>{advancedDisplay}</div>
 							<div className={advancedClass}>
-								<Field label="Timeout" type="number" name="hubTimeout" value={this.state.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.hubTimeoutError}></Field>
-				
-								<Field label="Trust Https Certificates" type="checkbox" name="hubAlwaysTrustCertificate" value={this.state.hubAlwaysTrustCertificate} onChange={this.handleChange} errorName="hubAlwaysTrustCertificateError" errorValue={this.state.hubAlwaysTrustCertificateError}></Field>
-								
-								<Field label="Proxy Host Name" type="text" name="hubProxyHost" value={this.state.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.hubProxyHostError}></Field>
-				
-								<Field label="Proxy Port" type="number" name="hubProxyPort" value={this.state.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.hubProxyPortError}></Field>
-				
-								<Field label="Proxy Username" type="text" name="hubProxyUsername" value={this.state.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.hubProxyUsernameError}></Field>
-				
-								<Field label="Proxy Password" type="password" name="hubProxyPassword" value={this.state.hubProxyPassword} onChange={this.handleChange} errorName="hubProxyPasswordError" errorValue={this.state.hubProxyPasswordError}></Field>
+								<NumberInput label="Timeout" name="hubTimeout" value={this.state.values.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.errors.hubTimeoutError}></NumberInput>
+								<CheckboxInput label="Trust Https Certificates" name="hubAlwaysTrustCertificate" readOnly="true" value={this.state.values.hubAlwaysTrustCertificate} onChange={this.handleChange} errorName="hubAlwaysTrustCertificateError" errorValue={this.state.errors.hubAlwaysTrustCertificateError}></CheckboxInput>
+								<TextInput label="Proxy Host Name" name="hubProxyHost" readOnly="true" value={this.state.values.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.errors.hubProxyHostError}></TextInput>
+								<NumberInput label="Proxy Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
+								<TextInput label="Proxy Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
 							</div>
 							<ConfigButtons includeTest="false" onClick={this.handleSubmit} text="Login" />
 							<p name="configurationMessage">{this.state.configurationMessage}</p>
