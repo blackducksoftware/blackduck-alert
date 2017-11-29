@@ -44,10 +44,10 @@ public class HubUsersConfigWrapperActionsTestIT {
 
     @After
     public void cleanup() {
-        // Delete any possible configurations created during tests
-        for (long i = 0; i < 5; i++) {
+        for (long i = 0; i < 25; i++) {
             hubUserManager.deleteConfig(new Long(i));
         }
+        hubUsersRepository.deleteAll();
     }
 
     @Test

@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
@@ -53,7 +52,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigWrapp
 import com.blackducksoftware.integration.hub.alert.web.model.ProjectVersionConfigWrapper;
 
 @Component
-@Transactional(propagation = Propagation.REQUIRES_NEW)
+@Transactional
 public class HubUserManager {
     private final Logger logger = LoggerFactory.getLogger(HubUserManager.class);
 
@@ -192,18 +191,17 @@ public class HubUserManager {
     }
 
     private <R extends DatabaseChannelRelation> boolean doesChannelConfigNeedUpdate(final Long userId, final Long channelConfigId, final JpaRepository<R, Long> repository) {
-        final R relation = repository.findOne(userId);
-        if (relation != null) {
-            if (channelConfigId != null) {
+        if (channelConfigId != null) {
+            final R relation = repository.findOne(userId);
+            if (relation != null) {
                 final Long storedChannelConfigId = relation.getChannelConfigId();
-                if (!storedChannelConfigId.equals(channelConfigId)) {
-                    return true;
+                if (storedChannelConfigId.equals(channelConfigId)) {
+                    return false;
                 }
-            } else {
-                return true;
             }
+            return true;
         }
-        return false;
+        return repository.exists(userId);
     }
 
     public boolean hasChannelConfiguration(final Long id) {

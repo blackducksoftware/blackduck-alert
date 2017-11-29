@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -63,15 +65,14 @@ public class HubUserSynchronizationManagerTestIT {
     @Autowired
     private HubUsersRepository hubUsersRepository;
     @Autowired
+    private HubUserFrequenciesRepository hubUserFrequenciesRepository;
+    @Autowired
     private HubUserProjectVersionsRepository hubUserProjectVersionsRepository;
     @Autowired
     private HubUserManager hubUserManager;
 
-    @Autowired
-    private HubUserFrequenciesRepository hubUserFrequenciesRepository;
-
     private MockUtils mockUtils;
-    private HubUserSynchronizationManager manager;
+    private HubUserSynchronizationManager hubUserSynchronizationManager;
     private Properties properties;
 
     @Before
@@ -80,11 +81,17 @@ public class HubUserSynchronizationManagerTestIT {
         final ResourceLoader resourceLoader = new ResourceLoader();
         properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
 
-        manager = new HubUserSynchronizationManager(globalProperties, hubUsersRepository, hubUserProjectVersionsRepository, hubUserManager, null);
+        hubUserSynchronizationManager = new HubUserSynchronizationManager(globalProperties, hubUsersRepository, hubUserProjectVersionsRepository, hubUserManager, null);
     }
 
     @After
     public void cleanup() {
+        for (int i = 0; i < 25; i++) {
+            try {
+                hubUserManager.deleteConfig(new Long(i));
+            } catch (final DataAccessException e) {
+            }
+        }
         hubUserProjectVersionsRepository.deleteAll();
         hubUsersRepository.deleteAll();
     }
@@ -103,7 +110,7 @@ public class HubUserSynchronizationManagerTestIT {
         final ProjectVersionRequestService projectVersionRequestService = Mockito.mock(ProjectVersionRequestService.class);
         Mockito.when(projectVersionRequestService.getAllProjectVersions(projectView)).thenReturn(Arrays.asList(mockUtils.createProjectVersionView()));
 
-        manager.synchronizeUsersWithHubServer(Arrays.asList(userView), new HashMap<String, HubUsersEntity>(), userDataService, projectVersionRequestService);
+        hubUserSynchronizationManager.synchronizeUsersWithHubServer(Arrays.asList(userView), createHubUsersMap(hubUsersRepository.findAll()), userDataService, projectVersionRequestService);
 
         assertEquals(1, hubUsersRepository.count());
         assertEquals(1, hubUserProjectVersionsRepository.count());
@@ -123,7 +130,7 @@ public class HubUserSynchronizationManagerTestIT {
         assertEquals(1, hubUsersRepository.count());
         assertEquals(1, hubUsersRepository.count());
 
-        final Map<String, HubUsersEntity> localUsernameMap = new HashMap<>();
+        final Map<String, HubUsersEntity> localUsernameMap = createHubUsersMap(hubUsersRepository.findAll());
         localUsernameMap.put(staleUser.getUsername(), staleUser);
 
         final UserDataService userDataService = Mockito.mock(UserDataService.class);
@@ -132,7 +139,7 @@ public class HubUserSynchronizationManagerTestIT {
         final ProjectVersionRequestService projectVersionRequestService = Mockito.mock(ProjectVersionRequestService.class);
         Mockito.when(projectVersionRequestService.getAllProjectVersions(activeProject)).thenReturn(Arrays.asList(mockUtils.createProjectVersionView()));
 
-        manager.synchronizeUsersWithHubServer(Arrays.asList(), localUsernameMap, userDataService, projectVersionRequestService);
+        hubUserSynchronizationManager.synchronizeUsersWithHubServer(Arrays.asList(), localUsernameMap, userDataService, projectVersionRequestService);
 
         assertEquals(0, hubUsersRepository.count());
         assertEquals(0, hubUserProjectVersionsRepository.count());
@@ -152,7 +159,7 @@ public class HubUserSynchronizationManagerTestIT {
         final ProjectVersionRequestService projectVersionRequestService = Mockito.mock(ProjectVersionRequestService.class);
         Mockito.when(projectVersionRequestService.getAllProjectVersions(projectView)).thenReturn(Arrays.asList(mockUtils.createProjectVersionView()));
 
-        manager.synchronizeUsersWithHubServer(Arrays.asList(userView), new HashMap<String, HubUsersEntity>(), userDataService, projectVersionRequestService);
+        hubUserSynchronizationManager.synchronizeUsersWithHubServer(Arrays.asList(userView), new HashMap<String, HubUsersEntity>(), userDataService, projectVersionRequestService);
 
         assertEquals(1, hubUsersRepository.count());
         assertEquals(Boolean.FALSE, hubUsersRepository.findAll().get(0).getActive());
@@ -173,10 +180,21 @@ public class HubUserSynchronizationManagerTestIT {
         final ProjectVersionRequestService projectVersionRequestService = Mockito.mock(ProjectVersionRequestService.class);
         Mockito.when(projectVersionRequestService.getAllProjectVersions(projectView)).thenReturn(Arrays.asList(mockUtils.createProjectVersionView()));
 
-        manager.synchronizeUsersWithHubServer(Arrays.asList(userView), new HashMap<String, HubUsersEntity>(), userDataService, projectVersionRequestService);
+        hubUserSynchronizationManager.synchronizeUsersWithHubServer(Arrays.asList(userView), new HashMap<String, HubUsersEntity>(), userDataService, projectVersionRequestService);
 
         assertEquals(1, hubUsersRepository.count());
         assertEquals(Boolean.FALSE, hubUsersRepository.findAll().get(0).getActive());
         assertEquals(0, hubUserProjectVersionsRepository.count());
     }
+
+    private Map<String, HubUsersEntity> createHubUsersMap(final List<HubUsersEntity> localHubUsersList) {
+        final Map<String, HubUsersEntity> map = new HashMap<>();
+        if (localHubUsersList != null) {
+            for (final HubUsersEntity entity : localHubUsersList) {
+                map.put(entity.getUsername(), entity);
+            }
+        }
+        return map;
+    }
+
 }

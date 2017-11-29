@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,11 @@ public class NotificationRepositoryIT {
 
     @Autowired
     private NotificationRepository repository;
+
+    @After
+    public void cleanup() {
+        repository.deleteAll();
+    }
 
     private NotificationEntity createNotificationEntity(final Date createdAt, final Collection<VulnerabilityEntity> vulnerabilityList) {
         final String hubUser = "hubUser";

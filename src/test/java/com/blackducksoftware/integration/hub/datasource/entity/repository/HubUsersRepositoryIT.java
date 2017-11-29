@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.datasource.entity.repository;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class HubUsersRepositoryIT {
     @Autowired
     private HubUsersRepository hubUsersRepository;
+
+    @After
+    public void cleanup() {
+        hubUsersRepository.deleteAll();
+    }
 
     @Test
     public void addUsersTestIT() {

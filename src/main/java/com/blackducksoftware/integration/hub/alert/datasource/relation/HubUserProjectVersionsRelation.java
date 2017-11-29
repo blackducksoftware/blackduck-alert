@@ -32,6 +32,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @Entity
 @IdClass(HubUserProjectVersionsRelationPK.class)
@@ -88,6 +90,12 @@ public class HubUserProjectVersionsRelation implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.toString();
     }
 
 }

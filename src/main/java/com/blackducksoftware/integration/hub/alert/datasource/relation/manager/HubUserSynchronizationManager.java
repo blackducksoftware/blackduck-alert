@@ -127,6 +127,7 @@ public class HubUserSynchronizationManager implements Runnable {
         usersThatDoNotExist.forEach(user -> {
             if (!hubUserManager.hasChannelConfiguration(user.getId())) {
                 hubUserManager.deleteConfig(user.getId());
+                localUsernamesMap.remove(user.getUsername());
             } else if (Boolean.TRUE.equals(user.getActive())) {
                 final HubUsersEntity newEntity = new HubUsersEntity(user.getUsername(), Boolean.FALSE);
                 newEntity.setId(user.getId());

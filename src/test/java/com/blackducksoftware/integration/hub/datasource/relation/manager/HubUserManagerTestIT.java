@@ -67,12 +67,12 @@ public class HubUserManagerTestIT {
 
     @After
     public void cleanup() {
-        hubUsersRepository.deleteAll();
-        hubUserFrequenciesRepository.deleteAll();
-        hubUserEmailRepository.deleteAll();
-        hubUserHipChatRepository.deleteAll();
-        hubUserSlackRepository.deleteAll();
         hubUserProjectVersionsRepository.deleteAll();
+        hubUserSlackRepository.deleteAll();
+        hubUserHipChatRepository.deleteAll();
+        hubUserEmailRepository.deleteAll();
+        hubUserFrequenciesRepository.deleteAll();
+        hubUsersRepository.deleteAll();
     }
 
     @Test
@@ -123,7 +123,8 @@ public class HubUserManagerTestIT {
     @Test
     public void simpleDeleteTestIT() throws AlertException {
         final HubUserManager manager = new HubUserManager(hubUsersRepository, hubUserFrequenciesRepository, hubUserEmailRepository, hubUserHipChatRepository, hubUserSlackRepository, hubUserProjectVersionsRepository, objectTransformer);
-        final Long savedId = manager.saveConfig(new HubUsersConfigWrapper());
+        final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, "", "", null, null, null, null, null);
+        final Long savedId = manager.saveConfig(newWrapper);
         assertTrue(hubUsersRepository.exists(savedId));
         manager.deleteConfig(savedId);
         assertTrue(!hubUsersRepository.exists(savedId));
