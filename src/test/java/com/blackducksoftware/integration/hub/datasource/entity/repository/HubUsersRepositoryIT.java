@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.datasource.entity.repository;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,10 +39,15 @@ public class HubUsersRepositoryIT {
     @Autowired
     private HubUsersRepository hubUsersRepository;
 
+    @After
+    public void cleanup() {
+        hubUsersRepository.deleteAll();
+    }
+
     @Test
     public void addUsersTestIT() {
         final String username = "username";
-        final HubUsersEntity entity = new HubUsersEntity(username);
+        final HubUsersEntity entity = new HubUsersEntity(username, null);
         final HubUsersEntity savedEntity = hubUsersRepository.save(entity);
 
         final long count = hubUsersRepository.count();
@@ -51,5 +57,4 @@ public class HubUsersRepositoryIT {
         assertEquals(username, foundEntity.getUsername());
     }
 
-    // TODO: add a delete on cascade test
 }

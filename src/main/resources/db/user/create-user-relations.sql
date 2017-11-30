@@ -16,7 +16,8 @@ CREATE TABLE alert.hub_user_slack (
 CREATE TABLE alert.hub_user_project_versions (
     user_config_id INTEGER,
     project_name VARCHAR,
-    project_version_name VARCHAR
+    project_version_name VARCHAR,
+    enabled BOOLEAN
 );
 
 CREATE TABLE alert.hub_user_frequencies (

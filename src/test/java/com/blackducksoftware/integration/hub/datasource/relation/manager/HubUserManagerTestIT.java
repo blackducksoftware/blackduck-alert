@@ -67,12 +67,12 @@ public class HubUserManagerTestIT {
 
     @After
     public void cleanup() {
-        hubUsersRepository.deleteAll();
-        hubUserFrequenciesRepository.deleteAll();
-        hubUserEmailRepository.deleteAll();
-        hubUserHipChatRepository.deleteAll();
-        hubUserSlackRepository.deleteAll();
         hubUserProjectVersionsRepository.deleteAll();
+        hubUserSlackRepository.deleteAll();
+        hubUserHipChatRepository.deleteAll();
+        hubUserEmailRepository.deleteAll();
+        hubUserFrequenciesRepository.deleteAll();
+        hubUsersRepository.deleteAll();
     }
 
     @Test
@@ -85,13 +85,14 @@ public class HubUserManagerTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         final Long savedId = manager.saveConfig(configWrapper);
 
         final HubUsersEntity hubUsersEntity = hubUsersRepository.findOne(savedId);
@@ -115,13 +116,15 @@ public class HubUserManagerTestIT {
         for (int i = 0; i < projectVersions.size(); i++) {
             assertEquals(projectVersions.get(i).getProjectName(), hubUserProjectVersionsRelation.get(i).getProjectName());
             assertEquals(projectVersions.get(i).getProjectVersionName(), hubUserProjectVersionsRelation.get(i).getProjectVersionName());
+            assertEquals(projectVersions.get(i).getEnabled(), hubUserProjectVersionsRelation.get(i).getEnabled().toString());
         }
     }
 
     @Test
     public void simpleDeleteTestIT() throws AlertException {
         final HubUserManager manager = new HubUserManager(hubUsersRepository, hubUserFrequenciesRepository, hubUserEmailRepository, hubUserHipChatRepository, hubUserSlackRepository, hubUserProjectVersionsRepository, objectTransformer);
-        final Long savedId = manager.saveConfig(new HubUsersConfigWrapper());
+        final HubUsersConfigWrapper newWrapper = new HubUsersConfigWrapper(null, "", "", null, null, null, null, null);
+        final Long savedId = manager.saveConfig(newWrapper);
         assertTrue(hubUsersRepository.exists(savedId));
         manager.deleteConfig(savedId);
         assertTrue(!hubUsersRepository.exists(savedId));
@@ -137,13 +140,14 @@ public class HubUserManagerTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         final Long savedId = manager.saveConfig(configWrapper);
 
         final HubUserProjectVersionsRelationPK key1 = new HubUserProjectVersionsRelationPK();
@@ -189,19 +193,21 @@ public class HubUserManagerTestIT {
         final String emailConfigId = "1";
         final String hipChatConfigId = "1";
         final String slackConfigId = "1";
+        final String existsOnHub = "true";
 
         final List<ProjectVersionConfigWrapper> projectVersions = new ArrayList<>();
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2"));
-        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 1", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 1", "Version 2", "false"));
+        projectVersions.add(new ProjectVersionConfigWrapper("Project 2", "Version 1", "false"));
 
-        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+        final HubUsersConfigWrapper configWrapper = new HubUsersConfigWrapper(id, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, existsOnHub, projectVersions);
         final Long savedId = manager.saveConfig(configWrapper);
 
         final List<ProjectVersionConfigWrapper> projectVersionWrapperList = manager.getProjectVersions(savedId);
         for (int i = 0; i < projectVersions.size(); i++) {
             assertEquals(projectVersions.get(i).getProjectName(), projectVersionWrapperList.get(i).getProjectName());
             assertEquals(projectVersions.get(i).getProjectVersionName(), projectVersionWrapperList.get(i).getProjectVersionName());
+            assertEquals(projectVersions.get(i).getEnabled(), projectVersionWrapperList.get(i).getEnabled());
         }
     }
 

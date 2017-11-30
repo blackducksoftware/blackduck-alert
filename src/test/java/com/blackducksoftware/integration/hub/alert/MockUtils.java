@@ -19,6 +19,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestMode
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestModel;
+import com.blackducksoftware.integration.hub.model.enumeration.ProjectVersionDistributionEnum;
+import com.blackducksoftware.integration.hub.model.enumeration.ProjectVersionPhaseEnum;
+import com.blackducksoftware.integration.hub.model.view.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.view.ProjectView;
 
 public class MockUtils {
 
@@ -86,7 +90,7 @@ public class MockUtils {
     }
 
     public HubUsersEntity createHubUsersEntity(final String username) {
-        final HubUsersEntity entity = new HubUsersEntity(username);
+        final HubUsersEntity entity = new HubUsersEntity(username, null);
         entity.setId(1L);
         return entity;
     }
@@ -97,6 +101,28 @@ public class MockUtils {
 
     public HubUsersConfigRestModel createHubUsersRestModel(final String username) {
         return new HubUsersConfigRestModel("1", username);
+    }
+
+    public ProjectView createProjectView() {
+        return createProjectView("Project Name");
+    }
+
+    public ProjectView createProjectView(final String projectName) {
+        final ProjectView projectView = new ProjectView();
+        projectView.name = projectName;
+        return projectView;
+    }
+
+    public ProjectVersionView createProjectVersionView() {
+        return createProjectVersionView("Version Name");
+    }
+
+    public ProjectVersionView createProjectVersionView(final String versionName) {
+        final ProjectVersionView projectVersionView = new ProjectVersionView();
+        projectVersionView.versionName = versionName;
+        projectVersionView.phase = ProjectVersionPhaseEnum.PLANNING;
+        projectVersionView.distribution = ProjectVersionDistributionEnum.EXTERNAL;
+        return projectVersionView;
     }
 
 }

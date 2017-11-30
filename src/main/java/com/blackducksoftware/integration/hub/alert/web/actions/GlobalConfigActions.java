@@ -38,10 +38,12 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.manager.HubUserSynchronizationManager;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
@@ -59,12 +61,15 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigActions.class);
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
+    private final HubUserSynchronizationManager hubUserSynchronizationManager;
 
     @Autowired
-    public GlobalConfigActions(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final ObjectTransformer objectTransformer) {
+    public GlobalConfigActions(final GlobalRepository globalRepository, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final HubUserSynchronizationManager hubUserSynchronizationManager,
+            final ObjectTransformer objectTransformer) {
         super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
+        this.hubUserSynchronizationManager = hubUserSynchronizationManager;
     }
 
     @Override
@@ -152,6 +157,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
         if (globalConfig != null) {
             accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            hubUserSynchronizationManager.scheduleJobExecution(AlertConstants.CRON_EXPRESSION_EVERY_MINUTE);
         }
     }
 

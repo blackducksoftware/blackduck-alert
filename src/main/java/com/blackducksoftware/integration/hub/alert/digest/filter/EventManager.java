@@ -106,7 +106,9 @@ public class EventManager {
         for (final HubUserProjectVersionsRelation relation : projectVersionsRelations) {
             if (relation != null && relation.getProjectName().equals(userNotification.getProjectName())) {
                 if (relation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
-                    return true;
+                    if (relation.getEnabled()) {
+                        return true;
+                    }
                 }
             }
         }

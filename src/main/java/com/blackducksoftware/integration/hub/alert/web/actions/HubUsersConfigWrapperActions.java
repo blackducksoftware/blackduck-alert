@@ -94,16 +94,20 @@ public class HubUsersConfigWrapperActions {
 
     public ResponseEntity<String> doNotAllowRequestMethod(final HubUsersConfigWrapper restModel, final String requestMethod) {
         logger.debug("Attempted to {} a user configuration, but that method is not allowed: {}", requestMethod, restModel);
-        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Cannot create new user configurations.");
+        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, -1L, "Users must be configured through the Hub.");
     }
 
     public String validateConfig(final HubUsersConfigWrapper restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
+        if (StringUtils.isBlank(restModel.getId())) {
+            fieldErrors.put("id", "Cannot be blank.");
+        }
         if (StringUtils.isBlank(restModel.getUsername())) {
             fieldErrors.put("username", "Cannot be blank.");
         }
         if (StringUtils.isBlank(restModel.getFrequency())) {
             fieldErrors.put("frequency", "Cannot be blank.");
+            // TODO get the enum values dynamically
         } else if (!("DAILY".equals(restModel.getFrequency()) || "REAL_TIME".equals(restModel.getFrequency()))) {
             fieldErrors.put("frequency", "Not a valid frequency enum. Valid values: DAILY, REAL_TIME");
         }
@@ -114,7 +118,11 @@ public class HubUsersConfigWrapperActions {
             fieldErrors.put("hipChatConfigId", "Not an Integer.");
         }
         if (StringUtils.isNotBlank(restModel.getSlackConfigId()) && !StringUtils.isNumeric(restModel.getSlackConfigId())) {
-            fieldErrors.put("slackConfigId", "Not an Boolean.");
+            fieldErrors.put("slackConfigId", "Not an Integer.");
+        }
+        if (restModel.getActive() != null) {
+            logger.debug("Setting Hub existence to null for user {} in order to manage synchronization.", restModel.getUsername());
+            restModel.setActive(null);
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -145,9 +153,10 @@ public class HubUsersConfigWrapperActions {
             final String emailConfigId = hubUserManager.getEmailConfigId(id);
             final String hipChatConfigId = hubUserManager.getHipChatConfigId(id);
             final String slackConfigId = hubUserManager.getSlackConfigId(id);
+            final String active = hubUserManager.getObjectTransformer().objectToString(entity.getActive());
             final List<ProjectVersionConfigWrapper> projectVersions = hubUserManager.getProjectVersions(id);
 
-            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, projectVersions);
+            return new HubUsersConfigWrapper(transformedId, username, frequency, emailConfigId, hipChatConfigId, slackConfigId, active, projectVersions);
         }
         return null;
     }

@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.datasource.relation.repository;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +40,17 @@ public class HubUserProjectVersionRepositoryIT {
     @Autowired
     private HubUserProjectVersionsRepository hubUserProjectVersionsRepository;
 
+    @After
+    public void cleanup() {
+        hubUserProjectVersionsRepository.deleteAll();
+    }
+
     @Test
     public void addUserProjectVersionsTestIT() {
         final Long userConfigId = new Long(1L);
         final String projectName = "A project name with spaces";
         final String projectVersionName = "A project version name with spaces";
-        final HubUserProjectVersionsRelation entity = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName);
+        final HubUserProjectVersionsRelation entity = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName, Boolean.TRUE);
         hubUserProjectVersionsRepository.save(entity);
 
         final long count = hubUserProjectVersionsRepository.count();
@@ -65,8 +71,8 @@ public class HubUserProjectVersionRepositoryIT {
         final String projectName = "A project name with spaces";
         final String projectVersionName1 = "A project version name with spaces";
         final String projectVersionName2 = "other";
-        final HubUserProjectVersionsRelation entity1 = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName1);
-        final HubUserProjectVersionsRelation entity2 = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName2);
+        final HubUserProjectVersionsRelation entity1 = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName1, Boolean.TRUE);
+        final HubUserProjectVersionsRelation entity2 = new HubUserProjectVersionsRelation(userConfigId, projectName, projectVersionName2, Boolean.TRUE);
         hubUserProjectVersionsRepository.save(entity1);
         hubUserProjectVersionsRepository.save(entity2);
 

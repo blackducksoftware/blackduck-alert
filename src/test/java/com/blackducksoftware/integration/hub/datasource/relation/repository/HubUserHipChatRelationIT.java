@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.datasource.relation.repository;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class HubUserHipChatRelationIT {
     @Autowired
     private HubUserHipChatRepository hubUserHipChatRepository;
+
+    @After
+    public void cleanup() {
+        hubUserHipChatRepository.deleteAll();
+    }
 
     @Test
     public void addUserHipChatTestIT() {

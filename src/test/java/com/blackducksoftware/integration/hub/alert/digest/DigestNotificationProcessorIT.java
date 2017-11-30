@@ -88,10 +88,10 @@ public class DigestNotificationProcessorIT {
         final String hipChatApiKey = "test_api_key";
         final Integer hipChatRoomId = 12345;
 
-        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
+        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName, null));
         final HipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new HipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
         hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
+        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName, Boolean.TRUE));
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
         // TODO load this from json
@@ -119,10 +119,10 @@ public class DigestNotificationProcessorIT {
         final String hipChatApiKey = "test_api_key";
         final Integer hipChatRoomId = 12345;
 
-        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
+        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName, null));
         final HipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new HipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
         hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
+        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName, Boolean.TRUE));
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
         // TODO load this from json
@@ -150,10 +150,10 @@ public class DigestNotificationProcessorIT {
         final String hipChatApiKey = "test_api_key";
         final Integer hipChatRoomId = 12345;
 
-        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
+        final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName, null));
         final HipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new HipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
         hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
+        projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName, Boolean.TRUE));
 
         final List<NotificationEntity> notificationList = new LinkedList<>();
         // TODO load this from json

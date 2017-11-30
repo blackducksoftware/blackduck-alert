@@ -32,20 +32,32 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 @Entity
 @Table(name = "hub_users")
 public class HubUsersEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 2565372713815698214L;
+    private static final long serialVersionUID = -622089604623191408L;
 
     @Column(name = "hub_username")
     private String username;
 
+    @Column(name = "active_on_hub")
+    private Boolean active;
+
     public HubUsersEntity() {
     }
 
-    public HubUsersEntity(final String username) {
+    public HubUsersEntity(final String username, final Boolean active) {
         this.username = username;
+        this.active = active;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public String getUsername() {
         return username;
+    }
+
+    public Boolean getActive() {
+        return active;
     }
 
     @Override
