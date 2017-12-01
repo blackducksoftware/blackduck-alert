@@ -82,7 +82,9 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
 
     @Override
     public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class));
+        // FIXME
+        return null;
+        // return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class));
     }
 
     @Override

@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
@@ -57,7 +58,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity> {
+public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
@@ -65,7 +66,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
 
     @Autowired
     public HipChatChannel(final Gson gson, final GlobalHipChatRepository hipChatRepository) {
-        super(gson, HipChatEvent.class);
+        super(gson, null, null, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
     }
 
@@ -85,7 +86,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     @Override
-    public void sendMessage(final HipChatEvent event, final GlobalHipChatConfigEntity config) {
+    public void sendMessage(final HipChatEvent event, final HipChatDistributionConfigEntity config) {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
@@ -95,7 +96,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         }
     }
 
-    private String sendMessage(final GlobalHipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
+    private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
@@ -105,7 +106,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
             final HttpUrl httpUrl = connection.createHttpUrl(urlSegments);
 
             final Map<String, String> map = new HashMap<>();
-            map.put("Authorization", "Bearer " + config.getApiKey());
+            map.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
             map.put("Content-Type", "application/json");
 
             final Request request = connection.createPostRequest(httpUrl, map, body);
@@ -126,7 +127,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     @Override
-    public String testMessage(final GlobalHipChatConfigEntity config) throws IntegrationException {
+    public String testMessage(final HipChatDistributionConfigEntity config) throws IntegrationException {
         return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 

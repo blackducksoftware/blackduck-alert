@@ -68,7 +68,9 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
 
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-        return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
+        // FIXME
+        return null;
+        // return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
     }
 
     @Override

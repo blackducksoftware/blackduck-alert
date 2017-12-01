@@ -35,6 +35,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
@@ -53,19 +54,19 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity> {
+public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
     private final GlobalSlackRepository slackRepository;
 
     @Autowired
     public SlackChannel(final Gson gson, final GlobalSlackRepository slackRepository) {
-        super(gson, SlackEvent.class);
+        super(gson, null, null, SlackEvent.class);
         this.slackRepository = slackRepository;
     }
 
     @Override
-    public void sendMessage(final SlackEvent event, final GlobalSlackConfigEntity config) {
+    public void sendMessage(final SlackEvent event, final SlackDistributionConfigEntity config) {
         final ProjectData projectData = event.getProjectData();
         final String htmlMessage = createMessage(projectData);
         try {
@@ -77,16 +78,16 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     }
 
     @Override
-    public String testMessage(final GlobalSlackConfigEntity config) throws IntegrationRestException {
+    public String testMessage(final SlackDistributionConfigEntity config) throws IntegrationRestException {
         final String message = "*Test* from _Alert_ application";
         return sendMessage(message, config);
     }
 
-    private String sendMessage(final String htmlMessage, final GlobalSlackConfigEntity config) throws IntegrationRestException {
-        final String slackUrl = config.getWebhook();
+    private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationRestException {
+        final String slackUrl = getGlobalConfigEntity().getWebhook();
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
-            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getUsername());
+            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), getGlobalConfigEntity().getUsername());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final Map<String, String> requestProperties = new HashMap<>();
