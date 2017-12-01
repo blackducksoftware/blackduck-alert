@@ -24,26 +24,45 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.DistributionProjectRelationPK;
+
 @Entity
-@Table(name = "hub_user_frequencies")
-public class HubUserFrequenciesRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -5467757197683436935L;
+@IdClass(DistributionProjectRelationPK.class)
+@Table(schema = "alert", name = "distribution_project_relation")
+public class DistributionProjectRelation extends DatabaseRelation {
+    private static final long serialVersionUID = 6656775537871602933L;
 
-    @Column(name = "frequency_id")
-    private Long frequencyId;
+    @Id
+    @Column(name = "distribution_config_id")
+    private Long distributionConfigId;
 
-    public HubUserFrequenciesRelation() {
+    @Id
+    @Column(name = "project_id")
+    private Long projectId;
+
+    public DistributionProjectRelation() {
     }
 
-    public HubUserFrequenciesRelation(final Long userConfidId, final Long frequencyId) {
-        super(userConfidId);
-        this.frequencyId = frequencyId;
+    public DistributionProjectRelation(final Long distributionConfigId, final Long projectId) {
+        super();
+        this.distributionConfigId = distributionConfigId;
+        this.projectId = projectId;
     }
 
-    public Long getFrequencyId() {
-        return frequencyId;
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public Long getDistributionConfigId() {
+        return distributionConfigId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
     }
 
 }

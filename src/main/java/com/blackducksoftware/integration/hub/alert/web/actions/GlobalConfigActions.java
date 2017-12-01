@@ -44,8 +44,8 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -60,7 +60,7 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
-public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, GlobalConfigRestModel> {
+public class GlobalConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalConfigActions.class);
     private final GlobalProperties globalProperties;
     private final AccumulatorConfig accumulatorConfig;
@@ -68,9 +68,9 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalConfigActions(final GlobalRepository globalRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
+    public GlobalConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
             final ObjectTransformer objectTransformer) {
-        super(GlobalConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
+        super(GlobalHubConfigEntity.class, GlobalConfigRestModel.class, globalRepository, objectTransformer);
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -80,7 +80,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     @Override
     public List<GlobalConfigRestModel> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final GlobalConfigEntity foundEntity = repository.findOne(id);
+            final GlobalHubConfigEntity foundEntity = repository.findOne(id);
             if (foundEntity != null) {
                 GlobalConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
                 restModel = updateModelFromEnvironment(restModel);
@@ -91,7 +91,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
             }
             return Collections.emptyList();
         }
-        final List<GlobalConfigEntity> databaseEntities = repository.findAll();
+        final List<GlobalHubConfigEntity> databaseEntities = repository.findAll();
         List<GlobalConfigRestModel> restModels = null;
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
@@ -125,7 +125,7 @@ public class GlobalConfigActions extends ConfigActions<GlobalConfigEntity, Globa
     }
 
     @Override
-    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalConfigEntity savedConfig) throws AlertException {
+    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalHubConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
         if (updatedConfig instanceof GlobalConfigRestModel) {
             updatedConfig = (T) updateModelFromEnvironment((GlobalConfigRestModel) updatedConfig);

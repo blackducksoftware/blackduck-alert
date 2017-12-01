@@ -16,12 +16,14 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+
 public class HipChatConfigEntityTest {
 
     @Test
     public void testEmptyModel() {
-        final HipChatConfigEntity hipChatConfigEntity = new HipChatConfigEntity();
-        assertEquals(2791949172564090134L, HipChatConfigEntity.getSerialversionuid());
+        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity();
+        assertEquals(2791949172564090134L, GlobalHipChatConfigEntity.getSerialversionuid());
 
         assertNull(hipChatConfigEntity.getApiKey());
         assertNull(hipChatConfigEntity.getColor());
@@ -34,7 +36,7 @@ public class HipChatConfigEntityTest {
         final String expectedString = "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
-        final HipChatConfigEntity hipChatConfigEntityNew = new HipChatConfigEntity();
+        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity();
         assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
     }
 
@@ -46,7 +48,7 @@ public class HipChatConfigEntityTest {
         final Boolean notify = true;
         final String color = "Color";
 
-        final HipChatConfigEntity hipChatConfigEntity = new HipChatConfigEntity(apiKey, roomId, notify, color);
+        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity(apiKey, roomId, notify, color);
         hipChatConfigEntity.setId(id);
 
         assertEquals(apiKey, hipChatConfigEntity.getApiKey());
@@ -60,7 +62,7 @@ public class HipChatConfigEntityTest {
         final String expectedString = "{\"roomId\":3245,\"notify\":true,\"color\":\"Color\",\"id\":435}";
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
-        final HipChatConfigEntity hipChatConfigEntityNew = new HipChatConfigEntity(apiKey, roomId, notify, color);
+        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity(apiKey, roomId, notify, color);
         hipChatConfigEntityNew.setId(id);
         assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
     }

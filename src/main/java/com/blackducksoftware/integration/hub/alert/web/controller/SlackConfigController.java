@@ -36,17 +36,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
 @RestController
 public class SlackConfigController extends ConfigController<SlackConfigRestModel> {
-    private final CommonConfigController<SlackConfigEntity, SlackConfigRestModel> commonConfigController;
+    private final CommonConfigController<GlobalSlackConfigEntity, SlackConfigRestModel> commonConfigController;
 
     @Autowired
     public SlackConfigController(final SlackConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(SlackConfigEntity.class, SlackConfigRestModel.class, configActions);
+        commonConfigController = new CommonConfigController<>(GlobalSlackConfigEntity.class, SlackConfigRestModel.class, configActions);
     }
 
     @Override

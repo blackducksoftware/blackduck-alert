@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +29,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(name = "email_config")
-public class EmailConfigEntity extends DatabaseEntity {
+@Table(schema = "alert", name = "global_email_config")
+public class GlobalEmailConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 4122029411365267232L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
@@ -87,12 +89,12 @@ public class EmailConfigEntity extends DatabaseEntity {
     @Column(name = "email_subject_line")
     private String emailSubjectLine;
 
-    public EmailConfigEntity() {
+    public GlobalEmailConfigEntity() {
     }
 
-    public EmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout, final String mailSmtpFrom,
-            final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial,
-            final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
+    public GlobalEmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
+            final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final Boolean mailSmtpAllow8bitmime,
+            final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;

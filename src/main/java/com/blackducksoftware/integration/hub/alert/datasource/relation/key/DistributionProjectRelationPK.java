@@ -20,15 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.key;
 
-import javax.transaction.Transactional;
+import java.io.Serializable;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class DistributionProjectRelationPK implements Serializable {
+    private static final long serialVersionUID = -894281261527215535L;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+    public Long distributionConfigId;
+    public Long projectId;
 
-@Transactional
-public interface EmailRepository extends JpaRepository<EmailConfigEntity, Long> {
+    public DistributionProjectRelationPK() {
+    }
 
 }

@@ -12,11 +12,10 @@
 package com.blackducksoftware.integration.hub.alert;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
@@ -24,7 +23,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.HubUsersConfigRestM
 
 public class MockUtils {
 
-    public GlobalProperties createTestGlobalProperties(final GlobalRepository globalRepository) {
+    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository) {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
         globalProperties.hubUrl = "HubUrl";
         globalProperties.hubTrustCertificate = false;
@@ -54,8 +53,8 @@ public class MockUtils {
         return restModel;
     }
 
-    public GlobalConfigEntity createGlobalConfigEntity() {
-        final GlobalConfigEntity configEntity = new GlobalConfigEntity(11, "HubUsername", "HubPassword", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
+    public GlobalHubConfigEntity createGlobalConfigEntity() {
+        final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubUsername", "HubPassword", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
         configEntity.setId(1L);
         return configEntity;
     }
@@ -80,9 +79,9 @@ public class MockUtils {
         return restModel;
     }
 
-    public EmailConfigEntity createEmailConfigEntity() {
-        final EmailConfigEntity configEntity = new EmailConfigEntity("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", 33, 11, 22, "MailSmtpFrom", "MailSmtpLocalhost", false, true, "MailSmtpDnsNotify", "MailSmtpDnsRet", false, false,
-                "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
+    public GlobalEmailConfigEntity createEmailConfigEntity() {
+        final GlobalEmailConfigEntity configEntity = new GlobalEmailConfigEntity("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", 33, 11, 22, "MailSmtpFrom", "MailSmtpLocalhost", false, true, "MailSmtpDnsNotify", "MailSmtpDnsRet", false,
+                false, "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
         configEntity.setId(1L);
         return configEntity;
     }
@@ -100,20 +99,10 @@ public class MockUtils {
         return restModel;
     }
 
-    public HipChatConfigEntity createHipChatConfigEntity() {
-        final HipChatConfigEntity configEntity = new HipChatConfigEntity("ApiKey", 11, false, "black");
+    public GlobalHipChatConfigEntity createHipChatConfigEntity() {
+        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity("ApiKey", 11, false, "black");
         configEntity.setId(1L);
         return configEntity;
-    }
-
-    public HubUsersEntity createHubUsersEntity() {
-        return createHubUsersEntity("user");
-    }
-
-    public HubUsersEntity createHubUsersEntity(final String username) {
-        final HubUsersEntity entity = new HubUsersEntity(username);
-        entity.setId(1L);
-        return entity;
     }
 
     public HubUsersConfigRestModel createHubUsersRestModel() {

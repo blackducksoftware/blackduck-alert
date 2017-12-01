@@ -24,30 +24,18 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 @MappedSuperclass
 public abstract class DatabaseRelation implements Serializable {
     private static final long serialVersionUID = 4000317230253976836L;
 
-    @Id
-    @Column(name = "user_config_id")
-    private Long userConfigId;
-
     public DatabaseRelation() {
-    }
-
-    public DatabaseRelation(final Long userConfigId) {
-        this.userConfigId = userConfigId;
-    }
-
-    public Long getUserConfidId() {
-        return userConfigId;
     }
 
     @Override
@@ -58,6 +46,12 @@ public abstract class DatabaseRelation implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.build();
     }
 
 }

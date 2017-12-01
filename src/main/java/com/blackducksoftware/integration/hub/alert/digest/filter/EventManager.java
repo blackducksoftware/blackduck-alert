@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
@@ -36,51 +35,45 @@ import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserEmailRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserProjectVersionsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
+// FIXME
 public class EventManager {
-    private final HubUserProjectVersionsRepository projectVersionRelationRepository;
-    private final HubUserEmailRepository emailRelationRepository;
-    private final HubUserHipChatRepository hipChatRelationRepository;
-    private final HubUserSlackRepository slackRelationRepository;
-
-    @Autowired
-    public EventManager(final HubUserProjectVersionsRepository projectVersionRelationRepository, final HubUserEmailRepository emailRelationRepository, final HubUserHipChatRepository hipChatRelationRepository,
-            final HubUserSlackRepository slackRelationRepository) {
-        this.projectVersionRelationRepository = projectVersionRelationRepository;
-        this.emailRelationRepository = emailRelationRepository;
-        this.hipChatRelationRepository = hipChatRelationRepository;
-        this.slackRelationRepository = slackRelationRepository;
-    }
+    // private final HubUserProjectVersionsRepository projectVersionRelationRepository;
+    // private final HubUserEmailRepository emailRelationRepository;
+    // private final HubUserHipChatRepository hipChatRelationRepository;
+    // private final HubUserSlackRepository slackRelationRepository;
+    //
+    // @Autowired
+    // public EventManager(final HubUserProjectVersionsRepository projectVersionRelationRepository, final HubUserEmailRepository emailRelationRepository, final HubUserHipChatRepository hipChatRelationRepository,
+    // final HubUserSlackRepository slackRelationRepository) {
+    // this.projectVersionRelationRepository = projectVersionRelationRepository;
+    // this.emailRelationRepository = emailRelationRepository;
+    // this.hipChatRelationRepository = hipChatRelationRepository;
+    // this.slackRelationRepository = slackRelationRepository;
+    // }
 
     public List<AbstractChannelEvent> createChannelEvents(final Collection<UserNotificationWrapper> userNotificationList) {
         final List<AbstractChannelEvent> channelEvents = new ArrayList<>();
-        final Set<UserNotificationWrapper> filteredUserNotifications = new HashSet<>();
-        userNotificationList.forEach(userNotification -> {
-            if (doesConfigurationApply(userNotification)) {
-                filteredUserNotifications.add(userNotification);
-            }
-        });
-
-        // Keep these ids until we support an implementation with configurations on a per-user basis
-        final Long hipChatConfigId = getHipChatConfigId();
-        final Long slackConfigId = getSlackConfigId();
-        final Set<ProjectData> hipChatProjectData = mergeUserNotifications(filteredUserNotifications, hipChatRelationRepository);
-        final Set<ProjectData> slackProjectData = mergeUserNotifications(filteredUserNotifications, slackRelationRepository);
-
-        channelEvents.addAll(createUserHipChatEvents(hipChatProjectData, hipChatConfigId));
-        channelEvents.addAll(createUserSlackEvents(slackProjectData, slackConfigId));
-        channelEvents.addAll(createUserEmailEvents(filteredUserNotifications));
-
+        // final Set<UserNotificationWrapper> filteredUserNotifications = new HashSet<>();
+        // userNotificationList.forEach(userNotification -> {
+        // if (doesConfigurationApply(userNotification)) {
+        // filteredUserNotifications.add(userNotification);
+        // }
+        // });
+        //
+        // // Keep these ids until we support an implementation with configurations on a per-user basis
+        // final Long hipChatConfigId = getHipChatConfigId();
+        // final Long slackConfigId = getSlackConfigId();
+        // final Set<ProjectData> hipChatProjectData = mergeUserNotifications(filteredUserNotifications, hipChatRelationRepository);
+        // final Set<ProjectData> slackProjectData = mergeUserNotifications(filteredUserNotifications, slackRelationRepository);
+        //
+        // channelEvents.addAll(createUserHipChatEvents(hipChatProjectData, hipChatConfigId));
+        // channelEvents.addAll(createUserSlackEvents(slackProjectData, slackConfigId));
+        // channelEvents.addAll(createUserEmailEvents(filteredUserNotifications));
+        //
         return channelEvents;
     }
 
@@ -102,24 +95,24 @@ public class EventManager {
     }
 
     private boolean isProjectVersionConfigured(final Long configId, final ProjectData userNotification) {
-        final HubUserProjectVersionsRelation projectVersionsRelation = projectVersionRelationRepository.findOne(configId);
-        if (projectVersionsRelation != null && projectVersionsRelation.getProjectName().equals(userNotification.getProjectName())) {
-            if (projectVersionsRelation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
-                return true;
-            }
-        }
+        // final HubUserProjectVersionsRelation projectVersionsRelation = projectVersionRelationRepository.findOne(configId);
+        // if (projectVersionsRelation != null && projectVersionsRelation.getProjectName().equals(userNotification.getProjectName())) {
+        // if (projectVersionsRelation.getProjectVersionName().equals(userNotification.getProjectVersion())) {
+        // return true;
+        // }
+        // }
         return false;
     }
 
     private Set<EmailEvent> createUserEmailEvents(final Collection<UserNotificationWrapper> userNotificationList) {
         final Set<EmailEvent> events = new HashSet<>();
-        userNotificationList.forEach(userNotification -> {
-            if (emailRelationRepository.exists(userNotification.getUserConfigId())) {
-                userNotification.getNotifications().forEach(notification -> {
-                    events.add(new EmailEvent(notification, userNotification.getUserConfigId()));
-                });
-            }
-        });
+        // userNotificationList.forEach(userNotification -> {
+        // if (emailRelationRepository.exists(userNotification.getUserConfigId())) {
+        // userNotification.getNotifications().forEach(notification -> {
+        // events.add(new EmailEvent(notification, userNotification.getUserConfigId()));
+        // });
+        // }
+        // });
         return events;
     }
 
@@ -153,18 +146,18 @@ public class EventManager {
     }
 
     private Long getHipChatConfigId() {
-        final List<HubUserHipChatRelation> hipChatRelations = hipChatRelationRepository.findAll();
-        if (!hipChatRelations.isEmpty()) {
-            return hipChatRelations.get(0).getChannelConfigId();
-        }
+        // final List<HubUserHipChatRelation> hipChatRelations = hipChatRelationRepository.findAll();
+        // if (!hipChatRelations.isEmpty()) {
+        // return hipChatRelations.get(0).getChannelConfigId();
+        // }
         return null;
     }
 
     private Long getSlackConfigId() {
-        final List<HubUserSlackRelation> slackRelations = slackRelationRepository.findAll();
-        if (!slackRelations.isEmpty()) {
-            return slackRelations.get(0).getChannelConfigId();
-        }
+        // final List<HubUserSlackRelation> slackRelations = slackRelationRepository.findAll();
+        // if (!slackRelations.isEmpty()) {
+        // return slackRelations.get(0).getChannelConfigId();
+        // }
         return null;
     }
 

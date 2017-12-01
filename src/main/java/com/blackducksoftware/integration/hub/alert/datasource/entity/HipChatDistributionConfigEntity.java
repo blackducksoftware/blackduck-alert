@@ -20,30 +20,50 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "hub_user_email")
-public class HubUserEmailRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 8484340743447368873L;
+@Table(schema = "alert", name = "hip_chat_distribution_config")
+public class HipChatDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 8645967062445661540L;
 
-    @Column(name = "email_config_id")
-    private Long emailConfigId;
+    @Column(name = "room_id")
+    private Integer roomId;
 
-    public HubUserEmailRelation() {
+    @Column(name = "notify")
+    private Boolean notify;
+
+    @Column(name = "color")
+    private String color;
+
+    public HipChatDistributionConfigEntity() {
     }
 
-    public HubUserEmailRelation(final Long userConfidId, final Long emailConfigId) {
-        super(userConfidId);
-        this.emailConfigId = emailConfigId;
+    public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {
+        super();
+        this.roomId = roomId;
+        this.notify = notify;
+        this.color = color;
     }
 
-    public Long getChannelConfigId() {
-        return emailConfigId;
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public Integer getRoomId() {
+        return roomId;
+    }
+
+    public Boolean getNotify() {
+        return notify;
+    }
+
+    public String getColor() {
+        return color;
     }
 
 }

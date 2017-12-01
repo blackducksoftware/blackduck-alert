@@ -20,14 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import javax.transaction.Transactional;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+@Entity
+@Table(schema = "alert", name = "email_group_distribution_config")
+public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -2969530122554864181L;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
+    @Column(name = "group_name")
+    private String groupName;
 
-@Transactional
-public interface HubUserHipChatRepository extends JpaRepository<HubUserHipChatRelation, Long> {
+    public EmailGroupDistributionConfigEntity() {
+    }
+
+    public EmailGroupDistributionConfigEntity(final String groupName) {
+        super();
+        this.groupName = groupName;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
 }

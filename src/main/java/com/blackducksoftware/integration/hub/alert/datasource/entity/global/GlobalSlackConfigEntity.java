@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +29,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(name = "slack_config")
-public class SlackConfigEntity extends DatabaseEntity {
+@Table(schema = "alert", name = "global_slack_config")
+public class GlobalSlackConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 4872590789715928839L;
 
     @Column(name = "channel_name")
@@ -43,10 +45,10 @@ public class SlackConfigEntity extends DatabaseEntity {
     @Column(name = "webhook")
     private String webhook;
 
-    public SlackConfigEntity() {
+    public GlobalSlackConfigEntity() {
     }
 
-    public SlackConfigEntity(final String channelName, final String username, final String webhook) {
+    public GlobalSlackConfigEntity(final String channelName, final String username, final String webhook) {
         this.channelName = channelName;
         this.username = username;
         this.webhook = webhook;

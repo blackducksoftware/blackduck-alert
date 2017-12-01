@@ -20,29 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.transaction.Transactional;
 
-@Entity
-@Table(name = "hub_user_slack")
-public class HubUserSlackRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -5649425971831549437L;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    @Column(name = "slack_config_id")
-    private Long slackConfigId;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
 
-    public HubUserSlackRelation() {
-    }
+@Transactional
+public interface EmailGroupDistributionRepository extends JpaRepository<EmailGroupDistributionConfigEntity, Long> {
 
-    public HubUserSlackRelation(final Long userConfidId, final Long slackConfigId) {
-        super(userConfidId);
-        this.slackConfigId = slackConfigId;
-    }
-
-    public Long getChannelConfigId() {
-        return slackConfigId;
-    }
 }

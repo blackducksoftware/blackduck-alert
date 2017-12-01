@@ -33,19 +33,19 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @Component
-public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailConfigRestModel> {
+public class EmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, EmailConfigRestModel> {
     private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailConfigActions(final EmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
-        super(EmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
+    public EmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
+        super(GlobalEmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
         this.emailChannel = emailChannel;
     }
 
@@ -82,7 +82,7 @@ public class EmailConfigActions extends ConfigActions<EmailConfigEntity, EmailCo
 
     @Override
     public String channelTestConfig(final EmailConfigRestModel restModel) throws IntegrationException {
-        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, EmailConfigEntity.class));
+        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class));
     }
 
     @Override

@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalSlackRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,7 +26,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class SlackRepositoryIT {
 
     @Autowired
-    private SlackRepository repository;
+    private GlobalSlackRepository repository;
 
     @Test
     public void testSaveEntity() {
@@ -34,12 +34,12 @@ public class SlackRepositoryIT {
         final String username = "user_name";
         final String webhook = "web_hook";
 
-        final SlackConfigEntity entity = new SlackConfigEntity(channelName, username, webhook);
+        final GlobalSlackConfigEntity entity = new GlobalSlackConfigEntity(channelName, username, webhook);
 
-        final SlackConfigEntity savedEntity = repository.save(entity);
+        final GlobalSlackConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final SlackConfigEntity foundEntity = repository.findOne(savedEntity.getId());
+        final GlobalSlackConfigEntity foundEntity = repository.findOne(savedEntity.getId());
         assertEquals(channelName, foundEntity.getChannelName());
         assertEquals(username, foundEntity.getUsername());
         assertEquals(webhook, foundEntity.getWebhook());

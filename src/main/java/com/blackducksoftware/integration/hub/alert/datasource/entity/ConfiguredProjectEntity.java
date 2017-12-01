@@ -20,38 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "hub_user_project_versions")
-public class HubUserProjectVersionsRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 544672444719776792L;
+@Table(schema = "alert", name = "configured_projects")
+public class ConfiguredProjectEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -4963256809935957135L;
 
     @Column(name = "project_name")
     private String projectName;
 
-    @Column(name = "project_version_name")
-    private String projectVersionName;
-
-    public HubUserProjectVersionsRelation() {
+    public ConfiguredProjectEntity() {
     }
 
-    public HubUserProjectVersionsRelation(final Long userConfidId, final String projectName, final String projectVersionName) {
-        super(userConfidId);
+    public ConfiguredProjectEntity(final String projectName) {
+        super();
         this.projectName = projectName;
-        this.projectVersionName = projectVersionName;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public String getProjectName() {
         return projectName;
-    }
-
-    public String getProjectVersionName() {
-        return projectVersionName;
     }
 
 }
