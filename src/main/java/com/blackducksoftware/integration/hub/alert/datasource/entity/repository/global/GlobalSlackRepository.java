@@ -20,13 +20,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 
 @Transactional
-public interface GlobalHipChatRepository extends JpaRepository<GlobalHipChatConfigEntity, Long> {
+public interface GlobalSlackRepository extends JpaRepository<GlobalSlackConfigEntity, Long> {
+
 }

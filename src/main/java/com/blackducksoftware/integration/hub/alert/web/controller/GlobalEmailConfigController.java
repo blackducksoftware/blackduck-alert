@@ -36,55 +36,55 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.GlobalEmailConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
 
 @RestController
-public class EmailConfigController extends ConfigController<EmailConfigRestModel> {
-    private final CommonConfigController<GlobalEmailConfigEntity, EmailConfigRestModel> commonConfigController;
+public class GlobalEmailConfigController extends ConfigController<GlobalEmailConfigRestModel> {
+    private final CommonConfigController<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> commonConfigController;
 
     @Autowired
-    EmailConfigController(final EmailConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(GlobalEmailConfigEntity.class, EmailConfigRestModel.class, configActions);
+    GlobalEmailConfigController(final GlobalEmailConfigActions configActions) {
+        commonConfigController = new CommonConfigController<>(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, configActions);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/email")
-    public List<EmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<GlobalEmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/email")
-    public ResponseEntity<String> postConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/email")
-    public ResponseEntity<String> putConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> validateConfig(final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.validateConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/email")
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/email/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final EmailConfigRestModel emailConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.testConfig(emailConfig);
     }
 

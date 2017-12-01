@@ -32,11 +32,11 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
 
 public class HipChatConfigActionsTest {
     private final MockUtils mockUtils = new MockUtils();
@@ -47,7 +47,7 @@ public class HipChatConfigActionsTest {
         final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
         Mockito.when(mockedHipChatRepository.exists(Mockito.anyLong())).thenReturn(true);
 
-        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
@@ -67,17 +67,17 @@ public class HipChatConfigActionsTest {
         Mockito.when(mockedHipChatRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createHipChatConfigEntity());
         Mockito.when(mockedHipChatRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createHipChatConfigEntity()));
 
-        final HipChatConfigRestModel restModel = mockUtils.createHipChatConfigRestModel();
+        final GlobalHipChatConfigRestModel restModel = mockUtils.createHipChatConfigRestModel();
 
-        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
-        List<HipChatConfigRestModel> emailConfigsById = configActions.getConfig(1L);
-        List<HipChatConfigRestModel> allHipChatConfigs = configActions.getConfig(null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
+        List<GlobalHipChatConfigRestModel> emailConfigsById = configActions.getConfig(1L);
+        List<GlobalHipChatConfigRestModel> allHipChatConfigs = configActions.getConfig(null);
 
         assertTrue(emailConfigsById.size() == 1);
         assertTrue(allHipChatConfigs.size() == 1);
 
-        final HipChatConfigRestModel emailConfigById = emailConfigsById.get(0);
-        final HipChatConfigRestModel emailConfig = allHipChatConfigs.get(0);
+        final GlobalHipChatConfigRestModel emailConfigById = emailConfigsById.get(0);
+        final GlobalHipChatConfigRestModel emailConfig = allHipChatConfigs.get(0);
         assertEquals(restModel, emailConfigById);
         assertEquals(restModel, emailConfig);
 
@@ -97,7 +97,7 @@ public class HipChatConfigActionsTest {
     public void testDeleteConfig() {
         final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
 
-        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
         configActions.deleteConfig(1L);
         verify(mockedHipChatRepository, times(1)).delete(Mockito.anyLong());
 
@@ -122,7 +122,7 @@ public class HipChatConfigActionsTest {
         final GlobalHipChatConfigEntity expectedHipChatConfigEntity = mockUtils.createHipChatConfigEntity();
         Mockito.when(mockedHipChatRepository.save(Mockito.any(GlobalHipChatConfigEntity.class))).thenReturn(expectedHipChatConfigEntity);
 
-        HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
+        GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
 
         GlobalHipChatConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
         assertNotNull(emailConfigEntity);
@@ -141,7 +141,7 @@ public class HipChatConfigActionsTest {
 
         final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = new HipChatConfigActions(mockedHipChatRepository, transformer, null);
+        configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, transformer, null);
 
         emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
         assertNull(emailConfigEntity);
@@ -150,12 +150,12 @@ public class HipChatConfigActionsTest {
     @Test
     public void testValidateConfig() throws Exception {
         final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
-        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
 
         String response = configActions.validateConfig(mockUtils.createHipChatConfigRestModel());
         assertEquals("Valid", response);
 
-        final HipChatConfigRestModel restModel = new HipChatConfigRestModel("1", "ApiKey", "NotInteger", "NotABoolean", "Color");
+        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel("1", "ApiKey", "NotInteger", "NotABoolean", "Color");
 
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("roomId", "Not an Integer.");
@@ -170,7 +170,7 @@ public class HipChatConfigActionsTest {
             }
         }
 
-        response = configActions.validateConfig(new HipChatConfigRestModel());
+        response = configActions.validateConfig(new GlobalHipChatConfigRestModel());
         assertEquals("Valid", response);
     }
 
@@ -179,7 +179,7 @@ public class HipChatConfigActionsTest {
         final HipChatChannel mockedHipChatChannel = Mockito.mock(HipChatChannel.class);
         Mockito.when(mockedHipChatChannel.testMessage(Mockito.any())).thenReturn("");
         final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
-        final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, mockedHipChatChannel);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer, mockedHipChatChannel);
 
         configActions.channelTestConfig(mockUtils.createHipChatConfigRestModel());
         verify(mockedHipChatChannel, times(1)).testMessage(Mockito.any());
@@ -187,13 +187,13 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testConfigurationChangeTriggers() {
-        final HipChatConfigActions configActions = new HipChatConfigActions(null, null, null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(null, null, null);
         configActions.configurationChangeTriggers(null);
     }
 
     @Test
     public void testIsBoolean() {
-        final HipChatConfigActions configActions = new HipChatConfigActions(null, null, null);
+        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(null, null, null);
         assertFalse(configActions.isBoolean(null));
         assertFalse(configActions.isBoolean(""));
         assertFalse(configActions.isBoolean("string"));

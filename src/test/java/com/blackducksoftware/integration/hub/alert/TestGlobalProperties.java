@@ -12,7 +12,7 @@
 package com.blackducksoftware.integration.hub.alert;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;

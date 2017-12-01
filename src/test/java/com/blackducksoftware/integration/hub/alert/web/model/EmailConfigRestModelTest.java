@@ -20,8 +20,8 @@ public class EmailConfigRestModelTest {
 
     @Test
     public void testEmptyModel() {
-        final EmailConfigRestModel emailConfigRestModel = new EmailConfigRestModel();
-        assertEquals(9172607945030111585L, EmailConfigRestModel.getSerialversionuid());
+        final GlobalEmailConfigRestModel emailConfigRestModel = new GlobalEmailConfigRestModel();
+        assertEquals(9172607945030111585L, GlobalEmailConfigRestModel.getSerialversionuid());
 
         assertNull(emailConfigRestModel.getEmailSubjectLine());
         assertNull(emailConfigRestModel.getEmailTemplateDirectory());
@@ -47,7 +47,7 @@ public class EmailConfigRestModelTest {
         final String expectedString = "{\"mailSmtpHost\":null,\"mailSmtpUser\":null,\"mailSmtpPort\":null,\"mailSmtpConnectionTimeout\":null,\"mailSmtpTimeout\":null,\"mailSmtpFrom\":null,\"mailSmtpLocalhost\":null,\"mailSmtpEhlo\":null,\"mailSmtpAuth\":null,\"mailSmtpDnsNotify\":null,\"mailSmtpDnsRet\":null,\"mailSmtpAllow8bitmime\":null,\"mailSmtpSendPartial\":null,\"emailTemplateDirectory\":null,\"emailTemplateLogoImage\":null,\"emailSubjectLine\":null,\"id\":null}";
         assertEquals(expectedString, emailConfigRestModel.toString());
 
-        final EmailConfigRestModel emailConfigRestModelNew = new EmailConfigRestModel();
+        final GlobalEmailConfigRestModel emailConfigRestModelNew = new GlobalEmailConfigRestModel();
         assertEquals(emailConfigRestModel, emailConfigRestModelNew);
     }
 
@@ -72,7 +72,7 @@ public class EmailConfigRestModelTest {
         final String emailTemplateLogoImage = "EmailTemplateLogoImage";
         final String emailSubjectLine = "EmailSubjectLine";
 
-        final EmailConfigRestModel emailConfigRestModel = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
+        final GlobalEmailConfigRestModel emailConfigRestModel = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
                 mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         assertEquals(emailSubjectLine, emailConfigRestModel.getEmailSubjectLine());
         assertEquals(emailTemplateDirectory, emailConfigRestModel.getEmailTemplateDirectory());
@@ -98,7 +98,7 @@ public class EmailConfigRestModelTest {
         final String expectedString = "{\"mailSmtpHost\":\"MailSmtpHost\",\"mailSmtpUser\":\"MailSmtpUser\",\"mailSmtpPort\":\"MailSmtpPort\",\"mailSmtpConnectionTimeout\":\"MailSmtpConnectionTimeout\",\"mailSmtpTimeout\":\"MailSmtpTimeout\",\"mailSmtpFrom\":\"MailSmtpFrom\",\"mailSmtpLocalhost\":\"MailSmtpLocalhost\",\"mailSmtpEhlo\":\"MailSmtpEhlo\",\"mailSmtpAuth\":\"MailSmtpAuth\",\"mailSmtpDnsNotify\":\"MailSmtpDnsNotify\",\"mailSmtpDnsRet\":\"MailSmtpDnsRet\",\"mailSmtpAllow8bitmime\":\"MailSmtpAllow8bitmime\",\"mailSmtpSendPartial\":\"MailSmtpSendPartial\",\"emailTemplateDirectory\":\"EmailTemplateDirectory\",\"emailTemplateLogoImage\":\"EmailTemplateLogoImage\",\"emailSubjectLine\":\"EmailSubjectLine\",\"id\":\"Id\"}";
         assertEquals(expectedString, emailConfigRestModel.toString());
 
-        final EmailConfigRestModel emailConfigRestModelNew = new EmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
+        final GlobalEmailConfigRestModel emailConfigRestModelNew = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
                 mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         assertEquals(emailConfigRestModel, emailConfigRestModelNew);
     }

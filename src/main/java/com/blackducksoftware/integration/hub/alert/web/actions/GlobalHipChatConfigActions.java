@@ -34,23 +34,23 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
 
 @Component
-public class HipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, HipChatConfigRestModel> {
+public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel> {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
-        super(GlobalHipChatConfigEntity.class, HipChatConfigRestModel.class, hipChatRepository, objectTransformer);
+    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
+        super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
         this.hipChatChannel = hipChatChannel;
     }
 
     @Override
-    public String validateConfig(final HipChatConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalHipChatConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getRoomId()) && !StringUtils.isNumeric(restModel.getRoomId())) {
             fieldErrors.put("roomId", "Not an Integer.");
@@ -67,7 +67,7 @@ public class HipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntit
     }
 
     @Override
-    public String channelTestConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
         return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
     }
 

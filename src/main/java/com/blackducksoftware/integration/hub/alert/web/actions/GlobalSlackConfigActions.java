@@ -34,23 +34,23 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalSlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
 
 @Component
-public class SlackConfigActions extends ConfigActions<GlobalSlackConfigEntity, SlackConfigRestModel> {
+public class GlobalSlackConfigActions extends ConfigActions<GlobalSlackConfigEntity, GlobalSlackConfigRestModel> {
     final SlackChannel slackChannel;
 
     @Autowired
-    public SlackConfigActions(final SlackChannel slackChannel, final GlobalSlackRepository slackRepository, final ObjectTransformer objectTransformer) {
-        super(GlobalSlackConfigEntity.class, SlackConfigRestModel.class, slackRepository, objectTransformer);
+    public GlobalSlackConfigActions(final SlackChannel slackChannel, final GlobalSlackRepository slackRepository, final ObjectTransformer objectTransformer) {
+        super(GlobalSlackConfigEntity.class, GlobalSlackConfigRestModel.class, slackRepository, objectTransformer);
         this.slackChannel = slackChannel;
     }
 
     @Override
-    public String validateConfig(final SlackConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalSlackConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isEmpty(restModel.getWebhook())) {
             fieldErrors.put("webhook", "Can't be blank");
@@ -64,7 +64,7 @@ public class SlackConfigActions extends ConfigActions<GlobalSlackConfigEntity, S
     }
 
     @Override
-    public String channelTestConfig(final SlackConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalSlackConfigRestModel restModel) throws IntegrationException {
         return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalSlackConfigEntity.class));
     }
 
