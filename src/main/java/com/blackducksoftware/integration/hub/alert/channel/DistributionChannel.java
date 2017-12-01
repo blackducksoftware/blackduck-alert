@@ -22,20 +22,42 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
-public abstract class DistributionChannel<E extends AbstractChannelEvent, C extends DatabaseEntity> extends MessageReceiver<E> {
+public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends DatabaseEntity, C extends DatabaseEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
-    public DistributionChannel(final Gson gson, final Class<E> clazz) {
+    private final CommonDistributionRepository commonDistributionRepository;
+    private final JpaRepository<G, Long> globalRepository;
+
+    public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
+        this.globalRepository = globalRepository;
+        this.commonDistributionRepository = commonDistributionRepository;
+    }
+
+    public CommonDistributionRepository getCommonDistributionRepository() {
+        return commonDistributionRepository;
+    }
+
+    public G getGlobalConfigEntity() {
+        final List<G> globalConfigs = globalRepository.findAll();
+        if (globalConfigs.size() == 1) {
+            return globalConfigs.get(0);
+        }
+        logger.error("Global Config did not have the expected number of rows: Expected one, but found {}.", globalConfigs.size());
+        return null;
     }
 
     public abstract void sendMessage(final E event, final C config);

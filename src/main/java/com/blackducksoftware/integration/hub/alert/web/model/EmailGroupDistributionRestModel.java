@@ -20,25 +20,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.event;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
+    private static final long serialVersionUID = -4728604702503057780L;
 
-public abstract class AbstractChannelEvent extends AbstractEvent {
-    private final ProjectData projectData;
-    private final Long commonDistributionConfigId;
+    private String groupName;
 
-    public AbstractChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
-        super();
-        this.projectData = projectData;
-        this.commonDistributionConfigId = commonDistributionConfigId;
+    public EmailGroupDistributionRestModel() {
     }
 
-    public ProjectData getProjectData() {
-        return projectData;
+    public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
+            final String groupName) {
+        super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject);
+        this.groupName = groupName;
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
+
+    public String getGroupName() {
+        return groupName;
+    }
+
 }
