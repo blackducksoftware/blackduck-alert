@@ -33,19 +33,19 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @Component
-public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, HipChatConfigRestModel> {
+public class HipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, HipChatConfigRestModel> {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatConfigActions(final HipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
-        super(HipChatConfigEntity.class, HipChatConfigRestModel.class, hipChatRepository, objectTransformer);
+    public HipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
+        super(GlobalHipChatConfigEntity.class, HipChatConfigRestModel.class, hipChatRepository, objectTransformer);
         this.hipChatChannel = hipChatChannel;
     }
 
@@ -68,7 +68,7 @@ public class HipChatConfigActions extends ConfigActions<HipChatConfigEntity, Hip
 
     @Override
     public String channelTestConfig(final HipChatConfigRestModel restModel) throws IntegrationException {
-        return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatConfigEntity.class));
+        return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
     }
 
     @Override

@@ -31,8 +31,8 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -44,7 +44,7 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testDoesConfigExist() {
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         Mockito.when(mockedEmailRepository.exists(Mockito.anyLong())).thenReturn(true);
 
         final EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, null);
@@ -63,7 +63,7 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testGetConfig() throws Exception {
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createEmailConfigEntity());
         Mockito.when(mockedEmailRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createEmailConfigEntity()));
 
@@ -95,7 +95,7 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testDeleteConfig() {
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
 
         final EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, null);
         configActions.deleteConfig(1L);
@@ -118,20 +118,20 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testSaveConfig() throws Exception {
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
-        final EmailConfigEntity expectedEmailConfigEntity = mockUtils.createEmailConfigEntity();
-        Mockito.when(mockedEmailRepository.save(Mockito.any(EmailConfigEntity.class))).thenReturn(expectedEmailConfigEntity);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
+        final GlobalEmailConfigEntity expectedEmailConfigEntity = mockUtils.createEmailConfigEntity();
+        Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenReturn(expectedEmailConfigEntity);
 
         EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, null);
 
-        EmailConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
+        GlobalEmailConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
         assertNotNull(emailConfigEntity);
         assertEquals(expectedEmailConfigEntity, emailConfigEntity);
 
         emailConfigEntity = configActions.saveConfig(null);
         assertNull(emailConfigEntity);
 
-        Mockito.when(mockedEmailRepository.save(Mockito.any(EmailConfigEntity.class))).thenThrow(new RuntimeException("test"));
+        Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenThrow(new RuntimeException("test"));
         try {
             emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
             fail();
@@ -149,7 +149,7 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testValidateConfig() throws Exception {
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, null);
 
         String response = configActions.validateConfig(mockUtils.createEmailConfigRestModel());
@@ -184,7 +184,7 @@ public class EmailConfigActionsTest {
     @Test
     public void testTestConfig() throws Exception {
         final EmailChannel mockedEmailChannel = Mockito.mock(EmailChannel.class);
-        final EmailRepository mockedEmailRepository = Mockito.mock(EmailRepository.class);
+        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final EmailConfigActions configActions = new EmailConfigActions(mockedEmailRepository, objectTransformer, mockedEmailChannel);
 
         configActions.testConfig(mockUtils.createEmailConfigRestModel());

@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHubRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,7 +26,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class GlobalRepositoryIT {
 
     @Autowired
-    private GlobalRepository repository;
+    private GlobalHubRepository repository;
 
     @Test
     public void testSaveEntity() {
@@ -36,11 +36,11 @@ public class GlobalRepositoryIT {
         final String accumulatorCron = "accumulator_cron";
         final String dailyDigestCron = "dailyDigest_cron";
         final String purgeDataCron = "purgeData_cron";
-        final GlobalConfigEntity entity = new GlobalConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
-        final GlobalConfigEntity savedEntity = repository.save(entity);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
+        final GlobalHubConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalConfigEntity foundEntity = repository.findOne(savedEntity.getId());
+        final GlobalHubConfigEntity foundEntity = repository.findOne(savedEntity.getId());
         assertEquals(hubTimeout, foundEntity.getHubTimeout());
         assertEquals(hubUsername, foundEntity.getHubUsername());
         assertEquals(hubPassword, foundEntity.getHubPassword());

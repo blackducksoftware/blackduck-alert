@@ -39,10 +39,8 @@ import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -59,18 +57,16 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatConfigEntity> {
+public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
-    private final HipChatRepository hipChatRepository;
-    private final HubUserHipChatRepository userRelationRepository;
+    private final GlobalHipChatRepository hipChatRepository;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final HubUserHipChatRepository userRelationRepository, final HipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final GlobalHipChatRepository hipChatRepository) {
         super(gson, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
-        this.userRelationRepository = userRelationRepository;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -81,14 +77,15 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
 
     @Override
     public void handleEvent(final HipChatEvent event) {
-        final HubUserHipChatRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
-        final Long configId = relationRow.getChannelConfigId();
-        final HipChatConfigEntity configuration = hipChatRepository.findOne(configId);
-        sendMessage(event, configuration);
+        // FIXME
+        // final HubUserHipChatRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
+        // final Long configId = relationRow.getChannelConfigId();
+        // final GlobalHipChatConfigEntity configuration = hipChatRepository.findOne(configId);
+        // sendMessage(event, configuration);
     }
 
     @Override
-    public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
+    public void sendMessage(final HipChatEvent event, final GlobalHipChatConfigEntity config) {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
@@ -98,7 +95,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
         }
     }
 
-    private String sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
+    private String sendMessage(final GlobalHipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
@@ -129,7 +126,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     @Override
-    public String testMessage(final HipChatConfigEntity config) throws IntegrationException {
+    public String testMessage(final GlobalHipChatConfigEntity config) throws IntegrationException {
         return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 

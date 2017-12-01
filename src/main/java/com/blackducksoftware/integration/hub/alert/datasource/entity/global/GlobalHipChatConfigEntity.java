@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +29,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(name = "hipchat_config")
-public class HipChatConfigEntity extends DatabaseEntity {
+@Table(schema = "alert", name = "global_hipchat_config")
+public class GlobalHipChatConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 2791949172564090134L;
 
     @Column(name = "api_key")
@@ -46,10 +48,10 @@ public class HipChatConfigEntity extends DatabaseEntity {
     @Column(name = "color")
     private String color;
 
-    public HipChatConfigEntity() {
+    public GlobalHipChatConfigEntity() {
     }
 
-    public HipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
+    public GlobalHipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
         this.apiKey = apiKey;
         this.roomId = room_id;
         this.notify = notify;

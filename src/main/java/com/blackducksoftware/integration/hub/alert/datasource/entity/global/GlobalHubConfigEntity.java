@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,9 +29,11 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(name = "global_config")
-public class GlobalConfigEntity extends DatabaseEntity {
+@Table(schema = "alert", name = "global_hub_config")
+public class GlobalHubConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 9172607945030111585L;
 
     @Column(name = "hub_timeout")
@@ -52,10 +54,10 @@ public class GlobalConfigEntity extends DatabaseEntity {
     @Column(name = "alert_purge_data_cron")
     private String purgeDataCron;
 
-    public GlobalConfigEntity() {
+    public GlobalHubConfigEntity() {
     }
 
-    public GlobalConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;

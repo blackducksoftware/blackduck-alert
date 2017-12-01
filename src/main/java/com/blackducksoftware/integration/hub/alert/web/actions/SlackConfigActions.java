@@ -33,19 +33,19 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
 
 @Component
-public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackConfigRestModel> {
+public class SlackConfigActions extends ConfigActions<GlobalSlackConfigEntity, SlackConfigRestModel> {
     final SlackChannel slackChannel;
 
     @Autowired
-    public SlackConfigActions(final SlackChannel slackChannel, final SlackRepository slackRepository, final ObjectTransformer objectTransformer) {
-        super(SlackConfigEntity.class, SlackConfigRestModel.class, slackRepository, objectTransformer);
+    public SlackConfigActions(final SlackChannel slackChannel, final GlobalSlackRepository slackRepository, final ObjectTransformer objectTransformer) {
+        super(GlobalSlackConfigEntity.class, SlackConfigRestModel.class, slackRepository, objectTransformer);
         this.slackChannel = slackChannel;
     }
 
@@ -65,7 +65,7 @@ public class SlackConfigActions extends ConfigActions<SlackConfigEntity, SlackCo
 
     @Override
     public String channelTestConfig(final SlackConfigRestModel restModel) throws IntegrationException {
-        return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, SlackConfigEntity.class));
+        return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalSlackConfigEntity.class));
     }
 
     @Override

@@ -20,29 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.transaction.Transactional;
 
-@Entity
-@Table(name = "hub_user_hipchat")
-public class HubUserHipChatRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 4597057895951603701L;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    @Column(name = "hipchat_config_id")
-    private Long hipChatConfigId;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 
-    public HubUserHipChatRelation() {
-    }
+@Transactional
+public interface CommonDistributionRepository extends JpaRepository<CommonDistributionConfigEntity, Long> {
 
-    public HubUserHipChatRelation(final Long userConfidId, final Long hipChatConfigId) {
-        super(userConfidId);
-        this.hipChatConfigId = hipChatConfigId;
-    }
-
-    public Long getChannelConfigId() {
-        return hipChatConfigId;
-    }
 }

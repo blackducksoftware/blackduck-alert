@@ -41,10 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HubUsersRepository;
 import com.blackducksoftware.integration.hub.alert.digest.filter.EventManager;
 import com.blackducksoftware.integration.hub.alert.digest.filter.UserNotificationWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
@@ -60,12 +58,10 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 public class DigestNotificationProcessor {
     private final static Logger logger = LoggerFactory.getLogger(DigestNotificationProcessor.class);
     private final EventManager eventManager;
-    private final HubUsersRepository hubUsersRepository;
 
     @Autowired
-    public DigestNotificationProcessor(final EventManager eventManager, final HubUsersRepository hubUsersRepository) {
+    public DigestNotificationProcessor(final EventManager eventManager) {
         this.eventManager = eventManager;
-        this.hubUsersRepository = hubUsersRepository;
     }
 
     public List<AbstractChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationEntity> notificationList) {
@@ -86,16 +82,17 @@ public class DigestNotificationProcessor {
         userProjectMap.entrySet().forEach(userMapEntry -> {
             final String username = userMapEntry.getKey();
             try {
-                final HubUsersEntity userEntity = hubUsersRepository.findByUsername(username);
-                if (userEntity != null) {
-                    final Map<String, ProjectDataBuilder> projectDataMap = userMapEntry.getValue();
-                    final Set<ProjectData> projectDataSet = new LinkedHashSet<>();
-                    projectDataMap.values().forEach(projectDataBuilder -> {
-                        projectDataSet.add(projectDataBuilder.build());
-                    });
+                // FIXME
+                // final HubUsersEntity userEntity = hubUsersRepository.findByUsername(username);
+                // if (userEntity != null) {
+                final Map<String, ProjectDataBuilder> projectDataMap = userMapEntry.getValue();
+                final Set<ProjectData> projectDataSet = new LinkedHashSet<>();
+                projectDataMap.values().forEach(projectDataBuilder -> {
+                    projectDataSet.add(projectDataBuilder.build());
+                });
 
-                    dataList.add(new UserNotificationWrapper(userEntity.getId(), projectDataSet));
-                }
+                // dataList.add(new UserNotificationWrapper(userEntity.getId(), projectDataSet));
+                // }
             } catch (final NoResultException ex) {
                 logger.debug("user {} could not be found in the configuration", username);
                 logger.debug("Cause:", ex);

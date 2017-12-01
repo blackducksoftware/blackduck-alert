@@ -20,20 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
-
-import java.util.Collection;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserProjectVersionsRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 
 @Transactional
-public interface HubUserProjectVersionsRepository extends JpaRepository<HubUserProjectVersionsRelation, Long> {
-    // TODO consider making this a JOIN because it is not one-to-one
-    @Query("SELECT userProjectVersions FROM HubUserProjectVersionsRelation userProjectVersions WHERE userProjectVersions.id = ?1")
-    public Collection<HubUserProjectVersionsRelation> findByUserId(final Long id);
+public interface ConfiguredProjectsRepository extends JpaRepository<ConfiguredProjectEntity, Long> {
+
 }

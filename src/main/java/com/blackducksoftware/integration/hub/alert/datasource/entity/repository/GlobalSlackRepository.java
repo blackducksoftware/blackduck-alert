@@ -25,9 +25,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 
 @Transactional
-public interface SlackRepository extends JpaRepository<SlackConfigEntity, Long> {
+public interface GlobalSlackRepository extends JpaRepository<GlobalSlackConfigEntity, Long> {
 
 }

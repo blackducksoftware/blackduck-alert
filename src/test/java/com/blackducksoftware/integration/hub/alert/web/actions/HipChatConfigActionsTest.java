@@ -31,8 +31,8 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -44,7 +44,7 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testDoesConfigExist() {
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
         Mockito.when(mockedHipChatRepository.exists(Mockito.anyLong())).thenReturn(true);
 
         final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
@@ -63,7 +63,7 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testGetConfig() throws Exception {
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
         Mockito.when(mockedHipChatRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createHipChatConfigEntity());
         Mockito.when(mockedHipChatRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createHipChatConfigEntity()));
 
@@ -95,7 +95,7 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testDeleteConfig() {
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
 
         final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
         configActions.deleteConfig(1L);
@@ -118,20 +118,20 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testSaveConfig() throws Exception {
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
-        final HipChatConfigEntity expectedHipChatConfigEntity = mockUtils.createHipChatConfigEntity();
-        Mockito.when(mockedHipChatRepository.save(Mockito.any(HipChatConfigEntity.class))).thenReturn(expectedHipChatConfigEntity);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
+        final GlobalHipChatConfigEntity expectedHipChatConfigEntity = mockUtils.createHipChatConfigEntity();
+        Mockito.when(mockedHipChatRepository.save(Mockito.any(GlobalHipChatConfigEntity.class))).thenReturn(expectedHipChatConfigEntity);
 
         HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
 
-        HipChatConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
+        GlobalHipChatConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
         assertNotNull(emailConfigEntity);
         assertEquals(expectedHipChatConfigEntity, emailConfigEntity);
 
         emailConfigEntity = configActions.saveConfig(null);
         assertNull(emailConfigEntity);
 
-        Mockito.when(mockedHipChatRepository.save(Mockito.any(HipChatConfigEntity.class))).thenThrow(new RuntimeException("test"));
+        Mockito.when(mockedHipChatRepository.save(Mockito.any(GlobalHipChatConfigEntity.class))).thenThrow(new RuntimeException("test"));
         try {
             emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
             fail();
@@ -149,7 +149,7 @@ public class HipChatConfigActionsTest {
 
     @Test
     public void testValidateConfig() throws Exception {
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
         final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, null);
 
         String response = configActions.validateConfig(mockUtils.createHipChatConfigRestModel());
@@ -178,7 +178,7 @@ public class HipChatConfigActionsTest {
     public void testChannelTestConfig() throws Exception {
         final HipChatChannel mockedHipChatChannel = Mockito.mock(HipChatChannel.class);
         Mockito.when(mockedHipChatChannel.testMessage(Mockito.any())).thenReturn("");
-        final HipChatRepository mockedHipChatRepository = Mockito.mock(HipChatRepository.class);
+        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
         final HipChatConfigActions configActions = new HipChatConfigActions(mockedHipChatRepository, objectTransformer, mockedHipChatChannel);
 
         configActions.channelTestConfig(mockUtils.createHipChatConfigRestModel());

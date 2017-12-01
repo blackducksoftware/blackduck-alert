@@ -35,17 +35,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.HipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.HipChatConfigRestModel;
 
 @RestController
 public class HipChatConfigController extends ConfigController<HipChatConfigRestModel> {
-    private final CommonConfigController<HipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
+    private final CommonConfigController<GlobalHipChatConfigEntity, HipChatConfigRestModel> commonConfigController;
 
     @Autowired
     public HipChatConfigController(final HipChatConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(HipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
+        commonConfigController = new CommonConfigController<>(GlobalHipChatConfigEntity.class, HipChatConfigRestModel.class, configActions);
     }
 
     @Override

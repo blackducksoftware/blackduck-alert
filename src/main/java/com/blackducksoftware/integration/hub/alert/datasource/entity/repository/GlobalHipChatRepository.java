@@ -25,9 +25,8 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HubUsersEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 
 @Transactional
-public interface HubUsersRepository extends JpaRepository<HubUsersEntity, Long> {
-    public HubUsersEntity findByUsername(String username);
+public interface GlobalHipChatRepository extends JpaRepository<GlobalHipChatConfigEntity, Long> {
 }

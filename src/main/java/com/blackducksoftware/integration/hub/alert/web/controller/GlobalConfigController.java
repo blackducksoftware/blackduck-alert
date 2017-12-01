@@ -35,17 +35,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.GlobalConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 
 @RestController
 public class GlobalConfigController extends ConfigController<GlobalConfigRestModel> {
-    private final CommonConfigController<GlobalConfigEntity, GlobalConfigRestModel> commonConfigController;
+    private final CommonConfigController<GlobalHubConfigEntity, GlobalConfigRestModel> commonConfigController;
 
     @Autowired
     GlobalConfigController(final GlobalConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(GlobalConfigEntity.class, GlobalConfigRestModel.class, configActions);
+        commonConfigController = new CommonConfigController<>(GlobalHubConfigEntity.class, GlobalConfigRestModel.class, configActions);
     }
 
     @Override

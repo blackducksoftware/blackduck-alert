@@ -20,13 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
+@Entity
+@Table(schema = "alert", name = "slack_distribution_config")
+public class SlackDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 3607759169675906880L;
 
-@Transactional
-public interface HipChatRepository extends JpaRepository<HipChatConfigEntity, Long> {
+    @Column(name = "channel_name")
+    private String channelName;
+
+    public SlackDistributionConfigEntity() {
+    }
+
+    public SlackDistributionConfigEntity(final String channelName) {
+        super();
+        this.channelName = channelName;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getChannelName() {
+        return channelName;
+    }
+
 }

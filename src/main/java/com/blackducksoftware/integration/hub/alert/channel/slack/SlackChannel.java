@@ -35,10 +35,8 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserSlackRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserSlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -55,21 +53,19 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEntity> {
+public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
-    private final HubUserSlackRepository userRelationRepository;
-    private final SlackRepository slackRepository;
+    private final GlobalSlackRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final HubUserSlackRepository userRelationRepository, final SlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final GlobalSlackRepository slackRepository) {
         super(gson, SlackEvent.class);
-        this.userRelationRepository = userRelationRepository;
         this.slackRepository = slackRepository;
     }
 
     @Override
-    public void sendMessage(final SlackEvent event, final SlackConfigEntity config) {
+    public void sendMessage(final SlackEvent event, final GlobalSlackConfigEntity config) {
         final ProjectData projectData = event.getProjectData();
         final String htmlMessage = createMessage(projectData);
         try {
@@ -81,12 +77,12 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
     }
 
     @Override
-    public String testMessage(final SlackConfigEntity config) throws IntegrationRestException {
+    public String testMessage(final GlobalSlackConfigEntity config) throws IntegrationRestException {
         final String message = "*Test* from _Alert_ application";
         return sendMessage(message, config);
     }
 
-    private String sendMessage(final String htmlMessage, final SlackConfigEntity config) throws IntegrationRestException {
+    private String sendMessage(final String htmlMessage, final GlobalSlackConfigEntity config) throws IntegrationRestException {
         final String slackUrl = config.getWebhook();
         final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
@@ -168,10 +164,11 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     @Override
     public void handleEvent(final SlackEvent event) {
-        final HubUserSlackRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
-        final Long configId = relationRow.getChannelConfigId();
-        final SlackConfigEntity configuration = slackRepository.findOne(configId);
-        sendMessage(event, configuration);
+        // FIXME
+        // final HubUserSlackRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
+        // final Long configId = relationRow.getChannelConfigId();
+        // final GlobalSlackConfigEntity configuration = slackRepository.findOne(configId);
+        // sendMessage(event, configuration);
     }
 
 }

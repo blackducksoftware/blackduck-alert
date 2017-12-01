@@ -20,36 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Entity
-@Table(name = "hub_users")
-public class HubUsersEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -7970838052348596256L;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 
-    private String username;
-
-    public HubUsersEntity() {
-    }
-
-    public HubUsersEntity(final String username) {
-        super();
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
-    }
+@Transactional
+public interface GlobalEmailRepository extends JpaRepository<GlobalEmailConfigEntity, Long> {
 
 }

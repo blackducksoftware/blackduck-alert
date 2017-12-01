@@ -35,17 +35,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.EmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
 
 @RestController
 public class EmailConfigController extends ConfigController<EmailConfigRestModel> {
-    private final CommonConfigController<EmailConfigEntity, EmailConfigRestModel> commonConfigController;
+    private final CommonConfigController<GlobalEmailConfigEntity, EmailConfigRestModel> commonConfigController;
 
     @Autowired
     EmailConfigController(final EmailConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(EmailConfigEntity.class, EmailConfigRestModel.class, configActions);
+        commonConfigController = new CommonConfigController<>(GlobalEmailConfigEntity.class, EmailConfigRestModel.class, configActions);
     }
 
     @Override

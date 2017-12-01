@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalEmailRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,7 +26,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class EmailRepositoryIT {
 
     @Autowired
-    private EmailRepository repository;
+    private GlobalEmailRepository repository;
 
     @Test
     public void testSaveEntity() {
@@ -47,12 +47,12 @@ public class EmailRepositoryIT {
         final String emailTemplateDirectory = "template_directory_path";
         final String emailTemplateLogoImage = "logo_image_path";
         final String emailSubjectLine = "email_subject_line";
-        final EmailConfigEntity entity = new EmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
+        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
                 mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        final EmailConfigEntity savedEntity = repository.save(entity);
+        final GlobalEmailConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final EmailConfigEntity foundEntity = repository.findOne(savedEntity.getId());
+        final GlobalEmailConfigEntity foundEntity = repository.findOne(savedEntity.getId());
         assertEquals(mailSmtpHost, foundEntity.getMailSmtpHost());
         assertEquals(mailSmtpUser, foundEntity.getMailSmtpUser());
         assertEquals(mailSmtpPassword, foundEntity.getMailSmtpPassword());
