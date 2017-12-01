@@ -36,7 +36,7 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnection
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalSlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;

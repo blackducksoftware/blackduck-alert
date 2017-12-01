@@ -25,17 +25,17 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class SlackConfigRestModel extends ConfigRestModel {
+public class GlobalSlackConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -2360827976516988339L;
 
     private String channelName;
     private String username;
     private String webhook;
 
-    public SlackConfigRestModel() {
+    public GlobalSlackConfigRestModel() {
     }
 
-    public SlackConfigRestModel(final String id, final String channelName, final String username, final String webhook) {
+    public GlobalSlackConfigRestModel(final String id, final String channelName, final String username, final String webhook) {
         super(id);
         this.channelName = channelName;
         this.username = username;

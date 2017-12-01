@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class GlobalConfigRestModel extends ConfigRestModel {
+public class GlobalHubConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
 
     private String hubUrl;
@@ -41,10 +41,10 @@ public class GlobalConfigRestModel extends ConfigRestModel {
     private String dailyDigestCron;
     private String purgeDataCron;
 
-    public GlobalConfigRestModel() {
+    public GlobalHubConfigRestModel() {
     }
 
-    public GlobalConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
+    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
             final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
         super(id);
         this.hubUrl = hubUrl;

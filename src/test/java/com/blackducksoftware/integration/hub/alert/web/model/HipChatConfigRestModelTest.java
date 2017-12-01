@@ -20,8 +20,8 @@ public class HipChatConfigRestModelTest {
 
     @Test
     public void testEmptyModel() {
-        final HipChatConfigRestModel hipChatConfigRestModel = new HipChatConfigRestModel();
-        assertEquals(8852683250883814613L, HipChatConfigRestModel.getSerialversionuid());
+        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel();
+        assertEquals(8852683250883814613L, GlobalHipChatConfigRestModel.getSerialversionuid());
 
         assertNull(hipChatConfigRestModel.getApiKey());
         assertNull(hipChatConfigRestModel.getColor());
@@ -34,7 +34,7 @@ public class HipChatConfigRestModelTest {
         final String expectedString = "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final HipChatConfigRestModel hipChatConfigRestModelNew = new HipChatConfigRestModel();
+        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel();
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 
@@ -46,7 +46,7 @@ public class HipChatConfigRestModelTest {
         final String notify = "Notify";
         final String color = "Color";
 
-        final HipChatConfigRestModel hipChatConfigRestModel = new HipChatConfigRestModel(id, apiKey, roomId, notify, color);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey, roomId, notify, color);
 
         assertEquals(apiKey, hipChatConfigRestModel.getApiKey());
         assertEquals(color, hipChatConfigRestModel.getColor());
@@ -59,7 +59,7 @@ public class HipChatConfigRestModelTest {
         final String expectedString = "{\"roomId\":\"RoomId\",\"notify\":\"Notify\",\"color\":\"Color\",\"id\":\"Id\"}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final HipChatConfigRestModel hipChatConfigRestModelNew = new HipChatConfigRestModel(id, apiKey, roomId, notify, color);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey, roomId, notify, color);
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 }

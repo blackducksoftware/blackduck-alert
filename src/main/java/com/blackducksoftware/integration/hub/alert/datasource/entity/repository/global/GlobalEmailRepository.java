@@ -20,15 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 
 @Transactional
-public interface GlobalHubRepository extends JpaRepository<GlobalHubConfigEntity, Long> {
+public interface GlobalEmailRepository extends JpaRepository<GlobalEmailConfigEntity, Long> {
 
 }

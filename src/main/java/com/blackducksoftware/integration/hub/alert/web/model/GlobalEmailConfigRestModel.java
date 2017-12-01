@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class EmailConfigRestModel extends ConfigRestModel {
+public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
@@ -48,10 +48,10 @@ public class EmailConfigRestModel extends ConfigRestModel {
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
 
-    public EmailConfigRestModel() {
+    public GlobalEmailConfigRestModel() {
     }
 
-    public EmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
+    public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime,
             final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super(id);

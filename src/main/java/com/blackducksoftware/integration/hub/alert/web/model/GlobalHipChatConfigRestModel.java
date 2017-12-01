@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class HipChatConfigRestModel extends ConfigRestModel {
+public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
     private String apiKey;
@@ -33,10 +33,10 @@ public class HipChatConfigRestModel extends ConfigRestModel {
     private String notify;
     private String color;
 
-    public HipChatConfigRestModel() {
+    public GlobalHipChatConfigRestModel() {
     }
 
-    public HipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
+    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
         super(id);
         this.apiKey = apiKey;
         this.roomId = roomId;

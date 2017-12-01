@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMe
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;

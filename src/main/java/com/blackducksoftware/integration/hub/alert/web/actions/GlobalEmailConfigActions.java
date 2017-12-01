@@ -34,23 +34,23 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.EmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
 
 @Component
-public class EmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, EmailConfigRestModel> {
+public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> {
     private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
-        super(GlobalEmailConfigEntity.class, EmailConfigRestModel.class, emailRepository, objectTransformer);
+    public GlobalEmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
+        super(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, emailRepository, objectTransformer);
         this.emailChannel = emailChannel;
     }
 
     @Override
-    public String validateConfig(final EmailConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalEmailConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getMailSmtpPort()) && !StringUtils.isNumeric(restModel.getMailSmtpPort())) {
             fieldErrors.put("mailSmtpPort", "Not an Integer.");
@@ -81,7 +81,7 @@ public class EmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, E
     }
 
     @Override
-    public String channelTestConfig(final EmailConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
         return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class));
     }
 

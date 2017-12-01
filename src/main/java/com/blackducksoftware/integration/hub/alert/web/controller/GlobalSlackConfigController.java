@@ -37,55 +37,55 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.SlackConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.SlackConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.GlobalSlackConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
 
 @RestController
-public class SlackConfigController extends ConfigController<SlackConfigRestModel> {
-    private final CommonConfigController<GlobalSlackConfigEntity, SlackConfigRestModel> commonConfigController;
+public class GlobalSlackConfigController extends ConfigController<GlobalSlackConfigRestModel> {
+    private final CommonConfigController<GlobalSlackConfigEntity, GlobalSlackConfigRestModel> commonConfigController;
 
     @Autowired
-    public SlackConfigController(final SlackConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(GlobalSlackConfigEntity.class, SlackConfigRestModel.class, configActions);
+    public GlobalSlackConfigController(final GlobalSlackConfigActions configActions) {
+        commonConfigController = new CommonConfigController<>(GlobalSlackConfigEntity.class, GlobalSlackConfigRestModel.class, configActions);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/slack")
-    public List<SlackConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<GlobalSlackConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/slack")
-    public ResponseEntity<String> postConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
+    public ResponseEntity<String> postConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.postConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/slack")
-    public ResponseEntity<String> putConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
+    public ResponseEntity<String> putConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.putConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/slack")
-    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final SlackConfigRestModel slackConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.deleteConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/slack/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final SlackConfigRestModel slackConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.testConfig(slackConfig);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(final SlackConfigRestModel restModel) {
+    public ResponseEntity<String> validateConfig(final GlobalSlackConfigRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
