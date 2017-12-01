@@ -20,21 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.model;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+public class HubGroup extends HubModel {
+    public String name;
 
-@RestController
-public class HubUserController {
+    public Boolean active;
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/hub/users")
-    public ResponseEntity<String> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return null;
-    }
+    public String url;
 
 }
