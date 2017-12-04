@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class CommonDistributionConfigRestModel extends ConfigRestModel {
+public abstract class CommonDistributionConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -4723009315760610084L;
 
     private String distributionConfigId;

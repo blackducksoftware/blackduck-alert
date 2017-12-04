@@ -34,12 +34,16 @@ public class SlackDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "channel_name")
     private String channelName;
 
+    @Column(name = "channel_username")
+    private String channelUsername;
+
     public SlackDistributionConfigEntity() {
     }
 
-    public SlackDistributionConfigEntity(final String channelName) {
+    public SlackDistributionConfigEntity(final String channelName, final String channelUsername) {
         super();
         this.channelName = channelName;
+        this.channelUsername = channelUsername;
     }
 
     public static long getSerialversionuid() {
@@ -48,6 +52,10 @@ public class SlackDistributionConfigEntity extends DatabaseEntity {
 
     public String getChannelName() {
         return channelName;
+    }
+
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
 }

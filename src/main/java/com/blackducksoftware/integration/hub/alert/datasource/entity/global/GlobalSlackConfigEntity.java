@@ -36,34 +36,18 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 public class GlobalSlackConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 4872590789715928839L;
 
-    @Column(name = "channel_name")
-    private String channelName;
-
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "webhook")
     private String webhook;
 
     public GlobalSlackConfigEntity() {
     }
 
-    public GlobalSlackConfigEntity(final String channelName, final String username, final String webhook) {
-        this.channelName = channelName;
-        this.username = username;
+    public GlobalSlackConfigEntity(final String webhook) {
         this.webhook = webhook;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public String getWebhook() {
