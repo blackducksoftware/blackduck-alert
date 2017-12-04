@@ -90,14 +90,18 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
-        } catch (final IntegrationRestException e) {
-            logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
+        } catch (final IntegrationException e) {
+            if (e instanceof IntegrationRestException) {
+                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
+            }
             logger.error(e.getMessage(), e);
         }
     }
 
-    private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+    private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
+        // FIXME need global properties
+        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
+        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);

@@ -27,27 +27,44 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.Credentials;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
+@Component
 public class ChannelRestConnectionFactory {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
 
-    public static RestConnection createUnauthenticatedRestConnection(final String stringUrl) {
+    private final GlobalProperties globalProperties;
+
+    @Autowired
+    public ChannelRestConnectionFactory(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
+    }
+
+    public RestConnection createUnauthenticatedRestConnection(final String stringUrl) throws EncryptionException {
         final URL url = getUrlFromString(stringUrl);
         return createUnauthenticatedRestConnection(url);
     }
 
-    public static RestConnection createUnauthenticatedRestConnection(final URL url) {
+    public RestConnection createUnauthenticatedRestConnection(final URL url) throws EncryptionException {
         return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), 5 * 60 * 1000);
     }
 
-    public static RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
-        final RestConnection connection = new UnauthenticatedRestConnection(intLogger, url, timeout);
+    public RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) throws EncryptionException {
+        // TODO should credentials be encrypted?
+        final Credentials credentials = new Credentials(globalProperties.hubProxyUsername, globalProperties.hubProxyPassword);
+        final int proxyPort = Integer.parseInt(globalProperties.hubProxyPort);
+        final RestConnection connection = new UnauthenticatedRestConnection(intLogger, url, timeout, new ProxyInfo(globalProperties.hubProxyHost, proxyPort, credentials, null));
         try {
             connection.connect();
             return connection;
@@ -57,7 +74,7 @@ public class ChannelRestConnectionFactory {
         }
     }
 
-    private static URL getUrlFromString(final String apiUrl) {
+    private URL getUrlFromString(final String apiUrl) {
         URL url = null;
         try {
             url = new URL(apiUrl);

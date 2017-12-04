@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -54,8 +54,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.api.user.UserRequestService;
+import com.blackducksoftware.integration.hub.api.group.GroupRequestService;
+import com.blackducksoftware.integration.hub.model.view.UserGroupView;
 import com.blackducksoftware.integration.hub.model.view.UserView;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
@@ -110,11 +112,9 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             try {
-                throw new IntegrationException();
-                // TODO update hub-common for GROUP REQUEST SERVICE
-                // final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-                // final String emailAddress = getEmailAddressForHubUser(hubServicesFactory.createUserRequestService(), hubGroupName);
-                // sendMessage(emailAddress, emailEvent, getGlobalConfigEntity());
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
+                final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupRequestService(), hubGroupName);
+                sendMessage(emailAddresses, emailEvent, getGlobalConfigEntity());
             } catch (final IntegrationException e) {
                 logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);
             }
@@ -141,6 +141,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
             model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
 
             for (final String emailAddress : emailAddresses) {
+                // TODO should these be individual emails, or one group email?
                 final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
                 emailService.sendEmailMessage(emailTarget);
             }
@@ -149,25 +150,29 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
         }
     }
 
-    private List<String> getEmailAddressForHubUser(final UserRequestService userRequestService, final String hubGroup) throws AlertException {
+    private List<String> getEmailAddressesForGroup(final GroupRequestService groupRequestService, final String hubGroup) throws AlertException {
         try {
-            final List<UserView> users = userRequestService.getAllUsers();
-            // TODO return getEmailByUsername(users, hubGroup);
-            return null;
+            final List<UserGroupView> groups = groupRequestService.getAllGroups();
+
+            UserGroupView userGroupView = null;
+            for (final UserGroupView group : groups) {
+                if (group.name.equals(hubGroup)) {
+                    userGroupView = group;
+                }
+            }
+            return getEmailAddressesForGroup(groupRequestService, userGroupView);
         } catch (final IntegrationException e) {
             throw new AlertException(e);
         }
     }
 
-    private String getEmailByUsername(final List<UserView> users, final String username) throws AlertException {
-        if (users != null) {
-            final Optional<UserView> foundUser = users.stream().filter(user -> user.userName.equals(username)).findFirst();
-            if (foundUser.isPresent()) {
-                return foundUser.get().email;
-            }
-            throw new AlertException("User '{}' not found on the Hub Server.");
+    private List<String> getEmailAddressesForGroup(final GroupRequestService groupRequestService, final UserGroupView group) throws AlertException {
+        try {
+            final List<UserView> users = groupRequestService.getAllUsersForGroup(group);
+            return users.stream().map(user -> user.email).collect(Collectors.toList());
+        } catch (final IntegrationException e) {
+            throw new AlertException(e);
         }
-        throw new AlertException("No Hub users found.");
     }
 
 }
