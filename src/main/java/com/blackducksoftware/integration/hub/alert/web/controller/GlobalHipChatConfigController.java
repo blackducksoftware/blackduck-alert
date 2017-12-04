@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalHipChatConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
 
 @RestController

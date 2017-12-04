@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
 
 public class EmailConfigActionsTest {
