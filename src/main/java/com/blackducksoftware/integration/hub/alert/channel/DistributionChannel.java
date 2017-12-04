@@ -56,13 +56,13 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         if (globalConfigs.size() == 1) {
             return globalConfigs.get(0);
         }
-        logger.error("Global Config did not have the expected number of rows: Expected one, but found {}.", globalConfigs.size());
+        logger.error("Global Config did not have the expected number of rows: expected 1, but found {}.", globalConfigs.size());
         return null;
     }
 
     public abstract void sendMessage(final E event, final C config);
 
-    public abstract String testMessage(final C config) throws IntegrationException;
+    public abstract String testMessage(final G globalConfig) throws IntegrationException;
 
     public abstract void handleEvent(final E event);
 
