@@ -71,21 +71,25 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         final String htmlMessage = createMessage(projectData);
         try {
             sendMessage(htmlMessage, config);
-        } catch (final IntegrationRestException e) {
-            logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
+        } catch (final IntegrationException e) {
+            if (e instanceof IntegrationRestException) {
+                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
+            }
             logger.error(e.getMessage(), e);
         }
     }
 
     @Override
-    public String testMessage(final SlackDistributionConfigEntity config) throws IntegrationRestException {
+    public String testMessage(final SlackDistributionConfigEntity config) throws IntegrationException {
         final String message = "*Test* from _Alert_ application";
         return sendMessage(message, config);
     }
 
-    private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationRestException {
+    private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = getGlobalConfigEntity().getWebhook();
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
+        // FIXME need global properties
+        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
+        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), getGlobalConfigEntity().getUsername());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
