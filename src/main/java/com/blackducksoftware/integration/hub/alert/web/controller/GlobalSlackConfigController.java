@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalSlackConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalSlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
 
 @RestController

@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalEmailConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
 
 @RestController
