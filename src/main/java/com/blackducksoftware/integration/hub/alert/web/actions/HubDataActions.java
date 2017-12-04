@@ -75,7 +75,6 @@ public class HubDataActions {
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
         if (hubServicesFactory != null) {
             final ProjectRequestService projectRequestService = hubServicesFactory.createProjectRequestService();
-
             final List<ProjectView> rawProjects = projectRequestService.getAllProjects();
 
             final List<HubProject> projects = new ArrayList<>();
