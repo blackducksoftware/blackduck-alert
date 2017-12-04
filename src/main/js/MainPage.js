@@ -1,10 +1,11 @@
 'use strict';
 
 import React from 'react';
-import GlobalConfiguration from './component/GlobalConfiguration';
-import EmailConfiguration from './component/EmailConfiguration';
-import HipChatConfiguration from './component/HipChatConfiguration';
-import SlackConfiguration from './component/SlackConfiguration';
+import HubConfiguration from './component/server/HubConfiguration';
+import SchedulingConfiguration from './component/server/SchedulingConfiguration';
+import EmailConfiguration from './component/server/EmailConfiguration';
+import HipChatConfiguration from './component/server/HipChatConfiguration';
+import SlackConfiguration from './component/server/SlackConfiguration';
 import Header from './component/Header';
 
 import styles from '../css/main.css';
@@ -27,23 +28,28 @@ class MainPage extends React.Component {
                 <div className={styles.alertHeader}>
                     <h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
                 </div>
-                
+
                 <Tabs className={styles.tabContainer} selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
-                        <Tab className={styles.configTabs}>Hub settings</Tab>
-                        <Tab className={styles.configTabs}>Channel configuration</Tab>
+                        <Tab className={styles.configTabs}>Server Configuration </Tab>
+                        <Tab className={styles.configTabs}>Distribution Configuration</Tab>
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={styles.tabContent}>
-                            <GlobalConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
-                        </TabPanel>
-                        <TabPanel className={styles.tabContent}>
                             <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
                                 <TabList className={styles.table}>
+                                    <Tab className={styles.channelTabs}>Hub</Tab>
+                                    <Tab className={styles.channelTabs}>Scheduling</Tab>
                                     <Tab className={styles.channelTabs}>Email</Tab>
                                     <Tab className={styles.channelTabs}>Hipchat</Tab>
                                     <Tab className={styles.channelTabs}>Slack</Tab>
                                 </TabList>
+                                <TabPanel>
+                                    <HubConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
+                                </TabPanel>
+                                <TabPanel>
+                                    <SchedulingConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
+                                </TabPanel>
                                 <TabPanel>
                                     <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
                                 </TabPanel>
@@ -54,6 +60,9 @@ class MainPage extends React.Component {
                                     <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
                                 </TabPanel>
                             </Tabs>
+                        </TabPanel>
+                        <TabPanel className={styles.tabContent}>
+
                         </TabPanel>
                     </div>
                 </Tabs>
