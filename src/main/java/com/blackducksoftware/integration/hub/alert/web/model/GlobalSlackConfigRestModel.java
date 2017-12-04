@@ -28,30 +28,18 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 public class GlobalSlackConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -2360827976516988339L;
 
-    private String channelName;
-    private String username;
     private String webhook;
 
     public GlobalSlackConfigRestModel() {
     }
 
-    public GlobalSlackConfigRestModel(final String id, final String channelName, final String username, final String webhook) {
+    public GlobalSlackConfigRestModel(final String id, final String webhook) {
         super(id);
-        this.channelName = channelName;
-        this.username = username;
         this.webhook = webhook;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public String getUsername() {
-        return username;
     }
 
     public String getWebhook() {

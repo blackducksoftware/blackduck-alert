@@ -38,8 +38,9 @@ import com.google.gson.Gson;
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends DatabaseEntity, C extends DatabaseEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
-    private final CommonDistributionRepository commonDistributionRepository;
     private final JpaRepository<G, Long> globalRepository;
+    private final CommonDistributionRepository commonDistributionRepository;
+    private G globalConfigEntity;
 
     public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
@@ -52,12 +53,15 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     public G getGlobalConfigEntity() {
-        final List<G> globalConfigs = globalRepository.findAll();
-        if (globalConfigs.size() == 1) {
-            return globalConfigs.get(0);
+        if (globalConfigEntity == null) {
+            final List<G> globalConfigs = globalRepository.findAll();
+            if (globalConfigs.size() == 1) {
+                globalConfigEntity = globalConfigs.get(0);
+            }
+            logger.error("Global Config did not have the expected number of rows: Expected one, but found {}.", globalConfigs.size());
         }
-        logger.error("Global Config did not have the expected number of rows: Expected one, but found {}.", globalConfigs.size());
-        return null;
+
+        return globalConfigEntity;
     }
 
     public abstract void sendMessage(final E event, final C config);
