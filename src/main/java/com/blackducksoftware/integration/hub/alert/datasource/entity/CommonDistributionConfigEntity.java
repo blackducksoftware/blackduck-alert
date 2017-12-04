@@ -70,6 +70,10 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         return distributionConfigId;
     }
 
+    public void setDistributionConfigId(final Long distributionConfigId) {
+        this.distributionConfigId = distributionConfigId;
+    }
+
     public String getDistributionType() {
         return distributionType;
     }
