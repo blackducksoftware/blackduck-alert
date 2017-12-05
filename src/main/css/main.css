@@ -5,9 +5,9 @@
 .wrapper {
     padding: 0px;
     font-size: 13px;
-    height: 100%;
+    height: 800px;
     width: 100%;
-    font-family: Verdana;
+    font-family: 'Open Sans', sans-serif;
     display: inline-block;
     position: absolute;
 }
@@ -49,7 +49,7 @@
 }
 
 .loginContainer {
-	width: 100vw; 
+	width: 100vw;
 	height: 100vh;
 	display: flex;
     align-items: center;
@@ -132,7 +132,6 @@
     padding-top: 10px;
 }
 
-
 .table {
 	display: table;
     margin: 0 auto;
@@ -143,6 +142,7 @@
     margin: 0 auto;
     margin-top: 10px;
     width: 75%;
+    height: 100%;
     padding: 10px;
     background-color: white;
     position: relative;
