@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { tableRow, statusSuccess, statusFailure } from '../../css/distributionConfig.css';
+import { addJobButton, deleteJobButton, tableRow, statusSuccess, statusFailure } from '../../css/distributionConfig.css';
 
-import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 
 	const jobs = [];
 
@@ -21,7 +21,7 @@ import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-t
 		});
 		jobs.push({
 			jobName: 'HipChat Job',
-			type: 'Slack',
+			type: 'HipChat',
 			lastRun: '1/01/2017 00:00:00',
 			status: 'Success'
 		});
@@ -46,14 +46,13 @@ export default class DistributionConfiguration extends React.Component {
 			errors: {},
 			jobs: {}
 		};
-		this.handleJobAdd = this.handleJobAdd.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+		this.handleJobAddClick = this.handleJobAddClick.bind(this);
+		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
+		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
+		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
 	}
 
-
-	handleJobAdd(event) {
-		
-	}
 
 	handleChange(event) {
 		const target = event.target;
@@ -67,10 +66,36 @@ export default class DistributionConfiguration extends React.Component {
 		});
 	}
 
+	handleJobAddClick(onClick) {
+		console.log('This is my custom function for InsertButton click event');
+	}
+
+	handleJobDeleteClick(onClick) {
+		console.log('This is my custom function for DeleteButton click event');
+	}
+
+	createCustomInsertButton(onClick) {
+		return (
+			<InsertButton
+			className={addJobButton}
+			onClick={ () => this.handleJobAddClick(onClick) }/>
+		);
+	}
+
+	createCustomDeleteButton(onClick) {
+		return (
+			<DeleteButton
+			className={deleteJobButton}
+			onClick={ () => this.handleJobDeleteClick(onClick) }/>
+		);
+	}
+	
 	render() {
 		const tableOptions = {
 	  		noDataText: 'This is custom text for empty data',
-	  		clearSearch: true
+	  		clearSearch: true,
+	  		insertBtn: this.createCustomInsertButton,
+	  		deleteBtn: this.createCustomDeleteButton
 		};
 
 		const selectRowProp = {
@@ -85,8 +110,7 @@ export default class DistributionConfiguration extends React.Component {
 		};
 		return (
 				<div>
-					<input className='thing' type='submit' value='+ Add' onClick={this.handleJobAdd}></input>
-					<BootstrapTable data={jobs} striped hover selectRow={ selectRowProp } search={ true } options={tableOptions} trClassName={ tableRow } >
+					<BootstrapTable data={jobs} striped hover insertRow={ true } deleteRow={ true } selectRow={ selectRowProp } search={ true } options={tableOptions} trClassName={ tableRow } >
       					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
       					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
       					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
