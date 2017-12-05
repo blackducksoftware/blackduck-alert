@@ -66,7 +66,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     public abstract void sendMessage(final E event, final C config);
 
-    public abstract String testMessage(final G globalConfig) throws IntegrationException;
+    public abstract String testMessage(final C distributionConfig) throws IntegrationException;
 
     public abstract void handleEvent(final E event);
 
