@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,12 +49,14 @@ public class CommonDistributionConfigController extends ConfigController<CommonD
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/common")
     public List<CommonDistributionConfigRestModel> getConfig(final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
         // TODO improve and abstract for reuse
@@ -61,24 +64,28 @@ public class CommonDistributionConfigController extends ConfigController<CommonD
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/common/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
         return commonConfigController.deleteConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/common/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
         return commonConfigController.testConfig(restModel);
