@@ -99,13 +99,13 @@
     border-radius: 20px;
     height: 70px;
     line-height: 64px;
-    width: 70px;
+    width: 80px;
     margin: 10px;
     text-align: center;
 }
 
 .tabContainer {
-    margin-top: 30px;
+    margin-top: 75px;
 }
 
 .tabContent {

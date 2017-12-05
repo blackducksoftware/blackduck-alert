@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { addJobButton, deleteJobButton, tableRow, statusSuccess, statusFailure } from '../../css/distributionConfig.css';
+import { addJobButton, deleteJobButton, tableRow, statusSuccess, statusFailure } from '../../../css/distributionConfig.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 
