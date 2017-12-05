@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,7 +23,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class HipChatRepositoryIT {
+public class GlobalHipChatRepositoryIT {
 
     @Autowired
     private GlobalHipChatRepository repository;

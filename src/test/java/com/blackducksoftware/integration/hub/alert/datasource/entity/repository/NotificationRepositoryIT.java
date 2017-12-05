@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,6 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -36,7 +35,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class NotificationRepositoryIT {
-
     @Autowired
     private NotificationRepository repository;
 
