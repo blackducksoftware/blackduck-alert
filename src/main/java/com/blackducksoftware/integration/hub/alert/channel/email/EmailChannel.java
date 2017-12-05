@@ -97,11 +97,11 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
     }
 
     @Override
-    public String testMessage(final EmailGroupDistributionConfigEntity emailConfigEntity) {
-        if (emailConfigEntity != null) {
+    public String testMessage(final GlobalEmailConfigEntity globalConfig) {
+        if (globalConfig != null) {
             final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-            final String emailAddress = getGlobalConfigEntity().getMailSmtpFrom();
-            sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null), getGlobalConfigEntity());
+            final String emailAddress = globalConfig.getMailSmtpFrom();
+            sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null), globalConfig);
             return "Attempted to send message with the given configuration.";
         }
         return null;

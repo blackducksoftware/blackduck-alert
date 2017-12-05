@@ -44,4 +44,8 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
         return groupName;
     }
 
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
+    }
+
 }

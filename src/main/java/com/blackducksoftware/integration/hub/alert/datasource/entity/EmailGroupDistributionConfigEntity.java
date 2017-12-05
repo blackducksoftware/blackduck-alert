@@ -50,4 +50,8 @@ public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
         return groupName;
     }
 
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
+    }
+
 }

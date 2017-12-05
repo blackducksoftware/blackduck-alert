@@ -52,21 +52,21 @@ public class GlobalEmailConfigController extends ConfigController<GlobalEmailCon
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/configuration/email")
+    @GetMapping(value = "/configuration/global/email")
     public List<GlobalEmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/email")
+    @PostMapping(value = "/configuration/global/email")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.postConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/configuration/email")
+    @PutMapping(value = "/configuration/global/email")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.putConfig(emailConfig);
     }
@@ -78,14 +78,14 @@ public class GlobalEmailConfigController extends ConfigController<GlobalEmailCon
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/configuration/email")
+    @DeleteMapping(value = "/configuration/global/email")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.deleteConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/email/test")
+    @PostMapping(value = "/configuration/global/email/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
         return commonConfigController.testConfig(emailConfig);
     }

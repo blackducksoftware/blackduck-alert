@@ -1,6 +1,18 @@
-package com.blackducksoftware.integration.hub.datasource.entity.repository;
+/*
+ * Copyright (C) 2017 Black Duck Software Inc.
+ * http://www.blackducksoftware.com/
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Black Duck Software ("Confidential Information"). You shall not
+ * disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Black Duck Software.
+ */
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,33 +27,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class SlackRepositoryIT {
-
+public class EmailDistributionRepositoryTestIT {
     @Autowired
-    private GlobalSlackRepository repository;
+    private EmailGroupDistributionRepository emailGroupDistributionRepository;
 
     @Test
-    public void testSaveEntity() {
-        final String channelName = "channel_name";
-        final String username = "user_name";
-        final String webhook = "web_hook";
-
-        final GlobalSlackConfigEntity entity = new GlobalSlackConfigEntity(channelName, username, webhook);
-
-        final GlobalSlackConfigEntity savedEntity = repository.save(entity);
-        final long count = repository.count();
-        assertEquals(1, count);
-        final GlobalSlackConfigEntity foundEntity = repository.findOne(savedEntity.getId());
-        assertEquals(channelName, foundEntity.getChannelName());
-        assertEquals(username, foundEntity.getUsername());
-        assertEquals(webhook, foundEntity.getWebhook());
+    public void saveEntityTestIT() {
+        final String groupName = "Hub Group";
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName);
+        final EmailGroupDistributionConfigEntity savedEntity = emailGroupDistributionRepository.save(entity);
+        assertEquals(1, emailGroupDistributionRepository.count());
+        assertNotNull(savedEntity.getId());
+        assertEquals(groupName, savedEntity.getGroupName());
     }
+
 }
