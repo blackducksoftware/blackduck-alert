@@ -58,7 +58,6 @@
 .loginBox {
 	background-color: #fff;
     overflow: hidden;
-    z-index: 1;
     min-height: 175px;
     box-shadow: 0 0 5px #333;
     max-width: 500px;
@@ -73,13 +72,7 @@
     border: 3px solid #ccc;
 }
 
-.tabSpacing {
-    padding: 10px 10px 10px 10px;
-    width: 10%;
-}
-
 .tab {
-    composes: tabSpacing;
     background-color: white;
     color: black;
     position: relative;
@@ -92,9 +85,10 @@
 
 .configTabs {
     composes: border tab;
+     width: 10%;
+    padding: 10px;
     display: inline;
     border-radius: 15px 15px 0px 0px;
-    z-index: 6;
 }
 
 .channelTabs {
@@ -102,11 +96,20 @@
     float: left;
     border-radius: 20px;
     height: 70px;
-    line-height: 70px;
+    line-height: 64px;
     width: 70px;
-    margin: 20px;
+    margin: 10px;
     text-align: center;
-    padding: 10px;
+}
+
+.tabContainer {
+    margin-top: 30px;
+}
+
+.tabContent {
+    padding: 0px 12px 0px 12px;
+    border-collapse: collapse;
+    text-align: left;
 }
 
 .tabSelected {
@@ -122,20 +125,11 @@
     padding-top: 50px;
 }
 
-.tabContainer {
-    margin-top: 30px;
-}
-
 .alertHeaderTag {
     margin: 0 auto;
     padding-top: 10px;
 }
 
-.tabContent {
-    padding: 0px 12px 0px 12px;
-    border-collapse: collapse;
-    text-align: left;
-}
 
 .table {
 	display: table;
@@ -146,10 +140,9 @@
     composes: border;
     margin: 0 auto;
     margin-top: 10px;
-    width: 50%;
+    width: 75%;
     padding: 10px;
     background-color: white;
     position: relative;
     overflow: hidden;
-    z-index: 5;
 }

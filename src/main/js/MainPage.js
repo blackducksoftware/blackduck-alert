@@ -5,6 +5,7 @@ import GlobalConfiguration from './component/GlobalConfiguration';
 import EmailConfiguration from './component/EmailConfiguration';
 import HipChatConfiguration from './component/HipChatConfiguration';
 import SlackConfiguration from './component/SlackConfiguration';
+import DistributionConfiguration from './component/DistributionConfiguration';
 import Header from './component/Header';
 
 import styles from '../css/main.css';
@@ -32,6 +33,7 @@ class MainPage extends React.Component {
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Hub settings</Tab>
                         <Tab className={styles.configTabs}>Channel configuration</Tab>
+                        <Tab className={styles.configTabs}>Distribution configuration</Tab>
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={styles.tabContent}>
@@ -54,6 +56,9 @@ class MainPage extends React.Component {
                                     <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
                                 </TabPanel>
                             </Tabs>
+                        </TabPanel>
+                        <TabPanel className={styles.tabContent}>
+                            <DistributionConfiguration />
                         </TabPanel>
                     </div>
                 </Tabs>
