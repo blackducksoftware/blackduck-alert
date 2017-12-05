@@ -30,6 +30,7 @@
 	color: #fff;
     background: #285f8f;
     text-align: center;
+    vertical-align: middle;
     padding: 5px 10px 5px 10px;
     font-size: 1em;
     display: inline-block;
@@ -77,6 +78,7 @@
     color: black;
     position: relative;
     list-style: none;
+    cursor: pointer;
 }
 
 .tab:hover {
@@ -85,7 +87,7 @@
 
 .configTabs {
     composes: border tab;
-     width: 10%;
+    width: 10%;
     padding: 10px;
     display: inline;
     border-radius: 15px 15px 0px 0px;

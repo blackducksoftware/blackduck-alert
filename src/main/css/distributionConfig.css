@@ -1,3 +1,21 @@
+.jobButton {
+	cursor: pointer;
+	color: #fff;
+    background: #285f8f;
+    display: inline-block;
+    border: 1px solid transparent;
+    text-align: center;
+    vertical-align: middle;
+}
+.addJobButton {
+	composes: jobButton;
+}
+
+.deleteJobButton {
+	composes: jobButton;
+    background: #ef4923;
+}
+
 .tableRow {
     cursor: pointer;
 }

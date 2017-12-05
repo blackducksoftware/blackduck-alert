@@ -52,7 +52,9 @@ export default class Configuration extends React.Component {
 							if (configuration.hasOwnProperty(key)) {
 								let name = key;
 								let value = configuration[key];
-								values[name] = value;
+								if (value != null) {
+									values[name] = value;
+								}
 							}
 						}
 						self.setState({
