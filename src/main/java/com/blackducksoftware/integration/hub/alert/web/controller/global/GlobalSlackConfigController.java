@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller.global;
 
 import java.util.List;
 
@@ -38,6 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalSlackConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
 
 @RestController
@@ -58,28 +60,28 @@ public class GlobalSlackConfigController extends ConfigController<GlobalSlackCon
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/slack")
+    @PostMapping(value = "/configuration/global/slack")
     public ResponseEntity<String> postConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.postConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/configuration/slack")
+    @PutMapping(value = "/configuration/global/slack")
     public ResponseEntity<String> putConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.putConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/configuration/slack")
+    @DeleteMapping(value = "/configuration/global/slack")
     public ResponseEntity<String> deleteConfig(@RequestAttribute(value = "slackConfig", required = true) @RequestBody final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.deleteConfig(slackConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/slack/test")
+    @PostMapping(value = "/configuration/global/slack/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSlackConfigRestModel slackConfig) {
         return commonConfigController.testConfig(slackConfig);
     }
