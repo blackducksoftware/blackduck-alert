@@ -3,7 +3,7 @@
 import React from 'react';
 
 import ConfigButtons from './ConfigButtons';
-import { submitButtons, submitContainers, header, fixedHeader } from '../../css/header.css';
+import { submitButtons, submitContainers, header, fixedHeader, title } from '../../css/header.css';
 import logo from '../../img/BDTextLogo.png';
 
 class Header extends React.Component {
@@ -12,7 +12,7 @@ class Header extends React.Component {
 		super(props);
 		this.handleLogout = this.handleLogout.bind(this);
 	}
-	
+
 	handleLogout(event) {
 		event.preventDefault();
 		var self = this;
@@ -47,7 +47,7 @@ class Header extends React.Component {
 			}
 		});
 	}
-	
+
 	//render is part of the Component lifecycle, used to render the Html
 	render() {
 		let logout = "";
@@ -58,15 +58,16 @@ class Header extends React.Component {
 		if (this.props.fixed == 'true'){
 			headerClass = fixedHeader;
 		}
-		
+
 		return (
-				<div className={headerClass}>
-				<img src={logo} alt="logo"></img>
+			<div className={headerClass}>
+				<img src='img/BDTextLogo.png' alt="logo"></img>
+                <div className={title}>Black Duck Alert</div>
 				{logout}
-				</div>
+			</div>
 		)
 	}
-	
+
 }
 
 export default Header;
