@@ -29,11 +29,11 @@ import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
-public class LoginDataHandler extends ControllerHandler {
+public class LoginHandler extends ControllerHandler {
     private final LoginActions loginActions;
 
     @Autowired
-    public LoginDataHandler(final ObjectTransformer objectTransformer, final LoginActions loginActions) {
+    public LoginHandler(final ObjectTransformer objectTransformer, final LoginActions loginActions) {
         super(objectTransformer);
         this.loginActions = loginActions;
     }

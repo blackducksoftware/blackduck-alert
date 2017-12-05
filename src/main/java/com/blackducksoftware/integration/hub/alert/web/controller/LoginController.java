@@ -30,26 +30,26 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.web.controller.handler.LoginDataHandler;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.LoginHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 
 @RestController
 public class LoginController {
-    private final LoginDataHandler loginDataHandler;
+    private final LoginHandler loginHandler;
 
     @Autowired
-    public LoginController(final LoginDataHandler loginDataHandler) {
-        this.loginDataHandler = loginDataHandler;
+    public LoginController(final LoginHandler loginDataHandler) {
+        this.loginHandler = loginDataHandler;
     }
 
     @PostMapping(value = "/logout")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
-        return loginDataHandler.userLogout(request);
+        return loginHandler.userLogout(request);
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(final HttpServletRequest request, @RequestBody(required = false) final LoginRestModel loginRestModel) {
-        return loginDataHandler.userLogin(request, loginRestModel);
+        return loginHandler.userLogin(request, loginRestModel);
     }
 
 }
