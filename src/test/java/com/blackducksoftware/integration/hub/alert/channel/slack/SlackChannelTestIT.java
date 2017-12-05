@@ -44,4 +44,5 @@ public class SlackChannelTestIT extends RestChannelTest {
     // final String actual = getLineContainingText("Successfully sent a slack message!");
     // assertTrue(!actual.isEmpty());
     // }
+
 }

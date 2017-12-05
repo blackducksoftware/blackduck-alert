@@ -83,7 +83,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     }
 
     @Override
-    public String testMessage(final GlobalSlackConfigEntity config) throws IntegrationException {
+    public String testMessage(final SlackDistributionConfigEntity config) throws IntegrationException {
         // TODO send test message from global config
         final String message = "*Test* from _Alert_ application";
         return sendMessage(message, null);
