@@ -4,7 +4,9 @@ import styles from '../../../css/distributionConfig.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 
-	const jobs = [];
+	var jobs = [];
+
+	var projects = [];
 
 	function addJobs() {
 		jobs.push({
@@ -91,11 +93,16 @@ export default class DistributionConfiguration extends React.Component {
 	}
 	
 	render() {
-		const tableOptions = {
-	  		noDataText: 'This is custom text for empty data',
+		const jobTableOptions = {
+	  		noDataText: 'No jobs configured',
 	  		clearSearch: true,
 	  		insertBtn: this.createCustomInsertButton,
 	  		deleteBtn: this.createCustomDeleteButton
+		};
+
+		const projectTableOptions = {
+	  		noDataText: 'No projects found',
+	  		clearSearch: true
 		};
 
 		const selectRowProp = {
@@ -118,7 +125,7 @@ export default class DistributionConfiguration extends React.Component {
 		return (
 				<div>
 					<div className={styles.contentBlock}>
-						<BootstrapTable data={jobs} containerClass={styles.table} striped hover insertRow={true} deleteRow={true} selectRow={selectRowProp} search={true} options={tableOptions} trClassName={styles.tableRow} >
+						<BootstrapTable data={jobs} containerClass={styles.table} striped hover insertRow={true} deleteRow={true} selectRow={selectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} >
 	      					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
@@ -128,6 +135,9 @@ export default class DistributionConfiguration extends React.Component {
   					<div className={jobConfigBlockClasses}>
   					</div>
   					<div className={jobConfigBlockClasses}>
+  						<BootstrapTable data={projects} containerClass={styles.table} striped hover selectRow={selectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} >
+	      					<TableHeaderColumn dataField='projectName' isKey dataSort>Project</TableHeaderColumn>
+	  					</BootstrapTable>
   					</div>
 				</div>
 		)
