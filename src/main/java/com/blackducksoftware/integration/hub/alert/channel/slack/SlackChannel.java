@@ -58,11 +58,14 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
     private final GlobalSlackRepository slackRepository;
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public SlackChannel(final Gson gson, final GlobalSlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final GlobalSlackRepository slackRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, null, null, SlackEvent.class);
         this.slackRepository = slackRepository;
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
+
     }
 
     @Override
@@ -89,8 +92,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = getGlobalConfigEntity().getWebhook();
         // FIXME need global properties
-        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
-        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
+        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), getGlobalConfigEntity().getUsername());
             final RequestBody body = connection.createJsonRequestBody(jsonString);

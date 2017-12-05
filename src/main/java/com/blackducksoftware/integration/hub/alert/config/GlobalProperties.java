@@ -29,9 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -84,12 +85,12 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServicesFactory createHubServicesFactory(final Logger logger) throws EncryptionException {
+    public HubServicesFactory createHubServicesFactory(final Logger logger) throws IntegrationException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         return createHubServicesFactory(intLogger);
     }
 
-    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws EncryptionException {
+    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
             final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
@@ -108,7 +109,7 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServerConfig createHubServerConfig(final IntLogger logger) {
+    public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
         final GlobalHubConfigEntity globalConfigEntity = getConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
@@ -127,7 +128,11 @@ public class GlobalProperties {
             }
             hubServerConfigBuilder.setLogger(logger);
 
-            return hubServerConfigBuilder.build();
+            try {
+                return hubServerConfigBuilder.build();
+            } catch (final IllegalStateException e) {
+                throw new AlertException(e.getMessage(), e);
+            }
         }
         return null;
     }
