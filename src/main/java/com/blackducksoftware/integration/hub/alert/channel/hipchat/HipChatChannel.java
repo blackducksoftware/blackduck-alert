@@ -131,8 +131,9 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     @Override
-    public String testMessage(final HipChatDistributionConfigEntity config) throws IntegrationException {
-        return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
+    public String testMessage(final GlobalHipChatConfigEntity config) throws IntegrationException {
+        // TODO send a test message with the global config
+        return sendMessage(null, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
