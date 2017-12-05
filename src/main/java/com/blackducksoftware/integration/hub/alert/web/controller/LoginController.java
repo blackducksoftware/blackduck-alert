@@ -80,7 +80,7 @@ public class LoginController {
         final HttpSession session = request.getSession(false);
         if (session != null) {
             // TODO figure out timeout
-            session.setMaxInactiveInterval(300);
+            session.setMaxInactiveInterval(60 * 10);
         }
         try {
             final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
