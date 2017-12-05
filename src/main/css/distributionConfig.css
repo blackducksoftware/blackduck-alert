@@ -1,4 +1,4 @@
-.jobButton {
+.jobTableButton {
 	cursor: pointer;
 	color: #fff;
     background: #285f8f;
@@ -8,12 +8,16 @@
     vertical-align: middle;
 }
 .addJobButton {
-	composes: jobButton;
+	composes: jobTableButton;
 }
 
 .deleteJobButton {
-	composes: jobButton;
+	composes: jobTableButton;
     background: #ef4923;
+}
+
+.table { 
+    width: 98%;
 }
 
 .tableRow {
@@ -26,4 +30,20 @@
 
 .statusFailure {
 	color: red;
+}
+
+.hidden {
+    display: none;
+}
+
+.contentBlock {
+    padding: 0px;
+    font-size: 12px;
+    height: 400px;
+    width: 100%;
+    font-family: 'Open Sans', sans-serif;
+    display: inline-block;
+    position: relative;
+    overflow-y: scroll;
+
 }
