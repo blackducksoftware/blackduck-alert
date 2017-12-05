@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
 @RestController
 public class GlobalHipChatConfigController extends ConfigController<GlobalHipChatConfigRestModel> {

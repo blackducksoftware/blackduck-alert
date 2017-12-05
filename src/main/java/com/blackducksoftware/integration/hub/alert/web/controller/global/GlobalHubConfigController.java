@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 @RestController
 public class GlobalHubConfigController extends ConfigController<GlobalHubConfigRestModel> {

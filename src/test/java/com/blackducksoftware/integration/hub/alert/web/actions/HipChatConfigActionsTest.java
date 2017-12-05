@@ -37,7 +37,7 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHipChatConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
 public class HipChatConfigActionsTest {
     private final MockUtils mockUtils = new MockUtils();

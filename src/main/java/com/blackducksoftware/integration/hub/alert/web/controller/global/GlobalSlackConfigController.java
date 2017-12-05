@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalSlackConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSlackConfigRestModel;
 
 @RestController
 public class GlobalSlackConfigController extends ConfigController<GlobalSlackConfigRestModel> {

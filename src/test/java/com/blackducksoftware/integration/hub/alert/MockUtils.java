@@ -16,9 +16,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalHipChatConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 public class MockUtils {
 

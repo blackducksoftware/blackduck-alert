@@ -20,54 +20,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.web.model.global;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class GlobalHipChatConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = 8852683250883814613L;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-    private String apiKey;
-    private String roomId;
-    private String notify;
-    private String color;
+public class GlobalSlackConfigRestModel extends ConfigRestModel {
+    private static final long serialVersionUID = -2360827976516988339L;
 
-    public GlobalHipChatConfigRestModel() {
+    private String webhook;
+
+    public GlobalSlackConfigRestModel() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
+    public GlobalSlackConfigRestModel(final String id, final String webhook) {
         super(id);
-        this.apiKey = apiKey;
-        this.roomId = roomId;
-        this.notify = notify;
-        this.color = color;
+        this.webhook = webhook;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public String getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
+    public String getWebhook() {
+        return webhook;
     }
 
     @Override
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
-        return reflectionToStringBuilder.build();
+        return reflectionToStringBuilder.toString();
     }
+
 }
