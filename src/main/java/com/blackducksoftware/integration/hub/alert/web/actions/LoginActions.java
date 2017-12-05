@@ -84,15 +84,19 @@ public class LoginActions {
         return false;
     }
 
-    public boolean isUserRoleValid(final String userName, final RestConnection restConnection) throws IntegrationException {
+    public boolean isUserRoleValid(final String userName, final RestConnection restConnection) {
         final HubServicesFactory hubServicesFactory = new HubServicesFactory(restConnection);
         final UserDataService userDataService = hubServicesFactory.createUserDataService();
-        final List<RoleView> userRoles = userDataService.getRolesForUser(userName);
 
-        for (final RoleView roles : userRoles) {
-            if ("System Administrator".equalsIgnoreCase(roles.name)) {
-                return true;
+        try {
+            final List<RoleView> userRoles = userDataService.getRolesForUser(userName);
+            for (final RoleView roles : userRoles) {
+                if ("System Administrator".equalsIgnoreCase(roles.name)) {
+                    return true;
+                }
             }
+        } catch (final IntegrationException e) {
+            return false;
         }
 
         return false;
