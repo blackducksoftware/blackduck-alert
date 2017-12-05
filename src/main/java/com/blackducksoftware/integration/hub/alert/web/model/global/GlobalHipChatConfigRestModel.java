@@ -20,36 +20,56 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.web.model.global;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-public class GlobalSlackConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -2360827976516988339L;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-    private String webhook;
+public class GlobalHipChatConfigRestModel extends ConfigRestModel {
+    private static final long serialVersionUID = 8852683250883814613L;
 
-    public GlobalSlackConfigRestModel() {
+    private String apiKey;
+    private String roomId;
+    private String notify;
+    private String color;
+
+    public GlobalHipChatConfigRestModel() {
     }
 
-    public GlobalSlackConfigRestModel(final String id, final String webhook) {
+    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
         super(id);
-        this.webhook = webhook;
+        this.apiKey = apiKey;
+        this.roomId = roomId;
+        this.notify = notify;
+        this.color = color;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getWebhook() {
-        return webhook;
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public String getNotify() {
+        return notify;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     @Override
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.toString();
+        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
+        return reflectionToStringBuilder.build();
     }
-
 }
