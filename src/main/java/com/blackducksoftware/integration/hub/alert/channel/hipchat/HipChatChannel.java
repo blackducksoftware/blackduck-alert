@@ -65,12 +65,14 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     private final HipChatRepository hipChatRepository;
     private final HubUserHipChatRepository userRelationRepository;
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final HubUserHipChatRepository userRelationRepository, final HipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final HubUserHipChatRepository userRelationRepository, final HipChatRepository hipChatRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
         this.userRelationRepository = userRelationRepository;
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -99,7 +101,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     private String sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
