@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.blackducksoftware.integration.hub.Credentials;
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
@@ -45,9 +46,8 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.global.HubCredentials;
-import com.blackducksoftware.integration.hub.global.HubProxyInfo;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.validator.HubServerConfigValidator;
 import com.blackducksoftware.integration.validator.ValidationResults;
@@ -327,8 +327,8 @@ public class GlobalConfigActionsTest {
         Mockito.doAnswer(new Answer<HubServerConfig>() {
             @Override
             public HubServerConfig answer(final InvocationOnMock invocation) throws Throwable {
-                final HubCredentials hubCredentials = new HubCredentials(user, password);
-                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, hubCredentials, new HubProxyInfo(null, 0, null, null), false);
+                final Credentials hubCredentials = new Credentials(user, password);
+                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, hubCredentials, new ProxyInfo(null, 0, null, null), false);
                 return hubServerConfig;
             }
         }).when(serverConfigBuilder).build();

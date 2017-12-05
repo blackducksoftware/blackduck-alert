@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
+//TODO rename to CommonConfigHandler, move to package handler, extend ControllerHandler
 public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
     public final Class<D> databaseEntityClass;
