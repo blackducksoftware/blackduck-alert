@@ -1,3 +1,11 @@
 .tableRow {
     cursor: pointer;
 }
+
+.statusSuccess {
+	color: green;
+}
+
+.statusFailure {
+	color: red;
+}
