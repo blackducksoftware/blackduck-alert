@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { addJobButton, deleteJobButton, tableRow, statusSuccess, statusFailure } from '../../../css/distributionConfig.css';
+import styles from '../../../css/distributionConfig.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 
@@ -31,9 +31,9 @@ import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteBut
 	addJobs();
 
 	function columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
-		var className = statusSuccess;
+		var className = styles.statusSuccess;
 		if (fieldValue === 'Failure') {
-			className = statusFailure;
+			className = styles.statusFailure;
 		}
 		return className;
 	}
@@ -77,7 +77,7 @@ export default class DistributionConfiguration extends React.Component {
 	createCustomInsertButton(onClick) {
 		return (
 			<InsertButton
-			className={addJobButton}
+			className={styles.addJobButton}
 			onClick={ () => this.handleJobAddClick(onClick) }/>
 		);
 	}
@@ -85,7 +85,7 @@ export default class DistributionConfiguration extends React.Component {
 	createCustomDeleteButton(onClick) {
 		return (
 			<DeleteButton
-			className={deleteJobButton}
+			className={styles.deleteJobButton}
 			onClick={ () => this.handleJobDeleteClick(onClick) }/>
 		);
 	}
@@ -108,14 +108,27 @@ export default class DistributionConfiguration extends React.Component {
 				return null;
 			}
 		};
+		const showJobConfiguration = true;
+		var jobConfigBlockClasses = '';
+		if (showJobConfiguration) {
+			jobConfigBlockClasses = styles.contentBlock;
+		} else {
+			jobConfigBlockClasses = styles.hidden;
+		}
 		return (
 				<div>
-					<BootstrapTable data={jobs} striped hover insertRow={ true } deleteRow={ true } selectRow={ selectRowProp } search={ true } options={tableOptions} trClassName={ tableRow } >
-      					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
-      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
-      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
-      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
-  					</BootstrapTable>
+					<div className={styles.contentBlock}>
+						<BootstrapTable data={jobs} containerClass={styles.table} striped hover insertRow={true} deleteRow={true} selectRow={selectRowProp} search={true} options={tableOptions} trClassName={styles.tableRow} >
+	      					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
+	  					</BootstrapTable>
+  					</div>
+  					<div className={jobConfigBlockClasses}>
+  					</div>
+  					<div className={jobConfigBlockClasses}>
+  					</div>
 				</div>
 		)
 	}
