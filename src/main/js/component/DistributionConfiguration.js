@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { tableRow } from '../../css/distributionConfig.css';
+import { tableRow, statusSuccess, statusFailure } from '../../css/distributionConfig.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 
@@ -29,6 +29,14 @@ import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-t
 	
 
 	addJobs();
+
+	function columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
+		var className = statusSuccess;
+		if (fieldValue === 'Failure') {
+			className = statusFailure;
+		}
+		return className;
+	}
 
 export default class DistributionConfiguration extends React.Component {
 	constructor(props) {
@@ -76,7 +84,7 @@ export default class DistributionConfiguration extends React.Component {
       					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
       					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
       					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
-      					<TableHeaderColumn dataField='status' dataSort>Status</TableHeaderColumn>
+      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
   					</BootstrapTable>
 				</div>
 		)
