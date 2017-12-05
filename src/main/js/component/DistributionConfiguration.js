@@ -75,7 +75,13 @@ export default class DistributionConfiguration extends React.Component {
 
 		const selectRowProp = {
 	  		mode: 'checkbox',
-	  		clickToSelect: true
+	  		clickToSelect: true,
+			bgColor: function(row, isSelect) {
+				if (isSelect) {
+					return '#e8e8e8';
+				}
+				return null;
+			}
 		};
 		return (
 				<div>
