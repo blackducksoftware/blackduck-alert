@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -73,7 +74,8 @@ public class EmailGroupDistributionController extends ConfigController<EmailGrou
     @Override
     @DeleteMapping(value = "/configuration/distribution/emailGroup")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        return commonConfigController.deleteConfig(restModel);
+        // TODO improve and abstract for reuse
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
     @Override

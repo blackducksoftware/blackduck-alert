@@ -29,6 +29,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -49,9 +50,11 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     @Override
     public EmailGroupDistributionRestModel constructRestModel(final EmailGroupDistributionConfigEntity entity) {
         final EmailGroupDistributionConfigEntity emailGroupEntity = emailGroupDistributionRepository.findOne(entity.getId());
-        if (emailGroupEntity != null) {
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
+        if (emailGroupEntity != null && commonEntity != null) {
             try {
-                final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(entity, EmailGroupDistributionRestModel.class);
+                final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
+                restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
                 restModel.setGroupName(emailGroupEntity.getGroupName());
                 return restModel;
             } catch (final AlertException e) {
