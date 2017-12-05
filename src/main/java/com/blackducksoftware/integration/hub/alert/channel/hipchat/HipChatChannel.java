@@ -63,11 +63,13 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     private final GlobalHipChatRepository hipChatRepository;
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final GlobalHipChatRepository hipChatRepository) {
+    public HipChatChannel(final Gson gson, final GlobalHipChatRepository hipChatRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, null, null, HipChatEvent.class);
         this.hipChatRepository = hipChatRepository;
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -99,9 +101,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
-        // FIXME need global properties
-        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
-        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
