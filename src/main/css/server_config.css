@@ -1,0 +1,11 @@
+.content_block {
+    padding: 0px;
+    font-size: 12px;
+    height: 400px;
+    width: 100%;
+    font-family: 'Open Sans', sans-serif;
+    display: inline-block;
+    position: relative;
+    overflow-y: scroll;
+
+}

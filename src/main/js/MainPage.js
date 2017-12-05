@@ -7,6 +7,7 @@ import EmailConfiguration from './component/server/EmailConfiguration';
 import HipChatConfiguration from './component/server/HipChatConfiguration';
 import SlackConfiguration from './component/server/SlackConfiguration';
 import Header from './component/Header';
+import ServerContent from './component/server/ServerContent';
 
 import styles from '../css/main.css';
 
@@ -25,10 +26,6 @@ class MainPage extends React.Component {
 		return (
 				<div className={styles.wrapper}>
 				<Header handleState={this.props.handleState} fixed="true" includeLogout="true"></Header>
-                <div className={styles.alertHeader}>
-                    <h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
-                </div>
-
                 <Tabs className={styles.tabContainer} selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={styles.configTabs}>Server Configuration </Tab>
@@ -36,33 +33,9 @@ class MainPage extends React.Component {
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={styles.tabContent}>
-                            <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
-                                <TabList className={styles.table}>
-                                    <Tab className={styles.channelTabs}>Hub</Tab>
-                                    <Tab className={styles.channelTabs}>Scheduling</Tab>
-                                    <Tab className={styles.channelTabs}>Email</Tab>
-                                    <Tab className={styles.channelTabs}>Hipchat</Tab>
-                                    <Tab className={styles.channelTabs}>Slack</Tab>
-                                </TabList>
-                                <TabPanel>
-                                    <HubConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <SchedulingConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <HipChatConfiguration restUrl="/configuration/hipchat" testUrl="/configuration/hipchat/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
-                                </TabPanel>
-                            </Tabs>
+                            <ServerContent/>
                         </TabPanel>
                         <TabPanel className={styles.tabContent}>
-
                         </TabPanel>
                     </div>
                 </Tabs>

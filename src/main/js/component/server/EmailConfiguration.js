@@ -1,24 +1,22 @@
 'use strict';
 import React from 'react';
+import PropTypes from 'prop-types';
 import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
-
-import ConfigButtons from '../ConfigButtons';
-import Configuration from '../Configuration';
+import ServerConfiguration from './ServerConfiguration';
 
 import { alignCenter } from '../../../css/main.css';
 
-export default class EmailConfiguration extends Configuration {
+class EmailConfiguration extends ServerConfiguration {
 	constructor(props) {
 		super(props);
 	}
 
 	render() {
-		return (
+		let content =
 				<div>
-					<h1 className={alignCenter}>Email Smtp Server Configuration</h1>
 					<TextInput label="Mail Smtp Host" name="mailSmtpHost" value={this.state.mailSmtpHost} onChange={this.handleChange} errorName="mailSmtpHostError" errorValue={this.state.errors.mailSmtpHostError}></TextInput>
 					<TextInput label="Mail Smtp User" name="mailSmtpUser" value={this.state.mailSmtpUser} onChange={this.handleChange} errorName="mailSmtpUserError" errorValue={this.state.errors.mailSmtpUserError}></TextInput>
 					<PasswordInput label="Mail Smtp Password" name="mailSmtpPassword" value={this.state.mailSmtpPassword} onChange={this.handleChange} errorName="mailSmtpPasswordError" errorValue={this.state.errors.mailSmtpPasswordError}></PasswordInput>
@@ -33,10 +31,19 @@ export default class EmailConfiguration extends Configuration {
 					<TextInput label="Mail Smtp Dns Ret" name="mailSmtpDnsRet" value={this.state.mailSmtpDnsRet} onChange={this.handleChange} errorName="mailSmtpDnsRetError" errorValue={this.state.errors.mailSmtpDnsRetError}></TextInput>
 					<CheckboxInput label="Mail Smtp Allow 8-bit Mime" name="mailSmtpAllow8bitmime" value={this.state.mailSmtpAllow8bitmime} onChange={this.handleChange} errorName="mailSmtpAllow8bitmimeError" errorValue={this.state.errors.mailSmtpAllow8bitmimeError}></CheckboxInput>
 					<CheckboxInput label="Mail Smtp Send Partial" name="mailSmtpSendPartial" value={this.state.mailSmtpSendPartial} onChange={this.handleChange} errorName="mailSmtpSendPartialError" errorValue={this.state.errors.mailSmtpSendPartialError}></CheckboxInput>
-
-					<ConfigButtons includeTest="true" onClick={this.handleSubmit} onTestClick={this.handleTestSubmit} />
-					<p name="configurationMessage">{this.state.configurationMessage}</p>
-				</div>
-		)
+				</div>;
+		return super.render(content);
 	}
-}
+};
+
+EmailConfiguration.propTypes = {
+    headerText: PropTypes.string,
+    externaconfigButtonTest: PropTypes.string
+};
+
+EmailConfiguration.defaultProps = {
+    headerText: 'Email Smtp Server Configuration',
+    configButtonTest: 'true'
+};
+
+export default EmailConfiguration;
