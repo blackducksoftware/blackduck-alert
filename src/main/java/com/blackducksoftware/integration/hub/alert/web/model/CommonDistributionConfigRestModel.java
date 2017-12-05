@@ -56,6 +56,10 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         return distributionConfigId;
     }
 
+    public void setDistributionConfigId(final String distributionConfigId) {
+        this.distributionConfigId = distributionConfigId;
+    }
+
     public String getDistributionType() {
         return distributionType;
     }

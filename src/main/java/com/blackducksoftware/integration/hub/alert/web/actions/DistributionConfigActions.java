@@ -34,28 +34,29 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionConfigRestModel;
 
 public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
-    public final JpaRepository<CommonDistributionConfigEntity, Long> commonDistributionRepository;
-    public final JpaRepository<D, Long> repository;
+    public final CommonDistributionRepository commonDistributionRepository;
+    public final JpaRepository<D, Long> channelDistributionRepository;
     public final ObjectTransformer objectTransformer;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<CommonDistributionConfigEntity, Long> commonDistributionRepository, final JpaRepository<D, Long> repository,
+    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final JpaRepository<D, Long> channelDistributionRepository,
             final ObjectTransformer objectTransformer) {
-        super(databaseEntityClass, configRestModelClass, repository, objectTransformer);
+        super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
-        this.repository = repository;
+        this.channelDistributionRepository = channelDistributionRepository;
         this.objectTransformer = objectTransformer;
     }
 
     @Override
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final D foundEntity = repository.findOne(id);
+            final D foundEntity = channelDistributionRepository.findOne(id);
             if (foundEntity != null) {
                 return Arrays.asList(constructRestModel(foundEntity));
             }
@@ -71,7 +72,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 final CommonDistributionConfigEntity commonEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
                 if (createdEntity != null && commonEntity != null) {
-                    createdEntity = repository.save(createdEntity);
+                    createdEntity = channelDistributionRepository.save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
                     commonDistributionRepository.save(commonEntity);
                     return createdEntity;
@@ -86,6 +87,18 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     @Override
     public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
         return saveConfig(restModel);
+    }
+
+    @Override
+    public void deleteConfig(final Long id) {
+        if (id != null) {
+            final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findOne(id);
+            if (commonEntity != null) {
+                final Long distributionConfigId = commonEntity.getDistributionConfigId();
+                channelDistributionRepository.delete(distributionConfigId);
+                commonDistributionRepository.delete(id);
+            }
+        }
     }
 
     @Override
@@ -112,8 +125,8 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     }
 
     public List<R> constructRestModels() {
-        final List<D> allEntities = repository.findAll();
-        final List<R> constructedRestModels = new ArrayList<>(allEntities.size());
+        final List<D> allEntities = channelDistributionRepository.findAll();
+        final List<R> constructedRestModels = new ArrayList<>();
         for (final D entity : allEntities) {
             constructedRestModels.add(constructRestModel(entity));
         }

@@ -24,11 +24,11 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionConfigRestModel;
@@ -37,8 +37,8 @@ import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionC
 public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(CommonDistributionConfigActions.class);
 
-    public CommonDistributionConfigActions(final JpaRepository<CommonDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer) {
-        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, repository, repository, objectTransformer);
+    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer) {
+        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, objectTransformer);
     }
 
     @Override
@@ -55,6 +55,13 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
             }
         }
         return null;
+    }
+
+    @Override
+    public void deleteConfig(final Long id) {
+        if (id != null) {
+            commonDistributionRepository.delete(id);
+        }
     }
 
     @Override

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -55,7 +56,8 @@ public class CommonDistributionConfigController extends ConfigController<CommonD
     @Override
     @PostMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
-        return commonConfigController.postConfig(restModel);
+        // TODO improve and abstract for reuse
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
     @Override
