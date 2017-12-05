@@ -140,7 +140,7 @@ public class LoginController {
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String message) {
-        final String responseBody = new ResponseBodyBuilder(0L, message).build();
+        final String responseBody = new ResponseBodyBuilder(-1L, message).build();
         return new ResponseEntity<>(responseBody, status);
     }
 
