@@ -27,6 +27,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,30 +51,35 @@ public class EmailGroupDistributionController extends ConfigController<EmailGrou
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/emailGroup")
     public List<EmailGroupDistributionRestModel> getConfig(final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup")
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/emailGroup")
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/emailGroup")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
         // TODO improve and abstract for reuse
@@ -81,6 +87,7 @@ public class EmailGroupDistributionController extends ConfigController<EmailGrou
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
         return commonConfigController.testConfig(restModel);
