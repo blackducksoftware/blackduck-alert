@@ -52,21 +52,21 @@ public class GlobalHipChatConfigController extends ConfigController<GlobalHipCha
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/configuration/hipchat")
+    @GetMapping(value = "/configuration/global/hipchat")
     public List<GlobalHipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/hipchat")
+    @PostMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigController.postConfig(hipChatConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/configuration/hipchat")
+    @PutMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigController.putConfig(hipChatConfig);
     }
@@ -78,14 +78,14 @@ public class GlobalHipChatConfigController extends ConfigController<GlobalHipCha
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/configuration/hipchat")
+    @DeleteMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigController.deleteConfig(hipChatConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/hipchat/test")
+    @PostMapping(value = "/configuration/global/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigController.testConfig(hipChatConfig);
     }

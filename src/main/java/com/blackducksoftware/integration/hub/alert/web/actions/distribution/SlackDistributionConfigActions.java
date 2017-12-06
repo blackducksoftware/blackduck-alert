@@ -38,14 +38,12 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackD
 @Component
 public class SlackDistributionConfigActions extends DistributionConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel> {
     private final SlackChannel slackChannel;
-    private final JpaRepository<SlackDistributionConfigEntity, Long> slackDistributionRepository;
 
     @Autowired
     public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<SlackDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer,
             final SlackChannel slackChannel) {
         super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, objectTransformer);
         this.slackChannel = slackChannel;
-        slackDistributionRepository = repository;
     }
 
     @Override
@@ -55,18 +53,13 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
     }
 
     @Override
-    public SlackDistributionRestModel constructRestModel(final SlackDistributionConfigEntity entity) throws AlertException {
-        final SlackDistributionConfigEntity slackDistributionEntity = slackDistributionRepository.findOne(entity.getId());
-        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
-        if (slackDistributionEntity != null && commonEntity != null) {
-            final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
-            restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
-            restModel.setChannelName(slackDistributionEntity.getChannelName());
-            restModel.setChannelUsername(slackDistributionEntity.getChannelName());
-            restModel.setWebhook(slackDistributionEntity.getWebhook());
-            return restModel;
-        }
-        return null;
+    public SlackDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final SlackDistributionConfigEntity distributionEntity) throws AlertException {
+        final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
+        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        restModel.setChannelName(distributionEntity.getChannelName());
+        restModel.setChannelUsername(distributionEntity.getChannelName());
+        restModel.setWebhook(distributionEntity.getWebhook());
+        return restModel;
     }
 
 }

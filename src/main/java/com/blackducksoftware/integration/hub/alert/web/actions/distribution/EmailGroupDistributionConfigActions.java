@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
@@ -38,26 +36,18 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailG
 
 @Component
 public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
-    private final Logger logger = LoggerFactory.getLogger(EmailGroupDistributionConfigActions.class);
-    private final JpaRepository<EmailGroupDistributionConfigEntity, Long> emailGroupDistributionRepository;
 
     @Autowired
     public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<EmailGroupDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer) {
         super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, objectTransformer);
-        this.emailGroupDistributionRepository = repository;
     }
 
     @Override
-    public EmailGroupDistributionRestModel constructRestModel(final EmailGroupDistributionConfigEntity entity) throws AlertException {
-        final EmailGroupDistributionConfigEntity emailGroupEntity = emailGroupDistributionRepository.findOne(entity.getId());
-        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
-        if (emailGroupEntity != null && commonEntity != null) {
-            final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
-            restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
-            restModel.setGroupName(emailGroupEntity.getGroupName());
-            return restModel;
-        }
-        return null;
+    public EmailGroupDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final EmailGroupDistributionConfigEntity distributionEntity) throws AlertException {
+        final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
+        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        restModel.setGroupName(distributionEntity.getGroupName());
+        return restModel;
     }
 
     @Override

@@ -26,14 +26,12 @@ public class HipChatConfigRestModelTest {
         assertEquals(8852683250883814613L, GlobalHipChatConfigRestModel.getSerialversionuid());
 
         assertNull(hipChatConfigRestModel.getApiKey());
-        assertNull(hipChatConfigRestModel.getColor());
         assertNull(hipChatConfigRestModel.getId());
-        assertNull(hipChatConfigRestModel.getNotify());
-        assertNull(hipChatConfigRestModel.getRoomId());
 
-        assertEquals(1178847269, hipChatConfigRestModel.hashCode());
+        final int restModelHash = hipChatConfigRestModel.hashCode();
+        assertEquals(23273, restModelHash);
 
-        final String expectedString = "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
+        final String expectedString = "{\"id\":null}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
         final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel();
@@ -44,24 +42,19 @@ public class HipChatConfigRestModelTest {
     public void testModel() {
         final String id = "Id";
         final String apiKey = "ApiKey";
-        final String roomId = "RoomId";
-        final String notify = "Notify";
-        final String color = "Color";
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey, roomId, notify, color);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey);
 
         assertEquals(apiKey, hipChatConfigRestModel.getApiKey());
-        assertEquals(color, hipChatConfigRestModel.getColor());
         assertEquals(id, hipChatConfigRestModel.getId());
-        assertEquals(notify, hipChatConfigRestModel.getNotify());
-        assertEquals(roomId, hipChatConfigRestModel.getRoomId());
 
-        assertEquals(-901313501, hipChatConfigRestModel.hashCode());
+        final int restModelHash = hipChatConfigRestModel.hashCode();
+        assertEquals(-215714083, restModelHash);
 
-        final String expectedString = "{\"roomId\":\"RoomId\",\"notify\":\"Notify\",\"color\":\"Color\",\"id\":\"Id\"}";
+        final String expectedString = "{\"id\":\"Id\"}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey, roomId, notify, color);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey);
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 }

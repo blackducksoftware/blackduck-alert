@@ -39,23 +39,11 @@ public class GlobalHipChatConfigEntity extends DatabaseEntity {
     @Column(name = "api_key")
     private String apiKey;
 
-    @Column(name = "room_id")
-    private Integer roomId;
-
-    @Column(name = "notify")
-    private Boolean notify;
-
-    @Column(name = "color")
-    private String color;
-
     public GlobalHipChatConfigEntity() {
     }
 
-    public GlobalHipChatConfigEntity(final String apiKey, final Integer room_id, final Boolean notify, final String color) {
+    public GlobalHipChatConfigEntity(final String apiKey) {
         this.apiKey = apiKey;
-        this.roomId = room_id;
-        this.notify = notify;
-        this.color = color;
     }
 
     public static long getSerialversionuid() {
@@ -64,18 +52,6 @@ public class GlobalHipChatConfigEntity extends DatabaseEntity {
 
     public String getApiKey() {
         return apiKey;
-    }
-
-    public Integer getRoomId() {
-        return roomId;
-    }
-
-    public Boolean getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     @Override

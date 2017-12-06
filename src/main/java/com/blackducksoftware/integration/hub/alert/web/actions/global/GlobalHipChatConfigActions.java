@@ -22,17 +22,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -52,31 +50,20 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
 
     @Override
     public String validateConfig(final GlobalHipChatConfigRestModel restModel) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        if (StringUtils.isNotBlank(restModel.getRoomId()) && !StringUtils.isNumeric(restModel.getRoomId())) {
-            fieldErrors.put("roomId", "Not an Integer.");
-        }
-
-        if (StringUtils.isNotBlank(restModel.getNotify()) && !isBoolean(restModel.getNotify())) {
-            fieldErrors.put("notify", "Not an Boolean.");
-        }
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
         return "Valid";
     }
 
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-        // FIXME
-        return null;
-        // return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
+        final HipChatDistributionConfigEntity configEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatDistributionConfigEntity.class);
+        return hipChatChannel.testMessage(configEntity);
     }
 
     @Override
     public List<String> sensitiveFields() {
-        return Collections.emptyList();
+        final List<String> sensitiveFields = new ArrayList<>();
+        sensitiveFields.add("apiKey");
+        return sensitiveFields;
     }
 
 }

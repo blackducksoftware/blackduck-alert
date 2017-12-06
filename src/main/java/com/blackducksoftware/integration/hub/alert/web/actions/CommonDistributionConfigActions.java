@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -36,7 +34,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 
 @Component
 public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> {
-    private final Logger logger = LoggerFactory.getLogger(CommonDistributionConfigActions.class);
 
     public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, objectTransformer);
@@ -66,22 +63,14 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) {
-        CommonDistributionConfigRestModel restModel = null;
-        if (entity != null) {
-            try {
-                restModel = objectTransformer.databaseEntityToConfigRestModel(entity, CommonDistributionConfigRestModel.class);
-            } catch (final AlertException e) {
-                logger.warn("Problem constructing rest model", e);
-            }
-        }
-        return restModel;
-    }
-
-    @Override
     public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
         // TODO test config
         return null;
+    }
+
+    @Override
+    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
+        return objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
     }
 
 }
