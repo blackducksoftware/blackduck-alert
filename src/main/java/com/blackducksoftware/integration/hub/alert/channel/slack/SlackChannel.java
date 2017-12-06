@@ -40,7 +40,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -63,8 +62,8 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     SlackDistributionRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final GlobalSlackRepository slackGlobalRepository, final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository slackRepository) {
-        super(gson, slackGlobalRepository, commonDistributionRepository, SlackEvent.class);
+    public SlackChannel(final Gson gson, final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository slackRepository) {
+        super(gson, null, commonDistributionRepository, SlackEvent.class);
         this.slackRepository = slackRepository;
     }
 

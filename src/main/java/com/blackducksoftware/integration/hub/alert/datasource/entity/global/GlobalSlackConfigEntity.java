@@ -24,7 +24,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
-//Slack has no global configuration
+// Slack has no global configuration
 public class GlobalSlackConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 1L;
 }
