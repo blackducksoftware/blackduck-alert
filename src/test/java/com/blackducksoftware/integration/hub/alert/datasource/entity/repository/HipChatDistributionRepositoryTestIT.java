@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -22,58 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
-@Entity
-@Table(schema = "alert", name = "global_slack_config")
+// Slack has no global configuration
 public class GlobalSlackConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 4872590789715928839L;
-
-    @Column(name = "channel_name")
-    private String channelName;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "webhook")
-    private String webhook;
-
-    public GlobalSlackConfigEntity() {
-    }
-
-    public GlobalSlackConfigEntity(final String channelName, final String username, final String webhook) {
-        this.channelName = channelName;
-        this.username = username;
-        this.webhook = webhook;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getWebhook() {
-        return webhook;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.toString();
-    }
-
+    private static final long serialVersionUID = 1L;
 }

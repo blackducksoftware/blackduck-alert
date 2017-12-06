@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,11 +33,13 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 @Component
 public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> {
@@ -82,7 +84,8 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
 
     @Override
     public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-        return emailChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class));
+        final EmailGroupDistributionConfigEntity emailConfig = objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
+        return emailChannel.testMessage(emailConfig);
     }
 
     @Override

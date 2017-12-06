@@ -20,34 +20,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(schema = "alert", name = "slack_distribution_config")
-public class SlackDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 3607759169675906880L;
+@Table(schema = "alert", name = "email_group_distribution_config")
+public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -2969530122554864181L;
 
-    @Column(name = "channel_name")
-    private String channelName;
+    @Column(name = "group_name")
+    private String groupName;
 
-    public SlackDistributionConfigEntity() {
+    public EmailGroupDistributionConfigEntity() {
     }
 
-    public SlackDistributionConfigEntity(final String channelName) {
+    public EmailGroupDistributionConfigEntity(final String groupName) {
         super();
-        this.channelName = channelName;
+        this.groupName = groupName;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getChannelName() {
-        return channelName;
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
     }
 
 }

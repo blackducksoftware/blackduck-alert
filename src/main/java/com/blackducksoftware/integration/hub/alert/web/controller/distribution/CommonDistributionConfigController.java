@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
 
 import java.util.List;
 
@@ -37,7 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.CommonDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @RestController
 public class CommonDistributionConfigController extends ConfigController<CommonDistributionConfigRestModel> {

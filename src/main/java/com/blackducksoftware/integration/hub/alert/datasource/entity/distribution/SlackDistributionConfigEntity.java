@@ -20,38 +20,52 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(schema = "alert", name = "email_group_distribution_config")
-public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -2969530122554864181L;
+@Table(schema = "alert", name = "slack_distribution_config")
+public class SlackDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 3607759169675906880L;
 
-    @Column(name = "group_name")
-    private String groupName;
+    @Column(name = "webhook")
+    private String webhook;
 
-    public EmailGroupDistributionConfigEntity() {
+    @Column(name = "channel_username")
+    private String channelUsername = "Hub-alert";
+
+    @Column(name = "channel_name")
+    private String channelName;
+
+    public SlackDistributionConfigEntity() {
     }
 
-    public EmailGroupDistributionConfigEntity(final String groupName) {
+    public SlackDistributionConfigEntity(final String webhook, final String channelUsername, final String channelName) {
         super();
-        this.groupName = groupName;
+        this.webhook = webhook;
+        this.channelUsername = channelUsername;
+        this.channelName = channelName;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public String getWebhook() {
+        return webhook;
     }
 
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
+    public String getChannelUsername() {
+        return channelUsername;
+    }
+
+    public String getChannelName() {
+        return channelName;
     }
 
 }

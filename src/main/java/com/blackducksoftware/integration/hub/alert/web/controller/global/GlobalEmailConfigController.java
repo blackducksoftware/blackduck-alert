@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller.global;
 
 import java.util.List;
 
@@ -36,8 +36,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalEmailConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 @RestController
 public class GlobalEmailConfigController extends ConfigController<GlobalEmailConfigRestModel> {
