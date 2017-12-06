@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Component } from 'react';
-import { channelTabs, bg_icon } from '../../../css/tabs.css';
+import { channelTabs, tabTitle, titleText } from '../../../css/tabs.css';
 
 class TabTitle extends Component {
     constructor(props) {
@@ -17,9 +17,9 @@ class TabTitle extends Component {
         }
 
         return (
-            <span>
+            <span className={tabTitle}>
                 {iconElement}
-                <span>{text}</span>
+                <span className={titleText}>{text}</span>
             </span>
         );
     }
