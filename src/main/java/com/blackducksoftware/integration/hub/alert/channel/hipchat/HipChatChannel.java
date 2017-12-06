@@ -135,7 +135,6 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
-        String html = "SOMETHING WENT WRONG";
         try {
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService("src/main/resources/hipchat/templates");
 
@@ -144,15 +143,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
             model.put("projectVersion", projectData.getProjectVersion());
             model.put("categoryMap", projectData.getCategoryMap());
 
-            try {
-                html = freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
-            } catch (final TemplateException e) {
-                logger.error("Problem resolving the Freemarker Template", e);
-            }
-        } catch (final IOException e) {
-            logger.error("Problem accessing the Freemarker Template", e);
+            return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
+        } catch (final IOException | TemplateException e) {
+            throw new RuntimeException(e);
         }
-        return html;
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
