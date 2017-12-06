@@ -50,7 +50,8 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
 
     @Override
     public String channelTestConfig(final SlackDistributionRestModel restModel) throws IntegrationException {
-        return slackChannel.testMessage();
+        final SlackDistributionConfigEntity slackConfig = objectTransformer.configRestModelToDatabaseEntity(restModel, SlackDistributionConfigEntity.class);
+        return slackChannel.testMessage(slackConfig);
     }
 
     @Override

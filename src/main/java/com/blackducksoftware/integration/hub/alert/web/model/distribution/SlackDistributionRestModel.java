@@ -25,21 +25,40 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
     private static final long serialVersionUID = -3032738984577328749L;
 
+    private String webhook;
+    private String channelUsername;
     private String channelName;
 
     public SlackDistributionRestModel() {
 
     }
 
-    public SlackDistributionRestModel(final String id, final String channelName, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType,
-            final String filterByProject) {
+    public SlackDistributionRestModel(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
+            final String frequency, final String notificationType, final String filterByProject) {
         super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject);
+        this.webhook = webhook;
+        this.channelUsername = channelUsername;
         this.channelName = channelName;
-
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getWebhook() {
+        return webhook;
+    }
+
+    public void setWebhook(final String webhook) {
+        this.webhook = webhook;
+    }
+
+    public String getChannelUsername() {
+        return channelUsername;
+    }
+
+    public void setChannelUsername(final String channelUsername) {
+        this.channelUsername = channelUsername;
     }
 
     public String getChannelName() {

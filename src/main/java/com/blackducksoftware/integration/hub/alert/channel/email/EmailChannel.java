@@ -97,7 +97,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
     }
 
     @Override
-    public String testMessage() {
+    public String testMessage(final EmailGroupDistributionConfigEntity distributionConfig) {
         final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
         final String emailAddress = getGlobalConfigEntity().getMailSmtpFrom();
         sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null));

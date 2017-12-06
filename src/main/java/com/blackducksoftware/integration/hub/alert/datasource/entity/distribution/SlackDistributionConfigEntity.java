@@ -33,19 +33,35 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 public class SlackDistributionConfigEntity extends DatabaseEntity {
     private static final long serialVersionUID = 3607759169675906880L;
 
+    @Column(name = "webhook")
+    private String webhook;
+
+    @Column(name = "channel_username")
+    private String channelUsername = "Hub-alert";
+
     @Column(name = "channel_name")
     private String channelName;
 
     public SlackDistributionConfigEntity() {
     }
 
-    public SlackDistributionConfigEntity(final String channelName) {
+    public SlackDistributionConfigEntity(final String webhook, final String channelUsername, final String channelName) {
         super();
+        this.webhook = webhook;
+        this.channelUsername = channelUsername;
         this.channelName = channelName;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getWebhook() {
+        return webhook;
+    }
+
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
     public String getChannelName() {
