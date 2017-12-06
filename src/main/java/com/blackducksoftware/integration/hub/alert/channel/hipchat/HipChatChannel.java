@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
@@ -43,16 +45,13 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConf
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import freemarker.template.TemplateException;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -136,29 +135,24 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
-        final StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
+        String html = "SOMETHING WENT WRONG";
+        try {
+            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService("src/main/resources/hipchat/templates");
 
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
-        if (categoryMap != null) {
-            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-                final CategoryData data = categoryMap.get(category);
-                if (data != null) {
-                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
-                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
-                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
-                    for (final ItemData item : data.getItemList()) {
-                        final Map<String, Object> dataSet = item.getDataSet();
-                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
-                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
-                    }
-                }
+            final HashMap<String, Object> model = new HashMap<>();
+            model.put("projectName", projectData.getProjectName());
+            model.put("projectVersion", projectData.getProjectVersion());
+            model.put("categoryMap", projectData.getCategoryMap());
+
+            try {
+                html = freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
+            } catch (final TemplateException e) {
+                logger.error("Problem resolving the Freemarker Template", e);
             }
-        } else {
-            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
+        } catch (final IOException e) {
+            logger.error("Problem accessing the Freemarker Template", e);
         }
-        return htmlBuilder.toString();
+        return html;
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
