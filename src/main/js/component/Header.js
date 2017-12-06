@@ -1,12 +1,12 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
 
 import ConfigButtons from './ConfigButtons';
 import { submitButtons, submitContainers, header, fixedHeader, title } from '../../css/header.css';
 import logo from '../../img/BDTextLogo.png';
 
-class Header extends React.Component {
+class Header extends Component {
 	//constructor is part of the Component lifecycle
 	constructor(props) {
 		super(props);

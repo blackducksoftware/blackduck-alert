@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { addJobButton, deleteJobButton, tableRow, statusSuccess, statusFailure } from '../../../css/distributionConfig.css';
 
@@ -26,7 +26,7 @@ import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteBut
 			status: 'Success'
 		});
 	}
-	
+
 
 	addJobs();
 
@@ -38,7 +38,7 @@ import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteBut
 		return className;
 	}
 
-export default class DistributionConfiguration extends React.Component {
+export default class DistributionConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
@@ -89,7 +89,7 @@ export default class DistributionConfiguration extends React.Component {
 			onClick={ () => this.handleJobDeleteClick(onClick) }/>
 		);
 	}
-	
+
 	render() {
 		const tableOptions = {
 	  		noDataText: 'This is custom text for empty data',

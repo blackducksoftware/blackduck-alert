@@ -1,6 +1,7 @@
 'use strict';
 
-import React from 'react';
+import React, { Component } from 'react';
+import TabTitle from '../tabs/TabTitle';
 import HubConfiguration from './HubConfiguration';
 import SchedulingConfiguration from './SchedulingConfiguration';
 import EmailConfiguration from './EmailConfiguration';
@@ -8,12 +9,13 @@ import HipChatConfiguration from './HipChatConfiguration';
 import SlackConfiguration from './SlackConfiguration';
 import Header from '../Header';
 
-import { tabContent, table, channelTabs, tabSelected} from '../../../css/main.css';
+import { table } from '../../../css/main.css';
+import { tabContent, channelTabs, tabSelected} from '../../../css/tabs.css';
 import { content_block } from '../../../css/server_config.css';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-class ServerContent extends React.Component {
+class ServerContent extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -25,11 +27,11 @@ class ServerContent extends React.Component {
 		return (
             <Tabs selectedTabClassName={tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
                 <TabList className={table}>
-                    <Tab className={channelTabs}>Hub</Tab>
-                    <Tab className={channelTabs}>Scheduling</Tab>
-                    <Tab className={channelTabs}>Email</Tab>
-                    <Tab className={channelTabs}>Hipchat</Tab>
-                    <Tab className={channelTabs}>Slack</Tab>
+                    <Tab className={channelTabs}><TabTitle text='Hub' icon='fa-laptop'></TabTitle></Tab>
+                    <Tab className={channelTabs}><TabTitle text='Scheduling' icon='fa-clock-o'></TabTitle></Tab>
+                    <Tab className={channelTabs}><TabTitle text='Email' icon='fa-envelope'></TabTitle></Tab>
+                    <Tab className={channelTabs}><TabTitle text='Hipchat' icon='fa-comments'></TabTitle></Tab>
+                    <Tab className={channelTabs}><TabTitle text='Slack' icon='fa-slack'></TabTitle></Tab>
                 </TabList>
                 <div>
                     <TabPanel>
