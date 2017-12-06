@@ -70,11 +70,9 @@ public class EmailChannelTestIT extends RestChannelTest {
             globalProperties.hubTrustCertificate = Boolean.valueOf(trustCert);
         }
 
-        // JpaRepository mockedGlobal = Mockito.mock(JpaRepository.class);
-
         final Gson gson = new Gson();
-        EmailChannel emailChannel = new EmailChannel(globalProperties, gson, null, null, null);
-        final EmailEvent event = new EmailEvent(projectData, null);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, null, null, null);
+        final EmailGroupEvent event = new EmailGroupEvent(projectData, null);
 
         final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(properties.getProperty("mail.smtp.host"), null, null, null, null, null, properties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
                 null, properties.getProperty("hub.email.template.directory"), properties.getProperty("logo.image"), "Test Subject Line");

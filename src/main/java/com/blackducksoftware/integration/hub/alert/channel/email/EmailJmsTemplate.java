@@ -40,6 +40,6 @@ public class EmailJmsTemplate extends AbstractJmsTemplate {
 
     @Override
     public String getDestinationName() {
-        return SupportedChannels.EMAIL;
+        return SupportedChannels.EMAIL_GROUP;
     }
 }

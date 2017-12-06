@@ -30,6 +30,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -39,12 +40,14 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
+    private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private G globalConfigEntity;
 
-    public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
         this.globalRepository = globalRepository;
+        this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
@@ -64,12 +67,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         return globalConfigEntity;
     }
 
-    public abstract void sendMessage(final E event, final C config);
-
-    public abstract String testMessage(C distributionConfig) throws IntegrationException;
-
-    public abstract void handleEvent(final E event);
-
     @Override
     public void receiveMessage(final String message) {
         logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
@@ -78,5 +75,17 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
         handleEvent(event);
     }
+
+    public void handleEvent(final E event) {
+        final Long eventDistributionId = event.getCommonDistributionConfigId();
+        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
+        final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
+        final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+        sendMessage(event, channelDistributionEntity);
+    }
+
+    public abstract void sendMessage(final E event, final C config);
+
+    public abstract String testMessage(C distributionConfig) throws IntegrationException;
 
 }

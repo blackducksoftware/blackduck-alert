@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,13 @@ public class LoginActionsTestIT extends RestChannelTest {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
 
     @Test
-    public void authenticateUserTest() throws IntegrationException {
+    public void authenticateUserTestIT() throws IntegrationException {
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.url"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.timeout"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.username"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.password"));
+        Assume.assumeTrue(properties.containsKey("blackduck.hub.always.trust.cert"));
+
         final LoginActions loginActions = new LoginActions();
         final LoginRestModel loginRestModel = new LoginRestModel("", properties.getProperty("blackduck.hub.url"), properties.getProperty("blackduck.hub.timeout"), properties.getProperty("blackduck.hub.username"),
                 properties.getProperty("blackduck.hub.password"), "", "", "", "", properties.getProperty("blackduck.hub.always.trust.cert"));

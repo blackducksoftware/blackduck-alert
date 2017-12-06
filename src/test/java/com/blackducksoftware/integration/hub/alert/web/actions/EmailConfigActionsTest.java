@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.MockUtils;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -184,7 +184,7 @@ public class EmailConfigActionsTest {
 
     @Test
     public void testTestConfig() throws Exception {
-        final EmailChannel mockedEmailChannel = Mockito.mock(EmailChannel.class);
+        final EmailGroupChannel mockedEmailChannel = Mockito.mock(EmailGroupChannel.class);
         final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer, mockedEmailChannel);
 

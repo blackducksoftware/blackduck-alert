@@ -26,14 +26,14 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
-public class EmailEvent extends AbstractChannelEvent {
+public class EmailGroupEvent extends AbstractChannelEvent {
 
-    public EmailEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public EmailGroupEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         super(projectData, commonDistributionConfigId);
     }
 
     @Override
     public String getTopic() {
-        return SupportedChannels.EMAIL;
+        return SupportedChannels.EMAIL_GROUP;
     }
 }
