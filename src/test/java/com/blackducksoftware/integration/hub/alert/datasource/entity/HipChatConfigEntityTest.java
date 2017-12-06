@@ -26,14 +26,12 @@ public class HipChatConfigEntityTest {
         assertEquals(2791949172564090134L, GlobalHipChatConfigEntity.getSerialversionuid());
 
         assertNull(hipChatConfigEntity.getApiKey());
-        assertNull(hipChatConfigEntity.getColor());
         assertNull(hipChatConfigEntity.getId());
-        assertNull(hipChatConfigEntity.getNotify());
-        assertNull(hipChatConfigEntity.getRoomId());
 
-        assertEquals(1178847269, hipChatConfigEntity.hashCode());
+        final int configHash = hipChatConfigEntity.hashCode();
+        assertEquals(23273, configHash);
 
-        final String expectedString = "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
+        final String expectedString = "{\"id\":null}";
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
         final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity();
@@ -44,25 +42,20 @@ public class HipChatConfigEntityTest {
     public void testModel() {
         final Long id = 435L;
         final String apiKey = "ApiKey";
-        final Integer roomId = 3245;
-        final Boolean notify = true;
-        final String color = "Color";
 
-        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity(apiKey, roomId, notify, color);
+        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity(apiKey);
         hipChatConfigEntity.setId(id);
 
         assertEquals(apiKey, hipChatConfigEntity.getApiKey());
-        assertEquals(color, hipChatConfigEntity.getColor());
         assertEquals(id, hipChatConfigEntity.getId());
-        assertEquals(notify, hipChatConfigEntity.getNotify());
-        assertEquals(roomId, hipChatConfigEntity.getRoomId());
 
-        assertEquals(-2001518964, hipChatConfigEntity.hashCode());
+        final int configHash = hipChatConfigEntity.hashCode();
+        assertEquals(-215716011, configHash);
 
-        final String expectedString = "{\"roomId\":3245,\"notify\":true,\"color\":\"Color\",\"id\":435}";
+        final String expectedString = "{\"id\":435}";
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
-        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity(apiKey, roomId, notify, color);
+        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity(apiKey);
         hipChatConfigEntityNew.setId(id);
         assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
     }

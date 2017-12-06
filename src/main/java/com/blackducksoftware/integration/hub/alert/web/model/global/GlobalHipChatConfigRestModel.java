@@ -31,19 +31,13 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
     private String apiKey;
-    private String roomId;
-    private String notify;
-    private String color;
 
     public GlobalHipChatConfigRestModel() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
+    public GlobalHipChatConfigRestModel(final String id, final String apiKey) {
         super(id);
         this.apiKey = apiKey;
-        this.roomId = roomId;
-        this.notify = notify;
-        this.color = color;
     }
 
     public static long getSerialversionuid() {
@@ -52,18 +46,6 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
 
     public String getApiKey() {
         return apiKey;
-    }
-
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public String getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     @Override

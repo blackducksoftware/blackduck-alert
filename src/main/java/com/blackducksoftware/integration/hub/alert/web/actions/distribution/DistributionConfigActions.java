@@ -134,7 +134,12 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         final List<R> constructedRestModels = new ArrayList<>();
         for (final D entity : allEntities) {
             try {
-                constructedRestModels.add(constructRestModel(entity));
+                final R restModel = constructRestModel(entity);
+                if (restModel != null) {
+                    constructedRestModels.add(restModel);
+                } else {
+                    logger.warn("Entity did not exist");
+                }
             } catch (final AlertException e) {
                 logger.warn("Problem constructing rest model", e);
             }
@@ -142,6 +147,15 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return constructedRestModels;
     }
 
-    public abstract R constructRestModel(final D entity) throws AlertException;
+    public R constructRestModel(final D entity) throws AlertException {
+        final D distributionEntity = channelDistributionRepository.findOne(entity.getId());
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
+        if (distributionEntity != null && commonEntity != null) {
+            return constructRestModel(commonEntity, distributionEntity);
+        }
+        return null;
+    }
+
+    public abstract R constructRestModel(final CommonDistributionConfigEntity commonEntity, D distributionEntity) throws AlertException;
 
 }

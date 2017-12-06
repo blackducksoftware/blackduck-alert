@@ -52,7 +52,7 @@ public class HipChatChannelTestIT extends RestChannelTest {
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(Integer.parseInt(properties.getProperty("hipchat.room.id")), false, "random");
 
         hipChatChannel = Mockito.spy(hipChatChannel);
-        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty("hipchat.api.key"), null, null, null)).when(hipChatChannel).getGlobalConfigEntity();
+        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty("hipchat.api.key"))).when(hipChatChannel).getGlobalConfigEntity();
 
         hipChatChannel.sendMessage(event, config);
 

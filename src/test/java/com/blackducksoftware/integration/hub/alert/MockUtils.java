@@ -94,12 +94,12 @@ public class MockUtils {
     }
 
     public GlobalHipChatConfigRestModel createHipChatConfigRestModel() {
-        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel("1", "ApiKey", "11", "false", "black");
+        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel("1", "ApiKey");
         return restModel;
     }
 
     public GlobalHipChatConfigEntity createHipChatConfigEntity() {
-        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity("ApiKey", 11, false, "black");
+        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity("ApiKey");
         configEntity.setId(1L);
         return configEntity;
     }
