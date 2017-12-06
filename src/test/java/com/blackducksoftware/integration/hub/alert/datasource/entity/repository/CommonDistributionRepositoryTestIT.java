@@ -42,7 +42,7 @@ public class CommonDistributionRepositoryTestIT {
     @Test
     public void saveEntityTestIT() {
         final Long distributionConfigId = 1L;
-        final String distributionType = SupportedChannels.EMAIL;
+        final String distributionType = SupportedChannels.EMAIL_GROUP;
         final String name = "My Config";
         final String frequency = "DAILY";
         final String notificationType = "ALL";

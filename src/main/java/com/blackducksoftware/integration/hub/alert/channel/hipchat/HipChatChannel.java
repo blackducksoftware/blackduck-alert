@@ -41,8 +41,11 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemp
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -61,29 +64,19 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
-    private final GlobalHipChatRepository hipChatRepository;
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final GlobalProperties globalProperties;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final GlobalHipChatRepository hipChatRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, null, null, HipChatEvent.class);
-        this.hipChatRepository = hipChatRepository;
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
+    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
+            final HipChatDistributionRepository hipChatDistributionRepository) {
+        super(gson, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
+        this.globalProperties = globalProperties;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
-    }
-
-    @Override
-    public void handleEvent(final HipChatEvent event) {
-        // FIXME
-        // final HubUserHipChatRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
-        // final Long configId = relationRow.getChannelConfigId();
-        // final GlobalHipChatConfigEntity configuration = hipChatRepository.findOne(configId);
-        // sendMessage(event, configuration);
     }
 
     @Override
@@ -100,7 +93,8 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
-        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
@@ -131,8 +125,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
 
     @Override
     public String testMessage(final HipChatDistributionConfigEntity distributionConfig) throws IntegrationException {
-        // TODO send a test message with the global config
-        return sendMessage(null, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
+        return sendMessage(distributionConfig, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 
     private String createHtmlMessage(final ProjectData projectData) {

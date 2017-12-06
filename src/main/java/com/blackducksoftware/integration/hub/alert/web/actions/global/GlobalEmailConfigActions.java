@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
@@ -43,10 +43,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailC
 
 @Component
 public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> {
-    private final EmailChannel emailChannel;
+    private final EmailGroupChannel emailChannel;
 
     @Autowired
-    public GlobalEmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailChannel emailChannel) {
+    public GlobalEmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer, final EmailGroupChannel emailChannel) {
         super(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, emailRepository, objectTransformer);
         this.emailChannel = emailChannel;
     }

@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +44,6 @@ import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarg
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -63,49 +61,37 @@ import com.google.gson.Gson;
 import freemarker.template.TemplateException;
 
 @Component
-public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
-    private final static Logger logger = LoggerFactory.getLogger(EmailChannel.class);
+public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
+    private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     private final GlobalProperties globalProperties;
-    private final EmailGroupDistributionRepository emailGroupDistributionRepository;
 
     @Autowired
-    public EmailChannel(final GlobalProperties globalProperties, final Gson gson, final GlobalEmailRepository emailRepository, final CommonDistributionRepository commonDistributionRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository) {
-        super(gson, emailRepository, commonDistributionRepository, EmailEvent.class);
+    public EmailGroupChannel(final GlobalProperties globalProperties, final Gson gson, final GlobalEmailRepository emailRepository, final EmailGroupDistributionRepository emailGroupDistributionRepository,
+            final CommonDistributionRepository commonDistributionRepository) {
+        super(gson, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
         this.globalProperties = globalProperties;
-        this.emailGroupDistributionRepository = emailGroupDistributionRepository;
     }
 
-    @JmsListener(destination = SupportedChannels.EMAIL)
+    @JmsListener(destination = SupportedChannels.EMAIL_GROUP)
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
     }
 
     @Override
-    public void handleEvent(final EmailEvent emailEvent) {
-        final Long eventDistributionId = emailEvent.getCommonDistributionConfigId();
-        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
-        if (SupportedChannels.EMAIL.equals(commonDistributionEntity.getDistributionType())) {
-            final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-            final EmailGroupDistributionConfigEntity channelDistributionEntity = emailGroupDistributionRepository.findOne(channelDistributionConfigId);
-            sendMessage(emailEvent, channelDistributionEntity);
-        } else {
-            logger.warn("Recieved an email event, but it was configured for a {} event.", commonDistributionEntity.getDistributionType());
-        }
-    }
-
-    @Override
     public String testMessage(final EmailGroupDistributionConfigEntity distributionConfig) {
+        if (getGlobalConfigEntity() == null) {
+            return "No global configuration found.";
+        }
         final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-        final String emailAddress = getGlobalConfigEntity().getMailSmtpFrom();
-        sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null));
+        final EmailGroupEvent event = new EmailGroupEvent(data, -1L);
+        sendMessage(event, distributionConfig);
         return "Attempted to send message with the given configuration.";
     }
 
     @Override
-    public void sendMessage(final EmailEvent emailEvent, final EmailGroupDistributionConfigEntity emailConfigEntity) {
+    public void sendMessage(final EmailGroupEvent emailEvent, final EmailGroupDistributionConfigEntity emailConfigEntity) {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             try {
@@ -120,7 +106,7 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final EmailEvent emailEvent) {
+    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent emailEvent) {
         try {
             final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
             final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
@@ -138,7 +124,6 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
             model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
 
             for (final String emailAddress : emailAddresses) {
-                // TODO should these be individual emails, or one group email?
                 final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
                 emailService.sendEmailMessage(emailTarget);
             }

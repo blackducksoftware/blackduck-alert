@@ -31,7 +31,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailEvent;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupEvent;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
@@ -104,8 +104,8 @@ public class EventManager {
         return false;
     }
 
-    private Set<EmailEvent> createUserEmailEvents(final Collection<UserNotificationWrapper> userNotificationList) {
-        final Set<EmailEvent> events = new HashSet<>();
+    private Set<EmailGroupEvent> createUserEmailEvents(final Collection<UserNotificationWrapper> userNotificationList) {
+        final Set<EmailGroupEvent> events = new HashSet<>();
         // userNotificationList.forEach(userNotification -> {
         // if (emailRelationRepository.exists(userNotification.getUserConfigId())) {
         // userNotification.getNotifications().forEach(notification -> {

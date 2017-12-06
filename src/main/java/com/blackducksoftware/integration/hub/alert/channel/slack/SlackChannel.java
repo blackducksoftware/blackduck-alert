@@ -35,7 +35,6 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -62,9 +61,9 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     SlackDistributionRepository slackRepository;
 
     @Autowired
-    public SlackChannel(final Gson gson, final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository slackRepository) {
-        super(gson, null, commonDistributionRepository, SlackEvent.class);
-        this.slackRepository = slackRepository;
+    public SlackChannel(final Gson gson, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
+        super(gson, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
+        this.slackRepository = slackDistributionRepository;
     }
 
     @Override
@@ -166,14 +165,6 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
-    }
-
-    @Override
-    public void handleEvent(final SlackEvent event) {
-        final CommonDistributionConfigEntity commonConfig = getCommonDistributionRepository().findOne(event.getCommonDistributionConfigId());
-        final Long slackConfigId = commonConfig.getDistributionConfigId();
-        final SlackDistributionConfigEntity slackConfigEntity = slackRepository.findOne(slackConfigId);
-        sendMessage(event, slackConfigEntity);
     }
 
 }
