@@ -2,11 +2,11 @@ import React from 'react';
 
 import styles from '../../../css/distributionConfig.css';
 
+import ProjectConfiguration from './ProjectConfiguration';
+
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 
 	var jobs = [];
-
-	var projects = [];
 
 	function addJobs() {
 		jobs.push({
@@ -46,27 +46,50 @@ export default class DistributionConfiguration extends React.Component {
 		 this.state = {
 			configurationMessage: '',
 			errors: {},
-			jobs: {}
+			jobs: [],
+			projects: []
 		};
-		this.handleChange = this.handleChange.bind(this);
 		this.handleJobAddClick = this.handleJobAddClick.bind(this);
 		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
 		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
 	}
 
-
-	handleChange(event) {
-		const target = event.target;
-		const value = target.type === 'checkbox' ? target.checked : target.value;
-		const name = target.name;
-
-		var values = this.state.values;
-		values[name] = value;
-		this.setState({
-			values
+	componentDidMount() {
+		var self = this;
+		
+		fetch('/hub/projects',{
+			credentials: "same-origin"
+		})  
+		.then(function(response) {
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.setState({
+						projectTableMessage: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					self.setState({
+						projectTableMessage: ''
+					});
+					var jsonArray = JSON.parse(json.message);
+					if (jsonArray != null && jsonArray.length > 0) {
+						var projects = [];
+						for (var index in jsonArray) {
+							projects.push({
+								name: jsonArray[index].name,
+								url: jsonArray[index].url
+							});
+						}
+						self.setState({
+							projects
+						});
+					}
+				});
+			}
 		});
-	}
+    }
 
 	handleJobAddClick(onClick) {
 		console.log('This is my custom function for InsertButton click event');
@@ -99,13 +122,7 @@ export default class DistributionConfiguration extends React.Component {
 	  		insertBtn: this.createCustomInsertButton,
 	  		deleteBtn: this.createCustomDeleteButton
 		};
-
-		const projectTableOptions = {
-	  		noDataText: 'No projects found',
-	  		clearSearch: true
-		};
-
-		const selectRowProp = {
+		const jobsSelectRowProp = {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
 			bgColor: function(row, isSelect) {
@@ -117,27 +134,29 @@ export default class DistributionConfiguration extends React.Component {
 		};
 		const showJobConfiguration = true;
 		var jobConfigBlockClasses = '';
-		if (showJobConfiguration) {
-			jobConfigBlockClasses = styles.contentBlock;
-		} else {
+		var projectsBlockClasses = '';
+		if (!showJobConfiguration) {
 			jobConfigBlockClasses = styles.hidden;
+			projectsBlockClasses = styles.hidden;
+		} else {
+			jobConfigBlockClasses = styles.contentBlock;
 		}
 		return (
 				<div>
-					<div className={styles.contentBlock}>
-						<BootstrapTable data={jobs} containerClass={styles.table} striped hover insertRow={true} deleteRow={true} selectRow={selectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} >
+					<div>
+						<BootstrapTable data={jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='jobName' isKey dataSort>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
 	  					</BootstrapTable>
+	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>
   					<div className={jobConfigBlockClasses}>
+  						<p name="jobConfigMessage">{this.state.jobConfigMessage}</p>
   					</div>
-  					<div className={jobConfigBlockClasses}>
-  						<BootstrapTable data={projects} containerClass={styles.table} striped hover selectRow={selectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} >
-	      					<TableHeaderColumn dataField='projectName' isKey dataSort>Project</TableHeaderColumn>
-	  					</BootstrapTable>
+  					<div className={projectsBlockClasses}>
+  						<ProjectConfiguration projects={this.state.projects} projectTableMessage={this.state.projectTableMessage} />
   					</div>
 				</div>
 		)
