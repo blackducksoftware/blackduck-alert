@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,7 +41,9 @@ public class SlackDistributionRepositoryTestIT {
     @Test
     public void saveEntityTestIT() {
         final String channelName = "My Channel";
-        final SlackDistributionConfigEntity entity = new SlackDistributionConfigEntity(channelName);
+        final String webhook = "Webhook";
+        final String channelUsername = "Hub-alert: test";
+        final SlackDistributionConfigEntity entity = new SlackDistributionConfigEntity(webhook, channelUsername, channelName);
         final SlackDistributionConfigEntity savedEntity = slackDistributionRepository.save(entity);
         assertEquals(1, slackDistributionRepository.count());
         assertNotNull(savedEntity.getId());

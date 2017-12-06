@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,42 +32,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalSlackConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
 @Component
-public class GlobalSlackConfigActions extends ConfigActions<GlobalSlackConfigEntity, GlobalSlackConfigRestModel> {
-    final SlackChannel slackChannel;
+public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel> {
+    private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public GlobalSlackConfigActions(final SlackChannel slackChannel, final GlobalSlackRepository slackRepository, final ObjectTransformer objectTransformer) {
-        super(GlobalSlackConfigEntity.class, GlobalSlackConfigRestModel.class, slackRepository, objectTransformer);
-        this.slackChannel = slackChannel;
+    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
+        super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
+        this.hipChatChannel = hipChatChannel;
     }
 
     @Override
-    public String validateConfig(final GlobalSlackConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalHipChatConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        if (StringUtils.isEmpty(restModel.getWebhook())) {
-            fieldErrors.put("webhook", "Can't be blank");
+        if (StringUtils.isNotBlank(restModel.getRoomId()) && !StringUtils.isNumeric(restModel.getRoomId())) {
+            fieldErrors.put("roomId", "Not an Integer.");
+        }
+
+        if (StringUtils.isNotBlank(restModel.getNotify()) && !isBoolean(restModel.getNotify())) {
+            fieldErrors.put("notify", "Not an Boolean.");
         }
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
-
         return "Valid";
     }
 
     @Override
-    public String channelTestConfig(final GlobalSlackConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
         // FIXME
         return null;
-        // return slackChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalSlackConfigEntity.class));
+        // return hipChatChannel.testMessage(objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class));
     }
 
     @Override

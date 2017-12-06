@@ -26,7 +26,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 
 @Transactional
 public interface SlackDistributionRepository extends JpaRepository<SlackDistributionConfigEntity, Long> {

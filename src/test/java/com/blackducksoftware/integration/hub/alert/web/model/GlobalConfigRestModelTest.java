@@ -16,6 +16,8 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
+
 public class GlobalConfigRestModelTest {
 
     @Test

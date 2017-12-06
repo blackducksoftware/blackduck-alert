@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
@@ -38,9 +40,12 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public final CommonDistributionRepository commonDistributionRepository;
     public final JpaRepository<D, Long> channelDistributionRepository;
     public final ObjectTransformer objectTransformer;
@@ -128,11 +133,15 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         final List<D> allEntities = channelDistributionRepository.findAll();
         final List<R> constructedRestModels = new ArrayList<>();
         for (final D entity : allEntities) {
-            constructedRestModels.add(constructRestModel(entity));
+            try {
+                constructedRestModels.add(constructRestModel(entity));
+            } catch (final AlertException e) {
+                logger.warn("Problem constructing rest model", e);
+            }
         }
         return constructedRestModels;
     }
 
-    public abstract R constructRestModel(final D entity);
+    public abstract R constructRestModel(final D entity) throws AlertException;
 
 }

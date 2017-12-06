@@ -20,25 +20,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class GlobalHipChatConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = 8852683250883814613L;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
-    private String apiKey;
-    private String roomId;
-    private String notify;
+@Entity
+@Table(schema = "alert", name = "hip_chat_distribution_config")
+public class HipChatDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 8645967062445661540L;
+
+    @Column(name = "room_id")
+    private Integer roomId;
+
+    @Column(name = "notify")
+    private Boolean notify;
+
+    @Column(name = "color")
     private String color;
 
-    public GlobalHipChatConfigRestModel() {
+    public HipChatDistributionConfigEntity() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final String roomId, final String notify, final String color) {
-        super(id);
-        this.apiKey = apiKey;
+    public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {
+        super();
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
@@ -48,15 +56,11 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
         return serialVersionUID;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public String getRoomId() {
+    public Integer getRoomId() {
         return roomId;
     }
 
-    public String getNotify() {
+    public Boolean getNotify() {
         return notify;
     }
 
@@ -64,10 +68,4 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
         return color;
     }
 
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
-        return reflectionToStringBuilder.build();
-    }
 }

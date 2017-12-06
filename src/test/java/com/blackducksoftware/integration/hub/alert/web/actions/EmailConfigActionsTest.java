@@ -36,7 +36,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class EmailConfigActionsTest {
     private final MockUtils mockUtils = new MockUtils();
