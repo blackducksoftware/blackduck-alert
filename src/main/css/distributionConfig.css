@@ -1,3 +1,8 @@
+.scrollable {
+    position: relative;
+    overflow-y: scroll;
+}
+
 .jobTableButton {
 	cursor: pointer;
 	color: #fff;
@@ -24,6 +29,12 @@
     cursor: pointer;
 }
 
+.tableScrollableBody {
+    composes: scrollable;
+    height: 200px !important;
+    width: 100%;
+}
+
 .statusSuccess {
 	color: green;
 }
@@ -37,13 +48,11 @@
 }
 
 .contentBlock {
+    composes: scrollable;
     padding: 0px;
     font-size: 12px;
-    height: 400px;
+    height: 200px;
     width: 100%;
     font-family: 'Open Sans', sans-serif;
     display: inline-block;
-    position: relative;
-    overflow-y: scroll;
-
 }
