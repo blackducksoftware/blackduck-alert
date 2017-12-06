@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +30,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @Component
 public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
@@ -48,18 +48,14 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     }
 
     @Override
-    public EmailGroupDistributionRestModel constructRestModel(final EmailGroupDistributionConfigEntity entity) {
+    public EmailGroupDistributionRestModel constructRestModel(final EmailGroupDistributionConfigEntity entity) throws AlertException {
         final EmailGroupDistributionConfigEntity emailGroupEntity = emailGroupDistributionRepository.findOne(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
         if (emailGroupEntity != null && commonEntity != null) {
-            try {
-                final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
-                restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
-                restModel.setGroupName(emailGroupEntity.getGroupName());
-                return restModel;
-            } catch (final AlertException e) {
-                logger.warn("Problem constructing rest model", e);
-            }
+            final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
+            restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+            restModel.setGroupName(emailGroupEntity.getGroupName());
+            return restModel;
         }
         return null;
     }

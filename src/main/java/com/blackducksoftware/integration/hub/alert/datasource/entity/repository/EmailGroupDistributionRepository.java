@@ -26,7 +26,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 
 @Transactional
 public interface EmailGroupDistributionRepository extends JpaRepository<EmailGroupDistributionConfigEntity, Long> {

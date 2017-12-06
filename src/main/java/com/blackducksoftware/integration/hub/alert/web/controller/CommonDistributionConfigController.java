@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.CommonDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @RestController
 public class CommonDistributionConfigController extends ConfigController<CommonDistributionConfigRestModel> {

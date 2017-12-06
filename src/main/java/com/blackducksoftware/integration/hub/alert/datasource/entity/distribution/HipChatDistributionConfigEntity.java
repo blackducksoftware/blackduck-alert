@@ -20,38 +20,52 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(schema = "alert", name = "email_group_distribution_config")
-public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -2969530122554864181L;
+@Table(schema = "alert", name = "hip_chat_distribution_config")
+public class HipChatDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 8645967062445661540L;
 
-    @Column(name = "group_name")
-    private String groupName;
+    @Column(name = "room_id")
+    private Integer roomId;
 
-    public EmailGroupDistributionConfigEntity() {
+    @Column(name = "notify")
+    private Boolean notify;
+
+    @Column(name = "color")
+    private String color;
+
+    public HipChatDistributionConfigEntity() {
     }
 
-    public EmailGroupDistributionConfigEntity(final String groupName) {
+    public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {
         super();
-        this.groupName = groupName;
+        this.roomId = roomId;
+        this.notify = notify;
+        this.color = color;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public Integer getRoomId() {
+        return roomId;
     }
 
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
+    public Boolean getNotify() {
+        return notify;
+    }
+
+    public String getColor() {
+        return color;
     }
 
 }

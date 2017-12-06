@@ -46,7 +46,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMe
 import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
@@ -97,14 +97,11 @@ public class EmailChannel extends DistributionChannel<EmailEvent, GlobalEmailCon
     }
 
     @Override
-    public String testMessage(final EmailGroupDistributionConfigEntity globalConfig) {
-        if (globalConfig != null) {
-            final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-            final String emailAddress = getGlobalConfigEntity().getMailSmtpFrom();
-            sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null));
-            return "Attempted to send message with the given configuration.";
-        }
-        return null;
+    public String testMessage() {
+        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
+        final String emailAddress = getGlobalConfigEntity().getMailSmtpFrom();
+        sendMessage(Arrays.asList(emailAddress), new EmailEvent(data, null));
+        return "Attempted to send message with the given configuration.";
     }
 
     @Override

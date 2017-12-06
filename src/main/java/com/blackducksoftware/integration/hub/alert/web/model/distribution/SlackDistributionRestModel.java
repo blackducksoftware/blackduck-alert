@@ -20,28 +20,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-@Entity
-@Table(schema = "alert", name = "slack_distribution_config")
-public class SlackDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 3607759169675906880L;
+public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
+    private static final long serialVersionUID = -3032738984577328749L;
 
-    @Column(name = "channel_name")
     private String channelName;
-
-    @Column(name = "channel_username")
     private String channelUsername;
 
-    public SlackDistributionConfigEntity() {
+    public SlackDistributionRestModel() {
+
     }
 
-    public SlackDistributionConfigEntity(final String channelName, final String channelUsername) {
-        super();
+    public SlackDistributionRestModel(final String id, final String channelName, final String channelUsername, final String distributionConfigId, final String distributionType, final String name, final String frequency,
+            final String notificationType, final String filterByProject) {
+        super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject);
         this.channelName = channelName;
         this.channelUsername = channelUsername;
     }
@@ -56,6 +52,20 @@ public class SlackDistributionConfigEntity extends DatabaseEntity {
 
     public String getChannelUsername() {
         return channelUsername;
+    }
+
+    public void setChannelName(final String channelName) {
+        this.channelName = channelName;
+    }
+
+    public void setChannelUsername(final String channelUsername) {
+        this.channelUsername = channelUsername;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.toString();
     }
 
 }

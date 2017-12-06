@@ -26,7 +26,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 
 @Transactional
 public interface HipChatDistributionRepository extends JpaRepository<HipChatDistributionConfigEntity, Long> {
