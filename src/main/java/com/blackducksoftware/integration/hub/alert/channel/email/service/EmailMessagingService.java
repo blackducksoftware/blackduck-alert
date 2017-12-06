@@ -22,9 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,58 +45,24 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackducksoftware.integration.hub.alert.AlertConstants;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
 import com.blackducksoftware.integration.hub.alert.channel.email.model.MimeMultipartBuilder;
 
 import freemarker.core.ParseException;
-import freemarker.template.Configuration;
 import freemarker.template.MalformedTemplateNameException;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateNotFoundException;
 
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
-    private final Configuration configuration;
+    private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
-        configuration = createFreemarkerConfig();
-    }
-
-    public Configuration createFreemarkerConfig() throws IOException {
-        final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
-        final File templateDirectory = findTemplateDirectory();
-        cfg.setDirectoryForTemplateLoading(templateDirectory);
-        cfg.setDefaultEncoding("UTF-8");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-        cfg.setLogTemplateExceptions(false);
-
-        return cfg;
-    }
-
-    private File findTemplateDirectory() {
-        try {
-            File templateDir = null;
-            final String appHomeDir = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
-            if (StringUtils.isNotBlank(appHomeDir)) {
-                templateDir = new File(appHomeDir, "templates");
-            }
-
-            final String templateDirProperty = emailProperties.getEmailTemplateDirectory();
-            if (StringUtils.isNotBlank(templateDirProperty)) {
-                templateDir = new File(templateDirProperty);
-            }
-
-            return templateDir;
-        } catch (final Exception e) {
-            logger.error("Error finding the template directory", e);
-            return null;
-        }
+        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(emailProperties.getEmailTemplateDirectory());
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
@@ -113,7 +77,7 @@ public class EmailMessagingService {
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
         addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, emailProperties.getEmailTemplateLogoImage());
-        final String html = getResolvedTemplate(model, templateName);
+        final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
         final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
         mimeMultipartBuilder.addHtmlContent(html);
@@ -121,27 +85,9 @@ public class EmailMessagingService {
         mimeMultipartBuilder.addEmbeddedImages(contentIdsToFilePaths);
         final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
-        final String resolvedSubjectLine = getResolvedSubjectLine(model);
+        final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
         final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
         sendMessage(emailProperties, session, message);
-    }
-
-    private String getResolvedTemplate(final Map<String, Object> model, final String templateName) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
-        final StringWriter stringWriter = new StringWriter();
-        final Template template = configuration.getTemplate(templateName);
-        template.process(model, stringWriter);
-        return stringWriter.toString();
-    }
-
-    private String getResolvedSubjectLine(final Map<String, Object> model) throws IOException, TemplateException {
-        String subjectLine = (String) model.get(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE);
-        if (StringUtils.isBlank(subjectLine)) {
-            subjectLine = "Default Subject Line - please define one";
-        }
-        final Template subjectLineTemplate = new Template("subjectLineTemplate", subjectLine, configuration);
-        final StringWriter stringWriter = new StringWriter();
-        subjectLineTemplate.process(model, stringWriter);
-        return stringWriter.toString();
     }
 
     private void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
