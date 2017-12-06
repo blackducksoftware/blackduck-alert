@@ -31,13 +31,15 @@ public class GlobalSlackConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -2360827976516988339L;
 
     private String webhook;
+    private String channelUsername;
 
     public GlobalSlackConfigRestModel() {
     }
 
-    public GlobalSlackConfigRestModel(final String id, final String webhook) {
+    public GlobalSlackConfigRestModel(final String id, final String webhook, final String channelUsername) {
         super(id);
         this.webhook = webhook;
+        this.channelUsername = channelUsername;
     }
 
     public static long getSerialversionuid() {
@@ -46,6 +48,10 @@ public class GlobalSlackConfigRestModel extends ConfigRestModel {
 
     public String getWebhook() {
         return webhook;
+    }
+
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
     @Override

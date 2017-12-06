@@ -22,24 +22,20 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
     private static final long serialVersionUID = -3032738984577328749L;
 
     private String channelName;
-    private String channelUsername;
 
     public SlackDistributionRestModel() {
 
     }
 
-    public SlackDistributionRestModel(final String id, final String channelName, final String channelUsername, final String distributionConfigId, final String distributionType, final String name, final String frequency,
-            final String notificationType, final String filterByProject) {
+    public SlackDistributionRestModel(final String id, final String channelName, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType,
+            final String filterByProject) {
         super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject);
         this.channelName = channelName;
-        this.channelUsername = channelUsername;
+
     }
 
     public static long getSerialversionuid() {
@@ -50,22 +46,8 @@ public class SlackDistributionRestModel extends CommonDistributionConfigRestMode
         return channelName;
     }
 
-    public String getChannelUsername() {
-        return channelUsername;
-    }
-
     public void setChannelName(final String channelName) {
         this.channelName = channelName;
-    }
-
-    public void setChannelUsername(final String channelUsername) {
-        this.channelUsername = channelUsername;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.toString();
     }
 
 }

@@ -60,7 +60,7 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
         if (slackDistributionEntity != null && commonEntity != null) {
             final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
             restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
-            restModel.setChannelUsername(slackDistributionEntity.getChannelUsername());
+            restModel.setChannelName(slackDistributionEntity.getChannelName());
             return restModel;
         }
         return null;
