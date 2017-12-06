@@ -94,7 +94,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
-            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
+            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), getGlobalConfigEntity().getChannelUsername());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final Map<String, String> requestProperties = new HashMap<>();
