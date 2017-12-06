@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-export default class Configuration extends React.Component {
+export default class Configuration extends Component {
     constructor(props) {
 		super(props);
         this.state = {
@@ -25,11 +25,11 @@ export default class Configuration extends React.Component {
     //componentDidMount is part of the Component lifecycle, executes after construction
 	componentDidMount() {
 		var self = this;
-		
+
 		let getUrl = this.props.getUrl || this.props.restUrl;
 		fetch(getUrl,{
 			credentials: "same-origin"
-		})  
+		})
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -145,7 +145,7 @@ export default class Configuration extends React.Component {
 			});
 		});
 	}
-    
+
     handleChange(event) {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;

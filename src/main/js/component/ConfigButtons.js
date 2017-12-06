@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import { submitContainers, submitButtons } from '../../css/main.css';
 
-export default class ConfigButtons extends React.Component {
+export default class ConfigButtons extends Component {
     constructor(props) {
         super(props);
     }

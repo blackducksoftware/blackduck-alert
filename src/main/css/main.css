@@ -1,3 +1,4 @@
+@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 .hidden {
 	display: none;
 }
@@ -70,53 +71,7 @@
 }
 
 .border {
-    border: 3px solid #ccc;
-}
-
-.tab {
-    background-color: white;
-    color: black;
-    position: relative;
-    list-style: none;
-    cursor: pointer;
-}
-
-.tab:hover {
-    background-color: #ddd;
-}
-
-.configTabs {
-    composes: border tab;
-    width: 10%;
-    padding: 10px;
-    display: inline;
-    border-radius: 15px 15px 0px 0px;
-}
-
-.channelTabs {
-    composes: border tab;
-    float: left;
-    border-radius: 20px;
-    height: 70px;
-    line-height: 64px;
-    width: 80px;
-    margin: 10px;
-    text-align: center;
-}
-
-.tabContainer {
-    margin-top: 75px;
-}
-
-.tabContent {
-    padding: 0px 12px 0px 12px;
-    border-collapse: collapse;
-    text-align: left;
-}
-
-.tabSelected {
-    background-color: #235483;
-    color: white;
+    border: #e6e6e6 1px solid;
 }
 
 .alertHeader {
