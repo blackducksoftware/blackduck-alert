@@ -1,11 +1,11 @@
 .tab {
-    border: #e6e6e6 1px solid;
-    background-color: #fafafa;
-    color: black;
+    color: #ddd;
     position: relative;
     list-style: none;
     cursor: pointer;
     transition: border-color .5s ease-out;
+    line-height: 1em;
+    font-size: 1em;
 }
 
 .tab:hover {
@@ -24,12 +24,11 @@
     composes: tab;
     float: left;
     border-radius: 20px;
-    height: 62px;
+    height: 70px;
     line-height: 64px;
-    width: 115px;
+    width: 80px;
     margin: 10px;
-    text-align: left;
-    padding-left: 20px;
+    text-align: center;
 }
 
 .tabContainer {
@@ -43,18 +42,6 @@
 }
 
 .tabSelected {
-    background-color: #235483;
-    color: white;
-}
-
-.bg_icon {
-    margin-left: 8px;
-    color: #ddd;
-    opacity: .3;
-    transition: opacity .5s ease-out;
-    position: absolute;
-    right: 10px;
-    top: -27px;
-    font-size: 3em;
-    line-height: 3em;
+    color: #235483;
+    text-decoration: underline;
 }

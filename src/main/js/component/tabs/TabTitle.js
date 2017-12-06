@@ -12,15 +12,14 @@ class TabTitle extends Component {
         const { text, icon } = this.props;
         let iconElement = null;
         if(icon) {
-            const fontAwesomeIcon = `${bg_icon} fa ${icon}`;
+            const fontAwesomeIcon = `fa ${icon}`;
             iconElement = <i className={fontAwesomeIcon} aria-hidden='true'></i>;
         }
 
         return (
             <span>
-            {iconElement}
+                {iconElement}
                 <span>{text}</span>
-
             </span>
         );
     }
