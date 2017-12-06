@@ -26,9 +26,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Entity
@@ -39,11 +36,15 @@ public class GlobalSlackConfigEntity extends DatabaseEntity {
     @Column(name = "webhook")
     private String webhook;
 
+    @Column(name = "channel_username")
+    private String channelUsername = "Hub-alert";
+
     public GlobalSlackConfigEntity() {
     }
 
-    public GlobalSlackConfigEntity(final String webhook) {
+    public GlobalSlackConfigEntity(final String webhook, final String channelUsername) {
         this.webhook = webhook;
+        this.channelUsername = channelUsername;
     }
 
     public static long getSerialversionuid() {
@@ -54,10 +55,8 @@ public class GlobalSlackConfigEntity extends DatabaseEntity {
         return webhook;
     }
 
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.toString();
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
 }

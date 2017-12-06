@@ -20,12 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.SlackDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 @RestController
@@ -46,30 +49,35 @@ public class SlackDistributionConfigController extends ConfigController<SlackDis
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/slack")
     public List<SlackDistributionRestModel> getConfig(final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> postConfig(final SlackDistributionRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> putConfig(final SlackDistributionRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> deleteConfig(final SlackDistributionRestModel restModel) {
         return commonConfigController.deleteConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack/test")
     public ResponseEntity<String> testConfig(final SlackDistributionRestModel restModel) {
         return commonConfigController.testConfig(restModel);
