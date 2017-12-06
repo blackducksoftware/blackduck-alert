@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
@@ -131,7 +131,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     @Override
-    public String testMessage(final HipChatDistributionConfigEntity config) throws IntegrationException {
+    public String testMessage() throws IntegrationException {
         // TODO send a test message with the global config
         return sendMessage(null, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }

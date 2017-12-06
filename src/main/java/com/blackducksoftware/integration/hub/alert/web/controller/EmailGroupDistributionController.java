@@ -34,9 +34,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.EmailGroupDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.actions.distribution.EmailGroupDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @RestController
 public class EmailGroupDistributionController extends ConfigController<EmailGroupDistributionRestModel> {

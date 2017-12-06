@@ -20,50 +20,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
 @Entity
-@Table(schema = "alert", name = "hip_chat_distribution_config")
-public class HipChatDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 8645967062445661540L;
+@Table(schema = "alert", name = "slack_distribution_config")
+public class SlackDistributionConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 3607759169675906880L;
 
-    @Column(name = "room_id")
-    private Integer roomId;
+    @Column(name = "channel_name")
+    private String channelName;
 
-    @Column(name = "notify")
-    private Boolean notify;
+    @Column(name = "channel_username")
+    private String channelUsername = "Hub-alert";
 
-    @Column(name = "color")
-    private String color;
-
-    public HipChatDistributionConfigEntity() {
+    public SlackDistributionConfigEntity() {
     }
 
-    public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {
+    public SlackDistributionConfigEntity(final String channelName, final String channelUsername) {
         super();
-        this.roomId = roomId;
-        this.notify = notify;
-        this.color = color;
+        this.channelName = channelName;
+        this.channelUsername = channelUsername;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public Integer getRoomId() {
-        return roomId;
+    public String getChannelName() {
+        return channelName;
     }
 
-    public Boolean getNotify() {
-        return notify;
-    }
-
-    public String getColor() {
-        return color;
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
 }

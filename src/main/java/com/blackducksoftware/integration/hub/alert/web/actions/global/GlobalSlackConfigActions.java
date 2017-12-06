@@ -66,8 +66,7 @@ public class GlobalSlackConfigActions extends ConfigActions<GlobalSlackConfigEnt
 
     @Override
     public String channelTestConfig(final GlobalSlackConfigRestModel restModel) throws IntegrationException {
-
-        return "Test";
+        return slackChannel.testMessage();
     }
 
     @Override

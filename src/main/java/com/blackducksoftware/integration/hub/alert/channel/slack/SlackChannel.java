@@ -36,7 +36,7 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnection
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
@@ -83,7 +83,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     }
 
     @Override
-    public String testMessage(final SlackDistributionConfigEntity config) throws IntegrationException {
+    public String testMessage() throws IntegrationException {
         // TODO send test message from global config
         final String message = "*Test* from _Alert_ application";
         return sendMessage(message, null);

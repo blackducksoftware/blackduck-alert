@@ -53,7 +53,7 @@ public class GlobalSlackConfigController extends ConfigController<GlobalSlackCon
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/configuration/slack")
+    @GetMapping(value = "/configuration/global/slack")
     public List<GlobalSlackConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
