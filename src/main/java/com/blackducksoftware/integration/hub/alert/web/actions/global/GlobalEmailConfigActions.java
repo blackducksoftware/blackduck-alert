@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -83,7 +84,8 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
 
     @Override
     public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-        return emailChannel.testMessage();
+        final EmailGroupDistributionConfigEntity emailConfig = objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
+        return emailChannel.testMessage(emailConfig);
     }
 
     @Override

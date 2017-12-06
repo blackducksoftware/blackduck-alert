@@ -22,41 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
-@Entity
-@Table(schema = "alert", name = "global_slack_config")
+//Slack has no global configuration
 public class GlobalSlackConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 4872590789715928839L;
-
-    @Column(name = "webhook")
-    private String webhook;
-
-    @Column(name = "channel_username")
-    private String channelUsername = "Hub-alert";
-
-    public GlobalSlackConfigEntity() {
-    }
-
-    public GlobalSlackConfigEntity(final String webhook, final String channelUsername) {
-        this.webhook = webhook;
-        this.channelUsername = channelUsername;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public String getWebhook() {
-        return webhook;
-    }
-
-    public String getChannelUsername() {
-        return channelUsername;
-    }
-
+    private static final long serialVersionUID = 1L;
 }
