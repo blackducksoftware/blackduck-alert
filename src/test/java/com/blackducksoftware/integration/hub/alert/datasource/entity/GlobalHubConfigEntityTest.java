@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 
-public class GlobalConfigEntityTest {
+public class GlobalHubConfigEntityTest {
 
     @Test
     public void testEmptyModel() {
