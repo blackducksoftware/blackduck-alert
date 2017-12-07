@@ -15,14 +15,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.google.gson.Gson;
 
 public class RestChannelTest {
@@ -52,12 +51,11 @@ public class RestChannelTest {
         }
 
         if (properties.isEmpty()) {
-            final Map<String, String> envMap = System.getenv();
-            for (final Entry<String, String> entry : envMap.entrySet()) {
-                final String key = entry.getKey();
-                final String value = entry.getValue();
-                System.out.println("Property key: \"" + key + "\" value: \"" + value + "\"");
-                properties.put(key, value);
+            for (final TestPropertyKey key : TestPropertyKey.values()) {
+                final String prop = System.getenv(key.toString());
+                if (prop != null && !prop.isEmpty()) {
+                    properties.setProperty(key.getPropertyKey(), prop);
+                }
             }
         }
     }
