@@ -43,6 +43,10 @@ public abstract class ConfigRestModel implements Serializable {
         return id;
     }
 
+    public void setId(final String id) {
+        this.id = id;
+    }
+
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);

@@ -54,7 +54,7 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -85,7 +85,7 @@ public class Application {
     @PostConstruct
     void init() {
         logger.info("Hub Alert Starting...");
-        final GlobalConfigEntity globalConfig = globalProperties.getConfig();
+        final GlobalHubConfigEntity globalConfig = globalProperties.getConfig();
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level: {}", loggingLevel);

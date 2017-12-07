@@ -16,12 +16,14 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+
 public class EmailConfigEntityTest {
 
     @Test
     public void testEmptyModel() {
-        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity();
-        assertEquals(4122029411365267232L, EmailConfigEntity.getSerialversionuid());
+        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity();
+        assertEquals(4122029411365267232L, GlobalEmailConfigEntity.getSerialversionuid());
 
         assertNull(emailConfigEntity.getEmailSubjectLine());
         assertNull(emailConfigEntity.getEmailTemplateDirectory());
@@ -47,7 +49,7 @@ public class EmailConfigEntityTest {
         final String expectedString = "{\"mailSmtpHost\":null,\"mailSmtpUser\":null,\"mailSmtpPort\":null,\"mailSmtpConnectionTimeout\":null,\"mailSmtpTimeout\":null,\"mailSmtpFrom\":null,\"mailSmtpLocalhost\":null,\"mailSmtpEhlo\":null,\"mailSmtpAuth\":null,\"mailSmtpDnsNotify\":null,\"mailSmtpDnsRet\":null,\"mailSmtpAllow8bitmime\":null,\"mailSmtpSendPartial\":null,\"emailTemplateDirectory\":null,\"emailTemplateLogoImage\":null,\"emailSubjectLine\":null,\"id\":null}";
         assertEquals(expectedString, emailConfigEntity.toString());
 
-        final EmailConfigEntity emailConfigEntityNew = new EmailConfigEntity();
+        final GlobalEmailConfigEntity emailConfigEntityNew = new GlobalEmailConfigEntity();
         assertEquals(emailConfigEntity, emailConfigEntityNew);
     }
 
@@ -72,7 +74,7 @@ public class EmailConfigEntityTest {
         final String emailTemplateLogoImage = "EmailTemplateLogoImage";
         final String emailSubjectLine = "EmailSubjectLine";
 
-        final EmailConfigEntity emailConfigEntity = new EmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
+        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
                 mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         emailConfigEntity.setId(id);
         assertEquals(emailSubjectLine, emailConfigEntity.getEmailSubjectLine());
@@ -99,7 +101,7 @@ public class EmailConfigEntityTest {
         final String expectedString = "{\"mailSmtpHost\":\"MailSmtpHost\",\"mailSmtpUser\":\"MailSmtpUser\",\"mailSmtpPort\":111,\"mailSmtpConnectionTimeout\":222,\"mailSmtpTimeout\":333,\"mailSmtpFrom\":\"MailSmtpFrom\",\"mailSmtpLocalhost\":\"MailSmtpLocalhost\",\"mailSmtpEhlo\":true,\"mailSmtpAuth\":false,\"mailSmtpDnsNotify\":\"MailSmtpDnsNotify\",\"mailSmtpDnsRet\":\"MailSmtpDnsRet\",\"mailSmtpAllow8bitmime\":false,\"mailSmtpSendPartial\":true,\"emailTemplateDirectory\":\"EmailTemplateDirectory\",\"emailTemplateLogoImage\":\"EmailTemplateLogoImage\",\"emailSubjectLine\":\"EmailSubjectLine\",\"id\":123}";
         assertEquals(expectedString, emailConfigEntity.toString());
 
-        final EmailConfigEntity emailConfigEntityNew = new EmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
+        final GlobalEmailConfigEntity emailConfigEntityNew = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
                 mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         emailConfigEntityNew.setId(id);
         assertEquals(emailConfigEntity, emailConfigEntityNew);

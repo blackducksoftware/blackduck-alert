@@ -119,6 +119,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
+    @SuppressWarnings(value = "rawtypes")
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
         try {
             final Class newConfigClass = newConfig.getClass();
@@ -186,7 +187,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(final R restModel) {
+    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
 
     }
 
