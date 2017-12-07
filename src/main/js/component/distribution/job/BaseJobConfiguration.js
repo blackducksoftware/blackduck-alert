@@ -1,11 +1,15 @@
 import React from 'react';
 
 import styles from '../../../../css/distributionConfig.css';
+import {fieldLabel, typeAheadField} from '../../../../css/field.css';
 
+import TextInput from '../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {Typeahead} from 'react-bootstrap-typeahead';
+
+import ConfigButtons from '../../ConfigButtons'
 
 export default class BaseJobConfiguration extends React.Component {
 	constructor(props) {
@@ -49,24 +53,32 @@ export default class BaseJobConfiguration extends React.Component {
 		return(
 			<div>
 				<div className={styles.contentBlock}>
+					<TextInput label="Job Name" name="jobName" value={this.props.jobName} onChange={this.props.handleJobNameChange} errorName="jobNameError" errorValue={this.props.jobNameError}></TextInput>
 					{content}
-					<Typeahead
-						onChange={this.handleFrequencyChanged}
-					    clearButton
-					    options={this.state.frequencyOptions}
-					    placeholder='Choose the frequency'
-					    selected={this.state.frequencyValue}
-					  />
-					<Typeahead
-						onChange={this.handleNotificationChanged}
-					    clearButton
-					    multiple
-					    options={this.state.notificationOptions}
-					    placeholder='Choose the notification types'
-					    selected={this.state.notificationValue}
-					  />
+					<div>
+						<label className={fieldLabel}>Frequency</label>
+						<Typeahead className={typeAheadField}
+							onChange={this.handleFrequencyChanged}
+						    clearButton
+						    options={this.state.frequencyOptions}
+						    placeholder='Choose the frequency'
+						    selected={this.state.frequencyValue}
+						  />
+					</div>
+					<div>
+						<label className={fieldLabel}>Notification Types</label>
+						<Typeahead className={typeAheadField}
+							onChange={this.handleNotificationChanged}
+						    clearButton
+						    multiple
+						    options={this.state.notificationOptions}
+						    placeholder='Choose the notification types'
+						    selected={this.state.notificationValue}
+						  />
+					</div>
 				</div>
 				<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
+				<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel} onClick={this.props.handleCancel} />
 			</div>
 		)
 	}

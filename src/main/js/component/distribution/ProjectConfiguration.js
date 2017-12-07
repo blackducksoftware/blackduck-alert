@@ -24,7 +24,7 @@ export default class ProjectConfiguration extends React.Component {
 
 		return (
 			<div>
-				<BootstrapTable data={this.props.projects} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
+				<BootstrapTable data={this.props.projects} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
 					<TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
 					<TableHeaderColumn dataField='url' hidden>Project Url</TableHeaderColumn>
 				</BootstrapTable>

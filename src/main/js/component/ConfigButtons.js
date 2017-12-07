@@ -8,17 +8,24 @@ export default class ConfigButtons extends React.Component {
     }
 
     render() {
+        const includeCancel = this.props.includeCancel || "false";
         const includeTest = this.props.includeTest || "false";
-        const buttonText = this.props.text || "Save";
-        const buttonType = this.props.type || "button";
-        const buttonTestText = this.props.testText || "Test";
-        const buttonTestType = this.props.testType || "button";
+
+        const saveButtonText = this.props.text || "Save";
+        const saveButtonType = this.props.type || "button";
+        const testButtonText = this.props.testText || "Test";
+        const testButtonType = this.props.testType || "button";
+        const cancelButtonText = this.props.cancelText || "Cancel";
+        const cancelButtonType = this.props.cancelType || "button";
 
         return (
             <div className={submitContainers}>
-                <input className={submitButtons} type={buttonType} value={buttonText} onClick={this.props.onClick}></input>
+                { includeCancel == "true" &&
+                    <input className={submitButtons} type={cancelButtonType} value={cancelButtonText} onClick={this.props.onCancelClick}></input>
+                }
+                <input className={submitButtons} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
                 { includeTest == "true" &&
-                    <input className={submitButtons} type={buttonTestType} value={buttonTestText} onClick={this.props.onTestClick}></input>
+                    <input className={submitButtons} type={testButtonType} value={testButtonText} onClick={this.props.onTestClick}></input>
                 }
             </div>
         )
