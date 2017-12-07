@@ -23,7 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.channel;
 
 public class SupportedChannels {
-    public final static String EMAIL = "email_channel";
+    public final static String EMAIL_GROUP = "email_group_channel";
     public final static String HIPCHAT = "hipchat_channel";
     public final static String SLACK = "slack_channel";
 
