@@ -65,7 +65,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     @Override
     public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
         // TODO test config
-        return null;
+        return "Not implemented.";
     }
 
     @Override

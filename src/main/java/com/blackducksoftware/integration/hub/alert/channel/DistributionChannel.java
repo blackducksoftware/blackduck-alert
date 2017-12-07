@@ -60,10 +60,10 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
             final List<G> globalConfigs = globalRepository.findAll();
             if (globalConfigs.size() == 1) {
                 globalConfigEntity = globalConfigs.get(0);
+            } else {
+                logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
             }
-            logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
         }
-
         return globalConfigEntity;
     }
 

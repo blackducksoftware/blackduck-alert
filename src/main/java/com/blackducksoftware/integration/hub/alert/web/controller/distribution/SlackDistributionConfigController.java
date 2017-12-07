@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -73,7 +74,8 @@ public class SlackDistributionConfigController extends ConfigController<SlackDis
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> deleteConfig(final SlackDistributionRestModel restModel) {
-        return commonConfigController.deleteConfig(restModel);
+        // TODO improve and abstract for reuse
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
     @Override
