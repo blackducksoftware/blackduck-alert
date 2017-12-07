@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.google.gson.Gson;
 
 public class RestChannelTest {
@@ -34,15 +35,29 @@ public class RestChannelTest {
 
     @Before
     public void init() throws IOException {
-        gson = new Gson();
-        resourceLoader = new ResourceLoader();
-        properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
-
         systemOut = System.out;
         systemErr = System.err;
         loggerOutput = new ByteArrayOutputStream();
         System.setOut(new PrintStream(loggerOutput));
         System.setErr(new PrintStream(loggerOutput));
+
+        gson = new Gson();
+        resourceLoader = new ResourceLoader();
+        properties = new Properties();
+        try {
+            properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
+        } catch (final Exception ex) {
+            System.out.println("Couldn't load " + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION + " file!");
+        }
+
+        if (properties.isEmpty()) {
+            for (final TestPropertyKey key : TestPropertyKey.values()) {
+                final String prop = System.getenv(key.toString());
+                if (prop != null && !prop.isEmpty()) {
+                    properties.setProperty(key.getPropertyKey(), prop);
+                }
+            }
+        }
     }
 
     @After

@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class ResourceLoader {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "application.properties";
     private static final File RESOURCE_DIR = new File("./src/test/resources/");
+    public static final String PROPERTIES_ENV_VARIABLE = "SPRING_APPLICATION_JSON";
 
     @SuppressWarnings("resource")
     public String loadJsonResource(final String resourceLocation) throws IOException {
