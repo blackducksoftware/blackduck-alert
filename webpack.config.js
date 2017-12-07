@@ -48,10 +48,9 @@ module.exports = {
                         }
                     }
                 ]
-            }
-            ,
+            },
             {
-            	test: /\.css$/,
+                test: /\.css$/,
                 include: /node_modules/,
                 use: [
                     {
