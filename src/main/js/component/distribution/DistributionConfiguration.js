@@ -60,6 +60,7 @@ export default class DistributionConfiguration extends React.Component {
 		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
 		this.handleJobSelect = this.handleJobSelect.bind(this);
+		this.cancelJobSelect = this.cancelJobSelect.bind(this);
 	}
 
 	componentDidMount() {
@@ -129,23 +130,27 @@ export default class DistributionConfiguration extends React.Component {
 				currentJobSelected: row
 			});
 		} else {
-			this.setState({
-				currentJobSelected: null
-			});
+			cancelJobSelect();
 		}
 
 		return true;
+	}
+
+	cancelJobSelect() {
+		this.setState({
+			currentJobSelected: null
+		});
 	}
 
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
 			if (currentJobSelected.type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration projects={this.state.projects} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (currentJobSelected.type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration projects={this.state.projects} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (currentJobSelected.type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration projects={this.state.projects} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
@@ -169,10 +174,7 @@ export default class DistributionConfiguration extends React.Component {
 				return null;
 			}
 		};
-		var currentJobContent = this.getCurrentJobConfig (this.state.currentJobSelected);
-		return (
-				<div>
-					<div>
+		var content = <div>
 						<BootstrapTable data={jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='jobId' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort>Distribution Job</TableHeaderColumn>
@@ -181,8 +183,14 @@ export default class DistributionConfiguration extends React.Component {
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
-  					</div>
-  					{currentJobContent}
+  					</div>;
+		var currentJobContent = this.getCurrentJobConfig (this.state.currentJobSelected);
+		if (currentJobContent != null) {
+			content = currentJobContent;
+		}
+		return (
+				<div>
+					{content}
 				</div>
 		)
 	}

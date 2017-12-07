@@ -29,9 +29,16 @@
     cursor: pointer;
 }
 
+
+.projectTableScrollableBody {
+    composes: scrollable;
+    height: 300px !important;
+    width: 100%;
+}
+
 .tableScrollableBody {
     composes: scrollable;
-    height: 200px !important;
+    height: 100% !important;
     width: 100%;
 }
 
@@ -51,7 +58,7 @@
     composes: scrollable;
     padding: 0px;
     font-size: 12px;
-    height: 200px;
+    height: 300px;
     width: 100%;
     font-family: 'Open Sans', sans-serif;
     display: inline-block;
