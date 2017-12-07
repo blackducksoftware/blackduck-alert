@@ -19,8 +19,8 @@ class HubConfiguration extends ServerConfiguration {
 
 				<div>
 					<TextInput label="Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
-					<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.errors.hubUsernameError}></TextInput>
-					<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.errors.hubPasswordError}></PasswordInput>
+					<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
+					<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="passwordError" errorValue={this.state.errors.passwordError}></PasswordInput>
 					<NumberInput label="Timeout" name="hubTimeout" value={this.state.values.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.errors.hubTimeoutError}></NumberInput>
 					<CheckboxInput label="Trust Https Certificates" name="hubAlwaysTrustCertificate" readOnly="true" value={this.state.values.hubAlwaysTrustCertificate} onChange={this.handleChange} errorName="hubAlwaysTrustCertificateError" errorValue={this.state.errors.hubAlwaysTrustCertificateError}></CheckboxInput>
 

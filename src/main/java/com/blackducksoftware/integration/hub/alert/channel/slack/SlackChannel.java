@@ -60,12 +60,14 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     private final HubUserSlackRepository userRelationRepository;
     private final SlackRepository slackRepository;
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public SlackChannel(final Gson gson, final HubUserSlackRepository userRelationRepository, final SlackRepository slackRepository) {
+    public SlackChannel(final Gson gson, final HubUserSlackRepository userRelationRepository, final SlackRepository slackRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, SlackEvent.class);
         this.userRelationRepository = userRelationRepository;
         this.slackRepository = slackRepository;
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
@@ -88,7 +90,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, SlackConfigEnt
 
     private String sendMessage(final String htmlMessage, final SlackConfigEntity config) throws IntegrationRestException {
         final String slackUrl = config.getWebhook();
-        final RestConnection connection = ChannelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
+        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getUsername());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
