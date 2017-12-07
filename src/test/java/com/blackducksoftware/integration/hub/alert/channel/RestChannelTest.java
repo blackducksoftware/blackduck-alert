@@ -15,13 +15,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class RestChannelTest {
     protected Gson gson;
@@ -36,8 +40,26 @@ public class RestChannelTest {
     public void init() throws IOException {
         gson = new Gson();
         resourceLoader = new ResourceLoader();
-        properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
+        properties = new Properties();
+        try {
+            properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
+        } catch (final Exception ex) {
+            System.out.println("Couldn't load " + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION + " file!");
+        }
 
+        if (properties.isEmpty()) {
+            final String applicationJSON = System.getenv(ResourceLoader.PROPERTIES_ENV_VARIABLE);
+
+            if (StringUtils.isNotBlank(applicationJSON)) {
+                final JsonParser jsonParser = new JsonParser();
+                final JsonElement jsonElement = jsonParser.parse(applicationJSON);
+                for (final Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
+                    final String key = entry.getKey();
+                    final String value = entry.getValue().getAsString();
+                    properties.put(key, value);
+                }
+            }
+        }
         systemOut = System.out;
         systemErr = System.err;
         loggerOutput = new ByteArrayOutputStream();
