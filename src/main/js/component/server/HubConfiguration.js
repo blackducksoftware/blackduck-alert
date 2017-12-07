@@ -35,12 +35,16 @@ class HubConfiguration extends ServerConfiguration {
 
 HubConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string
+    externaconfigButtonTest: PropTypes.string,
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string
 };
 
 HubConfiguration.defaultProps = {
     headerText: 'Hub Configuration',
-    configButtonTest: 'true'
+    configButtonTest: 'true',
+    baseUrl: '/configuration/global',
+    testUrl: '/configuration/global/test'
 };
 
 export default HubConfiguration;

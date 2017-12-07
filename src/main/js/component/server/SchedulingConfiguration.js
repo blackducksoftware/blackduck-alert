@@ -24,12 +24,16 @@ class SchedulingConfiguration extends ServerConfiguration {
 
 SchedulingConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string
+    externaconfigButtonTest: PropTypes.string,
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string
 };
 
 SchedulingConfiguration.defaultProps = {
     headerText: 'Scheduling Configuration',
-    configButtonTest: 'true'
+    configButtonTest: 'true',
+    baseUrl: '/configuration/global',
+    testUrl: '/configuration/global/test'
 };
 
 export default SchedulingConfiguration;

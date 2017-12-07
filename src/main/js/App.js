@@ -47,7 +47,7 @@ class App extends Component {
 		if (this.state.loggedIn) {
 			page = <MainPage handleState={this.handleState}></MainPage>
 		} else {
-			page = <LoginPage getUrl="/configuration/global" restUrl="/login" handleState={this.handleState}></LoginPage>
+			page = <LoginPage handleState={this.handleState}></LoginPage>
 		}
 		return (
 			<div>

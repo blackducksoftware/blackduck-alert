@@ -39,19 +39,19 @@ class ServerContent extends Component {
                 </div>
                 <div>
                     <TabPanel>
-                        <HubConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
+                        <HubConfiguration/>
                     </TabPanel>
                     <TabPanel>
-                        <SchedulingConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
+                        <SchedulingConfiguration/>
                     </TabPanel>
                     <TabPanel>
-                        <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
+                        <EmailConfiguration/>
                     </TabPanel>
                     <TabPanel>
-                        <HipChatConfiguration restUrl="/configuration/hipchat" testUrl="/configuration/hipchat/test" />
+                        <HipChatConfiguration/>
                     </TabPanel>
                     <TabPanel>
-                        <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
+                        <SlackConfiguration/>
                     </TabPanel>
                 </div>
             </Tabs>
