@@ -15,17 +15,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 public class RestChannelTest {
     protected Gson gson;
@@ -38,6 +36,12 @@ public class RestChannelTest {
 
     @Before
     public void init() throws IOException {
+        systemOut = System.out;
+        systemErr = System.err;
+        loggerOutput = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(loggerOutput));
+        System.setErr(new PrintStream(loggerOutput));
+
         gson = new Gson();
         resourceLoader = new ResourceLoader();
         properties = new Properties();
@@ -48,23 +52,14 @@ public class RestChannelTest {
         }
 
         if (properties.isEmpty()) {
-            final String applicationJSON = System.getenv(ResourceLoader.PROPERTIES_ENV_VARIABLE);
-
-            if (StringUtils.isNotBlank(applicationJSON)) {
-                final JsonParser jsonParser = new JsonParser();
-                final JsonElement jsonElement = jsonParser.parse(applicationJSON);
-                for (final Entry<String, JsonElement> entry : jsonElement.getAsJsonObject().entrySet()) {
-                    final String key = entry.getKey();
-                    final String value = entry.getValue().getAsString();
-                    properties.put(key, value);
-                }
+            final Map<String, String> envMap = System.getenv();
+            for (final Entry<String, String> entry : envMap.entrySet()) {
+                final String key = entry.getKey();
+                final String value = entry.getValue();
+                System.out.println("Property key: \"" + key + "\" value: \"" + value + "\"");
+                properties.put(key, value);
             }
         }
-        systemOut = System.out;
-        systemErr = System.err;
-        loggerOutput = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(loggerOutput));
-        System.setErr(new PrintStream(loggerOutput));
     }
 
     @After
