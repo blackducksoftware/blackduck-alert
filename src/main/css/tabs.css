@@ -47,45 +47,63 @@
     color: white;
 }
 
+.subTable {
+    display: inline-flex;
+    margin: 0 auto 20px auto;
+}
+
 .subTab {
     position: relative;
     list-style: none;
     cursor: pointer;
     transition: color .5s ease-out;
     transition: opacity .5s ease-out;
+    transition: font-size 2s ease-out;
     line-height: 1em;
     font-size: 1em;
     float: left;
     border-radius: 20px;
-    height: 62px;
+    height: 60px;
     line-height: 64px;
-    width: 115px;
-    margin: 10px;
+    width: 120px;
+    margin: 5px;
     text-align: left;
-    padding-left: 20px;
     color: #235483;
-
 }
 .subTabSelected {
     color: #EF4823;
     text-decoration: underline;
+}
+.subTabContainer {
+    margin-left: 115px;
+    margin-right: 115px;
+    border-bottom: 1px solid #ddd;
+}
+.subTabScrollableContainer {
+    overflow-x: auto;
 }
 
 .tabTitle {
     display: block;
     margin: 3px;
     text-align: center;
-    font-size: 32px;
-    line-height: 32px;
+    font-size: 40px;
+    line-height: 40px;
 }
 
 .tabTitle:hover {
     opacity: 0.602128623;
     text-decoration: underline;
+    font-size: 48px;
+    line-height: 48px;
 }
 
 .titleText {
-    margin-left: 5px;
-    font-size: 18px;
-    line-height: 18px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.tabIcon {
+    width: 50px;
+    height: 50px;
 }
