@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import CheckboxInput from './field/input/CheckboxInput';
 import NumberInput from './field/input/NumberInput';
 import PasswordInput from './field/input/PasswordInput';
@@ -18,7 +18,7 @@ class LoginPage extends Configuration {
 		super(props);
 		this.handleAdvancedClicked = this.handleAdvancedClicked.bind(this);
 	}
-	
+
 	handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Logging in...',
@@ -28,7 +28,7 @@ class LoginPage extends Configuration {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state.values);
 		var method = 'POST';
-		fetch(this.props.restUrl, {
+		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
@@ -40,17 +40,19 @@ class LoginPage extends Configuration {
 				self.props.handleState('loggedIn', true)
 			} else {
 				return response.json().then(json => {
-					let errors = json.errors;
-					if (errors) {
-						for (var key in errors) {
-							if (errors.hasOwnProperty(key)) {
+					let responseErrors = json.errors;
+					if (responseErrors) {
+						var fieldErrors = {};
+						for (var key in responseErrors) {
+							if (responseErrors.hasOwnProperty(key)) {
 								let name = key.concat('Error');
-								let value = errors[key];
-								self.setState({
-									[name]: value
-								});
+								let value = responseErrors[key];
+								fieldErrors[name] = value;
 							}
 						}
+						self.setState({
+							errors: fieldErrors
+						});
 					}
 					self.setState({
 						configurationMessage: json.message
@@ -59,7 +61,7 @@ class LoginPage extends Configuration {
 			}
 		});
 	}
-	
+
 	handleAdvancedClicked(event){
 		let advancedState = !this.state.advancedShown;
 		this.setState({
@@ -81,8 +83,8 @@ class LoginPage extends Configuration {
 						<div className={styles.loginBox}>
 							<Header></Header>
 							<TextInput label="Hub Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
-							<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="hubUsernameError" errorValue={this.state.errors.hubUsernameError}></TextInput>
-							<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="hubPasswordError" errorValue={this.state.hubPasswordError}></PasswordInput>
+							<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
+							<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="passwordError" errorValue={this.state.errors.passwordError}></PasswordInput>
 							<div className={styles.advanced} onClick={this.handleAdvancedClicked}>{advancedDisplay}</div>
 							<div className={advancedClass}>
 								<NumberInput label="Timeout" name="hubTimeout" value={this.state.values.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.errors.hubTimeoutError}></NumberInput>
@@ -98,6 +100,16 @@ class LoginPage extends Configuration {
 				</div>
 		)
 	}
+}
+
+LoginPage.propTypes = {
+    getUrl: PropTypes.string,
+    baseUrl: PropTypes.string
+}
+
+LoginPage.defaultProps = {
+    getUrl: '/configuration/global',
+    baseUrl: '/login'
 }
 
 export default LoginPage;

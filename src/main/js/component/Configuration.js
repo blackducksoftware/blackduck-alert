@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-export default class Configuration extends React.Component {
+export default class Configuration extends Component {
     constructor(props) {
 		super(props);
         this.state = {
@@ -25,11 +25,11 @@ export default class Configuration extends React.Component {
     //componentDidMount is part of the Component lifecycle, executes after construction
 	componentDidMount() {
 		var self = this;
-		
-		let getUrl = this.props.getUrl || this.props.restUrl;
+
+		let getUrl = this.props.getUrl || this.props.baseUrl;
 		fetch(getUrl,{
 			credentials: "same-origin"
-		})  
+		})
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -52,7 +52,9 @@ export default class Configuration extends React.Component {
 							if (configuration.hasOwnProperty(key)) {
 								let name = key;
 								let value = configuration[key];
-								values[name] = value;
+								if (value != null) {
+									values[name] = value;
+								}
 							}
 						}
 						self.setState({
@@ -76,7 +78,7 @@ export default class Configuration extends React.Component {
 		if (this.state.id) {
 			method = 'PUT';
 		}
-		fetch(this.props.restUrl, {
+		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
@@ -143,7 +145,7 @@ export default class Configuration extends React.Component {
 			});
 		});
 	}
-    
+
     handleChange(event) {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;

@@ -1,17 +1,22 @@
 'use strict';
 
-import React from 'react';
-import GlobalConfiguration from './component/GlobalConfiguration';
-import EmailConfiguration from './component/EmailConfiguration';
-import HipChatConfiguration from './component/HipChatConfiguration';
-import SlackConfiguration from './component/SlackConfiguration';
+import React, { Component } from 'react';
+
+import DistributionConfiguration from './component/distribution/DistributionConfiguration';
+import HubConfiguration from './component/server/HubConfiguration';
+import SchedulingConfiguration from './component/server/SchedulingConfiguration';
+import EmailConfiguration from './component/server/EmailConfiguration';
+import HipChatConfiguration from './component/server/HipChatConfiguration';
+import SlackConfiguration from './component/server/SlackConfiguration';
 import Header from './component/Header';
+import ServerContent from './component/server/ServerContent';
 
 import styles from '../css/main.css';
+import { tabContainer, configTabs, tabContent, tabSelected } from '../css/tabs.css';
 
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-class MainPage extends React.Component {
+class MainPage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -24,36 +29,17 @@ class MainPage extends React.Component {
 		return (
 				<div className={styles.wrapper}>
 				<Header handleState={this.props.handleState} fixed="true" includeLogout="true"></Header>
-                <div className={styles.alertHeader}>
-                    <h1 className={styles.alertHeaderTag}>Black Duck Alert</h1>
-                </div>
-                
-                <Tabs className={styles.tabContainer} selectedTabClassName={styles.tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
+                <Tabs className={tabContainer} selectedTabClassName={tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
-                        <Tab className={styles.configTabs}>Hub settings</Tab>
-                        <Tab className={styles.configTabs}>Channel configuration</Tab>
+                        <Tab className={configTabs}>Server Configuration </Tab>
+                        <Tab className={configTabs}>Distribution Configuration</Tab>
                     </TabList>
                     <div className={styles.tableBorder}>
-                        <TabPanel className={styles.tabContent}>
-                            <GlobalConfiguration restUrl="/configuration/global" testUrl="/configuration/global/test" />
+                        <TabPanel className={tabContent}>
+                            <ServerContent/>
                         </TabPanel>
-                        <TabPanel className={styles.tabContent}>
-                            <Tabs selectedTabClassName={styles.tabSelected} selectedIndex={this.state.channelIndex} onSelect={index => this.setState({ channelIndex: index })}>
-                                <TabList className={styles.table}>
-                                    <Tab className={styles.channelTabs}>Email</Tab>
-                                    <Tab className={styles.channelTabs}>Hipchat</Tab>
-                                    <Tab className={styles.channelTabs}>Slack</Tab>
-                                </TabList>
-                                <TabPanel>
-                                    <EmailConfiguration restUrl="/configuration/email" testUrl="/configuration/email/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <HipChatConfiguration restUrl="/configuration/hipchat" testUrl="/configuration/hipchat/test" />
-                                </TabPanel>
-                                <TabPanel>
-                                    <SlackConfiguration restUrl="/configuration/slack" testUrl="/configuration/slack/test" />
-                                </TabPanel>
-                            </Tabs>
+                        <TabPanel className={tabContent}>
+                            <DistributionConfiguration />
                         </TabPanel>
                     </div>
                 </Tabs>

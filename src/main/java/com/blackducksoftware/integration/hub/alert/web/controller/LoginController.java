@@ -51,5 +51,4 @@ public class LoginController {
     public ResponseEntity<String> login(final HttpServletRequest request, @RequestBody(required = false) final LoginRestModel loginRestModel) {
         return loginHandler.userLogin(request, loginRestModel);
     }
-
 }

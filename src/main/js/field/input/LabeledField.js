@@ -1,9 +1,9 @@
 'use strict';
-import React from 'react';
+import React, { Component } from 'react';
 
 import { fieldLabel, fieldError } from '../../../css/field.css';
 
-export default class LabeledField extends React.Component {
+class LabeledField extends Component {
 	constructor(props) {
 		super(props);
 	}
@@ -20,4 +20,6 @@ export default class LabeledField extends React.Component {
 				</div>
 		)
 	}
-}
+};
+
+export default LabeledField;
