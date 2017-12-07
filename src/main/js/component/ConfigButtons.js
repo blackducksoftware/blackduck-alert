@@ -16,10 +16,10 @@ export default class ConfigButtons extends Component {
 
         return (
             <div className={submitContainers}>
-                <input className={submitButtons} type={buttonType} value={buttonText} onClick={this.props.onClick}></input>
                 { includeTest == "true" &&
                     <input className={submitButtons} type={buttonTestType} value={buttonTestText} onClick={this.props.onTestClick}></input>
                 }
+                <input className={submitButtons} type={buttonType} value={buttonText} onClick={this.props.onClick}></input>
             </div>
         )
     }
