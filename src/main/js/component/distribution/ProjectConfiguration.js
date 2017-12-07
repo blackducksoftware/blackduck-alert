@@ -3,6 +3,7 @@ import React from 'react';
 import styles from '../../../css/distributionConfig.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
+import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 export default class ProjectConfiguration extends React.Component {
 	constructor(props) {

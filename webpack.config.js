@@ -34,6 +34,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
+                exclude: /node_modules/,
                 use: [
                     {
                         loader: 'style-loader'
@@ -47,13 +48,23 @@ module.exports = {
                         }
                     }
                 ]
-            },
+            }
+            ,
             {
             	test: /\.css$/,
                 include: /node_modules/,
                 use: [
-                  'style-loader',
-                  'css-loader'
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            modules: true,
+                            importLoaders: 1,
+                            localIdentName: '[local]'
+                        }
+                    }
                 ]
             }
         ]
