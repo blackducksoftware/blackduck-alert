@@ -58,7 +58,7 @@ public class HipChatConfigActionsTest {
         assertFalse(configActions.doesConfigExist(idLong));
     }
 
-    // FIXME Line the assertEquals comparing the restModel to emailConfigById is returning false event those they're equal and have a custom equals method
+    // FIXME The assertEquals comparing the restModel to emailConfigById is returning false even though they're equal and have a custom equals method
     // @Test
     public void testGetConfig() throws Exception {
         final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
@@ -145,8 +145,7 @@ public class HipChatConfigActionsTest {
         assertNull(emailConfigEntity);
     }
 
-    // FIXME broken
-    // @Test
+    @Test
     public void testChannelTestConfig() throws Exception {
         final HipChatChannel mockedHipChatChannel = Mockito.mock(HipChatChannel.class);
         Mockito.when(mockedHipChatChannel.testMessage(Mockito.any())).thenReturn("");

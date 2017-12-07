@@ -35,6 +35,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -59,11 +60,13 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
     SlackDistributionRepository slackRepository;
+    GlobalProperties globalProperties;
 
     @Autowired
-    public SlackChannel(final Gson gson, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
+    public SlackChannel(final Gson gson, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final GlobalProperties globalProperties) {
         super(gson, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
         this.slackRepository = slackDistributionRepository;
+        this.globalProperties = globalProperties;
     }
 
     @Override
@@ -88,7 +91,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
 
     private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = config.getWebhook();
-        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(null);
+        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
