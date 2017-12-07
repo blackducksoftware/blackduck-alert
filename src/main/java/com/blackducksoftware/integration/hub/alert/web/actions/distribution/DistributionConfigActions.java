@@ -149,12 +149,14 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
 
     public R constructRestModel(final D entity) throws AlertException {
         final D distributionEntity = channelDistributionRepository.findOne(entity.getId());
-        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigId(entity.getId());
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), getDistributionName());
         if (distributionEntity != null && commonEntity != null) {
             return constructRestModel(commonEntity, distributionEntity);
         }
         return null;
     }
+
+    public abstract String getDistributionName();
 
     public abstract R constructRestModel(final CommonDistributionConfigEntity commonEntity, D distributionEntity) throws AlertException;
 

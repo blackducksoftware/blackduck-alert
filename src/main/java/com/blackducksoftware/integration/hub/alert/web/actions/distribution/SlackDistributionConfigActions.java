@@ -27,6 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
@@ -60,6 +61,11 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
         restModel.setChannelUsername(distributionEntity.getChannelName());
         restModel.setWebhook(distributionEntity.getWebhook());
         return restModel;
+    }
+
+    @Override
+    public String getDistributionName() {
+        return SupportedChannels.SLACK;
     }
 
 }
