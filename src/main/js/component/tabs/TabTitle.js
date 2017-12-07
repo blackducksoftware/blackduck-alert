@@ -17,10 +17,10 @@ class TabTitle extends Component {
         }
 
         return (
-            <span className={tabTitle}>
+            <div className={tabTitle}>
                 {iconElement}
-                <span className={titleText}>{text}</span>
-            </span>
+                <div className={titleText}>{text}</div>
+            </div>
         );
     }
 };

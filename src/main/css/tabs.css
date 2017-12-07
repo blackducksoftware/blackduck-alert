@@ -52,6 +52,7 @@
     list-style: none;
     cursor: pointer;
     transition: color .5s ease-out;
+    transition: opacity .5s ease-out;
     line-height: 1em;
     font-size: 1em;
     float: left;
@@ -62,9 +63,11 @@
     margin: 10px;
     text-align: left;
     padding-left: 20px;
+    color: #235483;
+
 }
 .subTabSelected {
-    color: #235483;
+    color: #EF4823;
     text-decoration: underline;
 }
 
@@ -72,15 +75,17 @@
     display: block;
     margin: 3px;
     text-align: center;
-    font-size: 3em;
-    line-height: 3em;
+    font-size: 32px;
+    line-height: 32px;
 }
 
 .tabTitle:hover {
-    color: #285f8f;
+    opacity: 0.602128623;
     text-decoration: underline;
 }
 
 .titleText {
     margin-left: 5px;
+    font-size: 18px;
+    line-height: 18px;
 }
