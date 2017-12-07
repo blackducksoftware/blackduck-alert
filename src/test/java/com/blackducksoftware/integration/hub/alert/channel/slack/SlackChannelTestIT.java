@@ -20,9 +20,13 @@ import java.util.Map;
 
 import org.junit.Assume;
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -37,7 +41,10 @@ public class SlackChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("slack.username"));
         Assume.assumeTrue(properties.containsKey("slack.web.hook"));
 
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null);
+        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, channelRestConnectionFactory);
         final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
         final String webHook = properties.getProperty("slack.web.hook");

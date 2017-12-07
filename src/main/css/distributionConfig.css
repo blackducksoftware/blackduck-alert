@@ -1,4 +1,9 @@
-.jobButton {
+.scrollable {
+    position: relative;
+    overflow-y: scroll;
+}
+
+.jobTableButton {
 	cursor: pointer;
 	color: #fff;
     background: #285f8f;
@@ -8,16 +13,26 @@
     vertical-align: middle;
 }
 .addJobButton {
-	composes: jobButton;
+	composes: jobTableButton;
 }
 
 .deleteJobButton {
-	composes: jobButton;
+	composes: jobTableButton;
     background: #ef4923;
+}
+
+.table { 
+    width: 98%;
 }
 
 .tableRow {
     cursor: pointer;
+}
+
+.tableScrollableBody {
+    composes: scrollable;
+    height: 200px !important;
+    width: 100%;
 }
 
 .statusSuccess {
@@ -26,4 +41,18 @@
 
 .statusFailure {
 	color: red;
+}
+
+.hidden {
+    display: none;
+}
+
+.contentBlock {
+    composes: scrollable;
+    padding: 0px;
+    font-size: 12px;
+    height: 200px;
+    width: 100%;
+    font-family: 'Open Sans', sans-serif;
+    display: inline-block;
 }

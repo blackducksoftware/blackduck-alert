@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:18.5.0'
+    compile 'com.blackducksoftware.integration:hub-common:22.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch'
@@ -99,7 +99,10 @@ distributions {
 }
 
 task cleanBundles(type: Delete) {
-    delete 'src/main/resources/static/built/bundle.js', 'src/main/resources/static/built/bundle.js.map'
+    File staticFolder = new File('src/main/resources/static')
+    if (staticFolder.exists()) {
+        staticFolder.deleteDir()
+    }
 }
 
 tasks.clean.finalizedBy(cleanBundles)
@@ -118,7 +121,7 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
-tasks.cleanBundles.finalizedBy(npm_run)
+tasks.compileJava.finalizedBy(npm_run)
 
 license {
     header = file('HEADER')
