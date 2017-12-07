@@ -99,7 +99,10 @@ distributions {
 }
 
 task cleanBundles(type: Delete) {
-    delete 'src/main/resources/static/built/bundle.js', 'src/main/resources/static/built/bundle.js.map'
+    File staticFolder = new File('src/main/resources/static')
+    if (staticFolder.exists()) {
+        staticFolder.deleteDir()
+    }
 }
 
 tasks.clean.finalizedBy(cleanBundles)
@@ -118,7 +121,7 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
-tasks.cleanBundles.finalizedBy(npm_run)
+tasks.compileJava.finalizedBy(npm_run)
 
 license {
     header = file('HEADER')

@@ -19,3 +19,7 @@
     text-align: center;
 }
 
+.typeAheadField {
+	composes: textInput;
+	display: inline-block;
+}
