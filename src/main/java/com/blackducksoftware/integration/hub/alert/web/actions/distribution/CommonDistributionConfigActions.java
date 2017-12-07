@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
@@ -69,8 +68,23 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
+    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
+        final CommonDistributionConfigEntity foundEntity = commonDistributionRepository.findOne(entity.getId());
+        if (foundEntity != null) {
+            return constructRestModel(foundEntity, null);
+        }
+        return null;
+    }
+
+    @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
         return objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+    }
+
+    @Override
+    public String getDistributionName() {
+        // This does not have a distribution name
+        return null;
     }
 
 }

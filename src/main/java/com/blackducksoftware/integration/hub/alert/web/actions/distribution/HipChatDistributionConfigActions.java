@@ -27,6 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
@@ -60,6 +61,11 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
         restModel.setNotify(String.valueOf(distributionEntity.getNotify()));
         restModel.setRoomId(String.valueOf(distributionEntity.getRoomId()));
         return restModel;
+    }
+
+    @Override
+    public String getDistributionName() {
+        return SupportedChannels.HIPCHAT;
     }
 
 }

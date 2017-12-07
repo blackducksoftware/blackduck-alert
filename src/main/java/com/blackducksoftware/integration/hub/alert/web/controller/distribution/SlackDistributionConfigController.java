@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
@@ -59,21 +60,21 @@ public class SlackDistributionConfigController extends ConfigController<SlackDis
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack")
-    public ResponseEntity<String> postConfig(final SlackDistributionRestModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) final SlackDistributionRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/slack")
-    public ResponseEntity<String> putConfig(final SlackDistributionRestModel restModel) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = true) final SlackDistributionRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/slack")
-    public ResponseEntity<String> deleteConfig(final SlackDistributionRestModel restModel) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final SlackDistributionRestModel restModel) {
         // TODO improve and abstract for reuse
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
@@ -81,12 +82,12 @@ public class SlackDistributionConfigController extends ConfigController<SlackDis
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack/test")
-    public ResponseEntity<String> testConfig(final SlackDistributionRestModel restModel) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = true) final SlackDistributionRestModel restModel) {
         return commonConfigController.testConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(final SlackDistributionRestModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final SlackDistributionRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
