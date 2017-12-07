@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import CheckboxInput from './field/input/CheckboxInput';
 import NumberInput from './field/input/NumberInput';
 import PasswordInput from './field/input/PasswordInput';
@@ -18,7 +18,7 @@ class LoginPage extends Configuration {
 		super(props);
 		this.handleAdvancedClicked = this.handleAdvancedClicked.bind(this);
 	}
-	
+
 	handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Logging in...',
@@ -28,7 +28,7 @@ class LoginPage extends Configuration {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state.values);
 		var method = 'POST';
-		fetch(this.props.restUrl, {
+		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
@@ -59,7 +59,7 @@ class LoginPage extends Configuration {
 			}
 		});
 	}
-	
+
 	handleAdvancedClicked(event){
 		let advancedState = !this.state.advancedShown;
 		this.setState({
@@ -98,6 +98,16 @@ class LoginPage extends Configuration {
 				</div>
 		)
 	}
+}
+
+LoginPage.propTypes = {
+    getUrl: PropTypes.string,
+    baseUrl: PropTypes.string
+}
+
+LoginPage.defaultProps = {
+    getUrl: '/configuration/global',
+    baseUrl: '/login'
 }
 
 export default LoginPage;

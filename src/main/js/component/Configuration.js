@@ -26,7 +26,7 @@ export default class Configuration extends Component {
 	componentDidMount() {
 		var self = this;
 
-		let getUrl = this.props.getUrl || this.props.restUrl;
+		let getUrl = this.props.getUrl || this.props.baseUrl;
 		fetch(getUrl,{
 			credentials: "same-origin"
 		})
@@ -78,7 +78,7 @@ export default class Configuration extends Component {
 		if (this.state.id) {
 			method = 'PUT';
 		}
-		fetch(this.props.restUrl, {
+		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
