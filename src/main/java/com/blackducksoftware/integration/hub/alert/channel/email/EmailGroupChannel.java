@@ -81,7 +81,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
 
     @Override
     public String testMessage(final EmailGroupDistributionConfigEntity distributionConfig) {
-        if (getGlobalConfigEntity() == null) {
+        if (getGlobalConfigEntity() == null || globalProperties == null) {
             return "No global configuration found.";
         }
         final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());

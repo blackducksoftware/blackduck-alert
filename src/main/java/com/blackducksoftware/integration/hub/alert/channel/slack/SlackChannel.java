@@ -59,13 +59,11 @@ import okhttp3.Response;
 public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
 
-    SlackDistributionRepository slackRepository;
-    GlobalProperties globalProperties;
+    private final GlobalProperties globalProperties;
 
     @Autowired
     public SlackChannel(final Gson gson, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final GlobalProperties globalProperties) {
         super(gson, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
-        this.slackRepository = slackDistributionRepository;
         this.globalProperties = globalProperties;
     }
 

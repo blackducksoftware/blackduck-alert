@@ -79,9 +79,13 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public void handleEvent(final E event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
-        final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-        final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
-        sendMessage(event, channelDistributionEntity);
+        if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
+            final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
+            final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+            sendMessage(event, channelDistributionEntity);
+        } else {
+            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
+        }
     }
 
     public abstract void sendMessage(final E event, final C config);

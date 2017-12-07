@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -40,12 +38,9 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipCha
 
 @Component
 public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel> {
-    private final HipChatChannel hipChatChannel;
-
     @Autowired
-    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
+    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer) {
         super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
-        this.hipChatChannel = hipChatChannel;
     }
 
     @Override
@@ -55,8 +50,8 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
 
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-        final HipChatDistributionConfigEntity configEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatDistributionConfigEntity.class);
-        return hipChatChannel.testMessage(configEntity);
+        // TODO decide how to test the API key
+        return "Not implemented.";
     }
 
     @Override

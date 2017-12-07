@@ -27,6 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -36,10 +37,13 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailG
 
 @Component
 public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
+    private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
-    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<EmailGroupDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer) {
+    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<EmailGroupDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer,
+            final EmailGroupChannel emailGroupChannel) {
         super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, objectTransformer);
+        this.emailGroupChannel = emailGroupChannel;
     }
 
     @Override
@@ -52,8 +56,8 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
 
     @Override
     public String channelTestConfig(final EmailGroupDistributionRestModel restModel) throws IntegrationException {
-        // TODO test config
-        return null;
+        final EmailGroupDistributionConfigEntity testEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
+        return emailGroupChannel.testMessage(testEntity);
     }
 
 }
