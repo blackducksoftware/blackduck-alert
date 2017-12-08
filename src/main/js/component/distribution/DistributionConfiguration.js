@@ -5,6 +5,7 @@ import styles from '../../../css/distributionConfig.css';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
+import EditTableCellFormatter from './EditTableCellFormatter';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -46,7 +47,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 		return className;
 	}
 
-export default class DistributionConfiguration extends Component {
+
+class DistributionConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
@@ -59,16 +61,17 @@ export default class DistributionConfiguration extends Component {
 		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
 		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
-		this.handleJobSelect = this.handleJobSelect.bind(this);
 		this.cancelJobSelect = this.cancelJobSelect.bind(this);
+        this.editButtonClick = this.editButtonClick.bind(this);
+        this.handleSetState = this.handleSetState.bind(this);
 	}
 
 	componentDidMount() {
 		var self = this;
-		
+
 		fetch('/hub/projects',{
 			credentials: "same-origin"
-		})  
+		})
 		.then(function(response) {
 			if (!response.ok) {
 				return response.json().then(json => {
@@ -123,17 +126,10 @@ export default class DistributionConfiguration extends Component {
 		);
 	}
 
-	handleJobSelect(row, isSelected, event) {
-		// If the return value of this function is false, the select or deselect action will not be applied. 
-		if (isSelected) {
-			this.setState({
-				currentJobSelected: row
-			});
-		} else {
-			cancelJobSelect();
-		}
-
-		return true;
+	handleSetState(name, value) {
+		this.setState({
+			[name]: value
+		});
 	}
 
 	cancelJobSelect() {
@@ -155,7 +151,11 @@ export default class DistributionConfiguration extends Component {
 		}
 		return currentJobConfig;
 	}
-	
+
+    editButtonClick(cell, row) {
+        return <EditTableCellFormatter setParentState={this.handleSetState} currentJobSelected= {row} />;
+    }
+
 	render() {
 		const jobTableOptions = {
 	  		noDataText: 'No jobs configured',
@@ -166,7 +166,6 @@ export default class DistributionConfiguration extends Component {
 		const jobsSelectRowProp = {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
-	  		onSelect: this.handleJobSelect,
 			bgColor: function(row, isSelect) {
 				if (isSelect) {
 					return '#e8e8e8';
@@ -181,6 +180,7 @@ export default class DistributionConfiguration extends Component {
 	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
+                            <TableHeaderColumn dataField='' columnClassName={ columnClassNameFormat } dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;
@@ -194,4 +194,6 @@ export default class DistributionConfiguration extends Component {
 				</div>
 		)
 	}
-}
+};
+
+export default DistributionConfiguration;
