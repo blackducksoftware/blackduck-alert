@@ -22,32 +22,30 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupEvent;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
-public class ChannelEventFactory {
+public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DatabaseEntity, G extends DatabaseEntity> {
+    private final List<DistributionChannel<E, D, G>> distributionChannels;
+
+    public ChannelEventFactory(final List<DistributionChannel<E, D, G>> distributionChannels) {
+        this.distributionChannels = distributionChannels;
+    }
+
     public AbstractChannelEvent createEvent(final Long id, final String distributionType, final ProjectData projectData) {
-        switch (distributionType) {
-        case SupportedChannels.EMAIL_GROUP:
-            return new EmailGroupEvent(projectData, id);
-        case SupportedChannels.HIPCHAT:
-            return new HipChatEvent(projectData, id);
-        case SupportedChannels.SLACK:
-            return new SlackEvent(projectData, id);
-        default:
-            return new AbstractChannelEvent(projectData, id) {
-                @Override
-                public String getTopic() {
-                    return distributionType;
-                }
-            };
+        for (final DistributionChannel<E, D, G> channel : distributionChannels) {
+            final AbstractChannelEvent event = channel.createChannelEvent(projectData, id);
+            if (event.isApplicable(distributionType)) {
+                return event;
+            }
         }
+        return null;
     }
 
 }

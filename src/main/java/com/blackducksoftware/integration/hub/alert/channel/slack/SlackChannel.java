@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -166,6 +167,11 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
+    }
+
+    @Override
+    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+        return new SlackEvent(projectData, commonDistributionConfigId);
     }
 
 }

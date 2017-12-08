@@ -48,6 +48,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
@@ -152,6 +153,11 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         json.addProperty("color", color);
 
         return json.toString();
+    }
+
+    @Override
+    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+        return new HipChatEvent(projectData, commonDistributionConfigId);
     }
 
 }

@@ -33,6 +33,7 @@ import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
@@ -90,6 +91,8 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     public abstract void sendMessage(final E event, final C config);
 
-    public abstract String testMessage(C distributionConfig) throws IntegrationException;
+    public abstract String testMessage(final C distributionConfig) throws IntegrationException;
+
+    public abstract AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId);
 
 }
