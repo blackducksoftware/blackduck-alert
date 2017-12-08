@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import styles from '../../../../css/distributionConfig.css';
 import {fieldLabel, typeAheadField} from '../../../../css/field.css';
@@ -11,7 +11,7 @@ import {Typeahead} from 'react-bootstrap-typeahead';
 
 import ConfigButtons from '../../ConfigButtons'
 
-export default class BaseJobConfiguration extends React.Component {
+export default class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
