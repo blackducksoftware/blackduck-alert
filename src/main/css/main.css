@@ -13,6 +13,10 @@
     position: absolute;
 }
 
+.advancedWrapper {
+    text-align: right;
+}
+
 .advanced {
 	cursor: pointer;
 	padding-right: 10px;
