@@ -85,7 +85,7 @@ export default class JobAddModal extends Component {
 		if (typeValues != null && typeValues.length > 0) {
 			var type = typeValues[0];
 			if (type.id === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed='false' projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed='false' groups={this.props.groups} projects={this.props.projects} handleCancel={this.props.onModalClose} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (type.id === 'HipChat') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed='false' projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (type.id === 'Slack') {
