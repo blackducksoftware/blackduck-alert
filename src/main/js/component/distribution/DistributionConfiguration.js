@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 
+import { submitButtons } from '../../../css/main.css';
 import styles from '../../../css/distributionConfig.css';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
+
+import JobAddModal from './JobAddModal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -55,7 +58,7 @@ export default class DistributionConfiguration extends Component {
 			jobs: [],
 			projects: []
 		};
-		this.handleJobAddClick = this.handleJobAddClick.bind(this);
+		this.createCustomModal = this.createCustomModal.bind(this);
 		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
 		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
@@ -99,9 +102,17 @@ export default class DistributionConfiguration extends Component {
 		});
     }
 
-	handleJobAddClick(onClick) {
-		console.log('This is my custom function for InsertButton click event');
+    createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
+	    return (
+	    	<JobAddModal projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} 
+		    	onModalClose= { onModalClose }
+		    	onSave= { onSave }
+		    	columns={ columns }
+		        validateState={ validateState }
+		        ignoreEditable={ ignoreEditable } />
+	    );
 	}
+
 
 	handleJobDeleteClick(onClick) {
 		console.log('This is my custom function for DeleteButton click event');
@@ -111,7 +122,7 @@ export default class DistributionConfiguration extends Component {
 		return (
 			<InsertButton
 			className={styles.addJobButton}
-			onClick={ () => this.handleJobAddClick(onClick) }/>
+			/>
 		);
 	}
 
@@ -161,7 +172,8 @@ export default class DistributionConfiguration extends Component {
 	  		noDataText: 'No jobs configured',
 	  		clearSearch: true,
 	  		insertBtn: this.createCustomInsertButton,
-	  		deleteBtn: this.createCustomDeleteButton
+	  		deleteBtn: this.createCustomDeleteButton,
+	  		insertModal: this.createCustomModal
 		};
 		const jobsSelectRowProp = {
 	  		mode: 'checkbox',
