@@ -75,8 +75,13 @@
     text-decoration: underline;
 }
 .subTabContainer {
-    margin-left: 115px;
-    margin-right: 115px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-bottom: 1px solid #ddd;
 }
 .subTabScrollableContainer {
