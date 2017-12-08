@@ -70,7 +70,7 @@ public class DigestRemovalProcessor {
     }
 
     private String createCacheKey(final NotificationEntity entity) {
-        return entity.getHubUser() + entity.getEventKey();
+        return entity.getEventKey();
     }
 
     private boolean processPolicyNotifications(final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
