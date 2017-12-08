@@ -16,6 +16,7 @@ export default class BaseJobConfiguration extends Component {
 		super(props);
 		 this.state = {
 		 	values: [],
+		 	errors: [],
             frequencyOptions: [
 				{ label: 'Real Time', id: 'REAL_TIME'},
 				{ label: 'Daily', id: 'DAILY' }
@@ -31,6 +32,8 @@ export default class BaseJobConfiguration extends Component {
 			]
         }
         this.handleChange = this.handleChange.bind(this);
+        this.handleStateValues = this.handleStateValues.bind(this);
+        this.handleSetState = this.handleSetState.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
 	}
@@ -40,6 +43,10 @@ export default class BaseJobConfiguration extends Component {
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
 
+		handleStateValues(name, value);
+	}
+
+	handleStateValues(name, value) {
 		var values = this.state.values;
 		values[name] = value;
 		this.setState({
@@ -47,28 +54,27 @@ export default class BaseJobConfiguration extends Component {
 		});
 	}
 
-	handleFrequencyChanged (optionsList) {
-		console.log('You\'ve selected:', optionsList);
-		values['frequencyValue'] = optionsList;
+	handleSetState(name, value) {
 		this.setState({
-			values
+			[name] : value
 		});
+	}
+
+	handleFrequencyChanged (optionsList) {
+		handleStateValues('frequencyValue', optionsList);
 	}
 
 	handleNotificationChanged (optionsList) {
-		console.log('You\'ve selected:', optionsList);
-		values['notificationValue'] = optionsList;
-		this.setState({
-			values
-		});
+		handleStateValues('notificationValue', optionsList);
 	}
 
 	render(content) {
+		var buttonsFixed = this.props.buttonsFixed || "true";
 		return(
 			<div>
-				<form onSubmit={this.handleCancel}>
+				<form onSubmit={this.props.handleCancel}>
 					<div className={styles.contentBlock}>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
+						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.errors.jobNameError}></TextInput>
 						{content}
 						<div>
 							<label className={fieldLabel}>Frequency</label>
@@ -93,7 +99,7 @@ export default class BaseJobConfiguration extends Component {
 						</div>
 					</div>
 					<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
+					<ConfigButtons isFixed={buttonsFixed} includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
 				</form>
 			</div>
 		)
