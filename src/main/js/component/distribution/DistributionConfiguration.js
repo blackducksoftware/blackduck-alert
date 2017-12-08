@@ -75,7 +75,8 @@ class DistributionConfiguration extends Component {
 			configurationMessage: '',
 			errors: {},
 			jobs: [],
-			projects: []
+			projects: [],
+			groups: []
 		};
 		this.createCustomModal = this.createCustomModal.bind(this);
 		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
@@ -120,11 +121,48 @@ class DistributionConfiguration extends Component {
 				});
 			}
 		});
+
+		fetch('/hub/groups',{
+			credentials: "same-origin"
+		})
+		.then(function(response) {
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.setState({
+						groupError: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					self.setState({
+						groupError: ''
+					});
+					var jsonArray = JSON.parse(json.message);
+					if (jsonArray != null && jsonArray.length > 0) {
+						var groups = [];
+						for (var index in jsonArray) {
+							groups.push({
+								name: jsonArray[index].name,
+								active: jsonArray[index].active,
+								url: jsonArray[index].url
+							});
+						}
+						self.setState({
+							groups
+						});
+					}
+				});
+			}
+		});
     }
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
 	    return (
-	    	<JobAddModal projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage}
+	    	<JobAddModal projects={this.state.projects}
+	    		groups={this.state.groups}
+	    		groupError={this.state.groupError} 
+	    		projectTableMessage={this.state.projectTableMessage} 
+	    		handleCancel={this.cancelJobSelect} 
 		    	onModalClose= { onModalClose }
 		    	onSave= { onSave }
 		    	columns={ columns }
@@ -171,7 +209,7 @@ class DistributionConfiguration extends Component {
 		if (currentJobSelected != null) {
             const { jobName, type, frequency, notificationTypeArray } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} groups={this.state.groups} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
 				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
