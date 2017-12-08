@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.digest.filter.EventManager;
+import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -50,10 +50,10 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class DigestNotificationProcessor {
-    private final EventManager eventManager;
+    private final NotificationEventManager eventManager;
 
     @Autowired
-    public DigestNotificationProcessor(final EventManager eventManager) {
+    public DigestNotificationProcessor(final NotificationEventManager eventManager) {
         this.eventManager = eventManager;
     }
 
