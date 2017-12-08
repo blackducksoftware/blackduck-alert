@@ -27,7 +27,7 @@ import java.io.Serializable;
 public class DistributionProjectRelationPK implements Serializable {
     private static final long serialVersionUID = -894281261527215535L;
 
-    public Long distributionConfigId;
+    public Long commonDistributionConfigId;
     public Long projectId;
 
     public DistributionProjectRelationPK() {
