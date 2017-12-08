@@ -14,12 +14,14 @@ class ServerConfiguration extends Configuration {
         const { headerText, configButtonTest } = this.props;
         return (
 			<div>
-                <h1 className={alignCenter}>{ headerText }</h1>
-                <div className={content_block}>
-			    {content}
-                </div>
-                <ConfigButtons includeTest={configButtonTest} onClick={this.handleSubmit} onTestClick={this.handleTestSubmit} />
-                <p name="configurationMessage">{this.state.configurationMessage}</p>
+                <form onSubmit={this.handleSubmit}>
+                    <h1 className={alignCenter}>{ headerText }</h1>
+                    <div className={content_block}>
+    			    {content}
+                    </div>
+                    <ConfigButtons includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
+                    <p name="configurationMessage">{this.state.configurationMessage}</p>
+                </form>
 			</div>
 		)
     }

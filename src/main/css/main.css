@@ -13,6 +13,10 @@
     position: absolute;
 }
 
+.advancedWrapper {
+    text-align: right;
+}
+
 .advanced {
 	cursor: pointer;
 	padding-right: 10px;
@@ -39,7 +43,7 @@
 
 .submitContainers {
     display: inline-block;
-    margin: 5px 5px 5px 15px;
+    padding: 5px;
     text-align: right;
     padding-right: 20px;
     width: 100%;
@@ -53,7 +57,6 @@
 .submitContainersFixed {
     composes: submitContainers;
     background-color: white;
-    margin: 0px;
     padding: 10px;
     position: fixed;
     bottom: 1%;
@@ -119,4 +122,8 @@
     background-color: white;
     position: relative;
     overflow: hidden;
+}
+
+.modalContainer {
+    margin-top: 65px;
 }
