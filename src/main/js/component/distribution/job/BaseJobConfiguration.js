@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types';
 import styles from '../../../../css/distributionConfig.css';
 import {fieldLabel, typeAheadField} from '../../../../css/field.css';
 
@@ -11,7 +11,7 @@ import {Typeahead} from 'react-bootstrap-typeahead';
 
 import ConfigButtons from '../../ConfigButtons'
 
-export default class BaseJobConfiguration extends Component {
+class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
@@ -26,21 +26,45 @@ export default class BaseJobConfiguration extends Component {
 				{ label: 'Policy Violation Override', id: 'POLICY_VIOLATION_OVERRIDE'},
 				{ label: 'High Vulnerability', id: 'HIGH_VULNERABILITY'},
 				{ label: 'Medium Vulnerability', id: 'MEDIUM_VULNERABILITY'},
-				{ label: 'Low Vulnerability', id: 'LOW_VULNERABILITY'},
-				{ label: 'Vulnerability', id: 'VULNERABILITY'}
+				{ label: 'Low Vulnerability', id: 'LOW_VULNERABILITY'}
 			]
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
 	}
+    componentDidMount() {
+        this.initializeValues();
+    }
+
+    initializeValues() {
+        const { jobName, frequency, notificationTypeArray } = this.props;
+        let values = this.state.values;
+        values.jobName = jobName;
+        let frequencyValue = this.state.frequencyOptions.find((option)=> {
+            return option.id === frequency;
+        });
+
+        if(frequencyValue) {
+            values.frequencyValue = [frequencyValue];
+        }
+
+        let notificationValueArray = this.state.notificationOptions.filter((option) => {
+            return notificationTypeArray.includes(option);
+        });
+
+        if(notificationValueArray) {
+            values.notificationValue  = notificationValueArray;
+        }
+        this.setState({values});
+    }
 
 	handleChange(event) {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
 
-		var values = this.state.values;
+		let values = this.state.values;
 		values[name] = value;
 		this.setState({
 			values
@@ -49,6 +73,7 @@ export default class BaseJobConfiguration extends Component {
 
 	handleFrequencyChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+        let values = this.state.values;
 		values['frequencyValue'] = optionsList;
 		this.setState({
 			values
@@ -57,6 +82,7 @@ export default class BaseJobConfiguration extends Component {
 
 	handleNotificationChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+        let values = this.state.values;
 		values['notificationValue'] = optionsList;
 		this.setState({
 			values
@@ -68,7 +94,7 @@ export default class BaseJobConfiguration extends Component {
 			<div>
 				<form onSubmit={this.handleCancel}>
 					<div className={styles.contentBlock}>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
+						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError"></TextInput>
 						{content}
 						<div>
 							<label className={fieldLabel}>Frequency</label>
@@ -99,3 +125,5 @@ export default class BaseJobConfiguration extends Component {
 		)
 	}
 }
+
+export default BaseJobConfiguration;
