@@ -30,8 +30,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalProperties {
-    private final GlobalRepository globalRepository;
+    private final GlobalHubRepository globalRepository;
 
     @Value("${blackduck.hub.url:}")
     public String hubUrl;
@@ -63,12 +63,12 @@ public class GlobalProperties {
     public String hubProxyPassword;
 
     @Autowired
-    public GlobalProperties(final GlobalRepository globalRepository) {
+    public GlobalProperties(final GlobalHubRepository globalRepository) {
         this.globalRepository = globalRepository;
     }
 
-    public GlobalConfigEntity getConfig(final Long id) {
-        GlobalConfigEntity globalConfig = null;
+    public GlobalHubConfigEntity getConfig(final Long id) {
+        GlobalHubConfigEntity globalConfig = null;
         if (id != null && globalRepository.exists(id)) {
             globalConfig = globalRepository.findOne(id);
         } else {
@@ -77,8 +77,8 @@ public class GlobalProperties {
         return globalConfig;
     }
 
-    public GlobalConfigEntity getConfig() {
-        final List<GlobalConfigEntity> configs = globalRepository.findAll();
+    public GlobalHubConfigEntity getConfig() {
+        final List<GlobalHubConfigEntity> configs = globalRepository.findAll();
         if (configs != null && !configs.isEmpty()) {
             return configs.get(0);
         }
@@ -110,7 +110,7 @@ public class GlobalProperties {
     }
 
     public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
-        final GlobalConfigEntity globalConfigEntity = getConfig();
+        final GlobalHubConfigEntity globalConfigEntity = getConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
             hubServerConfigBuilder.setHubUrl(hubUrl);
@@ -138,7 +138,7 @@ public class GlobalProperties {
     }
 
     public Integer getHubTimeout() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getHubTimeout();
         }
@@ -146,7 +146,7 @@ public class GlobalProperties {
     }
 
     public String getHubUsername() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getHubUsername();
         }
@@ -154,7 +154,7 @@ public class GlobalProperties {
     }
 
     public String getHubPassword() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getHubPassword();
         }
@@ -162,7 +162,7 @@ public class GlobalProperties {
     }
 
     public String getAccumulatorCron() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getAccumulatorCron();
         }
@@ -170,7 +170,7 @@ public class GlobalProperties {
     }
 
     public String getDailyDigestCron() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getDailyDigestCron();
         }
@@ -178,7 +178,7 @@ public class GlobalProperties {
     }
 
     public String getPurgeDataCron() {
-        final GlobalConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getConfig();
         if (globalConfig != null) {
             return getConfig().getPurgeDataCron();
         }

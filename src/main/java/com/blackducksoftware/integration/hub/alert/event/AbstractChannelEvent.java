@@ -26,19 +26,19 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
 public abstract class AbstractChannelEvent extends AbstractEvent {
     private final ProjectData projectData;
-    private final Long userConfigId;
+    private final Long commonDistributionConfigId;
 
-    public AbstractChannelEvent(final ProjectData projectData, final Long userConfigId) {
+    public AbstractChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         super();
         this.projectData = projectData;
-        this.userConfigId = userConfigId;
+        this.commonDistributionConfigId = commonDistributionConfigId;
     }
 
     public ProjectData getProjectData() {
         return projectData;
     }
 
-    public Long getUserConfigId() {
-        return userConfigId;
+    public Long getCommonDistributionConfigId() {
+        return commonDistributionConfigId;
     }
 }

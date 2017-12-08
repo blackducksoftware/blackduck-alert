@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,43 +37,40 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.HipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.HubUserHipChatRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.HubUserHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import freemarker.template.TemplateException;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
-public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatConfigEntity> {
+public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
-    private final HipChatRepository hipChatRepository;
-    private final HubUserHipChatRepository userRelationRepository;
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final GlobalProperties globalProperties;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final HubUserHipChatRepository userRelationRepository, final HipChatRepository hipChatRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, HipChatEvent.class);
-        this.hipChatRepository = hipChatRepository;
-        this.userRelationRepository = userRelationRepository;
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
+    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
+            final HipChatDistributionRepository hipChatDistributionRepository) {
+        super(gson, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
+        this.globalProperties = globalProperties;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -82,26 +80,21 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     @Override
-    public void handleEvent(final HipChatEvent event) {
-        final HubUserHipChatRelation relationRow = userRelationRepository.findOne(event.getUserConfigId());
-        final Long configId = relationRow.getChannelConfigId();
-        final HipChatConfigEntity configuration = hipChatRepository.findOne(configId);
-        sendMessage(event, configuration);
-    }
-
-    @Override
-    public void sendMessage(final HipChatEvent event, final HipChatConfigEntity config) {
+    public void sendMessage(final HipChatEvent event, final HipChatDistributionConfigEntity config) {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
-        } catch (final IntegrationRestException e) {
-            logger.error(e.getHttpStatusCode() + ":" + e.getHttpStatusMessage());
+        } catch (final IntegrationException e) {
+            if (e instanceof IntegrationRestException) {
+                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
+            }
             logger.error(e.getMessage(), e);
         }
     }
 
-    private String sendMessage(final HipChatConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationRestException {
-        final RestConnection connection = channelRestConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
+    private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
+        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
             final RequestBody body = connection.createJsonRequestBody(jsonString);
@@ -110,7 +103,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
             final HttpUrl httpUrl = connection.createHttpUrl(urlSegments);
 
             final Map<String, String> map = new HashMap<>();
-            map.put("Authorization", "Bearer " + config.getApiKey());
+            map.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
             map.put("Content-Type", "application/json");
 
             final Request request = connection.createPostRequest(httpUrl, map, body);
@@ -131,34 +124,23 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, HipChatCon
     }
 
     @Override
-    public String testMessage(final HipChatConfigEntity config) throws IntegrationException {
-        return sendMessage(config, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
+    public String testMessage(final HipChatDistributionConfigEntity distributionConfig) throws IntegrationException {
+        return sendMessage(distributionConfig, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
-        final StringBuilder htmlBuilder = new StringBuilder();
-        htmlBuilder.append("<strong>" + projectData.getProjectName() + " > " + projectData.getProjectVersion() + "</strong>");
+        try {
+            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService("src/main/resources/hipchat/templates");
 
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
-        if (categoryMap != null) {
-            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-                final CategoryData data = categoryMap.get(category);
-                if (data != null) {
-                    htmlBuilder.append("<br />- - - - - - - - - - - - - - - - - - - -");
-                    htmlBuilder.append("<br />Type: " + data.getCategoryKey());
-                    htmlBuilder.append("<br />Number of Changes: " + data.getItemCount());
-                    for (final ItemData item : data.getItemList()) {
-                        final Map<String, Object> dataSet = item.getDataSet();
-                        htmlBuilder.append("<p>  Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
-                        htmlBuilder.append(" | Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        htmlBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]</p>");
-                    }
-                }
-            }
-        } else {
-            htmlBuilder.append("<br /><i>A notification was received, but it was empty.</i>");
+            final HashMap<String, Object> model = new HashMap<>();
+            model.put("projectName", projectData.getProjectName());
+            model.put("projectVersion", projectData.getProjectVersion());
+            model.put("categoryMap", projectData.getCategoryMap());
+
+            return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
+        } catch (final IOException | TemplateException e) {
+            throw new RuntimeException(e);
         }
-        return htmlBuilder.toString();
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {

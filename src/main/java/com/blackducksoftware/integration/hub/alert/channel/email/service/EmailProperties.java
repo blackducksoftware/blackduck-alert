@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.EmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 
 public class EmailProperties {
     // property keys
@@ -72,14 +72,14 @@ public class EmailProperties {
 
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
 
-    public EmailProperties(final EmailConfigEntity emailConfigEntity) {
+    public EmailProperties(final GlobalEmailConfigEntity emailConfigEntity) {
         if (emailConfigEntity == null) {
             throw new IllegalArgumentException("Email config cannot be null");
         }
         updateFromConfig(emailConfigEntity);
     }
 
-    public void updateFromConfig(final EmailConfigEntity emailConfigEntity) {
+    public void updateFromConfig(final GlobalEmailConfigEntity emailConfigEntity) {
         addJavaMailOption(JAVAMAIL_HOST_KEY, emailConfigEntity.getMailSmtpHost());
         addJavaMailOption(JAVAMAIL_USER_KEY, emailConfigEntity.getMailSmtpUser());
         addJavaMailOption(JAVAMAIL_PORT_KEY, emailConfigEntity.getMailSmtpPort());
