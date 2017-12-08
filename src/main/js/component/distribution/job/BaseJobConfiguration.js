@@ -15,8 +15,7 @@ export default class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
-		 	frequencyValue: [],
-		 	notificationValue: [],
+		 	values: [],
             frequencyOptions: [
 				{ label: 'Real Time', id: 'REAL_TIME'},
 				{ label: 'Daily', id: 'DAILY' }
@@ -31,54 +30,71 @@ export default class BaseJobConfiguration extends Component {
 				{ label: 'Vulnerability', id: 'VULNERABILITY'}
 			]
         }
+        this.handleChange = this.handleChange.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
 	}
 
+	handleChange(event) {
+		const target = event.target;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		const name = target.name;
+
+		var values = this.state.values;
+		values[name] = value;
+		this.setState({
+			values
+		});
+	}
+
 	handleFrequencyChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+		values['frequencyValue'] = optionsList;
 		this.setState({
-			frequencyValue: optionsList
+			values
 		});
 	}
 
 	handleNotificationChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+		values['notificationValue'] = optionsList;
 		this.setState({
-			notificationValue: optionsList
+			values
 		});
 	}
 
 	render(content) {
 		return(
 			<div>
-				<div className={styles.contentBlock}>
-					<TextInput label="Job Name" name="jobName" value={this.props.jobName} onChange={this.props.handleJobNameChange} errorName="jobNameError" errorValue={this.props.jobNameError}></TextInput>
-					{content}
-					<div>
-						<label className={fieldLabel}>Frequency</label>
-						<Typeahead className={typeAheadField}
-							onChange={this.handleFrequencyChanged}
-						    clearButton
-						    options={this.state.frequencyOptions}
-						    placeholder='Choose the frequency'
-						    selected={this.state.frequencyValue}
-						  />
+				<form onSubmit={this.handleCancel}>
+					<div className={styles.contentBlock}>
+						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
+						{content}
+						<div>
+							<label className={fieldLabel}>Frequency</label>
+							<Typeahead className={typeAheadField}
+								onChange={this.handleFrequencyChanged}
+							    clearButton
+							    options={this.state.frequencyOptions}
+							    placeholder='Choose the frequency'
+							    selected={this.state.values.frequencyValue}
+							  />
+						</div>
+						<div>
+							<label className={fieldLabel}>Notification Types</label>
+							<Typeahead className={typeAheadField}
+								onChange={this.handleNotificationChanged}
+							    clearButton
+							    multiple
+							    options={this.state.notificationOptions}
+							    placeholder='Choose the notification types'
+							    selected={this.state.values.notificationValue}
+							  />
+						</div>
 					</div>
-					<div>
-						<label className={fieldLabel}>Notification Types</label>
-						<Typeahead className={typeAheadField}
-							onChange={this.handleNotificationChanged}
-						    clearButton
-						    multiple
-						    options={this.state.notificationOptions}
-						    placeholder='Choose the notification types'
-						    selected={this.state.notificationValue}
-						  />
-					</div>
-				</div>
-				<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
-				<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel} onClick={this.props.handleCancel} />
+					<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
+					<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
+				</form>
 			</div>
 		)
 	}
