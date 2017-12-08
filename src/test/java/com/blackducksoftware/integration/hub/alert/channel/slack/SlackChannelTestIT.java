@@ -14,50 +14,31 @@ package com.blackducksoftware.integration.hub.alert.channel.slack;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.junit.Assume;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
-public class SlackChannelTestIT extends RestChannelTest {
+public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void sendMessageTestIT() throws IOException {
-        Assume.assumeTrue(properties.containsKey("slack.channel.name"));
-        Assume.assumeTrue(properties.containsKey("slack.username"));
-        Assume.assumeTrue(properties.containsKey("slack.web.hook"));
-
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
 
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, globalProperties);
-        final String roomName = properties.getProperty("slack.channel.name");
-        final String username = properties.getProperty("slack.username");
-        final String webHook = properties.getProperty("slack.web.hook");
+        final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
+        final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
+        final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
 
-        final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
-        final Map<String, Object> dataSet = new HashMap<>();
-        dataSet.put("uh", "what");
-        final ItemData itemData = new ItemData(dataSet);
-        final ArrayList<ItemData> data = new ArrayList<>();
-        data.add(itemData);
-        map.put(NotificationCategoryEnum.POLICY_VIOLATION, new CategoryData("test violation", data, 3));
-
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "0.0.1-TEST", map);
+        final ProjectData projectData = createProjectData("Slack test project");
         final SlackEvent event = new SlackEvent(projectData, new Long(0));
 
         slackChannel.sendMessage(event, config);
