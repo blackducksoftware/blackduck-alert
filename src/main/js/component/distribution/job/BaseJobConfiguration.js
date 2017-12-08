@@ -15,8 +15,7 @@ export default class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
-		 	frequencyValue: [],
-		 	notificationValue: [],
+		 	values: [],
             frequencyOptions: [
 				{ label: 'Real Time', id: 'REAL_TIME'},
 				{ label: 'Daily', id: 'DAILY' }
@@ -31,21 +30,36 @@ export default class BaseJobConfiguration extends Component {
 				{ label: 'Vulnerability', id: 'VULNERABILITY'}
 			]
         }
+        this.handleChange = this.handleChange.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
 	}
 
+	handleChange(event) {
+		const target = event.target;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		const name = target.name;
+
+		var values = this.state.values;
+		values[name] = value;
+		this.setState({
+			values
+		});
+	}
+
 	handleFrequencyChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+		values['frequencyValue'] = optionsList;
 		this.setState({
-			frequencyValue: optionsList
+			values
 		});
 	}
 
 	handleNotificationChanged (optionsList) {
 		console.log('You\'ve selected:', optionsList);
+		values['notificationValue'] = optionsList;
 		this.setState({
-			notificationValue: optionsList
+			values
 		});
 	}
 
@@ -53,7 +67,7 @@ export default class BaseJobConfiguration extends Component {
 		return(
 			<div>
 				<div className={styles.contentBlock}>
-					<TextInput label="Job Name" name="jobName" value={this.props.jobName} onChange={this.props.handleJobNameChange} errorName="jobNameError" errorValue={this.props.jobNameError}></TextInput>
+					<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
 					{content}
 					<div>
 						<label className={fieldLabel}>Frequency</label>
@@ -62,7 +76,7 @@ export default class BaseJobConfiguration extends Component {
 						    clearButton
 						    options={this.state.frequencyOptions}
 						    placeholder='Choose the frequency'
-						    selected={this.state.frequencyValue}
+						    selected={this.state.values.frequencyValue}
 						  />
 					</div>
 					<div>
@@ -73,7 +87,7 @@ export default class BaseJobConfiguration extends Component {
 						    multiple
 						    options={this.state.notificationOptions}
 						    placeholder='Choose the notification types'
-						    selected={this.state.notificationValue}
+						    selected={this.state.values.notificationValue}
 						  />
 					</div>
 				</div>
