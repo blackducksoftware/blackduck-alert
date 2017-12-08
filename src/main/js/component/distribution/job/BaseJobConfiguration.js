@@ -14,6 +14,7 @@ import ConfigButtons from '../../ConfigButtons'
 export default class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
+
 		 this.state = {
 		 	values: [],
 		 	errors: [],
