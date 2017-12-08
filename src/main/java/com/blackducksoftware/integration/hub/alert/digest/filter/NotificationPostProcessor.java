@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class NotificationPostProcessor {
@@ -51,27 +52,49 @@ public class NotificationPostProcessor {
     public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final ProjectData projectData) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
-            // TODO wrap the distribution config and call isApplicable()
-            if (distributionConfig.getFilterByProject()) {
-                final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, projectData);
-                applicableConfigurations.addAll(filteredConfigurations);
-            } else {
-                applicableConfigurations.add(distributionConfig);
+            if (isApplicable(distributionConfig, projectData)) {
+                if (distributionConfig.getFilterByProject()) {
+                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, projectData);
+                    applicableConfigurations.addAll(filteredConfigurations);
+                } else {
+                    applicableConfigurations.add(distributionConfig);
+                }
             }
         });
         return applicableConfigurations;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity distributionEntity, final ProjectData projectData) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
-        final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(distributionEntity.getId());
+        final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         foundRelations.forEach(relation -> {
             final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findOne(relation.getProjectId());
             if (foundEntity != null && foundEntity.getProjectName().equals(projectData.getProjectName())) {
-                applicableConfigurations.add(distributionEntity);
+                applicableConfigurations.add(commonDistributionConfigEntity);
             }
         });
         return applicableConfigurations;
+    }
+
+    public boolean isApplicable(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+        return doFrequenciesMatch(commonDistributionConfigEntity, projectData) && doNotificationTypesMatch(commonDistributionConfigEntity, projectData);
+    }
+
+    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+        return commonDistributionConfigEntity.getFrequency().equals(projectData.getDigestType().enumAsString());
+    }
+
+    public boolean doNotificationTypesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+        final String notificationType = commonDistributionConfigEntity.getNotificationType();
+        if ("ALL".equals(notificationType)) {
+            return true;
+        }
+        for (final NotificationCategoryEnum category : projectData.getCategoryMap().keySet()) {
+            if (category.toString().contains(notificationType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

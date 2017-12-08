@@ -36,11 +36,12 @@ public enum DigestTypeEnum {
         return name;
     }
 
-    public static DigestTypeEnum getById(final Number id) {
-        if (id.intValue() == 1) {
-            return DAILY;
+    public String enumAsString() {
+        if (this.equals(DAILY)) {
+            return "DAILY";
+        } else {
+            return "REAL_TIME";
         }
-        return REAL_TIME;
     }
 
 }

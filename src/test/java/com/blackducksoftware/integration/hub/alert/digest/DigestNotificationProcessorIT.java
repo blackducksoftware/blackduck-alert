@@ -74,7 +74,7 @@ public class DigestNotificationProcessorIT {
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
         final String frequency = "REAL_TIME";
-        final String notificationType = "ALL";
+        final String notificationType = "POLICY";
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
