@@ -39,12 +39,13 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.GlobalConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHubConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
@@ -58,10 +59,10 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testDoesConfigExist() {
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(mockedGlobalRepository.exists(Mockito.anyLong())).thenReturn(true);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
@@ -77,21 +78,21 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testGetConfig() throws Exception {
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalConfigEntity());
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalConfigEntity()));
         final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository);
-        final GlobalConfigRestModel maskedRestModel = mockUtils.createGlobalConfigMaskedRestModel();
+        final GlobalHubConfigRestModel maskedRestModel = mockUtils.createGlobalConfigMaskedRestModel();
 
-        final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
-        List<GlobalConfigRestModel> globalConfigsById = configActions.getConfig(1L);
-        List<GlobalConfigRestModel> allGlobalConfigs = configActions.getConfig(null);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        List<GlobalHubConfigRestModel> globalConfigsById = configActions.getConfig(1L);
+        List<GlobalHubConfigRestModel> allGlobalConfigs = configActions.getConfig(null);
 
         assertTrue(globalConfigsById.size() == 1);
         assertTrue(allGlobalConfigs.size() == 1);
 
-        final GlobalConfigRestModel globalConfigById = globalConfigsById.get(0);
-        final GlobalConfigRestModel globalConfig = allGlobalConfigs.get(0);
+        final GlobalHubConfigRestModel globalConfigById = globalConfigsById.get(0);
+        final GlobalHubConfigRestModel globalConfig = allGlobalConfigs.get(0);
 
         System.out.println(maskedRestModel.toString());
         System.out.println(globalConfigById.toString());
@@ -110,7 +111,7 @@ public class GlobalConfigActionsTest {
         assertTrue(globalConfigsById.isEmpty());
         assertTrue(allGlobalConfigs.size() == 1);
 
-        final GlobalConfigRestModel environmentGlobalConfig = allGlobalConfigs.get(0);
+        final GlobalHubConfigRestModel environmentGlobalConfig = allGlobalConfigs.get(0);
         assertNull(environmentGlobalConfig.getAccumulatorCron());
         assertNull(environmentGlobalConfig.getDailyDigestCron());
         assertEquals("false", environmentGlobalConfig.getHubAlwaysTrustCertificate());
@@ -128,9 +129,9 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testDeleteConfig() {
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
         configActions.deleteConfig(1L);
         verify(mockedGlobalRepository, times(1)).delete(Mockito.anyLong());
 
@@ -151,20 +152,20 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testSaveConfig() throws Exception {
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final GlobalConfigEntity expectedGlobalConfigEntity = mockUtils.createGlobalConfigEntity();
-        Mockito.when(mockedGlobalRepository.save(Mockito.any(GlobalConfigEntity.class))).thenReturn(expectedGlobalConfigEntity);
-        GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        final GlobalHubConfigEntity expectedGlobalConfigEntity = mockUtils.createGlobalConfigEntity();
+        Mockito.when(mockedGlobalRepository.save(Mockito.any(GlobalHubConfigEntity.class))).thenReturn(expectedGlobalConfigEntity);
+        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
 
-        GlobalConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalConfigRestModel());
+        GlobalHubConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalConfigRestModel());
         assertNotNull(emailConfigEntity);
         assertEquals(expectedGlobalConfigEntity, emailConfigEntity);
 
         emailConfigEntity = configActions.saveConfig(null);
         assertNull(emailConfigEntity);
 
-        Mockito.when(mockedGlobalRepository.save(Mockito.any(GlobalConfigEntity.class))).thenThrow(new RuntimeException("test"));
+        Mockito.when(mockedGlobalRepository.save(Mockito.any(GlobalHubConfigEntity.class))).thenThrow(new RuntimeException("test"));
         try {
             emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalConfigRestModel());
             fail();
@@ -174,7 +175,7 @@ public class GlobalConfigActionsTest {
 
         final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, transformer);
+        configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, transformer);
 
         emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalConfigRestModel());
         assertNull(emailConfigEntity);
@@ -182,15 +183,15 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testValidateConfig() throws Exception {
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
 
         String response = configActions.validateConfig(mockUtils.createGlobalConfigRestModel());
         assertEquals("Valid", response);
 
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "NotInteger", "HubUsername", "HubPassword", "HubProxyHost", "HubProxyPort", "HubProxyUsername", "HubProxyPassword", "NotBoolean", "AccumulatorCron",
-                "DailyDigestCron", "PurgeDataCron");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "NotInteger", "HubUsername", "HubPassword", "HubProxyHost", "HubProxyPort", "HubProxyUsername", "HubProxyPassword", "NotBoolean",
+                "AccumulatorCron", "DailyDigestCron", "PurgeDataCron");
 
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("hubTimeout", "Not an Integer.");
@@ -208,16 +209,16 @@ public class GlobalConfigActionsTest {
             }
         }
 
-        response = configActions.validateConfig(new GlobalConfigRestModel());
+        response = configActions.validateConfig(new GlobalHubConfigRestModel());
         assertEquals("Valid", response);
     }
 
     @Test
     public void testTestConfig() throws Exception {
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
 
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
@@ -233,16 +234,16 @@ public class GlobalConfigActionsTest {
         verify(mockedRestConnection, times(1)).connect();
         Mockito.reset(mockedRestConnection);
 
-        final GlobalConfigRestModel fullRestModel = mockUtils.createGlobalConfigRestModel();
+        final GlobalHubConfigRestModel fullRestModel = mockUtils.createGlobalConfigRestModel();
         configActions.testConfig(fullRestModel);
         verify(mockedRestConnection, times(1)).connect();
         Mockito.reset(mockedRestConnection);
 
-        final GlobalConfigRestModel partialRestModel = mockUtils.createGlobalConfigMaskedRestModel();
+        final GlobalHubConfigRestModel partialRestModel = mockUtils.createGlobalConfigMaskedRestModel();
 
-        Mockito.doAnswer(new Answer<GlobalConfigEntity>() {
+        Mockito.doAnswer(new Answer<GlobalHubConfigEntity>() {
             @Override
-            public GlobalConfigEntity answer(final InvocationOnMock invocation) throws Throwable {
+            public GlobalHubConfigEntity answer(final InvocationOnMock invocation) throws Throwable {
                 return mockUtils.createGlobalConfigEntity();
             }
         }).when(mockedGlobalRepository).findOne(Mockito.anyLong());
@@ -255,9 +256,9 @@ public class GlobalConfigActionsTest {
     @Test
     public void testChannelTestConfig() throws Exception {
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        GlobalConfigActions configActions = new GlobalConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
+        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, null, null, null, objectTransformer);
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
             @Override
@@ -272,7 +273,7 @@ public class GlobalConfigActionsTest {
         verify(mockedRestConnection, times(1)).connect();
         Mockito.reset(mockedRestConnection);
 
-        final GlobalConfigRestModel restModel = new GlobalConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *",
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *",
                 "0 0 12 1/2 * *");
         configActions.channelTestConfig(restModel);
         verify(mockedRestConnection, times(1)).connect();
@@ -280,7 +281,7 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testValidateHubConfiguration() throws Exception {
-        final GlobalConfigActions configActions = new GlobalConfigActions(null, null, null, null, null, null);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null, null, null, null);
 
         final String url = "https://www.google.com/";
         final String user = "User";
@@ -312,7 +313,7 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testCreateRestConnection() throws Exception {
-        final GlobalConfigActions configActions = new GlobalConfigActions(null, null, null, null, null, null);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null, null, null, null);
 
         final String url = "https://www.google.com/";
         final String user = "User";
@@ -343,14 +344,14 @@ public class GlobalConfigActionsTest {
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
 
-        final GlobalConfigActions configActions = new GlobalConfigActions(null, null, mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, null);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, null);
         configActions.configurationChangeTriggers(null);
         verify(mockedAccumulatorConfig, times(0)).scheduleJobExecution(Mockito.any());
         verify(mockedDailyDigestBatchConfig, times(0)).scheduleJobExecution(Mockito.any());
         Mockito.reset(mockedAccumulatorConfig);
         Mockito.reset(mockedDailyDigestBatchConfig);
 
-        final GlobalConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
+        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
         configActions.configurationChangeTriggers(restModel);
         verify(mockedAccumulatorConfig, times(1)).scheduleJobExecution(Mockito.any());
         verify(mockedDailyDigestBatchConfig, times(1)).scheduleJobExecution(Mockito.any());
@@ -358,7 +359,7 @@ public class GlobalConfigActionsTest {
 
     @Test
     public void testIsBoolean() {
-        final GlobalConfigActions configActions = new GlobalConfigActions(null, null, null, null, null, null);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null, null, null, null);
         assertFalse(configActions.isBoolean(null));
         assertFalse(configActions.isBoolean(""));
         assertFalse(configActions.isBoolean("string"));

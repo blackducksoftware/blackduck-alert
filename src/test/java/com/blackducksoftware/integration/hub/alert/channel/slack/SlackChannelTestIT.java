@@ -23,10 +23,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.SlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.GlobalRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -41,14 +40,14 @@ public class SlackChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("slack.username"));
         Assume.assumeTrue(properties.containsKey("slack.web.hook"));
 
-        final GlobalRepository mockedGlobalRepository = Mockito.mock(GlobalRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, channelRestConnectionFactory);
+
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, globalProperties);
         final String roomName = properties.getProperty("slack.channel.name");
         final String username = properties.getProperty("slack.username");
         final String webHook = properties.getProperty("slack.web.hook");
-        final SlackConfigEntity config = new SlackConfigEntity(roomName, username, webHook);
+        final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
 
         final HashMap<NotificationCategoryEnum, CategoryData> map = new HashMap<>();
         final Map<String, Object> dataSet = new HashMap<>();
@@ -66,4 +65,5 @@ public class SlackChannelTestIT extends RestChannelTest {
         final String actual = getLineContainingText("Successfully sent a slack message!");
         assertTrue(!actual.isEmpty());
     }
+
 }
