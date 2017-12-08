@@ -12,7 +12,7 @@ class EditTableCellFormatter extends Component {
 
     onClick() {
         const { setParentState, currentJobSelected } = this.props;
-        setParentState('currentJobSelected',currentJobSelected);
+        setParentState('currentJobSelected', currentJobSelected);
     }
 
     render() {
