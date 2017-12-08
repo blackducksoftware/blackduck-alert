@@ -26,22 +26,14 @@ public enum DigestTypeEnum {
     DAILY("Daily Digest"),
     REAL_TIME("Real Time Digest");
 
-    private final String name;
+    private final String displayName;
 
-    private DigestTypeEnum(final String name) {
-        this.name = name;
+    private DigestTypeEnum(final String displayName) {
+        this.displayName = displayName;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String enumAsString() {
-        if (this.equals(DAILY)) {
-            return "DAILY";
-        } else {
-            return "REAL_TIME";
-        }
+    public String getDisplayName() {
+        return displayName;
     }
 
 }

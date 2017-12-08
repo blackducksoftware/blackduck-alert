@@ -81,7 +81,7 @@ public class NotificationPostProcessor {
     }
 
     public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
-        return commonDistributionConfigEntity.getFrequency().equals(projectData.getDigestType().enumAsString());
+        return commonDistributionConfigEntity.getFrequency().equals(projectData.getDigestType().name());
     }
 
     public boolean doNotificationTypesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {

@@ -38,13 +38,13 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
-public class EventManager {
+public class NotificationEventManager {
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ChannelEventFactory channelEventFactory;
 
     @Autowired
-    public EventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory, final CommonDistributionRepository commonDistributionRepository) {
+    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory, final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionRepository = commonDistributionRepository;
