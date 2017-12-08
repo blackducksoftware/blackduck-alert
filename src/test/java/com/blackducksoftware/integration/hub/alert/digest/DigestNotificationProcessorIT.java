@@ -11,123 +11,152 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest;
 
-// FIXME
-//@RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
-//@Transactional
-//@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.transaction.Transactional;
+
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
+import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@Transactional
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class DigestNotificationProcessorIT {
-    // @Autowired
-    // private HubUsersRepository hubUsersRepository;
-    // @Autowired
-    // private HubUserProjectVersionsRepository projectVersionRelationRepository;
-    // @Autowired
-    // private HubUserEmailRepository emailRelationRepository;
-    // @Autowired
-    // private HubUserHipChatRepository hipChatRelationRepository;
-    // @Autowired
-    // private HubUserSlackRepository slackRelationRepository;
-    // @Autowired
-    // private HipChatRepository hipChatRepository;
-    // @Autowired
-    // private DigestNotificationProcessor processor;
-    //
-    // @After
-    // public void cleanup() {
-    // hubUsersRepository.deleteAll();
-    // projectVersionRelationRepository.deleteAll();
-    // emailRelationRepository.deleteAll();
-    // hipChatRelationRepository.deleteAll();
-    // slackRelationRepository.deleteAll();
-    // hipChatRepository.deleteAll();
-    // }
-    //
-    // @Test
-    // public void processNotificationDataBasicTestIT() {
-    // final String userName = "sysadmin";
-    // final String projectName = "Test Hub Project Name";
-    // final String projectVersionName = "Test Hub Project Version Name";
-    //
-    // final String hipChatApiKey = "test_api_key";
-    // final Integer hipChatRoomId = 12345;
-    //
-    // final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
-    // final GlobalHipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new GlobalHipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
-    // final HubUserHipChatRelation hipChatUserRel = hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-    // projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
-    //
-    // final List<NotificationEntity> notificationList = new ArrayList<>();
-    // final NotificationEntity applicableNotification = new NotificationEntity(userName, "event_key_1", new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-    // "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // final NotificationEntity nonApplicableNotification = new NotificationEntity(userName, "event_key_2", new Date(), "POLICY_VIOLATION", "Project that we don't care about", "", projectVersionName, "", "Test Component",
-    // "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // notificationList.add(applicableNotification);
-    // notificationList.add(nonApplicableNotification);
-    //
-    // final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
-    // assertEquals(1, eventsCreated.size());
-    // final AbstractChannelEvent event = eventsCreated.get(0);
-    // assertTrue(event instanceof HipChatEvent);
-    // assertEquals(hipChatUserRel.getUserConfidId(), event.getUserConfigId());
-    // }
-    //
-    // @Test
-    // public void processNotificationDataWithSameEventKeyTestIT() {
-    // final String eventKey = "event_key";
-    //
-    // final String userName = "sysadmin";
-    // final String projectName = "Test Hub Project Name";
-    // final String projectVersionName = "Test Hub Project Version Name";
-    //
-    // final String hipChatApiKey = "test_api_key";
-    // final Integer hipChatRoomId = 12345;
-    //
-    // final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
-    // final GlobalHipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new GlobalHipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
-    // final HubUserHipChatRelation hipChatUserRel = hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-    // projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
-    //
-    // final List<NotificationEntity> notificationList = new ArrayList<>();
-    // final NotificationEntity applicableNotification = new NotificationEntity(userName, eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-    // "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // final NotificationEntity otherApplicableNotification = new NotificationEntity(userName, eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-    // "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // notificationList.add(applicableNotification);
-    // notificationList.add(otherApplicableNotification);
-    //
-    // final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
-    // assertEquals(1, eventsCreated.size());
-    // final AbstractChannelEvent event = eventsCreated.get(0);
-    // assertTrue(event instanceof HipChatEvent);
-    // assertEquals(hipChatUserRel.getUserConfidId(), event.getUserConfigId());
-    // }
-    //
-    // @Test
-    // public void processNotificationDataWithNegatingTypesTestIT() {
-    // final String eventKey = "event_key";
-    //
-    // final String userName = "sysadmin";
-    // final String projectName = "Test Hub Project Name";
-    // final String projectVersionName = "Test Hub Project Version Name";
-    //
-    // final String hipChatApiKey = "test_api_key";
-    // final Integer hipChatRoomId = 12345;
-    //
-    // final HubUsersEntity userEntity = hubUsersRepository.save(new HubUsersEntity(userName));
-    // final GlobalHipChatConfigEntity hipChatConfEnt = hipChatRepository.save(new GlobalHipChatConfigEntity(hipChatApiKey, hipChatRoomId, false, "random"));
-    // hipChatRelationRepository.save(new HubUserHipChatRelation(userEntity.getId(), hipChatConfEnt.getId()));
-    // projectVersionRelationRepository.save(new HubUserProjectVersionsRelation(userEntity.getId(), projectName, projectVersionName));
-    //
-    // final List<NotificationEntity> notificationList = new LinkedList<>();
-    // final NotificationEntity applicableNotification = new NotificationEntity(userName, eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-    // "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // final NotificationEntity nonApplicableNotification = new NotificationEntity(userName, eventKey, new Date(), "POLICY_VIOLATION_CLEARED", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-    // "Test Policy Rule Name", "Test Person", Collections.emptyList());
-    // notificationList.add(applicableNotification);
-    // notificationList.add(nonApplicableNotification);
-    //
-    // final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
-    // assertEquals(0, eventsCreated.size());
-    // }
+    @Autowired
+    private CommonDistributionRepository commonDistributionRepository;
+    @Autowired
+    private DistributionProjectRepository distributionProjectRepository;
+    @Autowired
+    private ConfiguredProjectsRepository configuredProjectsRepository;
+    @Autowired
+    private DigestNotificationProcessor processor;
+
+    @After
+    public void cleanup() {
+        commonDistributionRepository.deleteAll();
+        distributionProjectRepository.deleteAll();
+        configuredProjectsRepository.deleteAll();
+    }
+
+    @Test
+    public void processNotificationDataBasicTestIT() {
+        final Long distributionConfigId = 10L;
+        final String distributionType = SupportedChannels.HIPCHAT;
+        final String name = "Config Name";
+        final String frequency = "REAL_TIME";
+        final String notificationType = "ALL";
+        final Boolean filterByProject = true;
+
+        final String projectName = "Test Hub Project Name";
+
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+        distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final List<NotificationEntity> notificationList = new ArrayList<>();
+        final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(), "POLICY_VIOLATION", projectName, "", "", "", "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person",
+                Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(), "POLICY_VIOLATION", "Project that we don't care about", "", "", "", "Test Component", "Test Component Version",
+                "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        notificationList.add(applicableNotification);
+        notificationList.add(nonApplicableNotification);
+
+        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        assertEquals(1, eventsCreated.size());
+        final AbstractChannelEvent event = eventsCreated.get(0);
+        assertTrue(event instanceof HipChatEvent);
+        assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
+    }
+
+    @Test
+    public void processNotificationDataWithSameEventKeyTestIT() {
+        final Long distributionConfigId = 10L;
+        final String distributionType = SupportedChannels.HIPCHAT;
+        final String name = "Config Name";
+        final String frequency = "REAL_TIME";
+        final String notificationType = "ALL";
+        final Boolean filterByProject = true;
+
+        final String eventKey = "event_key";
+        final String projectName = "Test Hub Project Name";
+        final String projectVersionName = "Test Hub Project Version Name";
+
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+        distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final List<NotificationEntity> notificationList = new ArrayList<>();
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
+                "Test Person", Collections.emptyList());
+        final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
+                "Test Person", Collections.emptyList());
+        notificationList.add(applicableNotification);
+        notificationList.add(otherApplicableNotification);
+
+        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        assertEquals(1, eventsCreated.size());
+        final AbstractChannelEvent event = eventsCreated.get(0);
+        assertTrue(event instanceof HipChatEvent);
+        assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
+    }
+
+    @Test
+    public void processNotificationDataWithNegatingTypesTestIT() {
+        final Long distributionConfigId = 10L;
+        final String distributionType = SupportedChannels.HIPCHAT;
+        final String name = "Config Name";
+        final String frequency = "REAL_TIME";
+        final String notificationType = "ALL";
+        final Boolean filterByProject = true;
+
+        final String eventKey = "event_key";
+        final String projectName = "Test Hub Project Name";
+        final String projectVersionName = "Test Hub Project Version Name";
+
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+        distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final List<NotificationEntity> notificationList = new LinkedList<>();
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
+                "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION_CLEARED", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
+                "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        notificationList.add(applicableNotification);
+        notificationList.add(nonApplicableNotification);
+
+        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        assertEquals(0, eventsCreated.size());
+    }
 
 }

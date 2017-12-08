@@ -33,6 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.key.Distr
 
 @Transactional
 public interface DistributionProjectRepository extends JpaRepository<DistributionProjectRelation, DistributionProjectRelationPK> {
-    public List<DistributionProjectRelation> findByDistributionConfigId(final Long distributionConfigId);
+    public List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
     public List<DistributionProjectRelation> findByProjectId(final Long projectId);
 }

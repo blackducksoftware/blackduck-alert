@@ -64,7 +64,7 @@ public class NotificationPostProcessor {
 
     public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity distributionEntity, final ProjectData projectData) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
-        final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByDistributionConfigId(distributionEntity.getId());
+        final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(distributionEntity.getId());
         foundRelations.forEach(relation -> {
             final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findOne(relation.getProjectId());
             if (foundEntity != null && foundEntity.getProjectName().equals(projectData.getProjectName())) {
