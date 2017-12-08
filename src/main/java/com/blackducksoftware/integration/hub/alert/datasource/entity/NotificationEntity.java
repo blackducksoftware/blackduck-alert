@@ -42,9 +42,6 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 public class NotificationEntity extends DatabaseEntity {
     private static final long serialVersionUID = -1194014350183607831L;
 
-    @Column(name = "hub_user")
-    private String hubUser;
-
     @Column(name = "event_key")
     private String eventKey;
 
@@ -86,9 +83,8 @@ public class NotificationEntity extends DatabaseEntity {
     public NotificationEntity() {
     }
 
-    public NotificationEntity(final String hubUser, final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
+    public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
             final String componentName, final String componentVersion, final String policyRuleName, final String person, final Collection<VulnerabilityEntity> vulnerabilityList) {
-        this.hubUser = hubUser;
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -105,10 +101,6 @@ public class NotificationEntity extends DatabaseEntity {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public String getHubUser() {
-        return hubUser;
     }
 
     public String getEventKey() {

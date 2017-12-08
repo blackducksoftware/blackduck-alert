@@ -50,7 +50,7 @@ public class DistributionProjectRepositoryTestIT {
         final long count = distributionProjectRepository.count();
         assertEquals(1, count);
 
-        assertEquals(distributionConfigId, savedRelation.getDistributionConfigId());
+        assertEquals(distributionConfigId, savedRelation.getCommonDistributionConfigId());
         assertEquals(projectId, savedRelation.getProjectId());
 
     }
