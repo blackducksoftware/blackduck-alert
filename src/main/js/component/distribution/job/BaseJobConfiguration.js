@@ -66,33 +66,35 @@ export default class BaseJobConfiguration extends Component {
 	render(content) {
 		return(
 			<div>
-				<div className={styles.contentBlock}>
-					<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
-					{content}
-					<div>
-						<label className={fieldLabel}>Frequency</label>
-						<Typeahead className={typeAheadField}
-							onChange={this.handleFrequencyChanged}
-						    clearButton
-						    options={this.state.frequencyOptions}
-						    placeholder='Choose the frequency'
-						    selected={this.state.values.frequencyValue}
-						  />
+				<form onSubmit={this.handleCancel}>
+					<div className={styles.contentBlock}>
+						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
+						{content}
+						<div>
+							<label className={fieldLabel}>Frequency</label>
+							<Typeahead className={typeAheadField}
+								onChange={this.handleFrequencyChanged}
+							    clearButton
+							    options={this.state.frequencyOptions}
+							    placeholder='Choose the frequency'
+							    selected={this.state.values.frequencyValue}
+							  />
+						</div>
+						<div>
+							<label className={fieldLabel}>Notification Types</label>
+							<Typeahead className={typeAheadField}
+								onChange={this.handleNotificationChanged}
+							    clearButton
+							    multiple
+							    options={this.state.notificationOptions}
+							    placeholder='Choose the notification types'
+							    selected={this.state.values.notificationValue}
+							  />
+						</div>
 					</div>
-					<div>
-						<label className={fieldLabel}>Notification Types</label>
-						<Typeahead className={typeAheadField}
-							onChange={this.handleNotificationChanged}
-						    clearButton
-						    multiple
-						    options={this.state.notificationOptions}
-						    placeholder='Choose the notification types'
-						    selected={this.state.values.notificationValue}
-						  />
-					</div>
-				</div>
-				<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
-				<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel} onClick={this.props.handleCancel} />
+					<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
+					<ConfigButtons includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
+				</form>
 			</div>
 		)
 	}

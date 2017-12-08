@@ -40,7 +40,8 @@ class LoginPage extends Configuration {
 				self.props.handleState('loggedIn', true)
 			} else {
 				return response.json().then(json => {
-					let responseErrors = json.errors;
+					var jsonArray = JSON.parse(json.message);
+					let responseErrors = jsonArray['errors'];
 					if (responseErrors) {
 						var fieldErrors = {};
 						for (var key in responseErrors) {
@@ -55,7 +56,7 @@ class LoginPage extends Configuration {
 						});
 					}
 					self.setState({
-						configurationMessage: json.message
+						configurationMessage: jsonArray['message']
 					});
 				});
 			}
@@ -83,7 +84,7 @@ class LoginPage extends Configuration {
 		return (
 				<div className={styles.wrapper}>
 					<div className={styles.loginContainer}>
-						<div className={styles.loginBox}>
+						<form onSubmit={this.handleSubmit} className={styles.loginBox}>
 							<Header></Header>
 							<TextInput label="Hub Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
 							<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
@@ -98,9 +99,9 @@ class LoginPage extends Configuration {
 								<NumberInput label="Proxy Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
 								<TextInput label="Proxy Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
 							</div>
-							<ConfigButtons isFixed="false" includeTest="false" onClick={this.handleSubmit} text="Login" />
+							<ConfigButtons isFixed="false" includeTest="false" type="submit" text="Login" />
 							<p name="configurationMessage">{this.state.configurationMessage}</p>
-						</div>
+						</form>
 					</div>
 				</div>
 		)
