@@ -79,12 +79,12 @@ class DistributionConfiguration extends Component {
 			groups: []
 		};
 		this.createCustomModal = this.createCustomModal.bind(this);
-		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
-		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
+		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.cancelJobSelect = this.cancelJobSelect.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
+        this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
 	}
 
 	componentDidMount() {
@@ -171,9 +171,20 @@ class DistributionConfiguration extends Component {
 	    );
 	}
 
+	customJobConfigDeletionConfirm(next, dropRowKeys) {
+	  if (confirm("Are you sure you want to delete these Job configurations?")) {
+	  	//TODO delete the Job configs from the backend
+	  	// dropRowKeys are the Id's of the Job configs
+	  	console.log('Deleting the Job configs');
+	    next();
+	  }
+	}
 
-	handleJobDeleteClick(onClick) {
-		console.log('This is my custom function for DeleteButton click event');
+	createCustomDeleteButton(onClick) {
+		return (
+			<DeleteButton
+			className={styles.deleteJobButton}/>
+		);
 	}
 
 	createCustomInsertButton(onClick) {
@@ -181,14 +192,6 @@ class DistributionConfiguration extends Component {
 			<InsertButton
 			className={styles.addJobButton}
 			/>
-		);
-	}
-
-	createCustomDeleteButton(onClick) {
-		return (
-			<DeleteButton
-			className={styles.deleteJobButton}
-			onClick={ () => this.handleJobDeleteClick(onClick) }/>
 		);
 	}
 
@@ -229,7 +232,8 @@ class DistributionConfiguration extends Component {
 	  		clearSearch: true,
 	  		insertBtn: this.createCustomInsertButton,
 	  		deleteBtn: this.createCustomDeleteButton,
-	  		insertModal: this.createCustomModal
+	  		insertModal: this.createCustomModal,
+	  		handleConfirmDeleteRow: this.customJobConfigDeletionConfirm
 		};
 		const jobsSelectRowProp = {
 	  		mode: 'checkbox',
