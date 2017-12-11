@@ -61,15 +61,19 @@ public class ObjectTransformer {
                 final T newClassObject = newClass.newInstance();
 
                 final List<Field> fields = new ArrayList<>();
-                fields.addAll(Arrays.asList(databaseEntity.getClass().getDeclaredFields()));
-                fields.addAll(Arrays.asList(databaseEntity.getClass().getSuperclass().getDeclaredFields()));
+                Class<?> databaseEntityClassHierarchy = databaseEntity.getClass();
+                while (databaseEntityClassHierarchy != null) {
+                    fields.addAll(Arrays.asList(databaseEntityClassHierarchy.getDeclaredFields()));
+                    databaseEntityClassHierarchy = databaseEntityClassHierarchy.getSuperclass();
+                }
 
                 final Map<String, Field> newFieldMap = new HashMap<>();
-                for (final Field field : newClassObject.getClass().getDeclaredFields()) {
-                    newFieldMap.put(field.getName(), field);
-                }
-                for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
-                    newFieldMap.put(field.getName(), field);
+                Class<?> newClassHierarchy = newClassObject.getClass();
+                while (newClassHierarchy != null) {
+                    for (final Field field : newClassHierarchy.getDeclaredFields()) {
+                        newFieldMap.put(field.getName(), field);
+                    }
+                    newClassHierarchy = newClassHierarchy.getSuperclass();
                 }
                 for (final Field field : fields) {
                     try {
@@ -131,15 +135,19 @@ public class ObjectTransformer {
                 final T newClassObject = newClass.newInstance();
 
                 final List<Field> fields = new ArrayList<>();
-                fields.addAll(Arrays.asList(configRestModel.getClass().getDeclaredFields()));
-                fields.addAll(Arrays.asList(configRestModel.getClass().getSuperclass().getDeclaredFields()));
+                Class<?> configRestModelClassHierarchy = configRestModel.getClass();
+                while (configRestModelClassHierarchy != null) {
+                    fields.addAll(Arrays.asList(configRestModelClassHierarchy.getDeclaredFields()));
+                    configRestModelClassHierarchy = configRestModelClassHierarchy.getSuperclass();
+                }
 
                 final Map<String, Field> newFieldMap = new HashMap<>();
-                for (final Field field : newClassObject.getClass().getDeclaredFields()) {
-                    newFieldMap.put(field.getName(), field);
-                }
-                for (final Field field : newClassObject.getClass().getSuperclass().getDeclaredFields()) {
-                    newFieldMap.put(field.getName(), field);
+                Class<?> newClassHierarchy = newClassObject.getClass();
+                while (newClassHierarchy != null) {
+                    for (final Field field : newClassHierarchy.getDeclaredFields()) {
+                        newFieldMap.put(field.getName(), field);
+                    }
+                    newClassHierarchy = newClassHierarchy.getSuperclass();
                 }
                 for (final Field field : fields) {
                     try {

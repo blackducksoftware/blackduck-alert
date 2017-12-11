@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,5 +32,5 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredP
 
 @Transactional
 public interface ConfiguredProjectsRepository extends JpaRepository<ConfiguredProjectEntity, Long> {
-
+    public List<ConfiguredProjectEntity> findByProjectName(final String projectName);
 }

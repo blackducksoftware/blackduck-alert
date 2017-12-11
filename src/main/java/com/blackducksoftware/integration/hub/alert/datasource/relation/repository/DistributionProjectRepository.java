@@ -22,13 +22,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.DistributionProjectRelationPK;
 
 @Transactional
-public interface DistributionProjectRepository extends JpaRepository<DistributionProjectRelation, Long> {
-
+public interface DistributionProjectRepository extends JpaRepository<DistributionProjectRelation, DistributionProjectRelationPK> {
+    public List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
+    public List<DistributionProjectRelation> findByProjectId(final Long projectId);
 }

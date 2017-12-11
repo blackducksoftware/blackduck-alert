@@ -70,7 +70,12 @@ public class ChannelRestConnectionFactory {
         if (globalProperties.hubProxyPort != null) {
             restConnectionBuilder.setProxyPort(NumberUtils.toInt(globalProperties.hubProxyPort));
         }
-        restConnectionBuilder.setProxyUsername(globalProperties.getHubUsername());
+        if (globalProperties.hubProxyUsername != null) {
+            restConnectionBuilder.setProxyUsername(globalProperties.hubProxyUsername);
+        }
+        if (globalProperties.hubProxyPassword != null) {
+            restConnectionBuilder.setProxyPassword(globalProperties.hubProxyPassword);
+        }
         restConnectionBuilder.setTimeout(timeout);
 
         final RestConnection connection = restConnectionBuilder.build();

@@ -26,11 +26,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-
 @Entity
 @Table(schema = "alert", name = "email_group_distribution_config")
-public class EmailGroupDistributionConfigEntity extends DatabaseEntity {
+public class EmailGroupDistributionConfigEntity extends DistributionChannelConfigEntity {
     private static final long serialVersionUID = -2969530122554864181L;
 
     @Column(name = "group_name")

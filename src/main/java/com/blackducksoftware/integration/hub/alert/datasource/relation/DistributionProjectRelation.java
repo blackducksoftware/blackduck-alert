@@ -37,8 +37,8 @@ public class DistributionProjectRelation extends DatabaseRelation {
     private static final long serialVersionUID = 6656775537871602933L;
 
     @Id
-    @Column(name = "distribution_config_id")
-    private Long distributionConfigId;
+    @Column(name = "common_distribution_config_id")
+    private Long commonDistributionConfigId;
 
     @Id
     @Column(name = "project_id")
@@ -47,9 +47,9 @@ public class DistributionProjectRelation extends DatabaseRelation {
     public DistributionProjectRelation() {
     }
 
-    public DistributionProjectRelation(final Long distributionConfigId, final Long projectId) {
+    public DistributionProjectRelation(final Long commonDistributionConfigId, final Long projectId) {
         super();
-        this.distributionConfigId = distributionConfigId;
+        this.commonDistributionConfigId = commonDistributionConfigId;
         this.projectId = projectId;
     }
 
@@ -57,8 +57,8 @@ public class DistributionProjectRelation extends DatabaseRelation {
         return serialVersionUID;
     }
 
-    public Long getDistributionConfigId() {
-        return distributionConfigId;
+    public Long getCommonDistributionConfigId() {
+        return commonDistributionConfigId;
     }
 
     public Long getProjectId() {

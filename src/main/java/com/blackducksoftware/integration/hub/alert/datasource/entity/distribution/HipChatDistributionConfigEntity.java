@@ -26,11 +26,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-
 @Entity
 @Table(schema = "alert", name = "hip_chat_distribution_config")
-public class HipChatDistributionConfigEntity extends DatabaseEntity {
+public class HipChatDistributionConfigEntity extends DistributionChannelConfigEntity {
     private static final long serialVersionUID = 8645967062445661540L;
 
     @Column(name = "room_id")

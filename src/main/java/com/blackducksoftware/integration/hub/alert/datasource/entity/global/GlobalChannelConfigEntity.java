@@ -20,27 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.digest.filter;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
-import java.util.Set;
+import javax.persistence.MappedSuperclass;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
-public class UserNotificationWrapper {
-    private final Long userConfigId;
-    private final Set<ProjectData> notifications;
+@MappedSuperclass
+public abstract class GlobalChannelConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -7950913676089377807L;
 
-    public UserNotificationWrapper(final Long userConfigId, final Set<ProjectData> notifications) {
-        this.userConfigId = userConfigId;
-        this.notifications = notifications;
-    }
-
-    public Long getUserConfigId() {
-        return userConfigId;
-    }
-
-    public Set<ProjectData> getNotifications() {
-        return notifications;
+    public GlobalChannelConfigEntity() {
     }
 
 }
