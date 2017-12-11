@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
@@ -36,6 +37,11 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     public SlackManager(final DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> distributionChannel, final JpaRepository<GlobalSlackConfigEntity, Long> globalRepository,
             final JpaRepository<SlackDistributionConfigEntity, Long> localRepository) {
         super(distributionChannel, globalRepository, localRepository);
+    }
+
+    @Override
+    public boolean isApplicable(final String supportedChannelName) {
+        return SupportedChannels.SLACK.equals(supportedChannelName);
     }
 
     @Override

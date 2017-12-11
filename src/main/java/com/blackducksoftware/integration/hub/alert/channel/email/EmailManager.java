@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
@@ -36,6 +37,11 @@ public class EmailManager extends DistributionChannelManager<GlobalEmailConfigEn
     public EmailManager(final DistributionChannel<EmailGroupEvent, GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> distributionChannel, final JpaRepository<GlobalEmailConfigEntity, Long> globalRepository,
             final JpaRepository<EmailGroupDistributionConfigEntity, Long> localRepository) {
         super(distributionChannel, globalRepository, localRepository);
+    }
+
+    @Override
+    public boolean isApplicable(final String supportedChannelName) {
+        return SupportedChannels.EMAIL_GROUP.equals(supportedChannelName);
     }
 
     @Override

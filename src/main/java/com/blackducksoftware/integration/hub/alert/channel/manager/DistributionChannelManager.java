@@ -53,6 +53,8 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         return localRepository;
     }
 
+    public abstract boolean isApplicable(final String supportedChannelName);
+
     public abstract E createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId);
 
 }

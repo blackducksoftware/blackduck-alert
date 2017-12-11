@@ -42,8 +42,4 @@ public abstract class AbstractChannelEvent extends AbstractEvent {
         return commonDistributionConfigId;
     }
 
-    public boolean isApplicable(final String topic) {
-        return getTopic().equals(topic);
-    }
-
 }
