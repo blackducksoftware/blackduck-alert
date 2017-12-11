@@ -14,8 +14,6 @@ class SlackConfiguration extends ServerConfiguration {
 	render() {
         let content =
             <div>
-				<TextInput label="Username" name="username" value={this.state.values.username} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
-				<TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.state.errors.webhookError}></TextInput>
 			</div>;
         return super.render(content);
 	}
@@ -23,16 +21,15 @@ class SlackConfiguration extends ServerConfiguration {
 
 SlackConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 SlackConfiguration.defaultProps = {
     headerText: 'Slack Configuration',
-    configButtonTest: 'true',
-    baseUrl: '/configuration/slack',
-    testUrl: '/configuration/slack/test'
+    configButtonTest: 'false',
+    baseUrl: '/configuration/slack'
 };
 
 export default SlackConfiguration;
