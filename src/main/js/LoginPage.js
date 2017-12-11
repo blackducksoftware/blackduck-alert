@@ -22,6 +22,7 @@ class LoginPage extends Configuration {
 	handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Logging in...',
+			loggingIn: true,
 			errors: {}
 		});
 		event.preventDefault();
@@ -36,6 +37,9 @@ class LoginPage extends Configuration {
 			},
 			body: jsonBody
 		}).then(function(response) {
+			self.setState({
+				loggingIn: false
+			});
 			if (response.ok) {
 				self.props.handleState('loggedIn', true)
 			} else {
@@ -86,7 +90,13 @@ class LoginPage extends Configuration {
 			advancedClass = "";
 			advancedDisplay = "Hide Advanced";
 		}
-
+		var progressIndicator = null;
+		if (this.state.loggingIn || this.state.isLoading) {
+        	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
+			progressIndicator = <div className={styles.progressIcon}>
+									<i className={fontAwesomeIcon} aria-hidden='true'></i>
+								</div>;
+		}
 		return (
 				<div className={styles.wrapper}>
 					<div className={styles.loginContainer}>
@@ -106,6 +116,7 @@ class LoginPage extends Configuration {
 								<TextInput label="Proxy Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
 							</div>
 							<ConfigButtons isFixed="false" includeTest="false" type="submit" text="Login" />
+							{progressIndicator}
 							<p name="configurationMessage">{this.state.configurationMessage}</p>
 						</form>
 					</div>

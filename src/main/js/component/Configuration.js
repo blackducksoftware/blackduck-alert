@@ -17,6 +17,7 @@ export default class Configuration extends Component {
 	componentWillMount() {
 		this.setState({
 			configurationMessage: 'Loading...',
+			isLoading: true,
 			errors: {},
 			values: {}
 		});
@@ -31,6 +32,9 @@ export default class Configuration extends Component {
 			credentials: "same-origin"
 		})
 		.then(function(response) {
+			self.setState({
+				isLoading: false
+			});
 			if (!response.ok) {
 				return response.json().then(json => {
 					self.setState({
