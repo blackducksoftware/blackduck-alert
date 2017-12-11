@@ -22,7 +22,7 @@ class LoginPage extends Configuration {
 	handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Logging in...',
-			loggingIn: true,
+			inProgress: true,
 			errors: {}
 		});
 		event.preventDefault();
@@ -38,7 +38,7 @@ class LoginPage extends Configuration {
 			body: jsonBody
 		}).then(function(response) {
 			self.setState({
-				loggingIn: false
+				inProgress: false
 			});
 			if (response.ok) {
 				self.props.handleState('loggedIn', true)
@@ -91,7 +91,7 @@ class LoginPage extends Configuration {
 			advancedDisplay = "Hide Advanced";
 		}
 		var progressIndicator = null;
-		if (this.state.loggingIn || this.state.isLoading) {
+		if (this.state.inProgress) {
         	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
 			progressIndicator = <div className={styles.progressIcon}>
 									<i className={fontAwesomeIcon} aria-hidden='true'></i>

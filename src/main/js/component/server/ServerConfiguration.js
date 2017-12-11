@@ -13,7 +13,7 @@ class ServerConfiguration extends Configuration {
     render(content) {
         const { headerText, configButtonTest } = this.props;
         var progressIndicator = null;
-        if (this.state.isLoading) {
+        if (this.state.inProgress) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
             progressIndicator = <div className={progressIcon}>
                                     <i className={fontAwesomeIcon} aria-hidden='true'></i>
