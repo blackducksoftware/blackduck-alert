@@ -18,23 +18,48 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		super.handleStateValues('groupValue', optionsList);
 	}
 
-	render() {		
-		var groupOptions= new Array();
-
-		if (this.props.groups != null && this.props.groups != undefined && this.props.groups.length > 0) {
-			var rawGroups = this.props.groups;
+    initializeValues() {
+        super.initializeValues();
+        const { groups, selectedGroups } = this.props;
+        let groupOptions= new Array();
+        if (groups != null && groups != undefined && groups.length > 0) {
+			var rawGroups = groups;
 			for (var index in rawGroups) {
 				groupOptions.push({
 					label: rawGroups[index].name,
 					id: rawGroups[index].url
 				});
 			}
+            let groupValueArray = groupOptions.filter((option) => {
+                if(selectedGroups){
+                    let includes = selectedGroups.includes(option.label);
+                    return includes;
+                } else {
+                    return false;
+                }
+            });
+
+            if(groupValueArray) {
+                this.state.groupValue = groupValueArray;
+            }
 		}
+        this.state.groupOptions = groupOptions;
+    }
+
+	render() {
+        const { groupOptions } = this.state;
+        let options;
+        if(groupOptions) {
+            options = groupOptions;
+        } else {
+            options = new Array();
+        }
 
 		let errorDiv = null;
 		if (this.props.groupError) {
 			errorDiv = <p className={fieldError} name="groupError">{this.props.groupError}</p>;
 		}
+
 		var progressIndicator = null;
 		if (this.props.waitingForGroups) {
         	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
@@ -42,13 +67,13 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 									<i className={fontAwesomeIcon} aria-hidden='true'></i>
 								</div>;
 		}
-		let content = 
+		let content =
 					<div>
 						<label className={fieldLabel}>Group</label>
 						<Typeahead className={typeAheadField}
 							onChange={this.handleGroupsChanged}
 						    clearButton
-						    options={groupOptions}
+						    options={options}
 						    placeholder='Choose the Hub user group'
 						    selected={this.state.groupValue}
 						  />
