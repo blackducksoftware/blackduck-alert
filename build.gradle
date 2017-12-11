@@ -135,3 +135,9 @@ license {
 }
 
 tasks.licenseMain.dependsOn(licenseFormatMain)
+
+task runServer(type: Exec) {
+    File jarFile = new File("build/libs/hub-alert-${version}.jar")
+    commandLine 'java', '-jar', jarFile.getAbsolutePath()
+    
+}
