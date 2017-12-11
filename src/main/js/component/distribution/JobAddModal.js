@@ -98,7 +98,6 @@ export default class JobAddModal extends Component {
 	render() {
 		const containerClasses = `modal-content react-bs-table-insert-modal ${modalContainer}`;
 		var content = <div>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
 						<ConfigButtons isFixed={false} includeCancel={true} onCancelClick={this.props.onModalClose} onClick={this.props.onModalClose} />
 					</div>;
 		

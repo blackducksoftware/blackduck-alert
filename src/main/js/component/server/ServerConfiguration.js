@@ -26,7 +26,7 @@ class ServerConfiguration extends Configuration {
                     <div className={content_block}>
     			    {content}
                     </div>
-                    <ConfigButtons includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
+                    <ConfigButtons isFixed={true} includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
                     {progressIndicator}
                     <p name="configurationMessage">{this.state.configurationMessage}</p>
                 </form>

@@ -35,7 +35,7 @@ class HubConfiguration extends ServerConfiguration {
 
 HubConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string,
+    externaconfigButtonTest: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };

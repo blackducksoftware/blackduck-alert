@@ -18,7 +18,7 @@ export default class ConfigButtons extends Component {
         const cancelButtonText = this.props.cancelText || "Cancel";
         const cancelButtonType = this.props.cancelType || "button";
 
-        const isFixed = this.props.isFixed || true;
+        const isFixed = this.props.isFixed || false;
 
         var containerClass = submitContainersFixed;
         var buttonClass = submitButtonsFixed;
