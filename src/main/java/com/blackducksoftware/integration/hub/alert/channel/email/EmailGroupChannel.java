@@ -51,7 +51,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.group.GroupRequestService;
 import com.blackducksoftware.integration.hub.model.view.UserGroupView;
@@ -156,11 +155,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         } catch (final IntegrationException e) {
             throw new AlertException(e);
         }
-    }
-
-    @Override
-    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
-        return new EmailGroupEvent(projectData, commonDistributionConfigId);
     }
 
 }
