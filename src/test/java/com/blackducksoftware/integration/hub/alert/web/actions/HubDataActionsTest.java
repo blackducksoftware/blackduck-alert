@@ -114,12 +114,9 @@ public class HubDataActionsTest {
 
         final List<ProjectView> projectViews = new ArrayList<>();
         final String projectName = "projectName";
-        final String href = "href";
+
         final ProjectView projectView = new ProjectView();
         projectView.name = projectName;
-        final MetaView metaView = new MetaView();
-        metaView.href = href;
-        projectView.meta = metaView;
         projectViews.add(projectView);
 
         Mockito.when(projectRequestService.getAllProjects()).thenReturn(projectViews);
@@ -131,6 +128,5 @@ public class HubDataActionsTest {
         assertEquals(1, hubProjects.size());
         final HubProject hubProject = hubProjects.get(0);
         assertEquals(projectName, hubProject.name);
-        assertEquals(href, hubProject.url);
     }
 }

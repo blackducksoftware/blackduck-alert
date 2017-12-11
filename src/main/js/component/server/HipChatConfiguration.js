@@ -26,14 +26,14 @@ class HipChatConfiguration extends ServerConfiguration {
 
 HipChatConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 HipChatConfiguration.defaultProps = {
     headerText: 'HipChat Configuration',
-    configButtonTest: 'true',
+    configButtonTest: 'false',
     baseUrl: '/configuration/hipchat',
     testUrl: '/configuration/hipchat/test'
 };
