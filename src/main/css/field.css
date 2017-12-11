@@ -2,11 +2,15 @@
     width: 50%;
 }
 
+.inline {
+    display: inline-block;
+}
+
 .fieldLabel {
-   text-align: right;
+    composes: inline;
+    text-align: right;
     padding: 10px;
     width: 30%;
-    display: inline-block;
 }
 
 .fieldLabel:after {
@@ -20,6 +24,5 @@
 }
 
 .typeAheadField {
-	composes: textInput;
-	display: inline-block;
+	composes: textInput inline;
 }

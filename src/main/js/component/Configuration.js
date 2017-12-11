@@ -17,6 +17,7 @@ export default class Configuration extends Component {
 	componentWillMount() {
 		this.setState({
 			configurationMessage: 'Loading...',
+			inProgress: true,
 			errors: {},
 			values: {}
 		});
@@ -31,6 +32,9 @@ export default class Configuration extends Component {
 			credentials: "same-origin"
 		})
 		.then(function(response) {
+			self.setState({
+				inProgress: false
+			});
 			if (!response.ok) {
 				return response.json().then(json => {
 					self.setState({
@@ -69,6 +73,7 @@ export default class Configuration extends Component {
     handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Saving...',
+			inProgress: true,
 			errors: {}
 		});
 		event.preventDefault();
@@ -86,6 +91,9 @@ export default class Configuration extends Component {
 			},
 			body: jsonBody
 		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
 			return response.json().then(json => {
 				let jsonErrors = json.errors;
 				if (jsonErrors) {
@@ -111,6 +119,7 @@ export default class Configuration extends Component {
 	handleTestSubmit(event) {
 		this.setState({
 			configurationMessage: 'Testing...',
+			inProgress: true,
 			errors: {}
 		});
 		event.preventDefault();
@@ -124,6 +133,9 @@ export default class Configuration extends Component {
 			},
 			body: jsonBody
 		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
 			return response.json().then(json => {
 				let jsonErrors = json.errors;
 				if (jsonErrors) {

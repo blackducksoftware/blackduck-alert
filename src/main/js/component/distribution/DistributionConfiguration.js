@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 
+import { submitButtons } from '../../../css/main.css';
 import styles from '../../../css/distributionConfig.css';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
+import EditTableCellFormatter from './EditTableCellFormatter';
+
+import JobAddModal from './JobAddModal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -17,21 +21,42 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 			jobName: 'Test Job',
 			type: 'Group Email',
 			lastRun: '12/01/2017 00:00:00',
-			status: 'Success'
+			status: 'Success',
+            frequency: 'DAILY',
+            notificationTypeArray: [
+            'POLICY_VIOLATION',
+            'POLICY_VIOLATION_CLEARED',
+            'POLICY_VIOLATION_OVERRIDE'],
+            selectedGroups: ['Developer'],
+            selectedProjects: ['PSTestApp']
 		});
 		jobs.push({
 			jobId: '1',
 			jobName: 'Alert Slack Job',
 			type: 'Slack',
 			lastRun: '12/02/2017 00:00:00',
-			status: 'Failure'
+			status: 'Failure',
+            frequency: 'REAL_TIME',
+            notificationTypeArray: [
+            'POLICY_VIOLATION_OVERRIDE',
+            'HIGH_VULNERABILITY'],
+            selectedProjects: []
 		});
 		jobs.push({
 			jobId: '2',
 			jobName: 'HipChat Job',
 			type: 'HipChat',
 			lastRun: '1/01/2017 00:00:00',
-			status: 'Success'
+			status: 'Success',
+            frequency: 'DAILY',
+            notificationTypeArray: [
+            'POLICY_VIOLATION',
+            'POLICY_VIOLATION_CLEARED',
+            'POLICY_VIOLATION_OVERRIDE',
+            'HIGH_VULNERABILITY',
+            'MEDIUM_VULNERABILITY',
+            'LOW_VULNERABILITY'],
+            selectedProjects: []
 		});
 	}
 
@@ -46,41 +71,43 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 		return className;
 	}
 
-export default class DistributionConfiguration extends Component {
+
+class DistributionConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
 			configurationMessage: '',
 			errors: {},
 			jobs: [],
-			projects: []
+			projects: [],
+			groups: [],
+			waitingForProjects: true,
+			waitingForGroups: true
 		};
-		this.handleJobAddClick = this.handleJobAddClick.bind(this);
-		this.handleJobDeleteClick = this.handleJobDeleteClick.bind(this);
-		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
+		this.createCustomModal = this.createCustomModal.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
-		this.handleJobSelect = this.handleJobSelect.bind(this);
+		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 		this.cancelJobSelect = this.cancelJobSelect.bind(this);
+        this.editButtonClick = this.editButtonClick.bind(this);
+        this.handleSetState = this.handleSetState.bind(this);
+        this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
 	}
 
 	componentDidMount() {
 		var self = this;
-		
+
 		fetch('/hub/projects',{
 			credentials: "same-origin"
-		})  
+		})
 		.then(function(response) {
+			self.handleSetState('waitingForProjects', false);
 			if (!response.ok) {
 				return response.json().then(json => {
-					self.setState({
-						projectTableMessage: json.message
-					});
+					self.handleSetState('projectTableMessage', json.message);
 				});
 			} else {
 				return response.json().then(json => {
-					self.setState({
-						projectTableMessage: ''
-					});
+					self.handleSetState('projectTableMessage', '');
 					var jsonArray = JSON.parse(json.message);
 					if (jsonArray != null && jsonArray.length > 0) {
 						var projects = [];
@@ -97,43 +124,84 @@ export default class DistributionConfiguration extends Component {
 				});
 			}
 		});
+
+		fetch('/hub/groups',{
+			credentials: "same-origin"
+		})
+		.then(function(response) {
+			self.handleSetState('waitingForGroups', false);
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('groupError', json.message);
+				});
+			} else {
+				return response.json().then(json => {
+					self.handleSetState('groupError', '');
+					var jsonArray = JSON.parse(json.message);
+					if (jsonArray != null && jsonArray.length > 0) {
+						var groups = [];
+						for (var index in jsonArray) {
+							groups.push({
+								name: jsonArray[index].name,
+								active: jsonArray[index].active,
+								url: jsonArray[index].url
+							});
+						}
+						self.setState({
+							groups
+						});
+					}
+				});
+			}
+		});
     }
 
-	handleJobAddClick(onClick) {
-		console.log('This is my custom function for InsertButton click event');
+    createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
+	    return (
+	    	<JobAddModal
+	    		waitingForProjects={this.state.waitingForProjects}
+	    		waitingForGroups={this.state.waitingForGroups}
+	    		projects={this.state.projects}
+	    		groups={this.state.groups}
+	    		groupError={this.state.groupError}
+	    		projectTableMessage={this.state.projectTableMessage}
+	    		handleCancel={this.cancelJobSelect}
+		    	onModalClose= { onModalClose }
+		    	onSave= { onSave }
+		    	columns={ columns }
+		        validateState={ validateState }
+		        ignoreEditable={ ignoreEditable } />
+	    );
 	}
 
-	handleJobDeleteClick(onClick) {
-		console.log('This is my custom function for DeleteButton click event');
+	customJobConfigDeletionConfirm(next, dropRowKeys) {
+	  if (confirm("Are you sure you want to delete these Job configurations?")) {
+	  	//TODO delete the Job configs from the backend
+	  	// dropRowKeys are the Id's of the Job configs
+	  	console.log('Deleting the Job configs');
+	    next();
+	  }
+	}
+
+	createCustomDeleteButton(onClick) {
+		return (
+			<DeleteButton
+			className={styles.deleteJobButton}/>
+		);
 	}
 
 	createCustomInsertButton(onClick) {
 		return (
 			<InsertButton
 			className={styles.addJobButton}
-			onClick={ () => this.handleJobAddClick(onClick) }/>
+			/>
 		);
 	}
 
-	createCustomDeleteButton(onClick) {
-		return (
-			<DeleteButton
-			className={styles.deleteJobButton}
-			onClick={ () => this.handleJobDeleteClick(onClick) }/>
-		);
-	}
-
-	handleJobSelect(row, isSelected, event) {
-		// If the return value of this function is false, the select or deselect action will not be applied. 
-		if (isSelected) {
-			this.setState({
-				currentJobSelected: row
-			});
-		} else {
-			cancelJobSelect();
-		}
-
-		return true;
+	handleSetState(name, value) {
+		this.setState({
+			[name]: value
+		});
 	}
 
 	cancelJobSelect() {
@@ -145,28 +213,34 @@ export default class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-			if (currentJobSelected.type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (currentJobSelected.type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (currentJobSelected.type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroups, selectedProjects } = currentJobSelected;
+			if (type === 'Group Email') {
+				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+			} else if (type === 'HipChat') {
+				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+			} else if (type === 'Slack') {
+				currentJobConfig = <SlackJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
 	}
-	
+
+    editButtonClick(cell, row) {
+        return <EditTableCellFormatter setParentState={this.handleSetState} currentJobSelected= {row} />;
+    }
+
 	render() {
 		const jobTableOptions = {
 	  		noDataText: 'No jobs configured',
 	  		clearSearch: true,
 	  		insertBtn: this.createCustomInsertButton,
-	  		deleteBtn: this.createCustomDeleteButton
+	  		deleteBtn: this.createCustomDeleteButton,
+	  		insertModal: this.createCustomModal,
+	  		handleConfirmDeleteRow: this.customJobConfigDeletionConfirm
 		};
 		const jobsSelectRowProp = {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
-	  		onSelect: this.handleJobSelect,
 			bgColor: function(row, isSelect) {
 				if (isSelect) {
 					return '#e8e8e8';
@@ -181,6 +255,7 @@ export default class DistributionConfiguration extends Component {
 	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
+                            <TableHeaderColumn dataField='' columnClassName={ columnClassNameFormat } dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;
@@ -194,4 +269,6 @@ export default class DistributionConfiguration extends Component {
 				</div>
 		)
 	}
-}
+};
+
+export default DistributionConfiguration;

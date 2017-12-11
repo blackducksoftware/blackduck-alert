@@ -13,6 +13,10 @@
     position: absolute;
 }
 
+.advancedWrapper {
+    text-align: right;
+}
+
 .advanced {
 	cursor: pointer;
 	padding-right: 10px;
@@ -39,10 +43,26 @@
 
 .submitContainers {
     display: inline-block;
-    margin: 5px 5px 5px 15px;
+    padding: 5px;
     text-align: right;
     padding-right: 20px;
     width: 100%;
+}
+
+.submitButtonsFixed {
+    composes: submitButtons;
+    margin: 10px;
+}
+
+.submitContainersFixed {
+    composes: submitContainers;
+    background-color: white;
+    padding: 10px;
+    position: fixed;
+    bottom: 1%;
+    right: 10%;
+    width: auto;
+    z-index: 99;
 }
 
 .configurationError {
@@ -103,4 +123,13 @@
     background-color: white;
     position: relative;
     overflow: hidden;
+}
+
+.modalContainer {
+    padding: 15px;
+    margin-top: 65px;
+}
+
+.progressIcon {
+    float: left;
 }
