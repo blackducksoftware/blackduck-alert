@@ -43,9 +43,8 @@ public class ChannelEventFactory<E extends AbstractChannelEvent, D extends Distr
 
     public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final ProjectData projectData) {
         for (final DistributionChannelManager<G, D, E> manager : channelManagers) {
-            final AbstractChannelEvent event = manager.createChannelEvent(projectData, commonDistributionConfigId);
-            if (event.isApplicable(distributionType)) {
-                return event;
+            if (manager.isApplicable(distributionType)) {
+                return manager.createChannelEvent(projectData, commonDistributionConfigId);
             }
         }
         return null;

@@ -26,6 +26,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
@@ -36,6 +37,11 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
     public HipChatManager(final DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> distributionChannel, final JpaRepository<GlobalHipChatConfigEntity, Long> globalRepository,
             final JpaRepository<HipChatDistributionConfigEntity, Long> localRepository) {
         super(distributionChannel, globalRepository, localRepository);
+    }
+
+    @Override
+    public boolean isApplicable(final String supportedChannelName) {
+        return SupportedChannels.HIPCHAT.equals(supportedChannelName);
     }
 
     @Override
