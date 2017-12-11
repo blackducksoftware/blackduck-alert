@@ -31,7 +31,7 @@ SchedulingConfiguration.propTypes = {
 
 SchedulingConfiguration.defaultProps = {
     headerText: 'Scheduling Configuration',
-    configButtonTest: 'false',
+    configButtonTest: false,
     baseUrl: '/configuration/global'
 };
 

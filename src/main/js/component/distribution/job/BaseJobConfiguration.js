@@ -95,7 +95,7 @@ class BaseJobConfiguration extends Component {
 	}
 
 	render(content) {
-		var buttonsFixed = this.props.buttonsFixed || "true";
+		var buttonsFixed = this.props.buttonsFixed || true;
 		return(
 			<div>
 				<form onSubmit={this.props.handleCancel}>
@@ -125,7 +125,7 @@ class BaseJobConfiguration extends Component {
 						</div>
 					</div>
 					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons isFixed={buttonsFixed} includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
+					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel}  type="submit" />
 				</form>
 			</div>
 		)

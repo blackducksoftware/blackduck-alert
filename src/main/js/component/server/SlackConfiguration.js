@@ -28,7 +28,7 @@ SlackConfiguration.propTypes = {
 
 SlackConfiguration.defaultProps = {
     headerText: 'Slack Configuration',
-    configButtonTest: 'false',
+    configButtonTest: false,
     baseUrl: '/configuration/slack'
 };
 

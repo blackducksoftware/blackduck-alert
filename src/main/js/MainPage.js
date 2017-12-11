@@ -28,7 +28,7 @@ class MainPage extends Component {
 	render() {
 		return (
 				<div className={styles.wrapper}>
-				<Header handleState={this.props.handleState} fixed="true" includeLogout="true"></Header>
+				<Header handleState={this.props.handleState} fixed={true} includeLogout={true}></Header>
                 <Tabs className={tabContainer} selectedTabClassName={tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
                         <Tab className={configTabs}>Server Configuration </Tab>

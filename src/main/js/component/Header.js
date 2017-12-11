@@ -2,7 +2,6 @@
 
 import React, { Component } from 'react';
 
-import ConfigButtons from './ConfigButtons';
 import { submitButtons, submitContainers, header, fixedHeader, title } from '../../css/header.css';
 import logo from '../../img/BDTextLogo.png';
 
@@ -51,11 +50,11 @@ class Header extends Component {
 	//render is part of the Component lifecycle, used to render the Html
 	render() {
 		let logout = "";
-		if (this.props.includeLogout == 'true'){
+		if (this.props.includeLogout === true){
 			logout = <div className={submitContainers}><input className={submitButtons} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
 		}
 		let headerClass = header;
-		if (this.props.fixed == 'true'){
+		if (this.props.fixed === true){
 			headerClass = fixedHeader;
 		}
 
