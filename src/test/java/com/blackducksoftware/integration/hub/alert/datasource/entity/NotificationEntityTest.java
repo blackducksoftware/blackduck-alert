@@ -40,9 +40,9 @@ public class NotificationEntityTest {
         assertNull(notificationEntity.getProjectVersion());
         assertNull(notificationEntity.getVulnerabilityList());
 
-        assertEquals(-202711751, notificationEntity.hashCode());
+        assertEquals(-1862761851, notificationEntity.hashCode());
 
-        final String expectedString = "{\"hubUser\":null,\"eventKey\":null,\"createdAt\":null,\"notificationType\":null,\"projectName\":null,\"projectVersion\":null,\"componentName\":null,\"componentVersion\":null,\"policyRuleName\":null,\"person\":null,\"projectUrl\":null,\"projectVersionUrl\":null,\"vulnerabilityList\":null,\"id\":null}";
+        final String expectedString = "{\"eventKey\":null,\"createdAt\":null,\"notificationType\":null,\"projectName\":null,\"projectVersion\":null,\"componentName\":null,\"componentVersion\":null,\"policyRuleName\":null,\"person\":null,\"projectUrl\":null,\"projectVersionUrl\":null,\"vulnerabilityList\":null,\"id\":null}";
         assertEquals(expectedString, notificationEntity.toString());
 
         final NotificationEntity notificationEntityNew = new NotificationEntity();
@@ -52,7 +52,6 @@ public class NotificationEntityTest {
     @Test
     public void testModel() {
         final Long id = 123L;
-        final String hubUser = "hubUser1";
         final String eventKey = "EventKey";
         final Date createdAt = new Date();
         final String notificationType = "NotificationType";
@@ -69,15 +68,14 @@ public class NotificationEntityTest {
         final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
         vulnerabilityList.add(vulnerabilityEntity);
 
-        final NotificationEntity notificationEntity = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName,
-                person, vulnerabilityList);
+        final NotificationEntity notificationEntity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
+                vulnerabilityList);
         notificationEntity.setId(id);
 
         assertEquals(componentName, notificationEntity.getComponentName());
         assertEquals(componentVersion, notificationEntity.getComponentVersion());
         assertEquals(createdAt, notificationEntity.getCreatedAt());
         assertEquals(eventKey, notificationEntity.getEventKey());
-        assertEquals(hubUser, notificationEntity.getHubUser());
         assertEquals(id, notificationEntity.getId());
         assertEquals(notificationType, notificationEntity.getNotificationType());
         assertEquals(person, notificationEntity.getPerson());
@@ -90,12 +88,12 @@ public class NotificationEntityTest {
 
         assertEquals(HashCodeBuilder.reflectionHashCode(notificationEntity), notificationEntity.hashCode());
 
-        final String expectedString = "{\"hubUser\":\"hubUser1\",\"eventKey\":\"EventKey\",\"createdAt\":\"" + createdAt.toString()
+        final String expectedString = "{\"eventKey\":\"EventKey\",\"createdAt\":\"" + createdAt.toString()
                 + "\",\"notificationType\":\"NotificationType\",\"projectName\":\"ProjectName\",\"projectVersion\":\"ProjectVersion\",\"componentName\":\"ComponentName\",\"componentVersion\":\"ComponentVersion\",\"policyRuleName\":\"PolicyRuleName\",\"person\":\"Person\",\"projectUrl\":\"projectUrl\",\"projectVersionUrl\":\"projectVersionUrl\",\"vulnerabilityList\":[{\"vulnerabilityId\":\"VulnerabilityId\",\"operation\":\"VulnerabilityOperation\",\"id\":null}],\"id\":123}";
         assertEquals(expectedString, notificationEntity.toString());
 
-        final NotificationEntity notificationEntityNew = new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName,
-                person, vulnerabilityList);
+        final NotificationEntity notificationEntityNew = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
+                vulnerabilityList);
         notificationEntityNew.setId(id);
 
         assertEquals(notificationEntity, notificationEntityNew);
