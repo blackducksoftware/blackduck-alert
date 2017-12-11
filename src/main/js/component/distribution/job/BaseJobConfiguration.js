@@ -42,7 +42,7 @@ class BaseJobConfiguration extends Component {
     }
 
     initializeValues() {
-        const { jobName, frequency, notificationTypeArray } = this.props;
+        const { jobName, frequency, notificationTypeArray, projects, selectedProjects } = this.props;
         let values = this.state.values;
         values.jobName = jobName;
         let frequencyValue = this.state.frequencyOptions.find((option)=> {
@@ -61,6 +61,7 @@ class BaseJobConfiguration extends Component {
         if(notificationValueArray) {
             values.notificationValue  = notificationValueArray;
         }
+
         this.setState({values});
     }
 
@@ -123,7 +124,7 @@ class BaseJobConfiguration extends Component {
 							  />
 						</div>
 					</div>
-					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
+					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
 				</form>
 			</div>
