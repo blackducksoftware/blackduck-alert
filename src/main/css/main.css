@@ -61,7 +61,8 @@
     position: fixed;
     bottom: 1%;
     right: 10%;
-    width: 250px;
+    width: auto;
+    z-index: 99;
 }
 
 .configurationError {
