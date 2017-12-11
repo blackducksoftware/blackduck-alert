@@ -26,11 +26,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-
 @Entity
 @Table(schema = "alert", name = "slack_distribution_config")
-public class SlackDistributionConfigEntity extends DatabaseEntity {
+public class SlackDistributionConfigEntity extends DistributionChannelConfigEntity {
     private static final long serialVersionUID = 3607759169675906880L;
 
     @Column(name = "webhook")
