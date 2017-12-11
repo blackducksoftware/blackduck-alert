@@ -26,7 +26,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             notificationTypeArray: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
-            'POLICY_VIOLATION_OVERRIDE']
+            'POLICY_VIOLATION_OVERRIDE'],
+            selectedGroups: ['Developer'],
+            selectedProjects: []
 		});
 		jobs.push({
 			jobId: '1',
@@ -37,7 +39,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             frequency: 'REAL_TIME',
             notificationTypeArray: [
             'POLICY_VIOLATION_OVERRIDE',
-            'HIGH_VULNERABILITY']
+            'HIGH_VULNERABILITY'],
+            selectedProjects: []
 		});
 		jobs.push({
 			jobId: '2',
@@ -52,7 +55,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'POLICY_VIOLATION_OVERRIDE',
             'HIGH_VULNERABILITY',
             'MEDIUM_VULNERABILITY',
-            'LOW_VULNERABILITY']
+            'LOW_VULNERABILITY'],
+            selectedProjects: []
 		});
 	}
 
@@ -154,14 +158,14 @@ class DistributionConfiguration extends Component {
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
 	    return (
-	    	<JobAddModal 
+	    	<JobAddModal
 	    		waitingForProjects={this.state.waitingForProjects}
 	    		waitingForGroups={this.state.waitingForGroups}
 	    		projects={this.state.projects}
 	    		groups={this.state.groups}
-	    		groupError={this.state.groupError} 
-	    		projectTableMessage={this.state.projectTableMessage} 
-	    		handleCancel={this.cancelJobSelect} 
+	    		groupError={this.state.groupError}
+	    		projectTableMessage={this.state.projectTableMessage}
+	    		handleCancel={this.cancelJobSelect}
 		    	onModalClose= { onModalClose }
 		    	onSave= { onSave }
 		    	columns={ columns }
@@ -209,9 +213,9 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray } = currentJobSelected;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroups } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
 				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
