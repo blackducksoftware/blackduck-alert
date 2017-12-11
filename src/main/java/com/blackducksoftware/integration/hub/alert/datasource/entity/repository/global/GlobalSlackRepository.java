@@ -20,12 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
-import javax.persistence.Entity;
+import javax.transaction.Transactional;
 
-// Slack has no global configuration
-@Entity
-public class GlobalSlackConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 1L;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+
+@Transactional
+public interface GlobalSlackRepository extends JpaRepository<GlobalSlackConfigEntity, Long> {
+
 }

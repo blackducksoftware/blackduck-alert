@@ -22,28 +22,37 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
         super.initializeValues();
         const { groups, selectedGroups } = this.props;
         let groupOptions= new Array();
-        if (groups != null && groups != undefined && groups.length > 0) {
-			var rawGroups = groups;
+        if (groups && groups.length > 0) {
+			let rawGroups = groups;
 			for (var index in rawGroups) {
 				groupOptions.push({
-					label: rawGroups[index].name,
-					id: rawGroups[index].url
+					label: rawGroups[index].name
 				});
 			}
-            let groupValueArray = groupOptions.filter((option) => {
-                if(selectedGroups){
-                    let includes = selectedGroups.includes(option.label);
-                    return includes;
-                } else {
-                    return false;
-                }
-            });
-
-            if(groupValueArray) {
-                this.state.groupValue = groupValueArray;
+		} else {
+            if(selectedGroups) {
+                let rawGroups = selectedGroups;
+                for (var index in rawGroups) {
+    				groupOptions.push({
+    					label: rawGroups[index]
+    				});
+    			}
             }
-		}
+        }
         this.state.groupOptions = groupOptions;
+
+        let groupValueArray = groupOptions.filter((option) => {
+            if(selectedGroups){
+                let includes = selectedGroups.includes(option.label);
+                return includes;
+            } else {
+                return false;
+            }
+        });
+
+        if(groupValueArray) {
+            this.state.groupValue = groupValueArray;
+        }
     }
 
 	render() {

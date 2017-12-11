@@ -41,4 +41,5 @@ public abstract class AbstractChannelEvent extends AbstractEvent {
     public Long getCommonDistributionConfigId() {
         return commonDistributionConfigId;
     }
+
 }
