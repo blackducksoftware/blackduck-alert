@@ -85,11 +85,11 @@ export default class JobAddModal extends Component {
 		if (typeValues != null && typeValues.length > 0) {
 			var type = typeValues[0];
 			if (type.id === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed='false' groups={this.props.groups} projects={this.props.projects} handleCancel={this.props.onModalClose} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed='false' waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (type.id === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed='false' projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed='false' waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (type.id === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed='false' projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed='false' waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;

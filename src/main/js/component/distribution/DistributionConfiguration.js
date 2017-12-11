@@ -26,7 +26,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             notificationTypeArray: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
-            'POLICY_VIOLATION_OVERRIDE']
+            'POLICY_VIOLATION_OVERRIDE'],
+            selectedGroups: ['Developer'],
+            selectedProjects: []
 		});
 		jobs.push({
 			jobId: '1',
@@ -37,7 +39,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             frequency: 'REAL_TIME',
             notificationTypeArray: [
             'POLICY_VIOLATION_OVERRIDE',
-            'HIGH_VULNERABILITY']
+            'HIGH_VULNERABILITY'],
+            selectedProjects: []
 		});
 		jobs.push({
 			jobId: '2',
@@ -52,7 +55,8 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'POLICY_VIOLATION_OVERRIDE',
             'HIGH_VULNERABILITY',
             'MEDIUM_VULNERABILITY',
-            'LOW_VULNERABILITY']
+            'LOW_VULNERABILITY'],
+            selectedProjects: []
 		});
 	}
 
@@ -76,7 +80,9 @@ class DistributionConfiguration extends Component {
 			errors: {},
 			jobs: [],
 			projects: [],
-			groups: []
+			groups: [],
+			waitingForProjects: true,
+			waitingForGroups: true
 		};
 		this.createCustomModal = this.createCustomModal.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
@@ -94,17 +100,14 @@ class DistributionConfiguration extends Component {
 			credentials: "same-origin"
 		})
 		.then(function(response) {
+			self.handleSetState('waitingForProjects', false);
 			if (!response.ok) {
 				return response.json().then(json => {
-					self.setState({
-						projectTableMessage: json.message
-					});
+					self.handleSetState('projectTableMessage', json.message);
 				});
 			} else {
 				return response.json().then(json => {
-					self.setState({
-						projectTableMessage: ''
-					});
+					self.handleSetState('projectTableMessage', '');
 					var jsonArray = JSON.parse(json.message);
 					if (jsonArray != null && jsonArray.length > 0) {
 						var projects = [];
@@ -126,17 +129,14 @@ class DistributionConfiguration extends Component {
 			credentials: "same-origin"
 		})
 		.then(function(response) {
+			self.handleSetState('waitingForGroups', false);
 			if (!response.ok) {
 				return response.json().then(json => {
-					self.setState({
-						groupError: json.message
-					});
+					self.handleSetState('groupError', json.message);
 				});
 			} else {
 				return response.json().then(json => {
-					self.setState({
-						groupError: ''
-					});
+					self.handleSetState('groupError', '');
 					var jsonArray = JSON.parse(json.message);
 					if (jsonArray != null && jsonArray.length > 0) {
 						var groups = [];
@@ -158,11 +158,14 @@ class DistributionConfiguration extends Component {
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
 	    return (
-	    	<JobAddModal projects={this.state.projects}
+	    	<JobAddModal
+	    		waitingForProjects={this.state.waitingForProjects}
+	    		waitingForGroups={this.state.waitingForGroups}
+	    		projects={this.state.projects}
 	    		groups={this.state.groups}
-	    		groupError={this.state.groupError} 
-	    		projectTableMessage={this.state.projectTableMessage} 
-	    		handleCancel={this.cancelJobSelect} 
+	    		groupError={this.state.groupError}
+	    		projectTableMessage={this.state.projectTableMessage}
+	    		handleCancel={this.cancelJobSelect}
 		    	onModalClose= { onModalClose }
 		    	onSave= { onSave }
 		    	columns={ columns }
@@ -210,13 +213,13 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray } = currentJobSelected;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroups } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} groups={this.state.groups} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray}projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;

@@ -1,7 +1,7 @@
 'use strict';
 import React from 'react';
 
-import {fieldLabel, typeAheadField, fieldError} from '../../../../css/field.css';
+import {fieldLabel, typeAheadField, fieldError, inline} from '../../../../css/field.css';
 
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {Typeahead} from 'react-bootstrap-typeahead';
@@ -30,10 +30,20 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 					id: rawGroups[index].url
 				});
 			}
-            
+            let groupValueArray = groupOptions.filter((option) => {
+                if(selectedGroups){
+                    let includes = selectedGroups.includes(option.label);
+                    return includes;
+                } else {
+                    return false;
+                }
+            });
+
+            if(groupValueArray) {
+                this.state.groupValue = groupValueArray;
+            }
 		}
         this.state.groupOptions = groupOptions;
-        this.state.groupValue = groups;
     }
 
 	render() {
@@ -49,6 +59,14 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		if (this.props.groupError) {
 			errorDiv = <p className={fieldError} name="groupError">{this.props.groupError}</p>;
 		}
+
+		var progressIndicator = null;
+		if (this.props.waitingForGroups) {
+        	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
+			progressIndicator = <div className={inline}>
+									<i className={fontAwesomeIcon} aria-hidden='true'></i>
+								</div>;
+		}
 		let content =
 					<div>
 						<label className={fieldLabel}>Group</label>
@@ -59,6 +77,7 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 						    placeholder='Choose the Hub user group'
 						    selected={this.state.groupValue}
 						  />
+						  {progressIndicator}
 						  {errorDiv}
 					</div>;
 		var renderResult =  super.render(content);
