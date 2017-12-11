@@ -40,23 +40,29 @@ class LoginPage extends Configuration {
 				self.props.handleState('loggedIn', true)
 			} else {
 				return response.json().then(json => {
-					var jsonArray = JSON.parse(json.message);
-					let responseErrors = jsonArray['errors'];
-					if (responseErrors) {
-						var fieldErrors = {};
-						for (var key in responseErrors) {
-							if (responseErrors.hasOwnProperty(key)) {
-								let name = key.concat('Error');
-								let value = responseErrors[key];
-								fieldErrors[name] = value;
+					var message = json.message;
+					try {
+						var jsonArray = JSON.parse(message);
+						let responseErrors = jsonArray['errors'];
+						if (responseErrors) {
+							var fieldErrors = {};
+							for (var key in responseErrors) {
+								if (responseErrors.hasOwnProperty(key)) {
+									let name = key.concat('Error');
+									let value = responseErrors[key];
+									fieldErrors[name] = value;
+								}
 							}
+							self.setState({
+								errors: fieldErrors
+							});
 						}
-						self.setState({
-							errors: fieldErrors
-						});
+						message = jsonArray['message']
+					} catch (e) {
+						// ignore exception
 					}
 					self.setState({
-						configurationMessage: jsonArray['message']
+						configurationMessage: message
 					});
 				});
 			}
