@@ -54,7 +54,8 @@ class BaseJobConfiguration extends Component {
         }
 
         let notificationValueArray = this.state.notificationOptions.filter((option) => {
-            return notificationTypeArray.includes(option);
+            let includes = notificationTypeArray.includes(option.id);
+            return includes;
         });
 
         if(notificationValueArray) {
@@ -67,7 +68,7 @@ class BaseJobConfiguration extends Component {
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		const name = target.name;
-		handleStateValues(name, value);
+		this.handleStateValues(name, value);
 	}
 
 	handleStateValues(name, value) {
@@ -85,11 +86,11 @@ class BaseJobConfiguration extends Component {
 	}
 
 	handleFrequencyChanged (optionsList) {
-		handleStateValues('frequencyValue', optionsList);
+		this.handleStateValues('frequencyValue', optionsList);
 	}
 
 	handleNotificationChanged (optionsList) {
-		handleStateValues('notificationValue', optionsList);
+		this.handleStateValues('notificationValue', optionsList);
 	}
 
 	render(content) {
