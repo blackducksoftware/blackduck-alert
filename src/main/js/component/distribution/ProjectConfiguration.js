@@ -12,6 +12,16 @@ export default class ProjectConfiguration extends Component {
 	}
 
 	render() {
+        let projectData = this.props.projects;
+        if(!projectData || projectData.length == 0) {
+            let rawProjects = this.props.selectedProjects;
+            for (var index in rawProjects) {
+                projectData.push({
+                    name: rawProjects[index]
+                });
+            }
+        }
+
 		const projectTableOptions = {
 	  		noDataText: 'No projects found',
 	  		clearSearch: true
@@ -32,9 +42,8 @@ export default class ProjectConfiguration extends Component {
 		}
 		return (
 			<div>
-				<BootstrapTable data={this.props.projects} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
+				<BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
 					<TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
-					<TableHeaderColumn dataField='url' hidden>Project Url</TableHeaderColumn>
 				</BootstrapTable>
 				{progressIndicator}
 				<p name="projectTableMessage">{this.props.projectTableMessage}</p>
