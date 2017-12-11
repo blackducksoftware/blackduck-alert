@@ -123,7 +123,7 @@ class BaseJobConfiguration extends Component {
 							  />
 						</div>
 					</div>
-					<ProjectConfiguration projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
+					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
 				</form>
 			</div>
