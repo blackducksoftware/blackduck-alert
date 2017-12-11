@@ -95,7 +95,7 @@ class BaseJobConfiguration extends Component {
 	}
 
 	render(content) {
-		var buttonsFixed = this.props.buttonsFixed || true;
+		var buttonsFixed = this.props.buttonsFixed || false;
 		return(
 			<div>
 				<form onSubmit={this.props.handleCancel}>

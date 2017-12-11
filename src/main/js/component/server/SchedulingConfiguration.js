@@ -24,7 +24,7 @@ class SchedulingConfiguration extends ServerConfiguration {
 
 SchedulingConfiguration.propTypes = {
     headerText: PropTypes.string,
-    configButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
