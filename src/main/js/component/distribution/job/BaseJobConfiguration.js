@@ -85,11 +85,11 @@ class BaseJobConfiguration extends Component {
 	}
 
 	handleFrequencyChanged (optionsList) {
-		handleStateValues('frequencyValue', optionsList);
+		this.handleStateValues('frequencyValue', optionsList);
 	}
 
 	handleNotificationChanged (optionsList) {
-		handleStateValues('notificationValue', optionsList);
+		this.handleStateValues('notificationValue', optionsList);
 	}
 
 	render(content) {
