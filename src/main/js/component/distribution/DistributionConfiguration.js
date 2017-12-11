@@ -28,7 +28,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE'],
             selectedGroups: ['Developer'],
-            selectedProjects: []
+            selectedProjects: ['PSTestApp']
 		});
 		jobs.push({
 			jobId: '1',
@@ -213,13 +213,13 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray, selectedGroups } = currentJobSelected;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroups, selectedProjects } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;

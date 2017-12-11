@@ -20,7 +20,8 @@ export default class ProjectConfiguration extends Component {
 		const projectsSelectRowProp = {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
-	  		showOnlySelected: true
+	  		showOnlySelected: true,
+            selected: this.props.selectedProjects
 		};
 		var progressIndicator = null;
 		if (this.props.waitingForProjects) {
