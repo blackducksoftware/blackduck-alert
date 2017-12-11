@@ -30,7 +30,6 @@ import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionC
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
 public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackEvent> {
@@ -40,7 +39,7 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     }
 
     @Override
-    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public SlackEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         return new SlackEvent(projectData, commonDistributionConfigId);
     }
 

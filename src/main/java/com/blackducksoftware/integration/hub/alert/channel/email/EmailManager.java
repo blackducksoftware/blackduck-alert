@@ -30,7 +30,6 @@ import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionC
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
 public class EmailManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent> {
@@ -40,7 +39,7 @@ public class EmailManager extends DistributionChannelManager<GlobalEmailConfigEn
     }
 
     @Override
-    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public EmailGroupEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         return new EmailGroupEvent(projectData, commonDistributionConfigId);
     }
 

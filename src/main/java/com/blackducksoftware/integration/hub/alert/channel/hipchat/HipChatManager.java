@@ -30,7 +30,6 @@ import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionC
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
 public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatEvent> {
@@ -40,7 +39,7 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
     }
 
     @Override
-    public AbstractChannelEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public HipChatEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         return new HipChatEvent(projectData, commonDistributionConfigId);
     }
 
