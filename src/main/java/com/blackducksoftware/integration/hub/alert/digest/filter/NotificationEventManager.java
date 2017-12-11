@@ -31,9 +31,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelEventFactory;
+import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -42,10 +43,10 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 public class NotificationEventManager {
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ChannelEventFactory<AbstractChannelEvent, DatabaseEntity, DatabaseEntity> channelEventFactory;
+    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity> channelEventFactory;
 
     @Autowired
-    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory<AbstractChannelEvent, DatabaseEntity, DatabaseEntity> channelEventFactory,
+    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity> channelEventFactory,
             final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;

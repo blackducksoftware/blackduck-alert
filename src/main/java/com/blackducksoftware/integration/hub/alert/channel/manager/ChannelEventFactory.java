@@ -20,27 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component
-public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DatabaseEntity, G extends DatabaseEntity> {
-    private final List<DistributionChannel<E, D, G>> distributionChannels;
+public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DistributionChannelConfigEntity, G extends GlobalChannelConfigEntity> {
+    private final List<DistributionChannelManager<G, D, E>> channelManagers;
 
-    public ChannelEventFactory(final List<DistributionChannel<E, D, G>> distributionChannels) {
-        this.distributionChannels = distributionChannels;
+    @Autowired
+    public ChannelEventFactory(final List<DistributionChannelManager<G, D, E>> channelManagers) {
+        this.channelManagers = channelManagers;
     }
 
-    public AbstractChannelEvent createEvent(final Long id, final String distributionType, final ProjectData projectData) {
-        for (final DistributionChannel<E, D, G> channel : distributionChannels) {
-            final AbstractChannelEvent event = channel.createChannelEvent(projectData, id);
+    public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final ProjectData projectData) {
+        for (final DistributionChannelManager<G, D, E> manager : channelManagers) {
+            final AbstractChannelEvent event = manager.createChannelEvent(projectData, commonDistributionConfigId);
             if (event.isApplicable(distributionType)) {
                 return event;
             }
