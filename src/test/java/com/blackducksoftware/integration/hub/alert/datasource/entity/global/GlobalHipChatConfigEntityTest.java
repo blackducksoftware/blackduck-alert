@@ -9,16 +9,17 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 
-public class HipChatConfigEntityTest {
+public class GlobalHipChatConfigEntityTest {
+    HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     @Test
     public void testEmptyModel() {
@@ -31,7 +32,7 @@ public class HipChatConfigEntityTest {
         final int configHash = hipChatConfigEntity.hashCode();
         assertEquals(23273, configHash);
 
-        final String expectedString = "{\"id\":null}";
+        final String expectedString = mockUtils.getEmptyGlobalEntityJson();
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
         final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity();
@@ -40,23 +41,18 @@ public class HipChatConfigEntityTest {
 
     @Test
     public void testModel() {
-        final Long id = 435L;
-        final String apiKey = "ApiKey";
+        final GlobalHipChatConfigEntity hipChatConfigEntity = mockUtils.createGlobalEntity();
 
-        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity(apiKey);
-        hipChatConfigEntity.setId(id);
-
-        assertEquals(apiKey, hipChatConfigEntity.getApiKey());
-        assertEquals(id, hipChatConfigEntity.getId());
+        assertEquals(mockUtils.getApiKey(), hipChatConfigEntity.getApiKey());
+        assertEquals(Long.valueOf(mockUtils.getId()), hipChatConfigEntity.getId());
 
         final int configHash = hipChatConfigEntity.hashCode();
-        assertEquals(-215716011, configHash);
+        assertEquals(-215716445, configHash);
 
-        final String expectedString = "{\"id\":435}";
+        final String expectedString = mockUtils.getGlobalEntityJson();
         assertEquals(expectedString, hipChatConfigEntity.toString());
 
-        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity(apiKey);
-        hipChatConfigEntityNew.setId(id);
+        final GlobalHipChatConfigEntity hipChatConfigEntityNew = mockUtils.createGlobalEntity();
         assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
     }
 }

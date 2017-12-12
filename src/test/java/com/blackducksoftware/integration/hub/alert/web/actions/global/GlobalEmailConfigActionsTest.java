@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,18 +29,16 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class GlobalEmailConfigActionsTest {
-    private final MockUtils mockUtils = new MockUtils();
     private final ObjectTransformer objectTransformer = new ObjectTransformer();
 
     @Test
@@ -64,11 +62,12 @@ public class GlobalEmailConfigActionsTest {
 
     @Test
     public void testGetConfig() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createEmailConfigEntity());
-        Mockito.when(mockedEmailRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createEmailConfigEntity()));
+        Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEmailConfigEntity());
+        Mockito.when(mockedEmailRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEmailConfigEntity()));
 
-        final GlobalEmailConfigRestModel maskedRestModel = mockUtils.createEmailConfigMaskedRestModel();
+        final GlobalEmailConfigRestModel maskedRestModel = mockUtils.createGlobalEmailConfigMaskedRestModel();
 
         final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
         List<GlobalEmailConfigRestModel> emailConfigsById = configActions.getConfig(1L);
@@ -119,13 +118,14 @@ public class GlobalEmailConfigActionsTest {
 
     @Test
     public void testSaveConfig() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final GlobalEmailConfigEntity expectedEmailConfigEntity = mockUtils.createEmailConfigEntity();
+        final GlobalEmailConfigEntity expectedEmailConfigEntity = mockUtils.createGlobalEmailConfigEntity();
         Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenReturn(expectedEmailConfigEntity);
 
         GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
 
-        GlobalEmailConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
+        GlobalEmailConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
         assertNotNull(emailConfigEntity);
         assertEquals(expectedEmailConfigEntity, emailConfigEntity);
 
@@ -134,7 +134,7 @@ public class GlobalEmailConfigActionsTest {
 
         Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenThrow(new RuntimeException("test"));
         try {
-            emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
+            emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
             fail();
         } catch (final AlertException e) {
             assertEquals("test", e.getMessage());
@@ -144,16 +144,17 @@ public class GlobalEmailConfigActionsTest {
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
         configActions = new GlobalEmailConfigActions(mockedEmailRepository, transformer);
 
-        emailConfigEntity = configActions.saveConfig(mockUtils.createEmailConfigRestModel());
+        emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
         assertNull(emailConfigEntity);
     }
 
     @Test
     public void testValidateConfig() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
 
-        String response = configActions.validateConfig(mockUtils.createEmailConfigRestModel());
+        String response = configActions.validateConfig(mockUtils.createGlobalEmailConfigRestModel());
         assertEquals("Valid", response);
 
         final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel("NotLong", "MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", "NotInteger", "NotInteger", "NotInteger", "MailSmtpFrom", "MailSmtpLocalhost", "NotBoolean",
@@ -185,11 +186,12 @@ public class GlobalEmailConfigActionsTest {
     // TODO fix when we have decided on an implementation of GlobalEmailConfigActions.testConfig()
     // @Test
     public void testTestConfig() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final EmailGroupChannel mockedEmailChannel = Mockito.mock(EmailGroupChannel.class);
         final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
 
-        configActions.testConfig(mockUtils.createEmailConfigRestModel());
+        configActions.testConfig(mockUtils.createGlobalEmailConfigRestModel());
         verify(mockedEmailChannel, times(1)).testMessage(Mockito.any());
         Mockito.reset(mockedEmailChannel);
 
