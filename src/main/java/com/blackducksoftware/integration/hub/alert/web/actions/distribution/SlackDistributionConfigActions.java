@@ -32,6 +32,8 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
@@ -41,9 +43,9 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
     private final SlackChannel slackChannel;
 
     @Autowired
-    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<SlackDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer,
-            final SlackChannel slackChannel) {
-        super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, objectTransformer);
+    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
+            final JpaRepository<SlackDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer, final SlackChannel slackChannel) {
+        super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, repository, objectTransformer);
         this.slackChannel = slackChannel;
     }
 
