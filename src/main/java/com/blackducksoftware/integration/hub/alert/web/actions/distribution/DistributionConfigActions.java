@@ -112,6 +112,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                 channelDistributionRepository.delete(distributionConfigId);
                 commonDistributionRepository.delete(id);
             }
+            cleanUpConfiguredProjects();
         }
     }
 
@@ -163,7 +164,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         }
     }
 
-    private List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
+    protected List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> configuredProjects = new ArrayList<>();
         for (final DistributionProjectRelation relation : distributionProjects) {
@@ -173,7 +174,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return configuredProjects;
     }
 
-    private void cleanUpConfiguredProjects() {
+    protected void cleanUpConfiguredProjects() {
         final List<ConfiguredProjectEntity> configuredProjects = configuredProjectsRepository.findAll();
         configuredProjects.forEach(configuredProject -> {
             final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByProjectId(configuredProject.getId());
