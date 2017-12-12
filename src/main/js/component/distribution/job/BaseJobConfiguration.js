@@ -6,8 +6,8 @@ import {fieldLabel, typeAheadField} from '../../../../css/field.css';
 import TextInput from '../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
 
 import ConfigButtons from '../../ConfigButtons'
 
@@ -19,16 +19,16 @@ class BaseJobConfiguration extends Component {
 		 	values: [],
 		 	errors: [],
             frequencyOptions: [
-				{ label: 'Real Time', id: 'REAL_TIME'},
-				{ label: 'Daily', id: 'DAILY' }
+				{ label: 'Real Time', value: 'REAL_TIME'},
+				{ label: 'Daily', value: 'DAILY' }
 			],
             notificationOptions: [
-				{ label: 'Policy Violation', id: 'POLICY_VIOLATION' },
-				{ label: 'Policy Violation Cleared', id: 'POLICY_VIOLATION_CLEARED'},
-				{ label: 'Policy Violation Override', id: 'POLICY_VIOLATION_OVERRIDE'},
-				{ label: 'High Vulnerability', id: 'HIGH_VULNERABILITY'},
-				{ label: 'Medium Vulnerability', id: 'MEDIUM_VULNERABILITY'},
-				{ label: 'Low Vulnerability', id: 'LOW_VULNERABILITY'}
+				{ label: 'Policy Violation', value: 'POLICY_VIOLATION' },
+				{ label: 'Policy Violation Cleared', value: 'POLICY_VIOLATION_CLEARED'},
+				{ label: 'Policy Violation Override', value: 'POLICY_VIOLATION_OVERRIDE'},
+				{ label: 'High Vulnerability', value: 'HIGH_VULNERABILITY'},
+				{ label: 'Medium Vulnerability', value: 'MEDIUM_VULNERABILITY'},
+				{ label: 'Low Vulnerability', value: 'LOW_VULNERABILITY'}
 			]
         }
         this.handleChange = this.handleChange.bind(this);
@@ -46,16 +46,16 @@ class BaseJobConfiguration extends Component {
         let values = this.state.values;
         values.jobName = jobName;
         let frequencyValue = this.state.frequencyOptions.find((option)=> {
-            return option.id === frequency;
+            return option.value === frequency;
         });
 
         if (frequencyValue) {
-            values.frequencyValue = [frequencyValue];
+            values.frequencyValue = frequencyValue.value;
         }
 
         let notificationValueArray = this.state.notificationOptions.filter((option) => {
             if (notificationTypeArray) {
-                let includes = notificationTypeArray.includes(option.id);
+                let includes = notificationTypeArray.includes(option.value);
                 return includes;
             } else {
                 return false;
@@ -90,13 +90,27 @@ class BaseJobConfiguration extends Component {
 		});
 	}
 
-	handleFrequencyChanged (optionsList) {
-		this.handleStateValues('frequencyValue', optionsList);
+	handleFrequencyChanged (option) {
+        if(option) {
+	        this.handleStateValues('frequencyValue', option.value);
+        } else {
+            this.handleStateValues('frequencyValue', option);
+        }
 	}
 
 	handleNotificationChanged (optionsList) {
-		this.handleStateValues('notificationValue', optionsList);
+		this.handleSelectedArrayChanged('notificationValue', optionsList);
 	}
+
+    handleSelectedArrayChanged(stateKey, selectedValues) {
+        let selected = new Array();
+        if(selectedValues && selectedValues.length > 0) {
+            selected = selectedValues.map((item) => {
+                return item.value;
+            });
+        }
+        this.handleStateValues(stateKey, selected);
+    }
 
 	render(content) {
 		var buttonsFixed = this.props.buttonsFixed || false;
@@ -107,23 +121,26 @@ class BaseJobConfiguration extends Component {
 						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError"></TextInput>
 						<div>
 							<label className={fieldLabel}>Frequency</label>
-							<Typeahead className={typeAheadField}
+							<Select className={typeAheadField}
 								onChange={this.handleFrequencyChanged}
-							    clearButton
+							    clearble={true}
+                                searchable={true}
 							    options={this.state.frequencyOptions}
 							    placeholder='Choose the frequency'
-							    selected={this.state.values.frequencyValue}
+							    value={this.state.values.frequencyValue}
 							  />
 						</div>
 						<div>
 							<label className={fieldLabel}>Notification Types</label>
-							<Typeahead className={typeAheadField}
+							<Select className={typeAheadField}
 								onChange={this.handleNotificationChanged}
-							    clearButton
-							    multiple
+							    clearble={true}
+                                searchable={true}
+							    multi
+                                removeSelected={true}
 							    options={this.state.notificationOptions}
 							    placeholder='Choose the notification types'
-							    selected={this.state.values.notificationValue}
+							    value={this.state.values.notificationValue}
 							  />
 						</div>
 						{content}
