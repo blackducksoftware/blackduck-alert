@@ -22,11 +22,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -34,8 +37,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Component
 public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> {
 
-    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer) {
-        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, objectTransformer);
+    @Autowired
+    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
+            final ObjectTransformer objectTransformer) {
+        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, commonDistributionRepository, objectTransformer);
     }
 
     @Override
@@ -45,6 +50,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
                 CommonDistributionConfigEntity createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 if (createdEntity != null) {
                     createdEntity = commonDistributionRepository.save(createdEntity);
+                    saveConfiguredProjects(createdEntity, restModel);
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -78,7 +84,8 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
-        return objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+        final CommonDistributionConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+        return restModel;
     }
 
     @Override
