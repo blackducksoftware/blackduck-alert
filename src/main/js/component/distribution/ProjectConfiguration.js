@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import styles from '../../../css/distributionConfig.css';
 import { progressIcon, missingHubData } from '../../../css/main.css';
 
+import CheckboxInput from '../../field/input/CheckboxInput';
+
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
@@ -80,14 +82,23 @@ export default class ProjectConfiguration extends Component {
 									<i className={fontAwesomeIcon} aria-hidden='true'></i>
 								</div>;
 		}
+
+        var projectTable = null;
+        if (!this.props.includeAllProjects) {
+            projectTable = <div>
+                                <BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
+                                    <TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
+                                    <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
+                                </BootstrapTable>
+                                {progressIndicator}
+                                <p name="projectTableMessage">{this.props.projectTableMessage}</p>
+                            </div>;
+        }
+
 		return (
 			<div>
-				<BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
-					<TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
-				</BootstrapTable>
-				{progressIndicator}
-				<p name="projectTableMessage">{this.props.projectTableMessage}</p>
+                <CheckboxInput labelClass={styles.fieldLabel} inputClass={styles.textInput} label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError}></CheckboxInput>
+				{projectTable}
 			</div>
 		)
 	}

@@ -9,11 +9,15 @@ export default class NumberInput extends LabeledField {
 	}
 
 	render() {
+		let inputClass = this.props.inputClass;
+		if (!inputClass) {
+			inputClass = numberInput;
+		}
 		let inputDiv = null;
 		if (this.props.readOnly) {
-			inputDiv = <input type="number" readOnly className={numberInput} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="number" readOnly className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
 		} else {
-			inputDiv = <input type="number" className={numberInput} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="number" className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
 		}
 		return (
 				super.render(inputDiv)

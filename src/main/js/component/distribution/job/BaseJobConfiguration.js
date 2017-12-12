@@ -42,23 +42,27 @@ class BaseJobConfiguration extends Component {
     }
 
     initializeValues() {
-        const { jobName, frequency, notificationTypeArray, projects, selectedProjects } = this.props;
+        const { jobName, frequency, notificationTypeArray, includeAllProjects, projects, selectedProjects } = this.props;
         let values = this.state.values;
         values.jobName = jobName;
         let frequencyValue = this.state.frequencyOptions.find((option)=> {
             return option.id === frequency;
         });
 
-        if(frequencyValue) {
+        if (frequencyValue) {
             values.frequencyValue = [frequencyValue];
         }
 
         let notificationValueArray = this.state.notificationOptions.filter((option) => {
-            let includes = notificationTypeArray.includes(option.id);
-            return includes;
+            if (notificationTypeArray) {
+                let includes = notificationTypeArray.includes(option.id);
+                return includes;
+            } else {
+                return false;
+            }
         });
-
-        if(notificationValueArray) {
+        values.includeAllProjects = includeAllProjects;
+        if (notificationValueArray) {
             values.notificationValue  = notificationValueArray;
         }
 
@@ -124,7 +128,7 @@ class BaseJobConfiguration extends Component {
 							  />
 						</div>
 					</div>
-					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
+					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel}  type="submit" />
 				</form>
 			</div>
