@@ -71,7 +71,7 @@ export default class JobAddModal extends Component {
 	handleTypeChanged (option) {
 		var values = this.state.values;
         if(option) {
-    		values['typeValues'] = option.value;
+    		values['typeValue'] = option.value;
     		this.setState({
     			values
     		});
@@ -80,14 +80,13 @@ export default class JobAddModal extends Component {
 
 	getCurrentJobConfig() {
 		var currentJobConfig = null;
-		let typeValues = this.state.values.typeValues;
-		if (typeValues != null && typeValues.length > 0) {
-			var type = typeValues[0];
-			if (type.value === 'Group Email') {
+		let typeValue = this.state.values.typeValue;
+		if (typeValue) {
+			if (typeValue === 'Group Email') {
 				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (type.value === 'HipChat') {
+			} else if (typeValue === 'HipChat') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (type.value === 'Slack') {
+			} else if (typeValue === 'Slack') {
 				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
 			}
 		}
@@ -131,7 +130,7 @@ export default class JobAddModal extends Component {
 						    options={this.state.typeOptions}
                             optionRenderer={this.renderOption}
 						    placeholder='Choose the Job Type'
-						    value={this.state.values.typeValues}
+						    value={this.state.values.typeValue}
                             valueRenderer={this.renderOptions}
 						  />
 				</div>

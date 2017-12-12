@@ -17,12 +17,16 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 	}
 
 	handleGroupsChanged (optionsList) {
-		super.handleStateValues('groupValue', optionsList.value);
+        if (optionsList) {
+            super.handleStateValues('groupValue', optionsList.value);
+        } else {
+            super.handleStateValues('groupValue', null);
+        }
 	}
 
     initializeValues() {
         super.initializeValues();
-        const { groups, selectedGroups } = this.props;
+        const { groups, selectedGroup } = this.props;
         let groupOptions= new Array();
         if (groups && groups.length > 0) {
 			let rawGroups = groups;
@@ -34,19 +38,19 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 				});
 			}
 
-            for(var index in selectedGroups) {
-                let groupFound = groupOptions.find((group) => {
-                    return group.name === selectedGroups[index];
-                });
+          
+            let groupFound = groupOptions.find((group) => {
+                return group.name === selectedGroup;
+            });
 
-                if(!groupFound) {
-                    groupOptions.push({
-                        label: selectedGroups[index],
-                        value: selectedGroups[index],
-                        missing: true
-                    });
-                }
+            if(!groupFound) {
+                groupOptions.push({
+                    label: selectedGroup,
+                    value: selectedGroup,
+                    missing: true
+                });
             }
+            
 
             groupOptions.sort((group1, group2) => {
                 if(group1.value < group2.value) {
@@ -58,31 +62,17 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
                 }
             });
 		} else {
-            if(selectedGroups) {
-                let rawGroups = selectedGroups;
-                for (var index in rawGroups) {
-    				groupOptions.push({
-    					label: rawGroups[index],
-                        value: rawGroups[index],
-                        missing: true
-    				});
-    			}
+            if(selectedGroup) {
+				groupOptions.push({
+					label: selectedGroup,
+                    value: selectedGroup,
+                    missing: true
+				});
             }
         }
         this.state.groupOptions = groupOptions;
-
-        let groupValueArray = groupOptions.filter((option) => {
-            if(selectedGroups){
-                let includes = selectedGroups.includes(option.label);
-                return includes;
-            } else {
-                return false;
-            }
-        });
-
-        if(groupValueArray) {
-            super.handleStateValues('groupValue', groupValueArray[0].value);
-        }
+        super.handleStateValues('groupValue', selectedGroup);
+    
     }
 
     renderOption(option) {

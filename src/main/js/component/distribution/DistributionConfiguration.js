@@ -26,7 +26,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE'],
-            selectedGroups: ['Custom Group'],
+            selectedGroup: 'Custom Group',
             selectedProjects: ['PSTestApp']
 		});
 		jobs.push({
@@ -231,9 +231,9 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray, selectedGroups, includeAllProjects, selectedProjects } = currentJobSelected;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroup, includeAllProjects, selectedProjects } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroup={selectedGroup} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
