@@ -10,6 +10,10 @@ export default class ConfigButtons extends Component {
     render() {
         const includeCancel = this.props.includeCancel || false;
         const includeTest = this.props.includeTest || false;
+        var includeSave = true;
+        if (this.props.includeSave != null && this.props.includeSave === false) {
+            includeSave = false;
+        }
 
         const saveButtonText = this.props.text || "Save";
         const saveButtonType = this.props.type || "button";
@@ -34,7 +38,9 @@ export default class ConfigButtons extends Component {
                 { includeTest === true &&
                     <input className={buttonClass} type={testButtonType} value={testButtonText} onClick={this.props.onTestClick}></input>
                 }
-                <input className={buttonClass} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
+                { includeSave === true &&
+                    <input className={buttonClass} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
+                }
             </div>
         )
     }

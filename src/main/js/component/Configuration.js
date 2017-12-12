@@ -15,9 +15,14 @@ export default class Configuration extends Component {
 	}
 
 	componentWillMount() {
+		let getUrl = this.props.getUrl || this.props.baseUrl;
+		if (getUrl) {
+			this.setState({
+				configurationMessage: 'Loading...',
+				inProgress: true,
+			});
+		}
 		this.setState({
-			configurationMessage: 'Loading...',
-			inProgress: true,
 			errors: {},
 			values: {}
 		});
