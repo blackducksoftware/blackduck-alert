@@ -39,6 +39,7 @@ class EmailConfiguration extends ServerConfiguration {
 EmailConfiguration.propTypes = {
     headerText: PropTypes.string,
     configButtonTest: PropTypes.bool,
+    configButtonsSave: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
