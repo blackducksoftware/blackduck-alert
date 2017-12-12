@@ -28,6 +28,9 @@ export default class Configuration extends Component {
 		var self = this;
 
 		let getUrl = this.props.getUrl || this.props.baseUrl;
+		if (!getUrl) {
+			return;
+		}
 		fetch(getUrl,{
 			credentials: "same-origin"
 		})
@@ -94,25 +97,34 @@ export default class Configuration extends Component {
 			self.setState({
 				inProgress: false
 			});
-			return response.json().then(json => {
-				let jsonErrors = json.errors;
-				if (jsonErrors) {
-					var errors = {};
-					for (var key in jsonErrors) {
-						if (jsonErrors.hasOwnProperty(key)) {
-							let name = key.concat('Error');
-							let value = jsonErrors[key];
-							errors[name] = value;
+			if (response.ok) {
+				return response.json().then(json => {
+					self.setState({
+						id: json.id,
+						configurationMessage: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
 						}
+						self.setState({
+							errors
+						});
 					}
 					self.setState({
-						errors
+						configurationMessage: json.message
 					});
-				}
-				self.setState({
-					configurationMessage: json.message
 				});
-			});
+			}
 		});
 	}
 
