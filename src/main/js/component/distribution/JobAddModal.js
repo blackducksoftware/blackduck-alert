@@ -5,7 +5,7 @@ import TextInput from '../../field/input/TextInput';
 import {modalContainer} from '../../../css/main.css';
 import {fieldLabel, typeAheadField} from '../../../css/field.css';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
+import {Typeahead, Token} from 'react-bootstrap-typeahead';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
@@ -95,6 +95,22 @@ export default class JobAddModal extends Component {
 		return currentJobConfig;
 	}
 
+	renderCustomJobTypeTokenDropDown(option, props, index) {
+		var fontAwesomeIcon = "";
+		if (option.id === 'Group Email') {
+			fontAwesomeIcon = 'fa fa-envelope';
+		} else if (option.id === 'HipChat') {
+			fontAwesomeIcon = 'fa fa-comments';
+		} else if (option.id === 'Slack') {
+			fontAwesomeIcon = 'fa fa-slack';
+		}
+	    return (<div>
+	    			<i key="icon" className={fontAwesomeIcon} aria-hidden='true'></i>
+			    	<strong key="name"> {option.label} </strong>
+		      	</div>
+	    );
+	  }
+
 	render() {
 		const containerClasses = `modal-content react-bs-table-insert-modal ${modalContainer}`;
 		var content = <div>
@@ -109,7 +125,9 @@ export default class JobAddModal extends Component {
 			<div className={containerClasses}>
 				<div>
 					<label className={fieldLabel}>Type</label>
-					<Typeahead className={typeAheadField}
+					<Typeahead
+							renderMenuItemChildren={this.renderCustomJobTypeTokenDropDown}
+							className={typeAheadField}
 							onChange={this.handleTypeChanged}
 						    clearButton
 						    options={this.state.typeOptions}
