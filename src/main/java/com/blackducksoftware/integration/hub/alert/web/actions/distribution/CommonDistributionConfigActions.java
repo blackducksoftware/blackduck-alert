@@ -64,6 +64,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     public void deleteConfig(final Long id) {
         if (id != null) {
             commonDistributionRepository.delete(id);
+            cleanUpConfiguredProjects();
         }
     }
 
@@ -85,6 +86,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
         final CommonDistributionConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+        restModel.setConfiguredProjects(getConfiguredProjects(commonEntity));
         return restModel;
     }
 
