@@ -119,7 +119,6 @@ class BaseJobConfiguration extends Component {
 				<form onSubmit={this.props.handleCancel}>
 					<div className={styles.contentBlock}>
 						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError"></TextInput>
-						{content}
 						<div>
 							<label className={fieldLabel}>Frequency</label>
 							<Select className={typeAheadField}
@@ -144,6 +143,7 @@ class BaseJobConfiguration extends Component {
 							    value={this.state.values.notificationValue}
 							  />
 						</div>
+						{content}
 					</div>
 					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel}  type="submit" />
