@@ -140,31 +140,6 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return Collections.emptyList();
     }
 
-    protected void saveConfiguredProjects(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
-            final List<String> configuredProjectsFromUI = restModel.getConfiguredProjects();
-            if (configuredProjectsFromUI != null) {
-                // Remove the old DistributionProjectRelations for the distribution configuration:
-                final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
-                distributionProjectRepository.delete(distributionProjects);
-                // Add new DistributionProjectRelations (and ConfiguredProjectEntities if needed):
-                for (final String projectName : configuredProjectsFromUI) {
-                    Long projectId;
-                    final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);
-                    if (foundEntity != null) {
-                        projectId = foundEntity.getId();
-                    } else {
-                        final ConfiguredProjectEntity createdEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
-                        projectId = createdEntity.getId();
-                    }
-                    distributionProjectRepository.save(new DistributionProjectRelation(commonEntity.getId(), projectId));
-                }
-                cleanUpConfiguredProjects();
-            }
-            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
-        }
-    }
-
     protected List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> configuredProjects = new ArrayList<>();
@@ -173,6 +148,37 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
             configuredProjects.add(entity.getProjectName());
         }
         return configuredProjects;
+    }
+
+    protected void saveConfiguredProjects(final CommonDistributionConfigEntity commonEntity, final R restModel) {
+        if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
+            final List<String> configuredProjectsFromRestModel = restModel.getConfiguredProjects();
+            if (configuredProjectsFromRestModel != null) {
+                removeOldDistributionProjectRelations(commonEntity.getId());
+                addNewDistributionProjectRelations(commonEntity.getId(), configuredProjectsFromRestModel);
+                cleanUpConfiguredProjects();
+            }
+            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
+        }
+    }
+
+    private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
+        final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
+        distributionProjectRepository.delete(distributionProjects);
+    }
+
+    private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
+        for (final String projectName : configuredProjectsFromRestModel) {
+            Long projectId;
+            final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);
+            if (foundEntity != null) {
+                projectId = foundEntity.getId();
+            } else {
+                final ConfiguredProjectEntity createdEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+                projectId = createdEntity.getId();
+            }
+            distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigId, projectId));
+        }
     }
 
     protected void cleanUpConfiguredProjects() {
