@@ -25,24 +25,26 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 public class ObjectTransformerTest {
-    private final MockUtils mockUtils = new MockUtils();
 
     @Test
     public void testTransformGlobalModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
-        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalConfigEntity();
+        final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
+        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalHubConfigRestModel();
+        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalHubConfigEntity();
 
         final GlobalHubConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHubConfigEntity.class);
         final GlobalHubConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalHubConfigRestModel.class);
@@ -70,9 +72,10 @@ public class ObjectTransformerTest {
 
     @Test
     public void testTransformEmailModels() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailConfigRestModel restModel = mockUtils.createEmailConfigRestModel();
-        final GlobalEmailConfigEntity configEntity = mockUtils.createEmailConfigEntity();
+        final GlobalEmailConfigRestModel restModel = mockUtils.createGlobalEmailConfigRestModel();
+        final GlobalEmailConfigEntity configEntity = mockUtils.createGlobalEmailConfigEntity();
 
         final GlobalEmailConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class);
         final GlobalEmailConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalEmailConfigRestModel.class);
@@ -83,9 +86,10 @@ public class ObjectTransformerTest {
 
     @Test
     public void testTransformHipchatModels() throws Exception {
+        final HipChatMockUtils mockUtils = new HipChatMockUtils();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalHipChatConfigRestModel restModel = mockUtils.createHipChatConfigRestModel();
-        final GlobalHipChatConfigEntity configEntity = mockUtils.createHipChatConfigEntity();
+        final GlobalHipChatConfigRestModel restModel = mockUtils.createGlobalRestModel();
+        final GlobalHipChatConfigEntity configEntity = mockUtils.createGlobalEntity();
 
         final GlobalHipChatConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
         final GlobalHipChatConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalHipChatConfigRestModel.class);
@@ -95,9 +99,10 @@ public class ObjectTransformerTest {
 
     @Test
     public void testTransformListsOfModels() throws Exception {
+        final EmailMockUtils mockUtils = new EmailMockUtils();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailConfigRestModel restModel = mockUtils.createEmailConfigRestModel();
-        final GlobalEmailConfigEntity configEntity = mockUtils.createEmailConfigEntity();
+        final GlobalEmailConfigRestModel restModel = mockUtils.createGlobalEmailConfigRestModel();
+        final GlobalEmailConfigEntity configEntity = mockUtils.createGlobalEmailConfigEntity();
 
         List<GlobalEmailConfigEntity> transformedConfigEntities = objectTransformer.configRestModelsToDatabaseEntities(Arrays.asList(restModel), GlobalEmailConfigEntity.class);
         List<GlobalEmailConfigRestModel> transformedConfigRestModels = objectTransformer.databaseEntitiesToConfigRestModels(Arrays.asList(configEntity), GlobalEmailConfigRestModel.class);
@@ -115,14 +120,15 @@ public class ObjectTransformerTest {
     @Test
     public void testTransformNullModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
+        final EmailMockUtils mockUtils = new EmailMockUtils();
 
         GlobalEmailConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(null, GlobalEmailConfigEntity.class);
         GlobalEmailConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(null, GlobalEmailConfigRestModel.class);
         assertNull(transformedConfigRestModel);
         assertNull(transformedConfigEntity);
 
-        transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(mockUtils.createEmailConfigRestModel(), null);
-        transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(mockUtils.createEmailConfigEntity(), null);
+        transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(mockUtils.createGlobalEmailConfigRestModel(), null);
+        transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(mockUtils.createGlobalEmailConfigEntity(), null);
         assertNull(transformedConfigRestModel);
         assertNull(transformedConfigEntity);
 

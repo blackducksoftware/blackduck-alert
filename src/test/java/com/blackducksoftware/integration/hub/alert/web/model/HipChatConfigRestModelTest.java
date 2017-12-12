@@ -16,45 +16,49 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
 public class HipChatConfigRestModelTest {
+    HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     @Test
     public void testEmptyModel() {
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel();
-        assertEquals(8852683250883814613L, GlobalHipChatConfigRestModel.getSerialversionuid());
+        final HipChatDistributionRestModel hipChatConfigRestModel = new HipChatDistributionRestModel();
+        assertEquals(-1179576393408142603L, HipChatDistributionRestModel.getSerialversionuid());
 
-        assertNull(hipChatConfigRestModel.getApiKey());
+        assertNull(hipChatConfigRestModel.getRoomId());
+        assertNull(hipChatConfigRestModel.getNotify());
+        assertNull(hipChatConfigRestModel.getColor());
         assertNull(hipChatConfigRestModel.getId());
 
         final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(23273, restModelHash);
+        assertEquals(-2120005431, restModelHash);
 
-        final String expectedString = "{\"id\":null}";
+        final String expectedString = mockUtils.getEmptyRestModelJson();
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel();
+        final HipChatDistributionRestModel hipChatConfigRestModelNew = new HipChatDistributionRestModel();
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 
     @Test
     public void testModel() {
-        final String id = "Id";
-        final String apiKey = "ApiKey";
+        final HipChatDistributionRestModel hipChatConfigRestModel = mockUtils.createRestModel();
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey);
-
-        assertEquals(apiKey, hipChatConfigRestModel.getApiKey());
-        assertEquals(id, hipChatConfigRestModel.getId());
+        assertEquals(mockUtils.getRoomId(), hipChatConfigRestModel.getRoomId());
+        assertEquals(mockUtils.getNotify(), hipChatConfigRestModel.getNotify());
+        assertEquals(mockUtils.getColor(), hipChatConfigRestModel.getColor());
+        assertEquals(mockUtils.getId(), hipChatConfigRestModel.getDistributionConfigId());
+        assertEquals(mockUtils.getCommonId(), hipChatConfigRestModel.getId());
 
         final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(-215714083, restModelHash);
+        assertEquals(-1722320535, restModelHash);
 
-        final String expectedString = "{\"id\":\"Id\"}";
+        final String expectedString = mockUtils.getRestModelJson();
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey);
+        final HipChatDistributionRestModel hipChatConfigRestModelNew = mockUtils.createRestModel();
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 }

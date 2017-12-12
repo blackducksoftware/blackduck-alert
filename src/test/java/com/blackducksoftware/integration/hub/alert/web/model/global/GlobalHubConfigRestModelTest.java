@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.web.model.global;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
-public class GlobalConfigRestModelTest {
+public class GlobalHubConfigRestModelTest {
 
     @Test
     public void testEmptyModel() {
