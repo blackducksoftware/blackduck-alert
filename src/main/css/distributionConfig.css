@@ -12,6 +12,7 @@
     text-align: center;
     vertical-align: middle;
 }
+
 .addJobButton {
 	composes: jobTableButton;
 }
@@ -21,7 +22,13 @@
     background: #ef4923;
 }
 
-.table { 
+.editJobButton {
+    composes: jobTableButton;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table {
     width: 98%;
 }
 
@@ -32,7 +39,7 @@
 
 .projectTableScrollableBody {
     composes: scrollable;
-    height: 300px !important;
+    height: 200px !important;
     width: 100%;
 }
 

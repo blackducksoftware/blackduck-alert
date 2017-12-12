@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { submitContainers, submitButtons } from '../../css/main.css';
+import { submitContainers, submitButtons, submitContainersFixed, submitButtonsFixed } from '../../css/main.css';
 
 export default class ConfigButtons extends Component {
     constructor(props) {
@@ -18,15 +18,23 @@ export default class ConfigButtons extends Component {
         const cancelButtonText = this.props.cancelText || "Cancel";
         const cancelButtonType = this.props.cancelType || "button";
 
+        const isFixed = this.props.isFixed || "true";
+
+        var containerClass = submitContainersFixed;
+        var buttonClass = submitButtonsFixed;
+        if (isFixed === "false") {
+            containerClass = submitContainers;
+            buttonClass = submitButtons;
+        }
         return (
-            <div className={submitContainers}>
+            <div className={containerClass}>
                 { includeCancel == "true" &&
-                    <input className={submitButtons} type={cancelButtonType} value={cancelButtonText} onClick={this.props.onCancelClick}></input>
+                    <input className={buttonClass} type={cancelButtonType} value={cancelButtonText} onClick={this.props.onCancelClick}></input>
                 }
                 { includeTest == "true" &&
-                    <input className={submitButtons} type={testButtonType} value={testButtonText} onClick={this.props.onTestClick}></input>
+                    <input className={buttonClass} type={testButtonType} value={testButtonText} onClick={this.props.onTestClick}></input>
                 }
-                <input className={submitButtons} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
+                <input className={buttonClass} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
             </div>
         )
     }

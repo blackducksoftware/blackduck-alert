@@ -95,7 +95,6 @@ public class PurgeJobIT {
     @Test
     public void testReaderWithData() throws Exception {
         final List<NotificationEntity> entityList = new ArrayList<>();
-        final String hubUser = "user1";
         final String eventKey = "eventKey";
         final String notificationType = "notificationType";
         final String projectName = "ProjectName";
@@ -111,17 +110,17 @@ public class PurgeJobIT {
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(1);
         Date createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(3);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
         notificationRepository.save(entityList);
 
         final PurgeReader reader = purgeConfig.reader();
@@ -170,7 +169,6 @@ public class PurgeJobIT {
     @Test
     public void testWriterWithData() throws Exception {
         final List<NotificationEntity> entityList = new ArrayList<>();
-        final String hubUser = "user1";
         final String eventKey = "eventKey";
         final String notificationType = "notificationType";
         final String projectName = "ProjectName";
@@ -186,17 +184,17 @@ public class PurgeJobIT {
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(1);
         Date createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(3);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(hubUser, eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
         notificationRepository.save(entityList);
 
         assertEquals(3, notificationRepository.count());
