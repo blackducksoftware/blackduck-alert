@@ -133,3 +133,9 @@
 .progressIcon {
     float: left;
 }
+
+.missingHubData {
+    color: #9b9b9b;
+    font-style: italic;
+    font-weight: bold;
+}
