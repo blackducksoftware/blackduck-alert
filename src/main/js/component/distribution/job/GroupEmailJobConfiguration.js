@@ -4,9 +4,6 @@ import React from 'react';
 import { missingHubData } from '../../../../css/main.css';
 import {fieldLabel, typeAheadField, fieldError, inline} from '../../../../css/field.css';
 
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
-
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';
 

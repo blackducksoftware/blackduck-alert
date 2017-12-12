@@ -7,6 +7,9 @@ import {fieldLabel, typeAheadField} from '../../../css/field.css';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {Typeahead, Token} from 'react-bootstrap-typeahead';
 
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
+
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
@@ -116,7 +119,7 @@ export default class JobAddModal extends Component {
 		var content = <div>
 						<ConfigButtons isFixed={false} includeCancel={true} onCancelClick={this.props.onModalClose} onClick={this.props.onModalClose} />
 					</div>;
-		
+
 		var currentJobConfig = this.getCurrentJobConfig();
 		if (currentJobConfig != null) {
 			content = currentJobConfig;
