@@ -32,6 +32,8 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChanne
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
@@ -41,9 +43,9 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<HipChatDistributionConfigEntity, Long> channelDistributionRepository,
-            final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
-        super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, objectTransformer);
+    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
+            final JpaRepository<HipChatDistributionConfigEntity, Long> channelDistributionRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
+        super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, channelDistributionRepository, objectTransformer);
         this.hipChatChannel = hipChatChannel;
     }
 
