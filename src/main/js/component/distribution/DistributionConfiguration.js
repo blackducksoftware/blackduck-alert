@@ -40,7 +40,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             notificationTypeArray: [
             'POLICY_VIOLATION_OVERRIDE',
             'HIGH_VULNERABILITY'],
-            selectedProjects: []
+            selectedProjects: ['missing-1', 'missing-2']
 		});
 		jobs.push({
 			jobId: '2',

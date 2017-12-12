@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import styles from '../../../css/distributionConfig.css';
-import { progressIcon } from '../../../css/main.css';
+import { progressIcon, missingHubData } from '../../../css/main.css';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -11,20 +11,60 @@ export default class ProjectConfiguration extends Component {
 		super(props);
 	}
 
-	render() {
-        let projectData = this.props.projects;
-        if(!projectData || projectData.length == 0) {
-            let rawProjects = this.props.selectedProjects;
+    createProjectList() {
+        const { projects, selectedProjects } = this.props;
+        let projectData = new Array();
+        if(projects && projects.length > 0) {
+            let rawProjects = projects;
+            let missingProjects = new Array();
+            for (var index in rawProjects) {
+                let name = rawProjects[index]
+                projectData.push({
+                    name: rawProjects[index].name,
+                    missing: false
+                });
+            }
+
+            for(var index in selectedProjects) {
+                let projectFound = projectData.find((project) => {
+                    return project.name === selectedProjects[index];
+                });
+
+                if(!projectFound) {
+                    projectData.push({
+                        name: selectedProjects[index],
+                        missing: true
+                    });
+                }
+            }
+        } else {
+            let rawProjects = selectedProjects;
             for (var index in rawProjects) {
                 projectData.push({
-                    name: rawProjects[index]
+                    name: rawProjects[index],
+                    missing: true
                 });
             }
         }
+        return projectData;
+    }
+
+    assignClassName(row, rowIdx) {
+        if(row.missing) {
+            return `${styles.tableRow} ${missingHubData}`;
+        } else {
+            return `${styles.tableRow}`;
+        }
+    }
+
+	render() {
+        let projectData = this.createProjectList();
 
 		const projectTableOptions = {
 	  		noDataText: 'No projects found',
-	  		clearSearch: true
+	  		clearSearch: true,
+            defaultSortName: 'name',
+            defaultSortOrder: 'asc'
 		};
 
 		const projectsSelectRowProp = {
@@ -42,8 +82,9 @@ export default class ProjectConfiguration extends Component {
 		}
 		return (
 			<div>
-				<BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
+				<BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
 					<TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
 				</BootstrapTable>
 				{progressIndicator}
 				<p name="projectTableMessage">{this.props.projectTableMessage}</p>
