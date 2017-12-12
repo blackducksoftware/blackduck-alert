@@ -27,7 +27,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE'],
-            selectedGroups: ['Developer'],
+            selectedGroups: ['Custom Group'],
             selectedProjects: ['PSTestApp']
 		});
 		jobs.push({

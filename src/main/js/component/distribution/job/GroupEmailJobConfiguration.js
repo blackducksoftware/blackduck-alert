@@ -1,10 +1,14 @@
 'use strict';
 import React from 'react';
 
+import { missingHubData } from '../../../../css/main.css';
 import {fieldLabel, typeAheadField, fieldError, inline} from '../../../../css/field.css';
 
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import {Typeahead} from 'react-bootstrap-typeahead';
+
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
 
 import BaseJobConfiguration from './BaseJobConfiguration';
 
@@ -15,7 +19,7 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 	}
 
 	handleGroupsChanged (optionsList) {
-		super.handleStateValues('groupValue', optionsList);
+		super.handleStateValues('groupValue', optionsList.value);
 	}
 
     initializeValues() {
@@ -26,15 +30,43 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 			let rawGroups = groups;
 			for (var index in rawGroups) {
 				groupOptions.push({
-					label: rawGroups[index].name
+					label: rawGroups[index].name,
+                    value: rawGroups[index].name,
+                    missing: false
 				});
 			}
+
+            for(var index in selectedGroups) {
+                let groupFound = groupOptions.find((group) => {
+                    return group.name === selectedGroups[index];
+                });
+
+                if(!groupFound) {
+                    groupOptions.push({
+                        label: selectedGroups[index],
+                        value: selectedGroups[index],
+                        missing: true
+                    });
+                }
+            }
+
+            groupOptions.sort((group1, group2) => {
+                if(group1.value < group2.value) {
+                    return -1;
+                } else if (group1.value > group2.value) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
 		} else {
             if(selectedGroups) {
                 let rawGroups = selectedGroups;
                 for (var index in rawGroups) {
     				groupOptions.push({
-    					label: rawGroups[index]
+    					label: rawGroups[index],
+                        value: rawGroups[index],
+                        missing: true
     				});
     			}
             }
@@ -51,12 +83,26 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
         });
 
         if(groupValueArray) {
-            this.state.groupValue = groupValueArray;
+            super.handleStateValues('groupValue', groupValueArray[0].value);
+        }
+    }
+
+    renderOption(option) {
+        let classAttribute;
+        if(option.missing) {
+            return (
+                <span className={missingHubData}>{option.label}</span>
+            );
+        } else {
+            return (
+                <span>{option.label}</span>
+            );
         }
     }
 
 	render() {
         const { groupOptions } = this.state;
+        const groupValue = this.state.values['groupValue'];
         let options;
         if(groupOptions) {
             options = groupOptions;
@@ -79,12 +125,15 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		let content =
 					<div>
 						<label className={fieldLabel}>Group</label>
-						<Typeahead className={typeAheadField}
+						<Select className={typeAheadField}
 							onChange={this.handleGroupsChanged}
-						    clearButton
+						    clearble={true}
 						    options={options}
+                            optionRenderer={this.renderOption}
 						    placeholder='Choose the Hub user group'
-						    selected={this.state.groupValue}
+						    value={groupValue}
+                            valueRenderer={this.renderOption}
+                            searchable={true}
 						  />
 						  {progressIndicator}
 						  {errorDiv}
