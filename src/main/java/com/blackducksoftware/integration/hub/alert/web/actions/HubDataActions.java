@@ -81,7 +81,6 @@ public class HubDataActions {
             for (final ProjectView projectView : rawProjects) {
                 final HubProject project = new HubProject();
                 project.name = projectView.name;
-                project.url = projectView.meta.href;
                 projects.add(project);
             }
             return projects;

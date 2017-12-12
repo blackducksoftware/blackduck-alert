@@ -20,12 +20,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
-import javax.persistence.Entity;
+import javax.persistence.MappedSuperclass;
 
-// Slack has no global configuration
-@Entity
-public class GlobalSlackConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 1L;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+
+@MappedSuperclass
+public abstract class DistributionChannelConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = -7153327306663893217L;
+
+    public DistributionChannelConfigEntity() {
+    }
+
 }

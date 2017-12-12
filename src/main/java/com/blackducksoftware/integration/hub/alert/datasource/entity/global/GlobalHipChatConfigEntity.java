@@ -29,11 +29,9 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
-public class GlobalHipChatConfigEntity extends DatabaseEntity {
+public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
     private static final long serialVersionUID = 2791949172564090134L;
 
     @Column(name = "api_key")

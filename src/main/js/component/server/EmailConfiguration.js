@@ -38,14 +38,14 @@ class EmailConfiguration extends ServerConfiguration {
 
 EmailConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 EmailConfiguration.defaultProps = {
     headerText: 'Email Smtp Server Configuration',
-    configButtonTest: 'true',
+    configButtonTest: 'false',
     baseUrl: '/configuration/email',
     testUrl: '/configuration/email/test'
 };

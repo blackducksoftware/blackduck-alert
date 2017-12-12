@@ -29,11 +29,9 @@ import javax.persistence.Table;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-
 @Entity
 @Table(schema = "alert", name = "global_email_config")
-public class GlobalEmailConfigEntity extends DatabaseEntity {
+public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     private static final long serialVersionUID = 4122029411365267232L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html

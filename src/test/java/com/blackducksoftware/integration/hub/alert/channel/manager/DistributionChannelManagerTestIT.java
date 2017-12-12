@@ -9,11 +9,11 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
+package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.transaction.Transactional;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,32 +26,27 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
-@Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class DistributionProjectRepositoryTestIT {
-
+public class DistributionChannelManagerTestIT<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity> {
     @Autowired
-    private DistributionProjectRepository distributionProjectRepository;
+    private List<DistributionChannel<E, G, D>> channelList;
+    @Autowired
+    private List<DistributionChannelManager<G, D, E>> channelManagerList;
 
     @Test
-    public void saveEntityTestIT() {
-        final Long distributionConfigId = 1L;
-        final Long projectId = 2L;
-        final DistributionProjectRelation relation = new DistributionProjectRelation(distributionConfigId, projectId);
-
-        final DistributionProjectRelation savedRelation = distributionProjectRepository.save(relation);
-        final long count = distributionProjectRepository.count();
-        assertEquals(1, count);
-
-        assertEquals(distributionConfigId, savedRelation.getCommonDistributionConfigId());
-        assertEquals(projectId, savedRelation.getProjectId());
-
+    public void assertManagerHasBeenCreatedForChannel() {
+        // DO NOT DELETE THIS TEST
+        // This test exists to ensure that when a new channel is created, its necessary pieces are created as well.
+        assertEquals(channelList.size(), channelManagerList.size());
     }
+
 }
