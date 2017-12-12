@@ -9,11 +9,15 @@ export default class TextInput extends LabeledField {
 	}
 
 	render() {
+		let inputClass = this.props.inputClass;
+		if (!inputClass) {
+			inputClass = textInput;
+		}
 		let inputDiv = null;
 		if (this.props.readOnly) {
-			inputDiv = <input type="text" readOnly className={textInput} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="text" readOnly className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
 		} else {
-			inputDiv = <input type="text" className={textInput} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="text" className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
 		}
 		return (
 				super.render(inputDiv)
