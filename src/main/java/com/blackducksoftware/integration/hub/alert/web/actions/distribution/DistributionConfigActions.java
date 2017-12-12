@@ -89,6 +89,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                     commonEntity.setDistributionConfigId(createdEntity.getId());
                     commonEntity = commonDistributionRepository.save(commonEntity);
                     saveConfiguredProjects(commonEntity, restModel);
+                    cleanUpStaleChannelConfigurations();
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -182,6 +183,19 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                 configuredProjectsRepository.delete(configuredProject);
             }
         });
+    }
+
+    private void cleanUpStaleChannelConfigurations() {
+        final String distributionName = getDistributionName();
+        if (distributionName != null) {
+            final List<D> channelDistributionConfigEntities = channelDistributionRepository.findAll();
+            channelDistributionConfigEntities.forEach(entity -> {
+                final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
+                if (commonEntity == null) {
+                    channelDistributionRepository.delete(entity);
+                }
+            });
+        }
     }
 
     public List<R> constructRestModels() {
