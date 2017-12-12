@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import { submitButtons } from '../../../css/main.css';
 import styles from '../../../css/distributionConfig.css';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
@@ -56,21 +55,13 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'HIGH_VULNERABILITY',
             'MEDIUM_VULNERABILITY',
             'LOW_VULNERABILITY'],
+            includeAllProjects: true,
             selectedProjects: []
 		});
 	}
 
 
 	addJobs();
-
-	function columnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
-		var className = styles.statusSuccess;
-		if (fieldValue === 'Failure') {
-			className = styles.statusFailure;
-		}
-		return className;
-	}
-
 
 class DistributionConfiguration extends Component {
 	constructor(props) {
@@ -156,12 +147,39 @@ class DistributionConfiguration extends Component {
 		});
     }
 
+    statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
+		var className = styles.statusSuccess;
+		if (fieldValue === 'Failure') {
+			className = styles.statusFailure;
+		}
+		return className;
+	}
+
+	typeColumnDataFormat(cell, row) {
+		var fontAwesomeClass = "";
+		if (cell === 'Group Email') {
+			fontAwesomeClass = 'fa fa-envelope';
+		} else if (cell === 'HipChat') {
+			fontAwesomeClass = 'fa fa-comments';
+		} else if (cell === 'Slack') {
+			fontAwesomeClass = 'fa fa-slack';
+		}
+		var cellText = " " + cell; 
+		var data = <div>
+						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
+						{cellText}
+					</div>;
+
+		return data;
+	}
+
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
 	    return (
 	    	<JobAddModal
 	    		waitingForProjects={this.state.waitingForProjects}
 	    		waitingForGroups={this.state.waitingForGroups}
 	    		projects={this.state.projects}
+	    		includeAllProjects={true}
 	    		groups={this.state.groups}
 	    		groupError={this.state.groupError}
 	    		projectTableMessage={this.state.projectTableMessage}
@@ -213,13 +231,13 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray, selectedGroups, selectedProjects } = currentJobSelected;
+            const { jobName, type, frequency, notificationTypeArray, selectedGroups, includeAllProjects, selectedProjects } = currentJobSelected;
 			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroups={selectedGroups} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} jobName={jobName} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
@@ -252,10 +270,10 @@ class DistributionConfiguration extends Component {
 						<BootstrapTable data={jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='jobId' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort>Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='type' dataSort>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='type' dataSort dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ columnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' columnClassName={ columnClassNameFormat } dataFormat={ this.editButtonClick }></TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
+                            <TableHeaderColumn dataField='' dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;
