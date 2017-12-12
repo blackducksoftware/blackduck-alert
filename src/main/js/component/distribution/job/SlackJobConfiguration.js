@@ -11,8 +11,12 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 	}
 
 	render() {
-		let content = 
-			<TextInput label="Room Name" name="roomName" value={this.props.roomName} onChange={this.props.handleRoomNameChange} errorName="roomNameError" errorValue={this.props.roomNameError}></TextInput>
+		let content = <div>
+							<TextInput label="Webhook" name="webhook" value={this.props.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError}></TextInput>
+							<TextInput label="Channel Name" name="channelName" value={this.props.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError}></TextInput>
+							<TextInput label="Channel Username" name="channelUsername" value={this.props.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError}></TextInput>
+						</div>;
+		
 		return super.render(content);
 	}
 }
