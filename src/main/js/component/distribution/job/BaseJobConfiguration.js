@@ -6,9 +6,6 @@ import {fieldLabel, typeAheadField} from '../../../../css/field.css';
 import TextInput from '../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
-
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';
 
@@ -127,7 +124,8 @@ class BaseJobConfiguration extends Component {
 							<label className={fieldLabel}>Frequency</label>
 							<Select className={typeAheadField}
 								onChange={this.handleFrequencyChanged}
-							    clearButton
+							    clearble={true}
+                                searchable={true}
 							    options={this.state.frequencyOptions}
 							    placeholder='Choose the frequency'
 							    value={this.state.values.frequencyValue}
@@ -138,6 +136,7 @@ class BaseJobConfiguration extends Component {
 							<Select className={typeAheadField}
 								onChange={this.handleNotificationChanged}
 							    clearble={true}
+                                searchable={true}
 							    multi
                                 removeSelected={true}
 							    options={this.state.notificationOptions}
