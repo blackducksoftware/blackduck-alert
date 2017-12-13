@@ -15,8 +15,8 @@ class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
-		 	values: [],
-		 	errors: [],
+		 	values: {},
+		 	errors: {},
             frequencyOptions: [
 				{ label: 'Real Time', value: 'REAL_TIME'},
 				{ label: 'Daily', value: 'DAILY' }
@@ -36,7 +36,10 @@ class BaseJobConfiguration extends Component {
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTestSubmit = this.handleTestSubmit.bind(this);
 	}
+
     componentDidMount() {
         this.initializeValues();
     }
@@ -69,6 +72,123 @@ class BaseJobConfiguration extends Component {
 
         this.setState({values});
     }
+
+    handleSubmit(event) {
+		this.setState({
+			configurationMessage: 'Saving...',
+			inProgress: true,
+			errors: {}
+		});
+		event.preventDefault();
+
+		var configuration = Object.assign({}, this.state.values);
+		configuration.filterByProject = !configuration.includeAllProjects;
+		configuration.includeAllProjects = null;
+		if (configuration.notificationType && configuration.notificationType.length > 0) {
+			configuration.notificationType = configuration.notificationType[0].value;
+		} else {
+			configuration.notificationType = null;
+		}
+
+		var self = this;
+		let jsonBody = JSON.stringify(configuration);
+		var method = 'POST';
+		if (this.state.id) {
+			method = 'PUT';
+		}
+		fetch(this.props.baseUrl, {
+			method: method,
+			credentials: "same-origin",
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonBody
+		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
+			if (response.ok) {
+				return response.json().then(json => {
+					self.setState({
+						id: json.id,
+						configurationMessage: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
+						}
+						self.setState({
+							errors
+						});
+					}
+					self.setState({
+						configurationMessage: json.message
+					});
+				});
+			}
+		});
+	}
+
+	handleTestSubmit(event) {
+		this.setState({
+			configurationMessage: 'Testing...',
+			inProgress: true,
+			errors: {}
+		});
+		event.preventDefault();
+
+		var configuration = Object.assign({}, this.state.values);
+		configuration.filterByProject = !configuration.includeAllProjects;
+		configuration.includeAllProjects = null;
+		if (configuration.notificationType && configuration.notificationType.length > 0) {
+			configuration.notificationType = configuration.notificationType[0].value;
+		} else {
+			configuration.notificationType = null;
+		}
+
+		var self = this;
+		let jsonBody = JSON.stringify(configuration);
+		fetch(this.props.testUrl, {
+			method: 'POST',
+			credentials: "same-origin",
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonBody
+		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
+			return response.json().then(json => {
+				let jsonErrors = json.errors;
+				if (jsonErrors) {
+					var errors = {};
+					for (var key in jsonErrors) {
+						if (jsonErrors.hasOwnProperty(key)) {
+							let name = key.concat('Error');
+							let value = jsonErrors[key];
+							errors[name] = value;
+						}
+					}
+					self.setState({
+						errors
+					});
+				}
+				self.setState({
+					configurationMessage: json.message
+				});
+			});
+		});
+	}
 
 	handleChange(event) {
 		const target = event.target;
@@ -122,7 +242,7 @@ class BaseJobConfiguration extends Component {
     }
 
     onSubmit(event) {
-        const { handleSubmit } = this.props;
+        const { handleSaveBtnClick } = this.props;
 
         var jobName = null;
 		if (this.state.values && this.state.values.name) {
@@ -137,6 +257,7 @@ class BaseJobConfiguration extends Component {
 		} else {
 			this.handleErrorValues('nameError', '');
 			handleSubmit(this.state.values);
+			handleSaveBtnClick(this.state.values);
 		}
     }
 
@@ -174,7 +295,8 @@ class BaseJobConfiguration extends Component {
 						{content}
 					</div>
 					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.props.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel} type="submit" />
+					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} type="submit" />
+					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 			</div>
 		)
