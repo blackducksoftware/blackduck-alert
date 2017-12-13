@@ -26,6 +26,7 @@ public class TestProperties {
     public Properties getProperties() {
         if (properties == null) {
             try {
+                // TODO add additional locations to check for properties
                 properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
                 if (properties.isEmpty()) {
                     populatePropertiesFromEnv();

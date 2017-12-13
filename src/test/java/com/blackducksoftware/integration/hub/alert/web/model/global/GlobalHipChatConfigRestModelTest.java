@@ -14,45 +14,40 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
-
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
-public class GlobalHipChatConfigRestModelTest {
-    HipChatMockUtils mockUtils = new HipChatMockUtils();
+public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+    private final static HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    @Test
-    public void testEmptyModel() {
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel();
-        assertEquals(8852683250883814613L, GlobalHipChatConfigRestModel.getSerialversionuid());
-
-        assertNull(hipChatConfigRestModel.getApiKey());
-        assertNull(hipChatConfigRestModel.getId());
-
-        final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(23273, restModelHash);
-
-        final String expectedString = mockUtils.getEmptyGlobalRestModelJson();
-        assertEquals(expectedString, hipChatConfigRestModel.toString());
-
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel();
-        assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
+    public GlobalHipChatConfigRestModelTest() {
+        super(mockUtils);
     }
 
-    @Test
-    public void testModel() {
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = mockUtils.createGlobalRestModel();
+    @Override
+    public void assertGlobalRestModelFieldsNull(final GlobalHipChatConfigRestModel restModel) {
+        assertNull(restModel.getApiKey());
+    }
 
-        assertEquals(mockUtils.getApiKey(), hipChatConfigRestModel.getApiKey());
-        assertEquals(mockUtils.getId(), hipChatConfigRestModel.getId());
+    @Override
+    public long emptyGlobalRestModelSerialId() {
+        return 3607759169675906880L;
+    }
 
-        final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(-215716397, restModelHash);
+    @Override
+    public int emptyGlobalRestModelHashCode() {
+        return 23273;
+    }
 
-        final String expectedString = mockUtils.getGlobalRestModelJson();
-        assertEquals(expectedString, hipChatConfigRestModel.toString());
+    @Override
+    public void assertGlobalRestModelFieldsFull(final GlobalHipChatConfigRestModel restModel) {
+        assertEquals(mockUtils.getApiKey(), restModel.getApiKey());
+    }
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = mockUtils.createGlobalRestModel();
-        assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
+    @Override
+    public int gloablRestModelHashCode() {
+        return -215716397;
     }
 }

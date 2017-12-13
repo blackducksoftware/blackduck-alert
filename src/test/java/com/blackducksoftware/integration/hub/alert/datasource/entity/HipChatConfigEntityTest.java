@@ -19,7 +19,7 @@ import org.junit.Test;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 
-public class HipChatConfigEntitytest {
+public class HipChatConfigEntityTest {
     HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     @Test

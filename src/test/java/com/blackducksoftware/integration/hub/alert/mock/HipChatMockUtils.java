@@ -52,6 +52,7 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
         return color;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -169,6 +170,26 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
     @Override
     public String getEmptyEntityJson() {
         return "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
+    }
+
+    @Override
+    public GlobalHipChatConfigRestModel createEmptyGlobalRestModel() {
+        return new GlobalHipChatConfigRestModel();
+    }
+
+    @Override
+    public HipChatDistributionRestModel createEmptyRestModel() {
+        return new HipChatDistributionRestModel();
+    }
+
+    @Override
+    public GlobalHipChatConfigEntity createEmptyGlobalEntity() {
+        return new GlobalHipChatConfigEntity();
+    }
+
+    @Override
+    public HipChatDistributionConfigEntity createEmptyEntity() {
+        return new HipChatDistributionConfigEntity();
     }
 
 }
