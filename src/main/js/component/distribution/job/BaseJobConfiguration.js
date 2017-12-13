@@ -263,8 +263,8 @@ class BaseJobConfiguration extends Component {
 			this.handleErrorValues('nameError', 'You must provide a Job name');
 		} else {
 			this.handleErrorValues('nameError', '');
-			handleSubmit(this.state.values);
-			handleSaveBtnClick(this.state.values);
+			this.handleSubmit(this.state.values);
+			this.handleSaveBtnClick(this.state.values);
 		}
     }
 
