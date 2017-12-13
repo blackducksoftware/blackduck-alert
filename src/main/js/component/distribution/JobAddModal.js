@@ -34,10 +34,7 @@ export default class JobAddModal extends Component {
 	}
 
 	handleSaveBtnClick(values) {
-		// TODO persist to the backend
-        // persist to the backend and get the distribution config ID to update the value in the newRow
-        // Allow us to use the distributionConfigId as the key again
-	    const { columns, onSave } = this.props;
+		const { columns, onSave } = this.props;
 	    const newRow = this.getFieldValue(values);
 	    // You should call onSave function and give the new row
 	    onSave(newRow);
@@ -83,11 +80,11 @@ export default class JobAddModal extends Component {
 		let typeValue = this.state.values.typeValue;
 		if (typeValue) {
 			if (typeValue === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSubmit={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (typeValue === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSubmit={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
 			} else if (typeValue === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSubmit={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
