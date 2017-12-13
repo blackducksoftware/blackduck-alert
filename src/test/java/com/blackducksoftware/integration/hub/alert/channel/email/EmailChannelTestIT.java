@@ -62,7 +62,7 @@ public class EmailChannelTestIT extends RestChannelTest {
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, null);
         globalProperties.hubUrl = properties.getProperty("blackduck.hub.url");
 
         final String trustCert = properties.getProperty("blackduck.hub.trust.cert");

@@ -30,20 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -64,18 +59,11 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(GlobalHubConfigActions.class);
     private final GlobalProperties globalProperties;
-    private final AccumulatorConfig accumulatorConfig;
-    private final DailyDigestBatchConfig dailyDigestBatchConfig;
-    private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
-            final ObjectTransformer objectTransformer) {
+    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final ObjectTransformer objectTransformer) {
         super(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, globalRepository, objectTransformer);
         this.globalProperties = globalProperties;
-        this.accumulatorConfig = accumulatorConfig;
-        this.dailyDigestBatchConfig = dailyDigestBatchConfig;
-        this.purgeConfig = purgeConfig;
     }
 
     @Override
@@ -141,29 +129,30 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
             fieldErrors.put("hubTimeout", "Not an Integer.");
         }
 
-        if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
-            try {
-                new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("accumulatorCron", e.getMessage());
-            }
-        }
-
-        if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
-            try {
-                new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("dailyDigestCron", e.getMessage());
-            }
-        }
-
-        if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
-            try {
-                new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("purgeDataCron", e.getMessage());
-            }
-        }
+        // TODO move this to the scheduling config actions
+        // if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
+        // try {
+        // new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
+        // } catch (final IllegalArgumentException e) {
+        // fieldErrors.put("accumulatorCron", e.getMessage());
+        // }
+        // }
+        //
+        // if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
+        // try {
+        // new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
+        // } catch (final IllegalArgumentException e) {
+        // fieldErrors.put("dailyDigestCron", e.getMessage());
+        // }
+        // }
+        //
+        // if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
+        // try {
+        // new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
+        // } catch (final IllegalArgumentException e) {
+        // fieldErrors.put("purgeDataCron", e.getMessage());
+        // }
+        // }
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -223,9 +212,10 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public void configurationChangeTriggers(final GlobalHubConfigRestModel globalConfig) {
         if (globalConfig != null) {
-            accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
-            purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
+            // TODO move this to scheduling config
+            // accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
+            // dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
+            // purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
 
         }
     }

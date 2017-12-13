@@ -16,14 +16,15 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 public class MockUtils {
 
-    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository) {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
+    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
         globalProperties.hubUrl = "HubUrl";
         globalProperties.hubTrustCertificate = false;
         globalProperties.hubProxyHost = "HubProxyHost";
@@ -42,13 +43,12 @@ public class MockUtils {
     }
 
     public GlobalHubConfigRestModel createGlobalConfigRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *",
-                "0 0 12 1/2 * *");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "false");
         return restModel;
     }
 
     public GlobalHubConfigRestModel createGlobalConfigMaskedRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", null, "HubProxyHost", "22", "HubProxyUsername", null, "false", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", null, "HubProxyHost", "22", "HubProxyUsername", null, "false");
         return restModel;
     }
 

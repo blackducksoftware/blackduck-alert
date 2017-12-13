@@ -39,15 +39,12 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
     private String hubProxyUsername;
     private String hubProxyPassword;
     private String hubAlwaysTrustCertificate;
-    private String accumulatorCron;
-    private String dailyDigestCron;
-    private String purgeDataCron;
 
     public GlobalHubConfigRestModel() {
     }
 
     public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+            final String hubProxyPassword, final String hubAlwaysTrustCertificate) {
         super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
@@ -58,9 +55,6 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
         this.hubProxyUsername = hubProxyUsername;
         this.hubProxyPassword = hubProxyPassword;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
     }
 
     public static long getSerialversionuid() {
@@ -129,18 +123,6 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     public void setHubAlwaysTrustCertificate(final String hubAlwaysTrustCertificate) {
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
-    }
-
-    public String getAccumulatorCron() {
-        return accumulatorCron;
-    }
-
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public String getPurgeDataCron() {
-        return purgeDataCron;
     }
 
     @Override

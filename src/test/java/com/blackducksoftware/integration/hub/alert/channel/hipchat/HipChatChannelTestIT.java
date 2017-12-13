@@ -40,7 +40,7 @@ public class HipChatChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("hipchat.room.id"));
 
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, null, null, null);
 
         final HashMap<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
