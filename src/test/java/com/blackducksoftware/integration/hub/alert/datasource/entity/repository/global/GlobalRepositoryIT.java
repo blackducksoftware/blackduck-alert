@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,8 +43,5 @@ public class GlobalRepositoryIT {
         assertEquals(hubTimeout, foundEntity.getHubTimeout());
         assertEquals(hubUsername, foundEntity.getHubUsername());
         assertEquals(hubPassword, foundEntity.getHubPassword());
-        assertEquals(accumulatorCron, foundEntity.getAccumulatorCron());
-        assertEquals(dailyDigestCron, foundEntity.getDailyDigestCron());
-        assertEquals(purgeDataCron, foundEntity.getPurgeDataCron());
     }
 }

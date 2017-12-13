@@ -25,8 +25,6 @@ public class GlobalHubConfigEntityTest {
         final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity();
         assertEquals(9172607945030111585L, GlobalHubConfigEntity.getSerialversionuid());
 
-        assertNull(globalConfigEntity.getAccumulatorCron());
-        assertNull(globalConfigEntity.getDailyDigestCron());
         assertNull(globalConfigEntity.getHubPassword());
         assertNull(globalConfigEntity.getHubTimeout());
         assertNull(globalConfigEntity.getHubUsername());
@@ -53,9 +51,6 @@ public class GlobalHubConfigEntityTest {
         final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
         globalConfigEntity.setId(id);
 
-        assertEquals(accumulatorCron, globalConfigEntity.getAccumulatorCron());
-        assertEquals(dailyDigestCron, globalConfigEntity.getDailyDigestCron());
-        assertEquals(purgeDataCron, globalConfigEntity.getPurgeDataCron());
         assertEquals(hubPassword, globalConfigEntity.getHubPassword());
         assertEquals(hubTimeout, globalConfigEntity.getHubTimeout());
         assertEquals(hubUsername, globalConfigEntity.getHubUsername());
