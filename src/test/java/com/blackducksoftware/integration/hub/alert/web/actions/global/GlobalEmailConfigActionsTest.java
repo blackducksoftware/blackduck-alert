@@ -11,213 +11,44 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
-public class GlobalEmailConfigActionsTest {
-    private final ObjectTransformer objectTransformer = new ObjectTransformer();
+public class GlobalEmailConfigActionsTest extends GlobalActionsTest<EmailGroupDistributionRestModel, GlobalEmailConfigRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
+    private static EmailMockUtils mockUtils = new EmailMockUtils();
 
-    @Test
-    public void testDoesConfigExist() {
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        Mockito.when(mockedEmailRepository.exists(Mockito.anyLong())).thenReturn(true);
-
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-        assertTrue(configActions.doesConfigExist(1L));
-        assertTrue(configActions.doesConfigExist("1"));
-
-        Mockito.when(mockedEmailRepository.exists(Mockito.anyLong())).thenReturn(false);
-        assertFalse(configActions.doesConfigExist(1L));
-        assertFalse(configActions.doesConfigExist("1"));
-
-        final String idString = null;
-        final Long idLong = null;
-        assertFalse(configActions.doesConfigExist(idString));
-        assertFalse(configActions.doesConfigExist(idLong));
+    public GlobalEmailConfigActionsTest() {
+        super(mockUtils);
     }
 
-    @Test
-    public void testGetConfig() throws Exception {
-        final EmailMockUtils mockUtils = new EmailMockUtils();
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEmailConfigEntity());
-        Mockito.when(mockedEmailRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEmailConfigEntity()));
-
-        final GlobalEmailConfigRestModel maskedRestModel = mockUtils.createGlobalEmailConfigMaskedRestModel();
-
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-        List<GlobalEmailConfigRestModel> emailConfigsById = configActions.getConfig(1L);
-        List<GlobalEmailConfigRestModel> allEmailConfigs = configActions.getConfig(null);
-
-        assertTrue(emailConfigsById.size() == 1);
-        assertTrue(allEmailConfigs.size() == 1);
-
-        final GlobalEmailConfigRestModel emailConfigById = emailConfigsById.get(0);
-        final GlobalEmailConfigRestModel emailConfig = allEmailConfigs.get(0);
-        assertEquals(maskedRestModel, emailConfigById);
-        assertEquals(maskedRestModel, emailConfig);
-
-        Mockito.when(mockedEmailRepository.findOne(Mockito.anyLong())).thenReturn(null);
-        Mockito.when(mockedEmailRepository.findAll()).thenReturn(null);
-
-        emailConfigsById = configActions.getConfig(1L);
-        allEmailConfigs = configActions.getConfig(null);
-
-        assertNotNull(emailConfigsById);
-        assertNotNull(allEmailConfigs);
-        assertTrue(emailConfigsById.isEmpty());
-        assertTrue(allEmailConfigs.isEmpty());
+    @Override
+    public GlobalEmailConfigActions getConfigActions() {
+        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 
-    @Test
-    public void testDeleteConfig() {
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-        configActions.deleteConfig(1L);
-        verify(mockedEmailRepository, times(1)).delete(Mockito.anyLong());
-
-        Mockito.reset(mockedEmailRepository);
-        configActions.deleteConfig("1");
-        verify(mockedEmailRepository, times(1)).delete(Mockito.anyLong());
-
-        final String idString = null;
-        final Long idLong = null;
-        Mockito.reset(mockedEmailRepository);
-        configActions.deleteConfig(idLong);
-        verify(mockedEmailRepository, times(0)).delete(Mockito.anyLong());
-
-        Mockito.reset(mockedEmailRepository);
-        configActions.deleteConfig(idString);
-        verify(mockedEmailRepository, times(0)).delete(Mockito.anyLong());
+    @Override
+    public GlobalEmailConfigActions getSaveTestConfigActions() {
+        return getConfigActions();
     }
 
-    @Test
-    public void testSaveConfig() throws Exception {
-        final EmailMockUtils mockUtils = new EmailMockUtils();
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final GlobalEmailConfigEntity expectedEmailConfigEntity = mockUtils.createGlobalEmailConfigEntity();
-        Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenReturn(expectedEmailConfigEntity);
-
-        GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-
-        GlobalEmailConfigEntity emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
-        assertNotNull(emailConfigEntity);
-        assertEquals(expectedEmailConfigEntity, emailConfigEntity);
-
-        emailConfigEntity = configActions.saveConfig(null);
-        assertNull(emailConfigEntity);
-
-        Mockito.when(mockedEmailRepository.save(Mockito.any(GlobalEmailConfigEntity.class))).thenThrow(new RuntimeException("test"));
-        try {
-            emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
-            fail();
-        } catch (final AlertException e) {
-            assertEquals("test", e.getMessage());
-        }
-
-        final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
-        Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = new GlobalEmailConfigActions(mockedEmailRepository, transformer);
-
-        emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalEmailConfigRestModel());
-        assertNull(emailConfigEntity);
+    @Override
+    public Class<GlobalEmailConfigEntity> getGlobalEntityClass() {
+        return GlobalEmailConfigEntity.class;
     }
 
-    @Test
-    public void testValidateConfig() throws Exception {
-        final EmailMockUtils mockUtils = new EmailMockUtils();
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-
-        String response = configActions.validateConfig(mockUtils.createGlobalEmailConfigRestModel());
-        assertEquals("Valid", response);
-
-        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel("NotLong", "MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", "NotInteger", "NotInteger", "NotInteger", "MailSmtpFrom", "MailSmtpLocalhost", "NotBoolean",
-                "NotBoolean", "MailSmtpDnsNotify", "MailSmtpDnsRet", "NotBoolean", "NotBoolean", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
-
-        final Map<String, String> fieldErrors = new HashMap<>();
-        fieldErrors.put("mailSmtpPort", "Not an Integer.");
-        fieldErrors.put("mailSmtpConnectionTimeout", "Not an Integer.");
-        fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
-        fieldErrors.put("mailSmtpEhlo", "Not an Boolean.");
-        fieldErrors.put("mailSmtpAuth", "Not an Boolean.");
-        fieldErrors.put("mailSmtpAllow8bitmime", "Not an Boolean.");
-        fieldErrors.put("mailSmtpSendPartial", "Not an Boolean.");
-        try {
-            response = configActions.validateConfig(restModel);
-            fail();
-        } catch (final AlertFieldException e) {
-            for (final Entry<String, String> entry : e.getFieldErrors().entrySet()) {
-                assertTrue(fieldErrors.containsKey(entry.getKey()));
-                final String expectedValue = fieldErrors.get(entry.getKey());
-                assertEquals(expectedValue, entry.getValue());
-            }
-        }
-
-        response = configActions.validateConfig(new GlobalEmailConfigRestModel());
-        assertEquals("Valid", response);
-    }
-
-    // TODO fix when we have decided on an implementation of GlobalEmailConfigActions.testConfig()
-    // @Test
-    public void testTestConfig() throws Exception {
-        final EmailMockUtils mockUtils = new EmailMockUtils();
-        final EmailGroupChannel mockedEmailChannel = Mockito.mock(EmailGroupChannel.class);
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-
-        configActions.testConfig(mockUtils.createGlobalEmailConfigRestModel());
-        verify(mockedEmailChannel, times(1)).testMessage(Mockito.any());
-        Mockito.reset(mockedEmailChannel);
-
-        configActions.testConfig(null);
-        verify(mockedEmailChannel, times(1)).testMessage(Mockito.any());
-    }
-
-    @Test
+    @Override
     public void testConfigurationChangeTriggers() {
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(null, null);
-        configActions.configurationChangeTriggers(null);
-    }
+        // TODO Auto-generated method stub
 
-    @Test
-    public void testIsBoolean() {
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(null, null);
-        assertFalse(configActions.isBoolean(null));
-        assertFalse(configActions.isBoolean(""));
-        assertFalse(configActions.isBoolean("string"));
-        assertFalse(configActions.isBoolean(" cat"));
-        assertTrue(configActions.isBoolean("true"));
-        assertTrue(configActions.isBoolean("false"));
-        assertTrue(configActions.isBoolean("TRUE"));
-        assertTrue(configActions.isBoolean("FALSE"));
-        assertTrue(configActions.isBoolean("  TruE"));
-        assertTrue(configActions.isBoolean("FaLSE  "));
     }
 
 }

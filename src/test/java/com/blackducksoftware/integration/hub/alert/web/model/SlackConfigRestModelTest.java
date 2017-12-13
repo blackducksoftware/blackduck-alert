@@ -14,47 +14,45 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
-public class SlackConfigRestModelTest {
+public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRestModel, ConfigRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity> {
+    private final static SlackMockUtils mockUtils = new SlackMockUtils();
 
-    // @Test
-    public void testEmptyModel() {
-        final SlackDistributionRestModel slackModel = new SlackDistributionRestModel();
-        assertEquals(-3032738984577328749L, SlackDistributionRestModel.getSerialversionuid());
-
-        assertNull(slackModel.getChannelName());
-        assertNull(slackModel.getChannelUsername());
-        assertNull(slackModel.getWebhook());
-        assertNull(slackModel.getId());
-
-        final int restModelHash = slackModel.hashCode();
-        assertEquals(-2120005431, restModelHash);
-
-        final String expectedString = "{\"id\":null}";
-        assertEquals(expectedString, slackModel.toString());
-
-        final SlackDistributionRestModel slackModelNew = new SlackDistributionRestModel();
-        assertEquals(slackModel, slackModelNew);
+    public SlackConfigRestModelTest() {
+        super(mockUtils);
     }
 
-    // @Test
-    // public void testModel() {
-    // final String id = "Id";
-    // final String apiKey = "ApiKey";
-    //
-    // final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey);
-    //
-    // assertEquals(apiKey, hipChatConfigRestModel.getApiKey());
-    // assertEquals(id, hipChatConfigRestModel.getId());
-    //
-    // final int restModelHash = hipChatConfigRestModel.hashCode();
-    // assertEquals(-215714083, restModelHash);
-    //
-    // final String expectedString = "{\"id\":\"Id\"}";
-    // assertEquals(expectedString, hipChatConfigRestModel.toString());
-    //
-    // final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey);
-    // assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
-    // }
+    @Override
+    public void assertRestModelFieldsNull(final SlackDistributionRestModel restModel) {
+        assertNull(restModel.getChannelName());
+        assertNull(restModel.getChannelUsername());
+        assertNull(restModel.getWebhook());
+    }
+
+    @Override
+    public long emptyRestModelSerialId() {
+        return 3607759169675906880L;
+    }
+
+    @Override
+    public int emptyRestModelHashCode() {
+        return -2120005431;
+    }
+
+    @Override
+    public void assertRestModelFieldsFull(final SlackDistributionRestModel restModel) {
+        assertEquals(mockUtils.getWebhook(), restModel.getWebhook());
+        assertEquals(mockUtils.getChannelName(), restModel.getChannelName());
+        assertEquals(mockUtils.getChannelUsername(), restModel.getChannelUsername());
+    }
+
+    @Override
+    public int restModelHashCode() {
+        return 1336371893;
+    }
+
 }

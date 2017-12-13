@@ -11,6 +11,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock;
 
+import static org.junit.Assert.assertEquals;
+
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -19,11 +21,19 @@ public interface MockUtils<R extends CommonDistributionConfigRestModel, GR exten
 
     public GR createGlobalRestModel();
 
+    public GR createEmptyGlobalRestModel();
+
     public R createRestModel();
+
+    public R createEmptyRestModel();
 
     public GE createGlobalEntity();
 
+    public GE createEmptyGlobalEntity();
+
     public E createEntity();
+
+    public E createEmptyEntity();
 
     public String getGlobalRestModelJson();
 
@@ -40,5 +50,27 @@ public interface MockUtils<R extends CommonDistributionConfigRestModel, GR exten
     public String getEntityJson();
 
     public String getEmptyEntityJson();
+
+    public String getId();
+
+    public default void verifyValues() {
+        final String emptyEntity = createEmptyEntity().toString();
+        final String emptyGlobalEntity = createEmptyGlobalEntity().toString();
+        final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();
+        final String emptyRestModel = createEmptyRestModel().toString();
+        final String entity = createEntity().toString();
+        final String globalEntity = createGlobalEntity().toString();
+        final String globalRestModel = createGlobalRestModel().toString();
+        final String restModel = createRestModel().toString();
+
+        assertEquals(getEmptyEntityJson(), emptyEntity);
+        assertEquals(getEmptyGlobalEntityJson(), emptyGlobalEntity);
+        assertEquals(getEmptyGlobalRestModelJson(), emptyGlobalRestModel);
+        assertEquals(getEmptyRestModelJson(), emptyRestModel);
+        assertEquals(getEntityJson(), entity);
+        assertEquals(getGlobalEntityJson(), globalEntity);
+        assertEquals(getGlobalRestModelJson(), globalRestModel);
+        assertEquals(getRestModelJson(), restModel);
+    }
 
 }
