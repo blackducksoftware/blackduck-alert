@@ -233,6 +233,11 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return null;
     }
 
+    @Override
+    public boolean doesConfigExist(final Long id) {
+        return id != null && commonDistributionRepository.exists(id);
+    }
+
     public abstract String getDistributionName();
 
     public abstract R constructRestModel(final CommonDistributionConfigEntity commonEntity, D distributionEntity) throws AlertException;
