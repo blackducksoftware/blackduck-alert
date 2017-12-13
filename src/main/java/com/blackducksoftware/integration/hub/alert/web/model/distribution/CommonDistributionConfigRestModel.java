@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -36,11 +38,13 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private String frequency;
     private String notificationType;
     private String filterByProject;
+    private List<String> configuredProjects;
 
     public CommonDistributionConfigRestModel() {
     }
 
-    public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject) {
+    public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
+            final List<String> configuredProjects) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -48,6 +52,7 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         this.frequency = frequency;
         this.notificationType = notificationType;
         this.filterByProject = filterByProject;
+        this.configuredProjects = configuredProjects;
     }
 
     public static long getSerialversionuid() {
@@ -80,6 +85,14 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     public String getFilterByProject() {
         return filterByProject;
+    }
+
+    public List<String> getConfiguredProjects() {
+        return configuredProjects;
+    }
+
+    public void setConfiguredProjects(final List<String> configuredProjects) {
+        this.configuredProjects = configuredProjects;
     }
 
     @Override
