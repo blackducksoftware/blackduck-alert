@@ -1,5 +1,6 @@
 'use strict';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TextInput from '../../../field/input/TextInput';
 import CheckboxInput from '../../../field/input/CheckboxInput';
@@ -22,6 +23,14 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 	}
 }
 
+HipChatJobConfiguration.propTypes = {
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string,
+    distributionType: PropTypes.string
+};
+
 HipChatJobConfiguration.defaultProps = {
+    baseUrl: '/configuration/distribution/hipchat',
+    testUrl: '/configuration/distribution/hipchat/test',
     distributionType: 'HipChat'
 };

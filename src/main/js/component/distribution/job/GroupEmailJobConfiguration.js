@@ -132,7 +132,17 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		return renderResult;
 	}
 };
+
+GroupEmailJobConfiguration.propTypes = {
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string,
+    distributionType: PropTypes.string
+};
+
 GroupEmailJobConfiguration.defaultProps = {
+    baseUrl: '/configuration/distribution/emailGroup',
+    testUrl: '/configuration/distribution/emailGroup/test',
     distributionType: 'Group Email'
 };
+
 export default GroupEmailJobConfiguration;

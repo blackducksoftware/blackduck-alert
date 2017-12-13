@@ -1,5 +1,6 @@
 'use strict';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TextInput from '../../../field/input/TextInput';
 
@@ -21,6 +22,14 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 	}
 }
 
+SlackJobConfiguration.propTypes = {
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string,
+    distributionType: PropTypes.string
+};
+
 SlackJobConfiguration.defaultProps = {
+    baseUrl: '/configuration/distribution/slack',
+    testUrl: '/configuration/distribution/slack/test',
     distributionType: 'Slack'
 };
