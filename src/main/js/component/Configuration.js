@@ -4,7 +4,6 @@ export default class Configuration extends Component {
     constructor(props) {
 		super(props);
         this.state = {
-            id: undefined,
 			configurationMessage: '',
 			errors: {},
 			values: {}
@@ -56,10 +55,8 @@ export default class Configuration extends Component {
 					});
 					if (jsonArray != null && jsonArray.length > 0) {
 						var configuration = jsonArray[0];
-						self.setState({
-							id: configuration.id
-						});
 						var values = {};
+						values.id = configuration.id;
 						for (var key in configuration) {
 							if (configuration.hasOwnProperty(key)) {
 								let name = key;
@@ -88,7 +85,7 @@ export default class Configuration extends Component {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state.values);
 		var method = 'POST';
-		if (this.state.id) {
+		if (this.state.values.id) {
 			method = 'PUT';
 		}
 		fetch(this.props.baseUrl, {
@@ -104,8 +101,10 @@ export default class Configuration extends Component {
 			});
 			if (response.ok) {
 				return response.json().then(json => {
+					var values = {};
+					values.id = json.id;
 					self.setState({
-						id: json.id,
+						values,
 						configurationMessage: json.message
 					});
 				});
