@@ -27,9 +27,13 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -9134645093354671571L;
 
-    private final String accumulatorCron;
-    private final String dailyDigestCron;
-    private final String purgeDataCron;
+    private String accumulatorCron;
+    private String dailyDigestCron;
+    private String purgeDataCron;
+
+    public GlobalSchedulingConfigRestModel() {
+
+    }
 
     public GlobalSchedulingConfigRestModel(final String id, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
         super(id);

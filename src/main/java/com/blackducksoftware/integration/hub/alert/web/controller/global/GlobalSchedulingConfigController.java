@@ -26,8 +26,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalSchedulingConfigActions;
@@ -35,6 +41,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigCo
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
+@RestController
 public class GlobalSchedulingConfigController extends ConfigController<GlobalSchedulingConfigRestModel> {
     private final CommonConfigController<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel> commonConfigController;
 
@@ -44,31 +51,43 @@ public class GlobalSchedulingConfigController extends ConfigController<GlobalSch
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping(value = "/configuration/global/scheduling")
     public List<GlobalSchedulingConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigController.getConfig(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/configuration/global/scheduling/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return commonConfigController.deleteConfig(restModel);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/configuration/global/scheduling/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return commonConfigController.testConfig(restModel);
     }
