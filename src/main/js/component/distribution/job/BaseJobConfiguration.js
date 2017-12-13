@@ -14,7 +14,6 @@ import ConfigButtons from '../../ConfigButtons'
 class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
-
 		 this.state = {
 		 	values: [],
 		 	errors: [],
@@ -36,34 +35,36 @@ class BaseJobConfiguration extends Component {
         this.handleSetState = this.handleSetState.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
 	}
     componentDidMount() {
         this.initializeValues();
     }
 
     initializeValues() {
-        const { jobName, frequency, notificationTypeArray, includeAllProjects, projects, selectedProjects } = this.props;
+        const { name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = this.props;
         let values = this.state.values;
-        values.jobName = jobName;
-        let frequencyValue = this.state.frequencyOptions.find((option)=> {
+        values.name = name;
+        values.distributionType = distributionType;
+        let frequencyFound = this.state.frequencyOptions.find((option)=> {
             return option.value === frequency;
         });
 
-        if (frequencyValue) {
-            values.frequencyValue = frequencyValue.value;
+        if (frequencyFound) {
+            values.frequency = frequencyFound.value;
         }
 
-        let notificationValueArray = this.state.notificationOptions.filter((option) => {
-            if (notificationTypeArray) {
-                let includes = notificationTypeArray.includes(option.value);
+        let notificationTypeArray = this.state.notificationOptions.filter((option) => {
+            if (notificationType) {
+                let includes = notificationType.includes(option.value);
                 return includes;
             } else {
                 return false;
             }
         });
         values.includeAllProjects = includeAllProjects;
-        if (notificationValueArray) {
-            values.notificationValue  = notificationValueArray;
+        if (notificationTypeArray) {
+            values.notificationType  = notificationTypeArray;
         }
 
         this.setState({values});
@@ -92,14 +93,14 @@ class BaseJobConfiguration extends Component {
 
 	handleFrequencyChanged (option) {
         if(option) {
-	        this.handleStateValues('frequencyValue', option.value);
+	        this.handleStateValues('frequency', option.value);
         } else {
-            this.handleStateValues('frequencyValue', option);
+            this.handleStateValues('frequency', option);
         }
 	}
 
 	handleNotificationChanged (optionsList) {
-		this.handleSelectedArrayChanged('notificationValue', optionsList);
+		this.handleSelectedArrayChanged('notificationType', optionsList);
 	}
 
     handleSelectedArrayChanged(stateKey, selectedValues) {
@@ -112,13 +113,18 @@ class BaseJobConfiguration extends Component {
         this.handleStateValues(stateKey, selected);
     }
 
+    onSubmit() {
+        const { handleSubmit } = this.props;
+        handleSubmit(this.state.values);
+    }
+
 	render(content) {
 		var buttonsFixed = this.props.buttonsFixed || false;
 		return(
 			<div>
-				<form onSubmit={this.props.handleCancel}>
+				<form onSubmit={this.onSubmit}>
 					<div className={styles.contentBlock}>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError"></TextInput>
+						<TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="jobNameError"></TextInput>
 						<div>
 							<label className={fieldLabel}>Frequency</label>
 							<Select className={typeAheadField}
@@ -127,7 +133,7 @@ class BaseJobConfiguration extends Component {
                                 searchable={true}
 							    options={this.state.frequencyOptions}
 							    placeholder='Choose the frequency'
-							    value={this.state.values.frequencyValue}
+							    value={this.state.values.frequency}
 							  />
 						</div>
 						<div>
@@ -140,13 +146,13 @@ class BaseJobConfiguration extends Component {
                                 removeSelected={true}
 							    options={this.state.notificationOptions}
 							    placeholder='Choose the notification types'
-							    value={this.state.values.notificationValue}
+							    value={this.state.values.notificationType}
 							  />
 						</div>
 						{content}
 					</div>
-					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel}  type="submit" />
+					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.props.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
+					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel} type="submit" />
 				</form>
 			</div>
 		)

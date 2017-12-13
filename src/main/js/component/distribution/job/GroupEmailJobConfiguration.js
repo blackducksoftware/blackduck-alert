@@ -1,5 +1,6 @@
 'use strict';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { missingHubData } from '../../../../css/main.css';
 import {fieldLabel, typeAheadField, fieldError, inline} from '../../../../css/field.css';
@@ -10,7 +11,7 @@ import 'react-select-2/dist/css/react-select-2.css';
 
 import BaseJobConfiguration from './BaseJobConfiguration';
 
-export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
+class GroupEmailJobConfiguration extends BaseJobConfiguration {
 	constructor(props) {
 		super(props);
 		this.handleGroupsChanged = this.handleGroupsChanged.bind(this);
@@ -18,15 +19,15 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 
 	handleGroupsChanged (optionsList) {
         if (optionsList) {
-            super.handleStateValues('groupValue', optionsList.value);
+            super.handleStateValues('groupName', optionsList.value);
         } else {
-            super.handleStateValues('groupValue', null);
+            super.handleStateValues('groupName', null);
         }
 	}
 
     initializeValues() {
         super.initializeValues();
-        const { groups, selectedGroup } = this.props;
+        const { groups, groupName } = this.props;
         let groupOptions= new Array();
         if (groups && groups.length > 0) {
 			let rawGroups = groups;
@@ -38,19 +39,19 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 				});
 			}
 
-          
+
             let groupFound = groupOptions.find((group) => {
-                return group.name === selectedGroup;
+                return group.name === groupName;
             });
 
             if(!groupFound) {
                 groupOptions.push({
-                    label: selectedGroup,
-                    value: selectedGroup,
+                    label: groupName,
+                    value: groupName,
                     missing: true
                 });
             }
-            
+
 
             groupOptions.sort((group1, group2) => {
                 if(group1.value < group2.value) {
@@ -62,17 +63,17 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
                 }
             });
 		} else {
-            if(selectedGroup) {
+            if(groupName) {
 				groupOptions.push({
-					label: selectedGroup,
-                    value: selectedGroup,
+					label: groupName,
+                    value: groupName,
                     missing: true
 				});
             }
         }
         this.state.groupOptions = groupOptions;
-        super.handleStateValues('groupValue', selectedGroup);
-    
+        super.handleStateValues('groupName', groupName);
+
     }
 
     renderOption(option) {
@@ -90,7 +91,7 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 
 	render() {
         const { groupOptions } = this.state;
-        const groupValue = this.state.values['groupValue'];
+        const groupName = this.state.values['groupName'];
         let options;
         if(groupOptions) {
             options = groupOptions;
@@ -119,7 +120,7 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 						    options={options}
                             optionRenderer={this.renderOption}
 						    placeholder='Choose the Hub user group'
-						    value={groupValue}
+						    value={groupName}
                             valueRenderer={this.renderOption}
                             searchable={true}
 						  />
@@ -130,4 +131,8 @@ export default class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		var renderResult =  super.render(content);
 		return renderResult;
 	}
-}
+};
+GroupEmailJobConfiguration.defaultProps = {
+    distributionType: 'Group Email'
+};
+export default GroupEmailJobConfiguration;

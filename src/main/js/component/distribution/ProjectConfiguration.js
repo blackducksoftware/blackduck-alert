@@ -14,7 +14,7 @@ export default class ProjectConfiguration extends Component {
 	}
 
     createProjectList() {
-        const { projects, selectedProjects } = this.props;
+        const { projects, configuredProjects } = this.props;
         let projectData = new Array();
         if(projects && projects.length > 0) {
             let rawProjects = projects;
@@ -27,20 +27,20 @@ export default class ProjectConfiguration extends Component {
                 });
             }
 
-            for(var index in selectedProjects) {
+            for(var index in configuredProjects) {
                 let projectFound = projectData.find((project) => {
-                    return project.name === selectedProjects[index];
+                    return project.name === configuredProjects[index];
                 });
 
                 if(!projectFound) {
                     projectData.push({
-                        name: selectedProjects[index],
+                        name: configuredProjects[index],
                         missing: true
                     });
                 }
             }
         } else {
-            let rawProjects = selectedProjects;
+            let rawProjects = configuredProjects;
             for (var index in rawProjects) {
                 projectData.push({
                     name: rawProjects[index],
@@ -73,7 +73,7 @@ export default class ProjectConfiguration extends Component {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
 	  		showOnlySelected: true,
-            selected: this.props.selectedProjects
+            selected: this.props.configuredProjects
 		};
 		var progressIndicator = null;
 		if (this.props.waitingForProjects) {
