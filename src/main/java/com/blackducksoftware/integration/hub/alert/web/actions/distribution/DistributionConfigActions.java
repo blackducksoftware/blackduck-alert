@@ -35,8 +35,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -46,14 +50,18 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public final CommonDistributionRepository commonDistributionRepository;
-    public final JpaRepository<D, Long> channelDistributionRepository;
-    public final ObjectTransformer objectTransformer;
+    protected final CommonDistributionRepository commonDistributionRepository;
+    protected final ConfiguredProjectsRepository configuredProjectsRepository;
+    protected final DistributionProjectRepository distributionProjectRepository;
+    protected final JpaRepository<D, Long> channelDistributionRepository;
+    protected final ObjectTransformer objectTransformer;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final JpaRepository<D, Long> channelDistributionRepository,
-            final ObjectTransformer objectTransformer) {
+    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository,
+            final DistributionProjectRepository distributionProjectRepository, final JpaRepository<D, Long> channelDistributionRepository, final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
+        this.configuredProjectsRepository = configuredProjectsRepository;
+        this.distributionProjectRepository = distributionProjectRepository;
         this.channelDistributionRepository = channelDistributionRepository;
         this.objectTransformer = objectTransformer;
     }
@@ -75,11 +83,13 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         if (restModel != null) {
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
-                final CommonDistributionConfigEntity commonEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
+                CommonDistributionConfigEntity commonEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
                 if (createdEntity != null && commonEntity != null) {
                     createdEntity = channelDistributionRepository.save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
-                    commonDistributionRepository.save(commonEntity);
+                    commonEntity = commonDistributionRepository.save(commonEntity);
+                    saveConfiguredProjects(commonEntity, restModel);
+                    cleanUpStaleChannelConfigurations();
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -103,6 +113,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                 channelDistributionRepository.delete(distributionConfigId);
                 commonDistributionRepository.delete(id);
             }
+            cleanUpConfiguredProjects();
         }
     }
 
@@ -129,6 +140,70 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return Collections.emptyList();
     }
 
+    protected List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
+        final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
+        final List<String> configuredProjects = new ArrayList<>();
+        for (final DistributionProjectRelation relation : distributionProjects) {
+            final ConfiguredProjectEntity entity = configuredProjectsRepository.findOne(relation.getProjectId());
+            configuredProjects.add(entity.getProjectName());
+        }
+        return configuredProjects;
+    }
+
+    protected void saveConfiguredProjects(final CommonDistributionConfigEntity commonEntity, final R restModel) {
+        if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
+            final List<String> configuredProjectsFromRestModel = restModel.getConfiguredProjects();
+            if (configuredProjectsFromRestModel != null) {
+                removeOldDistributionProjectRelations(commonEntity.getId());
+                addNewDistributionProjectRelations(commonEntity.getId(), configuredProjectsFromRestModel);
+                cleanUpConfiguredProjects();
+            }
+            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
+        }
+    }
+
+    private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
+        final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
+        distributionProjectRepository.delete(distributionProjects);
+    }
+
+    private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
+        for (final String projectName : configuredProjectsFromRestModel) {
+            Long projectId;
+            final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);
+            if (foundEntity != null) {
+                projectId = foundEntity.getId();
+            } else {
+                final ConfiguredProjectEntity createdEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+                projectId = createdEntity.getId();
+            }
+            distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigId, projectId));
+        }
+    }
+
+    protected void cleanUpConfiguredProjects() {
+        final List<ConfiguredProjectEntity> configuredProjects = configuredProjectsRepository.findAll();
+        configuredProjects.forEach(configuredProject -> {
+            final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByProjectId(configuredProject.getId());
+            if (distributionProjects.isEmpty()) {
+                configuredProjectsRepository.delete(configuredProject);
+            }
+        });
+    }
+
+    private void cleanUpStaleChannelConfigurations() {
+        final String distributionName = getDistributionName();
+        if (distributionName != null) {
+            final List<D> channelDistributionConfigEntities = channelDistributionRepository.findAll();
+            channelDistributionConfigEntities.forEach(entity -> {
+                final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
+                if (commonEntity == null) {
+                    channelDistributionRepository.delete(entity);
+                }
+            });
+        }
+    }
+
     public List<R> constructRestModels() {
         final List<D> allEntities = channelDistributionRepository.findAll();
         final List<R> constructedRestModels = new ArrayList<>();
@@ -151,7 +226,9 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         final D distributionEntity = channelDistributionRepository.findOne(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), getDistributionName());
         if (distributionEntity != null && commonEntity != null) {
-            return constructRestModel(commonEntity, distributionEntity);
+            final R restModel = constructRestModel(commonEntity, distributionEntity);
+            restModel.setConfiguredProjects(getConfiguredProjects(commonEntity));
+            return restModel;
         }
         return null;
     }
