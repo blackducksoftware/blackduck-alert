@@ -274,9 +274,6 @@ class DistributionConfiguration extends Component {
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField='' dataFormat={ this.editButtonClick }></TableHeaderColumn>
-                            <TableHeaderColumn dataField='frequency' hidden>Frequency</TableHeaderColumn>
-                            <TableHeaderColumn dataField='notificationType' hidden>NotificationType</TableHeaderColumn>
-                            <TableHeaderColumn dataField='configuredProjects' hidden>Configured Projects</TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;

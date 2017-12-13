@@ -55,7 +55,7 @@ export default class Configuration extends Component {
 					});
 					if (jsonArray != null && jsonArray.length > 0) {
 						var configuration = jsonArray[0];
-						var values = {};
+						var values = self.state.values;
 						values.id = configuration.id;
 						for (var key in configuration) {
 							if (configuration.hasOwnProperty(key)) {

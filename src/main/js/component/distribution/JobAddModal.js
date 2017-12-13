@@ -26,7 +26,6 @@ export default class JobAddModal extends Component {
 				{ label: 'HipChat', value: 'HipChat' }
 			]
 		}
-		this.getFieldValue = this.getFieldValue.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleTypeChanged = this.handleTypeChanged.bind(this);
 		this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
@@ -35,23 +34,10 @@ export default class JobAddModal extends Component {
 
 	handleSaveBtnClick(values) {
 		const { columns, onSave } = this.props;
-	    const newRow = this.getFieldValue(values);
 	    // You should call onSave function and give the new row
-	    onSave(newRow);
+	    onSave(values);
 	 }
 
-	getFieldValue(values) {
-	    const newRow = {};
-	    this.props.columns.forEach((column, i) => {
-	    	var value = values[column.field];
-	    	if (value == null || value == undefined) {
-	    		newRow[column.field] ='';
-	    	} else {
-	    		newRow[column.field] = value;
-	    	}
-	    }, this);
-    	return newRow;
-  	}
 
 	handleChange(event) {
 		const target = event.target;
