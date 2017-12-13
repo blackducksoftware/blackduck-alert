@@ -57,17 +57,9 @@ class BaseJobConfiguration extends Component {
             values.frequency = frequencyFound.value;
         }
 
-        let notificationTypeArray = this.state.notificationOptions.filter((option) => {
-            if (notificationType) {
-                let includes = notificationType.includes(option.value);
-                return includes;
-            } else {
-                return false;
-            }
-        });
         values.includeAllProjects = includeAllProjects;
-        if (notificationTypeArray) {
-            values.notificationType  = notificationTypeArray;
+        if (notificationType) {
+            values.notificationType  = notificationType;
         }
 
         this.setState({values});
@@ -87,7 +79,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			configuration.notificationType = configuration.notificationType[0].value;
+			configuration.notificationType = configuration.notificationType[0];
 		} else {
 			configuration.notificationType = null;
 		}
@@ -113,6 +105,7 @@ class BaseJobConfiguration extends Component {
 				return response.json().then(json => {
 					var values = {};
 					values.id = json.id;
+					values.distributionConfigId = json.distributionConfigId;
 					self.setState({
 						values,
 						configurationMessage: json.message
@@ -157,7 +150,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			configuration.notificationType = configuration.notificationType[0].value;
+			configuration.notificationType = configuration.notificationType[0];
 		} else {
 			configuration.notificationType = null;
 		}
