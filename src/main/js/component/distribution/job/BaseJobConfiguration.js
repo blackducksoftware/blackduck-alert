@@ -67,6 +67,8 @@ class BaseJobConfiguration extends Component {
             values.notificationType  = notificationTypeArray;
         }
 
+        values.configuredProjects = configuredProjects;
+
         this.setState({values});
     }
 
@@ -102,6 +104,10 @@ class BaseJobConfiguration extends Component {
 	handleNotificationChanged (optionsList) {
 		this.handleSelectedArrayChanged('notificationType', optionsList);
 	}
+
+    handleProjectChanged(projectList) {
+        this.handleSelectedArrayChanged('configuredProjects', projectList);
+    }
 
     handleSelectedArrayChanged(stateKey, selectedValues) {
         let selected = new Array();
