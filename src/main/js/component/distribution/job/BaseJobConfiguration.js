@@ -36,6 +36,7 @@ class BaseJobConfiguration extends Component {
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.handleProjectChanged = this.handleProjectChanged.bind(this);
 	}
     componentDidMount() {
         this.initializeValues();
@@ -179,7 +180,7 @@ class BaseJobConfiguration extends Component {
 						</div>
 						{content}
 					</div>
-					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.props.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
+					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.props.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onCancelClick={this.props.handleCancel} type="submit" />
 				</form>
 			</div>

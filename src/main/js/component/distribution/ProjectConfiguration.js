@@ -11,6 +11,10 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 export default class ProjectConfiguration extends Component {
 	constructor(props) {
 		super(props);
+        this.state = {
+            selectedProjects: []
+        };
+        this.onRowSelected = this.onRowSelected.bind(this);
 	}
 
     createProjectList() {
@@ -59,6 +63,19 @@ export default class ProjectConfiguration extends Component {
         }
     }
 
+    onRowSelected(row, isSelected) {
+        const { selectedProjects } = this.state;
+        if(isSelected) {
+            selectedProjects.push({value: row.name});
+        } else {
+            let index = selectedProjects.indexOf({value:row.name});
+            selectedProject.slice(index);
+        }
+
+        const { handleProjectChanged } = this.props;
+        handleProjectChanged(selectedProjects);
+    }
+
 	render() {
         let projectData = this.createProjectList();
 
@@ -73,7 +90,8 @@ export default class ProjectConfiguration extends Component {
 	  		mode: 'checkbox',
 	  		clickToSelect: true,
 	  		showOnlySelected: true,
-            selected: this.props.configuredProjects
+            selected: this.props.configuredProjects,
+            onSelect: this.onRowSelected
 		};
 		var progressIndicator = null;
 		if (this.props.waitingForProjects) {
