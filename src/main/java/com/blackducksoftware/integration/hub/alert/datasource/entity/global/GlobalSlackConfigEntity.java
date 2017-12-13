@@ -23,9 +23,11 @@
 package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 // Slack has no global configuration
 @Entity
+@Table(schema = "alert", name = "global_slack_config")
 public class GlobalSlackConfigEntity extends GlobalChannelConfigEntity {
     private static final long serialVersionUID = 1L;
 }
