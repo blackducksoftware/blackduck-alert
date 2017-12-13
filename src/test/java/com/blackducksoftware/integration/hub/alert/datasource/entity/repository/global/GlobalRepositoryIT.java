@@ -32,10 +32,7 @@ public class GlobalRepositoryIT {
         final Integer hubTimeout = 300;
         final String hubUsername = "hub_username";
         final String hubPassword = "hub_password";
-        final String accumulatorCron = "accumulator_cron";
-        final String dailyDigestCron = "dailyDigest_cron";
-        final String purgeDataCron = "purgeData_cron";
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
         final GlobalHubConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
