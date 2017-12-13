@@ -87,6 +87,14 @@ class BaseJobConfiguration extends Component {
 		});
 	}
 
+	handleErrorValues(name, value) {
+		var errors = this.state.errors;
+		errors[name] = value;
+		this.setState({
+			errors
+		});
+	}
+
 	handleSetState(name, value) {
 		this.setState({
 			[name] : value
@@ -119,9 +127,23 @@ class BaseJobConfiguration extends Component {
         this.handleStateValues(stateKey, selected);
     }
 
-    onSubmit() {
+    onSubmit(event) {
         const { handleSubmit } = this.props;
-        handleSubmit(this.state.values);
+
+        var jobName = null;
+		if (this.state.values && this.state.values.name) {
+			var trimmedName = this.state.values.name.trim();
+			if (trimmedName.length > 0) {
+				jobName = trimmedName;
+			}
+		}
+		if (!jobName) {
+			event.preventDefault();
+			this.handleErrorValues('nameError', 'You must provide a Job name');
+		} else {
+			this.handleErrorValues('nameError', '');
+			handleSubmit(this.state.values);
+		}
     }
 
 	render(content) {
@@ -130,7 +152,7 @@ class BaseJobConfiguration extends Component {
 			<div>
 				<form onSubmit={this.onSubmit}>
 					<div className={styles.contentBlock}>
-						<TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="jobNameError"></TextInput>
+						<TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}></TextInput>
 						<div>
 							<label className={fieldLabel}>Frequency</label>
 							<Select className={typeAheadField}
