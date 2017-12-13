@@ -79,7 +79,9 @@ class BaseJobConfiguration extends Component {
 			inProgress: true,
 			errors: {}
 		});
-		event.preventDefault();
+		if (event) {
+			event.preventDefault();
+		}
 
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
@@ -146,7 +148,10 @@ class BaseJobConfiguration extends Component {
 			inProgress: true,
 			errors: {}
 		});
-		event.preventDefault();
+
+		if (event) {
+			event.preventDefault();
+		}
 
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
@@ -244,7 +249,7 @@ class BaseJobConfiguration extends Component {
     }
 
     onSubmit(event) {
-        const { handleSaveBtnClick } = this.props;
+        const { handleSaveBtnClick, handleCancel } = this.props;
 
         var jobName = null;
 		if (this.state.values && this.state.values.name) {
@@ -258,8 +263,12 @@ class BaseJobConfiguration extends Component {
 			this.handleErrorValues('nameError', 'You must provide a Job name');
 		} else {
 			this.handleErrorValues('nameError', '');
-			handleSubmit(this.state.values);
-			handleSaveBtnClick(this.state.values);
+			this.handleSubmit();
+			if (handleSaveBtnClick) {
+				handleSaveBtnClick(this.state.values);
+			} else if (handleCancel) {
+				handleCancel();
+			}
 		}
     }
 
