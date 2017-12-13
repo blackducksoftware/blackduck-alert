@@ -22,6 +22,14 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 	}
 }
 
+HipChatJobConfiguration.propTypes = {
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string,
+    distributionType: PropTypes.string
+};
+
 HipChatJobConfiguration.defaultProps = {
+    baseUrl: '/configuration/distribution/hipchat',
+    testUrl: '/configuration/distribution/hipchat/test',
     distributionType: 'HipChat'
 };
