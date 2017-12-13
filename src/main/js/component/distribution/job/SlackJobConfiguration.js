@@ -16,7 +16,11 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 							<TextInput label="Channel Name" name="channelName" value={this.props.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError}></TextInput>
 							<TextInput label="Channel Username" name="channelUsername" value={this.props.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError}></TextInput>
 						</div>;
-		
+
 		return super.render(content);
 	}
 }
+
+SlackJobConfiguration.defaultProps = {
+    distributionType: 'Slack'
+};

@@ -17,7 +17,11 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 							<CheckboxInput label="Notify" name="notify" value={this.props.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
 							<TextInput label="Color" name="color" value={this.props.color} onChange={this.handleChange} errorName="colorError" errorValue={this.props.colorError}></TextInput>
 						</div>;
-		
+
 		return super.render(content);
 	}
 }
+
+HipChatJobConfiguration.defaultProps = {
+    distributionType: 'HipChat'
+};

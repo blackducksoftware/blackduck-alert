@@ -16,39 +16,39 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 	function addJobs() {
 		jobs.push({
-			jobId: '0',
-			jobName: 'Test Job',
-			type: 'Group Email',
+			distributionConfigId: '0',
+			name: 'Test Job',
+			distributionType: 'Group Email',
 			lastRun: '12/01/2017 00:00:00',
 			status: 'Success',
             frequency: 'DAILY',
-            notificationTypeArray: [
+            notificationType: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE'],
-            selectedGroup: 'Custom Group',
-            selectedProjects: ['PSTestApp']
+            groupName: 'Custom Group',
+            configuredProjects: ['PSTestApp']
 		});
 		jobs.push({
-			jobId: '1',
-			jobName: 'Alert Slack Job',
-			type: 'Slack',
+			distributionConfigId: '1',
+			name: 'Alert Slack Job',
+			distributionType: 'Slack',
 			lastRun: '12/02/2017 00:00:00',
 			status: 'Failure',
             frequency: 'REAL_TIME',
-            notificationTypeArray: [
+            notificationType: [
             'POLICY_VIOLATION_OVERRIDE',
             'HIGH_VULNERABILITY'],
-            selectedProjects: ['missing-1', 'missing-2']
+            configuredProjects: ['missing-1', 'missing-2']
 		});
 		jobs.push({
-			jobId: '2',
-			jobName: 'HipChat Job',
-			type: 'HipChat',
+			distributionConfigId: '2',
+			name: 'HipChat Job',
+			distributionType: 'HipChat',
 			lastRun: '1/01/2017 00:00:00',
 			status: 'Success',
             frequency: 'DAILY',
-            notificationTypeArray: [
+            notificationType: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE',
@@ -56,7 +56,7 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             'MEDIUM_VULNERABILITY',
             'LOW_VULNERABILITY'],
             includeAllProjects: true,
-            selectedProjects: []
+            configuredProjects: []
 		});
 	}
 
@@ -164,7 +164,7 @@ class DistributionConfiguration extends Component {
 		} else if (cell === 'Slack') {
 			fontAwesomeClass = 'fa fa-slack';
 		}
-		var cellText = " " + cell; 
+		var cellText = " " + cell;
 		var data = <div>
 						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
 						{cellText}
@@ -174,7 +174,7 @@ class DistributionConfiguration extends Component {
 	}
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
-	    return (
+        return (
 	    	<JobAddModal
 	    		waitingForProjects={this.state.waitingForProjects}
 	    		waitingForGroups={this.state.waitingForGroups}
@@ -231,13 +231,13 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected){
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { jobName, type, frequency, notificationTypeArray, selectedGroup, includeAllProjects, selectedProjects } = currentJobSelected;
-			if (type === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} selectedGroup={selectedGroup} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (type === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (type === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} jobName={jobName} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypeArray={notificationTypeArray} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} selectedProjects={selectedProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+            const { name, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
+			if (distributionType === 'Group Email') {
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+			} else if (distributionType === 'HipChat') {
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+			} else if (distributionType === 'Slack') {
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
@@ -268,12 +268,15 @@ class DistributionConfiguration extends Component {
 		};
 		var content = <div>
 						<BootstrapTable data={jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
-	      					<TableHeaderColumn dataField='jobId' isKey hidden>Job Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='jobName' dataSort>Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='type' dataSort dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Job Id</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='name' isKey dataSort>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField='' dataFormat={ this.editButtonClick }></TableHeaderColumn>
+                            <TableHeaderColumn dataField='frequency' hidden>Frequency</TableHeaderColumn>
+                            <TableHeaderColumn dataField='notificationType' hidden>NotificationType</TableHeaderColumn>
+                            <TableHeaderColumn dataField='configuredProjects' hidden>Configured Projects</TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;
