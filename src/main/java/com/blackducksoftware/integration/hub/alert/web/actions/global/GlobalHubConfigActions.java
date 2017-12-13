@@ -128,32 +128,6 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
         }
-
-        // TODO move this to the scheduling config actions
-        // if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
-        // try {
-        // new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
-        // } catch (final IllegalArgumentException e) {
-        // fieldErrors.put("accumulatorCron", e.getMessage());
-        // }
-        // }
-        //
-        // if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
-        // try {
-        // new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
-        // } catch (final IllegalArgumentException e) {
-        // fieldErrors.put("dailyDigestCron", e.getMessage());
-        // }
-        // }
-        //
-        // if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
-        // try {
-        // new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
-        // } catch (final IllegalArgumentException e) {
-        // fieldErrors.put("purgeDataCron", e.getMessage());
-        // }
-        // }
-
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }

@@ -53,7 +53,7 @@ public class MockUtils {
     }
 
     public GlobalHubConfigEntity createGlobalConfigEntity() {
-        final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubUsername", "HubPassword", "0 0/1 * 1/1 * *", "0 0/1 * 1/1 * *", "0 0 12 1/2 * *");
+        final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubUsername", "HubPassword");
         configEntity.setId(1L);
         return configEntity;
     }
