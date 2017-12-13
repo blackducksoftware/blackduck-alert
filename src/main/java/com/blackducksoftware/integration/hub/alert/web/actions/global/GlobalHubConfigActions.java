@@ -184,17 +184,6 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     }
 
     @Override
-    public void configurationChangeTriggers(final GlobalHubConfigRestModel globalConfig) {
-        if (globalConfig != null) {
-            // TODO move this to scheduling config
-            // accumulatorConfig.scheduleJobExecution(globalConfig.getAccumulatorCron());
-            // dailyDigestBatchConfig.scheduleJobExecution(globalConfig.getDailyDigestCron());
-            // purgeConfig.scheduleJobExecution(globalConfig.getPurgeDataCron());
-
-        }
-    }
-
-    @Override
     public List<String> sensitiveFields() {
         final List<String> sensitiveFields = new ArrayList<>();
         sensitiveFields.add("hubPassword");
