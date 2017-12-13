@@ -82,7 +82,9 @@ class BaseJobConfiguration extends Component {
 			inProgress: true,
 			errors: {}
 		});
-		event.preventDefault();
+		if (event) {
+			event.preventDefault();
+		}
 
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
@@ -96,7 +98,7 @@ class BaseJobConfiguration extends Component {
 		var self = this;
 		let jsonBody = JSON.stringify(configuration);
 		var method = 'POST';
-		if (this.state.id) {
+		if (this.state.values.id) {
 			method = 'PUT';
 		}
 		fetch(this.props.baseUrl, {
@@ -112,8 +114,10 @@ class BaseJobConfiguration extends Component {
 			});
 			if (response.ok) {
 				return response.json().then(json => {
+					var values = {};
+					values.id = json.id;
 					self.setState({
-						id: json.id,
+						values,
 						configurationMessage: json.message
 					});
 				});
@@ -147,7 +151,10 @@ class BaseJobConfiguration extends Component {
 			inProgress: true,
 			errors: {}
 		});
-		event.preventDefault();
+
+		if (event) {
+			event.preventDefault();
+		}
 
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
@@ -249,7 +256,7 @@ class BaseJobConfiguration extends Component {
     }
 
     onSubmit(event) {
-        const { handleSaveBtnClick } = this.props;
+        const { handleSaveBtnClick, handleCancel } = this.props;
 
         var jobName = null;
 		if (this.state.values && this.state.values.name) {
@@ -263,8 +270,12 @@ class BaseJobConfiguration extends Component {
 			this.handleErrorValues('nameError', 'You must provide a Job name');
 		} else {
 			this.handleErrorValues('nameError', '');
-			this.handleSubmit(this.state.values);
-			this.handleSaveBtnClick(this.state.values);
+			this.handleSubmit();
+			if (handleSaveBtnClick) {
+				handleSaveBtnClick(this.state.values);
+			} else if (handleCancel) {
+				handleCancel();
+			}
 		}
     }
 
