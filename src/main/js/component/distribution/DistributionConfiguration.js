@@ -148,6 +148,10 @@ class DistributionConfiguration extends Component {
         this.fetchDistributionJobs(jobs);
     }
 
+    updateJobsTable() {
+        this.fetchDistributionJobs(jobsArray);
+    }
+
     fetchDistributionJobs(jobsArray) {
         fetch('/configuration/distribution/common',{
 			credentials: "same-origin",
@@ -226,6 +230,7 @@ class DistributionConfiguration extends Component {
 	    		groupError={this.state.groupError}
 	    		projectTableMessage={this.state.projectTableMessage}
 	    		handleCancel={this.cancelJobSelect}
+                updateJobsTable={this.updateJobsTable}
 		    	onModalClose= { onModalClose }
 		    	onSave= { onSave }
 		    	columns={ columns }
@@ -275,11 +280,11 @@ class DistributionConfiguration extends Component {
 		if (currentJobSelected != null) {
             const { name, distributionConfigId, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} updateJobsTable={this.updateJobsTable} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel"') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			}
 		}
 		return currentJobConfig;

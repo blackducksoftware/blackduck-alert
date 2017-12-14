@@ -33,7 +33,8 @@ export default class JobAddModal extends Component {
 	}
 
 	handleSaveBtnClick(values) {
-		const { columns, onSave } = this.props;
+		const { columns, onSave, updateJobsTable } = this.props;
+        updateJobsTable();
 	    // You should call onSave function and give the new row
 	    onSave(values);
 	 }
@@ -66,11 +67,11 @@ export default class JobAddModal extends Component {
 		let typeValue = this.state.values.typeValue;
 		if (typeValue) {
 			if (typeValue === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
 			} else if (typeValue === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
 			} else if (typeValue === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
 			}
 		}
 		return currentJobConfig;
