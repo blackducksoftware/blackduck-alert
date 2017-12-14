@@ -103,7 +103,11 @@ public class PolicyViolationProcessor extends NotificationSubProcessor {
 
         dataSet.put(ItemTypeEnum.RULE.name(), rule.name);
         dataSet.put(ItemTypeEnum.COMPONENT.name(), policyViolationContentItem.getComponentName());
-        dataSet.put(ItemTypeEnum.VERSION.name(), policyViolationContentItem.getComponentVersion().versionName);
+        if (policyViolationContentItem.getComponentVersion() != null) {
+            dataSet.put(ItemTypeEnum.VERSION.name(), policyViolationContentItem.getComponentVersion().versionName);
+        } else {
+            dataSet.put(ItemTypeEnum.VERSION.name(), "?");
+        }
         dataSet.put(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT, policyViolationContentItem);
         return dataSet;
     }

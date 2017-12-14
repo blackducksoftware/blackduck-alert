@@ -76,8 +76,10 @@ class BaseJobConfiguration extends Component {
     }
 
     initializeValues(data) {
-        const { name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = data;
+        const { id, distributionConfigId, name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = data;
         let values = this.state.values;
+        values.id = id;
+        values.distributionConfigId = distributionConfigId;
         values.name = name;
         values.distributionType = distributionType;
         let frequencyFound = this.state.frequencyOptions.find((option)=> {
@@ -98,7 +100,7 @@ class BaseJobConfiguration extends Component {
         this.setState({values});
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
 		this.setState({
 			configurationMessage: 'Saving...',
 			inProgress: true,
@@ -124,7 +126,7 @@ class BaseJobConfiguration extends Component {
 			method = 'PUT';
 		}
 
-		fetch(this.props.baseUrl, {
+		return fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
@@ -139,7 +141,6 @@ class BaseJobConfiguration extends Component {
 				return response.json().then(json => {
 					var values = self.state.values;
 					values.id = json.id;
-					values.distributionConfigId = json.distributionConfigId;
 					self.setState({
 						values,
 						configurationMessage: json.message
@@ -280,7 +281,8 @@ class BaseJobConfiguration extends Component {
         this.handleStateValues(stateKey, selected);
     }
 
-    onSubmit(event) {
+    async onSubmit(event) {
+    	event.preventDefault();
         const { handleSaveBtnClick, handleCancel } = this.props;
 
         var jobName = null;
@@ -291,11 +293,10 @@ class BaseJobConfiguration extends Component {
 			}
 		}
 		if (!jobName) {
-			event.preventDefault();
 			this.handleErrorValues('nameError', 'You must provide a Job name');
 		} else {
 			this.handleErrorValues('nameError', '');
-			this.handleSubmit();
+			await this.handleSubmit();
 			if (handleSaveBtnClick) {
 				handleSaveBtnClick(this.state.values);
 			} else if (handleCancel) {

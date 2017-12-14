@@ -16,7 +16,6 @@ class HubConfiguration extends ServerConfiguration {
 
 	render() {
 		let content =
-
 				<div>
 					<TextInput label="Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
 					<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
