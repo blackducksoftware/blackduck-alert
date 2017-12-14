@@ -117,7 +117,11 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			configuration.notificationType = configuration.notificationType[0];
+			if (Array.isArray(configuration.notificationType)) {
+				configuration.notificationType = configuration.notificationType[0]; 
+			} else {
+				configuration.notificationType = configuration.notificationType;
+			}
 		} else {
 			configuration.notificationType = null;
 		}
@@ -188,7 +192,11 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			configuration.notificationType = configuration.notificationType[0];
+			if (Array.isArray(configuration.notificationType)) {
+				configuration.notificationType = configuration.notificationType[0]; 
+			} else {
+				configuration.notificationType = configuration.notificationType;
+			}
 		} else {
 			configuration.notificationType = null;
 		}
