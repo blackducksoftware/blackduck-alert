@@ -101,7 +101,7 @@ export default class Configuration extends Component {
 			});
 			if (response.ok) {
 				return response.json().then(json => {
-					var values = {};
+					var values = self.state.values;
 					values.id = json.id;
 					self.setState({
 						values,
