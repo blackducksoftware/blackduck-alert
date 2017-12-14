@@ -60,7 +60,7 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
         final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
         restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
         restModel.setChannelName(distributionEntity.getChannelName());
-        restModel.setChannelUsername(distributionEntity.getChannelName());
+        restModel.setChannelUsername(distributionEntity.getChannelUsername());
         restModel.setWebhook(distributionEntity.getWebhook());
         return restModel;
     }
