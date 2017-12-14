@@ -27,7 +27,7 @@ import java.io.Serializable;
 public class DistributionNotificationTypeRelationPK implements Serializable {
     private static final long serialVersionUID = 2441077483729832819L;
 
-    public Long distributionConfigId;
+    public Long commonDistributionConfigId;
     public Long notificationTypeId;
 
     public DistributionNotificationTypeRelationPK() {

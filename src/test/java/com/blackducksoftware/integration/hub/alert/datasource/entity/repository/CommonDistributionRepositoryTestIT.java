@@ -45,9 +45,8 @@ public class CommonDistributionRepositoryTestIT {
         final String distributionType = SupportedChannels.EMAIL_GROUP;
         final String name = "My Config";
         final String frequency = "DAILY";
-        final String notificationType = "ALL";
         final Boolean filterByProject = Boolean.TRUE;
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);
 
         assertEquals(1, commonDistributionRepository.count());
@@ -56,7 +55,6 @@ public class CommonDistributionRepositoryTestIT {
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
         assertEquals(frequency, savedEntity.getFrequency());
-        assertEquals(notificationType, savedEntity.getNotificationType());
         assertEquals(filterByProject, savedEntity.getFilterByProject());
     }
 }

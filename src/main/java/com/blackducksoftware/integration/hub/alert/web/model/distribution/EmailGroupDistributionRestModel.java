@@ -32,9 +32,9 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
     public EmailGroupDistributionRestModel() {
     }
 
-    public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
-            final String groupName, final List<String> configuredProjects) {
-        super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject, configuredProjects);
+    public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
+            final List<String> configuredProjects, final List<String> notificationTypes) {
+        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;
     }
 

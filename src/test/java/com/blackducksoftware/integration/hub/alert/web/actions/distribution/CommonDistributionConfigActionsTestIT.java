@@ -32,10 +32,10 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -47,16 +47,18 @@ public class CommonDistributionConfigActionsTestIT {
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
     @Autowired
-    private ConfiguredProjectsRepository configuredProjectsRepository;
+    private ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
     @Autowired
-    private DistributionProjectRepository distributionProjectRepository;
+    private NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
 
     private final ObjectTransformer objectTransformer = new ObjectTransformer();
 
     public void cleanup() {
         commonDistributionRepository.deleteAll();
-        configuredProjectsRepository.deleteAll();
-        distributionProjectRepository.deleteAll();
+        configuredProjectsActions.getConfiguredProjectsRepository().deleteAll();
+        configuredProjectsActions.getDistributionProjectRepository().deleteAll();
+        notificationTypesActions.getNotificationTypeRepository().deleteAll();
+        notificationTypesActions.getDistributionNotificationTypeRepository().deleteAll();
     }
 
     @Test
@@ -64,26 +66,29 @@ public class CommonDistributionConfigActionsTestIT {
         final String distributionType = null;
         final String name = "My Config";
         final String frequency = "DAILY";
-        final String type = "ALL";
         final String filterByProject = "true";
         final List<String> projectList = Arrays.asList("Project 1", "Project 2", "Project 3");
+        final List<String> notificationTypeList = Arrays.asList("TYPE_1", "TYPE_2");
 
-        final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, type, filterByProject, projectList);
-        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, objectTransformer);
+        final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
+        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
 
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
         assertEquals(frequency, savedEntity.getFrequency());
-        assertEquals(type, savedEntity.getNotificationType());
         assertEquals(filterByProject, savedEntity.getFilterByProject().toString());
-        assertEquals(projectList.size(), distributionProjectRepository.count());
-        assertEquals(projectList.size(), configuredProjectsRepository.count());
+        assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
+        assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
+        assertEquals(notificationTypeList.size(), notificationTypesActions.getDistributionNotificationTypeRepository().count());
+        assertEquals(notificationTypeList.size(), notificationTypesActions.getNotificationTypeRepository().count());
 
         final CommonDistributionConfigRestModel updatedRestModel = objectTransformer.databaseEntityToConfigRestModel(savedEntity, CommonDistributionConfigRestModel.class);
         commonDistributionConfigActions.saveConfig(updatedRestModel);
-        assertEquals(projectList.size(), distributionProjectRepository.count());
-        assertEquals(projectList.size(), configuredProjectsRepository.count());
+        assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
+        assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
+        assertEquals(notificationTypeList.size(), notificationTypesActions.getDistributionNotificationTypeRepository().count());
+        assertEquals(notificationTypeList.size(), notificationTypesActions.getNotificationTypeRepository().count());
 
         final List<CommonDistributionConfigRestModel> foundRestModels = commonDistributionConfigActions.getConfig(savedEntity.getId());
         assertEquals(1, foundRestModels.size());
