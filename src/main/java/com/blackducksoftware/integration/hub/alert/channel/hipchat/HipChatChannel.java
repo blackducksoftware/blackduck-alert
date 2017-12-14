@@ -96,9 +96,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
-            logger.info("README hipchat : " + config);
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
-            logger.info("README hipchat json : " + jsonString);
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");

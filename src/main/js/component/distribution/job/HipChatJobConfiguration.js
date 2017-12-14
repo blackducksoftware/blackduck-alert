@@ -13,20 +13,27 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 	}
 
     initializeValues(data) {
-       super.initializeValues(data);
+      super.initializeValues(data);
 
-       let roomId = data.roomId || this.props.roomId;
-       let notify = data.notify || this.props.notify;
-       let color = data.color || this.props.color;
+      let roomId = data.roomId || this.props.roomId;
+      let notify = null;
+      if(data.notify && data.notify === "true") {
+        notify = data.notify;
+      } else if (this.props.notify && this.props.notify === "true") {
+        notify = this.props.notify;
+      } else {
+        notify = "false";
+      }
+      let color = data.color || this.props.color;
 
-       super.handleStateValues('roomId', roomId);
-       super.handleStateValues('notify', notify);
-       super.handleStateValues('color', color);
+      super.handleStateValues('roomId', roomId);
+      super.handleStateValues('notify', notify);
+      super.handleStateValues('color', color);
     }
 
 	render() {
 		let content = <div>
-							<TextInput label="Room Name" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomNameError" errorValue={this.props.roomNameError}></TextInput>
+							<TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.roomIdError}></TextInput>
 							<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
 							<TextInput label="Color" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.props.colorError}></TextInput>
 						</div>;
