@@ -143,7 +143,7 @@ GroupEmailJobConfiguration.propTypes = {
 GroupEmailJobConfiguration.defaultProps = {
     baseUrl: '/configuration/distribution/emailGroup',
     testUrl: '/configuration/distribution/emailGroup/test',
-    distributionType: 'Group Email'
+    distributionType: 'email_group_channel'
 };
 
 export default GroupEmailJobConfiguration;

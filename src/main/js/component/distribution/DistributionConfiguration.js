@@ -16,9 +16,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 	function addJobs() {
 		jobs.push({
-			distributionConfigId: '0',
+			distributionConfigId: '999',
 			name: 'Test Job',
-			distributionType: 'Group Email',
+			distributionType: 'email_group_channel',
 			lastRun: '12/01/2017 00:00:00',
 			status: 'Success',
             frequency: 'DAILY',
@@ -30,9 +30,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             configuredProjects: ['PSTestApp']
 		});
 		jobs.push({
-			distributionConfigId: '1',
+			distributionConfigId: '998',
 			name: 'Alert Slack Job',
-			distributionType: 'Slack',
+			distributionType: 'slack_channel',
 			lastRun: '12/02/2017 00:00:00',
 			status: 'Failure',
             frequency: 'REAL_TIME',
@@ -42,9 +42,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
             configuredProjects: ['missing-1', 'missing-2']
 		});
 		jobs.push({
-			distributionConfigId: '2',
+			distributionConfigId: '997',
 			name: 'HipChat Job',
-			distributionType: 'HipChat',
+			distributionType: 'hipchat_channel',
 			lastRun: '1/01/2017 00:00:00',
 			status: 'Success',
             frequency: 'DAILY',
@@ -170,7 +170,14 @@ class DistributionConfiguration extends Component {
                                 notificationType: [item.notificationType],
                                 configuredProjects: item.configuredProjects
                             };
-                            jobs.push(jobConfig);
+
+                            let exists = jobs.some((element, index, array)=> {
+                                return element.distributionConfigId === jobConfig.distributionConfigId;
+                            });
+
+                            if(!exists) {
+                                jobs.push(jobConfig);
+                            }
                         });
                     }
                 });
@@ -188,11 +195,11 @@ class DistributionConfiguration extends Component {
 
 	typeColumnDataFormat(cell, row) {
 		var fontAwesomeClass = "";
-		if (cell === 'Group Email') {
+		if (cell === 'email_group_channel') {
 			fontAwesomeClass = 'fa fa-envelope';
-		} else if (cell === 'HipChat') {
+		} else if (cell === 'hipchat_channel') {
 			fontAwesomeClass = 'fa fa-comments';
-		} else if (cell === 'Slack') {
+		} else if (cell === 'slack_channel') {
 			fontAwesomeClass = 'fa fa-slack';
 		}
 		var cellText = " " + cell;
@@ -263,11 +270,11 @@ class DistributionConfiguration extends Component {
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
             const { name, distributionConfigId, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
-			if (distributionType === 'Group Email') {
+			if (distributionType === 'email_group_channel') {
 				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (distributionType === 'HipChat') {
+			} else if (distributionType === 'hipchat_channel"') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
-			} else if (distributionType === 'Slack') {
+			} else if (distributionType === 'slack_channel') {
 				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}

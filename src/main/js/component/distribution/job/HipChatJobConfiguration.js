@@ -36,5 +36,5 @@ HipChatJobConfiguration.propTypes = {
 HipChatJobConfiguration.defaultProps = {
     baseUrl: '/configuration/distribution/hipchat',
     testUrl: '/configuration/distribution/hipchat/test',
-    distributionType: 'HipChat'
+    distributionType: 'hipchat_channel'
 };
