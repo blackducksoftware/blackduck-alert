@@ -27,7 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(schema = "alert", name = "notification_type")
+@Table(schema = "alert", name = "notification_types")
 public class NotificationTypeEntity extends DatabaseEntity {
     private static final long serialVersionUID = 6250696874570412937L;
 

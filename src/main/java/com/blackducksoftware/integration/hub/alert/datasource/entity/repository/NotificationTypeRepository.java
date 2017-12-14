@@ -30,5 +30,5 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 
 @Transactional
 public interface NotificationTypeRepository extends JpaRepository<NotificationTypeEntity, Long> {
-
+    public NotificationTypeEntity findByType(final String type);
 }

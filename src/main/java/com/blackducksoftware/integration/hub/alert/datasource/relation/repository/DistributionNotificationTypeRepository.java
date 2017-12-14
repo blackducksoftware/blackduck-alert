@@ -29,12 +29,11 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.key.DistributionNotificationTypeRelationPK;
 
 @Transactional
 public interface DistributionNotificationTypeRepository extends JpaRepository<DistributionNotificationTypeRelation, DistributionNotificationTypeRelationPK> {
-    public List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
+    public List<DistributionNotificationTypeRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
 
-    public List<DistributionProjectRelation> findByNotificationTypeId(final Long notificationTypeId);
+    public List<DistributionNotificationTypeRelation> findByNotificationTypeId(final Long notificationTypeId);
 }
