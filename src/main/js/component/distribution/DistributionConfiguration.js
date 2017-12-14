@@ -174,13 +174,16 @@ class DistributionConfiguration extends Component {
                                 notificationType: [item.notificationType],
                                 configuredProjects: item.configuredProjects
                             };
-                            
+
                             newJobs.push(jobConfig);
                             self.setState({
                                 jobs: newJobs
                             });
                         });
                     }
+                   self.setState({
+						jobs
+					});
                 });
             }
         });
