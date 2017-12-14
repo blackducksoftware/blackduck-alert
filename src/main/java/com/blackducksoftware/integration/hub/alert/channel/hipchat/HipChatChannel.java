@@ -96,7 +96,9 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
         if (connection != null) {
+            logger.info("README hipchat : " + config);
             final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
+            logger.info("README hipchat json : " + jsonString);
             final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
@@ -146,11 +148,16 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
         final JsonObject json = new JsonObject();
         json.addProperty("message_format", "html");
-        json.addProperty("message", htmlMessage);
-        json.addProperty("from", from);
+        if (htmlMessage != null) {
+            json.addProperty("message", htmlMessage);
+        }
+        if (from != null) {
+            json.addProperty("from", from);
+        }
         json.addProperty("notify", notify);
-        json.addProperty("color", color);
-
+        if (color != null) {
+            json.addProperty("color", color);
+        }
         return json.toString();
     }
 

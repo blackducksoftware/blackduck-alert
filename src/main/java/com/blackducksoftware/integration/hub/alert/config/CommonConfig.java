@@ -86,6 +86,7 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
             }
         } else {
             if (future != null) {
+                logger.info("Un-Scheduling " + this.getClass().getSimpleName());
                 future.cancel(false);
             }
         }

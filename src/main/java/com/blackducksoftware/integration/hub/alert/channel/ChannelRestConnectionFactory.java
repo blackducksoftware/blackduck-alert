@@ -60,6 +60,7 @@ public class ChannelRestConnectionFactory {
 
     public RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
         if (url == null) {
+            logger.error("URL WAS NULL");
             return null;
         }
         final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
