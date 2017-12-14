@@ -25,9 +25,10 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         }
 	}
 
-    initializeValues() {
-        super.initializeValues();
-        const { groups, groupName } = this.props;
+    initializeValues(data) {
+        super.initializeValues(data);
+        let groupName = data.groupName || this.props.groupName;
+        const { groups } = this.props;
         let groupOptions= new Array();
         if (groups && groups.length > 0) {
 			let rawGroups = groups;

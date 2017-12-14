@@ -11,6 +11,10 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 		super(props);
 	}
 
+    initializeValues(data) {
+       super.initializeValues(data);
+    }
+
 	render() {
 		let content = <div>
 							<TextInput label="Webhook" name="webhook" value={this.props.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError}></TextInput>
