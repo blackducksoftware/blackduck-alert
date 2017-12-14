@@ -117,7 +117,7 @@ class DistributionConfiguration extends Component {
 		});
 
 		fetch('/hub/groups',{
-			credentials: "same-origin"
+			credentials: "same-origin",
 		})
 		.then(function(response) {
 			self.handleSetState('waitingForGroups', false);
@@ -145,6 +145,37 @@ class DistributionConfiguration extends Component {
 				});
 			}
 		});
+        this.fetchDistributionJobs(jobs);
+    }
+
+    fetchDistributionJobs(jobsArray) {
+        fetch('/configuration/distribution/common',{
+			credentials: "same-origin",
+            headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+		.then(function(response) {
+			if (response.ok) {
+                response.json().then(jsonArray => {
+					if (jsonArray != null && jsonArray.length > 0) {
+                        jsonArray.forEach((item) =>{
+                            let jobConfig = {
+                                distributionConfigId: item.distributionConfigId,
+                    			name: item.name,
+                    			distributionType: item.distributionType,
+                    			lastRun: '',
+                    			status: '',
+                                frequency: item.frequency,
+                                notificationType: [item.notificationType],
+                                configuredProjects: item.configuredProjects
+                            };
+                            jobs.push(jobConfig);
+                        });
+                    }
+                });
+            }
+        });
     }
 
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {

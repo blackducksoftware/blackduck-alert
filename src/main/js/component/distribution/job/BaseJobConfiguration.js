@@ -43,6 +43,11 @@ class BaseJobConfiguration extends Component {
 
     componentDidMount() {
         this.initializeValues();
+        this.readDistributionJobConfiguration();
+    }
+
+    readDistributionJobConfiguration() {
+
     }
 
     initializeValues() {
