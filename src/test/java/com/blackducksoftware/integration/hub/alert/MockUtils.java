@@ -15,11 +15,13 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
 public class MockUtils {
 
@@ -42,20 +44,28 @@ public class MockUtils {
         return "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":11,\"hubUsername\":\"HubUsername\",\"hubPassword\":\"HubPassword\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"22\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubProxyPassword\":\"HubProxyPassword\",\"hubAlwaysTrustCertificate\":false,\"accumulatorCron\":\"0 0/1 * 1/1 * *\",\"dailyDigestCron\":\"0 0/1 * 1/1 * *\",\"id\":1}";
     }
 
-    public GlobalHubConfigRestModel createGlobalConfigRestModel() {
+    public GlobalHubConfigRestModel createGlobalHubConfigRestModel() {
         final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "false");
         return restModel;
     }
 
-    public GlobalHubConfigRestModel createGlobalConfigMaskedRestModel() {
+    public GlobalHubConfigRestModel createGlobalHubConfigMaskedRestModel() {
         final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", null, "HubProxyHost", "22", "HubProxyUsername", null, "false");
         return restModel;
     }
 
-    public GlobalHubConfigEntity createGlobalConfigEntity() {
+    public GlobalHubConfigEntity createGlobalHubConfigEntity() {
         final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubUsername", "HubPassword");
         configEntity.setId(1L);
         return configEntity;
+    }
+
+    public GlobalSchedulingConfigRestModel createGlobalSchedulingConfigRestModel() {
+        return new GlobalSchedulingConfigRestModel("1", "0 0/1 * 1/1 * ?", "0 0/1 * 1/1 * ?", "0 0/1 * 1/1 * ?");
+    }
+
+    public GlobalSchedulingConfigEntity createGlobalSchedulingConfigEntity() {
+        return new GlobalSchedulingConfigEntity("0 0/1 * 1/1 * ?", "0 0/1 * 1/1 * ?", "0 0/1 * 1/1 * ?");
     }
 
     public String getEmailConfigRestModelJson() {

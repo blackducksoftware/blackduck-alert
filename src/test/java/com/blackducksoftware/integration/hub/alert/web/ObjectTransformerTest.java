@@ -41,8 +41,8 @@ public class ObjectTransformerTest {
     @Test
     public void testTransformGlobalModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
-        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalConfigEntity();
+        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalHubConfigRestModel();
+        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalHubConfigEntity();
 
         final GlobalHubConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHubConfigEntity.class);
         final GlobalHubConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalHubConfigRestModel.class);
