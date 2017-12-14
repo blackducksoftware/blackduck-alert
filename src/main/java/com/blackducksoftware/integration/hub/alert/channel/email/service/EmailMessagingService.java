@@ -63,7 +63,7 @@ public class EmailMessagingService {
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
         // this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(emailProperties.getEmailTemplateDirectory());
-        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "src/main/resources/email/templates");
+        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates");
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
