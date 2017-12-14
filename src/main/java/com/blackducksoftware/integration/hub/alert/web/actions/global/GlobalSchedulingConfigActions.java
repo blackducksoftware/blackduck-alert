@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
@@ -47,16 +46,14 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedu
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel> {
-    private final GlobalProperties globalProperties;
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalSchedulingConfigActions(final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig,
-            final GlobalSchedulingRepository repository, final ObjectTransformer objectTransformer) {
+    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
+            final ObjectTransformer objectTransformer) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
-        this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
@@ -106,12 +103,10 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Override
     public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
-        final GlobalSchedulingConfigEntity schedulingConfig = globalProperties.getSchedulingConfig();
-        if (schedulingConfig != null) {
-            accumulatorConfig.scheduleJobExecution(schedulingConfig.getAccumulatorCron());
-            dailyDigestBatchConfig.scheduleJobExecution(schedulingConfig.getDailyDigestCron());
-            purgeConfig.scheduleJobExecution(schedulingConfig.getPurgeDataCron());
-
+        if (restModel != null) {
+            accumulatorConfig.scheduleJobExecution(restModel.getAccumulatorCron());
+            dailyDigestBatchConfig.scheduleJobExecution(restModel.getDailyDigestCron());
+            purgeConfig.scheduleJobExecution(restModel.getPurgeDataCron());
         }
     }
 
