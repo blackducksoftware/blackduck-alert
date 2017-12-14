@@ -121,7 +121,7 @@ class BaseJobConfiguration extends Component {
 		if (this.state.values.id) {
 			method = 'PUT';
 		}
-        
+
 		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
@@ -142,6 +142,7 @@ class BaseJobConfiguration extends Component {
 						values,
 						configurationMessage: json.message
 					});
+                    self.readDistributionJobConfiguration(values.distributionConfigId);
 				});
 			} else {
 				return response.json().then(json => {
