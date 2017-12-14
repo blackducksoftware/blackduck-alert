@@ -70,7 +70,6 @@ class BaseJobConfiguration extends Component {
                 }
             });
         } else {
-            debugger;
             this.initializeValues(this.props)
         }
     }
