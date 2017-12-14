@@ -59,7 +59,9 @@ public class ChannelRestConnectionFactory {
     }
 
     public RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
-
+        if (url == null) {
+            return null;
+        }
         final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
         restConnectionBuilder.setBaseUrl(url.toString());
         restConnectionBuilder.setLogger(intLogger);
