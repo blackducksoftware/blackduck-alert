@@ -76,7 +76,7 @@ class BaseJobConfiguration extends Component {
     }
 
     initializeValues(data) {
-        const { id, distributionConfigId, name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = data;
+        const { id, distributionConfigId, name, distributionType, frequency, notificationType, includeAllProjects, filterByProject, projects, configuredProjects } = data;
         let values = this.state.values;
         values.id = id;
         values.distributionConfigId = distributionConfigId;
@@ -89,8 +89,11 @@ class BaseJobConfiguration extends Component {
         if (frequencyFound) {
             values.frequency = frequencyFound.value;
         }
-
-        values.includeAllProjects = includeAllProjects;
+        if (includeAllProjects) {
+        	values.includeAllProjects = includeAllProjects;
+        } else if (filterByProject) {
+        	values.includeAllProjects = (filterByProject == 'false');
+	    }
         if (notificationType) {
             values.notificationType  = notificationType;
         }
