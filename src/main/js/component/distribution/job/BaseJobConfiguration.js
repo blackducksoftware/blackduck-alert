@@ -145,7 +145,6 @@ class BaseJobConfiguration extends Component {
 						values,
 						configurationMessage: json.message
 					});
-                    self.readDistributionJobConfiguration(values.distributionConfigId);
 				});
 			} else {
 				return response.json().then(json => {
