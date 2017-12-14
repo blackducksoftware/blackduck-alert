@@ -13,7 +13,7 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 
     initializeValues(data) {
        super.initializeValues(data);
-
+       
        let webhook = data.webhook || this.props.webhook;
        let channelUsername = data.channelUsername || this.props.channelUsername;
        let channelName = data.channelName || this.props.channelName;
@@ -25,9 +25,9 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 
 	render() {
 		let content = <div>
-							<TextInput label="Webhook" name="webhook" value={this.props.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError}></TextInput>
-							<TextInput label="Channel Name" name="channelName" value={this.props.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError}></TextInput>
-							<TextInput label="Channel Username" name="channelUsername" value={this.props.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError}></TextInput>
+							<TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError}></TextInput>
+							<TextInput label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError}></TextInput>
+							<TextInput label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError}></TextInput>
 						</div>;
 
 		return super.render(content);
