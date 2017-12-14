@@ -65,20 +65,24 @@ export default class ProjectConfiguration extends Component {
 
     onRowSelected(row, isSelected) {
         const { selectedProjects } = this.state;
+        let selected = Object.assign([], selectedProjects);
         if(isSelected) {
-            let projectFound = selectedProjects.find((project) => {
+            let projectFound = selected.find((project) => {
                 return project.value === row.name;
             });
             if (!projectFound) {
-                selectedProjects.push({value: row.name});
+                selected.push({value: row.name});
             }
         } else {
-            let index = selectedProjects.indexOf({value:row.name});
-            selectedProjects.slice(index);
+            let projectFound = selected.find((project) => {
+                return project.value === row.name;
+            });
+            let index = selected.indexOf(projectFound);
+            selected = selected.slice(index);
         }
 
         const { handleProjectChanged } = this.props;
-        handleProjectChanged(selectedProjects);
+        handleProjectChanged(selected);
     }
 
 	render() {

@@ -182,7 +182,7 @@ class DistributionConfiguration extends Component {
                         });
                     }
                    self.setState({
-						jobs
+						jobs: newJobs
 					});
                 });
             }
