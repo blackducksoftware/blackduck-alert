@@ -31,7 +31,6 @@ class DistributionConfiguration extends Component {
         this.editButtonClick = this.editButtonClick.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
-        this.addDefaultJobs();
 	}
 
     addDefaultJobs() {
@@ -146,6 +145,7 @@ class DistributionConfiguration extends Component {
     }
 
     updateJobsTable() {
+        //TODO remove this and references to it
         //this.fetchDistributionJobs();
     }
 
@@ -161,6 +161,7 @@ class DistributionConfiguration extends Component {
 			if (response.ok) {
                 response.json().then(jsonArray => {
                     self.state.jobs = new Array();
+                    self.addDefaultJobs();
 					if (jsonArray != null && jsonArray.length > 0) {
                         jsonArray.forEach((item) =>{
                             let jobConfig = {
