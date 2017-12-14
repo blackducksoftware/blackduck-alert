@@ -21,9 +21,9 @@ export default class JobAddModal extends Component {
 			values: [],
 			errors: [],
             typeOptions: [
-				{ label: 'Group Email', value: 'Group Email'},
-				{ label: 'Slack', value: 'Slack' },
-				{ label: 'HipChat', value: 'HipChat' }
+				{ label: 'Group Email', value: 'email_group_channel'},
+				{ label: 'Slack', value: 'slack_channel' },
+				{ label: 'HipChat', value: 'hipchat_channel' }
 			]
 		}
 		this.handleChange = this.handleChange.bind(this);
@@ -65,11 +65,11 @@ export default class JobAddModal extends Component {
 		var currentJobConfig = null;
 		let typeValue = this.state.values.typeValue;
 		if (typeValue) {
-			if (typeValue === 'Group Email') {
+			if (typeValue === 'email_group_channel') {
 				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (typeValue === 'HipChat') {
+			} else if (typeValue === 'hipchat_channel') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (typeValue === 'Slack') {
+			} else if (typeValue === 'slack_channel') {
 				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} />;
 			}
 		}
@@ -78,11 +78,11 @@ export default class JobAddModal extends Component {
 
 	renderOption(option) {
 		var fontAwesomeIcon = "";
-		if (option.value === 'Group Email') {
+		if (option.value === 'email_group_channel') {
 			fontAwesomeIcon = 'fa fa-envelope';
-		} else if (option.value === 'HipChat') {
+		} else if (option.value === 'hipchat_channel') {
 			fontAwesomeIcon = 'fa fa-comments';
-		} else if (option.value === 'Slack') {
+		} else if (option.value === 'slack_channel') {
 			fontAwesomeIcon = 'fa fa-slack';
 		}
 	    return (<div>

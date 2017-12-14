@@ -49,8 +49,7 @@ class BaseJobConfiguration extends Component {
     readDistributionJobConfiguration(distributionId) {
         if(distributionId) {
             let urlString = this.props.getUrl || this.props.baseUrl;
-            let getUrl = new URL(urlString);
-            getUrl.searchParams = { id: distributionId };
+            let getUrl = `${urlString}?id=${distributionId}`
             let self = this;
             fetch(getUrl,{
     			credentials: "same-origin",
@@ -122,6 +121,7 @@ class BaseJobConfiguration extends Component {
 		if (this.state.values.id) {
 			method = 'PUT';
 		}
+        
 		fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
