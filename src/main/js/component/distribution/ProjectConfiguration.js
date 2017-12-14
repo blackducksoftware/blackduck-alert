@@ -74,7 +74,7 @@ export default class ProjectConfiguration extends Component {
             }
         } else {
             let index = selectedProjects.indexOf({value:row.name});
-            selectedProject.slice(index);
+            selectedProjects.slice(index);
         }
 
         const { handleProjectChanged } = this.props;
