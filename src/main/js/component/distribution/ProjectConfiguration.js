@@ -66,7 +66,12 @@ export default class ProjectConfiguration extends Component {
     onRowSelected(row, isSelected) {
         const { selectedProjects } = this.state;
         if(isSelected) {
-            selectedProjects.push({value: row.name});
+            let projectFound = selectedProjects.find((project) => {
+                return project.value === row.name;
+            });
+            if (!projectFound) {
+                selectedProjects.push({value: row.name});
+            }
         } else {
             let index = selectedProjects.indexOf({value:row.name});
             selectedProject.slice(index);
