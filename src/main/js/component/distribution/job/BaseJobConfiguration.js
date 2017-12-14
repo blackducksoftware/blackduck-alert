@@ -59,12 +59,14 @@ class BaseJobConfiguration extends Component {
     		})
     		.then(function(response) {
     			if (response.ok) {
-                    response.json().then(jsonObj => {
-                        debugger;
-                        self.initializeValues(jsonObj);
+                    response.json().then(jsonArray => {
+                        if(jsonArray && jsonArray.length > 0) {
+                            self.initializeValues(jsonArray[0]);
+                        } else {
+                            self.initializeValues(self.props);
+                        }
                     });
                 } else {
-                    debugger;
                     self.initializeValues(self.props);
                 }
             });
