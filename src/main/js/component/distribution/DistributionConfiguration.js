@@ -270,12 +270,12 @@ class DistributionConfiguration extends Component {
 		});
 	}
 
-	getCurrentJobConfig(currentJobSelected){
+	getCurrentJobConfig(currentJobSelected) {
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { name, distributionConfigId, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
+            const { id, name, distributionConfigId, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel"') {
 				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'slack_channel') {
