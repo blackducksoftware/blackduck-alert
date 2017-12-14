@@ -14,6 +14,14 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 
     initializeValues(data) {
        super.initializeValues(data);
+
+       let roomId = data.roomId || this.props.roomId;
+       let notify = data.notify || this.props.notify;
+       let color = data.color || this.props.color;
+
+       super.handleStateValues('roomId', roomId);
+       super.handleStateValues('notify', notify);
+       super.handleStateValues('color', color);
     }
 
 	render() {

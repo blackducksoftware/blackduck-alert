@@ -13,6 +13,14 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 
     initializeValues(data) {
        super.initializeValues(data);
+
+       let webhook = data.webhook || this.props.webhook;
+       let channelUsername = data.channelUsername || this.props.channelUsername;
+       let channelName = data.channelName || this.props.channelName;
+
+       super.handleStateValues('webhook', webhook);
+       super.handleStateValues('channelUsername', channelUsername);
+       super.handleStateValues('channelName', channelName);
     }
 
 	render() {
