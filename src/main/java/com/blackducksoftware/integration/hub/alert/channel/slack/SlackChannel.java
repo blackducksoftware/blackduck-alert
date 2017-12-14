@@ -90,7 +90,6 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = config.getWebhook();
         final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        logger.info("README slack url : " + slackUrl);
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
