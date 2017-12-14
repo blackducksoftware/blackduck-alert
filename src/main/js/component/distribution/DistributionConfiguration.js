@@ -160,7 +160,7 @@ class DistributionConfiguration extends Component {
 		.then(function(response) {
 			if (response.ok) {
                 response.json().then(jsonArray => {
-                    self.state.jobs = new Array();
+                    var jobs = new Array();
                     self.addDefaultJobs();
 					if (jsonArray != null && jsonArray.length > 0) {
                         jsonArray.forEach((item) =>{
@@ -174,16 +174,12 @@ class DistributionConfiguration extends Component {
                                 notificationType: [item.notificationType],
                                 configuredProjects: item.configuredProjects
                             };
-
-                            let exists = self.state.jobs.some((element, index, array)=> {
-                                return element.distributionConfigId === jobConfig.distributionConfigId;
-                            });
-
-                            if(!exists) {
-                                self.state.jobs.push(jobConfig);
-                            }
+                            jobs.push(jobConfig);
                         });
                     }
+                   self.setState({
+						jobs
+					});
                 });
             }
         });
