@@ -12,6 +12,10 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 		super(props);
 	}
 
+    initializeValues(data) {
+       super.initializeValues(data);
+    }
+
 	render() {
 		let content = <div>
 							<TextInput label="Room Name" name="roomName" value={this.props.roomName} onChange={this.handleChange} errorName="roomNameError" errorValue={this.props.roomNameError}></TextInput>

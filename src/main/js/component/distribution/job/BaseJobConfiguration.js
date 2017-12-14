@@ -42,16 +42,41 @@ class BaseJobConfiguration extends Component {
 	}
 
     componentDidMount() {
-        this.initializeValues();
-        this.readDistributionJobConfiguration();
+        const { distributionConfigId } = this.props;
+        this.readDistributionJobConfiguration(distributionConfigId);
     }
 
-    readDistributionJobConfiguration() {
-
+    readDistributionJobConfiguration(distributionId) {
+        if(distributionId) {
+            let urlString = this.props.getUrl || this.props.baseUrl;
+            let getUrl = new URL(urlString);
+            getUrl.searchParams = { id: distributionId };
+            let self = this;
+            fetch(getUrl,{
+    			credentials: "same-origin",
+                headers: {
+    				'Content-Type': 'application/json'
+    			}
+    		})
+    		.then(function(response) {
+    			if (response.ok) {
+                    response.json().then(jsonObj => {
+                        debugger;
+                        self.initializeValues(jsonObj);
+                    });
+                } else {
+                    debugger;
+                    self.initializeValues(self.props);
+                }
+            });
+        } else {
+            debugger;
+            this.initializeValues(this.props)
+        }
     }
 
-    initializeValues() {
-        const { name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = this.props;
+    initializeValues(data) {
+        const { name, distributionType, frequency, notificationType, includeAllProjects, projects, configuredProjects } = data;
         let values = this.state.values;
         values.name = name;
         values.distributionType = distributionType;
