@@ -25,7 +25,6 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
     }
 
 	render() {
-        debugger;
 		let content = <div>
 							<TextInput label="Room Name" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomNameError" errorValue={this.props.roomNameError}></TextInput>
 							<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
