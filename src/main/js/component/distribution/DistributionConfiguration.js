@@ -194,16 +194,20 @@ class DistributionConfiguration extends Component {
 	}
 
 	typeColumnDataFormat(cell, row) {
-		var fontAwesomeClass = "";
+		let fontAwesomeClass = "";
+        let cellText = '';
 		if (cell === 'email_group_channel') {
 			fontAwesomeClass = 'fa fa-envelope';
+            cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
 			fontAwesomeClass = 'fa fa-comments';
+            cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
 			fontAwesomeClass = 'fa fa-slack';
+            cellText = "Slack";
 		}
-		var cellText = " " + cell;
-		var data = <div>
+
+		let data = <div>
 						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
 						{cellText}
 					</div>;
