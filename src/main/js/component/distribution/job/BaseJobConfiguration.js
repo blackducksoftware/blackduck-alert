@@ -265,22 +265,24 @@ class BaseJobConfiguration extends Component {
         }
 	}
 
-	handleNotificationChanged (optionsList) {
-		this.handleSelectedArrayChanged('notificationType', optionsList);
-	}
-
-    handleProjectChanged(projectList) {
-        this.handleSelectedArrayChanged('configuredProjects', projectList);
-    }
-
-    handleSelectedArrayChanged(stateKey, selectedValues) {
-        let selected = new Array();
+	handleNotificationChanged (selectedValues) {
+		let selected = new Array();
         if(selectedValues && selectedValues.length > 0) {
             selected = selectedValues.map((item) => {
                 return item.value;
             });
         }
-        this.handleStateValues(stateKey, selected);
+        this.handleStateValues('notificationType', selected);
+	}
+
+    handleProjectChanged(selectedValues) {
+    	let selected = new Array();
+        if(selectedValues && selectedValues.length > 0) {
+            selected = selectedValues.map((item) => {
+                return item.value;
+            });
+        }
+        this.handleStateValues('configuredProjects', selected);
     }
 
     async onSubmit(event) {
@@ -340,7 +342,7 @@ class BaseJobConfiguration extends Component {
 						</div>
 						{content}
 					</div>
-					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.props.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
+					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} type="submit" />
 					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>

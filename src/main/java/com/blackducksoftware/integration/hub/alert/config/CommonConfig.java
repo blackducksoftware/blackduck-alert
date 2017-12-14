@@ -84,6 +84,10 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
             } catch (final IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
+        } else {
+            if (future != null) {
+                future.cancel(false);
+            }
         }
     }
 
