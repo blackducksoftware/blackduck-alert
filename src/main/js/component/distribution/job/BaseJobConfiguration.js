@@ -76,7 +76,7 @@ class BaseJobConfiguration extends Component {
     }
 
     initializeValues(data) {
-        const { id, distributionConfigId, name, distributionType, frequency, notificationType, includeAllProjects, filterByProject, projects, configuredProjects } = data;
+        const { id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, projects, configuredProjects } = data;
         let values = this.state.values;
         values.id = id;
         values.distributionConfigId = distributionConfigId;
@@ -94,8 +94,8 @@ class BaseJobConfiguration extends Component {
         } else if (filterByProject) {
         	values.includeAllProjects = (filterByProject == 'false');
 	    }
-        if (notificationType) {
-            values.notificationType  = notificationType;
+        if (notificationTypes) {
+            values.notificationTypes  = notificationTypes;
         }
 
         values.configuredProjects = configuredProjects;
@@ -116,14 +116,10 @@ class BaseJobConfiguration extends Component {
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
-		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			if (Array.isArray(configuration.notificationType)) {
-				configuration.notificationType = configuration.notificationType[0]; 
-			} else {
-				configuration.notificationType = configuration.notificationType;
-			}
+		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+			configuration.notificationTypes = configuration.notificationTypes; 
 		} else {
-			configuration.notificationType = null;
+			configuration.notificationTypes = null;
 		}
 
 		var self = this;
@@ -191,14 +187,10 @@ class BaseJobConfiguration extends Component {
 		var configuration = Object.assign({}, this.state.values);
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
-		if (configuration.notificationType && configuration.notificationType.length > 0) {
-			if (Array.isArray(configuration.notificationType)) {
-				configuration.notificationType = configuration.notificationType[0]; 
-			} else {
-				configuration.notificationType = configuration.notificationType;
-			}
+		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+			configuration.notificationTypes = configuration.notificationTypes; 
 		} else {
-			configuration.notificationType = null;
+			configuration.notificationTypes = null;
 		}
 
 		var self = this;
@@ -280,7 +272,7 @@ class BaseJobConfiguration extends Component {
                 return item.value;
             });
         }
-        this.handleStateValues('notificationType', selected);
+        this.handleStateValues('notificationTypes', selected);
 	}
 
     handleProjectChanged(selectedValues) {
@@ -345,7 +337,7 @@ class BaseJobConfiguration extends Component {
                                 removeSelected={true}
 							    options={this.state.notificationOptions}
 							    placeholder='Choose the notification types'
-							    value={this.state.values.notificationType}
+							    value={this.state.values.notificationTypes}
 							  />
 						</div>
 						{content}

@@ -42,7 +42,7 @@ class DistributionConfiguration extends Component {
             lastRun: '12/01/2017 00:00:00',
             status: 'Success',
             frequency: 'DAILY',
-            notificationType: [
+            notificationTypes: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE'],
@@ -56,7 +56,7 @@ class DistributionConfiguration extends Component {
             lastRun: '12/02/2017 00:00:00',
             status: 'Failure',
             frequency: 'REAL_TIME',
-            notificationType: [
+            notificationTypes: [
             'POLICY_VIOLATION_OVERRIDE',
             'HIGH_VULNERABILITY'],
             configuredProjects: ['missing-1', 'missing-2']
@@ -68,7 +68,7 @@ class DistributionConfiguration extends Component {
             lastRun: '1/01/2017 00:00:00',
             status: 'Success',
             frequency: 'DAILY',
-            notificationType: [
+            notificationTypes: [
             'POLICY_VIOLATION',
             'POLICY_VIOLATION_CLEARED',
             'POLICY_VIOLATION_OVERRIDE',
@@ -172,7 +172,7 @@ class DistributionConfiguration extends Component {
                     			lastRun: '',
                     			status: '',
                                 frequency: item.frequency,
-                                notificationType: [item.notificationType],
+                                notificationTypes: item.notificationTypes,
                                 configuredProjects: item.configuredProjects
                             };
 
@@ -183,6 +183,26 @@ class DistributionConfiguration extends Component {
 						jobs: newJobs
 					});
                 });
+            } else {
+				return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
+						}
+						self.setState({
+							errors
+						});
+					}
+					self.setState({
+						jobConfigTableMessage: json.message
+					});
+				});
             }
         });
     }
@@ -239,10 +259,49 @@ class DistributionConfiguration extends Component {
 
 	customJobConfigDeletionConfirm(next, dropRowKeys) {
 	  if (confirm("Are you sure you want to delete these Job configurations?")) {
+	  	console.log('Deleting the Job configs');
 	  	//TODO delete the Job configs from the backend
 	  	// dropRowKeys are the Id's of the Job configs
-	  	console.log('Deleting the Job configs');
-	    next();
+		let self = this;
+		var jobs = self.state.jobs;
+
+		var matchingJobs = jobs.filter(job => {
+			return dropRowKeys.includes(job.id);
+		});
+	  	matchingJobs.forEach(function(job){
+	  		let jsonBody = JSON.stringify(job);
+		    fetch('/configuration/distribution/common',{
+		    	method: 'DELETE',
+				credentials: "same-origin",
+	            headers: {
+					'Content-Type': 'application/json'
+				},
+				body: jsonBody
+			}).then(function(response) {
+				if (!response.ok) {
+					return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
+						}
+						self.setState({
+							errors
+						});
+					}
+					self.setState({
+						jobConfigTableMessage: json.message
+					});
+				});
+				}
+			});
+		});
+	  	next();
 	  }
 	}
 
@@ -276,13 +335,13 @@ class DistributionConfiguration extends Component {
 	getCurrentJobConfig(currentJobSelected) {
 		let currentJobConfig = null;
 		if (currentJobSelected != null) {
-            const { id, name, distributionConfigId, distributionType, frequency, notificationType, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
+            const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} updateJobsTable={this.updateJobsTable} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} updateJobsTable={this.updateJobsTable} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationType={notificationType} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			}
 		}
 		return currentJobConfig;
@@ -313,8 +372,9 @@ class DistributionConfiguration extends Component {
 		};
 		var content = <div>
 						<BootstrapTable data={this.state.jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
-	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Job Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='name' isKey dataSort>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='name' dataSort>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionType' dataSort dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
