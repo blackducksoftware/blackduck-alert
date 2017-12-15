@@ -28,19 +28,18 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
 public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> {
-
     @Autowired
-    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
-            final ObjectTransformer objectTransformer) {
-        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, commonDistributionRepository, objectTransformer);
+    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions,
+            final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions, final ObjectTransformer objectTransformer) {
+        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
     }
 
     @Override
@@ -50,7 +49,8 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
                 CommonDistributionConfigEntity createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 if (createdEntity != null) {
                     createdEntity = commonDistributionRepository.save(createdEntity);
-                    saveConfiguredProjects(createdEntity, restModel);
+                    configuredProjectsActions.saveConfiguredProjects(createdEntity, restModel);
+                    notificationTypesActions.saveNotificationTypes(createdEntity, restModel);
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -64,14 +64,15 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     public void deleteConfig(final Long id) {
         if (id != null) {
             commonDistributionRepository.delete(id);
-            cleanUpConfiguredProjects();
+            configuredProjectsActions.cleanUpConfiguredProjects();
+            notificationTypesActions.removeOldNotificationTypes(id);
         }
     }
 
     @Override
     public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
-        // TODO test config
-        return "Not implemented.";
+        // Should not be tested
+        return "Configuration should not be tested at this level.";
     }
 
     @Override
@@ -86,7 +87,8 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
         final CommonDistributionConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
-        restModel.setConfiguredProjects(getConfiguredProjects(commonEntity));
+        restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
+        restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
         return restModel;
     }
 

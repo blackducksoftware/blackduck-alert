@@ -36,8 +36,8 @@ public class SlackDistributionRestModel extends CommonDistributionConfigRestMode
     }
 
     public SlackDistributionRestModel(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
-            final String frequency, final String notificationType, final String filterByProject, final List<String> configuredProjects) {
-        super(id, distributionConfigId, distributionType, name, frequency, notificationType, filterByProject, configuredProjects);
+            final String frequency, final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
+        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.webhook = webhook;
         this.channelUsername = channelUsername;
         this.channelName = channelName;

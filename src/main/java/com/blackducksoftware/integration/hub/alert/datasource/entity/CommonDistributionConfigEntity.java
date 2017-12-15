@@ -43,22 +43,18 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "frequency")
     private String frequency;
 
-    @Column(name = "notification_type")
-    private String notificationType;
-
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
 
     public CommonDistributionConfigEntity() {
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final Boolean filterByProject) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.frequency = frequency;
-        this.notificationType = notificationType;
         this.filterByProject = filterByProject;
     }
 
@@ -84,10 +80,6 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
 
     public String getFrequency() {
         return frequency;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
     }
 
     public Boolean getFilterByProject() {
