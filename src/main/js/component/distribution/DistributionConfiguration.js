@@ -165,7 +165,7 @@ class DistributionConfiguration extends Component {
 					if (jsonArray != null && jsonArray.length > 0) {
                         jsonArray.forEach((item) =>{
                             let jobConfig = {
-                            	id: item.id
+                            	id: item.id,
                                 distributionConfigId: item.distributionConfigId,
                     			name: item.name,
                     			distributionType: item.distributionType,
@@ -177,9 +177,6 @@ class DistributionConfiguration extends Component {
                             };
 
                             newJobs.push(jobConfig);
-                            self.setState({
-                                jobs: newJobs
-                            });
                         });
                     }
                    self.setState({
