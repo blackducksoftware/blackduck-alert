@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,10 +32,7 @@ public class GlobalRepositoryIT {
         final Integer hubTimeout = 300;
         final String hubUsername = "hub_username";
         final String hubPassword = "hub_password";
-        final String accumulatorCron = "accumulator_cron";
-        final String dailyDigestCron = "dailyDigest_cron";
-        final String purgeDataCron = "purgeData_cron";
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
         final GlobalHubConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
@@ -44,8 +40,5 @@ public class GlobalRepositoryIT {
         assertEquals(hubTimeout, foundEntity.getHubTimeout());
         assertEquals(hubUsername, foundEntity.getHubUsername());
         assertEquals(hubPassword, foundEntity.getHubPassword());
-        assertEquals(accumulatorCron, foundEntity.getAccumulatorCron());
-        assertEquals(dailyDigestCron, foundEntity.getDailyDigestCron());
-        assertEquals(purgeDataCron, foundEntity.getPurgeDataCron());
     }
 }
