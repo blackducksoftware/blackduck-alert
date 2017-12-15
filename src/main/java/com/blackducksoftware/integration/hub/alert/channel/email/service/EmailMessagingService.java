@@ -65,6 +65,7 @@ public class EmailMessagingService {
         if (StringUtils.isNotBlank(emailProperties.getEmailTemplateDirectory())) {
             this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(emailProperties.getEmailTemplateDirectory());
         } else {
+            // TODO determine the actual template location for deployment
             this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates");
         }
     }
@@ -83,6 +84,7 @@ public class EmailMessagingService {
         if (StringUtils.isNotBlank(emailProperties.getEmailTemplateLogoImage())) {
             addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, emailProperties.getEmailTemplateLogoImage());
         } else {
+            // TODO determine the actual image location for deployment
             addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png");
         }
         final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
