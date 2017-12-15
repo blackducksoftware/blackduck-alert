@@ -20,34 +20,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model.distribution;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
-    private static final long serialVersionUID = -4728604702503057780L;
+@Entity
+@Table(schema = "alert", name = "notification_types")
+public class NotificationTypeEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 6250696874570412937L;
 
-    private String groupName;
+    @Column
+    private String type;
 
-    public EmailGroupDistributionRestModel() {
+    public NotificationTypeEntity() {
+
     }
 
-    public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
-            final List<String> configuredProjects, final List<String> notificationTypes) {
-        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
-        this.groupName = groupName;
+    public NotificationTypeEntity(final String type) {
+        this.type = type;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
+    public String getType() {
+        return type;
     }
 
 }
