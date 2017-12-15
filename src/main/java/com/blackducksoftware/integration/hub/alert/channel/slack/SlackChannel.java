@@ -144,6 +144,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
                         messageBuilder.append("Component: _" + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
                         messageBuilder.append("_ [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
                     }
+                    messageBuilder.append(System.lineSeparator());
                 }
             }
         } else {
