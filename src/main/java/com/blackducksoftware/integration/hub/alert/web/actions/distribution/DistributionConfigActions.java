@@ -120,6 +120,19 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     @Override
     public String validateConfig(final R restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
+        if (restModel.getName() != null) {
+            final List<CommonDistributionConfigEntity> configuredEntities = commonDistributionRepository.findAll();
+            for (final CommonDistributionConfigEntity entity : configuredEntities) {
+                final boolean areIdsEqual = entity.getId().toString().equals(restModel.getId());
+                final boolean areNamesEqual = entity.getName().trim().equalsIgnoreCase((restModel.getName().trim()));
+                if (!areIdsEqual && areNamesEqual) {
+                    fieldErrors.put("name", "A distribution configuration with this name already exists.");
+                    break;
+                }
+            }
+        } else {
+            fieldErrors.put("name", "Name cannot be null.");
+        }
         if (StringUtils.isNotBlank(restModel.getId()) && !StringUtils.isNumeric(restModel.getId())) {
             fieldErrors.put("id", "Not an Integer.");
         }
