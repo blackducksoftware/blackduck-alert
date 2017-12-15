@@ -41,14 +41,12 @@ public class ObjectTransformerTest {
     @Test
     public void testTransformGlobalModels() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalConfigRestModel();
-        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalConfigEntity();
+        final GlobalHubConfigRestModel restModel = mockUtils.createGlobalHubConfigRestModel();
+        final GlobalHubConfigEntity configEntity = mockUtils.createGlobalHubConfigEntity();
 
         final GlobalHubConfigEntity transformedConfigEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHubConfigEntity.class);
         final GlobalHubConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalHubConfigRestModel.class);
 
-        assertEquals(restModel.getAccumulatorCron(), transformedConfigRestModel.getAccumulatorCron());
-        assertEquals(restModel.getDailyDigestCron(), transformedConfigRestModel.getDailyDigestCron());
         assertNull(transformedConfigRestModel.getHubAlwaysTrustCertificate());
         assertEquals(restModel.getHubPassword(), transformedConfigRestModel.getHubPassword());
         assertNull(transformedConfigRestModel.getHubProxyHost());
@@ -60,8 +58,6 @@ public class ObjectTransformerTest {
         assertEquals(restModel.getHubUsername(), transformedConfigRestModel.getHubUsername());
         assertEquals(restModel.getId(), transformedConfigRestModel.getId());
 
-        assertEquals(configEntity.getAccumulatorCron(), transformedConfigEntity.getAccumulatorCron());
-        assertEquals(configEntity.getDailyDigestCron(), transformedConfigEntity.getDailyDigestCron());
         assertEquals(configEntity.getHubPassword(), transformedConfigEntity.getHubPassword());
         assertEquals(configEntity.getHubTimeout(), transformedConfigEntity.getHubTimeout());
         assertEquals(configEntity.getHubUsername(), transformedConfigEntity.getHubUsername());

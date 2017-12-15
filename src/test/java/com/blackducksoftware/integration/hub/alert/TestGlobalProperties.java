@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
@@ -21,8 +22,8 @@ public class TestGlobalProperties extends GlobalProperties {
     private String accumulatorCron;
     private String dailyDigestCron;
 
-    public TestGlobalProperties(final GlobalHubRepository globalRepository) {
-        super(globalRepository);
+    public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+        super(globalRepository, globalSchedulingRepository);
     }
 
     @Override

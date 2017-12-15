@@ -41,7 +41,7 @@ public class SlackChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("slack.web.hook"));
 
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
 
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, globalProperties);
         final String roomName = properties.getProperty("slack.channel.name");

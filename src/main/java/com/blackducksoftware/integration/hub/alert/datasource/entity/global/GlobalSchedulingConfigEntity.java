@@ -32,48 +32,48 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "global_hub_config")
-public class GlobalHubConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 9172607945030111585L;
+@Table(schema = "alert", name = "global_scheduling_config")
+public class GlobalSchedulingConfigEntity extends DatabaseEntity {
+    private static final long serialVersionUID = 8463934888905338203L;
 
-    @Column(name = "hub_timeout")
-    private Integer hubTimeout;
+    @Column(name = "alert_accumulator_cron")
+    private String accumulatorCron;
 
-    @Column(name = "hub_username")
-    private String hubUsername;
+    @Column(name = "alert_digest_daily_cron")
+    private String dailyDigestCron;
 
-    @Column(name = "hub_password")
-    private String hubPassword;
+    @Column(name = "alert_purge_data_cron")
+    private String purgeDataCron;
 
-    public GlobalHubConfigEntity() {
+    public GlobalSchedulingConfigEntity() {
+
     }
 
-    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword) {
-        this.hubTimeout = hubTimeout;
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+    public GlobalSchedulingConfigEntity(final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+        this.accumulatorCron = accumulatorCron;
+        this.dailyDigestCron = dailyDigestCron;
+        this.purgeDataCron = purgeDataCron;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public Integer getHubTimeout() {
-        return hubTimeout;
+    public String getAccumulatorCron() {
+        return accumulatorCron;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
+    public String getDailyDigestCron() {
+        return dailyDigestCron;
     }
 
-    public String getHubPassword() {
-        return hubPassword;
+    public String getPurgeDataCron() {
+        return purgeDataCron;
     }
 
     @Override
     public String toString() {
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("hubPassword");
         return reflectionToStringBuilder.build();
     }
 

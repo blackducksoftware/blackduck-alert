@@ -39,7 +39,7 @@ public class EmailChannelTestIT extends RestChannelTest {
         Assume.assumeTrue(properties.containsKey("blackduck.hub.password"));
 
         final GlobalHubRepository globalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"), "", "", "");
+        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
         final List<VulnerabilityEntity> vulns = new ArrayList<>();
@@ -62,7 +62,7 @@ public class EmailChannelTestIT extends RestChannelTest {
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
         final ProjectData projectData = projectDataBuilder.build();
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, null);
         globalProperties.hubUrl = properties.getProperty("blackduck.hub.url");
 
         final String trustCert = properties.getProperty("blackduck.hub.trust.cert");
