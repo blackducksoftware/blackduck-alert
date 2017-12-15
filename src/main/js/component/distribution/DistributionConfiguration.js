@@ -165,6 +165,7 @@ class DistributionConfiguration extends Component {
 					if (jsonArray != null && jsonArray.length > 0) {
                         jsonArray.forEach((item) =>{
                             let jobConfig = {
+                            	id: item.id
                                 distributionConfigId: item.distributionConfigId,
                     			name: item.name,
                     			distributionType: item.distributionType,
