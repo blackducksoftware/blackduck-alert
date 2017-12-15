@@ -130,6 +130,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
 
     private String createHtmlMessage(final ProjectData projectData) {
         try {
+            // TODO determine the actual template location for deployment
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates");
 
             final HashMap<String, Object> model = new HashMap<>();
