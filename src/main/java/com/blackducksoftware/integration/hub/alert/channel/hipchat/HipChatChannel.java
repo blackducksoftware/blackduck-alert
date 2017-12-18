@@ -114,18 +114,13 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
                 }
-                return "Attempting to send a test message.";
+                return Integer.toString(response.code());
             } catch (final IntegrationException e) {
                 throw new IntegrationRestException(HttpStatus.BAD_REQUEST.value(), "Failed to send a HipChat message", e.getMessage(), e);
             }
         } else {
             throw new IntegrationRestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
         }
-    }
-
-    @Override
-    public String testMessage(final HipChatDistributionConfigEntity distributionConfig) throws IntegrationException {
-        return sendMessage(distributionConfig, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
     }
 
     private String createHtmlMessage(final ProjectData projectData) {

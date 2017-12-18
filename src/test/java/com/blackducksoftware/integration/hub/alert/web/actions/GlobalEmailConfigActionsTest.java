@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.MockUtils;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -180,21 +179,6 @@ public class GlobalEmailConfigActionsTest {
 
         response = configActions.validateConfig(new GlobalEmailConfigRestModel());
         assertEquals("Valid", response);
-    }
-
-    // TODO fix when we have decided on an implementation of GlobalEmailConfigActions.testConfig()
-    // @Test
-    public void testTestConfig() throws Exception {
-        final EmailGroupChannel mockedEmailChannel = Mockito.mock(EmailGroupChannel.class);
-        final GlobalEmailRepository mockedEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final GlobalEmailConfigActions configActions = new GlobalEmailConfigActions(mockedEmailRepository, objectTransformer);
-
-        configActions.testConfig(mockUtils.createEmailConfigRestModel());
-        verify(mockedEmailChannel, times(1)).testMessage(Mockito.any());
-        Mockito.reset(mockedEmailChannel);
-
-        configActions.testConfig(null);
-        verify(mockedEmailChannel, times(1)).testMessage(Mockito.any());
     }
 
     @Test
