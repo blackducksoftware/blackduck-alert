@@ -63,12 +63,12 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            final Collection<ProjectData> userData = createCateoryDataMap(digestType, processedNotificationList);
+            final Collection<ProjectData> userData = createProjectData(digestType, processedNotificationList);
             return eventManager.createChannelEvents(userData);
         }
     }
 
-    private Collection<ProjectData> createCateoryDataMap(final DigestTypeEnum digestType, final Collection<NotificationEntity> eventMap) {
+    private Collection<ProjectData> createProjectData(final DigestTypeEnum digestType, final Collection<NotificationEntity> eventMap) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationEntity entity : eventMap) {
             final String projectKey = entity.getEventKey();

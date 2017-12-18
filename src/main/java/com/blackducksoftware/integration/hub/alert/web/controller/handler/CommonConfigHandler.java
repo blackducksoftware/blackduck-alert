@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,19 +33,20 @@ import org.springframework.http.ResponseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
-//TODO rename to CommonConfigHandler, move to package handler, extend ControllerHandler
-public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRestModel> {
-    private final Logger logger = LoggerFactory.getLogger(CommonConfigController.class);
+public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel> extends ControllerHandler {
+    private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
     public final ConfigActions<D, R> configActions;
 
-    public CommonConfigController(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R> configActions) {
+    public CommonConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R> configActions, final ObjectTransformer objectTransformer) {
+        super(objectTransformer);
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
         this.configActions = configActions;
@@ -153,15 +154,6 @@ public class CommonConfigController<D extends DatabaseEntity, R extends ConfigRe
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
         }
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
-        return createResponse(status, configActions.objectTransformer.stringToLong(id), message);
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
-        final String responseBody = new ResponseBodyBuilder(id, message).build();
-        return new ResponseEntity<>(responseBody, status);
     }
 
 }
