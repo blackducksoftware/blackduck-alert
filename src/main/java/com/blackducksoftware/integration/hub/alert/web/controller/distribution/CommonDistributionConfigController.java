@@ -36,25 +36,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.CommonDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @RestController
 public class CommonDistributionConfigController extends ConfigController<CommonDistributionConfigRestModel> {
-    private final CommonConfigController<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> commonConfigController;
+    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> commonConfigHandler;
 
     @Autowired
-    public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions) {
-        commonConfigController = new CommonConfigController<>(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionConfigActions);
+    public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ObjectTransformer objectTransformer) {
+        commonConfigHandler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionConfigActions, objectTransformer);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/common")
     public List<CommonDistributionConfigRestModel> getConfig(final Long id) {
-        return commonConfigController.getConfig(id);
+        return commonConfigHandler.getConfig(id);
     }
 
     @Override
@@ -69,28 +70,28 @@ public class CommonDistributionConfigController extends ConfigController<CommonD
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
-        return commonConfigController.putConfig(restModel);
+        return commonConfigHandler.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/common/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
-        return commonConfigController.validateConfig(restModel);
+        return commonConfigHandler.validateConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/common")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
-        return commonConfigController.deleteConfig(restModel);
+        return commonConfigHandler.deleteConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/common/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
-        return commonConfigController.testConfig(restModel);
+        return commonConfigHandler.testConfig(restModel);
     }
 
 }
