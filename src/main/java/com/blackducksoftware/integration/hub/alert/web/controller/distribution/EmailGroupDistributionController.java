@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,61 +35,61 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.EmailGroupDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @RestController
 public class EmailGroupDistributionController extends ConfigController<EmailGroupDistributionRestModel> {
-    private final CommonConfigController<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> commonConfigController;
+    private final CommonConfigHandler<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> commonConfigHandler;
 
     @Autowired
-    public EmailGroupDistributionController(final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions) {
-        commonConfigController = new CommonConfigController<>(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, emailGroupDistributionConfigActions);
+    public EmailGroupDistributionController(final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions, final ObjectTransformer objectTransformer) {
+        commonConfigHandler = new CommonConfigHandler<>(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, emailGroupDistributionConfigActions, objectTransformer);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/emailGroup")
     public List<EmailGroupDistributionRestModel> getConfig(final Long id) {
-        return commonConfigController.getConfig(id);
+        return commonConfigHandler.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup")
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        return commonConfigController.postConfig(restModel);
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final EmailGroupDistributionRestModel restModel) {
+        return commonConfigHandler.postConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/emailGroup")
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        return commonConfigController.putConfig(restModel);
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final EmailGroupDistributionRestModel restModel) {
+        return commonConfigHandler.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup/validate")
-    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        return commonConfigController.validateConfig(restModel);
+    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final EmailGroupDistributionRestModel restModel) {
+        return commonConfigHandler.validateConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/emailGroup")
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        // TODO improve and abstract for reuse
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final EmailGroupDistributionRestModel restModel) {
+        return commonConfigHandler.doNotAllowHttpMethod();
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/emailGroup/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) final EmailGroupDistributionRestModel restModel) {
-        return commonConfigController.testConfig(restModel);
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final EmailGroupDistributionRestModel restModel) {
+        return commonConfigHandler.testConfig(restModel);
     }
 
 }
