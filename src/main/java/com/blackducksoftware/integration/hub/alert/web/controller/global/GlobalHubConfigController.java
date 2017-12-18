@@ -36,56 +36,58 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHubConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 @RestController
 public class GlobalHubConfigController extends ConfigController<GlobalHubConfigRestModel> {
-    private final CommonConfigController<GlobalHubConfigEntity, GlobalHubConfigRestModel> commonConfigController;
+    private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel> commonConfigHandler;
 
     @Autowired
-    GlobalHubConfigController(final GlobalHubConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions);
+    GlobalHubConfigController(final GlobalHubConfigActions configActions, final ObjectTransformer objectTransformer) {
+        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions, objectTransformer);
     }
 
     @Override
     @GetMapping(value = "/configuration/global")
     public List<GlobalHubConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return commonConfigController.getConfig(id);
+        return commonConfigHandler.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
-        return commonConfigController.postConfig(globalConfig);
+        return commonConfigHandler.postConfig(globalConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/global")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
-        return commonConfigController.putConfig(globalConfig);
+        return commonConfigHandler.putConfig(globalConfig);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(final GlobalHubConfigRestModel globalConfig) {
-        return commonConfigController.validateConfig(globalConfig);
+        return commonConfigHandler.validateConfig(globalConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/global")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
-        return commonConfigController.deleteConfig(globalConfig);
+        return commonConfigHandler.deleteConfig(globalConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
-        return commonConfigController.testConfig(globalConfig);
+        return commonConfigHandler.testConfig(globalConfig);
     }
 }
