@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,61 +35,61 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.SlackDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 @RestController
 public class SlackDistributionConfigController extends ConfigController<SlackDistributionRestModel> {
-    private final CommonConfigController<SlackDistributionConfigEntity, SlackDistributionRestModel> commonConfigController;
+    private final CommonConfigHandler<SlackDistributionConfigEntity, SlackDistributionRestModel> commonConfigHandler;
 
     @Autowired
-    public SlackDistributionConfigController(final SlackDistributionConfigActions slackDistributionConfigActions) {
-        commonConfigController = new CommonConfigController<>(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, slackDistributionConfigActions);
+    public SlackDistributionConfigController(final SlackDistributionConfigActions slackDistributionConfigActions, final ObjectTransformer objectTransformer) {
+        commonConfigHandler = new CommonConfigHandler<>(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, slackDistributionConfigActions, objectTransformer);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/distribution/slack")
     public List<SlackDistributionRestModel> getConfig(final Long id) {
-        return commonConfigController.getConfig(id);
+        return commonConfigHandler.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final SlackDistributionRestModel restModel) {
-        return commonConfigController.postConfig(restModel);
+        return commonConfigHandler.postConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final SlackDistributionRestModel restModel) {
-        return commonConfigController.putConfig(restModel);
+        return commonConfigHandler.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/slack")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final SlackDistributionRestModel restModel) {
-        // TODO improve and abstract for reuse
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+        return commonConfigHandler.doNotAllowHttpMethod();
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final SlackDistributionRestModel restModel) {
-        return commonConfigController.testConfig(restModel);
+        return commonConfigHandler.testConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/slack/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final SlackDistributionRestModel restModel) {
-        return commonConfigController.validateConfig(restModel);
+        return commonConfigHandler.validateConfig(restModel);
     }
 
 }
