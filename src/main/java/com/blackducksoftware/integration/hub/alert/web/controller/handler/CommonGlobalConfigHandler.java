@@ -25,31 +25,25 @@ package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class ControllerHandler {
-    private final ObjectTransformer objectTransformer;
+public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel> extends CommonConfigHandler<D, R> {
+    private final Class<D> databaseEntityClass;
 
-    public ControllerHandler(final ObjectTransformer objectTransformer) {
-        this.objectTransformer = objectTransformer;
+    public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R> configActions, final ObjectTransformer objectTransformer) {
+        super(databaseEntityClass, configRestModelClass, configActions, objectTransformer);
+        this.databaseEntityClass = databaseEntityClass;
     }
 
-    public ResponseEntity<String> doNotAllowHttpMethod() {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
-        return createResponse(status, objectTransformer.stringToLong(id), message);
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
-        final String responseBody = new ResponseBodyBuilder(id, message).build();
-        return new ResponseEntity<>(responseBody, status);
-    }
-
-    protected ResponseEntity<String> createResponse(final HttpStatus status, final String message) {
-        return createResponse(status, -1L, message);
+    @Override
+    public ResponseEntity<String> postConfig(final R restModel) {
+        if (!getConfig(null).isEmpty()) {
+            return createResponse(HttpStatus.PRECONDITION_FAILED, String.format("Cannot POST because a global configuration for %s already exists!", databaseEntityClass.getSimpleName()));
+        }
+        return super.postConfig(restModel);
     }
 
 }

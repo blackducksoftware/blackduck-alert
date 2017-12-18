@@ -38,15 +38,17 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
 public class NotificationEventManager {
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity> channelEventFactory;
+    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
 
     @Autowired
-    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity> channelEventFactory,
+    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor,
+            final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory,
             final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
