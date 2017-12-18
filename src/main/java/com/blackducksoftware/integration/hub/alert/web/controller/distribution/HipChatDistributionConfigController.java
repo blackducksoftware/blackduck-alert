@@ -60,34 +60,36 @@ public class HipChatDistributionConfigController extends ConfigController<HipCha
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/distribution/hipchat")
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final HipChatDistributionRestModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigController.postConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/distribution/hipchat")
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final HipChatDistributionRestModel restModel) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigController.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/distribution/hipchat")
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final HipChatDistributionRestModel restModel) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         // TODO improve and abstract for reuse
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/distribution/slack/hipchat")
-    public ResponseEntity<String> testConfig(final HipChatDistributionRestModel restModel) {
-        return commonConfigController.postConfig(restModel);
+    @PostMapping(value = "/configuration/distribution/hipchat/test")
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
+        return commonConfigController.testConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(final HipChatDistributionRestModel restModel) {
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/configuration/distribution/hipchat/validate")
+    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigController.validateConfig(restModel);
     }
 
