@@ -22,21 +22,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @Component
-public class EmailManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent> {
-    public EmailManager(final DistributionChannel<EmailGroupEvent, GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> distributionChannel, final JpaRepository<GlobalEmailConfigEntity, Long> globalRepository,
-            final JpaRepository<EmailGroupDistributionConfigEntity, Long> localRepository) {
-        super(distributionChannel, globalRepository, localRepository);
+public class EmailGroupManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent, EmailGroupDistributionRestModel> {
+    @Autowired
+    public EmailGroupManager(final EmailGroupChannel distributionChannel, final GlobalEmailRepository globalRepository, final EmailGroupDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
+        super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
 
     @Override
@@ -47,6 +51,19 @@ public class EmailManager extends DistributionChannelManager<GlobalEmailConfigEn
     @Override
     public EmailGroupEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         return new EmailGroupEvent(projectData, commonDistributionConfigId);
+    }
+
+    @Override
+    public String sendTestMessage(final EmailGroupDistributionRestModel restModel) throws AlertException {
+        if (getDistributionChannel().getGlobalConfigEntity() != null) {
+            return super.sendTestMessage(restModel);
+        }
+        return "ERROR: Missing global configuration!";
+    }
+
+    @Override
+    public Class<EmailGroupDistributionConfigEntity> getDatabaseEntityClass() {
+        return EmailGroupDistributionConfigEntity.class;
     }
 
 }
