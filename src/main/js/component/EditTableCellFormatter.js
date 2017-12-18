@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { editJobButton } from '../../css/table.css';
+import { tableButton, editJobButton } from '../../css/table.css';
 
 class EditTableCellFormatter extends Component {
     constructor(props) {
@@ -17,8 +17,14 @@ class EditTableCellFormatter extends Component {
 
     render() {
         const buttonText = this.props.buttonText || "Edit";
-        const buttonClass = this.props.buttonClass || `btn btn-info ${editJobButton}`;
+        var buttonClass = this.props.buttonClass;
         
+        if (buttonClass) {
+            buttonClass = `${buttonClass} ${tableButton}`;
+        } else {
+            buttonClass = `btn btn-info ${editJobButton}`;
+        }
+
         return (
             <input className={buttonClass} type='button' onClick={this.onClick} value={buttonText}></input>
         );

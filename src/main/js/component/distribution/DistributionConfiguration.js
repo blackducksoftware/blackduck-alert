@@ -215,6 +215,7 @@ class DistributionConfiguration extends Component {
 		if (fieldValue === 'Failure') {
 			className = tableStyles.statusFailure;
 		}
+		className = `${className} ${tableStyles.tableCell}`
 		return className;
 	}
 
@@ -382,11 +383,11 @@ class DistributionConfiguration extends Component {
 						<BootstrapTable data={this.state.jobs} containerClass={tableStyles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='name' dataSort>Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='lastRun' dataSort>Last Run</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='name' dataSort columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='lastRun' dataSort columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' dataFormat={ this.editButtonClick }></TableHeaderColumn>
+                            <TableHeaderColumn dataField='' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;

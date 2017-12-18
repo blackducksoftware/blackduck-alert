@@ -71,13 +71,7 @@ class Audit extends Component {
     }
 
     onStatusFailureClick(currentRowSelected){
-    	// <Modal className='react-bs-insert-modal modal-dialog'
-     //    isOpen={ this.state.isInsertModalOpen }
-     //    ariaHideApp={ false }
-     //    onRequestClose={ this.handleModalClose }
-     //    contentLabel='Modal'>
-     //    { modal }
-     //  </Modal>
+    	this.handleSetState('currentRowSelected', currentRowSelected);
     }
 
     statusColumnDataFormat(cell, row) {
@@ -116,25 +110,34 @@ class Audit extends Component {
 		return data;
 	}
 
+	getCurrentEntryDetails(currentRowSelected) {
+		let currentEntryDetails = null;
+		
+		return currentEntryDetails;
+	}
+
 	render() {
 		const auditTableOptions = {
 	  		noDataText: 'No events',
 	  		clearSearch: true
 		};
-		var modal = this.state.modal;
+		var content = <div>
+						<BootstrapTable data={this.state.entries} containerClass={tableStyles.table} striped hover condensed search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='jobName' columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationType' dataSort columnClassName={tableStyles.tableCell}>Notification Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
+	                        <TableHeaderColumn dataField='' columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
+	  					</BootstrapTable>
+	  					<p name="message">{this.state.message}</p>
+  					</div>;
+  		var currentEntryDetails = this.getCurrentEntryDetails(this.state.currentRowSelected);
+  		if (currentEntryDetails) {
+  			content = currentEntryDetails;
+  		}
 		return (
-				<div>
-					{modal}
-					<BootstrapTable data={this.state.entries} containerClass={tableStyles.table} striped hover condensed search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
-      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
-      					<TableHeaderColumn dataField='jobName'>Distribution Job</TableHeaderColumn>
-      					<TableHeaderColumn dataField='eventType' dataSort dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>
-      					<TableHeaderColumn dataField='notificationType' dataSort>Notification Type</TableHeaderColumn>
-      					<TableHeaderColumn dataField='status' dataSort dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
-                        <TableHeaderColumn dataField='' dataFormat={ this.resendButton }></TableHeaderColumn>
-  					</BootstrapTable>
-  					<p name="message">{this.state.message}</p>
-				</div>
+				{content}
 		)
 	}
 

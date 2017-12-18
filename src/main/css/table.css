@@ -10,7 +10,6 @@
 .tableButton {
 	cursor: pointer;
 	color: #fff;
-    background: #285f8f;
     display: inline-block;
     border: 1px solid transparent;
     text-align: center;
@@ -20,6 +19,7 @@
 
 .addJobButton {
 	composes: tableButton;
+    background: #285f8f;
 }
 
 .deleteJobButton {
@@ -29,6 +29,7 @@
 
 .editJobButton {
     composes: tableButton;
+    background: #285f8f;
     margin-left: auto;
     margin-right: auto;
 }
@@ -39,6 +40,10 @@
 
 .tableRow {
     cursor: pointer;
+}
+
+.tableCell {
+    vertical-align: middle !important;
 }
 
 .scrollable {
