@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller.global;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,59 +36,60 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.controller.CommonConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 @RestController
 public class GlobalEmailConfigController extends ConfigController<GlobalEmailConfigRestModel> {
-    private final CommonConfigController<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> commonConfigController;
+    private final CommonConfigHandler<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> commonConfigHandler;
 
     @Autowired
-    GlobalEmailConfigController(final GlobalEmailConfigActions configActions) {
-        commonConfigController = new CommonConfigController<>(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, configActions);
+    GlobalEmailConfigController(final GlobalEmailConfigActions configActions, final ObjectTransformer objectTransformer) {
+        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, configActions, objectTransformer);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/global/email")
     public List<GlobalEmailConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return commonConfigController.getConfig(id);
+        return commonConfigHandler.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/email")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
-        return commonConfigController.postConfig(emailConfig);
+        return commonConfigHandler.postConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/global/email")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
-        return commonConfigController.putConfig(emailConfig);
+        return commonConfigHandler.putConfig(emailConfig);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(final GlobalEmailConfigRestModel emailConfig) {
-        return commonConfigController.validateConfig(emailConfig);
+        return commonConfigHandler.validateConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/global/email")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
-        return commonConfigController.deleteConfig(emailConfig);
+        return commonConfigHandler.deleteConfig(emailConfig);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/email/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalEmailConfigRestModel emailConfig) {
-        // TODO improve and abstract for reuse
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+        return commonConfigHandler.doNotAllowHttpMethod();
     }
 
 }
