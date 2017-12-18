@@ -1,4 +1,3 @@
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 .hidden {
 	display: none;
 }
@@ -132,4 +131,10 @@
 
 .progressIcon {
     float: left;
+}
+
+.missingHubData {
+    color: #9b9b9b;
+    font-style: italic;
+    font-weight: bold;
 }

@@ -11,7 +11,7 @@ class ServerConfiguration extends Configuration {
         super(props);
     }
     render(content) {
-        const { headerText, configButtonTest } = this.props;
+        const { headerText, configButtonTest, configButtonsSave } = this.props;
         var progressIndicator = null;
         if (this.state.inProgress) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
@@ -26,7 +26,7 @@ class ServerConfiguration extends Configuration {
                     <div className={content_block}>
     			    {content}
                     </div>
-                    <ConfigButtons includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
+                    <ConfigButtons isFixed={true} includeSave={configButtonsSave} includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
                     {progressIndicator}
                     <p name="configurationMessage">{this.state.configurationMessage}</p>
                 </form>
