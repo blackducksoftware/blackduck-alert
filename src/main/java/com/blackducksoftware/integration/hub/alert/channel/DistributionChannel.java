@@ -42,7 +42,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
-    private G globalConfigEntity;
 
     public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
@@ -56,15 +55,12 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     public G getGlobalConfigEntity() {
-        if (globalConfigEntity == null) {
-            final List<G> globalConfigs = globalRepository.findAll();
-            if (globalConfigs.size() == 1) {
-                globalConfigEntity = globalConfigs.get(0);
-            } else {
-                logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
-            }
+        final List<G> globalConfigs = globalRepository.findAll();
+        if (globalConfigs.size() == 1) {
+            return globalConfigs.get(0);
         }
-        return globalConfigEntity;
+        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
+        return null;
     }
 
     @Override
