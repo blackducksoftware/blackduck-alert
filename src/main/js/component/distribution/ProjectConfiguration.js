@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import styles from '../../../css/distributionConfig.css';
+import tableStyles from '../../../css/table.css';
 import { progressIcon, missingHubData } from '../../../css/main.css';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
@@ -57,9 +58,9 @@ export default class ProjectConfiguration extends Component {
 
     assignClassName(row, rowIdx) {
         if(row.missing) {
-            return `${styles.tableRow} ${missingHubData}`;
+            return `${tableStyles.tableRow} ${missingHubData}`;
         } else {
-            return `${styles.tableRow}`;
+            return `${tableStyles.tableRow}`;
         }
     }
 
@@ -113,7 +114,7 @@ export default class ProjectConfiguration extends Component {
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                                <BootstrapTable data={projectData} containerClass={styles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={styles.scrollable} bodyContainerClass={styles.projectTableScrollableBody} >
+                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
                                     <TableHeaderColumn dataField='name' isKey dataSort>Project</TableHeaderColumn>
                                     <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
                                 </BootstrapTable>
