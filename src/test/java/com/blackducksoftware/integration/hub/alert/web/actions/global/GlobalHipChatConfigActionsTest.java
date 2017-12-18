@@ -31,13 +31,14 @@ public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<HipChatDis
     @Override
     public GlobalHipChatConfigActions getConfigActions() {
         final GlobalHipChatRepository hipChatRepo = Mockito.mock(GlobalHipChatRepository.class);
-        final ObjectTransformer objectTransfomer = new ObjectTransformer();
-        return new GlobalHipChatConfigActions(hipChatRepo, objectTransfomer);
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer);
     }
 
     @Override
-    public GlobalHipChatConfigActions getSaveTestConfigActions() {
-        return getConfigActions();
+    public GlobalHipChatConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+        final GlobalHipChatRepository hipChatRepo = Mockito.mock(GlobalHipChatRepository.class);
+        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer);
     }
 
     @Override

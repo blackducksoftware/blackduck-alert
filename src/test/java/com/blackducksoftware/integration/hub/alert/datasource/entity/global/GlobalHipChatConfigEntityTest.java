@@ -14,45 +14,40 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
-
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class GlobalHipChatConfigEntityTest {
-    HipChatMockUtils mockUtils = new HipChatMockUtils();
+public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    @Test
-    public void testEmptyModel() {
-        final GlobalHipChatConfigEntity hipChatConfigEntity = new GlobalHipChatConfigEntity();
-        assertEquals(2791949172564090134L, GlobalHipChatConfigEntity.getSerialversionuid());
-
-        assertNull(hipChatConfigEntity.getApiKey());
-        assertNull(hipChatConfigEntity.getId());
-
-        final int configHash = hipChatConfigEntity.hashCode();
-        assertEquals(23273, configHash);
-
-        final String expectedString = mockUtils.getEmptyGlobalEntityJson();
-        assertEquals(expectedString, hipChatConfigEntity.toString());
-
-        final GlobalHipChatConfigEntity hipChatConfigEntityNew = new GlobalHipChatConfigEntity();
-        assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
+    public GlobalHipChatConfigEntityTest() {
+        super(mockUtils, GlobalHipChatConfigEntity.class);
     }
 
-    @Test
-    public void testModel() {
-        final GlobalHipChatConfigEntity hipChatConfigEntity = mockUtils.createGlobalEntity();
+    @Override
+    public void assertGlobalEntityFieldsNull(final GlobalHipChatConfigEntity entity) {
+        assertNull(entity.getApiKey());
+    }
 
-        assertEquals(mockUtils.getApiKey(), hipChatConfigEntity.getApiKey());
-        assertEquals(Long.valueOf(mockUtils.getId()), hipChatConfigEntity.getId());
+    @Override
+    public long emptyGlobalEntitySerialId() {
+        return GlobalHipChatConfigEntity.getSerialversionuid();
+    }
 
-        final int configHash = hipChatConfigEntity.hashCode();
-        assertEquals(-215716445, configHash);
+    @Override
+    public int emptyGlobalEntityHashCode() {
+        return 23273;
+    }
 
-        final String expectedString = mockUtils.getGlobalEntityJson();
-        assertEquals(expectedString, hipChatConfigEntity.toString());
+    @Override
+    public void assertGlobalEntityFieldsFull(final GlobalHipChatConfigEntity entity) {
+        assertEquals(mockUtils.getApiKey(), entity.getApiKey());
+    }
 
-        final GlobalHipChatConfigEntity hipChatConfigEntityNew = mockUtils.createGlobalEntity();
-        assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
+    @Override
+    public int globalEntityHashCode() {
+        return -215716445;
     }
 }

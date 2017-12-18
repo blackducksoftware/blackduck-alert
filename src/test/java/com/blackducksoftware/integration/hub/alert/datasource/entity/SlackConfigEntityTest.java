@@ -24,7 +24,7 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionRestModel
     private static final SlackMockUtils mockUtils = new SlackMockUtils();
 
     public SlackConfigEntityTest() {
-        super(mockUtils);
+        super(mockUtils, SlackDistributionConfigEntity.class);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionRestModel
 
     @Override
     public long emptyEntitySerialId() {
-        return 3607759169675906880L;
+        return SlackDistributionConfigEntity.getSerialversionuid();
     }
 
     @Override

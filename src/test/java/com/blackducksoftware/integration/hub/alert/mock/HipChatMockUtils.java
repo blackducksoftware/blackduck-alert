@@ -15,6 +15,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
+import com.google.gson.JsonObject;
 
 public class HipChatMockUtils extends DistributionMockUtils implements MockUtils<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
     private final String apiKey;
@@ -69,16 +70,16 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
 
     @Override
     public String getGlobalRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"id\":\"");
-        json.append(id);
-        json.append("\"}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("id", id);
         return json.toString();
     }
 
     @Override
     public String getEmptyGlobalRestModelJson() {
-        return "{\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("id", null);
+        return json.toString();
     }
 
     /*
@@ -94,16 +95,16 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
 
     @Override
     public String getGlobalEntityJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"id\":");
-        json.append(id);
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
 
     @Override
     public String getEmptyGlobalEntityJson() {
-        return "{\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("id", null);
+        return json.toString();
     }
 
     /*
@@ -113,31 +114,27 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
     @Override
     public HipChatDistributionRestModel createRestModel() {
         final HipChatDistributionRestModel hipChatDistributionRestModel = new HipChatDistributionRestModel(getCommonId(), roomId, notify, color, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(),
-                getNotificationType(), getFilterByProject());
+                getNotificationType(), getFilterByProject(), getProjects());
         return hipChatDistributionRestModel;
     }
 
     @Override
     public String getRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"roomId\":\"");
-        json.append(roomId);
-        json.append("\",\"notify\":\"");
-        json.append(notify);
-        json.append("\",\"color\":\"");
-        json.append(color);
-        json.append("\",");
-        json.append(getDistributionRestModelJson());
-        json.append("\"}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("roomId", roomId);
+        json.addProperty("notify", notify);
+        json.addProperty("color", color);
+        getDistributionRestModelJson(json);
         return json.toString();
     }
 
     @Override
     public String getEmptyRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"roomId\":null,\"notify\":null,\"color\":null,");
-        json.append(getEmptyDistributionRestModelJson());
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.add("roomId", null);
+        json.add("notify", null);
+        json.add("color", null);
+        getEmptyDistributionRestModelJson(json);
         return json.toString();
     }
 
@@ -154,22 +151,22 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
 
     @Override
     public String getEntityJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"roomId\":");
-        json.append(roomId);
-        json.append(",\"notify\":");
-        json.append(notify);
-        json.append(",\"color\":\"");
-        json.append(color);
-        json.append("\",\"id\":");
-        json.append(id);
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("roomId", Integer.valueOf(roomId));
+        json.addProperty("notify", Boolean.valueOf(notify));
+        json.addProperty("color", color);
+        json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
 
     @Override
     public String getEmptyEntityJson() {
-        return "{\"roomId\":null,\"notify\":null,\"color\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("roomId", null);
+        json.add("notify", null);
+        json.add("color", null);
+        json.add("id", null);
+        return json.toString();
     }
 
     @Override

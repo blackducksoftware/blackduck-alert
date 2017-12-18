@@ -24,7 +24,7 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public HipChatConfigRestModelTest() {
-        super(mockUtils);
+        super(mockUtils, HipChatDistributionRestModel.class);
     }
 
     @Override
@@ -36,12 +36,12 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public long emptyRestModelSerialId() {
-        return 3607759169675906880L;
+        return HipChatDistributionRestModel.getSerialversionuid();
     }
 
     @Override
     public int emptyRestModelHashCode() {
-        return -2120005431;
+        return -1130789619;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public int restModelHashCode() {
-        return -1722320535;
+        return -1430661866;
     }
 
 }
