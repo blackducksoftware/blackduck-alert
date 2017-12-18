@@ -22,23 +22,31 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
+import java.util.Collections;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent> {
+public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel> {
     private final DistributionChannel<E, G, D> distributionChannel;
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<D, Long> localRepository;
+    private final ObjectTransformer objectTransformer;
 
-    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final JpaRepository<G, Long> globalRepository, final JpaRepository<D, Long> localRepository) {
+    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final JpaRepository<G, Long> globalRepository, final JpaRepository<D, Long> localRepository, final ObjectTransformer objectTransformer) {
         this.distributionChannel = distributionChannel;
         this.globalRepository = globalRepository;
         this.localRepository = localRepository;
+        this.objectTransformer = objectTransformer;
     }
 
     public DistributionChannel<E, G, D> getDistributionChannel() {
@@ -52,6 +60,23 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     public JpaRepository<D, Long> getLocalRepository() {
         return localRepository;
     }
+
+    public ObjectTransformer getObjectTransformer() {
+        return objectTransformer;
+    }
+
+    public ProjectData getTestMessageProjectData() {
+        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyMap());
+    }
+
+    public String sendTestMessage(final R restModel) throws AlertException {
+        final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
+        final E event = createChannelEvent(getTestMessageProjectData(), null);
+        getDistributionChannel().sendMessage(event, entity);
+        return "Attempting to send a test message...";
+    }
+
+    public abstract Class<D> getDatabaseEntityClass();
 
     public abstract boolean isApplicable(final String supportedChannelName);
 

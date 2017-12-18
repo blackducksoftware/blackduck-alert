@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.MockUtils;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -144,18 +143,6 @@ public class GlobalHipChatConfigActionsTest {
 
         emailConfigEntity = configActions.saveConfig(mockUtils.createHipChatConfigRestModel());
         assertNull(emailConfigEntity);
-    }
-
-    // TODO fix when we have decided on an implementation of GlobalEmailConfigActions.testConfig()
-    // @Test
-    public void testChannelTestConfig() throws Exception {
-        final HipChatChannel mockedHipChatChannel = Mockito.mock(HipChatChannel.class);
-        Mockito.when(mockedHipChatChannel.testMessage(Mockito.any())).thenReturn("");
-        final GlobalHipChatRepository mockedHipChatRepository = Mockito.mock(GlobalHipChatRepository.class);
-        final GlobalHipChatConfigActions configActions = new GlobalHipChatConfigActions(mockedHipChatRepository, objectTransformer);
-
-        configActions.channelTestConfig(mockUtils.createHipChatConfigRestModel());
-        verify(mockedHipChatChannel, times(1)).testMessage(Mockito.any());
     }
 
     @Test

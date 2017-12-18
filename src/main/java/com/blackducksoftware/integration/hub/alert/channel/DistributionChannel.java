@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
@@ -90,7 +89,5 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     public abstract void sendMessage(final E event, final C config);
-
-    public abstract String testMessage(final C distributionConfig) throws IntegrationException;
 
 }
