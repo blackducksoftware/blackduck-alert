@@ -1,7 +1,9 @@
 'use strict';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TextInput from '../../../field/input/TextInput';
+import CheckboxInput from '../../../field/input/CheckboxInput';
 
 import BaseJobConfiguration from './BaseJobConfiguration';
 
@@ -10,9 +12,44 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 		super(props);
 	}
 
+    initializeValues(data) {
+      super.initializeValues(data);
+
+      let roomId = data.roomId || this.props.roomId;
+      let notify = null;
+      if(data.notify && data.notify === "true") {
+        notify = data.notify;
+      } else if (this.props.notify && this.props.notify === "true") {
+        notify = this.props.notify;
+      } else {
+        notify = "false";
+      }
+      let color = data.color || this.props.color;
+
+      super.handleStateValues('roomId', roomId);
+      super.handleStateValues('notify', notify);
+      super.handleStateValues('color', color);
+    }
+
 	render() {
-		let content = 
-			<TextInput label="Room Name" name="roomName" value={this.props.roomName} onChange={this.props.handleRoomNameChange} errorName="roomNameError" errorValue={this.props.roomNameError}></TextInput>
+		let content = <div>
+							<TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.roomIdError}></TextInput>
+							<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
+							<TextInput label="Color" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.props.colorError}></TextInput>
+						</div>;
+
 		return super.render(content);
 	}
 }
+
+HipChatJobConfiguration.propTypes = {
+    baseUrl: PropTypes.string,
+    testUrl: PropTypes.string,
+    distributionType: PropTypes.string
+};
+
+HipChatJobConfiguration.defaultProps = {
+    baseUrl: '/configuration/distribution/hipchat',
+    testUrl: '/configuration/distribution/hipchat/test',
+    distributionType: 'hipchat_channel'
+};

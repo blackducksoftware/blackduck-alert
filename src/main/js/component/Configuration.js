@@ -4,7 +4,6 @@ export default class Configuration extends Component {
     constructor(props) {
 		super(props);
         this.state = {
-            id: undefined,
 			configurationMessage: '',
 			errors: {},
 			values: {}
@@ -15,9 +14,14 @@ export default class Configuration extends Component {
 	}
 
 	componentWillMount() {
+		let getUrl = this.props.getUrl || this.props.baseUrl;
+		if (getUrl) {
+			this.setState({
+				configurationMessage: 'Loading...',
+				inProgress: true,
+			});
+		}
 		this.setState({
-			configurationMessage: 'Loading...',
-			inProgress: true,
 			errors: {},
 			values: {}
 		});
@@ -28,6 +32,9 @@ export default class Configuration extends Component {
 		var self = this;
 
 		let getUrl = this.props.getUrl || this.props.baseUrl;
+		if (!getUrl) {
+			return;
+		}
 		fetch(getUrl,{
 			credentials: "same-origin"
 		})
@@ -48,10 +55,8 @@ export default class Configuration extends Component {
 					});
 					if (jsonArray != null && jsonArray.length > 0) {
 						var configuration = jsonArray[0];
-						self.setState({
-							id: configuration.id
-						});
-						var values = {};
+						var values = self.state.values;
+						values.id = configuration.id;
 						for (var key in configuration) {
 							if (configuration.hasOwnProperty(key)) {
 								let name = key;
@@ -80,7 +85,7 @@ export default class Configuration extends Component {
 		var self = this;
 		let jsonBody = JSON.stringify(this.state.values);
 		var method = 'POST';
-		if (this.state.id) {
+		if (this.state.values.id) {
 			method = 'PUT';
 		}
 		fetch(this.props.baseUrl, {
@@ -94,25 +99,36 @@ export default class Configuration extends Component {
 			self.setState({
 				inProgress: false
 			});
-			return response.json().then(json => {
-				let jsonErrors = json.errors;
-				if (jsonErrors) {
-					var errors = {};
-					for (var key in jsonErrors) {
-						if (jsonErrors.hasOwnProperty(key)) {
-							let name = key.concat('Error');
-							let value = jsonErrors[key];
-							errors[name] = value;
+			if (response.ok) {
+				return response.json().then(json => {
+					var values = self.state.values;
+					values.id = json.id;
+					self.setState({
+						values,
+						configurationMessage: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
 						}
+						self.setState({
+							errors
+						});
 					}
 					self.setState({
-						errors
+						configurationMessage: json.message
 					});
-				}
-				self.setState({
-					configurationMessage: json.message
 				});
-			});
+			}
 		});
 	}
 

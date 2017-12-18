@@ -115,7 +115,7 @@ class LoginPage extends Configuration {
 								<NumberInput label="Proxy Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
 								<TextInput label="Proxy Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
 							</div>
-							<ConfigButtons isFixed="false" includeTest="false" type="submit" text="Login" />
+							<ConfigButtons isFixed={false} includeTest={false} type="submit" text="Login" />
 							{progressIndicator}
 							<p name="configurationMessage">{this.state.configurationMessage}</p>
 						</form>

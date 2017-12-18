@@ -62,7 +62,12 @@ public class EmailMessagingService {
 
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
-        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(emailProperties.getEmailTemplateDirectory());
+        if (StringUtils.isNotBlank(emailProperties.getEmailTemplateDirectory())) {
+            this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(emailProperties.getEmailTemplateDirectory());
+        } else {
+            // TODO determine the actual template location for deployment
+            this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates");
+        }
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
@@ -76,7 +81,12 @@ public class EmailMessagingService {
 
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, emailProperties.getEmailTemplateLogoImage());
+        if (StringUtils.isNotBlank(emailProperties.getEmailTemplateLogoImage())) {
+            addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, emailProperties.getEmailTemplateLogoImage());
+        } else {
+            // TODO determine the actual image location for deployment
+            addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png");
+        }
         final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
         final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
