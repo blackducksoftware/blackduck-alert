@@ -23,7 +23,7 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
     private final static SlackMockUtils mockUtils = new SlackMockUtils();
 
     public SlackConfigRestModelTest() {
-        super(mockUtils);
+        super(mockUtils, SlackDistributionRestModel.class);
     }
 
     @Override
@@ -35,12 +35,12 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public long emptyRestModelSerialId() {
-        return 3607759169675906880L;
+        return SlackDistributionRestModel.getSerialversionuid();
     }
 
     @Override
     public int emptyRestModelHashCode() {
-        return -2120005431;
+        return -1130789619;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public int restModelHashCode() {
-        return 1336371893;
+        return 71808274;
     }
 
 }

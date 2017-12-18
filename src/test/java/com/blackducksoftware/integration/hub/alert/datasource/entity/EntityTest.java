@@ -14,24 +14,27 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.ObjectStreamClass;
+
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class EntityTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
     private final MockUtils<R, GR, E, GE> mockUtils;
+    private final Class<E> entityClass;
 
-    public EntityTest(final MockUtils<R, GR, E, GE> mockUtils) {
+    public EntityTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<E> entityClass) {
         this.mockUtils = mockUtils;
+        this.entityClass = entityClass;
     }
 
     @Test
     public void testEmptyEntity() {
         final E configEntity = mockUtils.createEmptyEntity();
-        assertEquals(emptyEntitySerialId(), SlackDistributionConfigEntity.getSerialversionuid());
+        assertEquals(emptyEntitySerialId(), ObjectStreamClass.lookup(entityClass).getSerialVersionUID());
 
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());

@@ -23,7 +23,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipCha
     private final static HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public GlobalHipChatConfigRestModelTest() {
-        super(mockUtils);
+        super(mockUtils, GlobalHipChatConfigRestModel.class);
     }
 
     @Override
@@ -33,7 +33,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipCha
 
     @Override
     public long emptyGlobalRestModelSerialId() {
-        return 3607759169675906880L;
+        return GlobalHipChatConfigRestModel.getSerialversionuid();
     }
 
     @Override

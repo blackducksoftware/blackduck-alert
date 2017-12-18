@@ -15,6 +15,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
+import com.google.gson.JsonObject;
 
 public class SlackMockUtils extends DistributionMockUtils implements MockUtils<SlackDistributionRestModel, ConfigRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity> {
     private final String webhook;
@@ -54,7 +55,7 @@ public class SlackMockUtils extends DistributionMockUtils implements MockUtils<S
     @Override
     public SlackDistributionRestModel createRestModel() {
         final SlackDistributionRestModel restModel = new SlackDistributionRestModel(getCommonId(), webhook, channelUsername, channelName, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getNotificationType(),
-                getFilterByProject());
+                getFilterByProject(), getProjects());
         return restModel;
     }
 
@@ -77,46 +78,42 @@ public class SlackMockUtils extends DistributionMockUtils implements MockUtils<S
 
     @Override
     public String getRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"webhook\":\"");
-        json.append(webhook);
-        json.append("\",\"channelUsername\":\"");
-        json.append(channelUsername);
-        json.append("\",\"channelName\":\"");
-        json.append(channelName);
-        json.append("\",");
-        json.append(getDistributionRestModelJson());
-        json.append("\"}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("webhook", webhook);
+        json.addProperty("channelUsername", channelUsername);
+        json.addProperty("channelName", channelName);
+        getDistributionRestModelJson(json);
         return json.toString();
     }
 
     @Override
     public String getEmptyRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"webhook\":null,\"channelUsername\":null,\"channelName\":null,");
-        json.append(getEmptyDistributionRestModelJson());
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.add("webhook", null);
+        json.add("channelUsername", null);
+        json.add("channelName", null);
+        getEmptyDistributionRestModelJson(json);
         return json.toString();
     }
 
     @Override
     public String getEntityJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"webhook\":\"");
-        json.append(webhook);
-        json.append("\",\"channelUsername\":\"");
-        json.append(channelUsername);
-        json.append("\",\"channelName\":\"");
-        json.append(channelName);
-        json.append("\",\"id\":");
-        json.append(id);
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("webhook", webhook);
+        json.addProperty("channelUsername", channelUsername);
+        json.addProperty("channelName", channelName);
+        json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
 
     @Override
     public String getEmptyEntityJson() {
-        return "{\"webhook\":null,\"channelUsername\":\"Hub-alert\",\"channelName\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("webhook", null);
+        json.addProperty("channelUsername", "Hub-alert");
+        json.add("channelName", null);
+        json.add("id", null);
+        return json.toString();
     }
 
     /*

@@ -14,25 +14,28 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.ObjectStreamClass;
+
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
     private final MockUtils<R, GR, E, GE> mockUtils;
+    private final Class<GR> globalRestModelClass;
 
-    public GlobalRestModelTest(final MockUtils<R, GR, E, GE> mockUtils) {
+    public GlobalRestModelTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<GR> globalRestModelClass) {
         this.mockUtils = mockUtils;
+        this.globalRestModelClass = globalRestModelClass;
     }
 
     @Test
     public void testEmptyGlobalRestModel() {
         final GR configRestModel = mockUtils.createEmptyGlobalRestModel();
-        assertEquals(SlackDistributionConfigEntity.getSerialversionuid(), emptyGlobalRestModelSerialId());
+        assertEquals(emptyGlobalRestModelSerialId(), ObjectStreamClass.lookup(globalRestModelClass).getSerialVersionUID());
 
         assertGlobalRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());

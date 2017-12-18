@@ -14,24 +14,29 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.io.ObjectStreamClass;
+
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class RestModelTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
     private final MockUtils<R, GR, E, GE> mockUtils;
+    private final Class<R> restModelClass;
 
-    public RestModelTest(final MockUtils<R, GR, E, GE> mockUtils) {
+    public RestModelTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<R> restModelClass) {
         this.mockUtils = mockUtils;
+        this.restModelClass = restModelClass;
     }
 
     @Test
-    public void testEmptyRestModel() {
+    public void testEmptyRestModel() throws JSONException {
         final R configRestModel = mockUtils.createEmptyRestModel();
-        assertEquals(emptyRestModelSerialId(), SlackDistributionConfigEntity.getSerialversionuid());
+        assertEquals(emptyRestModelSerialId(), ObjectStreamClass.lookup(restModelClass).getSerialVersionUID());
 
         assertRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
@@ -40,10 +45,10 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel,
         assertEquals(emptyRestModelHashCode(), configHash);
 
         final String expectedString = mockUtils.getEmptyRestModelJson();
-        assertEquals(expectedString, configRestModel.toString());
+        JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
 
         final R configRestModelNew = mockUtils.createEmptyRestModel();
-        assertEquals(configRestModel, configRestModelNew);
+        JSONAssert.assertEquals(configRestModel.toString(), configRestModelNew.toString(), false);
     }
 
     public abstract void assertRestModelFieldsNull(R restModel);
@@ -53,7 +58,7 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel,
     public abstract int emptyRestModelHashCode();
 
     @Test
-    public void testRestModel() {
+    public void testRestModel() throws JSONException {
         final R configRestModel = mockUtils.createRestModel();
 
         assertRestModelFieldsFull(configRestModel);
@@ -63,10 +68,10 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel,
         assertEquals(restModelHashCode(), configHash);
 
         final String expectedString = mockUtils.getRestModelJson();
-        assertEquals(expectedString, configRestModel.toString());
+        JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
 
         final R configRestModelNew = mockUtils.createRestModel();
-        assertEquals(configRestModel, configRestModelNew);
+        JSONAssert.assertEquals(configRestModel.toString(), configRestModelNew.toString(), false);
     }
 
     public abstract void assertRestModelFieldsFull(R restModel);

@@ -11,7 +11,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock;
 
-import static org.junit.Assert.assertEquals;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -53,7 +54,7 @@ public interface MockUtils<R extends CommonDistributionConfigRestModel, GR exten
 
     public String getId();
 
-    public default void verifyValues() {
+    public default void verifyValues() throws JSONException {
         final String emptyEntity = createEmptyEntity().toString();
         final String emptyGlobalEntity = createEmptyGlobalEntity().toString();
         final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();
@@ -63,14 +64,14 @@ public interface MockUtils<R extends CommonDistributionConfigRestModel, GR exten
         final String globalRestModel = createGlobalRestModel().toString();
         final String restModel = createRestModel().toString();
 
-        assertEquals(getEmptyEntityJson(), emptyEntity);
-        assertEquals(getEmptyGlobalEntityJson(), emptyGlobalEntity);
-        assertEquals(getEmptyGlobalRestModelJson(), emptyGlobalRestModel);
-        assertEquals(getEmptyRestModelJson(), emptyRestModel);
-        assertEquals(getEntityJson(), entity);
-        assertEquals(getGlobalEntityJson(), globalEntity);
-        assertEquals(getGlobalRestModelJson(), globalRestModel);
-        assertEquals(getRestModelJson(), restModel);
+        JSONAssert.assertEquals(emptyEntity, getEmptyEntityJson(), false);
+        JSONAssert.assertEquals(emptyGlobalEntity, getEmptyGlobalEntityJson(), false);
+        JSONAssert.assertEquals(emptyGlobalRestModel, getEmptyGlobalRestModelJson(), false);
+        JSONAssert.assertEquals(emptyRestModel, getEmptyRestModelJson(), false);
+        JSONAssert.assertEquals(entity, getEntityJson(), false);
+        JSONAssert.assertEquals(globalEntity, getGlobalEntityJson(), false);
+        JSONAssert.assertEquals(globalRestModel, getGlobalRestModelJson(), false);
+        JSONAssert.assertEquals(restModel, getRestModelJson(), false);
     }
 
 }

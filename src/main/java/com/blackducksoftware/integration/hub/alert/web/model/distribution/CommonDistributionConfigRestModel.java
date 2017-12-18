@@ -97,7 +97,14 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
+        String[] configuredProjectsToStringArray = null;
+        if (configuredProjects != null) {
+            configuredProjectsToStringArray = configuredProjects.toArray(new String[configuredProjects.size()]);
+        }
+
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        reflectionToStringBuilder.setExcludeFieldNames("configuredProjects");
+        reflectionToStringBuilder.append("configuredProjects", configuredProjectsToStringArray);
         return reflectionToStringBuilder.build();
     }
 

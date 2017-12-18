@@ -14,50 +14,45 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class HipChatConfigEntityTest {
-    HipChatMockUtils mockUtils = new HipChatMockUtils();
+public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    @Test
-    public void testEmptyModel() {
-        final HipChatDistributionConfigEntity hipChatConfigEntity = new HipChatDistributionConfigEntity();
-        assertEquals(8645967062445661540L, HipChatDistributionConfigEntity.getSerialversionuid());
-
-        assertNull(hipChatConfigEntity.getRoomId());
-        assertNull(hipChatConfigEntity.getColor());
-        assertNull(hipChatConfigEntity.getNotify());
-        assertNull(hipChatConfigEntity.getId());
-
-        final int configHash = hipChatConfigEntity.hashCode();
-        assertEquals(31860737, configHash);
-
-        final String expectedString = mockUtils.getEmptyEntityJson();
-        assertEquals(expectedString, hipChatConfigEntity.toString());
-
-        final HipChatDistributionConfigEntity hipChatConfigEntityNew = new HipChatDistributionConfigEntity();
-        assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
+    public HipChatConfigEntityTest() {
+        super(mockUtils, HipChatDistributionConfigEntity.class);
     }
 
-    @Test
-    public void testModel() {
-        final HipChatDistributionConfigEntity hipChatConfigEntity = mockUtils.createEntity();
+    @Override
+    public void assertEntityFieldsNull(final HipChatDistributionConfigEntity entity) {
+        assertNull(entity.getRoomId());
+        assertNull(entity.getColor());
+        assertNull(entity.getNotify());
+    }
 
-        assertEquals(Integer.valueOf(mockUtils.getRoomId()), hipChatConfigEntity.getRoomId());
-        assertEquals(Boolean.valueOf(mockUtils.getNotify()), hipChatConfigEntity.getNotify());
-        assertEquals(mockUtils.getColor(), hipChatConfigEntity.getColor());
-        assertEquals(Long.valueOf(mockUtils.getId()), hipChatConfigEntity.getId());
+    @Override
+    public long emptyEntitySerialId() {
+        return HipChatDistributionConfigEntity.getSerialversionuid();
+    }
 
-        final int configHash = hipChatConfigEntity.hashCode();
-        assertEquals(-789557399, configHash);
+    @Override
+    public int emptyEntityHashCode() {
+        return 31860737;
+    }
 
-        final String expectedString = mockUtils.getEntityJson();
-        assertEquals(expectedString, hipChatConfigEntity.toString());
+    @Override
+    public void assertEntityFieldsFull(final HipChatDistributionConfigEntity entity) {
+        assertEquals(Integer.valueOf(mockUtils.getRoomId()), entity.getRoomId());
+        assertEquals(Boolean.valueOf(mockUtils.getNotify()), entity.getNotify());
+        assertEquals(mockUtils.getColor(), entity.getColor());
+    }
 
-        final HipChatDistributionConfigEntity hipChatConfigEntityNew = mockUtils.createEntity();
-        assertEquals(hipChatConfigEntity, hipChatConfigEntityNew);
+    @Override
+    public int entityHashCode() {
+        return -789557399;
     }
 }

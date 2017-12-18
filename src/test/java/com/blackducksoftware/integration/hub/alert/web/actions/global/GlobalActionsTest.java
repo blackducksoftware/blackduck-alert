@@ -135,13 +135,13 @@ public abstract class GlobalActionsTest<R extends CommonDistributionConfigRestMo
 
         final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = getSaveTestConfigActions();
+        configActions = createConfigActionsWithSpecificObjectTransformer(transformer);
 
         emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
         assertNull(emailConfigEntity);
     }
 
-    public abstract GCA getSaveTestConfigActions();
+    public abstract GCA createConfigActionsWithSpecificObjectTransformer(ObjectTransformer objectTransformer);
 
     public abstract Class<GE> getGlobalEntityClass();
 

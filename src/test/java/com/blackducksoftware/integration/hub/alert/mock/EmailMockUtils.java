@@ -15,6 +15,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
+import com.google.gson.JsonObject;
 
 public class EmailMockUtils extends DistributionMockUtils implements MockUtils<EmailGroupDistributionRestModel, GlobalEmailConfigRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {
     private final String mailSmtpHost;
@@ -34,7 +35,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     private final String emailTemplateDirectory;
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
-    private final String emailGroup;
+    private final String groupName;
     private final String id;
 
     public EmailMockUtils() {
@@ -63,7 +64,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         this.emailTemplateDirectory = emailTemplateDirectory;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-        this.emailGroup = emailGroup;
+        this.groupName = emailGroup;
         this.id = id;
     }
 
@@ -136,7 +137,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     }
 
     public String getEmailGroup() {
-        return emailGroup;
+        return groupName;
     }
 
     @Override
@@ -159,7 +160,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
         final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(getCommonId(), getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getNotificationType(), getFilterByProject(),
-                emailGroup);
+                groupName, getProjects());
         return restModel;
     }
 
@@ -184,7 +185,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
 
     @Override
     public EmailGroupDistributionConfigEntity createEntity() {
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailGroup);
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName);
         entity.setId(Long.parseLong(id));
         return entity;
     }
@@ -194,125 +195,136 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         return new EmailGroupDistributionConfigEntity();
     }
 
-    // 8
-    // {"mailSmtpHost":"MailSmtpHost","mailSmtpUser":"MailSmtpUser","mailSmtpPort":"99","mailSmtpConnectionTimeout":"400","mailSmtpTimeout":"500","mailSmtpFrom":"MailSmtpFrom","mailSmtpLocalhost":"MailSmtpLocalhost","mailSmtpEhlo":"true","mailSmtpAuth":"false","mailSmtpDnsNotify":"MailSmtpDnsNotify","mailSmtpDnsRet":"MailSmtpDnsRet","mailSmtpAllow8bitmime":"true","mailSmtpSendPartial":"false","emailTemplateDirectory":"EmailTemplateDirectory","emailTemplateLogoImage":"EmailTemplateLogoImage","emailSubjectLine":"EmailSubjectLine","id":"1"}
     @Override
     public String getGlobalRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"mailSmtpHost\":\"");
-        json.append(mailSmtpHost);
-        json.append("\",\"mailSmtpUser\":\"");
-        json.append(mailSmtpUser);
-        json.append("\",\"mailSmtpPort\":\"");
-        json.append(mailSmtpPort);
-        json.append("\",\"mailSmtpConnectionTimeout\":\"");
-        json.append(mailSmtpConnectionTimeout);
-        json.append("\",\"mailSmtpTimeout\":\"");
-        json.append(mailSmtpTimeout);
-        json.append("\",\"mailSmtpFrom\":\"");
-        json.append(mailSmtpFrom);
-        json.append("\",\"mailSmtpLocalhost\":\"");
-        json.append(mailSmtpLocalhost);
-        json.append("\",\"mailSmtpEhlo\":\"");
-        json.append(mailSmtpEhlo);
-        json.append("\",\"mailSmtpAuth\":\"");
-        json.append(mailSmtpAuth);
-        json.append("\",\"mailSmtpDnsNotify\":\"");
-        json.append(mailSmtpDnsNotify);
-        json.append("\",\"mailSmtpDnsRet\":\"");
-        json.append(mailSmtpDnsRet);
-        json.append("\",\"mailSmtpAllow8bitmime\":\"");
-        json.append(mailSmtpAllow8bitmime);
-        json.append("\",\"mailSmtpSendPartial\":\"");
-        json.append(mailSmtpSendPartial);
-        json.append("\",\"emailTemplateDirectory\":\"");
-        json.append(emailTemplateDirectory);
-        json.append("\",\"emailTemplateLogoImage\":\"");
-        json.append(emailTemplateLogoImage);
-        json.append("\",\"emailSubjectLine\":\"");
-        json.append(emailSubjectLine);
-        json.append("\",\"id\":\"");
-        json.append(id);
-        json.append("\"}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("mailSmtpHost", mailSmtpHost);
+        json.addProperty("mailSmtpUser", mailSmtpUser);
+        json.addProperty("mailSmtpPort", mailSmtpPort);
+        json.addProperty("mailSmtpConnectionTimeout", mailSmtpConnectionTimeout);
+        json.addProperty("mailSmtpTimeout", mailSmtpTimeout);
+        json.addProperty("mailSmtpFrom", mailSmtpFrom);
+        json.addProperty("mailSmtpLocalhost", mailSmtpLocalhost);
+        json.addProperty("mailSmtpEhlo", mailSmtpEhlo);
+        json.addProperty("mailSmtpAuth", mailSmtpAuth);
+        json.addProperty("mailSmtpDnsNotify", mailSmtpDnsNotify);
+        json.addProperty("mailSmtpDnsRet", mailSmtpDnsRet);
+        json.addProperty("mailSmtpAllow8bitmime", mailSmtpAllow8bitmime);
+        json.addProperty("mailSmtpSendPartial", mailSmtpSendPartial);
+        json.addProperty("emailTemplateDirectory", emailTemplateDirectory);
+        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
+        json.addProperty("emailSubjectLine", emailSubjectLine);
+        json.addProperty("id", id);
         return json.toString();
     }
 
     @Override
     public String getEmptyGlobalRestModelJson() {
-        return "{\"mailSmtpHost\":null,\"mailSmtpUser\":null,\"mailSmtpPort\":null,\"mailSmtpConnectionTimeout\":null,\"mailSmtpTimeout\":null,\"mailSmtpFrom\":null,\"mailSmtpLocalhost\":null,\"mailSmtpEhlo\":null,\"mailSmtpAuth\":null,\"mailSmtpDnsNotify\":null,\"mailSmtpDnsRet\":null,\"mailSmtpAllow8bitmime\":null,\"mailSmtpSendPartial\":null,\"emailTemplateDirectory\":null,\"emailTemplateLogoImage\":null,\"emailSubjectLine\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("mailSmtpHost", null);
+        json.add("mailSmtpUser", null);
+        json.add("mailSmtpPort", null);
+        json.add("mailSmtpConnectionTimeout", null);
+        json.add("mailSmtpTimeout", null);
+        json.add("mailSmtpFrom", null);
+        json.add("mailSmtpLocalhost", null);
+        json.add("mailSmtpEhlo", null);
+        json.add("mailSmtpAuth", null);
+        json.add("mailSmtpDnsNotify", null);
+        json.add("mailSmtpUser", null);
+        json.add("mailSmtpPort", null);
+        json.add("mailSmtpConnectionTimeout", null);
+        json.add("mailSmtpDnsRet", null);
+        json.add("mailSmtpAllow8bitmime", null);
+        json.add("mailSmtpSendPartial", null);
+        json.add("emailTemplateDirectory", null);
+        json.add("emailTemplateLogoImage", null);
+        json.add("mailSmtpAllow8bitmime", null);
+        json.add("emailSubjectLine", null);
+        json.add("id", null);
+        return json.toString();
     }
 
     @Override
     public String getRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"groupName\":\"");
-        json.append(emailGroup);
-        json.append("\",");
-        json.append(getDistributionRestModelJson());
-        json.append("\"}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("groupName", groupName);
+        getDistributionRestModelJson(json);
         return json.toString();
     }
 
     @Override
     public String getEmptyRestModelJson() {
-        return "{\"groupName\":null,\"distributionConfigId\":null,\"distributionType\":null,\"name\":null,\"frequency\":null,\"notificationType\":null,\"filterByProject\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("groupName", null);
+        getEmptyDistributionRestModelJson(json);
+        return json.toString();
     }
 
-    // {"mailSmtpHost":"MailSmtpHost","mailSmtpUser":"MailSmtpUser","mailSmtpPort":99,"mailSmtpConnectionTimeout":400,"mailSmtpTimeout":500,"mailSmtpFrom":"MailSmtpFrom","mailSmtpLocalhost":"MailSmtpLocalhost","mailSmtpEhlo":true,"mailSmtpAuth":false,"mailSmtpDnsNotify":"MailSmtpDnsNotify","mailSmtpDnsRet":"MailSmtpDnsRet","mailSmtpAllow8bitmime":true,"mailSmtpSendPartial":false,"emailTemplateDirectory":"EmailTemplateDirectory","emailTemplateLogoImage":"EmailTemplateLogoImage","emailSubjectLine":"EmailSubjectLine","id":1}
     @Override
     public String getGlobalEntityJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("{\"mailSmtpHost\":\"");
-        json.append(mailSmtpHost);
-        json.append("\",\"mailSmtpUser\":\"");
-        json.append(mailSmtpUser);
-        json.append("\",\"mailSmtpPort\":");
-        json.append(mailSmtpPort);
-        json.append(",\"mailSmtpConnectionTimeout\":");
-        json.append(mailSmtpConnectionTimeout);
-        json.append(",\"mailSmtpTimeout\":");
-        json.append(mailSmtpTimeout);
-        json.append(",\"mailSmtpFrom\":\"");
-        json.append(mailSmtpFrom);
-        json.append("\",\"mailSmtpLocalhost\":\"");
-        json.append(mailSmtpLocalhost);
-        json.append("\",\"mailSmtpEhlo\":");
-        json.append(mailSmtpEhlo);
-        json.append(",\"mailSmtpAuth\":");
-        json.append(mailSmtpAuth);
-        json.append(",\"mailSmtpDnsNotify\":\"");
-        json.append(mailSmtpDnsNotify);
-        json.append("\",\"mailSmtpDnsRet\":\"");
-        json.append(mailSmtpDnsRet);
-        json.append("\",\"mailSmtpAllow8bitmime\":");
-        json.append(mailSmtpAllow8bitmime);
-        json.append(",\"mailSmtpSendPartial\":");
-        json.append(mailSmtpSendPartial);
-        json.append(",\"emailTemplateDirectory\":\"");
-        json.append(emailTemplateDirectory);
-        json.append("\",\"emailTemplateLogoImage\":\"");
-        json.append(emailTemplateLogoImage);
-        json.append("\",\"emailSubjectLine\":\"");
-        json.append(emailSubjectLine);
-        json.append("\",\"id\":");
-        json.append(id);
-        json.append("}");
+        final JsonObject json = new JsonObject();
+        json.addProperty("mailSmtpHost", mailSmtpHost);
+        json.addProperty("mailSmtpUser", mailSmtpUser);
+        json.addProperty("mailSmtpPort", Integer.valueOf(mailSmtpPort));
+        json.addProperty("mailSmtpConnectionTimeout", Integer.valueOf(mailSmtpConnectionTimeout));
+        json.addProperty("mailSmtpTimeout", Integer.valueOf(mailSmtpTimeout));
+        json.addProperty("mailSmtpFrom", mailSmtpFrom);
+        json.addProperty("mailSmtpLocalhost", mailSmtpLocalhost);
+        json.addProperty("mailSmtpEhlo", Boolean.valueOf(mailSmtpEhlo));
+        json.addProperty("mailSmtpAuth", Boolean.valueOf(mailSmtpAuth));
+        json.addProperty("mailSmtpDnsNotify", mailSmtpDnsNotify);
+        json.addProperty("mailSmtpDnsRet", mailSmtpDnsRet);
+        json.addProperty("mailSmtpAllow8bitmime", Boolean.valueOf(mailSmtpAllow8bitmime));
+        json.addProperty("mailSmtpSendPartial", Boolean.valueOf(mailSmtpSendPartial));
+        json.addProperty("emailTemplateDirectory", emailTemplateDirectory);
+        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
+        json.addProperty("emailSubjectLine", emailSubjectLine);
+        json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
 
     @Override
     public String getEmptyGlobalEntityJson() {
-        return "{\"mailSmtpHost\":null,\"mailSmtpUser\":null,\"mailSmtpPort\":null,\"mailSmtpConnectionTimeout\":null,\"mailSmtpTimeout\":null,\"mailSmtpFrom\":null,\"mailSmtpLocalhost\":null,\"mailSmtpEhlo\":null,\"mailSmtpAuth\":null,\"mailSmtpDnsNotify\":null,\"mailSmtpDnsRet\":null,\"mailSmtpAllow8bitmime\":null,\"mailSmtpSendPartial\":null,\"emailTemplateDirectory\":null,\"emailTemplateLogoImage\":null,\"emailSubjectLine\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("mailSmtpHost", null);
+        json.add("mailSmtpUser", null);
+        json.add("mailSmtpPort", null);
+        json.add("mailSmtpConnectionTimeout", null);
+        json.add("mailSmtpTimeout", null);
+        json.add("mailSmtpFrom", null);
+        json.add("mailSmtpLocalhost", null);
+        json.add("mailSmtpEhlo", null);
+        json.add("mailSmtpAuth", null);
+        json.add("mailSmtpDnsNotify", null);
+        json.add("mailSmtpUser", null);
+        json.add("mailSmtpPort", null);
+        json.add("mailSmtpConnectionTimeout", null);
+        json.add("mailSmtpDnsRet", null);
+        json.add("mailSmtpAllow8bitmime", null);
+        json.add("mailSmtpSendPartial", null);
+        json.add("emailTemplateDirectory", null);
+        json.add("emailTemplateLogoImage", null);
+        json.add("mailSmtpAllow8bitmime", null);
+        json.add("emailSubjectLine", null);
+        json.add("id", null);
+        return json.toString();
     }
 
     @Override
     public String getEntityJson() {
-        return "{\"groupName\":\"EmailGroup\",\"id\":1}";
+        final JsonObject json = new JsonObject();
+        json.addProperty("groupName", groupName);
+        json.addProperty("id", Long.valueOf(id));
+        return json.toString();
     }
 
     @Override
     public String getEmptyEntityJson() {
-        return "{\"groupName\":null,\"id\":null}";
+        final JsonObject json = new JsonObject();
+        json.add("groupName", null);
+        json.add("id", null);
+        return json.toString();
     }
 
 }

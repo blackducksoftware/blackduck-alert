@@ -11,7 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock;
 
+import java.util.List;
+
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.google.gson.JsonObject;
 
 public class DistributionMockUtils {
     private final String commonId;
@@ -21,16 +24,20 @@ public class DistributionMockUtils {
     private final String frequency;
     private final String notificationType;
     private final String filterByProject;
+    private final List<String> configuredProjects;
+
+    protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
 
     public DistributionMockUtils() {
         this("1");
     }
 
     public DistributionMockUtils(final String distributionConfigId) {
-        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "Bad", "true");
+        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "Bad", "true", projectMock.createProjectListing());
     }
 
-    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject) {
+    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
+            final List<String> configuredProjects) {
         super();
         this.commonId = id;
         this.distributionConfigId = distributionConfigId;
@@ -39,6 +46,7 @@ public class DistributionMockUtils {
         this.frequency = frequency;
         this.notificationType = notificationType;
         this.filterByProject = filterByProject;
+        this.configuredProjects = configuredProjects;
     }
 
     public String getCommonId() {
@@ -69,27 +77,32 @@ public class DistributionMockUtils {
         return filterByProject;
     }
 
-    public String getEmptyDistributionRestModelJson() {
-        return "\"distributionConfigId\":null,\"distributionType\":null,\"name\":null,\"frequency\":null,\"notificationType\":null,\"filterByProject\":null,\"id\":null";
+    public List<String> getProjects() {
+        return configuredProjects;
     }
 
-    public String getDistributionRestModelJson() {
-        final StringBuilder json = new StringBuilder();
-        json.append("\"distributionConfigId\":\"");
-        json.append(distributionConfigId);
-        json.append("\",\"distributionType\":\"");
-        json.append(distributionType);
-        json.append("\",\"name\":\"");
-        json.append(name);
-        json.append("\",\"frequency\":\"");
-        json.append(frequency);
-        json.append("\",\"notificationType\":\"");
-        json.append(notificationType);
-        json.append("\",\"filterByProject\":\"");
-        json.append(filterByProject);
-        json.append("\",\"id\":\"");
-        json.append(commonId);
-        return json.toString();
+    public JsonObject getEmptyDistributionRestModelJson(final JsonObject json) {
+        json.add("distributionConfigId", null);
+        json.add("distributionType", null);
+        json.add("name", null);
+        json.add("frequency", null);
+        json.add("notificationType", null);
+        json.add("filterByProject", null);
+        json.add("configuredProjects", null);
+        json.add("id", null);
+        return json;
+    }
+
+    public JsonObject getDistributionRestModelJson(final JsonObject json) {
+        json.addProperty("distributionConfigId", distributionConfigId);
+        json.addProperty("distributionType", distributionType);
+        json.addProperty("name", name);
+        json.addProperty("frequency", frequency);
+        json.addProperty("notificationType", notificationType);
+        json.addProperty("filterByProject", filterByProject);
+        json.add("configuredProjects", projectMock.getProjectListingJson());
+        json.addProperty("id", commonId);
+        return json;
     }
 
     public CommonDistributionConfigEntity createDistributionConfigEntity() {
