@@ -1,0 +1,59 @@
+
+.statusSuccess {
+	color: green;
+}
+
+.statusFailure {
+	color: red;
+}
+
+.tableButton {
+	cursor: pointer;
+	color: #fff;
+    background: #285f8f;
+    display: inline-block;
+    border: 1px solid transparent;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+.addJobButton {
+	composes: tableButton;
+}
+
+.deleteJobButton {
+	composes: tableButton;
+    background: #ef4923;
+}
+
+.editJobButton {
+    composes: tableButton;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.table {
+    width: 98%;
+}
+
+.tableRow {
+    cursor: pointer;
+}
+
+.scrollable {
+    position: relative;
+    overflow-y: scroll;
+}
+
+.projectTableScrollableBody {
+    composes: scrollable;
+    height: 200px !important;
+    width: 100%;
+}
+
+.tableScrollableBody {
+    composes: scrollable;
+    height: 100% !important;
+    width: 100%;
+}

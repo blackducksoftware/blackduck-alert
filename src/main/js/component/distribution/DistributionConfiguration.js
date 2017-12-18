@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 
 import styles from '../../../css/distributionConfig.css';
 
+import tableStyles from '../../../css/table.css';
+
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
-import EditTableCellFormatter from './EditTableCellFormatter';
+import EditTableCellFormatter from '../EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
 
@@ -27,7 +29,8 @@ class DistributionConfiguration extends Component {
 		this.createCustomModal = this.createCustomModal.bind(this);
 		this.createCustomDeleteButton = this.createCustomDeleteButton.bind(this);
 		this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
-		this.cancelJobSelect = this.cancelJobSelect.bind(this);
+		this.cancelRowSelect = this.cancelRowSelect.bind(this);
+		this.editButtonClicked = this.editButtonClicked.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
@@ -208,9 +211,9 @@ class DistributionConfiguration extends Component {
     }
 
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
-		var className = styles.statusSuccess;
+		var className = tableStyles.statusSuccess;
 		if (fieldValue === 'Failure') {
-			className = styles.statusFailure;
+			className = tableStyles.statusFailure;
 		}
 		return className;
 	}
@@ -247,7 +250,7 @@ class DistributionConfiguration extends Component {
 	    		groups={this.state.groups}
 	    		groupError={this.state.groupError}
 	    		projectTableMessage={this.state.projectTableMessage}
-	    		handleCancel={this.cancelJobSelect}
+	    		handleCancel={this.cancelRowSelect}
                 updateJobsTable={this.updateJobsTable}
 		    	onModalClose= { onModalClose }
 		    	onSave= { onSave }
@@ -308,14 +311,14 @@ class DistributionConfiguration extends Component {
 	createCustomDeleteButton(onClick) {
 		return (
 			<DeleteButton
-			className={styles.deleteJobButton}/>
+			className={tableStyles.deleteJobButton}/>
 		);
 	}
 
 	createCustomInsertButton(onClick) {
 		return (
 			<InsertButton
-			className={styles.addJobButton}
+			className={tableStyles.addJobButton}
 			/>
 		);
 	}
@@ -326,30 +329,35 @@ class DistributionConfiguration extends Component {
 		});
 	}
 
-	cancelJobSelect() {
+	cancelRowSelect() {
 		this.setState({
-			currentJobSelected: null
+			currentRowSelected: null
 		});
 	}
 
-	getCurrentJobConfig(currentJobSelected) {
+	getCurrentJobConfig(currentRowSelected) {
 		let currentJobConfig = null;
-		if (currentJobSelected != null) {
-            const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentJobSelected;
+		if (currentRowSelected != null) {
+            const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentRowSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} updateJobsTable={this.updateJobsTable} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} updateJobsTable={this.updateJobsTable} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelJobSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} updateJobsTable={this.updateJobsTable}/>;
 			}
 		}
 		return currentJobConfig;
 	}
 
+	editButtonClicked(currentRowSelected) {
+		this.handleSetState('currentRowSelected', currentRowSelected);
+	}
+	
     editButtonClick(cell, row) {
-        return <EditTableCellFormatter setParentState={this.handleSetState} currentJobSelected= {row} />;
+        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected= {row} />;
     }
+
 
 	render() {
 		const jobTableOptions = {
@@ -371,7 +379,7 @@ class DistributionConfiguration extends Component {
 			}
 		};
 		var content = <div>
-						<BootstrapTable data={this.state.jobs} containerClass={styles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={styles.tableRow} headerContainerClass={styles.scrollable} bodyContainerClass={styles.tableScrollableBody} >
+						<BootstrapTable data={this.state.jobs} containerClass={tableStyles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='name' dataSort>Distribution Job</TableHeaderColumn>
@@ -382,7 +390,7 @@ class DistributionConfiguration extends Component {
 	  					</BootstrapTable>
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
   					</div>;
-		var currentJobContent = this.getCurrentJobConfig (this.state.currentJobSelected);
+		var currentJobContent = this.getCurrentJobConfig (this.state.currentRowSelected);
 		if (currentJobContent != null) {
 			content = currentJobContent;
 		}
