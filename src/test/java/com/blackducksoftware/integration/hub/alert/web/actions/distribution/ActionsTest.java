@@ -27,17 +27,19 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DatabaseEntity, DCA extends DistributionConfigActions<E, R>> {
+public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, DCA extends DistributionConfigActions<E, R>> {
     private final MockUtils<R, ?, E, ?> mockUtils;
     private final ProjectMockUtils projectMockUtils;
+    private final NotificationTypeMockUtils notificationMockUtil;
     private final DistributionMockUtils distributionMockUtils;
     private DCA configActions;
 
@@ -45,6 +47,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         this.mockUtils = mockUtils;
         configActions = getConfigActions();
         projectMockUtils = new ProjectMockUtils();
+        notificationMockUtil = new NotificationTypeMockUtils();
         distributionMockUtils = new DistributionMockUtils();
     }
 
@@ -52,11 +55,11 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     @Test
     public void testDoesConfigExist() {
-        Mockito.when(configActions.repository.exists(Mockito.anyLong())).thenReturn(true);
+        Mockito.when(configActions.commonDistributionRepository.exists(Mockito.anyLong())).thenReturn(true);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
-        Mockito.when(configActions.repository.exists(Mockito.anyLong())).thenReturn(false);
+        Mockito.when(configActions.commonDistributionRepository.exists(Mockito.anyLong())).thenReturn(false);
         assertFalse(configActions.doesConfigExist(1L));
         assertFalse(configActions.doesConfigExist("1"));
 
@@ -76,6 +79,9 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         Mockito.when(configActions.configuredProjectsActions.getConfiguredProjectsRepository().findOne(3L)).thenReturn(projectMockUtils.getProjectThreeEntity());
         Mockito.when(configActions.configuredProjectsActions.getConfiguredProjectsRepository().findOne(4L)).thenReturn(projectMockUtils.getProjectFourEntity());
         Mockito.when(configActions.configuredProjectsActions.getDistributionProjectRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(projectMockUtils.getProjectRelations());
+        Mockito.when(configActions.notificationTypesActions.getNotificationTypeRepository().findOne(1L)).thenReturn(notificationMockUtil.getType1Entity());
+        Mockito.when(configActions.notificationTypesActions.getNotificationTypeRepository().findOne(2L)).thenReturn(notificationMockUtil.getType2Entity());
+        Mockito.when(configActions.notificationTypesActions.getDistributionNotificationTypeRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(notificationMockUtil.getNotificationTypeRelations());
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
         final R restModel = mockUtils.createRestModel();
@@ -135,6 +141,8 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         Mockito.when(configActions.configuredProjectsActions.getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectTwo())).thenReturn(projectMockUtils.getProjectTwoEntity());
         Mockito.when(configActions.configuredProjectsActions.getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectThree())).thenReturn(projectMockUtils.getProjectThreeEntity());
         Mockito.when(configActions.configuredProjectsActions.getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectFour())).thenReturn(projectMockUtils.getProjectFourEntity());
+        Mockito.when(configActions.notificationTypesActions.getNotificationTypeRepository().findByType(notificationMockUtil.getType1())).thenReturn(notificationMockUtil.getType1Entity());
+        Mockito.when(configActions.notificationTypesActions.getNotificationTypeRepository().findByType(notificationMockUtil.getType2())).thenReturn(notificationMockUtil.getType2Entity());
         E actualConfigEntity = configActions.saveConfig(mockUtils.createRestModel());
         assertNotNull(actualConfigEntity);
         assertEquals(expectedConfigEntity, actualConfigEntity);
@@ -189,6 +197,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         final R actualRestModel = configActions.constructRestModel(commonEntity, mockUtils.createEntity());
         final R expectedRestModel = mockUtils.createRestModel();
         expectedRestModel.setConfiguredProjects(null);
+        expectedRestModel.setNotificationTypes(null);
         assertEquals(expectedRestModel, actualRestModel);
     }
 

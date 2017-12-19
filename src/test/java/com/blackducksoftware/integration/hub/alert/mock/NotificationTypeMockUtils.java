@@ -32,7 +32,7 @@ public class NotificationTypeMockUtils {
     }
 
     public NotificationTypeEntity getType1Entity() {
-        return new NotificationTypeEntity(type2);
+        return new NotificationTypeEntity(type1);
     }
 
     public NotificationTypeEntity getType2Entity() {
