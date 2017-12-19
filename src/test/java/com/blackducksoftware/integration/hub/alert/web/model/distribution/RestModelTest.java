@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -20,15 +20,14 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class RestModelTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
-    private final MockUtils<R, GR, E, GE> mockUtils;
+public abstract class RestModelTest<R extends CommonDistributionConfigRestModel> {
+    private final MockUtils<R, ?, ?, ?> mockUtils;
     private final Class<R> restModelClass;
 
-    public RestModelTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<R> restModelClass) {
+    public RestModelTest(final MockUtils<R, ?, ?, ?> mockUtils, final Class<R> restModelClass) {
         this.mockUtils = mockUtils;
         this.restModelClass = restModelClass;
     }
@@ -36,7 +35,7 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel,
     @Test
     public void testEmptyRestModel() throws JSONException {
         final R configRestModel = mockUtils.createEmptyRestModel();
-        assertEquals(emptyRestModelSerialId(), ObjectStreamClass.lookup(restModelClass).getSerialVersionUID());
+        assertEquals(restModelSerialId(), ObjectStreamClass.lookup(restModelClass).getSerialVersionUID());
 
         assertRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
@@ -53,7 +52,7 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel,
 
     public abstract void assertRestModelFieldsNull(R restModel);
 
-    public abstract long emptyRestModelSerialId();
+    public abstract long restModelSerialId();
 
     public abstract int emptyRestModelHashCode();
 

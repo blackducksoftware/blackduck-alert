@@ -13,15 +13,13 @@ package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity, GlobalHipChatConfigActions> {
+public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipChatConfigRestModel, GlobalHipChatConfigEntity, GlobalHipChatConfigActions> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public GlobalHipChatConfigActionsTest() {

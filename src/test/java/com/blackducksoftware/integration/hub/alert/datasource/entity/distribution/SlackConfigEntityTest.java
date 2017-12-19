@@ -9,18 +9,15 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
-public class SlackConfigEntityTest extends EntityTest<SlackDistributionRestModel, ConfigRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity> {
+public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
     private static final SlackMockUtils mockUtils = new SlackMockUtils();
 
     public SlackConfigEntityTest() {
@@ -35,7 +32,7 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionRestModel
     }
 
     @Override
-    public long emptyEntitySerialId() {
+    public long entitySerialId() {
         return SlackDistributionConfigEntity.getSerialversionuid();
     }
 

@@ -14,12 +14,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public GlobalHipChatConfigEntityTest() {
@@ -32,7 +29,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<HipChatDistr
     }
 
     @Override
-    public long emptyGlobalEntitySerialId() {
+    public long globalEntitySerialId() {
         return GlobalHipChatConfigEntity.getSerialversionuid();
     }
 

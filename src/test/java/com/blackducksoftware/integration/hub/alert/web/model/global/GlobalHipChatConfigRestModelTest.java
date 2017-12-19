@@ -14,12 +14,9 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
-public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<GlobalHipChatConfigRestModel> {
     private final static HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public GlobalHipChatConfigRestModelTest() {
@@ -32,7 +29,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipCha
     }
 
     @Override
-    public long emptyGlobalRestModelSerialId() {
+    public long globalRestModelSerialId() {
         return GlobalHipChatConfigRestModel.getSerialversionuid();
     }
 
@@ -47,7 +44,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipCha
     }
 
     @Override
-    public int gloablRestModelHashCode() {
+    public int globalRestModelHashCode() {
         return -215716397;
     }
 }

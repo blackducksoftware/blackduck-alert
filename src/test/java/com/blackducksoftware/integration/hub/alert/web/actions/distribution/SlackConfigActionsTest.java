@@ -13,22 +13,20 @@ package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
-import com.google.gson.Gson;
 
-public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, ConfigRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity, SlackDistributionConfigActions> {
+public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionConfigActions> {
     private static final SlackMockUtils mockUtils = new SlackMockUtils();
 
     public SlackConfigActionsTest() {
@@ -37,15 +35,7 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
 
     @Override
     public SlackDistributionConfigActions getConfigActions() {
-        final SlackDistributionRepository mockedHipChatRepository = Mockito.mock(SlackDistributionRepository.class);
-        final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
-        final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
-        final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final SlackChannel hipChatChannel = new SlackChannel(new Gson(), null, null, globalProperties);
-        final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, projectsRepository, distributionProjectRepository, mockedHipChatRepository, new ObjectTransformer(), hipChatChannel);
-        return configActions;
+        return createConfigActionsWithSpecificObjectTransformer(new ObjectTransformer());
     }
 
     @Override
@@ -55,14 +45,15 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
 
     @Override
     public SlackDistributionConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
-        final SlackDistributionRepository mockedHipChatRepository = Mockito.mock(SlackDistributionRepository.class);
+        final SlackDistributionRepository mockedSlackRepository = Mockito.mock(SlackDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
         final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
         final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-        final SlackChannel hipChatChannel = new SlackChannel(new Gson(), null, null, globalProperties);
-        final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, projectsRepository, distributionProjectRepository, mockedHipChatRepository, objectTransformer, hipChatChannel);
+        final ConfiguredProjectsActions<SlackDistributionRestModel> projectsAction = new ConfiguredProjectsActions<>(projectsRepository, distributionProjectRepository);
+        final NotificationTypeRepository notificationRepository = Mockito.mock(NotificationTypeRepository.class);
+        final DistributionNotificationTypeRepository notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepository.class);
+        final NotificationTypesActions<SlackDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
+        final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, mockedSlackRepository, projectsAction, notificationAction, objectTransformer, null);
         return configActions;
     }
 
