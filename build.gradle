@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
     }
 }
 
@@ -18,6 +20,10 @@ plugins {
     id 'com.moowork.node' version '1.2.0'
 }
 
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 tasks.withType(GroovyCompile) { options.encoding = 'UTF-8' }
 
@@ -27,7 +33,8 @@ description = ''
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 applicationDefaultJvmArgs = [
-    '-DAPP_HOME=APP_HOME_VAR_TOKEN'
+    '-DAPP_HOME=APP_HOME_VAR_TOKEN',
+    '--spring.config.location=file:/blackduck-alert-config-defaults'
 ]
 
 sourceCompatibility = 1.8
@@ -91,7 +98,7 @@ distributions {
     main {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
-            from('src/main/resources/application.properties') {into 'config/'}
+            from('src/main/resources/application.properties') {into '/blackduck-alert-config-defaults/'}
             from('src/main/resources/email/images/') {into 'images/'}
             from('src/main/resources/email/templates/') {into 'templates/'}
         }
@@ -141,3 +148,31 @@ task runServer(type: Exec, dependsOn: [build]) {
     commandLine 'java', '-jar', jarFile.getAbsolutePath()
     
 }
+
+task stageDocker(type:Copy, dependsOn: [build]) {
+    into "${project.buildDir}/docker"
+    from("${project.projectDir}") {
+        include 'Dockerfile'
+        include 'docker-entrypoint.sh'
+    }
+    into('build/distributions') {
+        from distTar
+    }
+}
+
+task buildDockerImage(type:DockerBuildImage, dependsOn: [stageDocker]) {
+    inputDir = file("${project.buildDir}/docker")
+    tag = "blackducksoftware/${project.name}:${project.version}"
+    buildArgs = [ 'VERSION': "${project.version}" ]
+}
+
+task dockerLogin(type: Exec) {
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_HUB_USER", "--password", "$System.env.DOCKER_HUB_PASSWORD"
+}
+
+task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
+    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+}
+
+task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {}
+
