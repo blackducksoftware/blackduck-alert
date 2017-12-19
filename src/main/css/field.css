@@ -13,6 +13,11 @@
     width: 30%;
 }
 
+.fieldLabelTextArea {
+    composes: fieldLabel;
+    vertical-align: top;
+}
+
 .fieldLabel:after {
     content: ":"
 }

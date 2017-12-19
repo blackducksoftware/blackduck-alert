@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import tableStyles from '../../../css/table.css';
 
 import EditTableCellFormatter from '../EditTableCellFormatter';
+import AuditDetails from './AuditDetails';
 
 import Modal from 'react-modal';
 
@@ -23,6 +24,7 @@ class Audit extends Component {
         this.onResendClick = this.onResendClick.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
+        this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
 	}
 
 	addDefaultEntries() {
@@ -32,14 +34,20 @@ class Audit extends Component {
             jobName: 'Test Job',
             eventType: 'email_group_channel',
             notificationType: 'High Vulnerability',
+            timeCreated: '12/01/2017 00:00:00',
+            timeLastSent: '12/01/2017 00:00:00',
             status: 'Success'
         });
         entries.push({
-            id: '999',
+            id: '111',
             jobName: 'Test Hipchat',
             eventType: 'hipchat_channel',
             notificationType: 'High Vulnerability',
-            status: 'Failure'
+            timeCreated: '12/01/2017 00:00:00',
+            timeLastSent: '12/01/2017 00:00:00',
+            status: 'Failure',
+            errorMessage: 'Could not reach Hipchat',
+            errorStackTrace: 'Exception : could not reach hipchat \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55)'
         });
         this.setState({
 			entries
@@ -63,7 +71,12 @@ class Audit extends Component {
 	}
 
 	onResendClick(currentRowSelected){
-
+		console.log(currentRowSelected);
+		var currentEntry = currentRowSelected;
+		if (!currentRowSelected){
+			currentEntry = this.state.currentRowSelected;
+		}
+		console.log(currentEntry);
 	}
 
 	resendButton(cell, row) {
@@ -75,14 +88,12 @@ class Audit extends Component {
     }
 
     statusColumnDataFormat(cell, row) {
-		var content = <div className={tableStyles.statusSuccess} aria-hidden='true'>
-							{cell}
-						</div>;
+		var statusClass = tableStyles.statusSuccess;
 		if (cell === 'Failure') {
-			content = <EditTableCellFormatter buttonClass="btn btn-danger" handleButtonClicked={this.onStatusFailureClick} currentRowSelected={row} buttonText={cell} />;
+			statusClass = tableStyles.statusFailure;
 		}
-		let data = <div>
-						{content}
+		let data = <div className={statusClass} aria-hidden='true'>
+						{cell}
 					</div>;
 
 		return data;
@@ -110,34 +121,37 @@ class Audit extends Component {
 		return data;
 	}
 
-	getCurrentEntryDetails(currentRowSelected) {
-		let currentEntryDetails = null;
-		
-		return currentEntryDetails;
+	isExpandableRow(row) {
+    	return true;
+  	}
+
+	expandComponent(row) {
+		return <AuditDetails currentEntry={row}/>;
 	}
 
 	render() {
 		const auditTableOptions = {
 	  		noDataText: 'No events',
-	  		clearSearch: true
+	  		clearSearch: true,
+	  		expandBy : 'column',
+	  		expandRowBgColor: '#e8e8e8'
 		};
-		var content = <div>
-						<BootstrapTable data={this.state.entries} containerClass={tableStyles.table} striped hover condensed search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+		return (
+				<div>
+					<div>
+						<BootstrapTable data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} striped hover condensed search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='jobName' columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='notificationType' dataSort columnClassName={tableStyles.tableCell}>Notification Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeCreated' dataSort columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeLastSent' dataSort columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
-	                        <TableHeaderColumn dataField='' columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
+	                        <TableHeaderColumn dataField='' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					<p name="message">{this.state.message}</p>
-  					</div>;
-  		var currentEntryDetails = this.getCurrentEntryDetails(this.state.currentRowSelected);
-  		if (currentEntryDetails) {
-  			content = currentEntryDetails;
-  		}
-		return (
-				{content}
+  					</div>
+				</div>
 		)
 	}
 

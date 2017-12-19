@@ -25,7 +25,7 @@ export default class CheckboxInput extends LabeledField {
 
 		let inputDiv = null;
 		if (this.props.readOnly) {
-			inputDiv = <input type="checkbox" readOnly disabled="disabled" className={inputClass} name={this.props.name} checked={isChecked} onChange={this.props.onChange} />;
+			inputDiv = <input type="checkbox" readOnly disabled="disabled" className={inputClass} name={this.props.name} checked={isChecked}/>;
 		} else {
 			inputDiv = <input type="checkbox" className={inputClass} name={this.props.name} checked={isChecked} onChange={this.props.onChange} />;
 		}
