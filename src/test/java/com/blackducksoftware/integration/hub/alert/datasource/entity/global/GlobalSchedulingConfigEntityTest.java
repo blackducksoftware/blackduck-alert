@@ -49,7 +49,7 @@ public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSch
 
     @Override
     public int globalEntityHashCode() {
-        return 713945800;
+        return -1636279562;
     }
 
 }
