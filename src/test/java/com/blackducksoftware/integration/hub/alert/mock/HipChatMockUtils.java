@@ -114,7 +114,7 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
     @Override
     public HipChatDistributionRestModel createRestModel() {
         final HipChatDistributionRestModel hipChatDistributionRestModel = new HipChatDistributionRestModel(getCommonId(), roomId, notify, color, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(),
-                getNotificationType(), getFilterByProject(), getProjects());
+                getFilterByProject(), getProjects());
         return hipChatDistributionRestModel;
     }
 

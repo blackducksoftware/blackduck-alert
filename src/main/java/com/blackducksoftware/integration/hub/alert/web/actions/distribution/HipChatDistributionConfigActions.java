@@ -28,31 +28,31 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
 @Component
 public class HipChatDistributionConfigActions extends DistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
-    private final HipChatChannel hipChatChannel;
+    private final HipChatManager hipChatManager;
 
     @Autowired
-    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
-            final JpaRepository<HipChatDistributionConfigEntity, Long> channelDistributionRepository, final ObjectTransformer objectTransformer, final HipChatChannel hipChatChannel) {
-        super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, channelDistributionRepository, objectTransformer);
-        this.hipChatChannel = hipChatChannel;
+    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<HipChatDistributionConfigEntity, Long> channelDistributionRepository,
+            final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
+            final HipChatManager hipChatManager) {
+        super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+        this.hipChatManager = hipChatManager;
     }
 
     @Override
     public String channelTestConfig(final HipChatDistributionRestModel restModel) throws IntegrationException {
-        final HipChatDistributionConfigEntity distributionConfig = objectTransformer.configRestModelToDatabaseEntity(restModel, HipChatDistributionConfigEntity.class);
-        return hipChatChannel.testMessage(distributionConfig);
+        return hipChatManager.sendTestMessage(restModel);
     }
 
     @Override

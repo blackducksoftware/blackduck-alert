@@ -21,15 +21,15 @@ class SlackConfiguration extends ServerConfiguration {
 
 SlackConfiguration.propTypes = {
     headerText: PropTypes.string,
-    configButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.bool,
+    configButtonsSave: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 SlackConfiguration.defaultProps = {
     headerText: 'Slack Configuration',
-    configButtonTest: 'false',
-    baseUrl: '/configuration/slack'
+    configButtonsSave: false
 };
 
 export default SlackConfiguration;

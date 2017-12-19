@@ -32,8 +32,12 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
@@ -42,11 +46,16 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 public class NotificationPostProcessor {
     private final DistributionProjectRepository distributionProjectRepository;
     private final ConfiguredProjectsRepository configuredProjectsRepository;
+    private final DistributionNotificationTypeRepository distributionNotificationTypeRepository;
+    private final NotificationTypeRepository notificationTypeRepository;
 
     @Autowired
-    public NotificationPostProcessor(final DistributionProjectRepository distributionProjectRepository, final ConfiguredProjectsRepository configuredProjectsRepository) {
+    public NotificationPostProcessor(final DistributionProjectRepository distributionProjectRepository, final ConfiguredProjectsRepository configuredProjectsRepository,
+            final DistributionNotificationTypeRepository distributionNotificationTypeRepository, final NotificationTypeRepository notificationTypeRepository) {
         this.distributionProjectRepository = distributionProjectRepository;
         this.configuredProjectsRepository = configuredProjectsRepository;
+        this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;
+        this.notificationTypeRepository = notificationTypeRepository;
     }
 
     public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final ProjectData projectData) {
@@ -85,13 +94,13 @@ public class NotificationPostProcessor {
     }
 
     public boolean doNotificationTypesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
-        final String notificationType = commonDistributionConfigEntity.getNotificationType();
-        if ("ALL".equals(notificationType)) {
-            return true;
-        }
-        for (final NotificationCategoryEnum category : projectData.getCategoryMap().keySet()) {
-            if (category.toString().contains(notificationType)) {
-                return true;
+        final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
+        for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
+            final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
+            for (final NotificationCategoryEnum category : projectData.getCategoryMap().keySet()) {
+                if (category.toString().equalsIgnoreCase(foundEntity.getType())) {
+                    return true;
+                }
             }
         }
         return false;

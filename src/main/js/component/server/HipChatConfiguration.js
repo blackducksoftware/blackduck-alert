@@ -17,8 +17,6 @@ class HipChatConfiguration extends ServerConfiguration {
 		let content =
 				<div>
 					<TextInput label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></TextInput>
-					<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.state.errors.notifyError}></CheckboxInput>
-					<TextInput label="Color" name="color" value={this.state.values.color} onChange={this.handleChange} errorName="colorError" errorValue={this.state.errors.colorError}></TextInput>
 				</div>;
         return super.render(content);
 	}
@@ -26,16 +24,16 @@ class HipChatConfiguration extends ServerConfiguration {
 
 HipChatConfiguration.propTypes = {
     headerText: PropTypes.string,
-    configButtonTest: PropTypes.string,
+    configButtonTest: PropTypes.bool,
+    configButtonsSave: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 HipChatConfiguration.defaultProps = {
     headerText: 'HipChat Configuration',
-    configButtonTest: 'false',
-    baseUrl: '/configuration/hipchat',
-    testUrl: '/configuration/hipchat/test'
+    configButtonTest: false,
+    baseUrl: '/configuration/global/hipchat'
 };
 
 export default HipChatConfiguration;

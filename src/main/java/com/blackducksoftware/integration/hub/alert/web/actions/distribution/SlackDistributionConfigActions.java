@@ -28,31 +28,31 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 @Component
 public class SlackDistributionConfigActions extends DistributionConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel> {
-    private final SlackChannel slackChannel;
+    private final SlackManager slackManager;
 
     @Autowired
-    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository,
-            final JpaRepository<SlackDistributionConfigEntity, Long> repository, final ObjectTransformer objectTransformer, final SlackChannel slackChannel) {
-        super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, configuredProjectsRepository, distributionProjectRepository, repository, objectTransformer);
-        this.slackChannel = slackChannel;
+    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<SlackDistributionConfigEntity, Long> repository,
+            final ConfiguredProjectsActions<SlackDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<SlackDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
+            final SlackManager slackManager) {
+        super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+        this.slackManager = slackManager;
     }
 
     @Override
     public String channelTestConfig(final SlackDistributionRestModel restModel) throws IntegrationException {
-        final SlackDistributionConfigEntity slackConfig = objectTransformer.configRestModelToDatabaseEntity(restModel, SlackDistributionConfigEntity.class);
-        return slackChannel.testMessage(slackConfig);
+        return slackManager.sendTestMessage(restModel);
     }
 
     @Override

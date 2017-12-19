@@ -114,7 +114,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
                 }
-                return "Attempting to send a test message.";
+                return Integer.toString(response.code());
             } catch (final IntegrationException e) {
                 throw new IntegrationRestException(HttpStatus.BAD_REQUEST.value(), "Failed to send a HipChat message", e.getMessage(), e);
             }
@@ -123,14 +123,10 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         }
     }
 
-    @Override
-    public String testMessage(final HipChatDistributionConfigEntity distributionConfig) throws IntegrationException {
-        return sendMessage(distributionConfig, HIP_CHAT_API, "Test Message", AlertConstants.ALERT_APPLICATION_NAME + " Tester");
-    }
-
     private String createHtmlMessage(final ProjectData projectData) {
         try {
-            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService("src/main/resources/hipchat/templates");
+            // TODO determine the actual template location for deployment
+            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates");
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put("projectName", projectData.getProjectName());
@@ -146,11 +142,16 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
         final JsonObject json = new JsonObject();
         json.addProperty("message_format", "html");
-        json.addProperty("message", htmlMessage);
-        json.addProperty("from", from);
+        if (htmlMessage != null) {
+            json.addProperty("message", htmlMessage);
+        }
+        if (from != null) {
+            json.addProperty("from", from);
+        }
         json.addProperty("notify", notify);
-        json.addProperty("color", color);
-
+        if (color != null) {
+            json.addProperty("color", color);
+        }
         return json.toString();
     }
 
