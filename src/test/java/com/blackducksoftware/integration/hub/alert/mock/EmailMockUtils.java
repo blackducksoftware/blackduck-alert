@@ -159,8 +159,8 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
 
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
-        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(getCommonId(), getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getNotificationType(), getFilterByProject(),
-                groupName, getProjects());
+        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(getCommonId(), getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(), groupName, getProjects(),
+                getNotifications());
         return restModel;
     }
 

@@ -18,6 +18,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
@@ -32,17 +33,14 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String hubProxyUsername;
     private final String hubProxyPassword;
     private final String hubAlwaysTrustCertificate;
-    private final String accumulatorCron;
-    private final String dailyDigestCron;
-    private final String purgeDataCron;
     private final String id;
 
     public GlobalHubMockUtils() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", "true", "1 1 1 1 1 1", "2 2 2 2 2 2", "3 3 3 3 3 3", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", "true", "1");
     }
 
     public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron, final String id) {
+            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String id) {
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
@@ -52,19 +50,17 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         this.hubProxyUsername = hubProxyUsername;
         this.hubProxyPassword = hubProxyPassword;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
         this.id = id;
     }
 
     public GlobalProperties createTestGlobalProperties() {
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        return createTestGlobalProperties(mockedGlobalRepository);
+        final GlobalSchedulingRepository mockedScheduledRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        return createTestGlobalProperties(mockedGlobalRepository, mockedScheduledRepository);
     }
 
-    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository) {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
+    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
         globalProperties.hubUrl = hubUrl;
         globalProperties.hubTrustCertificate = Boolean.valueOf(hubAlwaysTrustCertificate);
         globalProperties.hubProxyHost = hubProxyHost;
@@ -110,18 +106,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         return hubAlwaysTrustCertificate;
     }
 
-    public String getAccumulatorCron() {
-        return accumulatorCron;
-    }
-
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public String getPurgeDataCron() {
-        return purgeDataCron;
-    }
-
     @Override
     public String getId() {
         return id;
@@ -129,8 +113,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     @Override
     public GlobalHubConfigRestModel createGlobalRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate, accumulatorCron,
-                dailyDigestCron, purgeDataCron);
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate);
         return restModel;
     }
 
@@ -141,7 +124,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     @Override
     public GlobalHubConfigEntity createGlobalEntity() {
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubUsername, hubPassword, accumulatorCron, dailyDigestCron, purgeDataCron);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubUsername, hubPassword);
         entity.setId(Long.valueOf(id));
         return entity;
     }
@@ -161,9 +144,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         json.addProperty("hubProxyPort", hubProxyPort);
         json.addProperty("hubProxyUsername", hubProxyUsername);
         json.addProperty("hubAlwaysTrustCertificate", hubAlwaysTrustCertificate);
-        json.addProperty("accumulatorCron", accumulatorCron);
-        json.addProperty("dailyDigestCron", dailyDigestCron);
-        json.addProperty("purgeDataCron", purgeDataCron);
         json.addProperty("id", id);
         return json.toString();
     }
@@ -178,9 +158,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         json.add("hubProxyPort", null);
         json.add("hubProxyUsername", null);
         json.add("hubAlwaysTrustCertificate", null);
-        json.add("accumulatorCron", null);
-        json.add("dailyDigestCron", null);
-        json.add("purgeDataCron", null);
         json.add("id", null);
         return json.toString();
     }
@@ -190,9 +167,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         final JsonObject json = new JsonObject();
         json.addProperty("hubTimeout", Integer.valueOf(hubTimeout));
         json.addProperty("hubUsername", hubUsername);
-        json.addProperty("accumulatorCron", accumulatorCron);
-        json.addProperty("dailyDigestCron", dailyDigestCron);
-        json.addProperty("purgeDataCron", purgeDataCron);
         json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
@@ -202,9 +176,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         final JsonObject json = new JsonObject();
         json.add("hubTimeout", null);
         json.add("hubUsername", null);
-        json.add("accumulatorCron", null);
-        json.add("dailyDigestCron", null);
-        json.add("purgeDataCron", null);
         json.add("id", null);
         return json.toString();
     }

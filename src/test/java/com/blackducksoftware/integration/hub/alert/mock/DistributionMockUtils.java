@@ -24,18 +24,22 @@ public class DistributionMockUtils {
     private final String frequency;
     private final String filterByProject;
     private final List<String> configuredProjects;
+    private final List<String> notificationTypes;
 
     protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
+
+    protected static final NotificationTypeMockUtils notificationTypeMock = new NotificationTypeMockUtils();
 
     public DistributionMockUtils() {
         this("1");
     }
 
     public DistributionMockUtils(final String distributionConfigId) {
-        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing());
+        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing());
     }
 
-    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects) {
+    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
+            final List<String> notificationTypes) {
         super();
         this.commonId = id;
         this.distributionConfigId = distributionConfigId;
@@ -44,6 +48,7 @@ public class DistributionMockUtils {
         this.frequency = frequency;
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
+        this.notificationTypes = notificationTypes;
     }
 
     public String getCommonId() {
@@ -74,6 +79,10 @@ public class DistributionMockUtils {
         return configuredProjects;
     }
 
+    public List<String> getNotifications() {
+        return notificationTypes;
+    }
+
     public JsonObject getEmptyDistributionRestModelJson(final JsonObject json) {
         json.add("distributionConfigId", null);
         json.add("distributionType", null);
@@ -81,6 +90,7 @@ public class DistributionMockUtils {
         json.add("frequency", null);
         json.add("filterByProject", null);
         json.add("configuredProjects", null);
+        json.add("notificationTypes", null);
         json.add("id", null);
         return json;
     }
@@ -92,6 +102,7 @@ public class DistributionMockUtils {
         json.addProperty("frequency", frequency);
         json.addProperty("filterByProject", filterByProject);
         json.add("configuredProjects", projectMock.getProjectListingJson());
+        json.add("notificationTypes", notificationTypeMock.getNotificationListingJson());
         json.addProperty("id", commonId);
         return json;
     }

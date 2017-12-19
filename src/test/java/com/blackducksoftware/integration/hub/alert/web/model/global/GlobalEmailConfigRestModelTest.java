@@ -14,12 +14,9 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
-public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGroupDistributionRestModel, GlobalEmailConfigRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {
+public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEmailConfigRestModel> {
     private static final EmailMockUtils mockUtils = new EmailMockUtils();
 
     public GlobalEmailConfigRestModelTest() {
@@ -49,7 +46,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGro
     }
 
     @Override
-    public long emptyGlobalRestModelSerialId() {
+    public long globalRestModelSerialId() {
         return GlobalEmailConfigRestModel.getSerialversionuid();
     }
 
@@ -80,7 +77,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGro
     }
 
     @Override
-    public int gloablRestModelHashCode() {
+    public int globalRestModelHashCode() {
         return -1349295802;
     }
 

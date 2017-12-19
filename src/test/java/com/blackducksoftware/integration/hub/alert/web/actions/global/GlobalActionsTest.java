@@ -32,13 +32,12 @@ import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class GlobalActionsTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity, GCA extends ConfigActions<GE, GR>> {
-    private final MockUtils<R, GR, E, GE> mockUtils;
-    private GCA configActions;
+public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GCA extends ConfigActions<GE, GR>> {
+    private final MockUtils<?, GR, ?, GE> mockUtils;
+    protected GCA configActions;
 
-    public GlobalActionsTest(final MockUtils<R, GR, E, GE> mockUtils) {
+    public GlobalActionsTest(final MockUtils<?, GR, ?, GE> mockUtils) {
         this.mockUtils = mockUtils;
         configActions = getConfigActions();
     }

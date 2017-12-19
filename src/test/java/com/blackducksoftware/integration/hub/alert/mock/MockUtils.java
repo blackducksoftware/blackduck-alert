@@ -54,24 +54,55 @@ public interface MockUtils<R extends CommonDistributionConfigRestModel, GR exten
 
     public String getId();
 
-    public default void verifyValues() throws JSONException {
+    public default void verifyEmptyEntity() throws JSONException {
         final String emptyEntity = createEmptyEntity().toString();
-        final String emptyGlobalEntity = createEmptyGlobalEntity().toString();
-        final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();
-        final String emptyRestModel = createEmptyRestModel().toString();
-        final String entity = createEntity().toString();
-        final String globalEntity = createGlobalEntity().toString();
-        final String globalRestModel = createGlobalRestModel().toString();
-        final String restModel = createRestModel().toString();
-
         JSONAssert.assertEquals(emptyEntity, getEmptyEntityJson(), false);
+    }
+
+    public default void verifyEmptyGlobalEntity() throws JSONException {
+        final String emptyGlobalEntity = createEmptyGlobalEntity().toString();
         JSONAssert.assertEquals(emptyGlobalEntity, getEmptyGlobalEntityJson(), false);
+    }
+
+    public default void verifyEmptyGlobalRestModel() throws JSONException {
+        final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();
         JSONAssert.assertEquals(emptyGlobalRestModel, getEmptyGlobalRestModelJson(), false);
+    }
+
+    public default void verifyEmptyRestModel() throws JSONException {
+        final String emptyRestModel = createEmptyRestModel().toString();
         JSONAssert.assertEquals(emptyRestModel, getEmptyRestModelJson(), false);
+    }
+
+    public default void verifyEntity() throws JSONException {
+        final String entity = createEntity().toString();
         JSONAssert.assertEquals(entity, getEntityJson(), false);
+    }
+
+    public default void verifyGlobalEntity() throws JSONException {
+        final String globalEntity = createGlobalEntity().toString();
         JSONAssert.assertEquals(globalEntity, getGlobalEntityJson(), false);
+    }
+
+    public default void verifyGlobalRestModel() throws JSONException {
+        final String globalRestModel = createGlobalRestModel().toString();
         JSONAssert.assertEquals(globalRestModel, getGlobalRestModelJson(), false);
+    }
+
+    public default void verifyRestModel() throws JSONException {
+        final String restModel = createRestModel().toString();
         JSONAssert.assertEquals(restModel, getRestModelJson(), false);
+    }
+
+    public default void verifyAllValues() throws JSONException {
+        verifyEmptyEntity();
+        verifyEmptyGlobalEntity();
+        verifyEmptyGlobalRestModel();
+        verifyEmptyRestModel();
+        verifyEntity();
+        verifyGlobalEntity();
+        verifyGlobalRestModel();
+        verifyRestModel();
     }
 
 }

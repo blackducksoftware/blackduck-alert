@@ -9,18 +9,15 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public HipChatConfigRestModelTest() {
@@ -35,7 +32,7 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     }
 
     @Override
-    public long emptyRestModelSerialId() {
+    public long restModelSerialId() {
         return HipChatDistributionRestModel.getSerialversionuid();
     }
 
@@ -53,7 +50,7 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public int restModelHashCode() {
-        return -1430661866;
+        return -1953422357;
     }
 
 }

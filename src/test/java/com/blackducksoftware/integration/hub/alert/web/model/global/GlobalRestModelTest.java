@@ -18,16 +18,14 @@ import java.io.ObjectStreamClass;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
-    private final MockUtils<R, GR, E, GE> mockUtils;
+public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
+    private final MockUtils<?, GR, ?, ?> mockUtils;
     private final Class<GR> globalRestModelClass;
 
-    public GlobalRestModelTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<GR> globalRestModelClass) {
+    public GlobalRestModelTest(final MockUtils<?, GR, ?, ?> mockUtils, final Class<GR> globalRestModelClass) {
         this.mockUtils = mockUtils;
         this.globalRestModelClass = globalRestModelClass;
     }
@@ -35,7 +33,7 @@ public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRest
     @Test
     public void testEmptyGlobalRestModel() {
         final GR configRestModel = mockUtils.createEmptyGlobalRestModel();
-        assertEquals(emptyGlobalRestModelSerialId(), ObjectStreamClass.lookup(globalRestModelClass).getSerialVersionUID());
+        assertEquals(globalRestModelSerialId(), ObjectStreamClass.lookup(globalRestModelClass).getSerialVersionUID());
 
         assertGlobalRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
@@ -52,7 +50,7 @@ public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRest
 
     public abstract void assertGlobalRestModelFieldsNull(GR restModel);
 
-    public abstract long emptyGlobalRestModelSerialId();
+    public abstract long globalRestModelSerialId();
 
     public abstract int emptyGlobalRestModelHashCode();
 
@@ -64,7 +62,7 @@ public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRest
         assertEquals(mockUtils.getId(), configRestModel.getId());
 
         final int configHash = configRestModel.hashCode();
-        assertEquals(configHash, gloablRestModelHashCode());
+        assertEquals(globalRestModelHashCode(), configHash);
 
         final String expectedString = mockUtils.getGlobalRestModelJson();
         assertEquals(expectedString, configRestModel.toString());
@@ -75,5 +73,5 @@ public abstract class GlobalRestModelTest<R extends CommonDistributionConfigRest
 
     public abstract void assertGlobalRestModelFieldsFull(GR restModel);
 
-    public abstract int gloablRestModelHashCode();
+    public abstract int globalRestModelHashCode();
 }

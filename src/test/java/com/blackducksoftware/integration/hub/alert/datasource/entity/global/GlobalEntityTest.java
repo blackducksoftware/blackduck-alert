@@ -20,14 +20,12 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class GlobalEntityTest<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
-    private final MockUtils<R, GR, E, GE> mockUtils;
+public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
+    private final MockUtils<?, ?, ?, GE> mockUtils;
     private final Class<GE> globalEntityClass;
 
-    public GlobalEntityTest(final MockUtils<R, GR, E, GE> mockUtils, final Class<GE> globalEntityClass) {
+    public GlobalEntityTest(final MockUtils<?, ?, ?, GE> mockUtils, final Class<GE> globalEntityClass) {
         this.mockUtils = mockUtils;
         this.globalEntityClass = globalEntityClass;
     }
@@ -35,7 +33,7 @@ public abstract class GlobalEntityTest<R extends CommonDistributionConfigRestMod
     @Test
     public void testEmptyGlobalEntity() {
         final GE configEntity = mockUtils.createEmptyGlobalEntity();
-        assertEquals(emptyGlobalEntitySerialId(), ObjectStreamClass.lookup(globalEntityClass).getSerialVersionUID());
+        assertEquals(globalEntitySerialId(), ObjectStreamClass.lookup(globalEntityClass).getSerialVersionUID());
 
         assertGlobalEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
@@ -52,7 +50,7 @@ public abstract class GlobalEntityTest<R extends CommonDistributionConfigRestMod
 
     public abstract void assertGlobalEntityFieldsNull(GE entity);
 
-    public abstract long emptyGlobalEntitySerialId();
+    public abstract long globalEntitySerialId();
 
     public abstract int emptyGlobalEntityHashCode();
 

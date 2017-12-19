@@ -9,18 +9,15 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
-public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public HipChatConfigEntityTest() {
@@ -35,7 +32,7 @@ public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionRestM
     }
 
     @Override
-    public long emptyEntitySerialId() {
+    public long entitySerialId() {
         return HipChatDistributionConfigEntity.getSerialversionuid();
     }
 

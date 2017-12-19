@@ -13,15 +13,13 @@ package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
-public class GlobalEmailConfigActionsTest extends GlobalActionsTest<EmailGroupDistributionRestModel, GlobalEmailConfigRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
+public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
     private static EmailMockUtils mockUtils = new EmailMockUtils();
 
     public GlobalEmailConfigActionsTest() {
@@ -36,8 +34,9 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<EmailGroupDi
     }
 
     @Override
-    public GlobalEmailConfigActions getSaveTestConfigActions() {
-        return getConfigActions();
+    public GlobalEmailConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 
     @Override
@@ -47,8 +46,6 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<EmailGroupDi
 
     @Override
     public void testConfigurationChangeTriggers() {
-        // TODO Auto-generated method stub
-
     }
 
 }

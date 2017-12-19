@@ -11,7 +11,115 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-public class GlobalHubConfigActionsTest {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
+
+public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubConfigActions> {
+    private static final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
+
+    public GlobalHubConfigActionsTest() {
+        super(mockUtils);
+    }
+
+    @Override
+    public GlobalHubConfigActions getConfigActions() {
+        final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
+        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
+
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
+        return configActions;
+    }
+
+    @Override
+    public GlobalHubConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+        final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
+        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
+
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
+        return configActions;
+    }
+
+    @Override
+    public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
+        return GlobalHubConfigEntity.class;
+    }
+
+    @Override
+    public void testConfigurationChangeTriggers() {
+    }
+
+    @Test
+    @Override
+    public void testGetConfig() throws Exception {
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
+        Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEntity());
+        Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
+        final GlobalSchedulingRepository schedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository, schedulingRepository);
+        final GlobalHubConfigRestModel defaultRestModel = mockUtils.createGlobalRestModel();
+
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
+        final GlobalHubConfigRestModel maskedRestModel = configActions.maskRestModel(defaultRestModel);
+        List<GlobalHubConfigRestModel> globalConfigsById = configActions.getConfig(1L);
+        List<GlobalHubConfigRestModel> allGlobalConfigs = configActions.getConfig(null);
+
+        assertTrue(globalConfigsById.size() == 1);
+        assertTrue(allGlobalConfigs.size() == 1);
+
+        final GlobalHubConfigRestModel globalConfigById = globalConfigsById.get(0);
+        final GlobalHubConfigRestModel globalConfig = allGlobalConfigs.get(0);
+
+        System.out.println(maskedRestModel.toString());
+        System.out.println(globalConfigById.toString());
+
+        assertEquals(maskedRestModel, globalConfigById);
+        assertEquals(maskedRestModel, globalConfig);
+
+        Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(mockedGlobalRepository.findAll()).thenReturn(null);
+
+        globalConfigsById = configActions.getConfig(1L);
+        allGlobalConfigs = configActions.getConfig(null);
+
+        assertNotNull(globalConfigsById);
+        assertNotNull(allGlobalConfigs);
+        assertTrue(globalConfigsById.isEmpty());
+        assertTrue(allGlobalConfigs.size() == 1);
+
+        final GlobalHubConfigRestModel environmentGlobalConfig = allGlobalConfigs.get(0);
+        assertEquals(mockUtils.getHubAlwaysTrustCertificate(), environmentGlobalConfig.getHubAlwaysTrustCertificate());
+        assertNull(environmentGlobalConfig.getHubPassword());
+        assertEquals(mockUtils.getHubProxyHost(), environmentGlobalConfig.getHubProxyHost());
+        assertNull(environmentGlobalConfig.getHubProxyPassword());
+        assertEquals(mockUtils.getHubProxyPort(), environmentGlobalConfig.getHubProxyPort());
+        assertEquals(mockUtils.getHubProxyUsername(), environmentGlobalConfig.getHubProxyUsername());
+        assertNull(environmentGlobalConfig.getHubTimeout());
+        assertEquals(mockUtils.getHubUrl(), environmentGlobalConfig.getHubUrl());
+        assertNull(environmentGlobalConfig.getHubUsername());
+        assertNull(environmentGlobalConfig.getId());
+
+    }
+
     // private final ObjectTransformer objectTransformer = new ObjectTransformer();
     //
     // @Test
