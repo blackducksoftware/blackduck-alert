@@ -16,7 +16,6 @@ class HubConfiguration extends ServerConfiguration {
 
 	render() {
 		let content =
-
 				<div>
 					<TextInput label="Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
 					<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
@@ -35,14 +34,14 @@ class HubConfiguration extends ServerConfiguration {
 
 HubConfiguration.propTypes = {
     headerText: PropTypes.string,
-    externaconfigButtonTest: PropTypes.string,
+    externaconfigButtonTest: PropTypes.bool,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string
 };
 
 HubConfiguration.defaultProps = {
     headerText: 'Hub Configuration',
-    configButtonTest: 'true',
+    configButtonTest: true,
     baseUrl: '/configuration/global',
     testUrl: '/configuration/global/test'
 };

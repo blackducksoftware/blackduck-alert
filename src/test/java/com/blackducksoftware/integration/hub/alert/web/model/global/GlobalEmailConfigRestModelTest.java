@@ -23,7 +23,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGro
     private static final EmailMockUtils mockUtils = new EmailMockUtils();
 
     public GlobalEmailConfigRestModelTest() {
-        super(mockUtils);
+        super(mockUtils, GlobalEmailConfigRestModel.class);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGro
 
     @Override
     public long emptyGlobalRestModelSerialId() {
-        return 3607759169675906880L;
+        return GlobalEmailConfigRestModel.getSerialversionuid();
     }
 
     @Override

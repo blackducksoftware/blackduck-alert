@@ -30,7 +30,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     public void sendMessageTestIT() throws IOException {
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
 
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, globalProperties);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);

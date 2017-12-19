@@ -39,10 +39,10 @@ class ServerContent extends Component {
                 </div>
                 <div>
                     <TabPanel>
-                        <HubConfiguration/>
+                        <HubConfiguration />
                     </TabPanel>
                     <TabPanel>
-                        <SchedulingConfiguration/>
+                        <SchedulingConfiguration />
                     </TabPanel>
                     <TabPanel>
                         <EmailConfiguration/>

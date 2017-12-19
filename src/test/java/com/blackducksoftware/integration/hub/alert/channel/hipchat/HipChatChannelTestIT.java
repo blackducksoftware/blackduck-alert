@@ -31,7 +31,7 @@ public class HipChatChannelTestIT extends ChannelTest {
     @Test
     public void sendMessageTestIT() throws IOException {
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, null, null, null);
 
         final ProjectData data = createProjectData("Integration test project");

@@ -36,23 +36,23 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private String distributionType;
     private String name;
     private String frequency;
-    private String notificationType;
     private String filterByProject;
     private List<String> configuredProjects;
+    private List<String> notificationTypes;
 
     public CommonDistributionConfigRestModel() {
     }
 
-    public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
-            final List<String> configuredProjects) {
+    public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
+            final List<String> notificationTypes) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.frequency = frequency;
-        this.notificationType = notificationType;
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
+        this.notificationTypes = notificationTypes;
     }
 
     public static long getSerialversionuid() {
@@ -79,10 +79,6 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         return frequency;
     }
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
     public String getFilterByProject() {
         return filterByProject;
     }
@@ -93,6 +89,14 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     public void setConfiguredProjects(final List<String> configuredProjects) {
         this.configuredProjects = configuredProjects;
+    }
+
+    public List<String> getNotificationTypes() {
+        return notificationTypes;
+    }
+
+    public void setNotificationTypes(final List<String> notificationTypes) {
+        this.notificationTypes = notificationTypes;
     }
 
     @Override

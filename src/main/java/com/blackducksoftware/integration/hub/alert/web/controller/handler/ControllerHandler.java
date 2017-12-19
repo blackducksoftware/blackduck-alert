@@ -35,6 +35,10 @@ public abstract class ControllerHandler {
         this.objectTransformer = objectTransformer;
     }
 
+    public ResponseEntity<String> doNotAllowHttpMethod() {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+    }
+
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
         return createResponse(status, objectTransformer.stringToLong(id), message);
     }

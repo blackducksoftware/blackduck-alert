@@ -22,7 +22,6 @@ public class DistributionMockUtils {
     private final String distributionType;
     private final String name;
     private final String frequency;
-    private final String notificationType;
     private final String filterByProject;
     private final List<String> configuredProjects;
 
@@ -33,18 +32,16 @@ public class DistributionMockUtils {
     }
 
     public DistributionMockUtils(final String distributionConfigId) {
-        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "Bad", "true", projectMock.createProjectListing());
+        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing());
     }
 
-    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String notificationType, final String filterByProject,
-            final List<String> configuredProjects) {
+    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects) {
         super();
         this.commonId = id;
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.frequency = frequency;
-        this.notificationType = notificationType;
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
     }
@@ -69,10 +66,6 @@ public class DistributionMockUtils {
         return frequency;
     }
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
     public String getFilterByProject() {
         return filterByProject;
     }
@@ -86,7 +79,6 @@ public class DistributionMockUtils {
         json.add("distributionType", null);
         json.add("name", null);
         json.add("frequency", null);
-        json.add("notificationType", null);
         json.add("filterByProject", null);
         json.add("configuredProjects", null);
         json.add("id", null);
@@ -98,7 +90,6 @@ public class DistributionMockUtils {
         json.addProperty("distributionType", distributionType);
         json.addProperty("name", name);
         json.addProperty("frequency", frequency);
-        json.addProperty("notificationType", notificationType);
         json.addProperty("filterByProject", filterByProject);
         json.add("configuredProjects", projectMock.getProjectListingJson());
         json.addProperty("id", commonId);
@@ -106,7 +97,7 @@ public class DistributionMockUtils {
     }
 
     public CommonDistributionConfigEntity createDistributionConfigEntity() {
-        final CommonDistributionConfigEntity configEntity = new CommonDistributionConfigEntity(Long.valueOf(distributionConfigId), distributionType, name, frequency, notificationType, Boolean.valueOf(filterByProject));
+        final CommonDistributionConfigEntity configEntity = new CommonDistributionConfigEntity(Long.valueOf(distributionConfigId), distributionType, name, frequency, Boolean.valueOf(filterByProject));
         configEntity.setId(Long.valueOf(commonId));
         return configEntity;
     }

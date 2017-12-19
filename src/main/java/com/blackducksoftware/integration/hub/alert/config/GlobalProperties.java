@@ -31,7 +31,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
@@ -42,7 +44,8 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalProperties {
-    private final GlobalHubRepository globalRepository;
+    private final GlobalHubRepository globalHubRepository;
+    private final GlobalSchedulingRepository globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
     public String hubUrl;
@@ -63,22 +66,31 @@ public class GlobalProperties {
     public String hubProxyPassword;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepository globalRepository) {
-        this.globalRepository = globalRepository;
+    public GlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+        this.globalHubRepository = globalRepository;
+        this.globalSchedulingRepository = globalSchedulingRepository;
     }
 
     public GlobalHubConfigEntity getConfig(final Long id) {
         GlobalHubConfigEntity globalConfig = null;
-        if (id != null && globalRepository.exists(id)) {
-            globalConfig = globalRepository.findOne(id);
+        if (id != null && globalHubRepository.exists(id)) {
+            globalConfig = globalHubRepository.findOne(id);
         } else {
-            globalConfig = getConfig();
+            globalConfig = getHubConfig();
         }
         return globalConfig;
     }
 
-    public GlobalHubConfigEntity getConfig() {
-        final List<GlobalHubConfigEntity> configs = globalRepository.findAll();
+    public GlobalHubConfigEntity getHubConfig() {
+        final List<GlobalHubConfigEntity> configs = globalHubRepository.findAll();
+        if (configs != null && !configs.isEmpty()) {
+            return configs.get(0);
+        }
+        return null;
+    }
+
+    public GlobalSchedulingConfigEntity getSchedulingConfig() {
+        final List<GlobalSchedulingConfigEntity> configs = globalSchedulingRepository.findAll();
         if (configs != null && !configs.isEmpty()) {
             return configs.get(0);
         }
@@ -110,7 +122,7 @@ public class GlobalProperties {
     }
 
     public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
-        final GlobalHubConfigEntity globalConfigEntity = getConfig();
+        final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
             hubServerConfigBuilder.setHubUrl(hubUrl);
@@ -138,49 +150,49 @@ public class GlobalProperties {
     }
 
     public Integer getHubTimeout() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getHubTimeout();
+            return getHubConfig().getHubTimeout();
         }
         return null;
     }
 
     public String getHubUsername() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getHubUsername();
+            return getHubConfig().getHubUsername();
         }
         return null;
     }
 
     public String getHubPassword() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getHubPassword();
+            return getHubConfig().getHubPassword();
         }
         return null;
     }
 
     public String getAccumulatorCron() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getAccumulatorCron();
+            return getSchedulingConfig().getAccumulatorCron();
         }
         return null;
     }
 
     public String getDailyDigestCron() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getDailyDigestCron();
+            return getSchedulingConfig().getDailyDigestCron();
         }
         return null;
     }
 
     public String getPurgeDataCron() {
-        final GlobalHubConfigEntity globalConfig = getConfig();
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getConfig().getPurgeDataCron();
+            return getSchedulingConfig().getPurgeDataCron();
         }
         return null;
     }

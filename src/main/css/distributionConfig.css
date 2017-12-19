@@ -70,3 +70,20 @@
     font-family: 'Open Sans', sans-serif;
     display: inline-block;
 }
+
+.textInput{
+    width: 50%;
+}
+
+.inline {
+    display: inline-block;
+}
+
+.fieldLabel {
+    composes: inline;
+    padding: 10px;
+}
+
+.fieldLabel:after {
+    content: ":"
+}

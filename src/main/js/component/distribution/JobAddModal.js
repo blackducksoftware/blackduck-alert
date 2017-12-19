@@ -4,8 +4,9 @@ import TextInput from '../../field/input/TextInput';
 
 import {modalContainer} from '../../../css/main.css';
 import {fieldLabel, typeAheadField} from '../../../css/field.css';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
+
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
@@ -20,40 +21,24 @@ export default class JobAddModal extends Component {
 			values: [],
 			errors: [],
             typeOptions: [
-				{ label: 'Group Email', id: 'Group Email'},
-				{ label: 'Slack', id: 'Slack' },
-				{ label: 'HipChat', id: 'HipChat' }
+				{ label: 'Group Email', value: 'email_group_channel'},
+				{ label: 'Slack', value: 'slack_channel' },
+				{ label: 'HipChat', value: 'hipchat_channel' }
 			]
 		}
-		this.getFieldValue = this.getFieldValue.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleTypeChanged = this.handleTypeChanged.bind(this);
 		this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
+        this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
 	}
 
-	handleSaveBtnClick() {
-		// TODO persist to the backend
-	    const { columns, onSave } = this.props;
-	    const newRow = {};
-	    columns.forEach((column, i) => {
-	      newRow[column.field] = this.refs[column.field].value;
-	    }, this);
+	handleSaveBtnClick(values) {
+		const { columns, onSave, updateJobsTable } = this.props;
+        updateJobsTable();
 	    // You should call onSave function and give the new row
-	    onSave(newRow);
+	    onSave(values);
 	 }
 
-	getFieldValue() {
-	    const newRow = {};
-	    this.props.columns.forEach((column, i) => {
-	    	var value = values[column.field];
-	    	if (value == null || value == undefined) {
-	    		newRow[column.field] ='';
-	    	} else {
-	    		newRow[column.field] = value;
-	    	}
-	    }, this);
-    	return newRow;
-  	}
 
 	handleChange(event) {
 		const target = event.target;
@@ -67,41 +52,53 @@ export default class JobAddModal extends Component {
 		});
 	}
 
-	handleTypeChanged (optionsList) {
-		var option = null;
-		if (optionsList.length > 0) {
-			option = optionsList[0];
-		}
+	handleTypeChanged (option) {
 		var values = this.state.values;
-		values['typeValues'] = optionsList;
-		this.setState({
-			values
-		});
+        if(option) {
+    		values['typeValue'] = option.value;
+    		this.setState({
+    			values
+    		});
+        }
 	}
 
 	getCurrentJobConfig() {
 		var currentJobConfig = null;
-		let typeValues = this.state.values.typeValues;
-		if (typeValues != null && typeValues.length > 0) {
-			var type = typeValues[0];
-			if (type.id === 'Group Email') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed='false' waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (type.id === 'HipChat') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed='false' waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
-			} else if (type.id === 'Slack') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed='false' waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} projectTableMessage={this.props.projectTableMessage} />;
+		let typeValue = this.state.values.typeValue;
+		if (typeValue) {
+			if (typeValue === 'email_group_channel') {
+				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
+			} else if (typeValue === 'hipchat_channel') {
+				currentJobConfig = <HipChatJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
+			} else if (typeValue === 'slack_channel') {
+				currentJobConfig = <SlackJobConfiguration buttonsFixed={false} includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.props.onModalClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
 			}
 		}
 		return currentJobConfig;
 	}
 
+	renderOption(option) {
+		var fontAwesomeIcon = "";
+		if (option.value === 'email_group_channel') {
+			fontAwesomeIcon = 'fa fa-envelope';
+		} else if (option.value === 'hipchat_channel') {
+			fontAwesomeIcon = 'fa fa-comments';
+		} else if (option.value === 'slack_channel') {
+			fontAwesomeIcon = 'fa fa-slack';
+		}
+	    return (<div>
+	    			<i key="icon" className={fontAwesomeIcon} aria-hidden='true'></i>
+			    	<strong key="name"> {option.label} </strong>
+		      	</div>
+	    );
+	  }
+
 	render() {
 		const containerClasses = `modal-content react-bs-table-insert-modal ${modalContainer}`;
 		var content = <div>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError" errorValue={this.state.values.jobName}></TextInput>
-						<ConfigButtons isFixed="false" includeCancel='true' onCancelClick={this.props.onModalClose} onClick={this.props.onModalClose} />
+						<ConfigButtons isFixed={false} includeCancel={true} includeSave={false} onCancelClick={this.props.onModalClose} />
 					</div>;
-		
+
 		var currentJobConfig = this.getCurrentJobConfig();
 		if (currentJobConfig != null) {
 			content = currentJobConfig;
@@ -110,12 +107,15 @@ export default class JobAddModal extends Component {
 			<div className={containerClasses}>
 				<div>
 					<label className={fieldLabel}>Type</label>
-					<Typeahead className={typeAheadField}
+					<Select
+							className={typeAheadField}
 							onChange={this.handleTypeChanged}
-						    clearButton
+						    clearble={true}
 						    options={this.state.typeOptions}
+                            optionRenderer={this.renderOption}
 						    placeholder='Choose the Job Type'
-						    selected={this.state.values.typeValues}
+						    value={this.state.values.typeValue}
+                            valueRenderer={this.renderOptions}
 						  />
 				</div>
 				{content}

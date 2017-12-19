@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -45,6 +46,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,6 +62,8 @@ public class DigestNotificationProcessorIT {
     @Autowired
     private ConfiguredProjectsRepository configuredProjectsRepository;
     @Autowired
+    private NotificationTypesActions<CommonDistributionConfigRestModel> notificationActions;
+    @Autowired
     private DigestNotificationProcessor processor;
 
     @After
@@ -66,6 +71,8 @@ public class DigestNotificationProcessorIT {
         commonDistributionRepository.deleteAll();
         distributionProjectRepository.deleteAll();
         configuredProjectsRepository.deleteAll();
+        notificationActions.getDistributionNotificationTypeRepository().deleteAll();
+        notificationActions.getNotificationTypeRepository().deleteAll();
     }
 
     @Test
@@ -74,14 +81,16 @@ public class DigestNotificationProcessorIT {
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
         final String frequency = "REAL_TIME";
-        final String notificationType = "POLICY";
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(), "POLICY_VIOLATION", projectName, "", "", "", "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person",
@@ -104,16 +113,18 @@ public class DigestNotificationProcessorIT {
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
         final String frequency = "REAL_TIME";
-        final String notificationType = "ALL";
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
         final String projectName = "Test Hub Project Name";
         final String projectVersionName = "Test Hub Project Version Name";
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
@@ -136,16 +147,18 @@ public class DigestNotificationProcessorIT {
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
         final String frequency = "REAL_TIME";
-        final String notificationType = "ALL";
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
         final String projectName = "Test Hub Project Name";
         final String projectVersionName = "Test Hub Project Version Name";
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, notificationType, filterByProject));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
+
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"));
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new LinkedList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",

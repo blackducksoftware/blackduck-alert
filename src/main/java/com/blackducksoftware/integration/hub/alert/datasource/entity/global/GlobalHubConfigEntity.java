@@ -45,25 +45,13 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     @Column(name = "hub_password")
     private String hubPassword;
 
-    @Column(name = "alert_accumulator_cron")
-    private String accumulatorCron;
-
-    @Column(name = "alert_digest_daily_cron")
-    private String dailyDigestCron;
-
-    @Column(name = "alert_purge_data_cron")
-    private String purgeDataCron;
-
     public GlobalHubConfigEntity() {
     }
 
-    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword) {
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
     }
 
     public static long getSerialversionuid() {
@@ -80,18 +68,6 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
 
     public String getHubPassword() {
         return hubPassword;
-    }
-
-    public String getAccumulatorCron() {
-        return accumulatorCron;
-    }
-
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public String getPurgeDataCron() {
-        return purgeDataCron;
     }
 
     @Override

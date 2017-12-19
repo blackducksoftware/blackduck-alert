@@ -81,12 +81,6 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         }
     }
 
-    @Override
-    public String testMessage(final SlackDistributionConfigEntity distributionConfig) throws IntegrationException {
-        final String message = "*Test* from _Alert_ application";
-        return sendMessage(message, distributionConfig);
-    }
-
     private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = config.getWebhook();
         final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
@@ -144,6 +138,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
                         messageBuilder.append("Component: _" + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
                         messageBuilder.append("_ [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
                     }
+                    messageBuilder.append(System.lineSeparator());
                 }
             }
         } else {

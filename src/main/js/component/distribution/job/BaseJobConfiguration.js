@@ -6,29 +6,28 @@ import {fieldLabel, typeAheadField} from '../../../../css/field.css';
 import TextInput from '../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 
-import 'react-bootstrap-typeahead/css/Typeahead.css';
-import {Typeahead} from 'react-bootstrap-typeahead';
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
 
 import ConfigButtons from '../../ConfigButtons'
 
 class BaseJobConfiguration extends Component {
 	constructor(props) {
 		super(props);
-
 		 this.state = {
-		 	values: [],
-		 	errors: [],
+		 	values: {},
+		 	errors: {},
             frequencyOptions: [
-				{ label: 'Real Time', id: 'REAL_TIME'},
-				{ label: 'Daily', id: 'DAILY' }
+				{ label: 'Real Time', value: 'REAL_TIME'},
+				{ label: 'Daily', value: 'DAILY' }
 			],
             notificationOptions: [
-				{ label: 'Policy Violation', id: 'POLICY_VIOLATION' },
-				{ label: 'Policy Violation Cleared', id: 'POLICY_VIOLATION_CLEARED'},
-				{ label: 'Policy Violation Override', id: 'POLICY_VIOLATION_OVERRIDE'},
-				{ label: 'High Vulnerability', id: 'HIGH_VULNERABILITY'},
-				{ label: 'Medium Vulnerability', id: 'MEDIUM_VULNERABILITY'},
-				{ label: 'Low Vulnerability', id: 'LOW_VULNERABILITY'}
+				{ label: 'Policy Violation', value: 'POLICY_VIOLATION' },
+				{ label: 'Policy Violation Cleared', value: 'POLICY_VIOLATION_CLEARED'},
+				{ label: 'Policy Violation Override', value: 'POLICY_VIOLATION_OVERRIDE'},
+				{ label: 'High Vulnerability', value: 'HIGH_VULNERABILITY'},
+				{ label: 'Medium Vulnerability', value: 'MEDIUM_VULNERABILITY'},
+				{ label: 'Low Vulnerability', value: 'LOW_VULNERABILITY'}
 			]
         }
         this.handleChange = this.handleChange.bind(this);
@@ -36,34 +35,198 @@ class BaseJobConfiguration extends Component {
         this.handleSetState = this.handleSetState.bind(this);
         this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
         this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
+        this.handleProjectChanged = this.handleProjectChanged.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTestSubmit = this.handleTestSubmit.bind(this);
 	}
+
     componentDidMount() {
-        this.initializeValues();
+        const { distributionConfigId } = this.props;
+        this.readDistributionJobConfiguration(distributionConfigId);
     }
 
-    initializeValues() {
-        const { jobName, frequency, notificationTypeArray, projects, selectedProjects } = this.props;
+    readDistributionJobConfiguration(distributionId) {
+        if(distributionId) {
+            let urlString = this.props.getUrl || this.props.baseUrl;
+            let getUrl = `${urlString}?id=${distributionId}`
+            let self = this;
+            fetch(getUrl,{
+    			credentials: "same-origin",
+                headers: {
+    				'Content-Type': 'application/json'
+    			}
+    		})
+    		.then(function(response) {
+    			if (response.ok) {
+                    response.json().then(jsonArray => {
+                        if(jsonArray && jsonArray.length > 0) {
+                            self.initializeValues(jsonArray[0]);
+                        } else {
+                            self.initializeValues(self.props);
+                        }
+                    });
+                } else {
+                    self.initializeValues(self.props);
+                }
+            });
+        } else {
+            this.initializeValues(this.props)
+        }
+    }
+
+    initializeValues(data) {
+        const { id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, projects, configuredProjects } = data;
         let values = this.state.values;
-        values.jobName = jobName;
-        let frequencyValue = this.state.frequencyOptions.find((option)=> {
-            return option.id === frequency;
+        values.id = id;
+        values.distributionConfigId = distributionConfigId;
+        values.name = name;
+        values.distributionType = distributionType;
+        let frequencyFound = this.state.frequencyOptions.find((option)=> {
+            return option.value === frequency;
         });
 
-        if(frequencyValue) {
-            values.frequencyValue = [frequencyValue];
+        if (frequencyFound) {
+            values.frequency = frequencyFound.value;
+        }
+        if (includeAllProjects) {
+        	values.includeAllProjects = includeAllProjects;
+        } else if (filterByProject) {
+        	values.includeAllProjects = (filterByProject == 'false');
+	    }
+        if (notificationTypes) {
+            values.notificationTypes  = notificationTypes;
         }
 
-        let notificationValueArray = this.state.notificationOptions.filter((option) => {
-            let includes = notificationTypeArray.includes(option.id);
-            return includes;
-        });
-
-        if(notificationValueArray) {
-            values.notificationValue  = notificationValueArray;
-        }
+        values.configuredProjects = configuredProjects;
 
         this.setState({values});
     }
+
+    async handleSubmit(event) {
+		this.setState({
+			configurationMessage: 'Saving...',
+			inProgress: true,
+			errors: {}
+		});
+		if (event) {
+			event.preventDefault();
+		}
+
+		var configuration = Object.assign({}, this.state.values);
+		configuration.filterByProject = !configuration.includeAllProjects;
+		configuration.includeAllProjects = null;
+		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+			configuration.notificationTypes = configuration.notificationTypes; 
+		} else {
+			configuration.notificationTypes = null;
+		}
+
+		var self = this;
+		let jsonBody = JSON.stringify(configuration);
+		var method = 'POST';
+		if (this.state.values.id) {
+			method = 'PUT';
+		}
+
+		return fetch(this.props.baseUrl, {
+			method: method,
+			credentials: "same-origin",
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonBody
+		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
+			if (response.ok) {
+				return response.json().then(json => {
+					var values = self.state.values;
+					values.id = json.id;
+					self.setState({
+						values,
+						configurationMessage: json.message
+					});
+				});
+			} else {
+				return response.json().then(json => {
+					let jsonErrors = json.errors;
+					if (jsonErrors) {
+						var errors = {};
+						for (var key in jsonErrors) {
+							if (jsonErrors.hasOwnProperty(key)) {
+								let name = key.concat('Error');
+								let value = jsonErrors[key];
+								errors[name] = value;
+							}
+						}
+						self.setState({
+							errors
+						});
+					}
+					self.setState({
+						configurationMessage: json.message
+					});
+				});
+			}
+		});
+	}
+
+	handleTestSubmit(event) {
+		this.setState({
+			configurationMessage: 'Testing...',
+			inProgress: true,
+			errors: {}
+		});
+
+		if (event) {
+			event.preventDefault();
+		}
+
+		var configuration = Object.assign({}, this.state.values);
+		configuration.filterByProject = !configuration.includeAllProjects;
+		configuration.includeAllProjects = null;
+		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+			configuration.notificationTypes = configuration.notificationTypes; 
+		} else {
+			configuration.notificationTypes = null;
+		}
+
+		var self = this;
+		let jsonBody = JSON.stringify(configuration);
+		fetch(this.props.testUrl, {
+			method: 'POST',
+			credentials: "same-origin",
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: jsonBody
+		}).then(function(response) {
+			self.setState({
+				inProgress: false
+			});
+			return response.json().then(json => {
+				let jsonErrors = json.errors;
+				if (jsonErrors) {
+					var errors = {};
+					for (var key in jsonErrors) {
+						if (jsonErrors.hasOwnProperty(key)) {
+							let name = key.concat('Error');
+							let value = jsonErrors[key];
+							errors[name] = value;
+						}
+					}
+					self.setState({
+						errors
+					});
+				}
+				self.setState({
+					configurationMessage: json.message
+				});
+			});
+		});
+	}
 
 	handleChange(event) {
 		const target = event.target;
@@ -80,52 +243,108 @@ class BaseJobConfiguration extends Component {
 		});
 	}
 
+	handleErrorValues(name, value) {
+		var errors = this.state.errors;
+		errors[name] = value;
+		this.setState({
+			errors
+		});
+	}
+
 	handleSetState(name, value) {
 		this.setState({
 			[name] : value
 		});
 	}
 
-	handleFrequencyChanged (optionsList) {
-		this.handleStateValues('frequencyValue', optionsList);
+	handleFrequencyChanged (option) {
+        if(option) {
+	        this.handleStateValues('frequency', option.value);
+        } else {
+            this.handleStateValues('frequency', option);
+        }
 	}
 
-	handleNotificationChanged (optionsList) {
-		this.handleStateValues('notificationValue', optionsList);
+	handleNotificationChanged (selectedValues) {
+		let selected = new Array();
+        if(selectedValues && selectedValues.length > 0) {
+            selected = selectedValues.map((item) => {
+                return item.value;
+            });
+        }
+        this.handleStateValues('notificationTypes', selected);
 	}
+
+    handleProjectChanged(selectedValues) {
+    	let selected = new Array();
+        if(selectedValues && selectedValues.length > 0) {
+            selected = selectedValues.map((item) => {
+                return item.value;
+            });
+        }
+        this.handleStateValues('configuredProjects', selected);
+    }
+
+    async onSubmit(event) {
+    	event.preventDefault();
+        const { handleSaveBtnClick, handleCancel } = this.props;
+
+        var jobName = null;
+		if (this.state.values && this.state.values.name) {
+			var trimmedName = this.state.values.name.trim();
+			if (trimmedName.length > 0) {
+				jobName = trimmedName;
+			}
+		}
+		if (!jobName) {
+			this.handleErrorValues('nameError', 'You must provide a Job name');
+		} else {
+			this.handleErrorValues('nameError', '');
+			await this.handleSubmit();
+			if (handleSaveBtnClick) {
+				handleSaveBtnClick(this.state.values);
+			} else if (handleCancel) {
+				handleCancel();
+			}
+		}
+    }
 
 	render(content) {
-		var buttonsFixed = this.props.buttonsFixed || "true";
+		var buttonsFixed = this.props.buttonsFixed || false;
 		return(
 			<div>
-				<form onSubmit={this.props.handleCancel}>
+				<form onSubmit={this.onSubmit}>
 					<div className={styles.contentBlock}>
-						<TextInput label="Job Name" name="jobName" value={this.state.values.jobName} onChange={this.handleChange} errorName="jobNameError"></TextInput>
-						{content}
+						<TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}></TextInput>
 						<div>
 							<label className={fieldLabel}>Frequency</label>
-							<Typeahead className={typeAheadField}
+							<Select className={typeAheadField}
 								onChange={this.handleFrequencyChanged}
-							    clearButton
+							    clearble={true}
+                                searchable={true}
 							    options={this.state.frequencyOptions}
 							    placeholder='Choose the frequency'
-							    selected={this.state.values.frequencyValue}
+							    value={this.state.values.frequency}
 							  />
 						</div>
 						<div>
 							<label className={fieldLabel}>Notification Types</label>
-							<Typeahead className={typeAheadField}
+							<Select className={typeAheadField}
 								onChange={this.handleNotificationChanged}
-							    clearButton
-							    multiple
+							    clearble={true}
+                                searchable={true}
+							    multi
+                                removeSelected={true}
 							    options={this.state.notificationOptions}
 							    placeholder='Choose the notification types'
-							    selected={this.state.values.notificationValue}
+							    value={this.state.values.notificationTypes}
 							  />
 						</div>
+						{content}
 					</div>
-					<ProjectConfiguration waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} selectedProjects={this.props.selectedProjects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons isFixed={buttonsFixed} includeCancel='true' onCancelClick={this.props.handleCancel}  type="submit" />
+					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
+					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} type="submit" />
+					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 			</div>
 		)
