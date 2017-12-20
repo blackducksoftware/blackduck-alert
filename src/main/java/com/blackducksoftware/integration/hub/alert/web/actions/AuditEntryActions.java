@@ -123,7 +123,7 @@ public class AuditEntryActions {
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
         final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
-        final String status = auditEntryEntity.getStatus();
+        final String status = auditEntryEntity.getStatus().getDisplayName();
 
         NotificationRestModel notificationRestModel = null;
         if (notificationEntity != null) {
@@ -140,7 +140,6 @@ public class AuditEntryActions {
             distributionConfigName = commonConfigEntity.getName();
             eventType = commonConfigEntity.getDistributionType();
         }
-
         return new AuditEntryRestModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, notificationRestModel);
     }
 
