@@ -22,7 +22,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public abstract class EntityTest<E extends DatabaseEntity> {
-    private final MockUtils<?, ?, E, ?> mockUtils;
+    protected final MockUtils<?, ?, E, ?> mockUtils;
     private final Class<E> entityClass;
 
     public EntityTest(final MockUtils<?, ?, E, ?> mockUtils, final Class<E> entityClass) {

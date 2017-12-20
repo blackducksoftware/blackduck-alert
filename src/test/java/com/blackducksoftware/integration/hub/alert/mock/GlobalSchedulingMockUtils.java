@@ -119,50 +119,50 @@ public class GlobalSchedulingMockUtils implements MockUtils<CommonDistributionCo
      */
 
     @Override
+    @Deprecated
     public String getEntityJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public String getEmptyEntityJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public CommonDistributionConfigRestModel createRestModel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public CommonDistributionConfigRestModel createEmptyRestModel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public DatabaseEntity createEntity() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public DatabaseEntity createEmptyEntity() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public String getRestModelJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
+    @Deprecated
     public String getEmptyRestModelJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 

@@ -14,12 +14,12 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.distributi
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
+    // TODO create an abstract method to set MockUtils to avoid static
     public HipChatConfigEntityTest() {
         super(mockUtils, HipChatDistributionConfigEntity.class);
     }
