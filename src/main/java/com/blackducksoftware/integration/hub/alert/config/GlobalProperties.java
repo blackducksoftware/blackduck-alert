@@ -22,8 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +43,7 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -72,27 +77,61 @@ public class GlobalProperties {
     }
 
     public String getHubUrl() {
+        try {
+            final URL extensionUrl = new URL(hubUrl);
+            if (extensionUrl.getHost().equals("localhost")) {
+                final String hostName = Optional.ofNullable(System.getenv("PUBLIC_HUB_WEBSERVER_HOST")).orElseGet(() -> HostnameHelper.getMyHostname());
+                final URL url = new URL(extensionUrl.getProtocol(), hostName, extensionUrl.getPort(), extensionUrl.getFile());
+                return url.toString();
+            }
+        } catch (final MalformedURLException e) {
+            return hubUrl;
+        }
         return hubUrl;
     }
 
     public Boolean getHubTrustCertificate() {
+        final String alwaysTrust = System.getenv("HUB_ALWAYS_TRUST_SERVER_CERTIFICATE");
+        if (StringUtils.isNotBlank(alwaysTrust)) {
+            return Boolean.parseBoolean(alwaysTrust);
+        }
         return hubTrustCertificate;
     }
 
     public String getHubProxyHost() {
-        return hubProxyHost;
+        final String proxyHost = System.getenv("HUB_PROXY_HOST");
+        if (StringUtils.isEmpty(proxyHost)) {
+            return hubProxyHost;
+        } else {
+            return proxyHost;
+        }
     }
 
     public String getHubProxyPort() {
-        return hubProxyPort;
+        final String proxyPort = System.getenv("HUB_PROXY_PORT");
+        if (StringUtils.isEmpty(proxyPort)) {
+            return hubProxyPort;
+        } else {
+            return proxyPort;
+        }
     }
 
     public String getHubProxyUsername() {
-        return hubProxyUsername;
+        final String proxyUser = System.getenv("HUB_PROXY_USER");
+        if (StringUtils.isEmpty(proxyUser)) {
+            return hubProxyUsername;
+        } else {
+            return proxyUser;
+        }
     }
 
     public String getHubProxyPassword() {
-        return hubProxyPassword;
+        final String proxyPassword = System.getenv("HUB_PROXY_PASSWORD");
+        if (StringUtils.isEmpty(proxyPassword)) {
+            return hubProxyPassword;
+        } else {
+            return proxyPassword;
+        }
     }
 
     public void setHubUrl(final String hubUrl) {

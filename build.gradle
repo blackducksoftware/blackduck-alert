@@ -33,8 +33,7 @@ description = ''
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 applicationDefaultJvmArgs = [
-    '-DAPP_HOME=APP_HOME_VAR_TOKEN',
-    '--spring.config.location=file:/blackduck-alert-config-defaults'
+    '-DAPP_HOME=APP_HOME_VAR_TOKEN'
 ]
 
 sourceCompatibility = 1.8
@@ -59,11 +58,11 @@ dependencies {
     compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
     compile 'org.springframework.security:spring-security-config:4.2.3.RELEASE'
     runtime 'com.h2database:h2'
-    
+
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'javax.mail:mail:1.4.7'
     compile 'org.freemarker:freemarker:2.3.25-incubating'
-    
+
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
     compile 'org.apache.activemq:activemq-kahadb-store:5.14.5'
@@ -87,8 +86,8 @@ jar {
 
 startScripts {
     doLast {
-        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
-        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
+        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-defaults ")
+        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/blackduck-alert-config-defaults ")
         unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
         windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
     }
@@ -122,9 +121,9 @@ task webpack(type: Exec) {
         inputs.file("package-lock.json")
         inputs.file("webpack.config.js")
         inputs.dir("$projectDir/src/main")
-    
+
         outputs.dir("$projectDir/src/main/resources/static/built/bundle.js")
-    
+
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
@@ -146,7 +145,7 @@ tasks.licenseMain.dependsOn(licenseFormatMain)
 task runServer(type: Exec, dependsOn: [build]) {
     File jarFile = new File("build/libs/hub-alert-${version}.jar")
     commandLine 'java', '-jar', jarFile.getAbsolutePath()
-    
+
 }
 
 task stageDocker(type:Copy, dependsOn: [build]) {
@@ -175,4 +174,3 @@ task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
 }
 
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {}
-
