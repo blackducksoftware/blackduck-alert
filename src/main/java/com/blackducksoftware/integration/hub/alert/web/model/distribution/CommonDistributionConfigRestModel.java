@@ -39,6 +39,8 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private String filterByProject;
     private List<String> configuredProjects;
     private List<String> notificationTypes;
+    private String lastRan;
+    private String status;
 
     public CommonDistributionConfigRestModel() {
     }
@@ -97,6 +99,22 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     public void setNotificationTypes(final List<String> notificationTypes) {
         this.notificationTypes = notificationTypes;
+    }
+
+    public String getLastRan() {
+        return lastRan;
+    }
+
+    public void setLastRan(final String lastRan) {
+        this.lastRan = lastRan;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
     }
 
     @Override
