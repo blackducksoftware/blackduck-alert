@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import { progressIcon } from '../../../css/main.css';
 import tableStyles from '../../../css/table.css';
 
 import EditTableCellFormatter from '../EditTableCellFormatter';
@@ -54,7 +55,58 @@ class Audit extends Component {
 		});
     }
 
+    componentWillMount() {
+		this.setState({
+			message: 'Loading...',
+			inProgress: true
+		});
+	}
+
 	componentDidMount() {
+		var self = this;
+		fetch('/audit',{
+			credentials: "same-origin"
+		})
+		.then(function(response) {
+			self.handleSetState('inProgress', false);
+			self.handleSetState('waitingForProjects', false);
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('message', json.message);
+				});
+			} else {
+				return response.json().then(jsonArray => {
+					self.handleSetState('message', '');
+					if (jsonArray != null && jsonArray.length > 0) {
+						var projects = [];
+						for (var index in jsonArray) {
+							var newProject = {};
+							newProject.id = jsonArray[index].id;
+				            newProject.jobName = jsonArray[index].name;
+				            newProject.eventType = jsonArray[index].eventType;
+				            newProject.timeCreated = jsonArray[index].timeCreated;
+				            newProject.timeLastSent = jsonArray[index].timeLastSent;
+				            newProject.status =  jsonArray[index].status;
+				            newProject.errorMessage =  jsonArray[index].errorMessage;
+				            newProject.errorStackTrace = jsonArray[index].errorStackTrace;
+							if (jsonArray[index].notification) {
+					            newProject.notificationType = jsonArray[index].notification.notificationType;
+					            newProject.notificationProjectName = jsonArray[index].notification.projectName;
+								newProject.notificationProjectVersion = jsonArray[index].notification.projectVersion;
+								newProject.notificationComponentName = jsonArray[index].notification.componentName;
+								newProject.notificationComponentVersion = jsonArray[index].notification.componentVersion;
+								newProject.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
+							}
+							projects.push(newProject);
+						}
+						self.setState({
+							projects
+						});
+					}
+				});
+			}
+		});
+
 		this.addDefaultEntries();
 	}
 
@@ -136,6 +188,13 @@ class Audit extends Component {
 	  		expandBy : 'column',
 	  		expandRowBgColor: '#e8e8e8'
 		};
+		var progressIndicator = null;
+        if (this.state.inProgress) {
+            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
+            progressIndicator = <div className={progressIcon}>
+                                    <i className={fontAwesomeIcon} aria-hidden='true'></i>
+                                </div>;
+        }
 		return (
 				<div>
 					<div>
@@ -149,6 +208,7 @@ class Audit extends Component {
 	      					<TableHeaderColumn dataField='status' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
 	                        <TableHeaderColumn dataField='' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
+	  					{progressIndicator}
 	  					<p name="message">{this.state.message}</p>
   					</div>
 				</div>
