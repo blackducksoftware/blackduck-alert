@@ -63,11 +63,11 @@ public class EmailChannelTestIT extends RestChannelTest {
         final ProjectData projectData = projectDataBuilder.build();
 
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, null);
-        globalProperties.hubUrl = properties.getProperty("blackduck.hub.url");
+        globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
 
         final String trustCert = properties.getProperty("blackduck.hub.trust.cert");
         if (trustCert != null) {
-            globalProperties.hubTrustCertificate = Boolean.valueOf(trustCert);
+            globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
         final Gson gson = new Gson();

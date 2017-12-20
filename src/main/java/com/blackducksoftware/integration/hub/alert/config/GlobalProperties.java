@@ -48,27 +48,75 @@ public class GlobalProperties {
     private final GlobalSchedulingRepository globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
-    public String hubUrl;
+    private String hubUrl;
 
     @Value("${blackduck.hub.trust.cert:}")
-    public Boolean hubTrustCertificate;
+    private Boolean hubTrustCertificate;
 
     @Value("${blackduck.hub.proxy.host:}")
-    public String hubProxyHost;
+    private String hubProxyHost;
 
     @Value("${blackduck.hub.proxy.port:}")
-    public String hubProxyPort;
+    private String hubProxyPort;
 
     @Value("${blackduck.hub.proxy.username:}")
-    public String hubProxyUsername;
+    private String hubProxyUsername;
 
     @Value("${blackduck.hub.proxy.password:}")
-    public String hubProxyPassword;
+    private String hubProxyPassword;
 
     @Autowired
     public GlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
         this.globalHubRepository = globalRepository;
         this.globalSchedulingRepository = globalSchedulingRepository;
+    }
+
+    public String getHubUrl() {
+        return hubUrl;
+    }
+
+    public Boolean getHubTrustCertificate() {
+        return hubTrustCertificate;
+    }
+
+    public String getHubProxyHost() {
+        return hubProxyHost;
+    }
+
+    public String getHubProxyPort() {
+        return hubProxyPort;
+    }
+
+    public String getHubProxyUsername() {
+        return hubProxyUsername;
+    }
+
+    public String getHubProxyPassword() {
+        return hubProxyPassword;
+    }
+
+    public void setHubUrl(final String hubUrl) {
+        this.hubUrl = hubUrl;
+    }
+
+    public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
+        this.hubTrustCertificate = hubTrustCertificate;
+    }
+
+    public void setHubProxyHost(final String hubProxyHost) {
+        this.hubProxyHost = hubProxyHost;
+    }
+
+    public void setHubProxyPort(final String hubProxyPort) {
+        this.hubProxyPort = hubProxyPort;
+    }
+
+    public void setHubProxyUsername(final String hubProxyUsername) {
+        this.hubProxyUsername = hubProxyUsername;
+    }
+
+    public void setHubProxyPassword(final String hubProxyPassword) {
+        this.hubProxyPassword = hubProxyPassword;
     }
 
     public GlobalHubConfigEntity getConfig(final Long id) {
@@ -125,15 +173,15 @@ public class GlobalProperties {
         final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-            hubServerConfigBuilder.setHubUrl(hubUrl);
+            hubServerConfigBuilder.setHubUrl(getHubUrl());
             hubServerConfigBuilder.setTimeout(globalConfigEntity.getHubTimeout());
             hubServerConfigBuilder.setUsername(globalConfigEntity.getHubUsername());
             hubServerConfigBuilder.setPassword(globalConfigEntity.getHubPassword());
 
-            hubServerConfigBuilder.setProxyHost(hubProxyHost);
-            hubServerConfigBuilder.setProxyPort(hubProxyPort);
-            hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
-            hubServerConfigBuilder.setProxyPassword(hubProxyPassword);
+            hubServerConfigBuilder.setProxyHost(getHubProxyHost());
+            hubServerConfigBuilder.setProxyPort(getHubProxyPort());
+            hubServerConfigBuilder.setProxyUsername(getHubProxyUsername());
+            hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
 
             if (hubTrustCertificate != null) {
                 hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);

@@ -116,7 +116,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, getGlobalConfigEntity().getEmailSubjectLine());
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getDisplayName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.hubUrl));
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 
