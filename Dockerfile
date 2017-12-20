@@ -19,12 +19,14 @@ ADD "build/distributions/hub-alert-$VERSION.tar" /blackduck-alert-tar/
 # Override the default logger settings to match other Hub containers
 
 RUN mkdir -p /blackduck-alert-config-defaults
+RUN chown -R hubalert:hubalert /blackduck-alert-config-defaults/
 
 VOLUME [ "/blackduck-alert-config-volume/" ]
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
 # easily accessible location that the entrypoint can always find and copy data from.
 RUN cp -r /blackduck-alert-tar/blackduck-alert-config-defaults/* /blackduck-alert-config-defaults/
+
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
