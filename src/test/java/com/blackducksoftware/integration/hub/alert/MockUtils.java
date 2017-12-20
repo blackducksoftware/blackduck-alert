@@ -24,7 +24,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
@@ -122,7 +121,7 @@ public class MockUtils {
     }
 
     public CommonDistributionConfigEntity createCommonDistributionConfigEntity() {
-        return new CommonDistributionConfigEntity(null, SupportedChannels.HIPCHAT, "Job Name", "REAL_TIME", Boolean.FALSE, new Date(), StatusEnum.SUCCESS);
+        return new CommonDistributionConfigEntity(null, SupportedChannels.HIPCHAT, "Job Name", "REAL_TIME", Boolean.FALSE);
     }
 
     public NotificationEntity createNotificationEntity() {
