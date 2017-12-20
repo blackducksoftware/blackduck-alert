@@ -30,6 +30,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+
 @Entity
 @Table(schema = "alert", name = "audit_entries")
 public class AuditEntryEntity extends DatabaseEntity {
@@ -50,7 +52,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private Date timeLastSent;
 
     @Column(name = "status")
-    private String status;
+    private StatusEnum status;
 
     @Column(name = "error_message")
     private String errorMessage;
@@ -62,7 +64,7 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     }
 
-    public AuditEntryEntity(final Long notificationId, final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
+    public AuditEntryEntity(final Long notificationId, final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace) {
         this.notificationId = notificationId;
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
@@ -92,7 +94,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return timeLastSent;
     }
 
-    public String getStatus() {
+    public StatusEnum getStatus() {
         return status;
     }
 

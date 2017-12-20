@@ -45,7 +45,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -85,14 +84,12 @@ public class DigestNotificationProcessorIT {
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
-        final Date lastRan = new Date();
-        final StatusEnum status = StatusEnum.FAILURE;
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject, lastRan, status));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"), lastRan, status);
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
@@ -121,14 +118,12 @@ public class DigestNotificationProcessorIT {
         final String eventKey = "event_key";
         final String projectName = "Test Hub Project Name";
         final String projectVersionName = "Test Hub Project Version Name";
-        final Date lastRan = new Date();
-        final StatusEnum status = StatusEnum.FAILURE;
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject, lastRan, status));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"), lastRan, status);
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
@@ -157,14 +152,12 @@ public class DigestNotificationProcessorIT {
         final String eventKey = "event_key";
         final String projectName = "Test Hub Project Name";
         final String projectVersionName = "Test Hub Project Version Name";
-        final Date lastRan = new Date();
-        final StatusEnum status = StatusEnum.FAILURE;
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject, lastRan, status));
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = commonDistributionRepository.save(new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject));
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"), lastRan, status);
+        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new LinkedList<>();

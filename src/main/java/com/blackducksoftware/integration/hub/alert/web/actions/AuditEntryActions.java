@@ -123,7 +123,8 @@ public class AuditEntryActions {
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
         final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
-        final String status = auditEntryEntity.getStatus();
+
+        final String status = auditEntryEntity.getStatus().getDisplayName();
         final String errorMessage = auditEntryEntity.getErrorMessage();
         final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
