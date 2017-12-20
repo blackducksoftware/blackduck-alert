@@ -24,6 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.util.Collection;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 
 public class NotificationRestModel extends ConfigRestModel {
@@ -112,6 +115,12 @@ public class NotificationRestModel extends ConfigRestModel {
 
     public Collection<VulnerabilityEntity> getVulnerabilityList() {
         return vulnerabilityList;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.build();
     }
 
 }
