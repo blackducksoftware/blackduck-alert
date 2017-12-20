@@ -38,12 +38,12 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     }
 
     @Override
-    public GlobalSchedulingConfigActions getConfigActions() {
-        return createConfigActionsWithSpecificObjectTransformer(new ObjectTransformer());
+    public GlobalSchedulingConfigActions getMockedConfigActions() {
+        return createMockedConfigActionsUsingObjectTransformer(new ObjectTransformer());
     }
 
     @Override
-    public GlobalSchedulingConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public GlobalSchedulingConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final AccumulatorConfig mockedAccumulatorConfig = Mockito.mock(AccumulatorConfig.class);
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);

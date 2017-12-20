@@ -18,7 +18,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-//TODO Use the new CommonDatabaseEntity instead of DatabaseEntity
+//TODO Use the new CommonDatabaseEntity instead of DatabaseEntity. Will need to create a new MockUtils for channels specifically and another for all other DB items
 public interface MockUtils<R extends CommonDistributionConfigRestModel, GR extends ConfigRestModel, E extends DatabaseEntity, GE extends DatabaseEntity> {
 
     public GR createGlobalRestModel();

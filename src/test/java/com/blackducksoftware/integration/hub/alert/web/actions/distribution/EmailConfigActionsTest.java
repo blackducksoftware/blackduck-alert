@@ -35,8 +35,8 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
     }
 
     @Override
-    public EmailGroupDistributionConfigActions getConfigActions() {
-        return createConfigActionsWithSpecificObjectTransformer(new ObjectTransformer());
+    public EmailGroupDistributionConfigActions getMockedConfigActions() {
+        return createMockedConfigActionsUsingObjectTransformer(new ObjectTransformer());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
     }
 
     @Override
-    public EmailGroupDistributionConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public EmailGroupDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final EmailGroupManager emailManager = Mockito.mock(EmailGroupManager.class);
         final EmailGroupDistributionRepository mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
