@@ -24,9 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
@@ -103,6 +104,9 @@ public class ObjectTransformer {
                         } else if (Date.class == field.getType()) {
                             final Date oldField = (Date) field.get(databaseEntity);
                             newField.set(newClassObject, objectToString(oldField));
+                        } else if (StatusEnum.class == field.getType()) {
+                            final StatusEnum oldField = (StatusEnum) field.get(databaseEntity);
+                            newField.set(newClassObject, statusEnumToString(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName, field.getName(),
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
@@ -176,6 +180,8 @@ public class ObjectTransformer {
                             newField.set(newClassObject, stringToBoolean(oldField));
                         } else if (Date.class == field.getType()) {
                             newField.set(newClassObject, stringToDate(oldField));
+                        } else if (StatusEnum.class == field.getType()) {
+                            newField.set(newClassObject, stringToStatusEnum(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
@@ -229,16 +235,29 @@ public class ObjectTransformer {
         return null;
     }
 
-    @SuppressWarnings("deprecation")
     public Date stringToDate(final String value) {
         if (value != null) {
             final String trimmedValue = value.trim();
             try {
-                return new Date(trimmedValue);
+                return Date.valueOf(trimmedValue);
             } catch (final Exception e) {
             }
         }
         return null;
+    }
+
+    public StatusEnum stringToStatusEnum(final String value) {
+        if (value != null) {
+            try {
+                return StatusEnum.getStatusEnumFromString(value);
+            } catch (final IllegalArgumentException e) {
+            }
+        }
+        return StatusEnum.FAILURE;
+    }
+
+    public String statusEnumToString(final StatusEnum statusEnum) {
+        return statusEnum.getDisplayName();
     }
 
     public String objectToString(final Object value) {
