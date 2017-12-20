@@ -133,7 +133,7 @@ public class AuditEntryHandler extends ControllerHandler {
             try {
                 notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notificationEntity, NotificationRestModel.class);
             } catch (final AlertException e) {
-                logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e);
+                logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
             }
         }
 

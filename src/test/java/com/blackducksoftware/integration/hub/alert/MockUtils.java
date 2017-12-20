@@ -11,7 +11,13 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import java.util.Collections;
+import java.util.Date;
+
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
@@ -112,6 +118,15 @@ public class MockUtils {
         final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity("ApiKey");
         configEntity.setId(1L);
         return configEntity;
+    }
+
+    public CommonDistributionConfigEntity createCommonDistributionConfigEntity() {
+        return new CommonDistributionConfigEntity(null, SupportedChannels.HIPCHAT, "Job Name", "REAL_TIME", Boolean.FALSE);
+    }
+
+    public NotificationEntity createNotificationEntity() {
+        return new NotificationEntity("_event_key_", new Date(), "POLICY_VIOLATION", "Test Project Name", "", "Test Project Version Name", "", "Component Name", "Component Version Name", "Policy Rule Name", "Person",
+                Collections.emptyList());
     }
 
 }
