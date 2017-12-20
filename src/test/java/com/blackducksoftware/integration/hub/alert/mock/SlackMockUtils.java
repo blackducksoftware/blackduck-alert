@@ -156,28 +156,24 @@ public class SlackMockUtils extends DistributionMockUtils implements MockUtils<S
     @Override
     @Deprecated
     public ConfigRestModel createGlobalRestModel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     @Deprecated
     public ConfigRestModel createEmptyGlobalRestModel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     @Deprecated
     public String getGlobalRestModelJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     @Deprecated
     public String getEmptyGlobalRestModelJson() {
-        // TODO Auto-generated method stub
         return null;
     }
 

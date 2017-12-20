@@ -168,6 +168,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     public abstract Class<E> getConfigEntityClass();
 
+    // TODO change name to createMocked
     public abstract DCA createConfigActionsWithSpecificObjectTransformer(ObjectTransformer objectTransformer);
 
     @Test

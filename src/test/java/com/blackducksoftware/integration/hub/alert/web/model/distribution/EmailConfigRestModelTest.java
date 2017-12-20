@@ -21,7 +21,6 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
 
     public EmailConfigRestModelTest() {
         super(mockUtils, EmailGroupDistributionRestModel.class);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

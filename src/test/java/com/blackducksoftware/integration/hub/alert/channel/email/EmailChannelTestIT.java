@@ -13,7 +13,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.google.gson.Gson;
 
 public class EmailChannelTestIT extends ChannelTest {
 
@@ -32,9 +31,8 @@ public class EmailChannelTestIT extends ChannelTest {
             globalProperties.hubTrustCertificate = Boolean.valueOf(trustCert);
         }
 
-        final Gson gson = new Gson();
         EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, null, null, null);
-        final ProjectData projectData = super.createProjectData("Manual test project");
+        final ProjectData projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, null);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
