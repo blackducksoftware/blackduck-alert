@@ -13,6 +13,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +32,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -46,7 +50,9 @@ public class CommonDistributionRepositoryTestIT {
         final String name = "My Config";
         final String frequency = "DAILY";
         final Boolean filterByProject = Boolean.TRUE;
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject);
+        final Date lastRan = null;
+        final StatusEnum status = StatusEnum.SUCCESS;
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject, lastRan, status);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);
 
         assertEquals(1, commonDistributionRepository.count());
@@ -56,5 +62,7 @@ public class CommonDistributionRepositoryTestIT {
         assertEquals(name, savedEntity.getName());
         assertEquals(frequency, savedEntity.getFrequency());
         assertEquals(filterByProject, savedEntity.getFilterByProject());
+        assertNull(savedEntity.getLastRan());
+        assertEquals(status, StatusEnum.SUCCESS);
     }
 }
