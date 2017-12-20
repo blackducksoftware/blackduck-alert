@@ -52,16 +52,24 @@ public class AuditEntryEntity extends DatabaseEntity {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "error_message")
+    private String errorMessage;
+
+    @Column(name = "error_stack_trace")
+    private String errorStackTrace;
+
     public AuditEntryEntity() {
 
     }
 
-    public AuditEntryEntity(final Long notificationId, final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final String status) {
+    public AuditEntryEntity(final Long notificationId, final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
         this.notificationId = notificationId;
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
         this.status = status;
+        this.errorMessage = errorMessage;
+        this.errorStackTrace = errorStackTrace;
     }
 
     public static long getSerialversionuid() {
@@ -86,6 +94,14 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public String getErrorStackTrace() {
+        return errorStackTrace;
     }
 
 }
