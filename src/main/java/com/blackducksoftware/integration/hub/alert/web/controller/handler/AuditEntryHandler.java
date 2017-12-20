@@ -126,7 +126,7 @@ public class AuditEntryHandler extends ControllerHandler {
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
         final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
-        final String status = auditEntryEntity.getStatus();
+        final String status = auditEntryEntity.getStatus().name();
 
         NotificationRestModel notificationRestModel = null;
         if (notificationEntity != null) {
