@@ -45,11 +45,12 @@ class LoginPage extends Configuration {
 			} else {
 				return response.json().then(json => {
 					var message = json.message;
+					var fieldErrors = {};
+					var showAdvanced = self.state.advancedShown;
 					try {
 						var jsonArray = JSON.parse(message);
 						let responseErrors = jsonArray['errors'];
 						if (responseErrors) {
-							var fieldErrors = {};
 							for (var key in responseErrors) {
 								if (responseErrors.hasOwnProperty(key)) {
 									let name = key.concat('Error');
@@ -57,15 +58,19 @@ class LoginPage extends Configuration {
 									fieldErrors[name] = value;
 								}
 							}
-							self.setState({
-								errors: fieldErrors
-							});
+						}
+						if (fieldErrors.hubTimeoutError || fieldErrors.hubAlwaysTrustCertificateError  || fieldErrors.hubProxyHostError  || fieldErrors.hubProxyPortError || fieldErrors.hubProxyUsernameError) {
+							showAdvanced = true;
 						}
 						message = jsonArray['message']
 					} catch (e) {
 						// ignore exception
 					}
+
+
 					self.setState({
+						advancedShown : showAdvanced,
+						errors: fieldErrors,
 						configurationMessage: message
 					});
 				});
