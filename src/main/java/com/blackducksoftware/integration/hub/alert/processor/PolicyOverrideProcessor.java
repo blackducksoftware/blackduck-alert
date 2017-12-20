@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
@@ -36,11 +35,12 @@ import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.processor.SubProcessorCache;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.log.IntLogger;
 
 public class PolicyOverrideProcessor extends PolicyViolationProcessor {
 
-    public PolicyOverrideProcessor(final SubProcessorCache cache, final MetaService metaService) {
-        super(cache, metaService);
+    public PolicyOverrideProcessor(final SubProcessorCache cache, final IntLogger intLogger) {
+        super(cache, intLogger);
     }
 
     @Override

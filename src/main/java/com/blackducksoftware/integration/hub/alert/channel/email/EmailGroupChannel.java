@@ -50,7 +50,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.api.group.GroupRequestService;
+import com.blackducksoftware.integration.hub.api.group.GroupService;
 import com.blackducksoftware.integration.hub.model.view.UserGroupView;
 import com.blackducksoftware.integration.hub.model.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -83,7 +83,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
             final String hubGroupName = emailConfigEntity.getGroupName();
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-                final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupRequestService(), hubGroupName);
+                final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupService(), hubGroupName);
                 sendMessage(emailAddresses, emailEvent);
             } catch (final IntegrationException e) {
                 logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);
@@ -119,9 +119,9 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         }
     }
 
-    private List<String> getEmailAddressesForGroup(final GroupRequestService groupRequestService, final String hubGroup) throws AlertException {
+    private List<String> getEmailAddressesForGroup(final GroupService groupService, final String hubGroup) throws AlertException {
         try {
-            final List<UserGroupView> groups = groupRequestService.getAllGroups();
+            final List<UserGroupView> groups = groupService.getAllGroups();
 
             UserGroupView userGroupView = null;
             for (final UserGroupView group : groups) {
@@ -129,15 +129,15 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                     userGroupView = group;
                 }
             }
-            return getEmailAddressesForGroup(groupRequestService, userGroupView);
+            return getEmailAddressesForGroup(groupService, userGroupView);
         } catch (final IntegrationException e) {
             throw new AlertException(e);
         }
     }
 
-    private List<String> getEmailAddressesForGroup(final GroupRequestService groupRequestService, final UserGroupView group) throws AlertException {
+    private List<String> getEmailAddressesForGroup(final GroupService groupService, final UserGroupView group) throws AlertException {
         try {
-            final List<UserView> users = groupRequestService.getAllUsersForGroup(group);
+            final List<UserView> users = groupService.getAllUsersForGroup(group);
             return users.stream().map(user -> user.email).collect(Collectors.toList());
         } catch (final IntegrationException e) {
             throw new AlertException(e);
