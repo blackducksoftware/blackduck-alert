@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
-import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentRequestService;
-import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
+import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentService;
+import com.blackducksoftware.integration.hub.api.project.ProjectService;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.model.view.AssignedUserView;
@@ -45,10 +45,10 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 
 public class UserNotificationCache extends MapProcessorCache {
     private final Logger logger = LoggerFactory.getLogger(UserNotificationCache.class);
-    private final ProjectRequestService projectRequestService;
-    private final ProjectAssignmentRequestService projectAssignmentRequestService;
+    private final ProjectService projectRequestService;
+    private final ProjectAssignmentService projectAssignmentRequestService;
 
-    public UserNotificationCache(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignmentRequestService) {
+    public UserNotificationCache(final ProjectService projectRequestService, final ProjectAssignmentService projectAssignmentRequestService) {
         this.projectRequestService = projectRequestService;
         this.projectAssignmentRequestService = projectAssignmentRequestService;
     }
@@ -81,7 +81,7 @@ public class UserNotificationCache extends MapProcessorCache {
     private List<String> getUserNames(final String projectLink) {
         final List<String> userNameList = new ArrayList<>();
         try {
-            final ProjectView projectView = projectRequestService.getItem(projectLink, ProjectView.class);
+            final ProjectView projectView = projectRequestService.getView(projectLink, ProjectView.class);
             final List<AssignedUserView> assignedUserList = projectAssignmentRequestService.getProjectUsers(projectView);
             if (!assignedUserList.isEmpty()) {
                 assignedUserList.forEach(assignedUser -> {

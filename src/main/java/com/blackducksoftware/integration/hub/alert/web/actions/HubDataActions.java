@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.api.group.GroupRequestService;
-import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
+import com.blackducksoftware.integration.hub.api.group.GroupService;
+import com.blackducksoftware.integration.hub.api.project.ProjectService;
 import com.blackducksoftware.integration.hub.model.HubGroup;
 import com.blackducksoftware.integration.hub.model.HubProject;
 import com.blackducksoftware.integration.hub.model.view.ProjectView;
@@ -54,8 +54,8 @@ public class HubDataActions {
     public List<HubGroup> getHubGroups() throws IntegrationException {
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
         if (hubServicesFactory != null) {
-            final GroupRequestService groupRequestService = hubServicesFactory.createGroupRequestService();
-            final List<UserGroupView> rawGroups = groupRequestService.getAllGroups();
+            final GroupService groupService = hubServicesFactory.createGroupService();
+            final List<UserGroupView> rawGroups = groupService.getAllGroups();
 
             final List<HubGroup> groups = new ArrayList<>();
             for (final UserGroupView userGroupView : rawGroups) {
@@ -74,7 +74,7 @@ public class HubDataActions {
     public List<HubProject> getHubProjects() throws IntegrationException {
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
         if (hubServicesFactory != null) {
-            final ProjectRequestService projectRequestService = hubServicesFactory.createProjectRequestService();
+            final ProjectService projectRequestService = hubServicesFactory.createProjectService();
             final List<ProjectView> rawProjects = projectRequestService.getAllProjects();
 
             final List<HubProject> projects = new ArrayList<>();
