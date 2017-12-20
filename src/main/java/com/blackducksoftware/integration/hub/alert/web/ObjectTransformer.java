@@ -26,6 +26,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +100,9 @@ public class ObjectTransformer {
                         } else if (Boolean.class == field.getType()) {
                             final Boolean oldField = (Boolean) field.get(databaseEntity);
                             newField.set(newClassObject, objectToString(oldField));
+                        } else if (Date.class == field.getType()) {
+                            final Date oldField = (Date) field.get(databaseEntity);
+                            newField.set(newClassObject, objectToString(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName, field.getName(),
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
@@ -170,6 +174,8 @@ public class ObjectTransformer {
                             newField.set(newClassObject, stringToLong(oldField));
                         } else if (Boolean.class == newField.getType()) {
                             newField.set(newClassObject, stringToBoolean(oldField));
+                        } else if (Date.class == field.getType()) {
+                            newField.set(newClassObject, stringToDate(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
                                     field.getType().getSimpleName(), newField.getType().getSimpleName()));
@@ -218,6 +224,18 @@ public class ObjectTransformer {
                 return false;
             } else if (trimmedValue.equalsIgnoreCase("true")) {
                 return true;
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
+    public Date stringToDate(final String value) {
+        if (value != null) {
+            final String trimmedValue = value.trim();
+            try {
+                return new Date(trimmedValue);
+            } catch (final Exception e) {
             }
         }
         return null;

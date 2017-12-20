@@ -22,12 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import java.util.Collection;
-
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
-import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 
 public class NotificationRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -715566918536523106L;
@@ -43,13 +39,12 @@ public class NotificationRestModel extends ConfigRestModel {
     private String person;
     private String projectUrl;
     private String projectVersionUrl;
-    private Collection<VulnerabilityEntity> vulnerabilityList;
 
     public NotificationRestModel() {
     }
 
     public NotificationRestModel(final String id, final String eventKey, final String createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl, final Collection<VulnerabilityEntity> vulnerabilityList) {
+            final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl) {
         super(id);
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -62,7 +57,6 @@ public class NotificationRestModel extends ConfigRestModel {
         this.person = person;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
-        this.vulnerabilityList = vulnerabilityList;
     }
 
     public static long getSerialversionuid() {
@@ -111,10 +105,6 @@ public class NotificationRestModel extends ConfigRestModel {
 
     public String getProjectVersionUrl() {
         return projectVersionUrl;
-    }
-
-    public Collection<VulnerabilityEntity> getVulnerabilityList() {
-        return vulnerabilityList;
     }
 
     @Override
