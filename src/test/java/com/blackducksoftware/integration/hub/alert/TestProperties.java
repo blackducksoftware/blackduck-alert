@@ -18,21 +18,33 @@ import org.junit.Assume;
 public class TestProperties {
     private final ResourceLoader resourceLoader;
     private Properties properties;
+    private String propertiesLocation;
 
     public TestProperties() {
         resourceLoader = new ResourceLoader();
+        this.propertiesLocation = ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
+    }
+
+    public TestProperties(final String propertiesLocation) {
+        resourceLoader = new ResourceLoader();
+        this.propertiesLocation = propertiesLocation;
+    }
+
+    public void setPropertiesLocation(final String newPropertiesLocation) {
+        properties = null;
+        propertiesLocation = newPropertiesLocation;
     }
 
     public Properties getProperties() {
         if (properties == null) {
             try {
                 // TODO add additional locations to check for properties
-                properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
+                properties = resourceLoader.loadProperties(propertiesLocation);
                 if (properties.isEmpty()) {
                     populatePropertiesFromEnv();
                 }
             } catch (final Exception ex) {
-                System.out.println("Couldn't load " + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION + " file!");
+                System.out.println("Couldn't load " + propertiesLocation + " file!");
             }
         }
 
