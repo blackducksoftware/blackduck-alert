@@ -71,7 +71,7 @@ public class AuditEntryHandlerTestIT {
     public void getTestIT() {
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS"));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS", null, null));
 
         final List<AuditEntryRestModel> auditEntries = auditEntryHandler.get();
         assertEquals(1, auditEntries.size());
@@ -102,10 +102,10 @@ public class AuditEntryHandlerTestIT {
     public void resendNotificationTestIt() {
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS"));
-        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), -1L, new Date(), new Date(), "FAILED"));
-        final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository.save(new AuditEntryEntity(-1L, savedConfigEntity.getId(), new Date(), new Date(), "FAILED"));
-        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, -1L, new Date(), new Date(), "FAILED"));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS", null, null));
+        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), -1L, new Date(), new Date(), "FAILED", "Failed: stuff happened", ""));
+        final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository.save(new AuditEntryEntity(-1L, savedConfigEntity.getId(), new Date(), new Date(), "FAILED", "Failed: stuff happened", ""));
+        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, -1L, new Date(), new Date(), "FAILED", "Failed: stuff happened", ""));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
         assertEquals(HttpStatus.BAD_REQUEST, invalidIdResponse.getStatusCode());
