@@ -27,14 +27,14 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
     }
 
     @Override
-    public GlobalEmailConfigActions getConfigActions() {
+    public GlobalEmailConfigActions getMockedConfigActions() {
         final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 
     @Override
-    public GlobalEmailConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public GlobalEmailConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }

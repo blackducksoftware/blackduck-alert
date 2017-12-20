@@ -39,10 +39,10 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     public GlobalActionsTest(final MockUtils<?, GR, ?, GE> mockUtils) {
         this.mockUtils = mockUtils;
-        configActions = getConfigActions();
+        configActions = getMockedConfigActions();
     }
 
-    public abstract GCA getConfigActions();
+    public abstract GCA getMockedConfigActions();
 
     @Test
     public void testDoesConfigExist() {
@@ -134,13 +134,13 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
         final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = createConfigActionsWithSpecificObjectTransformer(transformer);
+        configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
 
         emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
         assertNull(emailConfigEntity);
     }
 
-    public abstract GCA createConfigActionsWithSpecificObjectTransformer(ObjectTransformer objectTransformer);
+    public abstract GCA createMockedConfigActionsUsingObjectTransformer(ObjectTransformer objectTransformer);
 
     public abstract Class<GE> getGlobalEntityClass();
 

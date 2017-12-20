@@ -45,13 +45,13 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     public ActionsTest(final MockUtils<R, ?, E, ?> mockUtils) {
         this.mockUtils = mockUtils;
-        configActions = getConfigActions();
+        configActions = getMockedConfigActions();
         projectMockUtils = new ProjectMockUtils();
         notificationMockUtil = new NotificationTypeMockUtils();
         distributionMockUtils = new DistributionMockUtils();
     }
 
-    public abstract DCA getConfigActions();
+    public abstract DCA getMockedConfigActions();
 
     @Test
     public void testDoesConfigExist() {
@@ -160,7 +160,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
         final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = createConfigActionsWithSpecificObjectTransformer(transformer);
+        configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
 
         actualConfigEntity = configActions.saveConfig(mockUtils.createRestModel());
         assertNull(actualConfigEntity);
@@ -168,8 +168,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     public abstract Class<E> getConfigEntityClass();
 
-    // TODO change name to createMocked
-    public abstract DCA createConfigActionsWithSpecificObjectTransformer(ObjectTransformer objectTransformer);
+    public abstract DCA createMockedConfigActionsUsingObjectTransformer(ObjectTransformer objectTransformer);
 
     @Test
     public void testIsBoolean() {

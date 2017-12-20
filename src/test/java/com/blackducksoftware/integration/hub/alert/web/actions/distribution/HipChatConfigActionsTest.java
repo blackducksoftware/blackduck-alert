@@ -35,8 +35,8 @@ public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRes
     }
 
     @Override
-    public HipChatDistributionConfigActions getConfigActions() {
-        return createConfigActionsWithSpecificObjectTransformer(new ObjectTransformer());
+    public HipChatDistributionConfigActions getMockedConfigActions() {
+        return createMockedConfigActionsUsingObjectTransformer(new ObjectTransformer());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRes
     }
 
     @Override
-    public HipChatDistributionConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public HipChatDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
         final HipChatDistributionRepository mockedHipChatRepository = Mockito.mock(HipChatDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);

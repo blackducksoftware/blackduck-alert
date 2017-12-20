@@ -15,6 +15,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 
+// TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
     private String hubUsername;

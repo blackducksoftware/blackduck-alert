@@ -51,7 +51,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     }
 
     @Override
-    public GlobalHubConfigActions getConfigActions() {
+    public GlobalHubConfigActions getMockedConfigActions() {
         final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
@@ -62,7 +62,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     }
 
     @Override
-    public GlobalHubConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public GlobalHubConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
@@ -77,7 +77,6 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         return GlobalHubConfigEntity.class;
     }
 
-    // TODO figure out why proxyPassword is causing the assertion to fail.
     @Test
     @Override
     public void testGetConfig() throws Exception {

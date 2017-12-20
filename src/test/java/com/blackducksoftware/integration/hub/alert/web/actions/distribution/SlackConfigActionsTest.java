@@ -35,8 +35,8 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
     }
 
     @Override
-    public SlackDistributionConfigActions getConfigActions() {
-        return createConfigActionsWithSpecificObjectTransformer(new ObjectTransformer());
+    public SlackDistributionConfigActions getMockedConfigActions() {
+        return createMockedConfigActionsUsingObjectTransformer(new ObjectTransformer());
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
     }
 
     @Override
-    public SlackDistributionConfigActions createConfigActionsWithSpecificObjectTransformer(final ObjectTransformer objectTransformer) {
+    public SlackDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final SlackManager slackManager = Mockito.mock(SlackManager.class);
         final SlackDistributionRepository mockedSlackRepository = Mockito.mock(SlackDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
