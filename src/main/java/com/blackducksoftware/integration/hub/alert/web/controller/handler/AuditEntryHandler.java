@@ -28,19 +28,28 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
 public class AuditEntryHandler extends ControllerHandler {
@@ -50,14 +59,22 @@ public class AuditEntryHandler extends ControllerHandler {
     private final NotificationRepository notificationRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
+    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
+    private final ProjectDataFactory projectDataFactory;
+    private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
-    public AuditEntryHandler(final AuditEntryRepository auditEntryRepository, final NotificationRepository notificationRepository, final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer) {
+    public AuditEntryHandler(final AuditEntryRepository auditEntryRepository, final NotificationRepository notificationRepository, final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
+            final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
+            final ChannelTemplateManager channelTemplateManager) {
         super(objectTransformer);
         this.auditEntryRepository = auditEntryRepository;
         this.notificationRepository = notificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
         this.objectTransformer = objectTransformer;
+        this.channelEventFactory = channelEventFactory;
+        this.projectDataFactory = projectDataFactory;
+        this.channelTemplateManager = channelTemplateManager;
     }
 
     public List<AuditEntryRestModel> get() {
@@ -75,10 +92,20 @@ public class AuditEntryHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> resendNotification(final Long id) {
-        // TODO implement this method
-        auditEntryRepository.findOne(id);
-
-        return doNotAllowHttpMethod();
+        final AuditEntryEntity auditEntryEntity = auditEntryRepository.findOne(id);
+        if (auditEntryEntity != null) {
+            final NotificationEntity notificationEntity = notificationRepository.findOne(auditEntryEntity.getNotificationId());
+            final Long commonConfigId = auditEntryEntity.getCommonConfigId();
+            final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
+            if (notificationEntity != null && commonConfigEntity != null) {
+                final ProjectData projectData = projectDataFactory.createProjectData(notificationEntity);
+                final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);
+                channelTemplateManager.sendEvent(event);
+                return createResponse(HttpStatus.OK, id, "Attempting to resend notification...");
+            }
+            return createResponse(HttpStatus.GONE, id, "The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
+        }
+        return createResponse(HttpStatus.BAD_REQUEST, id, "No audit entry with the provided id exists.");
     }
 
     private List<AuditEntryRestModel> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
