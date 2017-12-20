@@ -22,13 +22,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class CommonDistributionConfigRestModel extends ConfigRestModel {
@@ -41,14 +39,14 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private String filterByProject;
     private List<String> configuredProjects;
     private List<String> notificationTypes;
-    private Date lastRan;
-    private StatusEnum status;
+    private String lastRan;
+    private String status;
 
     public CommonDistributionConfigRestModel() {
     }
 
     public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
-            final List<String> notificationTypes, final Date lastRan, final StatusEnum status) {
+            final List<String> notificationTypes) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -57,8 +55,6 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
         this.notificationTypes = notificationTypes;
-        this.lastRan = lastRan;
-        this.status = status;
     }
 
     public static long getSerialversionuid() {
@@ -105,19 +101,19 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         this.notificationTypes = notificationTypes;
     }
 
-    public Date getLastRan() {
+    public String getLastRan() {
         return lastRan;
     }
 
-    public void setLastRan(final Date lastRan) {
+    public void setLastRan(final String lastRan) {
         this.lastRan = lastRan;
     }
 
-    public StatusEnum getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(final StatusEnum status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 

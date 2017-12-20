@@ -14,7 +14,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -41,6 +41,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -71,7 +72,8 @@ public class AuditEntryHandlerTestIT {
     public void getTestIT() {
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS"));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
+                .save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS));
 
         final List<AuditEntryRestModel> auditEntries = auditEntryHandler.get();
         assertEquals(1, auditEntries.size());
@@ -102,10 +104,11 @@ public class AuditEntryHandlerTestIT {
     public void resendNotificationTestIt() {
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(), new Date(), "SUCCESS"));
-        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), -1L, new Date(), new Date(), "FAILED"));
-        final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository.save(new AuditEntryEntity(-1L, savedConfigEntity.getId(), new Date(), new Date(), "FAILED"));
-        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, -1L, new Date(), new Date(), "FAILED"));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
+                .save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS));
+        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(savedNotificationEntity.getId(), -1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE));
+        final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository.save(new AuditEntryEntity(-1L, savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE));
+        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, -1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
         assertEquals(HttpStatus.BAD_REQUEST, invalidIdResponse.getStatusCode());

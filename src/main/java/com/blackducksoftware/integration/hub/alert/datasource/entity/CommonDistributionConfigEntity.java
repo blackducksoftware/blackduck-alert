@@ -22,13 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 @Entity
 @Table(schema = "alert", name = "common_distribution_config")
@@ -50,24 +46,16 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
 
-    @Column(name = "last_ran")
-    private Date lastRan;
-
-    @Column(name = "status")
-    private StatusEnum status;
-
     public CommonDistributionConfigEntity() {
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject, final Date lastRan, final StatusEnum status) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
-        this.lastRan = lastRan;
-        this.status = status;
     }
 
     public static long getSerialversionuid() {
@@ -96,14 +84,6 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
 
     public Boolean getFilterByProject() {
         return filterByProject;
-    }
-
-    public Date getLastRan() {
-        return lastRan;
-    }
-
-    public StatusEnum getStatus() {
-        return status;
     }
 
 }

@@ -22,10 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
-import java.util.Date;
 import java.util.List;
-
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
     private static final long serialVersionUID = -4728604702503057780L;
@@ -36,8 +33,8 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
     }
 
     public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
-            final List<String> configuredProjects, final List<String> notificationTypes, final Date lastRan, final StatusEnum status) {
-        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes, lastRan, status);
+            final List<String> configuredProjects, final List<String> notificationTypes) {
+        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;
     }
 

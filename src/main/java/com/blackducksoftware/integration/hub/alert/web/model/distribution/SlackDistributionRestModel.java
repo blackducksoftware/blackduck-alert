@@ -22,10 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
-import java.util.Date;
 import java.util.List;
-
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
     private static final long serialVersionUID = -3032738984577328749L;
@@ -39,8 +36,8 @@ public class SlackDistributionRestModel extends CommonDistributionConfigRestMode
     }
 
     public SlackDistributionRestModel(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
-            final String frequency, final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes, final Date lastRan, final StatusEnum status) {
-        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes, lastRan, status);
+            final String frequency, final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
+        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.webhook = webhook;
         this.channelUsername = channelUsername;
         this.channelName = channelName;
