@@ -127,7 +127,6 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
 						  />
 						  {progressIndicator}
 						  {errorDiv}
-						  <TextInput label="Test Email Address" name="testEmailAddress" value={this.props.testEmailAddress} onChange={this.handleChange} errorName="testEmailAddressError" errorValue={this.props.testEmailAddressError}></TextInput>
 					</div>;
 		var renderResult =  super.render(content);
 		return renderResult;
