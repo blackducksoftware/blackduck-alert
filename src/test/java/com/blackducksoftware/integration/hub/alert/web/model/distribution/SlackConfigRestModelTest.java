@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRestModel> {
     private final static SlackMockUtils mockUtils = new SlackMockUtils();
@@ -38,7 +37,7 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public int emptyRestModelHashCode() {
-        return -1130789619;
+        return -1862761851;
     }
 
     @Override
@@ -50,7 +49,7 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public int restModelHashCode() {
-        return -450952217;
+        return 1121637151;
     }
 
 }
