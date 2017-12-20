@@ -22,7 +22,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
+import java.util.Date;
 import java.util.List;
+
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 public class HipChatDistributionRestModel extends CommonDistributionConfigRestModel {
     private static final long serialVersionUID = -1179576393408142603L;
@@ -36,8 +39,8 @@ public class HipChatDistributionRestModel extends CommonDistributionConfigRestMo
     }
 
     public HipChatDistributionRestModel(final String id, final String roomId, final String notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String frequency,
-            final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
-        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
+            final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes, final Date lastRan, final StatusEnum status) {
+        super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes, lastRan, status);
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;

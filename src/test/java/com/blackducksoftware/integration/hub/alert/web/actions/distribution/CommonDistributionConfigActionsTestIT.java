@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -32,6 +33,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -69,13 +71,17 @@ public class CommonDistributionConfigActionsTestIT {
         final String filterByProject = "true";
         final List<String> projectList = Arrays.asList("Project 1", "Project 2", "Project 3");
         final List<String> notificationTypeList = Arrays.asList("TYPE_1", "TYPE_2");
+        final Date lastRan = new Date();
+        final StatusEnum status = StatusEnum.SUCCESS;
 
-        final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
+        final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList, lastRan, status);
         final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
 
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
+        assertEquals(lastRan, savedEntity.getLastRan());
+        assertEquals(status, savedEntity.getStatus());
         assertEquals(frequency, savedEntity.getFrequency());
         assertEquals(filterByProject, savedEntity.getFilterByProject().toString());
         assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
