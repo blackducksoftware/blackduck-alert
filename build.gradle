@@ -86,8 +86,8 @@ jar {
 
 startScripts {
     doLast {
-        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-defaults ")
-        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/blackduck-alert-config-defaults ")
+        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-volume ")
+        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/blackduck-alert-config-volume ")
         unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
         windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
     }
