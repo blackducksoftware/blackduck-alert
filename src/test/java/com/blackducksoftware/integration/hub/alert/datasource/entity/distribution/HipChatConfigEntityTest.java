@@ -19,7 +19,7 @@ import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    // TODO create an abstract method to set MockUtils to avoid static
+    // TODO create an abstract method to set MockUtils to avoid static (Do this everywhere necessary)
     public HipChatConfigEntityTest() {
         super(mockUtils, HipChatDistributionConfigEntity.class);
     }
