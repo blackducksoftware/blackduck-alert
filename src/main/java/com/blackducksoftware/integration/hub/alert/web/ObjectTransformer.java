@@ -24,9 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -239,7 +239,7 @@ public class ObjectTransformer {
         if (value != null) {
             final String trimmedValue = value.trim();
             try {
-                return Date.valueOf(trimmedValue);
+                return java.sql.Date.valueOf(trimmedValue);
             } catch (final Exception e) {
             }
         }
