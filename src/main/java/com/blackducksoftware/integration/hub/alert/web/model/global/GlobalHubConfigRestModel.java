@@ -34,26 +34,30 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
     private String hubTimeout;
     private String hubUsername;
     private String hubPassword;
+    private boolean hubPasswordIsSet;
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
     private String hubProxyPassword;
+    private boolean hubProxyPasswordIsSet;
     private String hubAlwaysTrustCertificate;
 
     public GlobalHubConfigRestModel() {
     }
 
-    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate) {
+    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
+            final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate) {
         super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
+        this.hubPasswordIsSet = hubPasswordIsSet;
         this.hubProxyHost = hubProxyHost;
         this.hubProxyPort = hubProxyPort;
         this.hubProxyUsername = hubProxyUsername;
         this.hubProxyPassword = hubProxyPassword;
+        this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
     }
 
@@ -83,6 +87,14 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     public String getHubPassword() {
         return hubPassword;
+    }
+
+    public boolean isHubPasswordIsSet() {
+        return hubPasswordIsSet;
+    }
+
+    public void setHubPasswordIsSet(final boolean hubPasswordIsSet) {
+        this.hubPasswordIsSet = hubPasswordIsSet;
     }
 
     public String getHubProxyHost() {
@@ -115,6 +127,14 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     public void setHubProxyPassword(final String hubProxyPassword) {
         this.hubProxyPassword = hubProxyPassword;
+    }
+
+    public boolean isHubProxyPasswordIsSet() {
+        return hubProxyPasswordIsSet;
+    }
+
+    public void setHubProxyPasswordIsSet(final boolean hubProxyPasswordIsSet) {
+        this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
     }
 
     public String getHubAlwaysTrustCertificate() {

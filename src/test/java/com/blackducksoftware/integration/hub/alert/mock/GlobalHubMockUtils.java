@@ -28,27 +28,31 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String hubTimeout;
     private final String hubUsername;
     private final String hubPassword;
+    private final boolean hubPasswordIsSet;
     private final String hubProxyHost;
     private final String hubProxyPort;
     private final String hubProxyUsername;
     private final String hubProxyPassword;
+    private final boolean hubProxyPasswordIsSet;
     private final String hubAlwaysTrustCertificate;
     private final String id;
 
     public GlobalHubMockUtils() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", "true", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", true, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
-    public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate, final String id) {
+    public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
+            final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate, final String id) {
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
+        this.hubPasswordIsSet = hubPasswordIsSet;
         this.hubProxyHost = hubProxyHost;
         this.hubProxyPort = hubProxyPort;
         this.hubProxyUsername = hubProxyUsername;
         this.hubProxyPassword = hubProxyPassword;
+        this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.id = id;
     }
@@ -113,7 +117,8 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     @Override
     public GlobalHubConfigRestModel createGlobalRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate);
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubPasswordIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
+                hubAlwaysTrustCertificate);
         return restModel;
     }
 
@@ -140,9 +145,11 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         json.addProperty("hubUrl", hubUrl);
         json.addProperty("hubTimeout", hubTimeout);
         json.addProperty("hubUsername", hubUsername);
+        json.addProperty("hubPasswordIsSet", hubPasswordIsSet);
         json.addProperty("hubProxyHost", hubProxyHost);
         json.addProperty("hubProxyPort", hubProxyPort);
         json.addProperty("hubProxyUsername", hubProxyUsername);
+        json.addProperty("hubProxyPasswordIsSet", hubProxyPasswordIsSet);
         json.addProperty("hubAlwaysTrustCertificate", hubAlwaysTrustCertificate);
         json.addProperty("id", id);
         return json.toString();
@@ -154,9 +161,11 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         json.add("hubUrl", null);
         json.add("hubTimeout", null);
         json.add("hubUsername", null);
+        json.addProperty("hubPasswordIsSet", false);
         json.add("hubProxyHost", null);
         json.add("hubProxyPort", null);
         json.add("hubProxyUsername", null);
+        json.addProperty("hubProxyPasswordIsSet", false);
         json.add("hubAlwaysTrustCertificate", null);
         json.add("id", null);
         return json.toString();

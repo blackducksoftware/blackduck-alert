@@ -35,6 +35,7 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private String mailSmtpUser;
     // not a javamail property, but we are going to piggy-back to get the smtp password
     private String mailSmtpPassword;
+    private boolean mailSmtpPasswordIsSet;
     private String mailSmtpPort;
     private String mailSmtpConnectionTimeout;
     private String mailSmtpTimeout;
@@ -53,13 +54,14 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     public GlobalEmailConfigRestModel() {
     }
 
-    public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
-            final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime,
-            final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
+    public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
+            final String mailSmtpConnectionTimeout, final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify,
+            final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
+        this.mailSmtpPasswordIsSet = mailSmtpPasswordIsSet;
         this.mailSmtpPort = mailSmtpPort;
         this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
         this.mailSmtpTimeout = mailSmtpTimeout;
@@ -90,6 +92,10 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
 
     public String getMailSmtpPassword() {
         return mailSmtpPassword;
+    }
+
+    public Boolean isMailSmtpPasswordIsSet() {
+        return mailSmtpPasswordIsSet;
     }
 
     public String getMailSmtpPort() {

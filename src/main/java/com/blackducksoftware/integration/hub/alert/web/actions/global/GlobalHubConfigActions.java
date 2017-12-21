@@ -102,6 +102,8 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         restModel.setHubProxyPort(globalProperties.getHubProxyPort());
         restModel.setHubProxyUsername(globalProperties.getHubProxyUsername());
         // Do not send passwords going to the UI
+        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(globalProperties.getHubProxyPassword());
+        restModel.setHubProxyPasswordIsSet(proxyPasswordIsSet);
         return restModel;
     }
 
