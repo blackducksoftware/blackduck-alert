@@ -109,7 +109,7 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
             final Request request = connection.createPostRequest(httpUrl, map, body);
             try {
                 logger.info("Attempting to send a HipChat message...");
-                final Response response = connection.handleExecuteClientCall(request);
+                final Response response = connection.createResponse(request);
                 logger.info("Successfully sent a HipChat message!");
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());
