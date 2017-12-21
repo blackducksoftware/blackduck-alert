@@ -15,13 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfigRestModel> {
-    private static final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
-
-    public GlobalHubConfigRestModelTest() {
-        super(mockUtils, GlobalHubConfigRestModel.class);
-    }
+    private final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
@@ -34,7 +31,6 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
         assertNull(restModel.getHubTimeout());
         assertNull(restModel.getHubUrl());
         assertNull(restModel.getHubUsername());
-        assertNull(restModel.getId());
     }
 
     @Override
@@ -58,11 +54,20 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
         assertEquals(mockUtils.getHubTimeout(), restModel.getHubTimeout());
         assertEquals(mockUtils.getHubUrl(), restModel.getHubUrl());
         assertEquals(mockUtils.getHubUsername(), restModel.getHubUsername());
-        assertEquals(mockUtils.getId(), restModel.getId());
     }
 
     @Override
     public int globalRestModelHashCode() {
         return 1536081842;
+    }
+
+    @Override
+    public MockUtils<?, GlobalHubConfigRestModel, ?, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
+        return GlobalHubConfigRestModel.class;
     }
 }

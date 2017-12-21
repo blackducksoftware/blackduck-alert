@@ -34,6 +34,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
@@ -44,11 +45,7 @@ import com.blackducksoftware.integration.hub.validator.HubServerConfigValidator;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubConfigActions> {
-    private static final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
-
-    public GlobalHubConfigActionsTest() {
-        super(mockUtils);
-    }
+    private final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
 
     @Override
     public GlobalHubConfigActions getMockedConfigActions() {
@@ -129,8 +126,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
 
     }
 
-    // TODO This will need to be fixed we modify the globalhubrestmodel proxy password
-    // @Test
+    @Test
     public void testTestConfig() throws Exception {
         final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
@@ -262,6 +258,11 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     @Override
     public void testConfigurationChangeTriggers() {
 
+    }
+
+    @Override
+    public MockUtils<?, GlobalHubConfigRestModel, ?, GlobalHubConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 
 }

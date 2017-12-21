@@ -15,13 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
-
-    public HipChatConfigRestModelTest() {
-        super(mockUtils, HipChatDistributionRestModel.class);
-    }
+    private final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
@@ -50,6 +47,16 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     @Override
     public int restModelHashCode() {
         return 1529350275;
+    }
+
+    @Override
+    public MockUtils<HipChatDistributionRestModel, ?, ?, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<HipChatDistributionRestModel> getRestModelClass() {
+        return HipChatDistributionRestModel.class;
     }
 
 }

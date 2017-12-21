@@ -15,13 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
-
-    public GlobalHipChatConfigEntityTest() {
-        super(mockUtils, GlobalHipChatConfigEntity.class);
-    }
+    private final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalHipChatConfigEntity entity) {
@@ -46,5 +43,15 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
     @Override
     public int globalEntityHashCode() {
         return -215716445;
+    }
+
+    @Override
+    public MockUtils<?, ?, ?, GlobalHipChatConfigEntity> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
+        return GlobalHipChatConfigEntity.class;
     }
 }

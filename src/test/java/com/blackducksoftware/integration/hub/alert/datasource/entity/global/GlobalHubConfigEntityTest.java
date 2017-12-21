@@ -14,53 +14,48 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigEntity> {
+    private final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
 
-public class GlobalHubConfigEntityTest {
-
-    @Test
-    public void testEmptyModel() {
-        final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity();
-        assertEquals(9172607945030111585L, GlobalHubConfigEntity.getSerialversionuid());
-
-        assertNull(globalConfigEntity.getHubPassword());
-        assertNull(globalConfigEntity.getHubTimeout());
-        assertNull(globalConfigEntity.getHubUsername());
-        assertNull(globalConfigEntity.getId());
-
-        assertEquals(31860737, globalConfigEntity.hashCode());
-        final String expectedString = "{\"hubTimeout\":null,\"hubUsername\":null,\"id\":null}";
-        assertEquals(expectedString, globalConfigEntity.toString());
-
-        final GlobalHubConfigEntity globalConfigEntityNew = new GlobalHubConfigEntity();
-        assertEquals(globalConfigEntity, globalConfigEntityNew);
+    @Override
+    public MockUtils<?, ?, ?, GlobalHubConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 
-    @Test
-    public void testModel() {
-        final Long id = 123L;
-        final Integer hubTimeout = 111;
-        final String hubUsername = "HubUsername";
-        final String hubPassword = "HubPassword";
+    @Override
+    public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
+        return GlobalHubConfigEntity.class;
+    }
 
-        final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
-        globalConfigEntity.setId(id);
+    @Override
+    public void assertGlobalEntityFieldsNull(final GlobalHubConfigEntity entity) {
+        assertNull(entity.getHubPassword());
+        assertNull(entity.getHubTimeout());
+        assertNull(entity.getHubUsername());
+    }
 
-        assertEquals(hubPassword, globalConfigEntity.getHubPassword());
-        assertEquals(hubTimeout, globalConfigEntity.getHubTimeout());
-        assertEquals(hubUsername, globalConfigEntity.getHubUsername());
-        assertEquals(id, globalConfigEntity.getId());
+    @Override
+    public long globalEntitySerialId() {
+        return GlobalHubConfigEntity.getSerialversionuid();
+    }
 
-        assertEquals(-610617422, globalConfigEntity.hashCode());
+    @Override
+    public int emptyGlobalEntityHashCode() {
+        return 31860737;
+    }
 
-        final String expectedString = "{\"hubTimeout\":111,\"hubUsername\":\"HubUsername\",\"id\":123}";
-        assertEquals(expectedString, globalConfigEntity.toString());
+    @Override
+    public void assertGlobalEntityFieldsFull(final GlobalHubConfigEntity entity) {
+        assertEquals(mockUtils.getHubPassword(), entity.getHubPassword());
+        assertEquals(Integer.valueOf(mockUtils.getHubTimeout()), entity.getHubTimeout());
+        assertEquals(mockUtils.getHubUsername(), entity.getHubUsername());
+    }
 
-        final GlobalHubConfigEntity globalConfigEntityNew = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
-        globalConfigEntityNew.setId(id);
-
-        assertEquals(globalConfigEntity, globalConfigEntityNew);
+    @Override
+    public int globalEntityHashCode() {
+        return -593750095;
     }
 }
