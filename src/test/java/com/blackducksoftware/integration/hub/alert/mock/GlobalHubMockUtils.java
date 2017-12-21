@@ -61,12 +61,12 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
-        globalProperties.hubUrl = hubUrl;
-        globalProperties.hubTrustCertificate = Boolean.valueOf(hubAlwaysTrustCertificate);
-        globalProperties.hubProxyHost = hubProxyHost;
-        globalProperties.hubProxyPort = hubProxyPort;
-        globalProperties.hubProxyUsername = hubProxyUsername;
-        globalProperties.hubProxyPassword = hubProxyPassword;
+        globalProperties.setHubUrl(hubUrl);
+        globalProperties.setHubTrustCertificate(Boolean.valueOf(hubAlwaysTrustCertificate));
+        globalProperties.setHubProxyHost(hubProxyHost);
+        globalProperties.setHubProxyPort(hubProxyPort);
+        globalProperties.setHubProxyUsername(hubProxyUsername);
+        globalProperties.setHubProxyPassword(hubProxyPassword);
         return globalProperties;
     }
 

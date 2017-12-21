@@ -24,11 +24,11 @@ public class EmailChannelTestIT extends ChannelTest {
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
-        globalProperties.hubUrl = properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL);
+        globalProperties.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         if (trustCert != null) {
-            globalProperties.hubTrustCertificate = Boolean.valueOf(trustCert);
+            globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, null, null, null);
