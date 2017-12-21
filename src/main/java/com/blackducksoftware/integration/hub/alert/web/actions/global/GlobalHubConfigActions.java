@@ -94,13 +94,13 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     }
 
     public GlobalHubConfigRestModel updateModelFromEnvironment(final GlobalHubConfigRestModel restModel) {
-        restModel.setHubUrl(globalProperties.hubUrl);
-        if (globalProperties.hubTrustCertificate != null) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.hubTrustCertificate));
+        restModel.setHubUrl(globalProperties.getHubUrl());
+        if (globalProperties.getHubTrustCertificate() != null) {
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate()));
         }
-        restModel.setHubProxyHost(globalProperties.hubProxyHost);
-        restModel.setHubProxyPort(globalProperties.hubProxyPort);
-        restModel.setHubProxyUsername(globalProperties.hubProxyUsername);
+        restModel.setHubProxyHost(globalProperties.getHubProxyHost());
+        restModel.setHubProxyPort(globalProperties.getHubProxyPort());
+        restModel.setHubProxyUsername(globalProperties.getHubProxyUsername());
         // Do not send passwords going to the UI
         return restModel;
     }
@@ -139,19 +139,19 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(globalProperties.hubUrl);
+        hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
         hubServerConfigBuilder.setUsername(restModel.getHubUsername());
 
-        hubServerConfigBuilder.setProxyHost(globalProperties.hubProxyHost);
-        hubServerConfigBuilder.setProxyPort(globalProperties.hubProxyPort);
-        hubServerConfigBuilder.setProxyUsername(globalProperties.hubProxyUsername);
+        hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
+        hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
+        hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
 
         hubServerConfigBuilder.setPassword(restModel.getHubPassword());
-        hubServerConfigBuilder.setProxyPassword(globalProperties.hubProxyPassword);
+        hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
-        if (globalProperties.hubTrustCertificate != null) {
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.hubTrustCertificate);
+        if (globalProperties.getHubTrustCertificate() != null) {
+            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
         }
         hubServerConfigBuilder.setLogger(intLogger);
         validateHubConfiguration(hubServerConfigBuilder);
