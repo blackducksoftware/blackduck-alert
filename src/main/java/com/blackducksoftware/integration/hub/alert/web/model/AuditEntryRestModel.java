@@ -34,11 +34,14 @@ public class AuditEntryRestModel extends ConfigRestModel {
     private String timeLastSent;
     private String status;
     private NotificationRestModel notification;
+    private String errorMessage;
+    private String errorStackTrace;
 
     public AuditEntryRestModel() {
     }
 
-    public AuditEntryRestModel(final String id, final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationRestModel notification) {
+    public AuditEntryRestModel(final String id, final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace,
+            final NotificationRestModel notification) {
         super(id);
         this.name = name;
         this.eventType = eventType;
@@ -46,6 +49,8 @@ public class AuditEntryRestModel extends ConfigRestModel {
         this.timeLastSent = timeLastSent;
         this.status = status;
         this.notification = notification;
+        this.errorMessage = errorMessage;
+        this.errorStackTrace = errorStackTrace;
     }
 
     public static long getSerialversionuid() {
@@ -74,6 +79,14 @@ public class AuditEntryRestModel extends ConfigRestModel {
 
     public NotificationRestModel getNotification() {
         return notification;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public String getErrorStackTrace() {
+        return errorStackTrace;
     }
 
     @Override

@@ -2,6 +2,10 @@
     width: 50%;
 }
 
+.textInput::placeholder {
+    color: black;
+}
+
 .inline {
     display: inline-block;
 }

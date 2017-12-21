@@ -21,6 +21,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     private final String mailSmtpHost;
     private final String mailSmtpUser;
     private final String mailSmtpPassword;
+    private final boolean mailSmtpPasswordIsSet;
     private final String mailSmtpPort;
     private final String mailSmtpConnectionTimeout;
     private final String mailSmtpTimeout;
@@ -39,17 +40,18 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     private final String id;
 
     public EmailMockUtils() {
-        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "EmailTemplateDirectory",
+        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "EmailTemplateDirectory",
                 "EmailTemplateLogoImage", "EmailSubjectLine", "EmailGroup", "1");
     }
 
-    public EmailMockUtils(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final String mailSmtpPort, final String mailSmtpConnectionTimeout, final String mailSmtpTimeout, final String mailSmtpFrom,
-            final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial,
-            final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final String emailGroup, final String id) {
+    public EmailMockUtils(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort, final String mailSmtpConnectionTimeout,
+            final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
+            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final String emailGroup, final String id) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
+        this.mailSmtpPasswordIsSet = mailSmtpPasswordIsSet;
         this.mailSmtpPort = mailSmtpPort;
         this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
         this.mailSmtpTimeout = mailSmtpTimeout;
@@ -78,6 +80,10 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
 
     public String getMailSmtpPassword() {
         return mailSmtpPassword;
+    }
+
+    public boolean isMailSmtpPasswordIsSet() {
+        return mailSmtpPasswordIsSet;
     }
 
     public String getMailSmtpPort() {
@@ -147,8 +153,8 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
 
     @Override
     public GlobalEmailConfigRestModel createGlobalRestModel() {
-        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom,
+                mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
         return restModel;
     }
 
@@ -200,6 +206,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         final JsonObject json = new JsonObject();
         json.addProperty("mailSmtpHost", mailSmtpHost);
         json.addProperty("mailSmtpUser", mailSmtpUser);
+        json.addProperty("mailSmtpPasswordIsSet", mailSmtpPasswordIsSet);
         json.addProperty("mailSmtpPort", mailSmtpPort);
         json.addProperty("mailSmtpConnectionTimeout", mailSmtpConnectionTimeout);
         json.addProperty("mailSmtpTimeout", mailSmtpTimeout);
@@ -223,6 +230,7 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         final JsonObject json = new JsonObject();
         json.add("mailSmtpHost", null);
         json.add("mailSmtpUser", null);
+        json.addProperty("mailSmtpPasswordIsSet", false);
         json.add("mailSmtpPort", null);
         json.add("mailSmtpConnectionTimeout", null);
         json.add("mailSmtpTimeout", null);
