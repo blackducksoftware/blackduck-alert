@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
@@ -43,7 +42,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
-    private G globalConfigEntity;
 
     public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
@@ -57,15 +55,12 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     public G getGlobalConfigEntity() {
-        if (globalConfigEntity == null) {
-            final List<G> globalConfigs = globalRepository.findAll();
-            if (globalConfigs.size() == 1) {
-                globalConfigEntity = globalConfigs.get(0);
-            } else {
-                logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
-            }
+        final List<G> globalConfigs = globalRepository.findAll();
+        if (globalConfigs.size() == 1) {
+            return globalConfigs.get(0);
         }
-        return globalConfigEntity;
+        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
+        return null;
     }
 
     @Override
@@ -90,7 +85,5 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     public abstract void sendMessage(final E event, final C config);
-
-    public abstract String testMessage(final C distributionConfig) throws IntegrationException;
 
 }

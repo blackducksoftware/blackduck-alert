@@ -187,6 +187,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public List<String> sensitiveFields() {
         final List<String> sensitiveFields = new ArrayList<>();
         sensitiveFields.add("hubPassword");
+        sensitiveFields.add("hubProxyPassword");
         return sensitiveFields;
     }
 

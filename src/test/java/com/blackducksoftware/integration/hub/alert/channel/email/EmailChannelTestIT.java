@@ -1,86 +1,51 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
-import org.junit.Assume;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryDataBuilder;
-import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataBuilder;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.google.gson.Gson;
 
-public class EmailChannelTestIT extends RestChannelTest {
+public class EmailChannelTestIT extends ChannelTest {
 
     @Test
     public void sendEmailTest() throws Exception {
-        Assume.assumeTrue(properties.containsKey("mail.recipient"));
-        Assume.assumeTrue(properties.containsKey("mail.smtp.host"));
-        Assume.assumeTrue(properties.containsKey("mail.smtp.from"));
-        Assume.assumeTrue(properties.containsKey("hub.email.template.directory"));
-        Assume.assumeTrue(properties.containsKey("logo.image"));
-
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.url"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.username"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.password"));
-
         final GlobalHubRepository globalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty("blackduck.hub.username"), properties.getProperty("blackduck.hub.password"));
+        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_USERNAME), properties.getProperty(TestPropertyKey.TEST_PASSWORD));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
+        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
-        final List<VulnerabilityEntity> vulns = new ArrayList<>();
-        final VulnerabilityEntity vulnerability = new VulnerabilityEntity("Vuln ID", "Vuln Operation");
-        vulns.add(vulnerability);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
+        globalProperties.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
-        final HashMap<String, Object> itemModel = new HashMap<>();
-        itemModel.put(ItemTypeEnum.COMPONENT.toString(), "Manual Test Component");
-        itemModel.put(ItemTypeEnum.VERSION.toString(), "1.0.3");
-        itemModel.put(ItemTypeEnum.RULE.toString(), "Manual Policy Rule");
-        final ItemData data = new ItemData(itemModel);
-        final CategoryDataBuilder categoryBuilder = new CategoryDataBuilder();
-        categoryBuilder.addItem(data);
-        categoryBuilder.setCategoryKey(NotificationCategoryEnum.POLICY_VIOLATION.toString());
-
-        final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
-        projectDataBuilder.setProjectName("Manual Test Project");
-        projectDataBuilder.setProjectVersion("Manual Test Project Version");
-        projectDataBuilder.setDigestType(DigestTypeEnum.REAL_TIME);
-        projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.POLICY_VIOLATION, categoryBuilder);
-        final ProjectData projectData = projectDataBuilder.build();
-
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, null);
-        globalProperties.setHubUrl(properties.getProperty("blackduck.hub.url"));
-
-        final String trustCert = properties.getProperty("blackduck.hub.trust.cert");
+        final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         if (trustCert != null) {
             globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        final Gson gson = new Gson();
         EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, null, null, null);
+        final ProjectData projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, null);
 
-        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(properties.getProperty("mail.smtp.host"), null, null, null, null, null, properties.getProperty("mail.smtp.from"), null, null, null, null, null, null,
-                null, properties.getProperty("hub.email.template.directory"), properties.getProperty("logo.image"), "Test Subject Line");
+        final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
+        final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
+        final String emailTemplate = properties.getProperty(TestPropertyKey.TEST_EMAIL_TEMPLATE);
+        final String logo = properties.getProperty(TestPropertyKey.TEST_EMAIL_LOGO);
+        final String subjectLine = "Test Subject Line";
+        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, emailTemplate, logo, subjectLine);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailConfigEntity).when(emailChannel).getGlobalConfigEntity();
 
-        emailChannel.sendMessage(Arrays.asList(properties.getProperty("mail.recipient")), event);
+        emailChannel.sendMessage(Arrays.asList(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), event);
     }
 
 }

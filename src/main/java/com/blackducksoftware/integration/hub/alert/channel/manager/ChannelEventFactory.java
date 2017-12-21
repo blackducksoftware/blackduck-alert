@@ -31,18 +31,19 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DistributionChannelConfigEntity, G extends GlobalChannelConfigEntity> {
-    private final List<DistributionChannelManager<G, D, E>> channelManagers;
+public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DistributionChannelConfigEntity, G extends GlobalChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
+    private final List<DistributionChannelManager<G, D, E, R>> channelManagers;
 
     @Autowired
-    public ChannelEventFactory(final List<DistributionChannelManager<G, D, E>> channelManagers) {
+    public ChannelEventFactory(final List<DistributionChannelManager<G, D, E, R>> channelManagers) {
         this.channelManagers = channelManagers;
     }
 
     public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final ProjectData projectData) {
-        for (final DistributionChannelManager<G, D, E> manager : channelManagers) {
+        for (final DistributionChannelManager<G, D, E, R> manager : channelManagers) {
             if (manager.isApplicable(distributionType)) {
                 return manager.createChannelEvent(projectData, commonDistributionConfigId);
             }
