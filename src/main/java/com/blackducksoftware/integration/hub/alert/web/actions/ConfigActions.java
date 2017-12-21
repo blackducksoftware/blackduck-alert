@@ -93,7 +93,11 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
                 final Field fieldIsSet = restModelClass.getDeclaredField(fieldName + "IsSet");
                 fieldIsSet.setAccessible(true);
-                fieldIsSet.setBoolean(restModel, isFieldSet);
+                final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(restModel);
+                if (!sensitiveIsSetFieldValue) {
+                    isFieldSet = true;
+                    fieldIsSet.setBoolean(restModel, isFieldSet);
+                }
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);

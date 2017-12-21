@@ -22,6 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
@@ -56,6 +59,12 @@ public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
 
     public String getPurgeDataCron() {
         return purgeDataCron;
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.build();
     }
 
 }

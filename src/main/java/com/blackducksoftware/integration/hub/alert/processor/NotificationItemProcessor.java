@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentRequestService;
-import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
-import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityRequestService;
+import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentService;
+import com.blackducksoftware.integration.hub.api.project.ProjectService;
+import com.blackducksoftware.integration.hub.api.view.MetaHandler;
+import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityService;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
@@ -38,25 +38,26 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.notification.processor.MapProcessorCache;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationProcessor;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
-import com.blackducksoftware.integration.hub.service.HubResponseService;
+import com.blackducksoftware.integration.hub.service.HubService;
+import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
-    public NotificationItemProcessor(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignMentRequestService, final HubResponseService hubResponseService,
-            final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
-        init(projectRequestService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, metaService);
+    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
+            final IntLogger intLogger) {
+        init(projectService, projectAssignmentService, hubService, vulnerabilityService, intLogger);
     }
 
-    public void init(final ProjectRequestService projectRequestService, final ProjectAssignmentRequestService projectAssignMentRequestService, final HubResponseService hubResponseService,
-            final VulnerabilityRequestService vulnerabilityRequestService, final MetaService metaService) {
-        final MapProcessorCache policyCache = new UserNotificationCache(projectRequestService, projectAssignMentRequestService);
-        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectRequestService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, metaService);
+    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
+            final IntLogger intLogger) {
+        final MapProcessorCache policyCache = new UserNotificationCache(projectService, projectAssignMentService);
+        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, projectAssignMentService, hubService, vulnerabilityService, new MetaHandler(intLogger));
         getCacheList().add(policyCache);
         getCacheList().add(vulnerabilityCache);
-        getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, metaService));
-        getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, metaService));
-        getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, metaService));
-        getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, metaService));
+        getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
+        getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, intLogger));
+        getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, intLogger));
+        getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, intLogger));
     }
 
     @Override

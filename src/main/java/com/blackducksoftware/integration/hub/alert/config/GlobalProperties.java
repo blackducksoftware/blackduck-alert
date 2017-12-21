@@ -22,8 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +43,7 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -48,27 +53,109 @@ public class GlobalProperties {
     private final GlobalSchedulingRepository globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
-    public String hubUrl;
+    private String hubUrl;
 
     @Value("${blackduck.hub.trust.cert:}")
-    public Boolean hubTrustCertificate;
+    private Boolean hubTrustCertificate;
 
     @Value("${blackduck.hub.proxy.host:}")
-    public String hubProxyHost;
+    private String hubProxyHost;
 
     @Value("${blackduck.hub.proxy.port:}")
-    public String hubProxyPort;
+    private String hubProxyPort;
 
     @Value("${blackduck.hub.proxy.username:}")
-    public String hubProxyUsername;
+    private String hubProxyUsername;
 
     @Value("${blackduck.hub.proxy.password:}")
-    public String hubProxyPassword;
+    private String hubProxyPassword;
 
     @Autowired
     public GlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
         this.globalHubRepository = globalRepository;
         this.globalSchedulingRepository = globalSchedulingRepository;
+    }
+
+    public String getHubUrl() {
+        try {
+            final URL extensionUrl = new URL(hubUrl);
+            if (extensionUrl.getHost().equals("localhost")) {
+                final String hostName = Optional.ofNullable(System.getenv("PUBLIC_HUB_WEBSERVER_HOST")).orElseGet(() -> HostnameHelper.getMyHostname());
+                final URL url = new URL(extensionUrl.getProtocol(), hostName, extensionUrl.getPort(), extensionUrl.getFile());
+                return url.toString();
+            }
+        } catch (final MalformedURLException e) {
+            return hubUrl;
+        }
+        return hubUrl;
+    }
+
+    public Boolean getHubTrustCertificate() {
+        final String alwaysTrust = System.getenv("HUB_ALWAYS_TRUST_SERVER_CERTIFICATE");
+        if (StringUtils.isNotBlank(alwaysTrust)) {
+            return Boolean.parseBoolean(alwaysTrust);
+        }
+        return hubTrustCertificate;
+    }
+
+    public String getHubProxyHost() {
+        final String proxyHost = System.getenv("HUB_PROXY_HOST");
+        if (StringUtils.isEmpty(proxyHost)) {
+            return hubProxyHost;
+        } else {
+            return proxyHost;
+        }
+    }
+
+    public String getHubProxyPort() {
+        final String proxyPort = System.getenv("HUB_PROXY_PORT");
+        if (StringUtils.isEmpty(proxyPort)) {
+            return hubProxyPort;
+        } else {
+            return proxyPort;
+        }
+    }
+
+    public String getHubProxyUsername() {
+        final String proxyUser = System.getenv("HUB_PROXY_USER");
+        if (StringUtils.isEmpty(proxyUser)) {
+            return hubProxyUsername;
+        } else {
+            return proxyUser;
+        }
+    }
+
+    public String getHubProxyPassword() {
+        final String proxyPassword = System.getenv("HUB_PROXY_PASSWORD");
+        if (StringUtils.isEmpty(proxyPassword)) {
+            return hubProxyPassword;
+        } else {
+            return proxyPassword;
+        }
+    }
+
+    public void setHubUrl(final String hubUrl) {
+        this.hubUrl = hubUrl;
+    }
+
+    public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
+        this.hubTrustCertificate = hubTrustCertificate;
+    }
+
+    public void setHubProxyHost(final String hubProxyHost) {
+        this.hubProxyHost = hubProxyHost;
+    }
+
+    public void setHubProxyPort(final String hubProxyPort) {
+        this.hubProxyPort = hubProxyPort;
+    }
+
+    public void setHubProxyUsername(final String hubProxyUsername) {
+        this.hubProxyUsername = hubProxyUsername;
+    }
+
+    public void setHubProxyPassword(final String hubProxyPassword) {
+        this.hubProxyPassword = hubProxyPassword;
     }
 
     public GlobalHubConfigEntity getConfig(final Long id) {
@@ -125,15 +212,15 @@ public class GlobalProperties {
         final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
         if (globalConfigEntity != null) {
             final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-            hubServerConfigBuilder.setHubUrl(hubUrl);
+            hubServerConfigBuilder.setHubUrl(getHubUrl());
             hubServerConfigBuilder.setTimeout(globalConfigEntity.getHubTimeout());
             hubServerConfigBuilder.setUsername(globalConfigEntity.getHubUsername());
             hubServerConfigBuilder.setPassword(globalConfigEntity.getHubPassword());
 
-            hubServerConfigBuilder.setProxyHost(hubProxyHost);
-            hubServerConfigBuilder.setProxyPort(hubProxyPort);
-            hubServerConfigBuilder.setProxyUsername(hubProxyUsername);
-            hubServerConfigBuilder.setProxyPassword(hubProxyPassword);
+            hubServerConfigBuilder.setProxyHost(getHubProxyHost());
+            hubServerConfigBuilder.setProxyPort(getHubProxyPort());
+            hubServerConfigBuilder.setProxyUsername(getHubProxyUsername());
+            hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
 
             if (hubTrustCertificate != null) {
                 hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);

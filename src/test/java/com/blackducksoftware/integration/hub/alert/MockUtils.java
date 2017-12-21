@@ -33,12 +33,12 @@ public class MockUtils {
 
     public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
-        globalProperties.hubUrl = "HubUrl";
-        globalProperties.hubTrustCertificate = false;
-        globalProperties.hubProxyHost = "HubProxyHost";
-        globalProperties.hubProxyPort = "22";
-        globalProperties.hubProxyUsername = "HubProxyUsername";
-        globalProperties.hubProxyPassword = "HubProxyPassword";
+        globalProperties.setHubUrl("HubUrl");
+        globalProperties.setHubTrustCertificate(false);
+        globalProperties.setHubProxyHost("HubProxyHost");
+        globalProperties.setHubProxyPort("22");
+        globalProperties.setHubProxyUsername("HubProxyUsername");
+        globalProperties.setHubProxyPassword("HubProxyPassword");
         return globalProperties;
     }
 
