@@ -91,10 +91,10 @@ public class Application {
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level: {}", loggingLevel);
-        logger.info("Hub URL:            {}", globalProperties.hubUrl);
-        logger.info("Hub Proxy Host:     {}", globalProperties.hubProxyHost);
-        logger.info("Hub Proxy Port:     {}", globalProperties.hubProxyPort);
-        logger.info("Hub Proxy User:     {}", globalProperties.hubProxyUsername);
+        logger.info("Hub URL:            {}", globalProperties.getHubUrl());
+        logger.info("Hub Proxy Host:     {}", globalProperties.getHubProxyHost());
+        logger.info("Hub Proxy Port:     {}", globalProperties.getHubProxyPort());
+        logger.info("Hub Proxy User:     {}", globalProperties.getHubProxyUsername());
         logger.info("Hub Proxy Password: **********");
 
         if (globalHubConfig != null) {

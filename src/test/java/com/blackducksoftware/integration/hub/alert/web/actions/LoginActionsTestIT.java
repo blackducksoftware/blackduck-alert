@@ -12,30 +12,26 @@
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.RestChannelTest;
+import com.blackducksoftware.integration.hub.alert.TestProperties;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
-public class LoginActionsTestIT extends RestChannelTest {
+public class LoginActionsTestIT {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
 
     @Test
     public void authenticateUserTestIT() throws IntegrationException {
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.url"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.timeout"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.username"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.password"));
-        Assume.assumeTrue(properties.containsKey("blackduck.hub.always.trust.cert"));
+        final TestProperties properties = new TestProperties();
 
         final LoginActions loginActions = new LoginActions();
-        final LoginRestModel loginRestModel = new LoginRestModel("", properties.getProperty("blackduck.hub.url"), properties.getProperty("blackduck.hub.timeout"), properties.getProperty("blackduck.hub.username"),
-                properties.getProperty("blackduck.hub.password"), "", "", "", "", properties.getProperty("blackduck.hub.always.trust.cert"));
+        final LoginRestModel loginRestModel = new LoginRestModel("", properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL), properties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT),
+                properties.getProperty(TestPropertyKey.TEST_USERNAME), properties.getProperty(TestPropertyKey.TEST_PASSWORD), "", "", "", "", properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT));
         final boolean userAuthenticated = loginActions.authenticateUser(loginRestModel, new Slf4jIntLogger(logger));
 
         Assert.assertTrue(userAuthenticated);
