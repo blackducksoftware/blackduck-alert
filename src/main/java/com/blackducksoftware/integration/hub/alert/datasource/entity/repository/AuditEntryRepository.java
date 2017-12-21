@@ -22,8 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,6 +30,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryE
 
 @Transactional
 public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    public List<AuditEntryEntity> findByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
+    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
 
 }
