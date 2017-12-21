@@ -45,12 +45,12 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 
 public class UserNotificationCache extends MapProcessorCache {
     private final Logger logger = LoggerFactory.getLogger(UserNotificationCache.class);
-    private final ProjectService projectRequestService;
-    private final ProjectAssignmentService projectAssignmentRequestService;
+    private final ProjectService projectService;
+    private final ProjectAssignmentService projectAssignmentService;
 
-    public UserNotificationCache(final ProjectService projectRequestService, final ProjectAssignmentService projectAssignmentRequestService) {
-        this.projectRequestService = projectRequestService;
-        this.projectAssignmentRequestService = projectAssignmentRequestService;
+    public UserNotificationCache(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService) {
+        this.projectService = projectService;
+        this.projectAssignmentService = projectAssignmentService;
     }
 
     @Override
@@ -81,8 +81,8 @@ public class UserNotificationCache extends MapProcessorCache {
     private List<String> getUserNames(final String projectLink) {
         final List<String> userNameList = new ArrayList<>();
         try {
-            final ProjectView projectView = projectRequestService.getView(projectLink, ProjectView.class);
-            final List<AssignedUserView> assignedUserList = projectAssignmentRequestService.getProjectUsers(projectView);
+            final ProjectView projectView = projectService.getView(projectLink, ProjectView.class);
+            final List<AssignedUserView> assignedUserList = projectAssignmentService.getProjectUsers(projectView);
             if (!assignedUserList.isEmpty()) {
                 assignedUserList.forEach(assignedUser -> {
                     userNameList.add(assignedUser.name);

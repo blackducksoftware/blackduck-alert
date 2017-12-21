@@ -43,15 +43,15 @@ import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
-    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignMentRequestService, final HubService hubService, final VulnerabilityService vulnerabilityService,
+    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
             final IntLogger intLogger) {
-        init(projectService, projectAssignMentRequestService, hubService, vulnerabilityService, intLogger);
+        init(projectService, projectAssignmentService, hubService, vulnerabilityService, intLogger);
     }
 
-    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentRequestService, final HubService hubResponseService, final VulnerabilityService vulnerabilityRequestService,
+    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
             final IntLogger intLogger) {
-        final MapProcessorCache policyCache = new UserNotificationCache(projectService, projectAssignMentRequestService);
-        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, projectAssignMentRequestService, hubResponseService, vulnerabilityRequestService, new MetaHandler(intLogger));
+        final MapProcessorCache policyCache = new UserNotificationCache(projectService, projectAssignMentService);
+        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, projectAssignMentService, hubService, vulnerabilityService, new MetaHandler(intLogger));
         getCacheList().add(policyCache);
         getCacheList().add(vulnerabilityCache);
         getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
