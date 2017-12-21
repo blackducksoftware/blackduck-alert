@@ -63,6 +63,6 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
 
     @Override
     public int globalRestModelHashCode() {
-        return -1119497884;
+        return 1536081842;
     }
 }

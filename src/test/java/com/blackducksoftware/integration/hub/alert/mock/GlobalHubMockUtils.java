@@ -38,7 +38,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String id;
 
     public GlobalHubMockUtils() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", true, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
     public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
