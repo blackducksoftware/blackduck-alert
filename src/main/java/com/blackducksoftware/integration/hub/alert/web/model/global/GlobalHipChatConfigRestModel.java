@@ -31,13 +31,15 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
     private String apiKey;
+    private boolean apiKeyIsSet;
 
     public GlobalHipChatConfigRestModel() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey) {
+    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet) {
         super(id);
         this.apiKey = apiKey;
+        this.apiKeyIsSet = apiKeyIsSet;
     }
 
     public static long getSerialversionuid() {
@@ -46,6 +48,10 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
 
     public String getApiKey() {
         return apiKey;
+    }
+
+    public boolean isApiKeyIsSet() {
+        return apiKeyIsSet;
     }
 
     @Override
