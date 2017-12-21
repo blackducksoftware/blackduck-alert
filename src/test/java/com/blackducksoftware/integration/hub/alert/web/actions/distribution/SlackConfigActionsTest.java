@@ -21,6 +21,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -28,11 +29,6 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionConfigActions> {
-    private static final SlackMockUtils mockUtils = new SlackMockUtils();
-
-    public SlackConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public SlackDistributionConfigActions getMockedConfigActions() {
@@ -57,6 +53,11 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
         final NotificationTypesActions<SlackDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, mockedSlackRepository, projectsAction, notificationAction, objectTransformer, slackManager);
         return configActions;
+    }
+
+    @Override
+    public MockUtils<SlackDistributionRestModel, ?, SlackDistributionConfigEntity, ?> getMockUtil() {
+        return new SlackMockUtils();
     }
 
 }

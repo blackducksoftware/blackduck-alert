@@ -16,15 +16,11 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
-    private static EmailMockUtils mockUtils = new EmailMockUtils();
-
-    public GlobalEmailConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public GlobalEmailConfigActions getMockedConfigActions() {
@@ -46,6 +42,11 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
 
     @Override
     public void testConfigurationChangeTriggers() {
+    }
+
+    @Override
+    public MockUtils<?, GlobalEmailConfigRestModel, ?, GlobalEmailConfigEntity> getMockUtil() {
+        return new EmailMockUtils();
     }
 
 }

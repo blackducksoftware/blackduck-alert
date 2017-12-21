@@ -14,97 +14,77 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.junit.Test;
+import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
+    private final EmailMockUtils mockUtils = new EmailMockUtils();
 
-public class GlobalEmailConfigEntityTest {
-
-    @Test
-    public void testEmptyModel() {
-        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity();
-        assertEquals(4122029411365267232L, GlobalEmailConfigEntity.getSerialversionuid());
-
-        assertNull(emailConfigEntity.getEmailSubjectLine());
-        assertNull(emailConfigEntity.getEmailTemplateDirectory());
-        assertNull(emailConfigEntity.getEmailTemplateLogoImage());
-        assertNull(emailConfigEntity.getId());
-        assertNull(emailConfigEntity.getMailSmtpAllow8bitmime());
-        assertNull(emailConfigEntity.getMailSmtpAuth());
-        assertNull(emailConfigEntity.getMailSmtpConnectionTimeout());
-        assertNull(emailConfigEntity.getMailSmtpDnsNotify());
-        assertNull(emailConfigEntity.getMailSmtpDnsRet());
-        assertNull(emailConfigEntity.getMailSmtpEhlo());
-        assertNull(emailConfigEntity.getMailSmtpFrom());
-        assertNull(emailConfigEntity.getMailSmtpHost());
-        assertNull(emailConfigEntity.getMailSmtpLocalhost());
-        assertNull(emailConfigEntity.getMailSmtpPassword());
-        assertNull(emailConfigEntity.getMailSmtpPort());
-        assertNull(emailConfigEntity.getMailSmtpSendPartial());
-        assertNull(emailConfigEntity.getMailSmtpTimeout());
-        assertNull(emailConfigEntity.getMailSmtpUser());
-
-        assertEquals(1169169065, emailConfigEntity.hashCode());
-
-        final String expectedString = "{\"mailSmtpHost\":null,\"mailSmtpUser\":null,\"mailSmtpPort\":null,\"mailSmtpConnectionTimeout\":null,\"mailSmtpTimeout\":null,\"mailSmtpFrom\":null,\"mailSmtpLocalhost\":null,\"mailSmtpEhlo\":null,\"mailSmtpAuth\":null,\"mailSmtpDnsNotify\":null,\"mailSmtpDnsRet\":null,\"mailSmtpAllow8bitmime\":null,\"mailSmtpSendPartial\":null,\"emailTemplateDirectory\":null,\"emailTemplateLogoImage\":null,\"emailSubjectLine\":null,\"id\":null}";
-        assertEquals(expectedString, emailConfigEntity.toString());
-
-        final GlobalEmailConfigEntity emailConfigEntityNew = new GlobalEmailConfigEntity();
-        assertEquals(emailConfigEntity, emailConfigEntityNew);
+    @Override
+    public MockUtils<?, ?, ?, GlobalEmailConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 
-    @Test
-    public void testModel() {
-        final Long id = 123L;
-        final String mailSmtpHost = "MailSmtpHost";
-        final String mailSmtpUser = "MailSmtpUser";
-        final String mailSmtpPassword = "MailSmtpPassword";
-        final Integer mailSmtpPort = 111;
-        final Integer mailSmtpConnectionTimeout = 222;
-        final Integer mailSmtpTimeout = 333;
-        final String mailSmtpFrom = "MailSmtpFrom";
-        final String mailSmtpLocalhost = "MailSmtpLocalhost";
-        final Boolean mailSmtpEhlo = true;
-        final Boolean mailSmtpAuth = false;
-        final String mailSmtpDnsNotify = "MailSmtpDnsNotify";
-        final String mailSmtpDnsRet = "MailSmtpDnsRet";
-        final Boolean mailSmtpAllow8bitmime = false;
-        final Boolean mailSmtpSendPartial = true;
-        final String emailTemplateDirectory = "EmailTemplateDirectory";
-        final String emailTemplateLogoImage = "EmailTemplateLogoImage";
-        final String emailSubjectLine = "EmailSubjectLine";
+    @Override
+    public Class<GlobalEmailConfigEntity> getGlobalEntityClass() {
+        return GlobalEmailConfigEntity.class;
+    }
 
-        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
-                mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        emailConfigEntity.setId(id);
-        assertEquals(emailSubjectLine, emailConfigEntity.getEmailSubjectLine());
-        assertEquals(emailTemplateDirectory, emailConfigEntity.getEmailTemplateDirectory());
-        assertEquals(emailTemplateLogoImage, emailConfigEntity.getEmailTemplateLogoImage());
-        assertEquals(id, emailConfigEntity.getId());
-        assertEquals(mailSmtpAllow8bitmime, emailConfigEntity.getMailSmtpAllow8bitmime());
-        assertEquals(mailSmtpAuth, emailConfigEntity.getMailSmtpAuth());
-        assertEquals(mailSmtpConnectionTimeout, emailConfigEntity.getMailSmtpConnectionTimeout());
-        assertEquals(mailSmtpDnsNotify, emailConfigEntity.getMailSmtpDnsNotify());
-        assertEquals(mailSmtpDnsRet, emailConfigEntity.getMailSmtpDnsRet());
-        assertEquals(mailSmtpEhlo, emailConfigEntity.getMailSmtpEhlo());
-        assertEquals(mailSmtpFrom, emailConfigEntity.getMailSmtpFrom());
-        assertEquals(mailSmtpHost, emailConfigEntity.getMailSmtpHost());
-        assertEquals(mailSmtpLocalhost, emailConfigEntity.getMailSmtpLocalhost());
-        assertEquals(mailSmtpPassword, emailConfigEntity.getMailSmtpPassword());
-        assertEquals(mailSmtpPort, emailConfigEntity.getMailSmtpPort());
-        assertEquals(mailSmtpSendPartial, emailConfigEntity.getMailSmtpSendPartial());
-        assertEquals(mailSmtpTimeout, emailConfigEntity.getMailSmtpTimeout());
-        assertEquals(mailSmtpUser, emailConfigEntity.getMailSmtpUser());
+    @Override
+    public void assertGlobalEntityFieldsNull(final GlobalEmailConfigEntity entity) {
+        assertNull(entity.getEmailSubjectLine());
+        assertNull(entity.getEmailTemplateDirectory());
+        assertNull(entity.getEmailTemplateLogoImage());
+        assertNull(entity.getMailSmtpAllow8bitmime());
+        assertNull(entity.getMailSmtpAuth());
+        assertNull(entity.getMailSmtpConnectionTimeout());
+        assertNull(entity.getMailSmtpDnsNotify());
+        assertNull(entity.getMailSmtpDnsRet());
+        assertNull(entity.getMailSmtpEhlo());
+        assertNull(entity.getMailSmtpFrom());
+        assertNull(entity.getMailSmtpHost());
+        assertNull(entity.getMailSmtpLocalhost());
+        assertNull(entity.getMailSmtpPassword());
+        assertNull(entity.getMailSmtpPort());
+        assertNull(entity.getMailSmtpSendPartial());
+        assertNull(entity.getMailSmtpTimeout());
+        assertNull(entity.getMailSmtpUser());
+    }
 
-        assertEquals(1668272119, emailConfigEntity.hashCode());
+    @Override
+    public long globalEntitySerialId() {
+        return GlobalEmailConfigEntity.getSerialversionuid();
+    }
 
-        final String expectedString = "{\"mailSmtpHost\":\"MailSmtpHost\",\"mailSmtpUser\":\"MailSmtpUser\",\"mailSmtpPort\":111,\"mailSmtpConnectionTimeout\":222,\"mailSmtpTimeout\":333,\"mailSmtpFrom\":\"MailSmtpFrom\",\"mailSmtpLocalhost\":\"MailSmtpLocalhost\",\"mailSmtpEhlo\":true,\"mailSmtpAuth\":false,\"mailSmtpDnsNotify\":\"MailSmtpDnsNotify\",\"mailSmtpDnsRet\":\"MailSmtpDnsRet\",\"mailSmtpAllow8bitmime\":false,\"mailSmtpSendPartial\":true,\"emailTemplateDirectory\":\"EmailTemplateDirectory\",\"emailTemplateLogoImage\":\"EmailTemplateLogoImage\",\"emailSubjectLine\":\"EmailSubjectLine\",\"id\":123}";
-        assertEquals(expectedString, emailConfigEntity.toString());
+    @Override
+    public int emptyGlobalEntityHashCode() {
+        return 1169169065;
+    }
 
-        final GlobalEmailConfigEntity emailConfigEntityNew = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        emailConfigEntityNew.setId(id);
-        assertEquals(emailConfigEntity, emailConfigEntityNew);
+    @Override
+    public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
+        assertEquals(mockUtils.getEmailSubjectLine(), entity.getEmailSubjectLine());
+        assertEquals(mockUtils.getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
+        assertEquals(mockUtils.getEmailTemplateLogoImage(), entity.getEmailTemplateLogoImage());
+        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpAllow8bitmime()), entity.getMailSmtpAllow8bitmime());
+        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpAuth()), entity.getMailSmtpAuth());
+        assertEquals(Integer.valueOf(mockUtils.getMailSmtpConnectionTimeout()), entity.getMailSmtpConnectionTimeout());
+        assertEquals(mockUtils.getMailSmtpDnsNotify(), entity.getMailSmtpDnsNotify());
+        assertEquals(mockUtils.getMailSmtpDnsRet(), entity.getMailSmtpDnsRet());
+        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpEhlo()), entity.getMailSmtpEhlo());
+        assertEquals(mockUtils.getMailSmtpFrom(), entity.getMailSmtpFrom());
+        assertEquals(mockUtils.getMailSmtpHost(), entity.getMailSmtpHost());
+        assertEquals(mockUtils.getMailSmtpLocalhost(), entity.getMailSmtpLocalhost());
+        assertEquals(mockUtils.getMailSmtpPassword(), entity.getMailSmtpPassword());
+        assertEquals(Integer.valueOf(mockUtils.getMailSmtpPort()), entity.getMailSmtpPort());
+        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpSendPartial()), entity.getMailSmtpSendPartial());
+        assertEquals(Integer.valueOf(mockUtils.getMailSmtpTimeout()), entity.getMailSmtpTimeout());
+        assertEquals(mockUtils.getMailSmtpUser(), entity.getMailSmtpUser());
+    }
+
+    @Override
+    public int globalEntityHashCode() {
+        return -620287382;
     }
 
 }

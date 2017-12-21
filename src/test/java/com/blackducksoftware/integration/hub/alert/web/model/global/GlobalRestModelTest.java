@@ -22,18 +22,13 @@ import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
-    private final MockUtils<?, GR, ?, ?> mockUtils;
-    private final Class<GR> globalRestModelClass;
 
-    public GlobalRestModelTest(final MockUtils<?, GR, ?, ?> mockUtils, final Class<GR> globalRestModelClass) {
-        this.mockUtils = mockUtils;
-        this.globalRestModelClass = globalRestModelClass;
-    }
+    public abstract MockUtils<?, GR, ?, ?> getMockUtil();
 
     @Test
     public void testEmptyGlobalRestModel() {
-        final GR configRestModel = mockUtils.createEmptyGlobalRestModel();
-        assertEquals(globalRestModelSerialId(), ObjectStreamClass.lookup(globalRestModelClass).getSerialVersionUID());
+        final GR configRestModel = getMockUtil().createEmptyGlobalRestModel();
+        assertEquals(globalRestModelSerialId(), ObjectStreamClass.lookup(getGlobalRestModelClass()).getSerialVersionUID());
 
         assertGlobalRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
@@ -41,12 +36,14 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
         final int configHash = configRestModel.hashCode();
         assertEquals(emptyGlobalRestModelHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEmptyGlobalRestModelJson();
+        final String expectedString = getMockUtil().getEmptyGlobalRestModelJson();
         assertEquals(expectedString, configRestModel.toString());
 
-        final GR configRestModelNew = mockUtils.createEmptyGlobalRestModel();
+        final GR configRestModelNew = getMockUtil().createEmptyGlobalRestModel();
         assertEquals(configRestModel, configRestModelNew);
     }
+
+    public abstract Class<GR> getGlobalRestModelClass();
 
     public abstract void assertGlobalRestModelFieldsNull(GR restModel);
 
@@ -56,18 +53,18 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
 
     @Test
     public void testGlobalRestModel() {
-        final GR configRestModel = mockUtils.createGlobalRestModel();
+        final GR configRestModel = getMockUtil().createGlobalRestModel();
 
         assertGlobalRestModelFieldsFull(configRestModel);
-        assertEquals(mockUtils.getId(), configRestModel.getId());
+        assertEquals(getMockUtil().getId(), configRestModel.getId());
 
         final int configHash = configRestModel.hashCode();
         assertEquals(globalRestModelHashCode(), configHash);
 
-        final String expectedString = mockUtils.getGlobalRestModelJson();
+        final String expectedString = getMockUtil().getGlobalRestModelJson();
         assertEquals(expectedString, configRestModel.toString());
 
-        final GR configRestModelNew = mockUtils.createGlobalRestModel();
+        final GR configRestModelNew = getMockUtil().createGlobalRestModel();
         assertEquals(configRestModel, configRestModelNew);
     }
 

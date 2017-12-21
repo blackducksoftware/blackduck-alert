@@ -21,18 +21,13 @@ import org.junit.Test;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
-    protected final MockUtils<?, ?, E, ?> mockUtils;
-    private final Class<E> entityClass;
 
-    public EntityTest(final MockUtils<?, ?, E, ?> mockUtils, final Class<E> entityClass) {
-        this.mockUtils = mockUtils;
-        this.entityClass = entityClass;
-    }
+    public abstract MockUtils<?, ?, E, ?> getMockUtil();
 
     @Test
     public void testEmptyEntity() {
-        final E configEntity = mockUtils.createEmptyEntity();
-        assertEquals(entitySerialId(), ObjectStreamClass.lookup(entityClass).getSerialVersionUID());
+        final E configEntity = getMockUtil().createEmptyEntity();
+        assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
 
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
@@ -40,12 +35,14 @@ public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
         final int configHash = configEntity.hashCode();
         assertEquals(emptyEntityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEmptyEntityJson();
+        final String expectedString = getMockUtil().getEmptyEntityJson();
         assertEquals(expectedString, configEntity.toString());
 
-        final E configEntityNew = mockUtils.createEmptyEntity();
+        final E configEntityNew = getMockUtil().createEmptyEntity();
         assertEquals(configEntity, configEntityNew);
     }
+
+    public abstract Class<E> getEntityClass();
 
     public abstract void assertEntityFieldsNull(E entity);
 
@@ -55,18 +52,18 @@ public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
 
     @Test
     public void testEntity() {
-        final E configEntity = mockUtils.createEntity();
+        final E configEntity = getMockUtil().createEntity();
 
         assertEntityFieldsFull(configEntity);
-        assertEquals(Long.valueOf(mockUtils.getId()), configEntity.getId());
+        assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
 
         final int configHash = configEntity.hashCode();
         assertEquals(entityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEntityJson();
+        final String expectedString = getMockUtil().getEntityJson();
         assertEquals(expectedString, configEntity.toString());
 
-        final E configEntityNew = mockUtils.createEntity();
+        final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);
     }
 

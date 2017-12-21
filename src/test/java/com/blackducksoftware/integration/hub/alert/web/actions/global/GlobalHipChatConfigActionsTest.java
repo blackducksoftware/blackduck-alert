@@ -16,15 +16,11 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
 public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipChatConfigRestModel, GlobalHipChatConfigEntity, GlobalHipChatConfigActions> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
-
-    public GlobalHipChatConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public GlobalHipChatConfigActions getMockedConfigActions() {
@@ -46,6 +42,11 @@ public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipC
 
     @Override
     public void testConfigurationChangeTriggers() {
+    }
+
+    @Override
+    public MockUtils<?, GlobalHipChatConfigRestModel, ?, GlobalHipChatConfigEntity> getMockUtil() {
+        return new HipChatMockUtils();
     }
 
 }

@@ -15,13 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<GlobalSchedulingConfigRestModel> {
-    private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
-
-    public GlobalSchedulingConfigRestModelTest() {
-        super(mockUtils, GlobalSchedulingConfigRestModel.class);
-    }
+    private final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalSchedulingConfigRestModel restModel) {
@@ -50,6 +47,16 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
     @Override
     public int globalRestModelHashCode() {
         return -1636279514;
+    }
+
+    @Override
+    public MockUtils<?, GlobalSchedulingConfigRestModel, ?, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<GlobalSchedulingConfigRestModel> getGlobalRestModelClass() {
+        return GlobalSchedulingConfigRestModel.class;
     }
 
 }
