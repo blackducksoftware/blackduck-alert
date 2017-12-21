@@ -45,6 +45,8 @@ public class TestProperties {
                 }
             } catch (final Exception ex) {
                 System.out.println("Couldn't load " + propertiesLocation + " file!");
+                System.out.println("Reading from the environment...");
+                populatePropertiesFromEnv();
             }
         }
 
