@@ -29,10 +29,8 @@ import org.springframework.batch.item.ItemProcessor;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
-import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
@@ -47,8 +45,8 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
         try {
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
             if (hubServicesFactory != null) {
-                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectRequestService(), hubServicesFactory.createProjectAssignmentRequestService(),
-                        hubServicesFactory.createHubResponseService(), hubServicesFactory.createVulnerabilityRequestService(), new MetaService(new Slf4jIntLogger(logger)));
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectService(), hubServicesFactory.createProjectAssignmentService(), hubServicesFactory.createHubService(),
+                        hubServicesFactory.createVulnerabilityService(), hubServicesFactory.getRestConnection().logger);
                 final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
                 return storeEvent;
             }

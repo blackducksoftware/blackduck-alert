@@ -15,19 +15,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.After;
 import org.junit.Before;
 
-import com.blackducksoftware.integration.hub.alert.ResourceLoader;
-import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.TestProperties;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
-public class RestChannelTest {
+public class ChannelTest {
     protected Gson gson;
-    private ResourceLoader resourceLoader;
-    protected Properties properties;
+    protected TestProperties properties;
 
     private OutputStream systemOut;
     private OutputStream systemErr;
@@ -42,22 +46,7 @@ public class RestChannelTest {
         System.setErr(new PrintStream(loggerOutput));
 
         gson = new Gson();
-        resourceLoader = new ResourceLoader();
-        properties = new Properties();
-        try {
-            properties = resourceLoader.loadProperties(ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION);
-        } catch (final Exception ex) {
-            System.out.println("Couldn't load " + ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION + " file!");
-        }
-
-        if (properties.isEmpty()) {
-            for (final TestPropertyKey key : TestPropertyKey.values()) {
-                final String prop = System.getenv(key.toString());
-                if (prop != null && !prop.isEmpty()) {
-                    properties.setProperty(key.getPropertyKey(), prop);
-                }
-            }
-        }
+        properties = new TestProperties();
     }
 
     @After
@@ -80,6 +69,33 @@ public class RestChannelTest {
             }
         }
         return lineContainingText;
+    }
+
+    protected CategoryData createMockPolicyViolation() {
+        final HashMap<String, Object> dataMap = new HashMap<>();
+        dataMap.put("COMPONENT", "comp");
+        dataMap.put("VERSION", "version in violation");
+        dataMap.put("RULE", "my policy rule");
+
+        return new CategoryData("POLICY_VIOLATION", Arrays.asList(new ItemData(dataMap)), 1);
+    }
+
+    protected CategoryData createMockVulnerability() {
+        final HashMap<String, Object> dataMap = new HashMap<>();
+        dataMap.put("COMPONENT", "vuln comp");
+        dataMap.put("VERSION", "vuln ver");
+        dataMap.put("COUNT", 7);
+
+        return new CategoryData("MEDIUM_VULNERABILITY", Arrays.asList(new ItemData(dataMap)), 1);
+    }
+
+    public ProjectData createProjectData(final String testName) {
+        final HashMap<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
+        categoryMap.put(NotificationCategoryEnum.POLICY_VIOLATION, createMockPolicyViolation());
+        categoryMap.put(NotificationCategoryEnum.MEDIUM_VULNERABILITY, createMockVulnerability());
+
+        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", categoryMap);
+        return projectData;
     }
 
     // For ease of debugging
