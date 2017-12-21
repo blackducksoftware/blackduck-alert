@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
 
     dependencies {
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.2.RELEASE'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
     }
 }
 
@@ -17,6 +19,10 @@ plugins {
     id 'com.github.hierynomus.license' version '0.14.0'
     id 'com.moowork.node' version '1.2.0'
 }
+
+apply plugin: 'com.bmuschko.docker-remote-api'
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 tasks.withType(JavaCompile) { options.encoding = 'UTF-8' }
 tasks.withType(GroovyCompile) { options.encoding = 'UTF-8' }
@@ -40,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:22.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:24.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch'
@@ -52,11 +58,11 @@ dependencies {
     compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
     compile 'org.springframework.security:spring-security-config:4.2.3.RELEASE'
     runtime 'com.h2database:h2'
-    
+
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'javax.mail:mail:1.4.7'
     compile 'org.freemarker:freemarker:2.3.25-incubating'
-    
+
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
     compile 'org.apache.activemq:activemq-kahadb-store:5.14.5'
@@ -80,8 +86,8 @@ jar {
 
 startScripts {
     doLast {
-        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
-        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:APP_HOME_VAR_TOKEN/config/ ")
+        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-volume ")
+        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/blackduck-alert-config-volume ")
         unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
         windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
     }
@@ -91,7 +97,7 @@ distributions {
     main {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
-            from('src/main/resources/application.properties') {into 'config/'}
+            from('src/main/resources/application.properties') {into '/blackduck-alert-config-defaults/'}
             from('src/main/resources/email/images/') {into 'images/'}
             from('src/main/resources/email/templates/') {into 'templates/'}
         }
@@ -115,9 +121,9 @@ task webpack(type: Exec) {
         inputs.file("package-lock.json")
         inputs.file("webpack.config.js")
         inputs.dir("$projectDir/src/main")
-    
+
         outputs.dir("$projectDir/src/main/resources/static/built/bundle.js")
-    
+
         commandLine "$projectDir/node_modules/.bin/webpack", "$projectDir/src/main/js/App.js", "$projectDir/src/main/resources/static/built/bundle.js"
 }
 
@@ -139,5 +145,32 @@ tasks.licenseMain.dependsOn(licenseFormatMain)
 task runServer(type: Exec, dependsOn: [build]) {
     File jarFile = new File("build/libs/hub-alert-${version}.jar")
     commandLine 'java', '-jar', jarFile.getAbsolutePath()
-    
+
 }
+
+task stageDocker(type:Copy, dependsOn: [build]) {
+    into "${project.buildDir}/docker"
+    from("${project.projectDir}") {
+        include 'Dockerfile'
+        include 'docker-entrypoint.sh'
+    }
+    into('build/distributions') {
+        from distTar
+    }
+}
+
+task buildDockerImage(type:DockerBuildImage, dependsOn: [stageDocker]) {
+    inputDir = file("${project.buildDir}/docker")
+    tag = "blackducksoftware/${project.name}:${project.version}"
+    buildArgs = [ 'VERSION': "${project.version}" ]
+}
+
+task dockerLogin(type: Exec) {
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_HUB_USER", "--password", "$System.env.DOCKER_HUB_PASSWORD"
+}
+
+task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
+    commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+}
+
+task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {}

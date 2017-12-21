@@ -66,18 +66,18 @@ public class ChannelRestConnectionFactory {
         final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
         restConnectionBuilder.setBaseUrl(url.toString());
         restConnectionBuilder.setLogger(intLogger);
-        if (globalProperties.hubTrustCertificate != null) {
-            restConnectionBuilder.setAlwaysTrustServerCertificate(globalProperties.hubTrustCertificate);
+        if (globalProperties.getHubTrustCertificate() != null) {
+            restConnectionBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
         }
-        restConnectionBuilder.setProxyHost(globalProperties.hubProxyHost);
-        if (globalProperties.hubProxyPort != null) {
-            restConnectionBuilder.setProxyPort(NumberUtils.toInt(globalProperties.hubProxyPort));
+        restConnectionBuilder.setProxyHost(globalProperties.getHubProxyHost());
+        if (globalProperties.getHubProxyPort() != null) {
+            restConnectionBuilder.setProxyPort(NumberUtils.toInt(globalProperties.getHubProxyPort()));
         }
-        if (globalProperties.hubProxyUsername != null) {
-            restConnectionBuilder.setProxyUsername(globalProperties.hubProxyUsername);
+        if (globalProperties.getHubProxyUsername() != null) {
+            restConnectionBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
         }
-        if (globalProperties.hubProxyPassword != null) {
-            restConnectionBuilder.setProxyPassword(globalProperties.hubProxyPassword);
+        if (globalProperties.getHubProxyPassword() != null) {
+            restConnectionBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
         }
         restConnectionBuilder.setTimeout(timeout);
 

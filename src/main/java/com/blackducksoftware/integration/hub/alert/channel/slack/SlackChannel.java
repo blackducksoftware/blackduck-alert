@@ -97,7 +97,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
 
             try {
                 logger.info("Attempting to send message...");
-                final Response response = connection.handleExecuteClientCall(request);
+                final Response response = connection.createResponse(request);
                 logger.info("Successfully sent a slack message!");
                 if (logger.isTraceEnabled()) {
                     logger.trace("Response: " + response.toString());

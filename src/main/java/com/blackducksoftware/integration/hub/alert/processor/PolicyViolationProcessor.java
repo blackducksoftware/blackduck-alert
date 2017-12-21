@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.processor;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.blackducksoftware.integration.hub.api.item.MetaService;
+import com.blackducksoftware.integration.hub.api.view.MetaHandler;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.blackducksoftware.integration.hub.notification.processor.SubProcessorCache;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEventConstants;
+import com.blackducksoftware.integration.log.IntLogger;
 
 public class PolicyViolationProcessor extends NotificationSubProcessor {
 
@@ -43,8 +44,8 @@ public class PolicyViolationProcessor extends NotificationSubProcessor {
 
     public final static String POLICY_RULE = "policyRule";
 
-    public PolicyViolationProcessor(final SubProcessorCache cache, final MetaService metaService) {
-        super(cache, metaService);
+    public PolicyViolationProcessor(final SubProcessorCache cache, final IntLogger intLogger) {
+        super(cache, new MetaHandler(intLogger));
     }
 
     @Override
@@ -90,7 +91,7 @@ public class PolicyViolationProcessor extends NotificationSubProcessor {
 
         keyBuilder.append(NotificationEventConstants.EVENT_KEY_HUB_POLICY_RULE_REL_URL_HASHED_NAME);
         keyBuilder.append(NotificationEventConstants.EVENT_KEY_NAME_VALUE_SEPARATOR);
-        keyBuilder.append(hashString(getMetaService().getHref(rule)));
+        keyBuilder.append(hashString(getMetaHandler().getHref(rule)));
         final String key = keyBuilder.toString();
         return key;
     }
