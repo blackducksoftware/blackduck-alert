@@ -35,7 +35,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<Global
 
     @Override
     public int emptyGlobalRestModelHashCode() {
-        return 23273;
+        return 906870;
     }
 
     @Override
@@ -45,6 +45,6 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<Global
 
     @Override
     public int globalRestModelHashCode() {
-        return -215716397;
+        return 608471908;
     }
 }

@@ -3,60 +3,6 @@
     overflow-y: scroll;
 }
 
-.jobTableButton {
-	cursor: pointer;
-	color: #fff;
-    background: #285f8f;
-    display: inline-block;
-    border: 1px solid transparent;
-    text-align: center;
-    vertical-align: middle;
-}
-
-.addJobButton {
-	composes: jobTableButton;
-}
-
-.deleteJobButton {
-	composes: jobTableButton;
-    background: #ef4923;
-}
-
-.editJobButton {
-    composes: jobTableButton;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.table {
-    width: 98%;
-}
-
-.tableRow {
-    cursor: pointer;
-}
-
-
-.projectTableScrollableBody {
-    composes: scrollable;
-    height: 200px !important;
-    width: 100%;
-}
-
-.tableScrollableBody {
-    composes: scrollable;
-    height: 100% !important;
-    width: 100%;
-}
-
-.statusSuccess {
-	color: green;
-}
-
-.statusFailure {
-	color: red;
-}
-
 .hidden {
     display: none;
 }

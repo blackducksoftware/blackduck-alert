@@ -16,7 +16,7 @@ class HipChatConfiguration extends ServerConfiguration {
 	render() {
 		let content =
 				<div>
-					<TextInput label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></TextInput>
+					<TextInput label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} isSet={this.state.values.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></TextInput>
 				</div>;
         return super.render(content);
 	}

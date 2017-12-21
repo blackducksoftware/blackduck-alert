@@ -16,10 +16,15 @@ class LabeledField extends Component {
 		if (this.props.errorName && this.props.errorValue) {
 			errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
 		}
+		var field = inputDiv;
+		if (!inputDiv) {
+			field = this.props.field;
+		}
+
 		return (
 				<div>
 					<label className={labelClass}>{this.props.label}</label>
-					{inputDiv}
+					{field}
 					{errorDiv}
 				</div>
 		)

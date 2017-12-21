@@ -19,18 +19,20 @@ import com.google.gson.JsonObject;
 
 public class HipChatMockUtils extends DistributionMockUtils implements MockUtils<HipChatDistributionRestModel, GlobalHipChatConfigRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
     private final String apiKey;
+    private final boolean apiKeyIsSet;
     private final String roomId;
     private final String notify;
     private final String color;
     private final String id;
 
     public HipChatMockUtils() {
-        this("ApiKey", "11", "false", "black", "1");
+        this("ApiKey", false, "11", "false", "black", "1");
     }
 
-    public HipChatMockUtils(final String apiKey, final String roomId, final String notify, final String color, final String id) {
+    public HipChatMockUtils(final String apiKey, final boolean apiKeyIsSet, final String roomId, final String notify, final String color, final String id) {
         super(id);
         this.apiKey = apiKey;
+        this.apiKeyIsSet = apiKeyIsSet;
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
@@ -64,13 +66,14 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
 
     @Override
     public GlobalHipChatConfigRestModel createGlobalRestModel() {
-        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel(id, apiKey);
+        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel(id, apiKey, apiKeyIsSet);
         return restModel;
     }
 
     @Override
     public String getGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
+        json.addProperty("apiKeyIsSet", apiKeyIsSet);
         json.addProperty("id", id);
         return json.toString();
     }
@@ -78,6 +81,7 @@ public class HipChatMockUtils extends DistributionMockUtils implements MockUtils
     @Override
     public String getEmptyGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
+        json.addProperty("apiKeyIsSet", apiKeyIsSet);
         json.add("id", null);
         return json.toString();
     }

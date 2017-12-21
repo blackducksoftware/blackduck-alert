@@ -17,16 +17,17 @@ class HubConfiguration extends ServerConfiguration {
 	render() {
 		let content =
 				<div>
-					<TextInput label="Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} onChange={this.handleChange} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
+					<TextInput label="Url" name="hubUrl" readOnly="true" value={this.state.values.hubUrl} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}></TextInput>
 					<TextInput label="Username" name="hubUsername" value={this.state.values.hubUsername} onChange={this.handleChange} errorName="usernameError" errorValue={this.state.errors.usernameError}></TextInput>
-					<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} onChange={this.handleChange} errorName="passwordError" errorValue={this.state.errors.passwordError}></PasswordInput>
+					<PasswordInput label="Password" name="hubPassword" value={this.state.values.hubPassword} isSet={this.state.values.hubPasswordIsSet} onChange={this.handleChange} errorName="passwordError" errorValue={this.state.errors.passwordError}></PasswordInput>
 					<NumberInput label="Timeout" name="hubTimeout" value={this.state.values.hubTimeout} onChange={this.handleChange} errorName="hubTimeoutError" errorValue={this.state.errors.hubTimeoutError}></NumberInput>
 					<CheckboxInput label="Trust Https Certificates" name="hubAlwaysTrustCertificate" readOnly="true" value={this.state.values.hubAlwaysTrustCertificate} onChange={this.handleChange} errorName="hubAlwaysTrustCertificateError" errorValue={this.state.errors.hubAlwaysTrustCertificateError}></CheckboxInput>
 
 					<h2 className={alignCenter}>Proxy Configuration</h2>
 					<TextInput label="Host Name" name="hubProxyHost" readOnly="true" value={this.state.values.hubProxyHost} onChange={this.handleChange} errorName="hubProxyHostError" errorValue={this.state.errors.hubProxyHostError}></TextInput>
-					<NumberInput label="Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} onChange={this.handleChange} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
-					<TextInput label="Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername} onChange={this.handleChange} errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
+					<NumberInput label="Port" name="hubProxyPort" readOnly="true" value={this.state.values.hubProxyPort} errorName="hubProxyPortError" errorValue={this.state.errors.hubProxyPortError}></NumberInput>
+					<TextInput label="Username" name="hubProxyUsername" readOnly="true" value={this.state.values.hubProxyUsername}  errorName="hubProxyUsernameError" errorValue={this.state.errors.hubProxyUsernameError}></TextInput>
+					<TextInput label="Proxy Password" name="hubProxyPassword" readOnly="true" isSet={this.state.values.hubProxyPasswordIsSet} errorName="hubProxyPasswordError" errorValue={this.state.errors.hubProxyPassword}></TextInput>
 				</div>;
         return super.render(content);
 	}

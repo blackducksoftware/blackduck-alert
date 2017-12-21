@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 
+import Audit from './component/audit/Audit';
 import DistributionConfiguration from './component/distribution/DistributionConfiguration';
 import HubConfiguration from './component/server/HubConfiguration';
 import SchedulingConfiguration from './component/server/SchedulingConfiguration';
@@ -31,8 +32,9 @@ class MainPage extends Component {
 				<Header handleState={this.props.handleState} fixed={true} includeLogout={true}></Header>
                 <Tabs className={tabContainer} selectedTabClassName={tabSelected} selectedIndex={this.state.mainIndex} onSelect={index => this.setState({ mainIndex: index })}>
                     <TabList className={styles.table}>
-                        <Tab className={configTabs}>Server Configuration </Tab>
+                        <Tab className={configTabs}>Server Configuration</Tab>
                         <Tab className={configTabs}>Distribution Configuration</Tab>
+                        <Tab className={configTabs}>Audit</Tab>
                     </TabList>
                     <div className={styles.tableBorder}>
                         <TabPanel className={tabContent}>
@@ -40,6 +42,9 @@ class MainPage extends Component {
                         </TabPanel>
                         <TabPanel className={tabContent}>
                             <DistributionConfiguration />
+                        </TabPanel>
+                        <TabPanel className={tabContent}>
+                            <Audit />
                         </TabPanel>
                     </div>
                 </Tabs>

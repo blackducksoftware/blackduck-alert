@@ -79,7 +79,7 @@ public class CommonDistributionConfigActionsTestIT {
         final Date lastRan = new Date(System.currentTimeMillis());
         final StatusEnum status = StatusEnum.SUCCESS;
 
-        auditEntryRepository.save(new AuditEntryEntity(new Long(-1), new Long(-1), lastRan, lastRan, status));
+        auditEntryRepository.save(new AuditEntryEntity(new Long(-1), new Long(-1), lastRan, lastRan, status, "", ""));
 
         final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
         final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);

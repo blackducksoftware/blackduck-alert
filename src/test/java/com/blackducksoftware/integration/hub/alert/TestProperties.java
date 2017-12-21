@@ -50,6 +50,9 @@ public class TestProperties {
             }
         }
 
+        if (properties == null) {
+            properties = new Properties();
+        }
         return properties;
     }
 
