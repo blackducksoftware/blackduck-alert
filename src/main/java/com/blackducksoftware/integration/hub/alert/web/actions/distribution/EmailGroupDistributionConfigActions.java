@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -40,14 +40,14 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailG
 
 @Component
 public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
-    private final EmailGroupChannel emailGroupChannel;
+    private final EmailGroupManager emailManager;
 
     @Autowired
     public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<EmailGroupDistributionConfigEntity, Long> repository,
             final ConfiguredProjectsActions<EmailGroupDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<EmailGroupDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
-            final EmailGroupChannel emailGroupChannel) {
+            final EmailGroupManager emailManager) {
         super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
-        this.emailGroupChannel = emailGroupChannel;
+        this.emailManager = emailManager;
     }
 
     @Override
@@ -60,8 +60,7 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
 
     @Override
     public String channelTestConfig(final EmailGroupDistributionRestModel restModel) throws IntegrationException {
-        final EmailGroupDistributionConfigEntity testEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
-        return emailGroupChannel.testMessage(testEntity);
+        return emailManager.sendTestMessage(restModel);
     }
 
     @Override

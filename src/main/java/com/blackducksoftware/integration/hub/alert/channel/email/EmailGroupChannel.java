@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +48,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
-import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.group.GroupRequestService;
@@ -77,17 +75,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     @Override
     public void receiveMessage(final String message) {
         super.receiveMessage(message);
-    }
-
-    @Override
-    public String testMessage(final EmailGroupDistributionConfigEntity distributionConfig) {
-        if (getGlobalConfigEntity() == null || globalProperties == null) {
-            return "No global configuration found.";
-        }
-        final ProjectData data = new ProjectData(DigestTypeEnum.REAL_TIME, "Test Project", "Test Version", Collections.emptyMap());
-        final EmailGroupEvent event = new EmailGroupEvent(data, -1L);
-        sendMessage(event, distributionConfig);
-        return "Attempted to send message with the given configuration.";
     }
 
     @Override

@@ -22,21 +22,22 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 @Component
-public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackEvent> {
-    public SlackManager(final DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> distributionChannel, final JpaRepository<GlobalSlackConfigEntity, Long> globalRepository,
-            final JpaRepository<SlackDistributionConfigEntity, Long> localRepository) {
-        super(distributionChannel, globalRepository, localRepository);
+public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackEvent, SlackDistributionRestModel> {
+    public SlackManager(final SlackChannel distributionChannel, final GlobalSlackRepository globalRepository, final SlackDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
+        super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
 
     @Override
@@ -47,6 +48,11 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     @Override
     public SlackEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         return new SlackEvent(projectData, commonDistributionConfigId);
+    }
+
+    @Override
+    public Class<SlackDistributionConfigEntity> getDatabaseEntityClass() {
+        return SlackDistributionConfigEntity.class;
     }
 
 }
