@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -27,8 +28,10 @@ public class GlobalConfigRestModelTest {
 
         assertNull(globalConfigRestModel.getHubAlwaysTrustCertificate());
         assertNull(globalConfigRestModel.getHubPassword());
+        assertFalse(globalConfigRestModel.isHubPasswordIsSet());
         assertNull(globalConfigRestModel.getHubProxyHost());
         assertNull(globalConfigRestModel.getHubProxyPassword());
+        assertFalse(globalConfigRestModel.isHubProxyPasswordIsSet());
         assertNull(globalConfigRestModel.getHubProxyPort());
         assertNull(globalConfigRestModel.getHubProxyUsername());
         assertNull(globalConfigRestModel.getHubTimeout());
@@ -36,9 +39,10 @@ public class GlobalConfigRestModelTest {
         assertNull(globalConfigRestModel.getHubUsername());
         assertNull(globalConfigRestModel.getId());
 
-        assertEquals(-2120005431, globalConfigRestModel.hashCode());
+        final int restModelHash = globalConfigRestModel.hashCode();
+        assertEquals(-1151643201, restModelHash);
 
-        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubAlwaysTrustCertificate\":null,\"id\":null}";
+        final String expectedString = "{\"hubUrl\":null,\"hubTimeout\":null,\"hubUsername\":null,\"hubPasswordIsSet\":false,\"hubProxyHost\":null,\"hubProxyPort\":null,\"hubProxyUsername\":null,\"hubProxyPasswordIsSet\":false,\"hubAlwaysTrustCertificate\":null,\"id\":null}";
         assertEquals(expectedString, globalConfigRestModel.toString());
 
         final GlobalHubConfigRestModel globalConfigRestModelNew = new GlobalHubConfigRestModel();
@@ -58,7 +62,8 @@ public class GlobalConfigRestModelTest {
         final String hubProxyPassword = "HubProxyPassword";
         final String hubAlwaysTrustCertificate = "HubAlwaysTrustCertificate";
 
-        final GlobalHubConfigRestModel globalConfigRestModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate);
+        final GlobalHubConfigRestModel globalConfigRestModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, true, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, true,
+                hubAlwaysTrustCertificate);
         assertEquals(hubAlwaysTrustCertificate, globalConfigRestModel.getHubAlwaysTrustCertificate());
         assertEquals(hubPassword, globalConfigRestModel.getHubPassword());
         assertEquals(hubProxyHost, globalConfigRestModel.getHubProxyHost());
@@ -70,12 +75,14 @@ public class GlobalConfigRestModelTest {
         assertEquals(hubUsername, globalConfigRestModel.getHubUsername());
         assertEquals(id, globalConfigRestModel.getId());
 
-        assertEquals(1740245846, globalConfigRestModel.hashCode());
+        final int restModelHash = globalConfigRestModel.hashCode();
+        assertEquals(-1414035720, restModelHash);
 
-        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":\"HubTimeout\",\"hubUsername\":\"HubUsername\",\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubAlwaysTrustCertificate\":\"HubAlwaysTrustCertificate\",\"id\":\"Id\"}";
+        final String expectedString = "{\"hubUrl\":\"HubUrl\",\"hubTimeout\":\"HubTimeout\",\"hubUsername\":\"HubUsername\",\"hubPasswordIsSet\":true,\"hubProxyHost\":\"HubProxyHost\",\"hubProxyPort\":\"HubProxyPort\",\"hubProxyUsername\":\"HubProxyUsername\",\"hubProxyPasswordIsSet\":true,\"hubAlwaysTrustCertificate\":\"HubAlwaysTrustCertificate\",\"id\":\"Id\"}";
         assertEquals(expectedString, globalConfigRestModel.toString());
 
-        final GlobalHubConfigRestModel globalConfigRestModelNew = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubAlwaysTrustCertificate);
+        final GlobalHubConfigRestModel globalConfigRestModelNew = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, true, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, true,
+                hubAlwaysTrustCertificate);
         assertEquals(globalConfigRestModel, globalConfigRestModelNew);
     }
 }

@@ -155,8 +155,8 @@ public class GlobalEmailConfigActionsTest {
         String response = configActions.validateConfig(mockUtils.createEmailConfigRestModel());
         assertEquals("Valid", response);
 
-        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel("NotLong", "MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", "NotInteger", "NotInteger", "NotInteger", "MailSmtpFrom", "MailSmtpLocalhost", "NotBoolean",
-                "NotBoolean", "MailSmtpDnsNotify", "MailSmtpDnsRet", "NotBoolean", "NotBoolean", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
+        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel("NotLong", "MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", true, "NotInteger", "NotInteger", "NotInteger", "MailSmtpFrom", "MailSmtpLocalhost",
+                "NotBoolean", "NotBoolean", "MailSmtpDnsNotify", "MailSmtpDnsRet", "NotBoolean", "NotBoolean", "MailSmtpTemplateDirectory", "MailSmtpTemplateLogoImage", "MailSmtpSubjectLine");
 
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("mailSmtpPort", "Not an Integer.");

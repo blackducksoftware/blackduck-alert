@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -27,11 +28,12 @@ public class HipChatConfigRestModelTest {
 
         assertNull(hipChatConfigRestModel.getApiKey());
         assertNull(hipChatConfigRestModel.getId());
+        assertFalse(hipChatConfigRestModel.isApiKeyIsSet());
 
         final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(23273, restModelHash);
+        assertEquals(906870, restModelHash);
 
-        final String expectedString = "{\"id\":null}";
+        final String expectedString = "{\"apiKeyIsSet\":false,\"id\":null}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
         final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel();
@@ -43,18 +45,18 @@ public class HipChatConfigRestModelTest {
         final String id = "Id";
         final String apiKey = "ApiKey";
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModel = new GlobalHipChatConfigRestModel(id, apiKey, true);
 
         assertEquals(apiKey, hipChatConfigRestModel.getApiKey());
         assertEquals(id, hipChatConfigRestModel.getId());
 
         final int restModelHash = hipChatConfigRestModel.hashCode();
-        assertEquals(-215714083, restModelHash);
+        assertEquals(608474000, restModelHash);
 
-        final String expectedString = "{\"id\":\"Id\"}";
+        final String expectedString = "{\"apiKeyIsSet\":true,\"id\":\"Id\"}";
         assertEquals(expectedString, hipChatConfigRestModel.toString());
 
-        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey);
+        final GlobalHipChatConfigRestModel hipChatConfigRestModelNew = new GlobalHipChatConfigRestModel(id, apiKey, true);
         assertEquals(hipChatConfigRestModel, hipChatConfigRestModelNew);
     }
 }

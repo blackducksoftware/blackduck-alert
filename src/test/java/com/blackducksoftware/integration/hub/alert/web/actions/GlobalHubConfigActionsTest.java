@@ -185,7 +185,7 @@ public class GlobalHubConfigActionsTest {
         String response = configActions.validateConfig(mockUtils.createGlobalHubConfigRestModel());
         assertEquals("Valid", response);
 
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "NotInteger", "HubUsername", "HubPassword", "HubProxyHost", "HubProxyPort", "HubProxyUsername", "HubProxyPassword", "NotBoolean");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "NotInteger", "HubUsername", "HubPassword", true, "HubProxyHost", "HubProxyPort", "HubProxyUsername", "HubProxyPassword", true, "NotBoolean");
 
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("hubTimeout", "Not an Integer.");
@@ -267,7 +267,7 @@ public class GlobalHubConfigActionsTest {
         verify(mockedRestConnection, times(1)).connect();
         Mockito.reset(mockedRestConnection);
 
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", "");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", true, "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", true, "");
         configActions.channelTestConfig(restModel);
         verify(mockedRestConnection, times(1)).connect();
     }
