@@ -9,15 +9,19 @@ export default class PasswordInput extends LabeledField {
 	}
 
 	render() {
+		let placeholderText = null;
+		if (this.props.isSet) {
+			placeholderText = '***********';
+		} 
 		let inputClass = this.props.inputClass;
 		if (!inputClass) {
 			inputClass = textInput;
 		}
 		let inputDiv = null;
 		if (this.props.readOnly) {
-			inputDiv = <input type="password" readOnly className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="password" readOnly className={inputClass} name={this.props.name} value={this.props.value} placeholder={placeholderText} />;
 		} else {
-			inputDiv = <input type="password" className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} />;
+			inputDiv = <input type="password" className={inputClass} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />;
 		}
 		return (
 				super.render(inputDiv)

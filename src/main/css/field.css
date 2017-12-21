@@ -2,6 +2,10 @@
     width: 50%;
 }
 
+.textInput::placeholder {
+    color: black;
+}
+
 .inline {
     display: inline-block;
 }
@@ -11,6 +15,11 @@
     text-align: right;
     padding: 10px;
     width: 30%;
+}
+
+.fieldLabelTextArea {
+    composes: fieldLabel;
+    vertical-align: top;
 }
 
 .fieldLabel:after {

@@ -82,9 +82,22 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         try {
             final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
             for (final String fieldName : sensitiveFields()) {
+                boolean isFieldSet = false;
                 final Field field = restModelClass.getDeclaredField(fieldName);
                 field.setAccessible(true);
+                final String sensitiveFieldValue = (String) field.get(restModel);
+                if (StringUtils.isNotBlank(sensitiveFieldValue)) {
+                    isFieldSet = true;
+                }
                 field.set(restModel, null);
+
+                final Field fieldIsSet = restModelClass.getDeclaredField(fieldName + "IsSet");
+                fieldIsSet.setAccessible(true);
+                final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(restModel);
+                if (!sensitiveIsSetFieldValue) {
+                    isFieldSet = true;
+                    fieldIsSet.setBoolean(restModel, isFieldSet);
+                }
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
@@ -129,7 +142,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 final String newValue = (String) field.get(newConfig);
                 if (StringUtils.isBlank(newValue) && savedConfig != null) {
                     final Class savedConfigClass = savedConfig.getClass();
-                    final Field savedField = savedConfigClass.getDeclaredField(fieldName);
+                    Field savedField = null;
+                    try {
+                        savedField = savedConfigClass.getDeclaredField(fieldName);
+                    } catch (final NoSuchFieldException e) {
+                        continue;
+                    }
                     savedField.setAccessible(true);
                     final String savedValue = (String) savedField.get(savedConfig);
                     field.set(newConfig, savedValue);

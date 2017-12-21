@@ -52,7 +52,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public int emptyGlobalRestModelHashCode() {
-        return 1169169065;
+        return 1021354782;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public int globalRestModelHashCode() {
-        return -1349295802;
+        return 1485333119;
     }
 
 }
