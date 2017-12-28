@@ -15,8 +15,10 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
@@ -45,8 +47,13 @@ public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipC
     }
 
     @Override
-    public MockUtils<?, GlobalHipChatConfigRestModel, ?, GlobalHipChatConfigEntity> getMockUtil() {
-        return new HipChatMockUtils();
+    public MockGlobalEntityUtil<GlobalHipChatConfigEntity> getGlobalEntityMockUtil() {
+        return new MockHipChatGlobalEntity();
+    }
+
+    @Override
+    public MockGlobalRestModelUtil<GlobalHipChatConfigRestModel> getGlobalRestModelMockUtil() {
+        return new MockHipChatGlobalRestModel();
     }
 
 }

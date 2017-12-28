@@ -19,11 +19,11 @@ import java.io.ObjectStreamClass;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 
 public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
 
-    public abstract MockUtils<?, ?, ?, GE> getMockUtil();
+    public abstract MockGlobalEntityUtil<GE> getMockUtil();
 
     @Test
     public void testEmptyGlobalEntity() {

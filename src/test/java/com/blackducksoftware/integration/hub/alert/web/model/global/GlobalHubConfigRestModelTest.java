@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 
 public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfigRestModel> {
-    private final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
+    private final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
@@ -62,12 +62,12 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     }
 
     @Override
-    public MockUtils<?, GlobalHubConfigRestModel, ?, ?> getMockUtil() {
-        return mockUtils;
+    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
+        return GlobalHubConfigRestModel.class;
     }
 
     @Override
-    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHubConfigRestModel.class;
+    public MockGlobalRestModelUtil<GlobalHubConfigRestModel> getMockUtil() {
+        return mockUtils;
     }
 }

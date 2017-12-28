@@ -14,14 +14,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.distributi
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEmailEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
 public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConfigEntity> {
-    private final EmailMockUtils mockUtils = new EmailMockUtils();
+    private final MockEmailEntity mockUtils = new MockEmailEntity();
 
     @Override
-    public MockUtils<?, ?, EmailGroupDistributionConfigEntity, ?> getMockUtil() {
+    public MockEntityUtil<EmailGroupDistributionConfigEntity> getMockUtil() {
         return mockUtils;
     }
 
@@ -47,12 +47,12 @@ public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConf
 
     @Override
     public void assertEntityFieldsFull(final EmailGroupDistributionConfigEntity entity) {
-        assertEquals(mockUtils.getEmailGroup(), entity.getGroupName());
+        assertEquals(mockUtils.getGroupName(), entity.getGroupName());
     }
 
     @Override
     public int entityHashCode() {
-        return 1468645689;
+        return 957142140;
     }
 
 }

@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
 
 public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
-    private final HipChatMockUtils mockUtils = new HipChatMockUtils();
+    private final MockHipChatGlobalEntity mockUtils = new MockHipChatGlobalEntity();
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalHipChatConfigEntity entity) {
@@ -46,12 +46,12 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
     }
 
     @Override
-    public MockUtils<?, ?, ?, GlobalHipChatConfigEntity> getMockUtil() {
-        return mockUtils;
+    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
+        return GlobalHipChatConfigEntity.class;
     }
 
     @Override
-    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
-        return GlobalHipChatConfigEntity.class;
+    public MockGlobalEntityUtil<GlobalHipChatConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 }

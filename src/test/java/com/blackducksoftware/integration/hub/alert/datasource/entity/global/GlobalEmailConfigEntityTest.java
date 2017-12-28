@@ -14,14 +14,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 
 public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
-    private final EmailMockUtils mockUtils = new EmailMockUtils();
+    private final MockEmailGlobalEntity mockUtils = new MockEmailGlobalEntity();
 
     @Override
-    public MockUtils<?, ?, ?, GlobalEmailConfigEntity> getMockUtil() {
+    public MockGlobalEntityUtil<GlobalEmailConfigEntity> getMockUtil() {
         return mockUtils;
     }
 

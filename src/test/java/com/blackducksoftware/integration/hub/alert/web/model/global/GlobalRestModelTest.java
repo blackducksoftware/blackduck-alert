@@ -18,12 +18,12 @@ import java.io.ObjectStreamClass;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
 
-    public abstract MockUtils<?, GR, ?, ?> getMockUtil();
+    public abstract MockGlobalRestModelUtil<GR> getMockUtil();
 
     @Test
     public void testEmptyGlobalRestModel() {
@@ -56,7 +56,7 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
         final GR configRestModel = getMockUtil().createGlobalRestModel();
 
         assertGlobalRestModelFieldsFull(configRestModel);
-        assertEquals(getMockUtil().getId(), configRestModel.getId());
+        assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getId());
 
         final int configHash = configRestModel.hashCode();
         assertEquals(globalRestModelHashCode(), configHash);

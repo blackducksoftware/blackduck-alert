@@ -20,11 +20,11 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 
 public abstract class RestModelTest<R extends CommonDistributionConfigRestModel> {
 
-    public abstract MockUtils<R, ?, ?, ?> getMockUtil();
+    public abstract MockRestModelUtil<R> getMockUtil();
 
     @Test
     public void testEmptyRestModel() throws JSONException {
@@ -57,7 +57,7 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel>
         final R configRestModel = getMockUtil().createRestModel();
 
         assertRestModelFieldsFull(configRestModel);
-        assertEquals(getMockUtil().getId(), configRestModel.getDistributionConfigId());
+        assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getDistributionConfigId());
 
         final int configHash = configRestModel.hashCode();
         assertEquals(restModelHashCode(), configHash);

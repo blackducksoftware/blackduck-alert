@@ -9,15 +9,15 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock;
+package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
+import org.json.JSONException;
+import org.junit.Test;
+
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class EmailMockUtils extends DistributionMockUtils implements MockUtils<EmailGroupDistributionRestModel, GlobalEmailConfigRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {
+public class MockEmailGlobalRestModel implements MockGlobalRestModelUtil<GlobalEmailConfigRestModel> {
     private final String mailSmtpHost;
     private final String mailSmtpUser;
     private final String mailSmtpPassword;
@@ -36,18 +36,16 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     private final String emailTemplateDirectory;
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
-    private final String groupName;
     private final String id;
 
-    public EmailMockUtils() {
+    public MockEmailGlobalRestModel() {
         this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "EmailTemplateDirectory",
-                "EmailTemplateLogoImage", "EmailSubjectLine", "EmailGroup", "1");
+                "EmailTemplateLogoImage", "EmailSubjectLine", "1");
     }
 
-    public EmailMockUtils(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort, final String mailSmtpConnectionTimeout,
+    private MockEmailGlobalRestModel(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort, final String mailSmtpConnectionTimeout,
             final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final String emailGroup, final String id) {
-        super(id);
+            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final String id) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -66,8 +64,13 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         this.emailTemplateDirectory = emailTemplateDirectory;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-        this.groupName = emailGroup;
         this.id = id;
+    }
+
+    @Test
+    public void test() throws JSONException {
+        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
+        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public String getMailSmtpHost() {
@@ -142,13 +145,9 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         return emailSubjectLine;
     }
 
-    public String getEmailGroup() {
-        return groupName;
-    }
-
     @Override
-    public String getId() {
-        return id;
+    public Long getId() {
+        return Long.valueOf(id);
     }
 
     @Override
@@ -161,44 +160,6 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
     @Override
     public GlobalEmailConfigRestModel createEmptyGlobalRestModel() {
         return new GlobalEmailConfigRestModel();
-    }
-
-    @Override
-    public EmailGroupDistributionRestModel createRestModel() {
-        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(getCommonId(), getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(), groupName, getProjects(),
-                getNotifications());
-        return restModel;
-    }
-
-    @Override
-    public EmailGroupDistributionRestModel createEmptyRestModel() {
-        return new EmailGroupDistributionRestModel();
-    }
-
-    @Override
-    public GlobalEmailConfigEntity createGlobalEntity() {
-        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, Integer.valueOf(mailSmtpPort), Integer.valueOf(mailSmtpConnectionTimeout), Integer.valueOf(mailSmtpTimeout),
-                mailSmtpFrom, mailSmtpLocalhost, Boolean.valueOf(mailSmtpEhlo), Boolean.valueOf(mailSmtpAuth), mailSmtpDnsNotify, mailSmtpDnsRet, Boolean.valueOf(mailSmtpAllow8bitmime), Boolean.valueOf(mailSmtpSendPartial),
-                emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        entity.setId(Long.parseLong(id));
-        return entity;
-    }
-
-    @Override
-    public GlobalEmailConfigEntity createEmptyGlobalEntity() {
-        return new GlobalEmailConfigEntity();
-    }
-
-    @Override
-    public EmailGroupDistributionConfigEntity createEntity() {
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName);
-        entity.setId(Long.parseLong(id));
-        return entity;
-    }
-
-    @Override
-    public EmailGroupDistributionConfigEntity createEmptyEntity() {
-        return new EmailGroupDistributionConfigEntity();
     }
 
     @Override
@@ -249,88 +210,6 @@ public class EmailMockUtils extends DistributionMockUtils implements MockUtils<E
         json.add("emailTemplateLogoImage", null);
         json.add("mailSmtpAllow8bitmime", null);
         json.add("emailSubjectLine", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
-    @Override
-    public String getRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.addProperty("groupName", groupName);
-        getDistributionRestModelJson(json);
-        return json.toString();
-    }
-
-    @Override
-    public String getEmptyRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.add("groupName", null);
-        getEmptyDistributionRestModelJson(json);
-        return json.toString();
-    }
-
-    @Override
-    public String getGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.addProperty("mailSmtpHost", mailSmtpHost);
-        json.addProperty("mailSmtpUser", mailSmtpUser);
-        json.addProperty("mailSmtpPort", Integer.valueOf(mailSmtpPort));
-        json.addProperty("mailSmtpConnectionTimeout", Integer.valueOf(mailSmtpConnectionTimeout));
-        json.addProperty("mailSmtpTimeout", Integer.valueOf(mailSmtpTimeout));
-        json.addProperty("mailSmtpFrom", mailSmtpFrom);
-        json.addProperty("mailSmtpLocalhost", mailSmtpLocalhost);
-        json.addProperty("mailSmtpEhlo", Boolean.valueOf(mailSmtpEhlo));
-        json.addProperty("mailSmtpAuth", Boolean.valueOf(mailSmtpAuth));
-        json.addProperty("mailSmtpDnsNotify", mailSmtpDnsNotify);
-        json.addProperty("mailSmtpDnsRet", mailSmtpDnsRet);
-        json.addProperty("mailSmtpAllow8bitmime", Boolean.valueOf(mailSmtpAllow8bitmime));
-        json.addProperty("mailSmtpSendPartial", Boolean.valueOf(mailSmtpSendPartial));
-        json.addProperty("emailTemplateDirectory", emailTemplateDirectory);
-        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
-        json.addProperty("emailSubjectLine", emailSubjectLine);
-        json.addProperty("id", Long.valueOf(id));
-        return json.toString();
-    }
-
-    @Override
-    public String getEmptyGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("mailSmtpHost", null);
-        json.add("mailSmtpUser", null);
-        json.add("mailSmtpPort", null);
-        json.add("mailSmtpConnectionTimeout", null);
-        json.add("mailSmtpTimeout", null);
-        json.add("mailSmtpFrom", null);
-        json.add("mailSmtpLocalhost", null);
-        json.add("mailSmtpEhlo", null);
-        json.add("mailSmtpAuth", null);
-        json.add("mailSmtpDnsNotify", null);
-        json.add("mailSmtpUser", null);
-        json.add("mailSmtpPort", null);
-        json.add("mailSmtpConnectionTimeout", null);
-        json.add("mailSmtpDnsRet", null);
-        json.add("mailSmtpAllow8bitmime", null);
-        json.add("mailSmtpSendPartial", null);
-        json.add("emailTemplateDirectory", null);
-        json.add("emailTemplateLogoImage", null);
-        json.add("mailSmtpAllow8bitmime", null);
-        json.add("emailSubjectLine", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
-    @Override
-    public String getEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.addProperty("groupName", groupName);
-        json.addProperty("id", Long.valueOf(id));
-        return json.toString();
-    }
-
-    @Override
-    public String getEmptyEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("groupName", null);
         json.add("id", null);
         return json.toString();
     }

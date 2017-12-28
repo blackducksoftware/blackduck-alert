@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 
 public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
-    private final HipChatMockUtils mockUtils = new HipChatMockUtils();
+    private final MockHipChatRestModel mockUtils = new MockHipChatRestModel();
 
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
@@ -50,13 +50,13 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     }
 
     @Override
-    public MockUtils<HipChatDistributionRestModel, ?, ?, ?> getMockUtil() {
-        return mockUtils;
+    public Class<HipChatDistributionRestModel> getRestModelClass() {
+        return HipChatDistributionRestModel.class;
     }
 
     @Override
-    public Class<HipChatDistributionRestModel> getRestModelClass() {
-        return HipChatDistributionRestModel.class;
+    public MockRestModelUtil<HipChatDistributionRestModel> getMockUtil() {
+        return mockUtils;
     }
 
 }

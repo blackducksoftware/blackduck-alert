@@ -9,10 +9,14 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock;
+package com.blackducksoftware.integration.hub.alert.accumulator;
 
-public interface MockUtils {
+import org.junit.Test;
 
-    public Long getId();
+public class AccumulatorProcessorTest {
 
+    @Test
+    public void testProcess() {
+        // final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor();
+    }
 }
