@@ -38,7 +38,6 @@ public class ConfiguredProjectEntity extends DatabaseEntity {
     }
 
     public ConfiguredProjectEntity(final String projectName) {
-        super();
         this.projectName = projectName;
     }
 
