@@ -40,7 +40,7 @@ public class PolicyViolationClearedProcessorTest {
         final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
         final String componentName = "Content item test";
         final ComponentVersionView componentVersionView = new ComponentVersionView();
-        final String componentUrl = "google.com";
+        final String componentUrl = "url";
         final String componentVersionUrl = "newest";
         final PolicyRuleView policyRuleView = new PolicyRuleView();
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);

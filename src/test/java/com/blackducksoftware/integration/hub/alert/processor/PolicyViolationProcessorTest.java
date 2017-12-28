@@ -40,14 +40,14 @@ public class PolicyViolationProcessorTest {
         final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
         final String componentName = "Content item test";
         final ComponentVersionView componentVersionView = new ComponentVersionView();
-        final String componentUrl = "google.com";
+        final String componentUrl = "url";
         final String componentVersionUrl = "newest";
         final PolicyRuleView policyRuleView = new PolicyRuleView();
         final MetaView metaView = new MetaView();
         metaView.href = "Meta href";
         policyRuleView.meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
-        final String coponentIssueUrl = "broken.edu";
+        final String coponentIssueUrl = "issueUrl";
         final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, coponentIssueUrl);
 
         assertTrue(cache.getEvents().size() == 0);
