@@ -22,8 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 
