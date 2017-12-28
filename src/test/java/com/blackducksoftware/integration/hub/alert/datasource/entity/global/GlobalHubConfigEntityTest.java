@@ -14,16 +14,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.GlobalHubMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
 
 public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigEntity> {
-    private final GlobalHubMockUtils mockUtils = new GlobalHubMockUtils();
-
-    @Override
-    public MockUtils<?, ?, ?, GlobalHubConfigEntity> getMockUtil() {
-        return mockUtils;
-    }
+    private final MockGlobalHubEntity mockUtils = new MockGlobalHubEntity();
 
     @Override
     public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
@@ -57,5 +52,10 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
     @Override
     public int globalEntityHashCode() {
         return -593750095;
+    }
+
+    @Override
+    public MockGlobalEntityUtil<GlobalHubConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 }

@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
 
 public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<GlobalSchedulingConfigRestModel> {
-    private final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
+    private final MockGlobalSchedulingRestModel mockUtils = new MockGlobalSchedulingRestModel();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalSchedulingConfigRestModel restModel) {
@@ -50,13 +50,13 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
     }
 
     @Override
-    public MockUtils<?, GlobalSchedulingConfigRestModel, ?, ?> getMockUtil() {
-        return mockUtils;
+    public Class<GlobalSchedulingConfigRestModel> getGlobalRestModelClass() {
+        return GlobalSchedulingConfigRestModel.class;
     }
 
     @Override
-    public Class<GlobalSchedulingConfigRestModel> getGlobalRestModelClass() {
-        return GlobalSchedulingConfigRestModel.class;
+    public MockGlobalRestModelUtil<GlobalSchedulingConfigRestModel> getMockUtil() {
+        return mockUtils;
     }
 
 }

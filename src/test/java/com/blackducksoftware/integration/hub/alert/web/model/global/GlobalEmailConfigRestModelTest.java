@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 
 public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEmailConfigRestModel> {
-    private final EmailMockUtils mockUtils = new EmailMockUtils();
+    private final MockEmailGlobalRestModel mockUtils = new MockEmailGlobalRestModel();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
@@ -78,13 +78,13 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     }
 
     @Override
-    public MockUtils<?, GlobalEmailConfigRestModel, ?, ?> getMockUtil() {
-        return mockUtils;
+    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
+        return GlobalEmailConfigRestModel.class;
     }
 
     @Override
-    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
-        return GlobalEmailConfigRestModel.class;
+    public MockGlobalRestModelUtil<GlobalEmailConfigRestModel> getMockUtil() {
+        return mockUtils;
     }
 
 }

@@ -14,11 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
-import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 
 public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRestModel> {
-    private final SlackMockUtils mockUtils = new SlackMockUtils();
+    private final MockSlackRestModel mockUtils = new MockSlackRestModel();
 
     @Override
     public void assertRestModelFieldsNull(final SlackDistributionRestModel restModel) {
@@ -50,13 +50,13 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
     }
 
     @Override
-    public MockUtils<SlackDistributionRestModel, ?, ?, ?> getMockUtil() {
-        return mockUtils;
+    public Class<SlackDistributionRestModel> getRestModelClass() {
+        return SlackDistributionRestModel.class;
     }
 
     @Override
-    public Class<SlackDistributionRestModel> getRestModelClass() {
-        return SlackDistributionRestModel.class;
+    public MockRestModelUtil<SlackDistributionRestModel> getMockUtil() {
+        return mockUtils;
     }
 
 }

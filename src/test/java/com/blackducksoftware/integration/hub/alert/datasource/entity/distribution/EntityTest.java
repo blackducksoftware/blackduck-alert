@@ -18,11 +18,12 @@ import java.io.ObjectStreamClass;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
-public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
+public abstract class EntityTest<E extends DatabaseEntity> {
 
-    public abstract MockUtils<?, ?, E, ?> getMockUtil();
+    public abstract MockEntityUtil<E> getMockUtil();
 
     @Test
     public void testEmptyEntity() {

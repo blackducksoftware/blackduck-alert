@@ -9,21 +9,20 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock;
+package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
+import org.json.JSONException;
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRestModel, GlobalHubConfigRestModel, DatabaseEntity, GlobalHubConfigEntity> {
+public class MockGlobalHubRestModel implements MockGlobalRestModelUtil<GlobalHubConfigRestModel> {
     private final String hubUrl;
     private final String hubTimeout;
     private final String hubUsername;
@@ -37,11 +36,11 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String hubAlwaysTrustCertificate;
     private final String id;
 
-    public GlobalHubMockUtils() {
+    public MockGlobalHubRestModel() {
         this("HubUrl", "444", "HubUsername", "HubPassword", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
-    public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
+    private MockGlobalHubRestModel(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
             final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate, final String id) {
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
@@ -55,6 +54,12 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.id = id;
+    }
+
+    @Test
+    public void test() throws JSONException {
+        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
+        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public GlobalProperties createTestGlobalProperties() {
@@ -111,8 +116,8 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     }
 
     @Override
-    public String getId() {
-        return id;
+    public Long getId() {
+        return Long.valueOf(id);
     }
 
     @Override
@@ -125,18 +130,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     @Override
     public GlobalHubConfigRestModel createEmptyGlobalRestModel() {
         return new GlobalHubConfigRestModel();
-    }
-
-    @Override
-    public GlobalHubConfigEntity createGlobalEntity() {
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubUsername, hubPassword);
-        entity.setId(Long.valueOf(id));
-        return entity;
-    }
-
-    @Override
-    public GlobalHubConfigEntity createEmptyGlobalEntity() {
-        return new GlobalHubConfigEntity();
     }
 
     @Override
@@ -170,79 +163,5 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         json.add("id", null);
         return json.toString();
     }
-
-    @Override
-    public String getGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.addProperty("hubTimeout", Integer.valueOf(hubTimeout));
-        json.addProperty("hubUsername", hubUsername);
-        json.addProperty("id", Long.valueOf(id));
-        return json.toString();
-    }
-
-    @Override
-    public String getEmptyGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("hubTimeout", null);
-        json.add("hubUsername", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
-    /*
-     * Does not support the following
-     */
-
-    @Override
-    @Deprecated
-    public CommonDistributionConfigRestModel createRestModel() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public CommonDistributionConfigRestModel createEmptyRestModel() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public DatabaseEntity createEntity() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public DatabaseEntity createEmptyEntity() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public String getRestModelJson() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public String getEmptyRestModelJson() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public String getEntityJson() {
-        return null;
-    }
-
-    @Override
-    @Deprecated
-    public String getEmptyEntityJson() {
-        return null;
-    }
-
-    /*
-     * End
-     */
 
 }
