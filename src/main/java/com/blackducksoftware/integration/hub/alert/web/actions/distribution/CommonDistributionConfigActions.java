@@ -67,8 +67,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
         String lastRan = "Unknown";
         String status = "Unknown";
         final Long id = objectTransformer.stringToLong(restModel.getId());
-        final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findByCommonConfigIdOrderByTimeLastSentDesc(id);
-        final AuditEntryEntity lastRanEntry = auditEntryEntities.isEmpty() ? null : auditEntryEntities.get(0);
+        final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
         if (lastRanEntry != null) {
             lastRan = objectTransformer.objectToString(lastRanEntry.getTimeLastSent());
             status = objectTransformer.objectToString(lastRanEntry.getStatus());
