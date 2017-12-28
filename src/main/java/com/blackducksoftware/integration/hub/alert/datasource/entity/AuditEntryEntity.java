@@ -33,12 +33,9 @@ import javax.persistence.TemporalType;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 @Entity
-@Table(schema = "alert", name = "audit_entries")
+@Table(schema = "alert", name = "audit_entry")
 public class AuditEntryEntity extends DatabaseEntity {
     private static final long serialVersionUID = -5848616198072005794L;
-
-    @Column(name = "notification_id")
-    private Long notificationId;
 
     @Column(name = "common_config_id")
     private Long commonConfigId;
@@ -64,8 +61,7 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     }
 
-    public AuditEntryEntity(final Long notificationId, final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace) {
-        this.notificationId = notificationId;
+    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -76,10 +72,6 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
-    }
-
-    public Long getNotificationId() {
-        return notificationId;
     }
 
     public Long getCommonConfigId() {
@@ -104,6 +96,22 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     public String getErrorStackTrace() {
         return errorStackTrace;
+    }
+
+    public void setTimeLastSent(final Date timeLastSent) {
+        this.timeLastSent = timeLastSent;
+    }
+
+    public void setStatus(final StatusEnum status) {
+        this.status = status;
+    }
+
+    public void setErrorMessage(final String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setErrorStackTrace(final String errorStackTrace) {
+        this.errorStackTrace = errorStackTrace;
     }
 
 }

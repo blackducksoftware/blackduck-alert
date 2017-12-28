@@ -20,15 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.key;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
+import java.io.Serializable;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+public class AuditNotificationRelationPK implements Serializable {
+    private static final long serialVersionUID = -7710698140802321977L;
 
-@Transactional
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
+    public Long auditEntryId;
+    public Long notificationId;
 
+    public AuditNotificationRelationPK() {
+    }
 }

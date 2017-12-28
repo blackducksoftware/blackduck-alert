@@ -20,15 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
+
+import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
 
 @Transactional
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
+public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
+    public List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+
+    public List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
 
 }
