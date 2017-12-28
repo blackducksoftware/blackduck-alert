@@ -33,7 +33,7 @@ import javax.persistence.TemporalType;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
 @Entity
-@Table(schema = "alert", name = "audit_entry")
+@Table(schema = "alert", name = "audit_entries")
 public class AuditEntryEntity extends DatabaseEntity {
     private static final long serialVersionUID = -5848616198072005794L;
 
