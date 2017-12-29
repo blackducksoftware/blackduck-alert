@@ -125,8 +125,8 @@ public class MockUtils {
     }
 
     public NotificationEntity createNotificationEntity() {
-        return new NotificationEntity("_event_key_", new Date(), "POLICY_VIOLATION", "Test Project Name", "", "Test Project Version Name", "", "Component Name", "Component Version Name", "Policy Rule Name", "Person",
-                Collections.emptyList());
+        return new NotificationEntity("_event_key_", new Date(System.currentTimeMillis()), "POLICY_VIOLATION", "Test Project Name", "", "Test Project Version Name", "", "Component Name", "Component Version Name", "Policy Rule Name",
+                "Person", Collections.emptyList());
     }
 
 }

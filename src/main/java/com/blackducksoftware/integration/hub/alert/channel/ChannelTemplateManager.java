@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
 
+@Transactional
 @Component
 public class ChannelTemplateManager {
     private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
@@ -95,10 +97,10 @@ public class ChannelTemplateManager {
                 final AbstractChannelEvent channelEvent = (AbstractChannelEvent) event;
                 final List<String> ids = channelEvent.getProjectData().getNotificationIds().stream().map(id -> id.toString()).collect(Collectors.toList());
                 // TODO remove println
-                System.out.println("Notification Id's : " + StringUtils.join(ids.toArray()));
+                System.out.println("Notification Id's : " + StringUtils.join(ids.toArray(), ","));
                 System.out.println("Event " + channelEvent);
                 // TODO update AuditEntryEntity to handle multiple notifications
-                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(), null, null, null, null));
+                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
                 // FIXME WHY IS THE ID NOT BEING GENERATED??
                 channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
                 System.out.println("Saved Audit " + savedAuditEntryEntity);
