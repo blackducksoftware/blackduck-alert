@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;

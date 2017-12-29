@@ -29,7 +29,6 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
 public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalSchedulingConfigRestModel, GlobalSchedulingConfigEntity, GlobalSchedulingConfigActions> {

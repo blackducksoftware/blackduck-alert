@@ -18,7 +18,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {

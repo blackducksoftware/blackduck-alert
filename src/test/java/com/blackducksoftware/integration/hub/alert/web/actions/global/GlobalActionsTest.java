@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
