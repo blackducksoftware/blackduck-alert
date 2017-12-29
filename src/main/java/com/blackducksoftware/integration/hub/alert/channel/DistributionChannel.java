@@ -22,11 +22,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
+@Transactional
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
@@ -71,7 +73,6 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         if (auditEntryId != null) {
             final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
             if (auditEntryEntity != null) {
-                logger.error("AUDIT ENTRY WAS NOT NULL setting success");
                 auditEntryEntity.setStatus(StatusEnum.SUCCESS);
 
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
@@ -84,12 +85,19 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         if (auditEntryId != null) {
             final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
             if (auditEntryEntity != null) {
-                logger.error("AUDIT ENTRY WAS NOT NULL setting failure");
                 auditEntryEntity.setStatus(StatusEnum.FAILURE);
                 auditEntryEntity.setErrorMessage(errorMessage);
-                final StringWriter stringWriter = new StringWriter();
-                e.printStackTrace(new PrintWriter(stringWriter));
-                auditEntryEntity.setErrorStackTrace(stringWriter.toString());
+                final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(e);
+                String exceptionStackTrace = "";
+                for (final String line : rootCause) {
+                    if (exceptionStackTrace.length() + line.length() < 9999) {
+                        exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
+                    } else {
+                        break;
+                    }
+                }
+
+                auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
 
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 getAuditEntryRepository().save(auditEntryEntity);
