@@ -37,7 +37,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     private final Long id;
 
     public MockNotificationEntity() {
-        this("eventKey", new Date(400), "notificationType", "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "person", "projectUrl", "projectVersionUrl",
+        this("_event_key_", new Date(400), "POLICY_VIOLATION", "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "person", "projectUrl", "projectVersionUrl",
                 Arrays.asList(new MockVulnerabilityEntity().createEntity()), 1L);
     }
 

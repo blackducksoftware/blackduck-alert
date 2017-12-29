@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.mock;
 
 import java.util.List;
 
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
@@ -37,7 +38,7 @@ public class DistributionMockUtils {
     }
 
     public DistributionMockUtils(final String distributionConfigId) {
-        this("2", distributionConfigId, "test_type", "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
+        this("2", distributionConfigId, SupportedChannels.HIPCHAT.toString(), "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
     }
 
     public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,

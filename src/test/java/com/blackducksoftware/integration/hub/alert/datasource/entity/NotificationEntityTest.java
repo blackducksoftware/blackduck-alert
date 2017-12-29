@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 
 public class NotificationEntityTest extends EntityTest<NotificationEntity> {
@@ -73,7 +72,7 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
 
     @Override
     public int entityHashCode() {
-        return 600107216;
+        return 1476972858;
     }
 
 }
