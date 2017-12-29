@@ -11,14 +11,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 import com.google.gson.JsonObject;
 
-public class MockEmailRestModel extends DistributionMockUtils implements MockRestModelUtil<EmailGroupDistributionRestModel> {
+public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistributionRestModel> {
+    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+
     private final String groupName;
     private final String id;
 
@@ -27,15 +26,8 @@ public class MockEmailRestModel extends DistributionMockUtils implements MockRes
     }
 
     private MockEmailRestModel(final String groupName, final String id) {
-        super();
         this.groupName = groupName;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockRestModelUtil.super.verifyEmptyRestModel();
-        MockRestModelUtil.super.verifyRestModel();
     }
 
     public String getGroupName() {
@@ -49,8 +41,8 @@ public class MockEmailRestModel extends DistributionMockUtils implements MockRes
 
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
-        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(getCommonId(), getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(), groupName, getProjects(),
-                getNotifications());
+        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(distributionMockUtil.getCommonId(), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
+                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, distributionMockUtil.getProjects(), distributionMockUtil.getNotifications());
         return restModel;
     }
 
@@ -63,7 +55,7 @@ public class MockEmailRestModel extends DistributionMockUtils implements MockRes
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("groupName", groupName);
-        getDistributionRestModelJson(json);
+        distributionMockUtil.getDistributionRestModelJson(json);
         return json.toString();
     }
 
@@ -71,7 +63,7 @@ public class MockEmailRestModel extends DistributionMockUtils implements MockRes
     public String getEmptyRestModelJson() {
         final JsonObject json = new JsonObject();
         json.add("groupName", null);
-        getEmptyDistributionRestModelJson(json);
+        distributionMockUtil.getEmptyDistributionRestModelJson(json);
         return json.toString();
     }
 

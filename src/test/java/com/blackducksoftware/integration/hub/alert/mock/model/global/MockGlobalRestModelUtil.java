@@ -12,30 +12,38 @@
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
 import org.json.JSONException;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface MockGlobalRestModelUtil<GR extends ConfigRestModel> extends MockUtils {
+public abstract class MockGlobalRestModelUtil<GR extends ConfigRestModel> implements MockUtils {
 
-    public GR createGlobalRestModel();
+    public abstract GR createGlobalRestModel();
 
-    public GR createEmptyGlobalRestModel();
+    public abstract GR createEmptyGlobalRestModel();
 
-    public String getGlobalRestModelJson();
+    public abstract String getGlobalRestModelJson();
 
-    public String getEmptyGlobalRestModelJson();
+    public abstract String getEmptyGlobalRestModelJson();
 
-    public default void verifyEmptyGlobalRestModel() throws JSONException {
+    public void verifyEmptyGlobalRestModel() throws JSONException {
         final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();
         final String json = getEmptyGlobalRestModelJson();
         JSONAssert.assertEquals(emptyGlobalRestModel, json, false);
     }
 
-    public default void verifyGlobalRestModel() throws JSONException {
+    public void verifyGlobalRestModel() throws JSONException {
         final String globalRestModel = createGlobalRestModel().toString();
         final String json = getGlobalRestModelJson();
         JSONAssert.assertEquals(globalRestModel, json, false);
+    }
+
+    @Test
+    @Override
+    public void testConfiguration() throws JSONException {
+        verifyGlobalRestModel();
+        verifyEmptyGlobalRestModel();
     }
 }

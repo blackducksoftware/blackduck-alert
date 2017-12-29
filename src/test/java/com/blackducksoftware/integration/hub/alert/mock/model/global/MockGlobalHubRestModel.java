@@ -11,8 +11,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import org.json.JSONException;
-import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -22,7 +20,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class MockGlobalHubRestModel implements MockGlobalRestModelUtil<GlobalHubConfigRestModel> {
+public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubConfigRestModel> {
     private final String hubUrl;
     private final String hubTimeout;
     private final String hubUsername;
@@ -54,12 +52,6 @@ public class MockGlobalHubRestModel implements MockGlobalRestModelUtil<GlobalHub
         this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
-        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public GlobalProperties createTestGlobalProperties() {

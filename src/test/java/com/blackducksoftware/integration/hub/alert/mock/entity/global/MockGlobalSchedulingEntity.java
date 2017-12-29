@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockGlobalSchedulingEntity implements MockGlobalEntityUtil<GlobalSchedulingConfigEntity> {
+public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSchedulingConfigEntity> {
     private final String accumulatorCron;
     private final String dailyDigestCron;
     private final String purgeDataCron;
@@ -33,12 +30,6 @@ public class MockGlobalSchedulingEntity implements MockGlobalEntityUtil<GlobalSc
         this.dailyDigestCron = dailyDigestCron;
         this.purgeDataCron = purgeDataCron;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalEntityUtil.super.verifyEmptyGlobalEntity();
-        MockGlobalEntityUtil.super.verifyGlobalEntity();
     }
 
     public String getAccumulatorCron() {

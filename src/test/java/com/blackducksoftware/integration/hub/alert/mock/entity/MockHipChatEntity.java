@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockHipChatEntity implements MockEntityUtil<HipChatDistributionConfigEntity> {
+public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigEntity> {
     private final Integer roomId;
     private final Boolean notify;
     private final String color;
@@ -32,12 +29,6 @@ public class MockHipChatEntity implements MockEntityUtil<HipChatDistributionConf
         this.notify = notify;
         this.color = color;
         this.id = id;
-    }
-
-    @Test
-    public void tes() throws JSONException {
-        MockEntityUtil.super.verifyEmptyEntity();
-        MockEntityUtil.super.verifyEntity();
     }
 
     public Integer getRoomId() {

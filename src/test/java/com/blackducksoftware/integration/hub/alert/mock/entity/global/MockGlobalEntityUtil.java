@@ -12,30 +12,38 @@
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
 import org.json.JSONException;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
-public interface MockGlobalEntityUtil<GE extends DatabaseEntity> extends MockUtils {
+public abstract class MockGlobalEntityUtil<GE extends DatabaseEntity> implements MockUtils {
 
-    public GE createGlobalEntity();
+    public abstract GE createGlobalEntity();
 
-    public GE createEmptyGlobalEntity();
+    public abstract GE createEmptyGlobalEntity();
 
-    public String getGlobalEntityJson();
+    public abstract String getGlobalEntityJson();
 
-    public String getEmptyGlobalEntityJson();
+    public abstract String getEmptyGlobalEntityJson();
 
-    public default void verifyEmptyGlobalEntity() throws JSONException {
+    public void verifyEmptyGlobalEntity() throws JSONException {
         final String emptyGlobalEntity = createEmptyGlobalEntity().toString();
         final String json = getEmptyGlobalEntityJson();
         JSONAssert.assertEquals(emptyGlobalEntity, json, false);
     }
 
-    public default void verifyGlobalEntity() throws JSONException {
+    public void verifyGlobalEntity() throws JSONException {
         final String globalEntity = createGlobalEntity().toString();
         final String json = getGlobalEntityJson();
         JSONAssert.assertEquals(globalEntity, json, false);
+    }
+
+    @Test
+    @Override
+    public void testConfiguration() throws JSONException {
+        verifyEmptyGlobalEntity();
+        verifyGlobalEntity();
     }
 }

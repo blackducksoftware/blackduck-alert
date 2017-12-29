@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class MockEmailGlobalRestModel implements MockGlobalRestModelUtil<GlobalEmailConfigRestModel> {
+public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmailConfigRestModel> {
     private final String mailSmtpHost;
     private final String mailSmtpUser;
     private final String mailSmtpPassword;
@@ -65,12 +62,6 @@ public class MockEmailGlobalRestModel implements MockGlobalRestModelUtil<GlobalE
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
-        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public String getMailSmtpHost() {

@@ -11,14 +11,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 import com.google.gson.JsonObject;
 
-public class MockSlackRestModel extends DistributionMockUtils implements MockRestModelUtil<SlackDistributionRestModel> {
+public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {
+    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+
     private final String webhook;
     private final String channelName;
     private final String channelUsername;
@@ -29,17 +28,10 @@ public class MockSlackRestModel extends DistributionMockUtils implements MockRes
     }
 
     private MockSlackRestModel(final String webhook, final String channelName, final String channelUsername, final String id) {
-        super(id);
         this.webhook = webhook;
         this.channelName = channelName;
         this.channelUsername = channelUsername;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockRestModelUtil.super.verifyEmptyRestModel();
-        MockRestModelUtil.super.verifyRestModel();
     }
 
     public String getWebhook() {
@@ -61,8 +53,9 @@ public class MockSlackRestModel extends DistributionMockUtils implements MockRes
 
     @Override
     public SlackDistributionRestModel createRestModel() {
-        final SlackDistributionRestModel restModel = new SlackDistributionRestModel(getCommonId(), webhook, channelUsername, channelName, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(),
-                getProjects(), getNotifications());
+        final SlackDistributionRestModel restModel = new SlackDistributionRestModel(distributionMockUtil.getCommonId(), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
+                distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
+                distributionMockUtil.getNotifications());
         return restModel;
     }
 
@@ -77,7 +70,7 @@ public class MockSlackRestModel extends DistributionMockUtils implements MockRes
         json.addProperty("webhook", webhook);
         json.addProperty("channelUsername", channelUsername);
         json.addProperty("channelName", channelName);
-        getDistributionRestModelJson(json);
+        distributionMockUtil.getDistributionRestModelJson(json);
         return json.toString();
     }
 
@@ -87,7 +80,7 @@ public class MockSlackRestModel extends DistributionMockUtils implements MockRes
         json.add("webhook", null);
         json.add("channelUsername", null);
         json.add("channelName", null);
-        getEmptyDistributionRestModelJson(json);
+        distributionMockUtil.getEmptyDistributionRestModelJson(json);
         return json.toString();
     }
 
