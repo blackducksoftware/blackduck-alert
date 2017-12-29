@@ -14,7 +14,7 @@ package com.blackducksoftware.integration.hub.alert.mock.entity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockSlackEntity implements MockEntityUtil<SlackDistributionConfigEntity> {
+public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntity> {
     private final String webhook;
     private final String channelName;
     private final String channelUsername;
@@ -24,7 +24,7 @@ public class MockSlackEntity implements MockEntityUtil<SlackDistributionConfigEn
         this("Webhook", "ChannelName", "ChannelUsername", 1L);
     }
 
-    public MockSlackEntity(final String webhook, final String channelName, final String channelUsername, final Long id) {
+    private MockSlackEntity(final String webhook, final String channelName, final String channelUsername, final Long id) {
         this.webhook = webhook;
         this.channelName = channelName;
         this.channelUsername = channelUsername;

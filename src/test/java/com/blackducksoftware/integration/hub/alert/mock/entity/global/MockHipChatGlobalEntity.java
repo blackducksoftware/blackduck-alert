@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockHipChatGlobalEntity implements MockGlobalEntityUtil<GlobalHipChatConfigEntity> {
+public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatConfigEntity> {
     private final String apiKey;
     private final boolean apiKeyIsSet;
     private final Long id;
@@ -30,12 +27,6 @@ public class MockHipChatGlobalEntity implements MockGlobalEntityUtil<GlobalHipCh
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalEntityUtil.super.verifyEmptyGlobalEntity();
-        MockGlobalEntityUtil.super.verifyGlobalEntity();
     }
 
     public String getApiKey() {

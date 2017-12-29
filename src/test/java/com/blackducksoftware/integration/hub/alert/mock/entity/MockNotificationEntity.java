@@ -21,7 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class MockNotificationEntity implements MockEntityUtil<NotificationEntity> {
+public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     private final String eventKey;
     private final Date createdAt;
     private final String notificationType;
@@ -41,7 +41,7 @@ public class MockNotificationEntity implements MockEntityUtil<NotificationEntity
                 Arrays.asList(new MockVulnerabilityEntity().createEntity()), 1L);
     }
 
-    public MockNotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,
+    private MockNotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName, final String componentVersion,
             final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl, final Collection<VulnerabilityEntity> vulnerabilityList, final Long id) {
         super();
         this.eventKey = eventKey;

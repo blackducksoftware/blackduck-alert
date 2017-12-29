@@ -12,30 +12,38 @@
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
 import org.json.JSONException;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface MockRestModelUtil<R extends ConfigRestModel> extends MockUtils {
+public abstract class MockRestModelUtil<R extends ConfigRestModel> implements MockUtils {
 
-    public R createRestModel();
+    public abstract R createRestModel();
 
-    public R createEmptyRestModel();
+    public abstract R createEmptyRestModel();
 
-    public String getRestModelJson();
+    public abstract String getRestModelJson();
 
-    public String getEmptyRestModelJson();
+    public abstract String getEmptyRestModelJson();
 
-    public default void verifyEmptyRestModel() throws JSONException {
+    public void verifyEmptyRestModel() throws JSONException {
         final String emptyRestModel = createEmptyRestModel().toString();
         final String json = getEmptyRestModelJson();
         JSONAssert.assertEquals(emptyRestModel, json, false);
     }
 
-    public default void verifyRestModel() throws JSONException {
+    public void verifyRestModel() throws JSONException {
         final String restModel = createRestModel().toString();
         final String json = getRestModelJson();
         JSONAssert.assertEquals(restModel, json, false);
+    }
+
+    @Test
+    @Override
+    public void testConfiguration() throws JSONException {
+        verifyEmptyRestModel();
+        verifyRestModel();
     }
 }

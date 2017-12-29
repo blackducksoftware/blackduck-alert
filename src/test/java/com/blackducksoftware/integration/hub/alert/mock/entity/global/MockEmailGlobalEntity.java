@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockEmailGlobalEntity implements MockGlobalEntityUtil<GlobalEmailConfigEntity> {
+public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfigEntity> {
     private final String mailSmtpHost;
     private final String mailSmtpUser;
     private final String mailSmtpPassword;
@@ -66,12 +63,6 @@ public class MockEmailGlobalEntity implements MockGlobalEntityUtil<GlobalEmailCo
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalEntityUtil.super.verifyEmptyGlobalEntity();
-        MockGlobalEntityUtil.super.verifyGlobalEntity();
     }
 
     public String getMailSmtpHost() {

@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockGlobalHubEntity implements MockGlobalEntityUtil<GlobalHubConfigEntity> {
+public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEntity> {
     private final Integer hubTimeout;
     private final String hubUsername;
     private final String hubPassword;
@@ -33,12 +30,6 @@ public class MockGlobalHubEntity implements MockGlobalEntityUtil<GlobalHubConfig
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalEntityUtil.super.verifyEmptyGlobalEntity();
-        MockGlobalEntityUtil.super.verifyGlobalEntity();
     }
 
     public Integer getHubTimeout() {

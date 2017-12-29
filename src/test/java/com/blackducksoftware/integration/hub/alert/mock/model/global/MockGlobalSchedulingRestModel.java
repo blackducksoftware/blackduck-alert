@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class MockGlobalSchedulingRestModel implements MockGlobalRestModelUtil<GlobalSchedulingConfigRestModel> {
+public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<GlobalSchedulingConfigRestModel> {
     private final String accumulatorCron;
     private final String dailyDigestCron;
     private final String purgeDataCron;
@@ -33,12 +30,6 @@ public class MockGlobalSchedulingRestModel implements MockGlobalRestModelUtil<Gl
         this.dailyDigestCron = dailyDigestCron;
         this.purgeDataCron = purgeDataCron;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
-        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public String getAccumulatorCron() {

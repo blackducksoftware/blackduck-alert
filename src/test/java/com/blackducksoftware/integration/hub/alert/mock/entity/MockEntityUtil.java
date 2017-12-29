@@ -12,30 +12,38 @@
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
 import org.json.JSONException;
+import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
-public interface MockEntityUtil<E extends DatabaseEntity> extends MockUtils {
+public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUtils {
 
-    public E createEntity();
+    public abstract E createEntity();
 
-    public E createEmptyEntity();
+    public abstract E createEmptyEntity();
 
-    public String getEntityJson();
+    public abstract String getEntityJson();
 
-    public String getEmptyEntityJson();
+    public abstract String getEmptyEntityJson();
 
-    public default void verifyEmptyEntity() throws JSONException {
+    public void verifyEmptyEntity() throws JSONException {
         final String emptyEntity = createEmptyEntity().toString();
         final String emptyJson = getEmptyEntityJson();
         JSONAssert.assertEquals(emptyEntity, emptyJson, false);
     }
 
-    public default void verifyEntity() throws JSONException {
+    public void verifyEntity() throws JSONException {
         final String entity = createEntity().toString();
         final String json = getEntityJson();
         JSONAssert.assertEquals(entity, json, false);
+    }
+
+    @Test
+    @Override
+    public void testConfiguration() throws JSONException {
+        verifyEntity();
+        verifyEmptyEntity();
     }
 }

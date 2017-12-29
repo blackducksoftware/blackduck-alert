@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
-public class MockEmailEntity implements MockEntityUtil<EmailGroupDistributionConfigEntity> {
+public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
     private final String groupName;
     private final Long id;
 
@@ -29,12 +26,6 @@ public class MockEmailEntity implements MockEntityUtil<EmailGroupDistributionCon
         super();
         this.groupName = groupName;
         this.id = id;
-    }
-
-    @Test
-    public void tes() throws JSONException {
-        MockEntityUtil.super.verifyEmptyEntity();
-        MockEntityUtil.super.verifyEntity();
     }
 
     public String getGroupName() {

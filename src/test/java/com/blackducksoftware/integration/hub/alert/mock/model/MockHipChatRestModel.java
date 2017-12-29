@@ -11,14 +11,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 import com.google.gson.JsonObject;
 
-public class MockHipChatRestModel extends DistributionMockUtils implements MockRestModelUtil<HipChatDistributionRestModel> {
+public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionRestModel> {
+    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+
     private final String roomId;
     private final String notify;
     private final String color;
@@ -29,17 +28,10 @@ public class MockHipChatRestModel extends DistributionMockUtils implements MockR
     }
 
     private MockHipChatRestModel(final String roomId, final String notify, final String color, final String id) {
-        super(id);
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockRestModelUtil.super.verifyEmptyRestModel();
-        MockRestModelUtil.super.verifyRestModel();
     }
 
     public String getRoomId() {
@@ -61,8 +53,8 @@ public class MockHipChatRestModel extends DistributionMockUtils implements MockR
 
     @Override
     public HipChatDistributionRestModel createRestModel() {
-        final HipChatDistributionRestModel restModel = new HipChatDistributionRestModel(getCommonId(), roomId, notify, color, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(), getProjects(),
-                getNotifications());
+        final HipChatDistributionRestModel restModel = new HipChatDistributionRestModel(distributionMockUtil.getCommonId(), roomId, notify, color, distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
+                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(), distributionMockUtil.getNotifications());
         return restModel;
     }
 
@@ -72,7 +64,7 @@ public class MockHipChatRestModel extends DistributionMockUtils implements MockR
         json.addProperty("roomId", roomId);
         json.addProperty("notify", notify);
         json.addProperty("color", color);
-        getDistributionRestModelJson(json);
+        distributionMockUtil.getDistributionRestModelJson(json);
         return json.toString();
     }
 
@@ -82,7 +74,7 @@ public class MockHipChatRestModel extends DistributionMockUtils implements MockR
         json.add("roomId", null);
         json.add("notify", null);
         json.add("color", null);
-        getEmptyDistributionRestModelJson(json);
+        distributionMockUtil.getEmptyDistributionRestModelJson(json);
         return json.toString();
     }
 

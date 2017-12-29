@@ -11,8 +11,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock;
 
+import org.json.JSONException;
+
 public interface MockUtils {
 
-    public Long getId();
+    Long getId();
+
+    void testConfiguration() throws JSONException;
 
 }

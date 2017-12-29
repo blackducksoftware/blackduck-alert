@@ -11,13 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import org.json.JSONException;
-import org.junit.Test;
-
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 import com.google.gson.JsonObject;
 
-public class MockHipChatGlobalRestModel implements MockGlobalRestModelUtil<GlobalHipChatConfigRestModel> {
+public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHipChatConfigRestModel> {
     private final String apiKey;
     private final boolean apiKeyIsSet;
     private final String id;
@@ -30,12 +27,6 @@ public class MockHipChatGlobalRestModel implements MockGlobalRestModelUtil<Globa
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
         this.id = id;
-    }
-
-    @Test
-    public void test() throws JSONException {
-        MockGlobalRestModelUtil.super.verifyEmptyGlobalRestModel();
-        MockGlobalRestModelUtil.super.verifyGlobalRestModel();
     }
 
     public String getApiKey() {
