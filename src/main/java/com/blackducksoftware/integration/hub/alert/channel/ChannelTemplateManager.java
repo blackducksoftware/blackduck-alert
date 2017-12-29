@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,7 +95,7 @@ public class ChannelTemplateManager {
                 final AbstractChannelEvent channelEvent = (AbstractChannelEvent) event;
                 final List<String> ids = channelEvent.getProjectData().getNotificationIds().stream().map(id -> id.toString()).collect(Collectors.toList());
                 // TODO remove println
-                System.out.println("Notification Id's : " + StringUtils.join(ids));
+                System.out.println("Notification Id's : " + StringUtils.join(ids.toArray()));
                 // TODO update AuditEntryEntity to handle multiple notifications
                 final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(), null, null, null, null);
                 final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
