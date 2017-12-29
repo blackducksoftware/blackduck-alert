@@ -96,12 +96,11 @@ public class ChannelTemplateManager {
                 final List<String> ids = channelEvent.getProjectData().getNotificationIds().stream().map(id -> id.toString()).collect(Collectors.toList());
                 // TODO remove println
                 System.out.println("Notification Id's : " + StringUtils.join(ids.toArray()));
+                System.out.println("Event " + channelEvent);
                 // TODO update AuditEntryEntity to handle multiple notifications
-                final AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(), null, null, null, null);
-                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(), null, null, null, null));
                 // FIXME WHY IS THE ID NOT BEING GENERATED??
                 channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-                System.out.println("Audit " + auditEntryEntity);
                 System.out.println("Saved Audit " + savedAuditEntryEntity);
                 // TODO remove println
                 System.out.println("Audit Entity Id : " + channelEvent.getAuditEntryId());

@@ -103,7 +103,7 @@ public class AuditEntryActions {
             final List<NotificationEntity> notifications = notificationRepository.findAll(notificationIds);
             final Long commonConfigId = auditEntryEntity.getCommonConfigId();
             final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
-            if (notifications != null && commonConfigEntity != null) {
+            if (notifications != null && !notifications.isEmpty() && commonConfigEntity != null) {
                 final Collection<ProjectData> projectDataList = projectDataFactory.createProjectDataCollection(notifications);
                 for (final ProjectData projectData : projectDataList) {
                     final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);

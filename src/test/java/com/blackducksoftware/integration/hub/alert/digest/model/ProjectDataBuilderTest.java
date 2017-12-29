@@ -38,7 +38,7 @@ public class ProjectDataBuilderTest {
         assertNull(projectDataBuilder.getProjectName());
         assertNull(projectDataBuilder.getProjectVersion());
 
-        final ProjectData projectData = new ProjectData(null, null, null, null, new HashMap<>());
+        final ProjectData projectData = new ProjectData(null, null, null, Collections.emptyList(), new HashMap<>());
         assertEquals(projectData, projectDataBuilder.build());
     }
 
