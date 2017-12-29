@@ -107,6 +107,7 @@ public class AuditEntryActions {
                 final Collection<ProjectData> projectDataList = projectDataFactory.createProjectDataCollection(notifications);
                 for (final ProjectData projectData : projectDataList) {
                     final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);
+                    event.setAuditEntryId(auditEntryEntity.getId());
                     channelTemplateManager.sendEvent(event);
                 }
                 return auditEntryEntity;
@@ -137,7 +138,11 @@ public class AuditEntryActions {
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
         final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
 
-        final String status = auditEntryEntity.getStatus().getDisplayName();
+        String status = null;
+        if (auditEntryEntity.getStatus() != null) {
+            status = auditEntryEntity.getStatus().getDisplayName();
+        }
+
         final String errorMessage = auditEntryEntity.getErrorMessage();
         final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 

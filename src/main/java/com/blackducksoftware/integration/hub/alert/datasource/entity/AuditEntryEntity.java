@@ -26,9 +26,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Type;
 
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 
@@ -54,7 +57,9 @@ public class AuditEntryEntity extends DatabaseEntity {
     @Column(name = "error_message")
     private String errorMessage;
 
-    @Column(name = "error_stack_trace")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "error_stack_trace", length = 10000)
     private String errorStackTrace;
 
     public AuditEntryEntity() {

@@ -93,6 +93,9 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
             logger.error(e.getMessage(), e);
+        } catch (final Exception e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
     }
 
