@@ -232,6 +232,15 @@ class Audit extends Component {
 		return <AuditDetails currentEntry={row}/>;
 	}
 
+	trClassFormat(row, rowIndex) {
+		// color the row correctly, since Striped does not work with expandable rows
+		var isEven = rowIndex % 2 === 0;
+		var className = isEven ? tableStyles.tableEvenRow : tableStyles.tableRow; 
+		return className; 
+	}
+
+
+
 	render() {
 		const auditTableOptions = {
 	  		noDataText: 'No events',
@@ -249,7 +258,7 @@ class Audit extends Component {
 		return (
 				<div>
 					<div>
-						<BootstrapTable data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} striped hover condensed search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>
