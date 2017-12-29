@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class ProjectDataBuilderTest {
         assertNull(projectDataBuilder.getProjectName());
         assertNull(projectDataBuilder.getProjectVersion());
 
-        final ProjectData projectData = new ProjectData(null, null, null, new HashMap<>());
+        final ProjectData projectData = new ProjectData(null, null, null, null, new HashMap<>());
         assertEquals(projectData, projectDataBuilder.build());
     }
 
@@ -67,7 +68,7 @@ public class ProjectDataBuilderTest {
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryDataBuilder.build());
 
-        ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", categoryMap);
+        ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", Collections.emptyList(), categoryMap);
         assertEquals(projectData, projectDataBuilder.build());
 
         projectDataBuilder.removeCategoryBuilder(NotificationCategoryEnum.HIGH_VULNERABILITY);
@@ -78,7 +79,7 @@ public class ProjectDataBuilderTest {
         assertEquals("Project", projectDataBuilder.getProjectName());
         assertEquals("Version", projectDataBuilder.getProjectVersion());
 
-        projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", new HashMap<>());
+        projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", Collections.emptyList(), new HashMap<>());
         assertEquals(projectData, projectDataBuilder.build());
     }
 
