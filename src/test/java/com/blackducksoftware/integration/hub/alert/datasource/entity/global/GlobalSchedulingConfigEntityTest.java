@@ -15,13 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSchedulingConfigEntity> {
-    private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
-
-    public GlobalSchedulingConfigEntityTest() {
-        super(mockUtils, GlobalSchedulingConfigEntity.class);
-    }
+    private final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalSchedulingConfigEntity entity) {
@@ -50,6 +47,16 @@ public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSch
     @Override
     public int globalEntityHashCode() {
         return -1636279562;
+    }
+
+    @Override
+    public MockUtils<?, ?, ?, GlobalSchedulingConfigEntity> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<GlobalSchedulingConfigEntity> getGlobalEntityClass() {
+        return GlobalSchedulingConfigEntity.class;
     }
 
 }

@@ -14,14 +14,11 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
 
 public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRestModel> {
-    private final static SlackMockUtils mockUtils = new SlackMockUtils();
-
-    public SlackConfigRestModelTest() {
-        super(mockUtils, SlackDistributionRestModel.class);
-    }
+    private final SlackMockUtils mockUtils = new SlackMockUtils();
 
     @Override
     public void assertRestModelFieldsNull(final SlackDistributionRestModel restModel) {
@@ -50,6 +47,16 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
     @Override
     public int restModelHashCode() {
         return 1121637151;
+    }
+
+    @Override
+    public MockUtils<SlackDistributionRestModel, ?, ?, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<SlackDistributionRestModel> getRestModelClass() {
+        return SlackDistributionRestModel.class;
     }
 
 }

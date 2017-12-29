@@ -15,13 +15,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
+    private final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    // TODO create an abstract method to set MockUtils to avoid static (Do this everywhere necessary)
-    public HipChatConfigEntityTest() {
-        super(mockUtils, HipChatDistributionConfigEntity.class);
+    @Override
+    public MockUtils<?, ?, HipChatDistributionConfigEntity, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<HipChatDistributionConfigEntity> getEntityClass() {
+        return HipChatDistributionConfigEntity.class;
     }
 
     @Override
@@ -52,4 +58,5 @@ public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfi
     public int entityHashCode() {
         return -789557399;
     }
+
 }

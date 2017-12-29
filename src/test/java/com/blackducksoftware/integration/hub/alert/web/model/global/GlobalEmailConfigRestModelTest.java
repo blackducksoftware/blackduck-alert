@@ -15,20 +15,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 
 public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEmailConfigRestModel> {
-    private static final EmailMockUtils mockUtils = new EmailMockUtils();
-
-    public GlobalEmailConfigRestModelTest() {
-        super(mockUtils, GlobalEmailConfigRestModel.class);
-    }
+    private final EmailMockUtils mockUtils = new EmailMockUtils();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
         assertNull(restModel.getEmailSubjectLine());
         assertNull(restModel.getEmailTemplateDirectory());
         assertNull(restModel.getEmailTemplateLogoImage());
-        assertNull(restModel.getId());
         assertNull(restModel.getMailSmtpAllow8bitmime());
         assertNull(restModel.getMailSmtpAuth());
         assertNull(restModel.getMailSmtpConnectionTimeout());
@@ -79,6 +75,16 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     @Override
     public int globalRestModelHashCode() {
         return 1485333119;
+    }
+
+    @Override
+    public MockUtils<?, GlobalEmailConfigRestModel, ?, ?> getMockUtil() {
+        return mockUtils;
+    }
+
+    @Override
+    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
+        return GlobalEmailConfigRestModel.class;
     }
 
 }

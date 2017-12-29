@@ -34,13 +34,13 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GCA extends ConfigActions<GE, GR>> {
-    private final MockUtils<?, GR, ?, GE> mockUtils;
     protected GCA configActions;
 
-    public GlobalActionsTest(final MockUtils<?, GR, ?, GE> mockUtils) {
-        this.mockUtils = mockUtils;
+    public GlobalActionsTest() {
         configActions = getMockedConfigActions();
     }
+
+    public abstract MockUtils<?, GR, ?, GE> getMockUtil();
 
     public abstract GCA getMockedConfigActions();
 
@@ -62,11 +62,11 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testGetConfig() throws Exception {
-        Mockito.when(configActions.repository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEntity());
-        Mockito.when(configActions.repository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
+        Mockito.when(configActions.repository.findOne(Mockito.anyLong())).thenReturn(getMockUtil().createGlobalEntity());
+        Mockito.when(configActions.repository.findAll()).thenReturn(Arrays.asList(getMockUtil().createGlobalEntity()));
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
-        final GR restModel = mockUtils.createGlobalRestModel();
+        final GR restModel = getMockUtil().createGlobalRestModel();
         configActions.maskRestModel(restModel);
 
         List<GR> configsById = configActions.getConfig(1L);
@@ -114,10 +114,10 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testSaveConfig() throws Exception {
-        final GE expectedHipChatConfigEntity = mockUtils.createGlobalEntity();
+        final GE expectedHipChatConfigEntity = getMockUtil().createGlobalEntity();
         Mockito.when(configActions.repository.save(Mockito.any(getGlobalEntityClass()))).thenReturn(expectedHipChatConfigEntity);
 
-        GE emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
+        GE emailConfigEntity = configActions.saveConfig(getMockUtil().createGlobalRestModel());
         assertNotNull(emailConfigEntity);
         assertEquals(expectedHipChatConfigEntity, emailConfigEntity);
 
@@ -126,7 +126,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
         Mockito.when(configActions.repository.save(Mockito.any(getGlobalEntityClass()))).thenThrow(new RuntimeException("test"));
         try {
-            emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
+            emailConfigEntity = configActions.saveConfig(getMockUtil().createGlobalRestModel());
             fail();
         } catch (final AlertException e) {
             assertEquals("test", e.getMessage());
@@ -136,7 +136,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
         configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
 
-        emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
+        emailConfigEntity = configActions.saveConfig(getMockUtil().createGlobalRestModel());
         assertNull(emailConfigEntity);
     }
 

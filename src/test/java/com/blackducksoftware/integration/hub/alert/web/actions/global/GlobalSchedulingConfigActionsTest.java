@@ -27,15 +27,12 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
 public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalSchedulingConfigRestModel, GlobalSchedulingConfigEntity, GlobalSchedulingConfigActions> {
-    private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
-
-    public GlobalSchedulingConfigActionsTest() {
-        super(mockUtils);
-    }
+    private final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
 
     @Override
     public GlobalSchedulingConfigActions getMockedConfigActions() {
@@ -113,6 +110,11 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         }
         assertNull(caughtException);
         assertEquals("Valid", validationString);
+    }
+
+    @Override
+    public MockUtils<?, GlobalSchedulingConfigRestModel, ?, GlobalSchedulingConfigEntity> getMockUtil() {
+        return mockUtils;
     }
 
 }

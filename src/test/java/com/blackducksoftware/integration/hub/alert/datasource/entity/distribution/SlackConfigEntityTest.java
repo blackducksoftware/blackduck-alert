@@ -14,14 +14,15 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.distributi
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
 
 public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
-    private static final SlackMockUtils mockUtils = new SlackMockUtils();
+    private final SlackMockUtils mockUtils = new SlackMockUtils();
 
-    public SlackConfigEntityTest() {
-        super(mockUtils, SlackDistributionConfigEntity.class);
+    @Override
+    public MockUtils<?, ?, SlackDistributionConfigEntity, ?> getMockUtil() {
+        return mockUtils;
     }
 
     @Override
@@ -52,4 +53,10 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEnt
     public int entityHashCode() {
         return 584468116;
     }
+
+    @Override
+    public Class<SlackDistributionConfigEntity> getEntityClass() {
+        return SlackDistributionConfigEntity.class;
+    }
+
 }
