@@ -45,7 +45,7 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public int restModelHashCode() {
-        return 1529350275;
+        return 2091601255;
     }
 
     @Override
