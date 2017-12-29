@@ -74,7 +74,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 logger.error("AUDIT ENTRY WAS NOT NULL setting success");
                 auditEntryEntity.setStatus(StatusEnum.SUCCESS);
 
-                auditEntryEntity.setTimeLastSent(new Date());
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 getAuditEntryRepository().save(auditEntryEntity);
             }
         }
@@ -91,7 +91,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 e.printStackTrace(new PrintWriter(stringWriter));
                 auditEntryEntity.setErrorStackTrace(stringWriter.toString());
 
-                auditEntryEntity.setTimeLastSent(new Date());
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 getAuditEntryRepository().save(auditEntryEntity);
             }
         }

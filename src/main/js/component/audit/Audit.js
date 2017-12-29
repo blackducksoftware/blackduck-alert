@@ -28,32 +28,32 @@ class Audit extends Component {
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
 	}
 
-	addDefaultEntries() {
-        const { entries } = this.state;
-        entries.push({
-            id: '999',
-            jobName: 'Test Job',
-            eventType: 'email_group_channel',
-            notificationType: 'High Vulnerability',
-            timeCreated: '12/01/2017 00:00:00',
-            timeLastSent: '12/01/2017 00:00:00',
-            status: 'Success'
-        });
-        entries.push({
-            id: '111',
-            jobName: 'Test Hipchat',
-            eventType: 'hipchat_channel',
-            notificationType: 'High Vulnerability',
-            timeCreated: '12/01/2017 00:00:00',
-            timeLastSent: '12/01/2017 00:00:00',
-            status: 'Failure',
-            errorMessage: 'Could not reach Hipchat',
-            errorStackTrace: 'Exception : could not reach hipchat \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55)'
-        });
-        this.setState({
-			entries
-		});
-    }
+	// addDefaultEntries() {
+ //        const { entries } = this.state;
+ //        entries.push({
+ //            id: '999',
+ //            jobName: 'Test Job',
+ //            eventType: 'email_group_channel',
+ //            notificationType: 'High Vulnerability',
+ //            timeCreated: '12/01/2017 00:00:00',
+ //            timeLastSent: '12/01/2017 00:00:00',
+ //            status: 'Success'
+ //        });
+ //        entries.push({
+ //            id: '111',
+ //            jobName: 'Test Hipchat',
+ //            eventType: 'hipchat_channel',
+ //            notificationType: 'High Vulnerability',
+ //            timeCreated: '12/01/2017 00:00:00',
+ //            timeLastSent: '12/01/2017 00:00:00',
+ //            status: 'Failure',
+ //            errorMessage: 'Could not reach Hipchat',
+ //            errorStackTrace: 'Exception : could not reach hipchat \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55)'
+ //        });
+ //        this.setState({
+	// 		entries
+	// 	});
+ //    }
 
     componentWillMount() {
 		this.setState({
@@ -78,36 +78,36 @@ class Audit extends Component {
 				return response.json().then(jsonArray => {
 					self.handleSetState('message', '');
 					if (jsonArray != null && jsonArray.length > 0) {
-						var projects = [];
+						var entries = self.state.entries;
 						for (var index in jsonArray) {
-							var newProject = {};
-							newProject.id = jsonArray[index].id;
-				            newProject.jobName = jsonArray[index].name;
-				            newProject.eventType = jsonArray[index].eventType;
-				            newProject.timeCreated = jsonArray[index].timeCreated;
-				            newProject.timeLastSent = jsonArray[index].timeLastSent;
-				            newProject.status =  jsonArray[index].status;
-				            newProject.errorMessage =  jsonArray[index].errorMessage;
-				            newProject.errorStackTrace = jsonArray[index].errorStackTrace;
+							var newEntry = {};
+							newEntry.id = jsonArray[index].id;
+				            newEntry.jobName = jsonArray[index].name;
+				            newEntry.eventType = jsonArray[index].eventType;
+				            newEntry.timeCreated = jsonArray[index].timeCreated;
+				            newEntry.timeLastSent = jsonArray[index].timeLastSent;
+				            newEntry.status =  jsonArray[index].status;
+				            newEntry.errorMessage =  jsonArray[index].errorMessage;
+				            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
 							if (jsonArray[index].notification) {
-					            newProject.notificationType = jsonArray[index].notification.notificationType;
-					            newProject.notificationProjectName = jsonArray[index].notification.projectName;
-								newProject.notificationProjectVersion = jsonArray[index].notification.projectVersion;
-								newProject.notificationComponentName = jsonArray[index].notification.componentName;
-								newProject.notificationComponentVersion = jsonArray[index].notification.componentVersion;
-								newProject.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
+					            newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
+					            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
+								newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
+								newEntry.notificationComponentName = jsonArray[index].notification.componentName;
+								newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
+								newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
 							}
-							projects.push(newProject);
+							entries.push(newEntry);
 						}
 						self.setState({
-							projects
+							entries
 						});
 					}
 				});
 			}
 		});
 
-		this.addDefaultEntries();
+		// this.addDefaultEntries();
 	}
 
 	handleSetState(name, value) {
