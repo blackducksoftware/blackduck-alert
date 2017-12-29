@@ -14,7 +14,9 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -26,7 +28,7 @@ public class ProjectDataTest {
 
     @Test
     public void testDataNull() {
-        final ProjectData projectData = new ProjectData(null, null, null, null);
+        final ProjectData projectData = new ProjectData(null, null, null, null, null);
 
         assertNull(projectData.getCategoryMap());
         assertNull(projectData.getDigestType());
@@ -39,16 +41,16 @@ public class ProjectDataTest {
 
     @Test
     public void testProjectKey() {
-        ProjectData projectData = new ProjectData(null, null, null, null);
+        ProjectData projectData = new ProjectData(null, null, null, null, null);
         assertNull(projectData.getProjectKey());
 
-        projectData = new ProjectData(null, null, "Version", null);
+        projectData = new ProjectData(null, null, "Version", null, null);
         assertEquals("Version", projectData.getProjectKey());
 
-        projectData = new ProjectData(null, "Project", null, null);
+        projectData = new ProjectData(null, "Project", null, null, null);
         assertEquals("Project", projectData.getProjectKey());
 
-        projectData = new ProjectData(null, "Project", "Version", null);
+        projectData = new ProjectData(null, "Project", "Version", null, null);
         assertEquals("ProjectVersion", projectData.getProjectKey());
     }
 
@@ -58,7 +60,10 @@ public class ProjectDataTest {
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryData);
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Project", "Version", categoryMap);
+        final List<Long> notificationIds = new ArrayList<>();
+        notificationIds.add(1L);
+
+        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Project", "Version", notificationIds, categoryMap);
 
         assertEquals(categoryMap, projectData.getCategoryMap());
         assertEquals(DigestTypeEnum.REAL_TIME, projectData.getDigestType());
@@ -67,7 +72,7 @@ public class ProjectDataTest {
         assertEquals("Version", projectData.getProjectVersion());
 
         assertEquals(
-                "{\"digestType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"itemList\":null,\"itemCount\":0}}}",
+                "{\"digestType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"notificationIds\":[1],\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"itemList\":null,\"itemCount\":0}}}",
                 projectData.toString());
     }
 }
