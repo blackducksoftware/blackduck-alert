@@ -14,11 +14,10 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
 
 public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
-    private final MockHipChatGlobalEntity mockUtils = new MockHipChatGlobalEntity();
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalHipChatConfigEntity entity) {
@@ -37,7 +36,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalHipChatConfigEntity entity) {
-        assertEquals(mockUtils.getApiKey(), entity.getApiKey());
+        assertEquals(getMockUtil().getApiKey(), entity.getApiKey());
     }
 
     @Override
@@ -51,7 +50,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
     }
 
     @Override
-    public MockGlobalEntityUtil<GlobalHipChatConfigEntity> getMockUtil() {
-        return mockUtils;
+    public MockHipChatGlobalEntity getMockUtil() {
+        return new MockHipChatGlobalEntity();
     }
 }

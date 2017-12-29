@@ -14,11 +14,10 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
 
 public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigEntity> {
-    private final MockGlobalHubEntity mockUtils = new MockGlobalHubEntity();
 
     @Override
     public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
@@ -44,9 +43,9 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalHubConfigEntity entity) {
-        assertEquals(mockUtils.getHubPassword(), entity.getHubPassword());
-        assertEquals(Integer.valueOf(mockUtils.getHubTimeout()), entity.getHubTimeout());
-        assertEquals(mockUtils.getHubUsername(), entity.getHubUsername());
+        assertEquals(getMockUtil().getHubPassword(), entity.getHubPassword());
+        assertEquals(getMockUtil().getHubTimeout(), entity.getHubTimeout());
+        assertEquals(getMockUtil().getHubUsername(), entity.getHubUsername());
     }
 
     @Override
@@ -55,7 +54,7 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
     }
 
     @Override
-    public MockGlobalEntityUtil<GlobalHubConfigEntity> getMockUtil() {
-        return mockUtils;
+    public MockGlobalHubEntity getMockUtil() {
+        return new MockGlobalHubEntity();
     }
 }

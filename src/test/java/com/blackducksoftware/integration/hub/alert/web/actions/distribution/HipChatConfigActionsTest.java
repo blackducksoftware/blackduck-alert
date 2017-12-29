@@ -21,11 +21,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
@@ -58,12 +57,12 @@ public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRes
     }
 
     @Override
-    public MockEntityUtil<HipChatDistributionConfigEntity> getEntityMockUtil() {
+    public MockHipChatEntity getEntityMockUtil() {
         return new MockHipChatEntity();
     }
 
     @Override
-    public MockRestModelUtil<HipChatDistributionRestModel> getRestMockUtil() {
+    public MockHipChatRestModel getRestMockUtil() {
         return new MockHipChatRestModel();
     }
 }

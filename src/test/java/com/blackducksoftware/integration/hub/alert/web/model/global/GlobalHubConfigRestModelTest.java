@@ -15,10 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
 public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfigRestModel> {
-    private final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
@@ -45,15 +44,15 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHubConfigRestModel restModel) {
-        assertEquals(mockUtils.getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
-        assertEquals(mockUtils.getHubPassword(), restModel.getHubPassword());
-        assertEquals(mockUtils.getHubProxyHost(), restModel.getHubProxyHost());
-        assertEquals(mockUtils.getHubProxyPassword(), restModel.getHubProxyPassword());
-        assertEquals(mockUtils.getHubProxyPort(), restModel.getHubProxyPort());
-        assertEquals(mockUtils.getHubProxyUsername(), restModel.getHubProxyUsername());
-        assertEquals(mockUtils.getHubTimeout(), restModel.getHubTimeout());
-        assertEquals(mockUtils.getHubUrl(), restModel.getHubUrl());
-        assertEquals(mockUtils.getHubUsername(), restModel.getHubUsername());
+        assertEquals(getMockUtil().getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
+        assertEquals(getMockUtil().getHubPassword(), restModel.getHubPassword());
+        assertEquals(getMockUtil().getHubProxyHost(), restModel.getHubProxyHost());
+        assertEquals(getMockUtil().getHubProxyPassword(), restModel.getHubProxyPassword());
+        assertEquals(getMockUtil().getHubProxyPort(), restModel.getHubProxyPort());
+        assertEquals(getMockUtil().getHubProxyUsername(), restModel.getHubProxyUsername());
+        assertEquals(getMockUtil().getHubTimeout(), restModel.getHubTimeout());
+        assertEquals(getMockUtil().getHubUrl(), restModel.getHubUrl());
+        assertEquals(getMockUtil().getHubUsername(), restModel.getHubUsername());
     }
 
     @Override
@@ -67,7 +66,7 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     }
 
     @Override
-    public MockGlobalRestModelUtil<GlobalHubConfigRestModel> getMockUtil() {
-        return mockUtils;
+    public MockGlobalHubRestModel getMockUtil() {
+        return new MockGlobalHubRestModel();
     }
 }

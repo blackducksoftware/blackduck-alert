@@ -16,10 +16,9 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
@@ -47,12 +46,12 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
     }
 
     @Override
-    public MockGlobalEntityUtil<GlobalEmailConfigEntity> getGlobalEntityMockUtil() {
+    public MockEmailGlobalEntity getGlobalEntityMockUtil() {
         return new MockEmailGlobalEntity();
     }
 
     @Override
-    public MockGlobalRestModelUtil<GlobalEmailConfigRestModel> getGlobalRestModelMockUtil() {
+    public MockEmailGlobalRestModel getGlobalRestModelMockUtil() {
         return new MockEmailGlobalRestModel();
     }
 

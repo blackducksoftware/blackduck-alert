@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model.distribution;
+package com.blackducksoftware.integration.hub.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class RestModelTest<R extends CommonDistributionConfigRestModel> {
 
