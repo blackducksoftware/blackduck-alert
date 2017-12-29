@@ -15,10 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
 public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
-    private final MockHipChatRestModel mockUtils = new MockHipChatRestModel();
 
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
@@ -39,9 +38,9 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public void assertRestModelFieldsFull(final HipChatDistributionRestModel restModel) {
-        assertEquals(mockUtils.getRoomId(), restModel.getRoomId());
-        assertEquals(mockUtils.getNotify(), restModel.getNotify());
-        assertEquals(mockUtils.getColor(), restModel.getColor());
+        assertEquals(getMockUtil().getRoomId(), restModel.getRoomId());
+        assertEquals(getMockUtil().getNotify(), restModel.getNotify());
+        assertEquals(getMockUtil().getColor(), restModel.getColor());
     }
 
     @Override
@@ -55,8 +54,8 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     }
 
     @Override
-    public MockRestModelUtil<HipChatDistributionRestModel> getMockUtil() {
-        return mockUtils;
+    public MockHipChatRestModel getMockUtil() {
+        return new MockHipChatRestModel();
     }
 
 }

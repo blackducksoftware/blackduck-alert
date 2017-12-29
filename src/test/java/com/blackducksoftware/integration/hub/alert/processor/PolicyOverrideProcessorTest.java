@@ -47,9 +47,9 @@ public class PolicyOverrideProcessorTest {
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
         final String firstName = "B";
         final String lastName = "Dawg";
-        final String coponentIssueUrl = "broken.edu";
+        final String componentIssueUrl = "broken.edu";
         final PolicyOverrideContentItem notification = new PolicyOverrideContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, firstName, lastName,
-                coponentIssueUrl);
+                componentIssueUrl);
 
         assertTrue(cache.getEvents().size() == 0);
 

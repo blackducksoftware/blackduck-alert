@@ -14,15 +14,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 
 public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
-    private final MockEmailGlobalEntity mockUtils = new MockEmailGlobalEntity();
 
     @Override
-    public MockGlobalEntityUtil<GlobalEmailConfigEntity> getMockUtil() {
-        return mockUtils;
+    public MockEmailGlobalEntity getMockUtil() {
+        return new MockEmailGlobalEntity();
     }
 
     @Override
@@ -63,23 +62,23 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
-        assertEquals(mockUtils.getEmailSubjectLine(), entity.getEmailSubjectLine());
-        assertEquals(mockUtils.getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
-        assertEquals(mockUtils.getEmailTemplateLogoImage(), entity.getEmailTemplateLogoImage());
-        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpAllow8bitmime()), entity.getMailSmtpAllow8bitmime());
-        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpAuth()), entity.getMailSmtpAuth());
-        assertEquals(Integer.valueOf(mockUtils.getMailSmtpConnectionTimeout()), entity.getMailSmtpConnectionTimeout());
-        assertEquals(mockUtils.getMailSmtpDnsNotify(), entity.getMailSmtpDnsNotify());
-        assertEquals(mockUtils.getMailSmtpDnsRet(), entity.getMailSmtpDnsRet());
-        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpEhlo()), entity.getMailSmtpEhlo());
-        assertEquals(mockUtils.getMailSmtpFrom(), entity.getMailSmtpFrom());
-        assertEquals(mockUtils.getMailSmtpHost(), entity.getMailSmtpHost());
-        assertEquals(mockUtils.getMailSmtpLocalhost(), entity.getMailSmtpLocalhost());
-        assertEquals(mockUtils.getMailSmtpPassword(), entity.getMailSmtpPassword());
-        assertEquals(Integer.valueOf(mockUtils.getMailSmtpPort()), entity.getMailSmtpPort());
-        assertEquals(Boolean.valueOf(mockUtils.getMailSmtpSendPartial()), entity.getMailSmtpSendPartial());
-        assertEquals(Integer.valueOf(mockUtils.getMailSmtpTimeout()), entity.getMailSmtpTimeout());
-        assertEquals(mockUtils.getMailSmtpUser(), entity.getMailSmtpUser());
+        assertEquals(getMockUtil().getEmailSubjectLine(), entity.getEmailSubjectLine());
+        assertEquals(getMockUtil().getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
+        assertEquals(getMockUtil().getEmailTemplateLogoImage(), entity.getEmailTemplateLogoImage());
+        assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), entity.getMailSmtpAllow8bitmime());
+        assertEquals(getMockUtil().getMailSmtpAuth(), entity.getMailSmtpAuth());
+        assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), entity.getMailSmtpConnectionTimeout());
+        assertEquals(getMockUtil().getMailSmtpDnsNotify(), entity.getMailSmtpDnsNotify());
+        assertEquals(getMockUtil().getMailSmtpDnsRet(), entity.getMailSmtpDnsRet());
+        assertEquals(getMockUtil().getMailSmtpEhlo(), entity.getMailSmtpEhlo());
+        assertEquals(getMockUtil().getMailSmtpFrom(), entity.getMailSmtpFrom());
+        assertEquals(getMockUtil().getMailSmtpHost(), entity.getMailSmtpHost());
+        assertEquals(getMockUtil().getMailSmtpLocalhost(), entity.getMailSmtpLocalhost());
+        assertEquals(getMockUtil().getMailSmtpPassword(), entity.getMailSmtpPassword());
+        assertEquals(getMockUtil().getMailSmtpPort(), entity.getMailSmtpPort());
+        assertEquals(getMockUtil().getMailSmtpSendPartial(), entity.getMailSmtpSendPartial());
+        assertEquals(getMockUtil().getMailSmtpTimeout(), entity.getMailSmtpTimeout());
+        assertEquals(getMockUtil().getMailSmtpUser(), entity.getMailSmtpUser());
     }
 
     @Override

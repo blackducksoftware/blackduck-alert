@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
+package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +35,7 @@ import com.blackducksoftware.integration.hub.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, DCA extends DistributionConfigActions<E, R>> {

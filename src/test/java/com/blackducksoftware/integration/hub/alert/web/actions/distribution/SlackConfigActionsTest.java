@@ -21,11 +21,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
@@ -58,12 +57,12 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
     }
 
     @Override
-    public MockEntityUtil<SlackDistributionConfigEntity> getEntityMockUtil() {
+    public MockSlackEntity getEntityMockUtil() {
         return new MockSlackEntity();
     }
 
     @Override
-    public MockRestModelUtil<SlackDistributionRestModel> getRestMockUtil() {
+    public MockSlackRestModel getRestMockUtil() {
         return new MockSlackRestModel();
     }
 

@@ -44,8 +44,8 @@ public class PolicyViolationClearedProcessorTest {
         final String componentVersionUrl = "newest";
         final PolicyRuleView policyRuleView = new PolicyRuleView();
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
-        final String coponentIssueUrl = "broken.edu";
-        final PolicyViolationClearedContentItem notification = new PolicyViolationClearedContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, coponentIssueUrl);
+        final String componentIssueUrl = "broken.edu";
+        final PolicyViolationClearedContentItem notification = new PolicyViolationClearedContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
 
         assertTrue(cache.getEvents().size() == 0);
 

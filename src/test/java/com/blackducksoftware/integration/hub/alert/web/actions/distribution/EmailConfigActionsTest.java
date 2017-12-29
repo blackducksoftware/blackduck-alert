@@ -22,10 +22,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEmailEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockEmailRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.ActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
@@ -58,12 +57,12 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
     }
 
     @Override
-    public MockEntityUtil<EmailGroupDistributionConfigEntity> getEntityMockUtil() {
+    public MockEmailEntity getEntityMockUtil() {
         return new MockEmailEntity();
     }
 
     @Override
-    public MockRestModelUtil<EmailGroupDistributionRestModel> getRestMockUtil() {
+    public MockEmailRestModel getRestMockUtil() {
         return new MockEmailRestModel();
     }
 

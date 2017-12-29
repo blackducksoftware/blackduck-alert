@@ -47,8 +47,8 @@ public class PolicyViolationProcessorTest {
         metaView.href = "Meta href";
         policyRuleView.meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
-        final String coponentIssueUrl = "issueUrl";
-        final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, coponentIssueUrl);
+        final String componentIssueUrl = "issueUrl";
+        final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
 
         assertTrue(cache.getEvents().size() == 0);
 
