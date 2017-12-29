@@ -36,7 +36,7 @@ public class ProjectDataTest {
         assertNull(projectData.getProjectName());
         assertNull(projectData.getProjectVersion());
 
-        assertEquals("{\"digestType\":null,\"projectKey\":null,\"projectName\":null,\"projectVersion\":null,\"categoryMap\":null}", projectData.toString());
+        assertEquals("{\"digestType\":null,\"projectKey\":null,\"projectName\":null,\"projectVersion\":null,\"notificationIds\":null,\"categoryMap\":null}", projectData.toString());
     }
 
     @Test
