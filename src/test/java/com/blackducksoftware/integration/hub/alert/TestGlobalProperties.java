@@ -11,6 +11,8 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import org.mockito.Mockito;
+
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
@@ -23,8 +25,22 @@ public class TestGlobalProperties extends GlobalProperties {
     private String accumulatorCron;
     private String dailyDigestCron;
 
+    public TestGlobalProperties() {
+        this(Mockito.mock(GlobalHubRepository.class), Mockito.mock(GlobalSchedulingRepository.class));
+    }
+
     public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+        this(globalRepository, globalSchedulingRepository, 400, "hubUsername", "hubPassword", "1 1 1 1 1 1", "2 2 2 2 2 2");
+    }
+
+    public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository, final Integer hubTimeout, final String hubUsername, final String hubPassword,
+            final String accumulatorCron, final String dailyDigestCron) {
         super(globalRepository, globalSchedulingRepository);
+        this.hubTimeout = hubTimeout;
+        this.hubUsername = hubUsername;
+        this.hubPassword = hubPassword;
+        this.accumulatorCron = accumulatorCron;
+        this.dailyDigestCron = dailyDigestCron;
     }
 
     @Override

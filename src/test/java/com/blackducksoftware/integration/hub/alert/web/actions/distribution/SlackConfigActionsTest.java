@@ -24,7 +24,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.repositor
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ActionsTest;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
