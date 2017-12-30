@@ -23,12 +23,20 @@
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Collection;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ConfigRestModel implements Serializable {
     private static final long serialVersionUID = -3734941694720407916L;
+
+    private final static Logger logger = LoggerFactory.getLogger(ConfigRestModel.class);
 
     private String id;
 
@@ -55,5 +63,30 @@ public abstract class ConfigRestModel implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    public ReflectionToStringBuilder createToStringBuilder(final Object objectToString) {
+        final ReflectionToStringBuilder builder = new ReflectionToStringBuilder(objectToString, ToStringStyle.JSON_STYLE) {
+
+            @Override
+            protected Object getValue(final Field field) throws IllegalArgumentException, IllegalAccessException {
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    try {
+                        final Collection<String> collectionInstance = (Collection<String>) field.get(objectToString);
+                        String[] collectionToStringArray = null;
+                        if (collectionInstance != null) {
+                            collectionToStringArray = collectionInstance.toArray(new String[collectionInstance.size()]);
+                        }
+
+                        return collectionToStringArray;
+                    } catch (IllegalAccessException | IllegalArgumentException e) {
+                        logger.debug("Error when converting from Collection to array", e);
+                    }
+                }
+                return super.getValue(field);
+            }
+        };
+
+        return builder;
     }
 }
