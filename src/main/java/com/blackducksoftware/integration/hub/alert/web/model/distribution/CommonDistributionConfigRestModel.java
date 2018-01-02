@@ -24,9 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -4723009315760610084L;
@@ -118,8 +118,14 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = super.createToStringBuilder(this);
-        return reflectionToStringBuilder.build();
+        String json = "{}";
+        final ObjectMapper mapper = new ObjectMapper();
+        try {
+            json = mapper.writeValueAsString(this);
+        } catch (final JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 
 }

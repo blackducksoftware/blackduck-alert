@@ -16,9 +16,10 @@ import static org.junit.Assert.assertNull;
 
 import java.io.ObjectStreamClass;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
 public abstract class EntityTest<E extends DatabaseEntity> {
@@ -26,7 +27,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
     public abstract MockEntityUtil<E> getMockUtil();
 
     @Test
-    public void testEmptyEntity() {
+    public void testEmptyEntity() throws JSONException {
         final E configEntity = getMockUtil().createEmptyEntity();
         assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
 
@@ -37,7 +38,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         assertEquals(emptyEntityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEmptyEntityJson();
-        assertEquals(expectedString, configEntity.toString());
+        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
         final E configEntityNew = getMockUtil().createEmptyEntity();
         assertEquals(configEntity, configEntityNew);
@@ -52,7 +53,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
     public abstract int emptyEntityHashCode();
 
     @Test
-    public void testEntity() {
+    public void testEntity() throws JSONException {
         final E configEntity = getMockUtil().createEntity();
 
         assertEntityFieldsFull(configEntity);
@@ -62,7 +63,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         assertEquals(entityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEntityJson();
-        assertEquals(expectedString, configEntity.toString());
+        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
         final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);
