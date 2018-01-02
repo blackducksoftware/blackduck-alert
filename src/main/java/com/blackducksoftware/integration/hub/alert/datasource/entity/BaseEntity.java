@@ -24,29 +24,33 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.RecursiveToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 @MappedSuperclass
-public abstract class DatabaseEntity extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -655751104442653527L;
+public abstract class BaseEntity implements Serializable {
+    private static final long serialVersionUID = 2292606946685763925L;
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
-
-    public DatabaseEntity() {
-        super();
+    public BaseEntity() {
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    public void setId(final Long id) {
-        this.id = id;
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.build();
     }
 }
