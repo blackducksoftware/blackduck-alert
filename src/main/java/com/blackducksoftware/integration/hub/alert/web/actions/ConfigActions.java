@@ -94,10 +94,10 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 final Field fieldIsSet = restModelClass.getDeclaredField(fieldName + "IsSet");
                 fieldIsSet.setAccessible(true);
                 final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(restModel);
-                if (sensitiveIsSetFieldValue) {
-                    isFieldSet = true;
+                if (!sensitiveIsSetFieldValue) {
                     fieldIsSet.setBoolean(restModel, isFieldSet);
                 }
+
             }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
@@ -137,7 +137,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         try {
             final Class newConfigClass = newConfig.getClass();
             for (final String fieldName : sensitiveFields()) {
-                final Field field = newConfigClass.getDeclaredField(fieldName);
+                Field field = null;
+                try {
+                    field = newConfigClass.getDeclaredField(fieldName);
+                } catch (final NoSuchFieldException e) {
+                    continue;
+                }
                 field.setAccessible(true);
                 final String newValue = (String) field.get(newConfig);
                 if (StringUtils.isBlank(newValue) && savedConfig != null) {
@@ -153,7 +158,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                     field.set(newConfig, savedValue);
                 }
             }
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+        } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
         }
 
