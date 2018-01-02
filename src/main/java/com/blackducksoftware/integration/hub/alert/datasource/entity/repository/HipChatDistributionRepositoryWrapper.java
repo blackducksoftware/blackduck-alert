@@ -22,26 +22,22 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 
-public abstract class AbstractRepositoryWrapper<D extends DatabaseEntity, R extends JpaRepository<D, Long>> {
+@Component
+public class HipChatDistributionRepositoryWrapper extends AbstractRepositoryWrapper<HipChatDistributionConfigEntity, HipChatDistributionRepository> {
 
-    private final R repository;
-
-    AbstractRepositoryWrapper(final R repository) {
-        this.repository = repository;
+    @Autowired
+    public HipChatDistributionRepositoryWrapper(final HipChatDistributionRepository repository) {
+        super(repository);
     }
 
-    public R getRepository() {
-        return repository;
+    @Override
+    public HipChatDistributionConfigEntity encryptSensitiveData(final HipChatDistributionConfigEntity entity) {
+        return entity;
     }
-
-    public D save(final D entity) {
-        final D encryptedEntity = encryptSensitiveData(entity);
-        return getRepository().save(encryptedEntity);
-    }
-
-    public abstract D encryptSensitiveData(D entity);
 }

@@ -20,33 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import java.io.Serializable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 
-@MappedSuperclass
-public abstract class DatabaseEntity extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -655751104442653527L;
+@Component
+public class DistributionProjectRepositoryWrapper extends AbstractRepositoryWrapper<DistributionProjectRelation, DistributionProjectRepository> {
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
-
-    public DatabaseEntity() {
-        super();
+    @Autowired
+    public DistributionProjectRepositoryWrapper(final DistributionProjectRepository repository) {
+        super(repository);
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public DistributionProjectRelation encryptSensitiveData(final DistributionProjectRelation entity) {
+        return entity;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
 }
