@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 
 @Component
-public class SlackDistributionRepositoryWrapper extends AbstractRepositoryWrapper<SlackDistributionConfigEntity, SlackDistributionRepository> {
+public class SlackDistributionRepositoryWrapper extends AbstractRepositoryWrapper<SlackDistributionConfigEntity, Long, SlackDistributionRepository> {
 
     @Autowired
     public SlackDistributionRepositoryWrapper(final SlackDistributionRepository repository) {

@@ -27,9 +27,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.DistributionProjectRelationPK;
 
 @Component
-public class DistributionProjectRepositoryWrapper extends AbstractRepositoryWrapper<DistributionProjectRelation, DistributionProjectRepository> {
+public class DistributionProjectRepositoryWrapper extends AbstractRepositoryWrapper<DistributionProjectRelation, DistributionProjectRelationPK, DistributionProjectRepository> {
 
     @Autowired
     public DistributionProjectRepositoryWrapper(final DistributionProjectRepository repository) {

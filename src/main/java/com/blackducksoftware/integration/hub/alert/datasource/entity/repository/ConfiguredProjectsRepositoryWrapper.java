@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 
 @Component
-public class ConfiguredProjectsRepositoryWrapper extends AbstractRepositoryWrapper<ConfiguredProjectEntity, ConfiguredProjectsRepository> {
+public class ConfiguredProjectsRepositoryWrapper extends AbstractRepositoryWrapper<ConfiguredProjectEntity, Long, ConfiguredProjectsRepository> {
 
     @Autowired
     public ConfiguredProjectsRepositoryWrapper(final ConfiguredProjectsRepository repository) {

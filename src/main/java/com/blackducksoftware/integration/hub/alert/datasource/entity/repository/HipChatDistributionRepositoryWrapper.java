@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 
 @Component
-public class HipChatDistributionRepositoryWrapper extends AbstractRepositoryWrapper<HipChatDistributionConfigEntity, HipChatDistributionRepository> {
+public class HipChatDistributionRepositoryWrapper extends AbstractRepositoryWrapper<HipChatDistributionConfigEntity, Long, HipChatDistributionRepository> {
 
     @Autowired
     public HipChatDistributionRepositoryWrapper(final HipChatDistributionRepository repository) {

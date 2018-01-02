@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 
 @Component
-public class GlobalEmailRepositoryWrapper extends AbstractRepositoryWrapper<GlobalEmailConfigEntity, GlobalEmailRepository> {
+public class GlobalEmailRepositoryWrapper extends AbstractRepositoryWrapper<GlobalEmailConfigEntity, Long, GlobalEmailRepository> {
 
     @Autowired
     public GlobalEmailRepositoryWrapper(final GlobalEmailRepository repository) {

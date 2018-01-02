@@ -27,9 +27,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.DistributionNotificationTypeRelationPK;
 
 @Component
-public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepositoryWrapper<DistributionNotificationTypeRelation, DistributionNotificationTypeRepository> {
+public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepositoryWrapper<DistributionNotificationTypeRelation, DistributionNotificationTypeRelationPK, DistributionNotificationTypeRepository> {
 
     @Autowired
     public DistributionNotificationTypeRepositoryWrapper(final DistributionNotificationTypeRepository repository) {

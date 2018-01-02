@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 
 @Component
-public class EmailGroupDistributionRepositoryWrapper extends AbstractRepositoryWrapper<EmailGroupDistributionConfigEntity, EmailGroupDistributionRepository> {
+public class EmailGroupDistributionRepositoryWrapper extends AbstractRepositoryWrapper<EmailGroupDistributionConfigEntity, Long, EmailGroupDistributionRepository> {
 
     @Autowired
     public EmailGroupDistributionRepositoryWrapper(final EmailGroupDistributionRepository repository) {
