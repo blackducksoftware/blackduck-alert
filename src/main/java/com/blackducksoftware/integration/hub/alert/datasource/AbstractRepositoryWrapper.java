@@ -23,6 +23,7 @@
 package com.blackducksoftware.integration.hub.alert.datasource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,11 +59,18 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public D findOne(final ID id) {
-        return getRepository().findOne(id);
+        final D entity = getRepository().findOne(id);
+        return decryptSensitiveData(entity);
     }
 
     public List<D> findAll() {
-        return getRepository().findAll();
+        final List<D> entityList = getRepository().findAll();
+        final List<D> returnList = new ArrayList<>(entityList.size());
+
+        for (final D entity : entityList) {
+            returnList.add(decryptSensitiveData(entity));
+        }
+        return returnList;
     }
 
     public D save(final D entity) {
@@ -71,4 +79,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public abstract D encryptSensitiveData(D entity);
+
+    public abstract D decryptSensitiveData(D entity);
 }

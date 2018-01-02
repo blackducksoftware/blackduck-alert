@@ -40,4 +40,9 @@ public class GlobalSlackRepositoryWrapper extends AbstractRepositoryWrapper<Glob
     public GlobalSlackConfigEntity encryptSensitiveData(final GlobalSlackConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public GlobalSlackConfigEntity decryptSensitiveData(final GlobalSlackConfigEntity entity) {
+        return entity;
+    }
 }

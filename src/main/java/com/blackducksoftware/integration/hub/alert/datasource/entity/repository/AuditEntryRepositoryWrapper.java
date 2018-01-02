@@ -43,4 +43,9 @@ public class AuditEntryRepositoryWrapper extends AbstractRepositoryWrapper<Audit
     public AuditEntryEntity encryptSensitiveData(final AuditEntryEntity entity) {
         return entity;
     }
+
+    @Override
+    public AuditEntryEntity decryptSensitiveData(final AuditEntryEntity entity) {
+        return entity;
+    }
 }

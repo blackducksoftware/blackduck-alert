@@ -41,4 +41,8 @@ public class EmailGroupDistributionRepositoryWrapper extends AbstractRepositoryW
         return entity;
     }
 
+    @Override
+    public EmailGroupDistributionConfigEntity decryptSensitiveData(final EmailGroupDistributionConfigEntity entity) {
+        return entity;
+    }
 }

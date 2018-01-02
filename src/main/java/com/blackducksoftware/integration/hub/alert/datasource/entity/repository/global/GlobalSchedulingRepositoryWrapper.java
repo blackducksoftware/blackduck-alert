@@ -40,4 +40,9 @@ public class GlobalSchedulingRepositoryWrapper extends AbstractRepositoryWrapper
     public GlobalSchedulingConfigEntity encryptSensitiveData(final GlobalSchedulingConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public GlobalSchedulingConfigEntity decryptSensitiveData(final GlobalSchedulingConfigEntity entity) {
+        return entity;
+    }
 }

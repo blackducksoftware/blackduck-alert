@@ -40,4 +40,9 @@ public class GlobalHipChatRepositoryWrapper extends AbstractRepositoryWrapper<Gl
     public GlobalHipChatConfigEntity encryptSensitiveData(final GlobalHipChatConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public GlobalHipChatConfigEntity decryptSensitiveData(final GlobalHipChatConfigEntity entity) {
+        return entity;
+    }
 }

@@ -41,4 +41,9 @@ public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepos
     public DistributionNotificationTypeRelation encryptSensitiveData(final DistributionNotificationTypeRelation entity) {
         return entity;
     }
+
+    @Override
+    public DistributionNotificationTypeRelation decryptSensitiveData(final DistributionNotificationTypeRelation entity) {
+        return entity;
+    }
 }
