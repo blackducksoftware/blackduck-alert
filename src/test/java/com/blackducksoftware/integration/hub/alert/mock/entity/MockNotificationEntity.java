@@ -129,7 +129,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         final Gson gson = new Gson();
         final JsonObject json = new JsonObject();
         json.addProperty("eventKey", eventKey);
-        json.addProperty("createdAt", createdAt.toString());
+        json.addProperty("createdAt", createdAt.getTime());
         json.addProperty("notificationType", notificationType);
         json.addProperty("projectName", projectName);
         json.addProperty("projectVersion", projectVersion);

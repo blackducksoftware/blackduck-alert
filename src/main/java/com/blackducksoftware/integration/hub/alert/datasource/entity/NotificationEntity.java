@@ -34,9 +34,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 @Entity
 @Table(schema = "alert", name = "notification_events")
 public class NotificationEntity extends DatabaseEntity {
@@ -150,9 +147,18 @@ public class NotificationEntity extends DatabaseEntity {
     public Collection<VulnerabilityEntity> getVulnerabilityList() {
         return vulnerabilityList;
     }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
-    }
+    //
+    // @Override
+    // public String toString() {
+    // String json = "";
+    // final ObjectMapper mapper = new ObjectMapper();
+    // try {
+    // json = mapper.writeValueAsString(this);
+    // } catch (final JsonProcessingException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // return json;
+    // return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
+    // }
 }
