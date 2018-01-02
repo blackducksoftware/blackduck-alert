@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 
 @Component
-public class CommonDistributionRepositoryWrapper extends AbstractRepositoryWrapper<CommonDistributionConfigEntity, CommonDistributionRepository> {
+public class CommonDistributionRepositoryWrapper extends AbstractRepositoryWrapper<CommonDistributionConfigEntity, Long, CommonDistributionRepository> {
 
     @Autowired
     public CommonDistributionRepositoryWrapper(final CommonDistributionRepository repository) {

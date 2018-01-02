@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 
 @Component
-public class AuditEntryRepositoryWrapper extends AbstractRepositoryWrapper<AuditEntryEntity, AuditEntryRepository> {
+public class AuditEntryRepositoryWrapper extends AbstractRepositoryWrapper<AuditEntryEntity, Long, AuditEntryRepository> {
     @Autowired
     public AuditEntryRepositoryWrapper(final AuditEntryRepository repository) {
         super(repository);

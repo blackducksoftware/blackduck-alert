@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 
 @Component
-public class GlobalSchedulingRepositoryWrapper extends AbstractRepositoryWrapper<GlobalSchedulingConfigEntity, GlobalSchedulingRepository> {
+public class GlobalSchedulingRepositoryWrapper extends AbstractRepositoryWrapper<GlobalSchedulingConfigEntity, Long, GlobalSchedulingRepository> {
 
     @Autowired
     public GlobalSchedulingRepositoryWrapper(final GlobalSchedulingRepository repository) {

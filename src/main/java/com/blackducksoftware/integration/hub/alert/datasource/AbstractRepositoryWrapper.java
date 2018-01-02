@@ -23,12 +23,13 @@
 package com.blackducksoftware.integration.hub.alert.datasource;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
-public abstract class AbstractRepositoryWrapper<D extends BaseEntity, R extends JpaRepository<D, ? extends Serializable>> {
+public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends Serializable, R extends JpaRepository<D, ID>> {
 
     private final R repository;
 
@@ -38,6 +39,22 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, R extends 
 
     public R getRepository() {
         return repository;
+    }
+
+    public boolean exists(final ID id) {
+        return getRepository().exists(id);
+    }
+
+    public void delete(final ID id) {
+        getRepository().delete(id);
+    }
+
+    public D findOne(final ID id) {
+        return getRepository().findOne(id);
+    }
+
+    public List<D> findAll() {
+        return getRepository().findAll();
     }
 
     public D save(final D entity) {

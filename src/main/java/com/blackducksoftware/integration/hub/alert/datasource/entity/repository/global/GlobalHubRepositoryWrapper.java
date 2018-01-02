@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepository
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 
 @Component
-public class GlobalHubRepositoryWrapper extends AbstractRepositoryWrapper<GlobalHubConfigEntity, GlobalHubRepository> {
+public class GlobalHubRepositoryWrapper extends AbstractRepositoryWrapper<GlobalHubConfigEntity, Long, GlobalHubRepository> {
 
     @Autowired
     public GlobalHubRepositoryWrapper(final GlobalHubRepository repository) {
