@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHipChatConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -45,7 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipCha
 
 @RestController
 public class GlobalHipChatConfigController extends ConfigController<GlobalHipChatConfigRestModel> {
-    private final CommonConfigHandler<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel> commonConfigHandler;
+    private final CommonConfigHandler<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     public GlobalHipChatConfigController(final GlobalHipChatConfigActions configActions, final ObjectTransformer objectTransformer) {

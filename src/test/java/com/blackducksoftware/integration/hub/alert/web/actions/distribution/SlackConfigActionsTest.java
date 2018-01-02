@@ -15,10 +15,10 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
@@ -27,7 +27,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
-public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionConfigActions> {
+public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionRepositoryWrapper, SlackDistributionConfigActions> {
     private static final SlackMockUtils mockUtils = new SlackMockUtils();
 
     public SlackConfigActionsTest() {
@@ -47,8 +47,8 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
     @Override
     public SlackDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final SlackManager slackManager = Mockito.mock(SlackManager.class);
-        final SlackDistributionRepository mockedSlackRepository = Mockito.mock(SlackDistributionRepository.class);
-        final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
+        final SlackDistributionRepositoryWrapper mockedSlackRepository = Mockito.mock(SlackDistributionRepositoryWrapper.class);
+        final CommonDistributionRepositoryWrapper commonRepository = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
         final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
         final ConfiguredProjectsActions<SlackDistributionRestModel> projectsAction = new ConfiguredProjectsActions<>(projectsRepository, distributionProjectRepository);

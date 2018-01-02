@@ -29,25 +29,25 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
+public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends AbstractRepositoryWrapper<D, Long, ?>> {
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
-    public final JpaRepository<D, Long> repositoryWrapper;
+    public final W repositoryWrapper;
     public final ObjectTransformer objectTransformer;
 
-    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
+    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final W repositoryWrapper, final ObjectTransformer objectTransformer) {
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
-        this.repositoryWrapper = repository;
+        this.repositoryWrapper = repositoryWrapper;
         this.objectTransformer = objectTransformer;
     }
 

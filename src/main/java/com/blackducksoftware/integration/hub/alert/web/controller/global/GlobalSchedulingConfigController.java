@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalSchedulingConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -45,7 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedu
 
 @RestController
 public class GlobalSchedulingConfigController extends ConfigController<GlobalSchedulingConfigRestModel> {
-    private final CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel> commonConfigHandler;
+    private final CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     GlobalSchedulingConfigController(final GlobalSchedulingConfigActions configActions, final ObjectTransformer objectTransformer) {
