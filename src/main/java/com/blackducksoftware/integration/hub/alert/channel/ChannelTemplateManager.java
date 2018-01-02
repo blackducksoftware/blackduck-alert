@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
@@ -40,6 +41,7 @@ public class ChannelTemplateManager {
     private final Gson gson;
     private final List<AbstractJmsTemplate> templateList;
 
+    @Autowired
     public ChannelTemplateManager(final Gson gson, final List<AbstractJmsTemplate> templateList) {
         jmsTemplateMap = new HashMap<>();
         this.gson = gson;
