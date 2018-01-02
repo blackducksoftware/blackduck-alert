@@ -40,4 +40,9 @@ public class GlobalHubRepositoryWrapper extends AbstractRepositoryWrapper<Global
     public GlobalHubConfigEntity encryptSensitiveData(final GlobalHubConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public GlobalHubConfigEntity decryptSensitiveData(final GlobalHubConfigEntity entity) {
+        return entity;
+    }
 }

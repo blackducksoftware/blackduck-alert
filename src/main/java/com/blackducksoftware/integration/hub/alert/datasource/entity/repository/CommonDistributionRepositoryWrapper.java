@@ -44,4 +44,9 @@ public class CommonDistributionRepositoryWrapper extends AbstractRepositoryWrapp
     public CommonDistributionConfigEntity encryptSensitiveData(final CommonDistributionConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public CommonDistributionConfigEntity decryptSensitiveData(final CommonDistributionConfigEntity entity) {
+        return entity;
+    }
 }

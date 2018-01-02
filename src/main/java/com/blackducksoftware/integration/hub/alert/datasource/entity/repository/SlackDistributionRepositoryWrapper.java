@@ -40,4 +40,9 @@ public class SlackDistributionRepositoryWrapper extends AbstractRepositoryWrappe
     public SlackDistributionConfigEntity encryptSensitiveData(final SlackDistributionConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public SlackDistributionConfigEntity decryptSensitiveData(final SlackDistributionConfigEntity entity) {
+        return entity;
+    }
 }

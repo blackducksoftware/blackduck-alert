@@ -45,4 +45,8 @@ public class ConfiguredProjectsRepositoryWrapper extends AbstractRepositoryWrapp
         return entity;
     }
 
+    @Override
+    public ConfiguredProjectEntity decryptSensitiveData(final ConfiguredProjectEntity entity) {
+        return entity;
+    }
 }

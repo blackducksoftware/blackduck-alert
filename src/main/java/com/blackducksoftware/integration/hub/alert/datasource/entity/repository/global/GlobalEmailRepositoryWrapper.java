@@ -40,4 +40,9 @@ public class GlobalEmailRepositoryWrapper extends AbstractRepositoryWrapper<Glob
     public GlobalEmailConfigEntity encryptSensitiveData(final GlobalEmailConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public GlobalEmailConfigEntity decryptSensitiveData(final GlobalEmailConfigEntity entity) {
+        return entity;
+    }
 }

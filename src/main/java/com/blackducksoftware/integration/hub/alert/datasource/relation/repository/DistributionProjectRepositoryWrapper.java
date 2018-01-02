@@ -42,4 +42,9 @@ public class DistributionProjectRepositoryWrapper extends AbstractRepositoryWrap
         return entity;
     }
 
+    @Override
+    public DistributionProjectRelation decryptSensitiveData(final DistributionProjectRelation entity) {
+        return entity;
+    }
+
 }

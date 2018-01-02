@@ -40,4 +40,10 @@ public class HipChatDistributionRepositoryWrapper extends AbstractRepositoryWrap
     public HipChatDistributionConfigEntity encryptSensitiveData(final HipChatDistributionConfigEntity entity) {
         return entity;
     }
+
+    @Override
+    public HipChatDistributionConfigEntity decryptSensitiveData(final HipChatDistributionConfigEntity entity) {
+        return entity;
+    }
+
 }
