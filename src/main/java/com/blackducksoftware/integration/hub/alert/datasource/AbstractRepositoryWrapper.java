@@ -49,6 +49,14 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().delete(id);
     }
 
+    public void delete(final D entity) {
+        getRepository().delete(entity);
+    }
+
+    public void deleteAll() {
+        getRepository().deleteAll();
+    }
+
     public D findOne(final ID id) {
         return getRepository().findOne(id);
     }

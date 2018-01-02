@@ -12,8 +12,8 @@
 package com.blackducksoftware.integration.hub.alert;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 
 // TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
@@ -23,7 +23,7 @@ public class TestGlobalProperties extends GlobalProperties {
     private String accumulatorCron;
     private String dailyDigestCron;
 
-    public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
         super(globalRepository, globalSchedulingRepository);
     }
 

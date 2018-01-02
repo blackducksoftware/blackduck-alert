@@ -15,9 +15,9 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
@@ -27,7 +27,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
-public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGroupDistributionConfigActions> {
+public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGroupDistributionRepositoryWrapper, EmailGroupDistributionConfigActions> {
     private static final EmailMockUtils mockUtils = new EmailMockUtils();
 
     public EmailConfigActionsTest() {
@@ -47,8 +47,8 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
     @Override
     public EmailGroupDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final EmailGroupManager emailManager = Mockito.mock(EmailGroupManager.class);
-        final EmailGroupDistributionRepository mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepository.class);
-        final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
+        final EmailGroupDistributionRepositoryWrapper mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
+        final CommonDistributionRepositoryWrapper commonRepository = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
         final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
         final ConfiguredProjectsActions<EmailGroupDistributionRestModel> projectsAction = new ConfiguredProjectsActions<>(projectsRepository, distributionProjectRepository);

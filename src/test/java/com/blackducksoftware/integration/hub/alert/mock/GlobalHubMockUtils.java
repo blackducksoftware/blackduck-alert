@@ -17,8 +17,8 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
@@ -58,12 +58,12 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     }
 
     public GlobalProperties createTestGlobalProperties() {
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository mockedScheduledRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalSchedulingRepositoryWrapper mockedScheduledRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
         return createTestGlobalProperties(mockedGlobalRepository, mockedScheduledRepository);
     }
 
-    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+    public GlobalProperties createTestGlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
         globalProperties.setHubUrl(hubUrl);
         globalProperties.setHubTrustCertificate(Boolean.valueOf(hubAlwaysTrustCertificate));

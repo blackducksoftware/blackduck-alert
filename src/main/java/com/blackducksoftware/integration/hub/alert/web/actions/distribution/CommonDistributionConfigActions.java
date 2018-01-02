@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -39,11 +39,11 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> {
+public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepositoryWrapper> {
     private final AuditEntryRepository auditEntryRepository;
 
     @Autowired
-    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final AuditEntryRepository auditEntryRepository,
+    public CommonDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final AuditEntryRepository auditEntryRepository,
             final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
             final ObjectTransformer objectTransformer) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);

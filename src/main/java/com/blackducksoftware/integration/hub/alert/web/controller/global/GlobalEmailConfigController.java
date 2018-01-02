@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalEmailConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -45,7 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailC
 
 @RestController
 public class GlobalEmailConfigController extends ConfigController<GlobalEmailConfigRestModel> {
-    private final CommonConfigHandler<GlobalEmailConfigEntity, GlobalEmailConfigRestModel> commonConfigHandler;
+    private final CommonConfigHandler<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     GlobalEmailConfigController(final GlobalEmailConfigActions configActions, final ObjectTransformer objectTransformer) {

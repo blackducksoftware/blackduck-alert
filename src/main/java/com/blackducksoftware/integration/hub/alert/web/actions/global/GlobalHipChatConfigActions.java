@@ -30,16 +30,16 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
 
 @Component
-public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel> {
+public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> {
     @Autowired
-    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer) {
+    public GlobalHipChatConfigActions(final GlobalHipChatRepositoryWrapper hipChatRepository, final ObjectTransformer objectTransformer) {
         super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
     }
 

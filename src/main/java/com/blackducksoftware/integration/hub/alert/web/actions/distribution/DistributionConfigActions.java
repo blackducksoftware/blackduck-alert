@@ -32,11 +32,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -45,16 +45,16 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
+public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel, W extends AbstractRepositoryWrapper<D, Long, ?>> extends ConfigActions<D, R, W> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected final CommonDistributionRepository commonDistributionRepository;
-    protected final JpaRepository<D, Long> channelDistributionRepository;
+    protected final CommonDistributionRepositoryWrapper commonDistributionRepository;
+    protected final W channelDistributionRepository;
     protected final ConfiguredProjectsActions<R> configuredProjectsActions;
     protected final NotificationTypesActions<R> notificationTypesActions;
     protected final ObjectTransformer objectTransformer;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final JpaRepository<D, Long> channelDistributionRepository,
+    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepositoryWrapper commonDistributionRepository, final W channelDistributionRepository,
             final ConfiguredProjectsActions<R> configuredProjectsActions, final NotificationTypesActions<R> notificationTypesActions, final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
