@@ -75,7 +75,8 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
                 if (auditEntryEntity != null) {
                     auditEntryEntity.setStatus(StatusEnum.SUCCESS);
-
+                    auditEntryEntity.setErrorMessage(null);
+                    auditEntryEntity.setErrorStackTrace(null);
                     auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                     getAuditEntryRepository().save(auditEntryEntity);
                 }
