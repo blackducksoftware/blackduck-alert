@@ -25,24 +25,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
 
 @Component
-public class GlobalSchedulingRepositoryWrapper extends AbstractRepositoryWrapper<GlobalSchedulingConfigEntity, Long, GlobalSchedulingRepository> {
+public class GlobalSchedulingRepositoryWrapper extends SimpleKeyRepositoryWrapper<GlobalSchedulingConfigEntity, GlobalSchedulingRepository> {
 
     @Autowired
     public GlobalSchedulingRepositoryWrapper(final GlobalSchedulingRepository repository) {
         super(repository);
-    }
-
-    @Override
-    public GlobalSchedulingConfigEntity encryptSensitiveData(final GlobalSchedulingConfigEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public GlobalSchedulingConfigEntity decryptSensitiveData(final GlobalSchedulingConfigEntity entity) {
-        return entity;
     }
 }

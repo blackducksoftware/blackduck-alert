@@ -20,22 +20,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
-@Component
-public class AuditEntryRepositoryWrapper extends SimpleKeyRepositoryWrapper<AuditEntryEntity, AuditEntryRepository> {
-    @Autowired
-    public AuditEntryRepositoryWrapper(final AuditEntryRepository repository) {
+public abstract class SimpleKeyRepositoryWrapper<D extends BaseEntity, R extends JpaRepository<D, Long>> extends AbstractRepositoryWrapper<D, Long, R> {
+
+    public SimpleKeyRepositoryWrapper(final R repository) {
         super(repository);
     }
 
-    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId) {
-        return decryptSensitiveData(getRepository().findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId));
+    @Override
+    public D encryptSensitiveData(final D entity) {
+        return entity;
+    }
+
+    @Override
+    public D decryptSensitiveData(final D entity) {
+        return entity;
     }
 }

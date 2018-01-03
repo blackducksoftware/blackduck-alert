@@ -25,11 +25,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 
 @Component
-public class CommonDistributionRepositoryWrapper extends AbstractRepositoryWrapper<CommonDistributionConfigEntity, Long, CommonDistributionRepository> {
+public class CommonDistributionRepositoryWrapper extends SimpleKeyRepositoryWrapper<CommonDistributionConfigEntity, CommonDistributionRepository> {
 
     @Autowired
     public CommonDistributionRepositoryWrapper(final CommonDistributionRepository repository) {
@@ -37,16 +37,6 @@ public class CommonDistributionRepositoryWrapper extends AbstractRepositoryWrapp
     }
 
     public CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType) {
-        return getRepository().findByDistributionConfigIdAndDistributionType(distributionConfigId, distributionType);
-    }
-
-    @Override
-    public CommonDistributionConfigEntity encryptSensitiveData(final CommonDistributionConfigEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public CommonDistributionConfigEntity decryptSensitiveData(final CommonDistributionConfigEntity entity) {
-        return entity;
+        return decryptSensitiveData(getRepository().findByDistributionConfigIdAndDistributionType(distributionConfigId, distributionType));
     }
 }
