@@ -78,7 +78,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     @JmsListener(destination = SupportedChannels.EMAIL_GROUP)
     @Override
     public void receiveMessage(final String message) {
-        // TODO figure out why the JMSListener sends the message back to the Queue when there is an exception even though we handle exceptions
         super.receiveMessage(message);
     }
 
@@ -91,6 +90,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                 final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupService(), hubGroupName);
                 sendMessage(emailAddresses, event);
                 setAuditEntrySuccess(event.getAuditEntryId());
+                throw new IntegrationException("See Paulo");
             } catch (final IntegrationException e) {
                 setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
                 logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);

@@ -21,6 +21,8 @@ class Audit extends Component {
 		};
 		// this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
+        this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
+        this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -63,9 +65,14 @@ class Audit extends Component {
 	}
 
 	componentDidMount() {
+		// run the reload now and then every 10 seconds
 		this.reloadAuditEntries();
+		let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+		this.handleSetState('reloadInterval', reloadInterval);
+	}
 
-		// this.addDefaultEntries();
+	componentWillUnmount() {
+		 clearInterval(this.state.reloadInterval);
 	}
 
 	reloadAuditEntries(){
@@ -82,35 +89,39 @@ class Audit extends Component {
 			} else {
 				return response.json().then(jsonArray => {
 					self.handleSetState('message', '');
-					if (jsonArray != null && jsonArray.length > 0) {
-						var entries = [];
-						for (var index in jsonArray) {
-							var newEntry = {};
-							newEntry.id = jsonArray[index].id;
-				            newEntry.jobName = jsonArray[index].name;
-				            newEntry.eventType = jsonArray[index].eventType;
-				            newEntry.timeCreated = jsonArray[index].timeCreated;
-				            newEntry.timeLastSent = jsonArray[index].timeLastSent;
-				            newEntry.status =  jsonArray[index].status;
-				            newEntry.errorMessage =  jsonArray[index].errorMessage;
-				            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
-							if (jsonArray[index].notification) {
-								newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
-					            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
-								newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
-								newEntry.notificationComponentName = jsonArray[index].notification.componentName;
-								newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
-								newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
-							}
-							entries.push(newEntry);
-						}
-						self.setState({
-							entries
-						});
-					}
+					self.setEntriesFromArray(jsonArray);
 				});
 			}
 		});
+	}
+
+	setEntriesFromArray(jsonArray) {
+		if (jsonArray != null && jsonArray.length > 0) {
+			var entries = [];
+			for (var index in jsonArray) {
+				var newEntry = {};
+				newEntry.id = jsonArray[index].id;
+	            newEntry.jobName = jsonArray[index].name;
+	            newEntry.eventType = jsonArray[index].eventType;
+	            newEntry.timeCreated = jsonArray[index].timeCreated;
+	            newEntry.timeLastSent = jsonArray[index].timeLastSent;
+	            newEntry.status =  jsonArray[index].status;
+	            newEntry.errorMessage =  jsonArray[index].errorMessage;
+	            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
+				if (jsonArray[index].notification) {
+					newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
+		            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
+					newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
+					newEntry.notificationComponentName = jsonArray[index].notification.componentName;
+					newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
+					newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
+				}
+				entries.push(newEntry);
+			}
+			this.setState({
+				entries
+			});
+		}
 	}
 
 
@@ -133,6 +144,11 @@ class Audit extends Component {
 			currentEntry = this.state.currentRowSelected;
 		}
 
+		this.setState({
+			message: 'Sending...',
+			inProgress: true
+		});
+
 		var self = this;		
 		var resendUrl = '/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
@@ -143,13 +159,17 @@ class Audit extends Component {
 			}
 		}).then(function(response) {
 			self.handleSetState('inProgress', false);
-			var response = response.json().then(json => {
-				self.handleSetState('message', json.message);
-			});
-
-			self.reloadAuditEntries();
-
-			return response;
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('message', json.message);
+				});
+			}  else {
+				return response.json().then(json => {
+					self.handleSetState('message', '');
+					var jsonArray = JSON.parse(json.message);
+					self.setEntriesFromArray(jsonArray);
+				});
+			}
 		});
 	}
 
