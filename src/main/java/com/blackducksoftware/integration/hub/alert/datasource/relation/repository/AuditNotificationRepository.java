@@ -20,14 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
+
+import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
 
 @Transactional
-public interface GlobalHipChatRepository extends JpaRepository<GlobalHipChatConfigEntity, Long> {
+public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
+    public List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+
+    public List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
+
 }

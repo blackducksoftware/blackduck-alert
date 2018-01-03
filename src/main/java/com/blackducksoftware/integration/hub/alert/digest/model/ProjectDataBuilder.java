@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -33,10 +35,17 @@ public class ProjectDataBuilder {
     private String projectName;
     private String projectVersion;
 
+    private final List<Long> notificationIds;
+
     private final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap;
 
     public ProjectDataBuilder() {
+        notificationIds = new ArrayList<>();
         categoryBuilderMap = new TreeMap<>();
+    }
+
+    public void addNotificationId(final Long notificationId) {
+        notificationIds.add(notificationId);
     }
 
     public void addCategoryBuilder(final NotificationCategoryEnum category, final CategoryDataBuilder categoryBuilder) {
@@ -80,6 +89,6 @@ public class ProjectDataBuilder {
         for (final Map.Entry<NotificationCategoryEnum, CategoryDataBuilder> entry : categoryBuilderMap.entrySet()) {
             categoryMap.put(entry.getKey(), entry.getValue().build());
         }
-        return new ProjectData(digestType, projectName, projectVersion, categoryMap);
+        return new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
     }
 }

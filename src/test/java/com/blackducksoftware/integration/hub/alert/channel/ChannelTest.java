@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.junit.After;
@@ -94,7 +95,7 @@ public class ChannelTest {
         categoryMap.put(NotificationCategoryEnum.POLICY_VIOLATION, createMockPolicyViolation());
         categoryMap.put(NotificationCategoryEnum.MEDIUM_VULNERABILITY, createMockVulnerability());
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", categoryMap);
+        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
         return projectData;
     }
 

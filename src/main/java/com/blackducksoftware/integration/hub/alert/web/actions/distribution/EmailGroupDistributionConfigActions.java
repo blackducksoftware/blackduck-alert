@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -32,6 +31,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManag
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -43,7 +43,7 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     private final EmailGroupManager emailManager;
 
     @Autowired
-    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<EmailGroupDistributionConfigEntity, Long> repository,
+    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final EmailGroupDistributionRepository repository,
             final ConfiguredProjectsActions<EmailGroupDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<EmailGroupDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
             final EmailGroupManager emailManager) {
         super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);

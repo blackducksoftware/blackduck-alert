@@ -18,17 +18,17 @@
 
 .addJobButton {
 	composes: tableButton;
-    background: #285f8f;
+    background-color: #285f8f;
 }
 
 .deleteJobButton {
 	composes: tableButton;
-    background: #ef4923;
+    background-color: #ef4923;
 }
 
 .editJobButton {
     composes: tableButton;
-    background: #285f8f;
+    background-color: #285f8f;
     margin-left: auto;
     margin-right: auto;
 }
@@ -39,6 +39,11 @@
 
 .tableRow {
     cursor: pointer;
+}
+
+.tableEvenRow {
+    composes: tableRow;
+    background-color: #f9f9f9;
 }
 
 .tableCell {
