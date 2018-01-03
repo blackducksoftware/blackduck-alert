@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 
-import { progressIcon } from '../../../css/main.css';
+import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
+import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
 
+import CheckboxInput from '../../field/input/CheckboxInput';
 import EditTableCellFormatter from '../EditTableCellFormatter';
 import AuditDetails from './AuditDetails';
 
@@ -15,11 +17,13 @@ class Audit extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
+		 	autoRefresh: true,
 			message: '',
 			entries: [],
 			modal: undefined
 		};
 		// this.addDefaultEntries = this.addDefaultEntries.bind(this);
+		this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
         this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
@@ -28,6 +32,7 @@ class Audit extends Component {
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
+        this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
 	}
 
 	// addDefaultEntries() {
@@ -57,13 +62,6 @@ class Audit extends Component {
 	// 	});
  //    }
 
-    componentWillMount() {
-		this.setState({
-			message: 'Loading...',
-			inProgress: true
-		});
-	}
-
 	componentDidMount() {
 		// run the reload now and then every 10 seconds
 		this.reloadAuditEntries();
@@ -76,6 +74,10 @@ class Audit extends Component {
 	}
 
 	reloadAuditEntries(){
+		this.setState({
+			message: 'Loading...',
+			inProgress: true
+		});
 		var self = this;
 		fetch('/audit',{
 			credentials: "same-origin"
@@ -124,6 +126,17 @@ class Audit extends Component {
 		}
 	}
 
+	handleAutoRefreshChange(event) {
+		const target = event.target;
+		if (target.checked) {
+			let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+			this.handleSetState('reloadInterval', reloadInterval);
+		} else {
+			clearInterval(this.state.reloadInterval);
+		}
+		const name = target.name;
+		this.handleSetState(name, target.checked);
+	}
 
 
 	handleSetState(name, value) {
@@ -197,13 +210,13 @@ class Audit extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (cell === 'email_group_channel') {
-			fontAwesomeClass = 'fa fa-envelope';
+			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
             cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = 'fa fa-comments';
+			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
             cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = 'fa fa-slack';
+			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
             cellText = "Slack";
 		}
 
@@ -259,10 +272,19 @@ class Audit extends Component {
 		return className; 
 	}
 
-
+	createCustomInsertButton(onClick) {
+		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.addJobButton}`;
+		let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
+		return (
+			<div className={classes} onClick={ () => this.reloadAuditEntries() } >
+				 <i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
+			</div>
+		);
+	}
 
 	render() {
 		const auditTableOptions = {
+			insertBtn: this.createCustomInsertButton,
 	  		noDataText: 'No events',
 	  		clearSearch: true,
 	  		expandBy : 'column',
@@ -278,7 +300,8 @@ class Audit extends Component {
 		return (
 				<div>
 					<div>
-						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<CheckboxInput labelClass={styles.fieldLabel} inputClass={styles.textInput} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
+						<BootstrapTable insertRow={!this.state.autoRefresh} trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>

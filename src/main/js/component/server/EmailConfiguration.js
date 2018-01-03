@@ -18,12 +18,12 @@ class EmailConfiguration extends ServerConfiguration {
 		let content =
 				<div>
 					<TextInput label="Mail Smtp Host" name="mailSmtpHost" value={this.state.values.mailSmtpHost} onChange={this.handleChange} errorName="mailSmtpHostError" errorValue={this.state.errors.mailSmtpHostError}></TextInput>
+					<TextInput label="Mail Smtp From" name="mailSmtpFrom" value={this.state.values.mailSmtpFrom} onChange={this.handleChange} errorName="mailSmtpFromError" errorValue={this.state.errors.mailSmtpFromError}></TextInput>
 					<TextInput label="Mail Smtp User" name="mailSmtpUser" value={this.state.values.mailSmtpUser} onChange={this.handleChange} errorName="mailSmtpUserError" errorValue={this.state.errors.mailSmtpUserError}></TextInput>
 					<PasswordInput label="Mail Smtp Password" name="mailSmtpPassword" value={this.state.values.mailSmtpPassword} isSet={this.state.values.mailSmtpPasswordIsSet} onChange={this.handleChange} errorName="mailSmtpPasswordError" errorValue={this.state.errors.mailSmtpPasswordError}></PasswordInput>
 					<NumberInput label="Mail Smtp Port" name="mailSmtpPort" value={this.state.values.mailSmtpPort} onChange={this.handleChange} errorName="mailSmtpPortError" errorValue={this.state.errors.mailSmtpPortError}></NumberInput>
 					<NumberInput label="Mail Smtp Connection Timeout" name="mailSmtpConnectionTimeout" value={this.state.values.mailSmtpConnectionTimeout} onChange={this.handleChange} errorName="mailSmtpConnectionTimeoutError" errorValue={this.state.errors.mailSmtpConnectionTimeoutError}></NumberInput>
 					<NumberInput label="Mail Smtp Timeout" name="mailSmtpTimeout" value={this.state.values.mailSmtpTimeout} onChange={this.handleChange} errorName="mailSmtpTimeoutError" errorValue={this.state.errors.mailSmtpTimeoutError}></NumberInput>
-					<TextInput label="Mail Smtp From" name="mailSmtpFrom" value={this.state.values.mailSmtpFrom} onChange={this.handleChange} errorName="mailSmtpFromError" errorValue={this.state.errors.mailSmtpFromError}></TextInput>
 					<TextInput label="Mail Smtp Localhost" name="mailSmtpLocalhost" value={this.state.values.mailSmtpLocalhost} onChange={this.handleChange} errorName="mailSmtpLocalhostError" errorValue={this.state.errors.mailSmtpLocalhostError}></TextInput>
 					<CheckboxInput label="Mail Smtp Ehlo" name="mailSmtpEhlo" value={this.state.values.mailSmtpEhlo} onChange={this.handleChange} errorName="mailSmtpEhloError" errorValue={this.state.errors.mailSmtpEhloError}></CheckboxInput>
 					<CheckboxInput label="Mail Smtp Auth" name="mailSmtpAuth" value={this.state.values.mailSmtpAuth} onChange={this.handleChange} errorName="mailSmtpAuthError" errorValue={this.state.errors.mailSmtpAuthError}></CheckboxInput>
