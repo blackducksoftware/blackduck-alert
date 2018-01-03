@@ -35,13 +35,13 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 
 public class PurgeReader implements ItemReader<List<NotificationEntity>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeReader.class);
-    private final NotificationRepository notificationRepository;
+    private final NotificationRepositoryWrapper notificationRepository;
 
-    public PurgeReader(final NotificationRepository notificationRepository) {
+    public PurgeReader(final NotificationRepositoryWrapper notificationRepository) {
         this.notificationRepository = notificationRepository;
     }
 

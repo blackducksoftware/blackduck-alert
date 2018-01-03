@@ -26,31 +26,32 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
-    private final JpaRepository<G, Long> globalRepository;
-    private final JpaRepository<C, Long> distributionRepository;
-    private final CommonDistributionRepository commonDistributionRepository;
+    private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
+    private final SimpleKeyRepositoryWrapper<C, ?> distributionRepository;
+    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
 
-    public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
+            final Class<E> clazz) {
         super(gson, clazz);
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public CommonDistributionRepository getCommonDistributionRepository() {
+    public CommonDistributionRepositoryWrapper getCommonDistributionRepository() {
         return commonDistributionRepository;
     }
 

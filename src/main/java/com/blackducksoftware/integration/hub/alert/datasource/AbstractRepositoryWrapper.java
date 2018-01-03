@@ -24,6 +24,7 @@ package com.blackducksoftware.integration.hub.alert.datasource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -42,6 +43,10 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         return repository;
     }
 
+    public long count() {
+        return getRepository().count();
+    }
+
     public boolean exists(final ID id) {
         return getRepository().exists(id);
     }
@@ -56,6 +61,22 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
 
     public void deleteAll() {
         getRepository().deleteAll();
+    }
+
+    public void delete(final Iterable<D> entities) {
+        getRepository().delete(entities);
+    }
+
+    public void delete(final List<D> entities) {
+        getRepository().delete(entities);
+    }
+
+    public void deleteInBatch(final Iterable<D> entities) {
+        getRepository().deleteInBatch(entities);
+    }
+
+    public void deleteInBatch(final List<D> entities) {
+        getRepository().deleteInBatch(entities);
     }
 
     public D findOne(final ID id) {
@@ -73,9 +94,40 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         return returnList;
     }
 
+    public void save(final Iterable<D> entities) {
+        if (entities != null) {
+            for (final D entity : entities) {
+                save(entity);
+            }
+        }
+    }
+
+    public void save(final List<D> entities) {
+        if (entities != null) {
+            for (final D entity : entities) {
+                save(entity);
+            }
+        }
+    }
+
     public D save(final D entity) {
         final D encryptedEntity = encryptSensitiveData(entity);
         return getRepository().save(encryptedEntity);
+    }
+
+    public List<D> decryptSensitiveData(final List<D> entityList) {
+        List<D> resultList;
+        if (entityList == null) {
+            resultList = Collections.emptyList();
+        } else {
+            resultList = new ArrayList<>(entityList.size());
+
+            for (final D entity : entityList) {
+                resultList.add(decryptSensitiveData(entity));
+            }
+        }
+
+        return resultList;
     }
 
     public abstract D encryptSensitiveData(D entity);

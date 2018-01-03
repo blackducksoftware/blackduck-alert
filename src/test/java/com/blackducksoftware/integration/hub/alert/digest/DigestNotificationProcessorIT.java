@@ -41,10 +41,10 @@ import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -56,11 +56,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class DigestNotificationProcessorIT {
     @Autowired
-    private CommonDistributionRepository commonDistributionRepository;
+    private CommonDistributionRepositoryWrapper commonDistributionRepository;
     @Autowired
-    private DistributionProjectRepository distributionProjectRepository;
+    private DistributionProjectRepositoryWrapper distributionProjectRepository;
     @Autowired
-    private ConfiguredProjectsRepository configuredProjectsRepository;
+    private ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
     @Autowired
     private NotificationTypesActions<CommonDistributionConfigRestModel> notificationActions;
     @Autowired

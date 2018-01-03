@@ -37,9 +37,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -53,18 +53,18 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
-    private final AuditEntryRepository auditEntryRepository;
-    private final NotificationRepository notificationRepository;
-    private final CommonDistributionRepository commonDistributionRepository;
+    private final AuditEntryRepositoryWrapper auditEntryRepository;
+    private final NotificationRepositoryWrapper notificationRepository;
+    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
     private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
     private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
-    public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationRepository notificationRepository, final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
-            final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
-            final ChannelTemplateManager channelTemplateManager) {
+    public AuditEntryActions(final AuditEntryRepositoryWrapper auditEntryRepository, final NotificationRepositoryWrapper notificationRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
+            final ObjectTransformer objectTransformer, final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory,
+            final ProjectDataFactory projectDataFactory, final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationRepository = notificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;

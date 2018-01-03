@@ -36,7 +36,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class EmailDistributionRepositoryTestIT {
     @Autowired
-    private EmailGroupDistributionRepository emailGroupDistributionRepository;
+    private EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository;
 
     @Test
     public void saveEntityTestIT() {
