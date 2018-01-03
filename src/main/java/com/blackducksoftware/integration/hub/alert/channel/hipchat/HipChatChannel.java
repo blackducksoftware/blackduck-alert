@@ -44,6 +44,7 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
@@ -67,9 +68,9 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
-            final HipChatDistributionRepository hipChatDistributionRepository) {
-        super(gson, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
+    public HipChatChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final GlobalProperties globalProperties, final GlobalHipChatRepository globalHipChatRepository,
+            final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository hipChatDistributionRepository) {
+        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
         this.globalProperties = globalProperties;
     }
 
@@ -84,10 +85,16 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
+            setAuditEntrySuccess(event.getAuditEntryId());
         } catch (final IntegrationException e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+
             if (e instanceof IntegrationRestException) {
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
+            logger.error(e.getMessage(), e);
+        } catch (final Exception e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
             logger.error(e.getMessage(), e);
         }
     }

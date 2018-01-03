@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
@@ -62,8 +63,9 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public SlackChannel(final Gson gson, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final GlobalProperties globalProperties) {
-        super(gson, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
+    public SlackChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository,
+            final GlobalProperties globalProperties) {
+        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
         this.globalProperties = globalProperties;
     }
 
@@ -73,10 +75,16 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         final String htmlMessage = createMessage(projectData);
         try {
             sendMessage(htmlMessage, config);
+            setAuditEntrySuccess(event.getAuditEntryId());
         } catch (final IntegrationException e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+
             if (e instanceof IntegrationRestException) {
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
+            logger.error(e.getMessage(), e);
+        } catch (final Exception e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
             logger.error(e.getMessage(), e);
         }
     }

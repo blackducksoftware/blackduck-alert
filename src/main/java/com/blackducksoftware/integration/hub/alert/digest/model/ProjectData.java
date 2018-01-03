@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.model;
 
+import java.util.List;
 import java.util.Map;
 
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
@@ -32,12 +33,14 @@ public class ProjectData extends DigestData {
     private final String projectKey;
     private final String projectName;
     private final String projectVersion;
+    private final List<Long> notificationIds;
     private final Map<NotificationCategoryEnum, CategoryData> categoryMap;
 
-    public ProjectData(final DigestTypeEnum digestType, final String projectName, final String projectVersion, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
+    public ProjectData(final DigestTypeEnum digestType, final String projectName, final String projectVersion, final List<Long> notificationIds, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
         this.digestType = digestType;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
+        this.notificationIds = notificationIds;
         this.categoryMap = categoryMap;
         if (projectName != null && projectVersion != null) {
             this.projectKey = projectName + projectVersion;
@@ -62,6 +65,10 @@ public class ProjectData extends DigestData {
 
     public String getProjectVersion() {
         return projectVersion;
+    }
+
+    public List<Long> getNotificationIds() {
+        return notificationIds;
     }
 
     public Map<NotificationCategoryEnum, CategoryData> getCategoryMap() {

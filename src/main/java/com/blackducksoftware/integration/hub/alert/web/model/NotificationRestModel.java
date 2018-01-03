@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
+import java.util.List;
+
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -30,7 +32,7 @@ public class NotificationRestModel extends ConfigRestModel {
 
     private String eventKey;
     private String createdAt;
-    private String notificationType;
+    private List<String> notificationTypes;
     private String projectName;
     private String projectVersion;
     private String componentName;
@@ -43,12 +45,12 @@ public class NotificationRestModel extends ConfigRestModel {
     public NotificationRestModel() {
     }
 
-    public NotificationRestModel(final String id, final String eventKey, final String createdAt, final String notificationType, final String projectName, final String projectVersion, final String componentName,
+    public NotificationRestModel(final String id, final String eventKey, final String createdAt, final List<String> notificationTypes, final String projectName, final String projectVersion, final String componentName,
             final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl) {
         super(id);
         this.eventKey = eventKey;
         this.createdAt = createdAt;
-        this.notificationType = notificationType;
+        this.notificationTypes = notificationTypes;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
         this.componentName = componentName;
@@ -71,8 +73,12 @@ public class NotificationRestModel extends ConfigRestModel {
         return createdAt;
     }
 
-    public String getNotificationType() {
-        return notificationType;
+    public List<String> getNotificationTypes() {
+        return notificationTypes;
+    }
+
+    public void setNotificationTypes(final List<String> notificationTypes) {
+        this.notificationTypes = notificationTypes;
     }
 
     public String getProjectName() {
@@ -109,7 +115,14 @@ public class NotificationRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
+        String[] notificationTypesToStringArray = null;
+        if (notificationTypes != null) {
+            notificationTypesToStringArray = notificationTypes.toArray(new String[notificationTypes.size()]);
+        }
+
         final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
+        reflectionToStringBuilder.setExcludeFieldNames("notificationTypes");
+        reflectionToStringBuilder.append("notificationTypes", notificationTypesToStringArray);
         return reflectionToStringBuilder.build();
     }
 

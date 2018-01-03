@@ -28,6 +28,8 @@ public abstract class AbstractChannelEvent extends AbstractEvent {
     private final ProjectData projectData;
     private final Long commonDistributionConfigId;
 
+    private Long auditEntryId;
+
     public AbstractChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
         super();
         this.projectData = projectData;
@@ -40,6 +42,14 @@ public abstract class AbstractChannelEvent extends AbstractEvent {
 
     public Long getCommonDistributionConfigId() {
         return commonDistributionConfigId;
+    }
+
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public void setAuditEntryId(final Long auditEntryId) {
+        this.auditEntryId = auditEntryId;
     }
 
 }

@@ -23,7 +23,9 @@
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +42,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -55,6 +59,7 @@ public class AuditEntryActions {
 
     private final AuditEntryRepository auditEntryRepository;
     private final NotificationRepository notificationRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
     private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
@@ -62,11 +67,13 @@ public class AuditEntryActions {
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
-    public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationRepository notificationRepository, final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
+    public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationRepository notificationRepository, final AuditNotificationRepository auditNotificationRepository,
+            final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
             final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
             final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationRepository = notificationRepository;
+        this.auditNotificationRepository = auditNotificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
         this.objectTransformer = objectTransformer;
         this.channelEventFactory = channelEventFactory;
@@ -91,13 +98,18 @@ public class AuditEntryActions {
     public AuditEntryEntity resendNotification(final Long id) {
         final AuditEntryEntity auditEntryEntity = auditEntryRepository.findOne(id);
         if (auditEntryEntity != null) {
-            final NotificationEntity notificationEntity = notificationRepository.findOne(auditEntryEntity.getNotificationId());
+            final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
+            final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
+            final List<NotificationEntity> notifications = notificationRepository.findAll(notificationIds);
             final Long commonConfigId = auditEntryEntity.getCommonConfigId();
             final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
-            if (notificationEntity != null && commonConfigEntity != null) {
-                final ProjectData projectData = projectDataFactory.createProjectData(notificationEntity);
-                final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);
-                channelTemplateManager.sendEvent(event);
+            if (notifications != null && !notifications.isEmpty() && commonConfigEntity != null) {
+                final Collection<ProjectData> projectDataList = projectDataFactory.createProjectDataCollection(notifications);
+                for (final ProjectData projectData : projectDataList) {
+                    final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);
+                    event.setAuditEntryId(auditEntryEntity.getId());
+                    channelTemplateManager.sendEvent(event);
+                }
                 return auditEntryEntity;
             }
             throw new IllegalArgumentException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
@@ -114,28 +126,37 @@ public class AuditEntryActions {
     }
 
     private AuditEntryRestModel createRestModel(final AuditEntryEntity auditEntryEntity) {
-        final Long notificationId = auditEntryEntity.getNotificationId();
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
 
-        final NotificationEntity notificationEntity = notificationRepository.findOne(notificationId);
+        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
+        final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
+        final List<NotificationEntity> notifications = notificationRepository.findAll(notificationIds);
+
         final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
 
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
         final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
 
-        final String status = auditEntryEntity.getStatus().getDisplayName();
+        String status = null;
+        if (auditEntryEntity.getStatus() != null) {
+            status = auditEntryEntity.getStatus().getDisplayName();
+        }
+
         final String errorMessage = auditEntryEntity.getErrorMessage();
         final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
         NotificationRestModel notificationRestModel = null;
-        if (notificationEntity != null) {
+        if (!notifications.isEmpty() && notifications.get(0) != null) {
             try {
-                notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notificationEntity, NotificationRestModel.class);
+                // TODO check to see the notificationTypes field does not mess up the conversion
+                notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0), NotificationRestModel.class);
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
             }
         }
+        final List<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType()).collect(Collectors.toList());
+        notificationRestModel.setNotificationTypes(notificationTypes);
 
         String distributionConfigName = null;
         String eventType = null;

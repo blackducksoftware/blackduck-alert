@@ -10,6 +10,7 @@ import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -18,6 +19,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
     @Test
     public void sendEmailTest() throws Exception {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalHubRepository globalRepository = Mockito.mock(GlobalHubRepository.class);
         final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_USERNAME), properties.getProperty(TestPropertyKey.TEST_PASSWORD));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
@@ -31,7 +33,7 @@ public class EmailChannelTestIT extends ChannelTest {
             globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, null, null, null);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, auditEntryRepository, null, null, null);
         final ProjectData projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, null);
 

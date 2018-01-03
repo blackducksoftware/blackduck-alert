@@ -93,10 +93,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(), "POLICY_VIOLATION", projectName, "", "", "", "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person",
-                Collections.emptyList());
-        final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(), "POLICY_VIOLATION", "Project that we don't care about", "", "", "", "Test Component", "Test Component Version",
+        final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", "", "", "Test Component", "Test Component Version",
                 "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(System.currentTimeMillis()), "POLICY_VIOLATION", "Project that we don't care about", "", "", "", "Test Component",
+                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(nonApplicableNotification);
 
@@ -127,10 +127,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
-                "Test Person", Collections.emptyList());
-        final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
-                "Test Person", Collections.emptyList());
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
+                "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
+                "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(otherApplicableNotification);
 
@@ -161,10 +161,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new LinkedList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version", "Test Policy Rule Name",
-                "Test Person", Collections.emptyList());
-        final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(), "POLICY_VIOLATION_CLEARED", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
                 "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION_CLEARED", projectName, "", projectVersionName, "", "Test Component",
+                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(nonApplicableNotification);
 

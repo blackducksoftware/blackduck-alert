@@ -20,33 +20,49 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
+
 @Entity
-@Table(schema = "alert", name = "configured_projects")
-public class ConfiguredProjectEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -4963256809935957135L;
+@IdClass(AuditNotificationRelationPK.class)
+@Table(schema = "alert", name = "audit_notification_relation")
+public class AuditNotificationRelation extends DatabaseRelation {
+    private static final long serialVersionUID = -6168171736942951164L;
 
-    @Column(name = "project_name")
-    private String projectName;
+    @Id
+    @Column(name = "audit_entry_id")
+    private Long auditEntryId;
 
-    public ConfiguredProjectEntity() {
+    @Id
+    @Column(name = "notification_id")
+    private Long notificationId;
+
+    public AuditNotificationRelation() {
     }
 
-    public ConfiguredProjectEntity(final String projectName) {
-        this.projectName = projectName;
+    public AuditNotificationRelation(final Long auditEntryId, final Long notificationId) {
+        super();
+        this.auditEntryId = auditEntryId;
+        this.notificationId = notificationId;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
     }
 
 }

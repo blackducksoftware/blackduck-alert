@@ -380,7 +380,7 @@ class DistributionConfiguration extends Component {
 			}
 		};
 		var content = <div>
-						<BootstrapTable data={this.state.jobs} containerClass={tableStyles.table} striped hover condensed insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='name' dataSort columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>

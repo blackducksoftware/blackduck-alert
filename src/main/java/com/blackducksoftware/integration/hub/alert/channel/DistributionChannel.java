@@ -22,36 +22,87 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.google.gson.Gson;
 
+@Transactional
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
+    private final AuditEntryRepository auditEntryRepository;
 
-    public DistributionChannel(final Gson gson, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+            final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
+        this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
+    public AuditEntryRepository getAuditEntryRepository() {
+        return auditEntryRepository;
+    }
+
     public CommonDistributionRepository getCommonDistributionRepository() {
         return commonDistributionRepository;
+    }
+
+    public void setAuditEntrySuccess(final Long auditEntryId) {
+        if (auditEntryId != null) {
+            final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+            if (auditEntryEntity != null) {
+                auditEntryEntity.setStatus(StatusEnum.SUCCESS);
+
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                getAuditEntryRepository().save(auditEntryEntity);
+            }
+        }
+    }
+
+    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable e) {
+        if (auditEntryId != null) {
+            final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+            if (auditEntryEntity != null) {
+                auditEntryEntity.setStatus(StatusEnum.FAILURE);
+                auditEntryEntity.setErrorMessage(errorMessage);
+                final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(e);
+                String exceptionStackTrace = "";
+                for (final String line : rootCause) {
+                    if (exceptionStackTrace.length() + line.length() < 9999) {
+                        exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
+                    } else {
+                        break;
+                    }
+                }
+
+                auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
+
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                getAuditEntryRepository().save(auditEntryEntity);
+            }
+        }
     }
 
     public G getGlobalConfigEntity() {
