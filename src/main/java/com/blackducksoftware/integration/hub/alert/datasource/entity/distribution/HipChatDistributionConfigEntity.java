@@ -44,7 +44,6 @@ public class HipChatDistributionConfigEntity extends DistributionChannelConfigEn
     }
 
     public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {
-        super();
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;

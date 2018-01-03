@@ -20,23 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.key;
 
-import java.util.Date;
-import java.util.List;
+import java.io.Serializable;
 
-import javax.transaction.Transactional;
+public class AuditNotificationRelationPK implements Serializable {
+    private static final long serialVersionUID = -7710698140802321977L;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+    public Long auditEntryId;
+    public Long notificationId;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-
-@Transactional
-public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);
-
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBefore(final Date date);
+    public AuditNotificationRelationPK() {
+    }
 }

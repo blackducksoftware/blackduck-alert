@@ -38,7 +38,6 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
     }
 
     public EmailGroupDistributionConfigEntity(final String groupName) {
-        super();
         this.groupName = groupName;
     }
 

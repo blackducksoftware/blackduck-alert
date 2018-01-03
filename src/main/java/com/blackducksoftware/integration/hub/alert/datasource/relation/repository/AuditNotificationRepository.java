@@ -20,23 +20,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
 
 @Transactional
-public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);
+public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
+    public List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
 
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBefore(final Date date);
+    public List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
+
 }
