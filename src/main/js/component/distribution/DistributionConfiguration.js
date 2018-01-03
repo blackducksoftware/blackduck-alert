@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { fontAwesomeLabel } from '../../../css/main.css';
+
 import styles from '../../../css/distributionConfig.css';
 
 import tableStyles from '../../../css/table.css';
@@ -223,13 +225,13 @@ class DistributionConfiguration extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (cell === 'email_group_channel') {
-			fontAwesomeClass = 'fa fa-envelope';
+			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
             cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = 'fa fa-comments';
+			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
             cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = 'fa fa-slack';
+			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
             cellText = "Slack";
 		}
 
