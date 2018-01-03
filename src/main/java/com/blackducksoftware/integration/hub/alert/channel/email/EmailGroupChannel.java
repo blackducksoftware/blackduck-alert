@@ -90,7 +90,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                 final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupService(), hubGroupName);
                 sendMessage(emailAddresses, event);
                 setAuditEntrySuccess(event.getAuditEntryId());
-                throw new IntegrationException("See Paulo");
             } catch (final IntegrationException e) {
                 setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
                 logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);
