@@ -22,29 +22,41 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepository;
+import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
 
+@Transactional
 @Component
 public class ChannelTemplateManager {
     private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
     private final Gson gson;
     private final List<AbstractJmsTemplate> templateList;
+    private final AuditEntryRepository auditEntryRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final List<AbstractJmsTemplate> templateList) {
+    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final List<AbstractJmsTemplate> templateList) {
         jmsTemplateMap = new HashMap<>();
         this.gson = gson;
+        this.auditEntryRepository = auditEntryRepository;
+        this.auditNotificationRepository = auditNotificationRepository;
         this.templateList = templateList;
     }
 
@@ -79,10 +91,30 @@ public class ChannelTemplateManager {
     public boolean sendEvent(final AbstractEvent event) {
         final String destination = event.getTopic();
         if (hasTemplate(destination)) {
-            final String jsonMessage = gson.toJson(event);
-            final AbstractJmsTemplate template = getTemplate(destination);
-            template.convertAndSend(destination, jsonMessage);
+            if (event instanceof AbstractChannelEvent) {
+                final AbstractChannelEvent channelEvent = (AbstractChannelEvent) event;
+                AuditEntryEntity savedAuditEntryEntity = null;
+                if (channelEvent.getAuditEntryId() == null) {
+                    savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
+                    channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
+                } else {
+                    savedAuditEntryEntity = auditEntryRepository.findOne(channelEvent.getAuditEntryId());
+                    channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
+                }
+                for (final Long notificationId : channelEvent.getProjectData().getNotificationIds()) {
+                    final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                    auditNotificationRepository.save(auditNotificationRelation);
+                }
+                final String jsonMessage = gson.toJson(channelEvent);
+                final AbstractJmsTemplate template = getTemplate(destination);
+                template.convertAndSend(destination, jsonMessage);
+            } else {
+                final String jsonMessage = gson.toJson(event);
+                final AbstractJmsTemplate template = getTemplate(destination);
+                template.convertAndSend(destination, jsonMessage);
+            }
             return true;
+
         } else {
             return false;
         }

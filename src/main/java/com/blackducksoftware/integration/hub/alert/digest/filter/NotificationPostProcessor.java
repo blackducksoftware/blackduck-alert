@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
@@ -90,7 +92,12 @@ public class NotificationPostProcessor {
     }
 
     public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
-        return commonDistributionConfigEntity.getFrequency().equals(projectData.getDigestType().name());
+        final DigestTypeEnum digestTypeEnum = projectData.getDigestType();
+        final String digestName = digestTypeEnum.name();
+        if (StringUtils.isNotBlank(commonDistributionConfigEntity.getFrequency())) {
+            return commonDistributionConfigEntity.getFrequency().equals(digestName);
+        }
+        return false;
     }
 
     public boolean doNotificationTypesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {

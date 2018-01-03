@@ -53,7 +53,7 @@ public class NotificationEntityTest {
     public void testModel() {
         final Long id = 123L;
         final String eventKey = "EventKey";
-        final Date createdAt = new Date();
+        final Date createdAt = new Date(System.currentTimeMillis());
         final String notificationType = "NotificationType";
         final String projectName = "ProjectName";
         final String projectUrl = "projectUrl";

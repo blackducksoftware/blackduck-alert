@@ -98,6 +98,42 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         }
     }
 
+    public List<D> findAll(final Iterable<ID> idList) {
+        final List<D> entityList = getRepository().findAll(idList);
+        if (entityList == null) {
+            return Collections.emptyList();
+        } else {
+            try {
+                final List<D> returnList = new ArrayList<>(entityList.size());
+                for (final D entity : entityList) {
+                    returnList.add(decryptSensitiveData(entity));
+                }
+                return returnList;
+            } catch (final EncryptionException ex) {
+                getLogger().error("Error finding all entities", ex);
+                return Collections.emptyList();
+            }
+        }
+    }
+
+    public List<D> findAll(final List<ID> idList) {
+        final List<D> entityList = getRepository().findAll(idList);
+        if (entityList == null) {
+            return Collections.emptyList();
+        } else {
+            try {
+                final List<D> returnList = new ArrayList<>(entityList.size());
+                for (final D entity : entityList) {
+                    returnList.add(decryptSensitiveData(entity));
+                }
+                return returnList;
+            } catch (final EncryptionException ex) {
+                getLogger().error("Error finding all entities", ex);
+                return Collections.emptyList();
+            }
+        }
+    }
+
     public List<D> findAll() {
         final List<D> entityList = getRepository().findAll();
         if (entityList == null) {

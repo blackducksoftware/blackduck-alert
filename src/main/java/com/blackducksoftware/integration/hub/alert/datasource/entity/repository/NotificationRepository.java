@@ -25,9 +25,10 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 

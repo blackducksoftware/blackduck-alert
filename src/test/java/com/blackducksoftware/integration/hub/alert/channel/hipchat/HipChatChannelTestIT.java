@@ -23,6 +23,7 @@ import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
@@ -30,9 +31,10 @@ public class HipChatChannelTestIT extends ChannelTest {
 
     @Test
     public void sendMessageTestIT() throws IOException {
+        final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
-        HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, null, null, null);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, globalProperties, null, null, null);
 
         final ProjectData data = createProjectData("Integration test project");
         final HipChatEvent event = new HipChatEvent(data, null);

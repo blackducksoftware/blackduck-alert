@@ -20,33 +20,49 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
+package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
+
 @Entity
-@Table(schema = "alert", name = "email_group_distribution_config")
-public class EmailGroupDistributionConfigEntity extends DistributionChannelConfigEntity {
-    private static final long serialVersionUID = -2969530122554864181L;
+@IdClass(AuditNotificationRelationPK.class)
+@Table(schema = "alert", name = "audit_notification_relation")
+public class AuditNotificationRelation extends DatabaseRelation {
+    private static final long serialVersionUID = -6168171736942951164L;
 
-    @Column(name = "group_name")
-    private String groupName;
+    @Id
+    @Column(name = "audit_entry_id")
+    private Long auditEntryId;
 
-    public EmailGroupDistributionConfigEntity() {
+    @Id
+    @Column(name = "notification_id")
+    private Long notificationId;
+
+    public AuditNotificationRelation() {
     }
 
-    public EmailGroupDistributionConfigEntity(final String groupName) {
-        this.groupName = groupName;
+    public AuditNotificationRelation(final Long auditEntryId, final Long notificationId) {
+        super();
+        this.auditEntryId = auditEntryId;
+        this.notificationId = notificationId;
     }
 
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
     }
 
 }
