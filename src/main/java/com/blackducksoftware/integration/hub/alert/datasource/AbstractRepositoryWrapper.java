@@ -27,16 +27,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
 public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends Serializable, R extends JpaRepository<D, ID>> {
 
+    private final Logger logger;
     private final R repository;
 
     public AbstractRepositoryWrapper(final R repository) {
         this.repository = repository;
+        logger = LoggerFactory.getLogger(getClass());
+    }
+
+    public Logger getLogger() {
+        return logger;
     }
 
     public R getRepository() {
@@ -80,18 +89,31 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public D findOne(final ID id) {
-        final D entity = getRepository().findOne(id);
-        return decryptSensitiveData(entity);
+        try {
+            final D entity = getRepository().findOne(id);
+            return decryptSensitiveData(entity);
+        } catch (final EncryptionException ex) {
+            getLogger().error("Error getting entity ", ex);
+            return null;
+        }
     }
 
     public List<D> findAll() {
         final List<D> entityList = getRepository().findAll();
-        final List<D> returnList = new ArrayList<>(entityList.size());
-
-        for (final D entity : entityList) {
-            returnList.add(decryptSensitiveData(entity));
+        if (entityList == null) {
+            return Collections.emptyList();
+        } else {
+            try {
+                final List<D> returnList = new ArrayList<>(entityList.size());
+                for (final D entity : entityList) {
+                    returnList.add(decryptSensitiveData(entity));
+                }
+                return returnList;
+            } catch (final EncryptionException ex) {
+                getLogger().error("Error finding all entities", ex);
+                return Collections.emptyList();
+            }
         }
-        return returnList;
     }
 
     public void save(final Iterable<D> entities) {
@@ -111,8 +133,13 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public D save(final D entity) {
-        final D encryptedEntity = encryptSensitiveData(entity);
-        return getRepository().save(encryptedEntity);
+        try {
+            final D encryptedEntity = encryptSensitiveData(entity);
+            return getRepository().save(encryptedEntity);
+        } catch (final EncryptionException ex) {
+            getLogger().error("Error saving entity", ex);
+            return null;
+        }
     }
 
     public List<D> decryptSensitiveData(final List<D> entityList) {
@@ -120,17 +147,21 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         if (entityList == null) {
             resultList = Collections.emptyList();
         } else {
-            resultList = new ArrayList<>(entityList.size());
-
-            for (final D entity : entityList) {
-                resultList.add(decryptSensitiveData(entity));
+            try {
+                resultList = new ArrayList<>(entityList.size());
+                for (final D entity : entityList) {
+                    resultList.add(decryptSensitiveData(entity));
+                }
+            } catch (final EncryptionException ex) {
+                getLogger().error("Error transforming entity data", ex);
+                resultList = Collections.emptyList();
             }
         }
 
         return resultList;
     }
 
-    public abstract D encryptSensitiveData(D entity);
+    public abstract D encryptSensitiveData(D entity) throws EncryptionException;
 
-    public abstract D decryptSensitiveData(D entity);
+    public abstract D decryptSensitiveData(D entity) throws EncryptionException;
 }
