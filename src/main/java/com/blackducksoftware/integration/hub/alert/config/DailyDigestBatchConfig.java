@@ -36,7 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.DailyDigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
@@ -54,7 +54,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepository notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
+            final NotificationRepositoryWrapper notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
             final DigestNotificationProcessor notificationProcessor) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;

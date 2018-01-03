@@ -44,9 +44,9 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
@@ -67,8 +67,8 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
-            final HipChatDistributionRepository hipChatDistributionRepository) {
+    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
+            final HipChatDistributionRepositoryWrapper hipChatDistributionRepository) {
         super(gson, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
         this.globalProperties = globalProperties;
     }

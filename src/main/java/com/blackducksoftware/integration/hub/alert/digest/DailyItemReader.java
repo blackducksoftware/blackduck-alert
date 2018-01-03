@@ -26,11 +26,11 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 
 public class DailyItemReader extends DigestItemReader {
 
-    public DailyItemReader(final NotificationRepository notificationRepository) {
+    public DailyItemReader(final NotificationRepositoryWrapper notificationRepository) {
         super(DailyItemReader.class.getName(), notificationRepository);
     }
 

@@ -33,25 +33,25 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class NotificationPostProcessor {
-    private final DistributionProjectRepository distributionProjectRepository;
-    private final ConfiguredProjectsRepository configuredProjectsRepository;
-    private final DistributionNotificationTypeRepository distributionNotificationTypeRepository;
-    private final NotificationTypeRepository notificationTypeRepository;
+    private final DistributionProjectRepositoryWrapper distributionProjectRepository;
+    private final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
+    private final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
+    private final NotificationTypeRepositoryWrapper notificationTypeRepository;
 
     @Autowired
-    public NotificationPostProcessor(final DistributionProjectRepository distributionProjectRepository, final ConfiguredProjectsRepository configuredProjectsRepository,
-            final DistributionNotificationTypeRepository distributionNotificationTypeRepository, final NotificationTypeRepository notificationTypeRepository) {
+    public NotificationPostProcessor(final DistributionProjectRepositoryWrapper distributionProjectRepository, final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository,
+            final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository, final NotificationTypeRepositoryWrapper notificationTypeRepository) {
         this.distributionProjectRepository = distributionProjectRepository;
         this.configuredProjectsRepository = configuredProjectsRepository;
         this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;

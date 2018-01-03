@@ -35,7 +35,7 @@ import org.springframework.batch.item.ItemWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
@@ -45,10 +45,10 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
-    private final NotificationRepository notificationRepository;
+    private final NotificationRepositoryWrapper notificationRepository;
     private final ChannelTemplateManager channelTemplateManager;
 
-    public AccumulatorWriter(final NotificationRepository notificationRepository, final ChannelTemplateManager channelTemplateManager) {
+    public AccumulatorWriter(final NotificationRepositoryWrapper notificationRepository, final ChannelTemplateManager channelTemplateManager) {
         this.notificationRepository = notificationRepository;
         this.channelTemplateManager = channelTemplateManager;
     }

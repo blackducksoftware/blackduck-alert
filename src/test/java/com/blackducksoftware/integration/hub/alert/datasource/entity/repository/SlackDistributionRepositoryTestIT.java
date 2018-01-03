@@ -36,7 +36,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class SlackDistributionRepositoryTestIT {
     @Autowired
-    private SlackDistributionRepository slackDistributionRepository;
+    private SlackDistributionRepositoryWrapper slackDistributionRepository;
 
     @Test
     public void saveEntityTestIT() {

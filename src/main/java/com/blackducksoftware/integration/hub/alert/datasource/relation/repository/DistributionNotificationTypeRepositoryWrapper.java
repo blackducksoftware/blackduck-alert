@@ -22,6 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +37,14 @@ public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepos
     @Autowired
     public DistributionNotificationTypeRepositoryWrapper(final DistributionNotificationTypeRepository repository) {
         super(repository);
+    }
+
+    public List<DistributionNotificationTypeRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId) {
+        return decryptSensitiveData(getRepository().findByCommonDistributionConfigId(commonDistributionConfigId));
+    }
+
+    public List<DistributionNotificationTypeRelation> findByNotificationTypeId(final Long notificationTypeId) {
+        return decryptSensitiveData(getRepository().findByNotificationTypeId(notificationTypeId));
     }
 
     @Override
