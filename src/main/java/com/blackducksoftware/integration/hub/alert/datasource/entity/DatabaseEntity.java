@@ -31,9 +31,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 @MappedSuperclass
 public abstract class DatabaseEntity implements Serializable {
@@ -67,14 +66,8 @@ public abstract class DatabaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        String json = "{}";
-        final ObjectMapper mapper = new ObjectMapper();
-        try {
-            json = mapper.writeValueAsString(this);
-        } catch (final JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return json;
+        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE);
+        return reflectionToStringBuilder.build();
     }
 
 }
