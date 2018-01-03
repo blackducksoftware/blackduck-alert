@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 
@@ -37,6 +38,12 @@ public class CommonDistributionRepositoryWrapper extends SimpleKeyRepositoryWrap
     }
 
     public CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType) {
-        return decryptSensitiveData(getRepository().findByDistributionConfigIdAndDistributionType(distributionConfigId, distributionType));
+        final CommonDistributionConfigEntity entity = getRepository().findByDistributionConfigIdAndDistributionType(distributionConfigId, distributionType);
+        try {
+            return decryptSensitiveData(entity);
+        } catch (final EncryptionException ex) {
+            getLogger().error("Error finding common distribution config", ex);
+            return null;
+        }
     }
 }

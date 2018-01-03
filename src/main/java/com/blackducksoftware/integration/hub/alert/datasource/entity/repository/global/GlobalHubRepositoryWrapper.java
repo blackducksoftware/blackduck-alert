@@ -25,6 +25,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.encryption.PasswordDecrypter;
+import com.blackducksoftware.integration.encryption.PasswordEncrypter;
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 
@@ -37,12 +40,22 @@ public class GlobalHubRepositoryWrapper extends SimpleKeyRepositoryWrapper<Globa
     }
 
     @Override
-    public GlobalHubConfigEntity encryptSensitiveData(final GlobalHubConfigEntity entity) {
-        return entity;
+    public GlobalHubConfigEntity encryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
+        final Integer hubTimeout = entity.getHubTimeout();
+        final String hubUsername = entity.getHubUsername();
+        final String hubPassword = PasswordEncrypter.encrypt(entity.getHubPassword());
+        final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+        newEntity.setId(entity.getId());
+        return newEntity;
     }
 
     @Override
-    public GlobalHubConfigEntity decryptSensitiveData(final GlobalHubConfigEntity entity) {
-        return entity;
+    public GlobalHubConfigEntity decryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
+        final Integer hubTimeout = entity.getHubTimeout();
+        final String hubUsername = entity.getHubUsername();
+        final String hubPassword = PasswordDecrypter.decrypt(entity.getHubPassword());
+        final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+        newEntity.setId(entity.getId());
+        return newEntity;
     }
 }

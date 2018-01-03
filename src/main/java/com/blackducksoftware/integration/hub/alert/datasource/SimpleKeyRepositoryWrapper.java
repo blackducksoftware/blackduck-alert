@@ -24,6 +24,7 @@ package com.blackducksoftware.integration.hub.alert.datasource;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
 public abstract class SimpleKeyRepositoryWrapper<D extends BaseEntity, R extends JpaRepository<D, Long>> extends AbstractRepositoryWrapper<D, Long, R> {
@@ -33,12 +34,12 @@ public abstract class SimpleKeyRepositoryWrapper<D extends BaseEntity, R extends
     }
 
     @Override
-    public D encryptSensitiveData(final D entity) {
+    public D encryptSensitiveData(final D entity) throws EncryptionException {
         return entity;
     }
 
     @Override
-    public D decryptSensitiveData(final D entity) {
+    public D decryptSensitiveData(final D entity) throws EncryptionException {
         return entity;
     }
 }
