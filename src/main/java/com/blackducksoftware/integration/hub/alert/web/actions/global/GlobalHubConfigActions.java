@@ -130,6 +130,9 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
         }
+        if (StringUtils.isBlank(restModel.getHubApiKey())) {
+            fieldErrors.put("hubApiKey", "Cannot be blank!");
+        }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
