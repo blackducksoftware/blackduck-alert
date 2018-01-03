@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,17 +42,27 @@ public class GlobalHipChatRepositoryWrapper extends SimpleKeyRepositoryWrapper<G
 
     @Override
     public GlobalHipChatConfigEntity encryptSensitiveData(final GlobalHipChatConfigEntity entity) throws EncryptionException {
-        final String apiKey = PasswordEncrypter.encrypt(entity.getApiKey());
-        final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
-        newEntity.setId(entity.getId());
-        return newEntity;
+        String apiKey = entity.getApiKey();
+        if (StringUtils.isBlank(apiKey)) {
+            return entity;
+        } else {
+            apiKey = PasswordEncrypter.encrypt(apiKey);
+            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 
     @Override
     public GlobalHipChatConfigEntity decryptSensitiveData(final GlobalHipChatConfigEntity entity) throws EncryptionException {
-        final String apiKey = PasswordDecrypter.decrypt(entity.getApiKey());
-        final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
-        newEntity.setId(entity.getId());
-        return newEntity;
+        String apiKey = entity.getApiKey();
+        if (StringUtils.isBlank(apiKey)) {
+            return entity;
+        } else {
+            apiKey = PasswordDecrypter.decrypt(apiKey);
+            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 }
