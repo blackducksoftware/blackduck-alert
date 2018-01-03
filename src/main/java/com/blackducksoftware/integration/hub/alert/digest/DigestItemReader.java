@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.digest;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemReader;
@@ -35,6 +37,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 
+@Transactional
 public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {
     private final Logger logger = LoggerFactory.getLogger(DigestItemReader.class);
     private final NotificationRepository notificationRepository;

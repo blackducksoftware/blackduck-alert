@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+@Transactional
 public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

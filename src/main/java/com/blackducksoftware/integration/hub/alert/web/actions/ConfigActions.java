@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -38,6 +40,7 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
+@Transactional
 public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
