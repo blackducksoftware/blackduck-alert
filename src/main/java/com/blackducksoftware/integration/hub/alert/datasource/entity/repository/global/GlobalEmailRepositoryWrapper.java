@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,51 +42,61 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
 
     @Override
     public GlobalEmailConfigEntity encryptSensitiveData(final GlobalEmailConfigEntity entity) throws EncryptionException {
-        final String mailSmtpHost = entity.getMailSmtpHost();
-        final String mailSmtpUser = entity.getMailSmtpUser();
-        final String mailSmtpPassword = PasswordEncrypter.encrypt(entity.getMailSmtpPassword());
-        final Integer mailSmtpPort = entity.getMailSmtpPort();
-        final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
-        final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
-        final String mailSmtpFrom = entity.getMailSmtpFrom();
-        final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
-        final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
-        final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
-        final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
-        final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
-        final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
-        final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-        final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
-        final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
-        final String emailSubjectLine = entity.getEmailSubjectLine();
-        final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        newEntity.setId(entity.getId());
-        return newEntity;
+        String mailSmtpPassword = entity.getMailSmtpPassword();
+        if (StringUtils.isBlank(mailSmtpPassword)) {
+            return entity;
+        } else {
+            final String mailSmtpHost = entity.getMailSmtpHost();
+            final String mailSmtpUser = entity.getMailSmtpUser();
+            mailSmtpPassword = PasswordEncrypter.encrypt(entity.getMailSmtpPassword());
+            final Integer mailSmtpPort = entity.getMailSmtpPort();
+            final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
+            final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
+            final String mailSmtpFrom = entity.getMailSmtpFrom();
+            final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
+            final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
+            final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
+            final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
+            final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
+            final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
+            final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
+            final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
+            final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
+            final String emailSubjectLine = entity.getEmailSubjectLine();
+            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
+                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 
     @Override
     public GlobalEmailConfigEntity decryptSensitiveData(final GlobalEmailConfigEntity entity) throws EncryptionException {
-        final String mailSmtpHost = entity.getMailSmtpHost();
-        final String mailSmtpUser = entity.getMailSmtpUser();
-        final String mailSmtpPassword = PasswordDecrypter.decrypt(entity.getMailSmtpPassword());
-        final Integer mailSmtpPort = entity.getMailSmtpPort();
-        final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
-        final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
-        final String mailSmtpFrom = entity.getMailSmtpFrom();
-        final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
-        final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
-        final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
-        final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
-        final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
-        final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
-        final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-        final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
-        final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
-        final String emailSubjectLine = entity.getEmailSubjectLine();
-        final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
-        newEntity.setId(entity.getId());
-        return entity;
+        String mailSmtpPassword = entity.getMailSmtpPassword();
+        if (StringUtils.isBlank(mailSmtpPassword)) {
+            return entity;
+        } else {
+            final String mailSmtpHost = entity.getMailSmtpHost();
+            final String mailSmtpUser = entity.getMailSmtpUser();
+            mailSmtpPassword = PasswordDecrypter.decrypt(entity.getMailSmtpPassword());
+            final Integer mailSmtpPort = entity.getMailSmtpPort();
+            final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
+            final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
+            final String mailSmtpFrom = entity.getMailSmtpFrom();
+            final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
+            final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
+            final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
+            final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
+            final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
+            final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
+            final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
+            final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
+            final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
+            final String emailSubjectLine = entity.getEmailSubjectLine();
+            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
+                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 }
