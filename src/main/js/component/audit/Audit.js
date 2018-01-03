@@ -10,7 +10,7 @@ import AuditDetails from './AuditDetails';
 
 import Modal from 'react-modal';
 
-import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Audit extends Component {
@@ -32,7 +32,7 @@ class Audit extends Component {
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
-        this.createCustomInsertButton = this.createCustomInsertButton.bind(this);
+        this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
 	}
 
 	// addDefaultEntries() {
@@ -272,19 +272,27 @@ class Audit extends Component {
 		return className; 
 	}
 
-	createCustomInsertButton(onClick) {
-		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.addJobButton}`;
-		let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
-		return (
-			<div className={classes} onClick={ () => this.reloadAuditEntries() } >
-				 <i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
-			</div>
-		);
-	}
+
+	createCustomButtonGroup() {
+		let refreshButton= null;
+		if (!this.state.autoRefresh) {
+			let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
+			let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
+			let reloadEntries = () => this.reloadAuditEntries();
+			refreshButton = <div className={classes} onClick={reloadEntries} >
+								<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
+						</div>;
+		}
+	    return (
+	    	<ButtonGroup>
+	      		{refreshButton}
+	      	</ButtonGroup>
+	    );
+  	}
 
 	render() {
 		const auditTableOptions = {
-			insertBtn: this.createCustomInsertButton,
+			btnGroup: this.createCustomButtonGroup,
 	  		noDataText: 'No events',
 	  		clearSearch: true,
 	  		expandBy : 'column',
@@ -301,7 +309,7 @@ class Audit extends Component {
 				<div>
 					<div>
 						<CheckboxInput labelClass={styles.fieldLabel} inputClass={styles.textInput} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
-						<BootstrapTable insertRow={!this.state.autoRefresh} trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>

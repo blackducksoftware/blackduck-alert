@@ -70,7 +70,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
         final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
         if (lastRanEntry != null) {
             lastRan = objectTransformer.objectToString(lastRanEntry.getTimeLastSent());
-            status = objectTransformer.objectToString(lastRanEntry.getStatus());
+            status = lastRanEntry.getStatus().getDisplayName();
         }
         restModel.setLastRan(lastRan);
         restModel.setStatus(status);
