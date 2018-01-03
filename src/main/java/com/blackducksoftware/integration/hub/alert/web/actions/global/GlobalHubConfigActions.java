@@ -143,13 +143,12 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
-        hubServerConfigBuilder.setUsername(restModel.getHubUsername());
 
         hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-
-        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
+        // TODO set apiKey
+        // hubServerConfigBuilder.setApiKey(restModel.getHubApiKey());
         hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
         if (globalProperties.getHubTrustCertificate() != null) {
@@ -188,7 +187,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public List<String> sensitiveFields() {
         final List<String> sensitiveFields = new ArrayList<>();
-        sensitiveFields.add("hubPassword");
+        sensitiveFields.add("hubApiKey");
         sensitiveFields.add("hubProxyPassword");
         return sensitiveFields;
     }

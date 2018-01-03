@@ -51,17 +51,17 @@ public class MockUtils {
     }
 
     public GlobalHubConfigRestModel createGlobalHubConfigRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", "HubPassword", false, "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "false");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubApiKey", false, "HubProxyHost", "22", "HubProxyUsername", "HubProxyPassword", false, "false");
         return restModel;
     }
 
     public GlobalHubConfigRestModel createGlobalHubConfigMaskedRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", "HubUsername", null, true, "HubProxyHost", "22", "HubProxyUsername", null, true, "false");
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel("1", "HubUrl", "11", null, true, "HubProxyHost", "22", "HubProxyUsername", null, true, "false");
         return restModel;
     }
 
     public GlobalHubConfigEntity createGlobalHubConfigEntity() {
-        final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubUsername", "HubPassword");
+        final GlobalHubConfigEntity configEntity = new GlobalHubConfigEntity(11, "HubApiKey");
         configEntity.setId(1L);
         return configEntity;
     }

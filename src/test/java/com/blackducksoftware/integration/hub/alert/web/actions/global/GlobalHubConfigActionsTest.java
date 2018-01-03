@@ -117,14 +117,13 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
 
         final GlobalHubConfigRestModel environmentGlobalConfig = allGlobalConfigs.get(0);
         assertEquals(mockUtils.getHubAlwaysTrustCertificate(), environmentGlobalConfig.getHubAlwaysTrustCertificate());
-        assertNull(environmentGlobalConfig.getHubPassword());
+        assertNull(environmentGlobalConfig.getHubApiKey());
         assertEquals(mockUtils.getHubProxyHost(), environmentGlobalConfig.getHubProxyHost());
         assertNull(environmentGlobalConfig.getHubProxyPassword());
         assertEquals(mockUtils.getHubProxyPort(), environmentGlobalConfig.getHubProxyPort());
         assertEquals(mockUtils.getHubProxyUsername(), environmentGlobalConfig.getHubProxyUsername());
         assertNull(environmentGlobalConfig.getHubTimeout());
         assertEquals(mockUtils.getHubUrl(), environmentGlobalConfig.getHubUrl());
-        assertNull(environmentGlobalConfig.getHubUsername());
         assertNull(environmentGlobalConfig.getId());
 
     }
