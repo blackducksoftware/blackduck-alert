@@ -44,7 +44,6 @@ public class SlackDistributionConfigEntity extends DistributionChannelConfigEnti
     }
 
     public SlackDistributionConfigEntity(final String webhook, final String channelUsername, final String channelName) {
-        super();
         this.webhook = webhook;
         this.channelUsername = channelUsername;
         this.channelName = channelName;

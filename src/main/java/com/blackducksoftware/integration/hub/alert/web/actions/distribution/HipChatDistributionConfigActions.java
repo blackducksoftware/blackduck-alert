@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -32,6 +31,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManage
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -43,7 +43,7 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
     private final HipChatManager hipChatManager;
 
     @Autowired
-    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<HipChatDistributionConfigEntity, Long> channelDistributionRepository,
+    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository channelDistributionRepository,
             final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
             final HipChatManager hipChatManager) {
         super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);

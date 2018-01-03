@@ -40,6 +40,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
@@ -58,6 +60,8 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     public AuditEntryRepository auditEntryRepository;
     @Autowired
+    public AuditNotificationRepository auditNotificationRepository;
+    @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
@@ -75,8 +79,9 @@ public class AuditEntryHandlerTestIT {
         final DistributionMockUtils mockDistributionConfig = new DistributionMockUtils();
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockNotification.createEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                .save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
+
+        auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         final List<AuditEntryRestModel> auditEntries = auditEntryHandler.get();
         assertEquals(1, auditEntries.size());
@@ -92,7 +97,7 @@ public class AuditEntryHandlerTestIT {
         final NotificationRestModel notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
-        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
+        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationTypes().get(0));
         assertEquals(savedNotificationEntity.getProjectName(), notification.getProjectName());
         assertEquals(savedNotificationEntity.getProjectVersion(), notification.getProjectVersion());
         assertEquals(savedNotificationEntity.getProjectUrl(), notification.getProjectUrl());
@@ -109,14 +114,13 @@ public class AuditEntryHandlerTestIT {
         final DistributionMockUtils mockDistributionConfig = new DistributionMockUtils();
         final NotificationEntity savedNotificationEntity = notificationRepository.save(mockNotification.createEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createDistributionConfigEntity());
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                .save(new AuditEntryEntity(savedNotificationEntity.getId(), savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
-        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository
-                .save(new AuditEntryEntity(savedNotificationEntity.getId(), -1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
+
+        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+        auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
         final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
-                .save(new AuditEntryEntity(-1L, savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
-        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository
-                .save(new AuditEntryEntity(-1L, -1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+                .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
         assertEquals(HttpStatus.BAD_REQUEST, invalidIdResponse.getStatusCode());

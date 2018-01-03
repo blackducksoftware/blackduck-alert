@@ -59,6 +59,7 @@ public class ProjectDataFactory {
                 projectBuilder = getProjectDataBuilder(entity, digestType);
                 projectDataMap.put(projectKey, projectBuilder);
             }
+            projectBuilder.addNotificationId(entity.getId());
             final CategoryDataBuilder categoryDataBuilder = getCategoryDataBuilder(entity, projectBuilder.getCategoryBuilderMap());
             addCategoryData(entity, categoryDataBuilder);
         }
@@ -71,6 +72,7 @@ public class ProjectDataFactory {
 
     public ProjectData createProjectData(final NotificationEntity notification, final DigestTypeEnum digestType) {
         final ProjectDataBuilder projectBuilder = getProjectDataBuilder(notification, digestType);
+        projectBuilder.addNotificationId(notification.getId());
         final CategoryDataBuilder categoryData = new CategoryDataBuilder();
         categoryData.setCategoryKey(getCategoryKey(notification).name());
         addCategoryData(notification, categoryData);

@@ -23,7 +23,6 @@
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -32,6 +31,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -43,9 +43,8 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
     private final SlackManager slackManager;
 
     @Autowired
-    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final JpaRepository<SlackDistributionConfigEntity, Long> repository,
-            final ConfiguredProjectsActions<SlackDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<SlackDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
-            final SlackManager slackManager) {
+    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository repository, final ConfiguredProjectsActions<SlackDistributionRestModel> configuredProjectsActions,
+            final NotificationTypesActions<SlackDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer, final SlackManager slackManager) {
         super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
         this.slackManager = slackManager;
     }
