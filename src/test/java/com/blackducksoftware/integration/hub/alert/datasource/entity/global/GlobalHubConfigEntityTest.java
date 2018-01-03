@@ -16,8 +16,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-
 public class GlobalHubConfigEntityTest {
 
     @Test
@@ -25,13 +23,12 @@ public class GlobalHubConfigEntityTest {
         final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity();
         assertEquals(9172607945030111585L, GlobalHubConfigEntity.getSerialversionuid());
 
-        assertNull(globalConfigEntity.getHubPassword());
+        assertNull(globalConfigEntity.getHubApiKey());
         assertNull(globalConfigEntity.getHubTimeout());
-        assertNull(globalConfigEntity.getHubUsername());
         assertNull(globalConfigEntity.getId());
 
-        assertEquals(31860737, globalConfigEntity.hashCode());
-        final String expectedString = "{\"hubTimeout\":null,\"hubUsername\":null,\"id\":null}";
+        assertEquals(861101, globalConfigEntity.hashCode());
+        final String expectedString = "{\"hubTimeout\":null,\"id\":null}";
         assertEquals(expectedString, globalConfigEntity.toString());
 
         final GlobalHubConfigEntity globalConfigEntityNew = new GlobalHubConfigEntity();
@@ -42,23 +39,21 @@ public class GlobalHubConfigEntityTest {
     public void testModel() {
         final Long id = 123L;
         final Integer hubTimeout = 111;
-        final String hubUsername = "HubUsername";
-        final String hubPassword = "HubPassword";
+        final String hubApiKey = "HubApiKey";
 
-        final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+        final GlobalHubConfigEntity globalConfigEntity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
         globalConfigEntity.setId(id);
 
-        assertEquals(hubPassword, globalConfigEntity.getHubPassword());
+        assertEquals(hubApiKey, globalConfigEntity.getHubApiKey());
         assertEquals(hubTimeout, globalConfigEntity.getHubTimeout());
-        assertEquals(hubUsername, globalConfigEntity.getHubUsername());
         assertEquals(id, globalConfigEntity.getId());
 
-        assertEquals(-610617422, globalConfigEntity.hashCode());
+        assertEquals(-1088833407, globalConfigEntity.hashCode());
 
-        final String expectedString = "{\"hubTimeout\":111,\"hubUsername\":\"HubUsername\",\"id\":123}";
+        final String expectedString = "{\"hubTimeout\":" + hubTimeout + ",\"id\":" + id + "}";
         assertEquals(expectedString, globalConfigEntity.toString());
 
-        final GlobalHubConfigEntity globalConfigEntityNew = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+        final GlobalHubConfigEntity globalConfigEntityNew = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
         globalConfigEntityNew.setId(id);
 
         assertEquals(globalConfigEntity, globalConfigEntityNew);

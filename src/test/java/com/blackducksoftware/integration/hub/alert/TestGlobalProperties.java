@@ -18,8 +18,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 // TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
-    private String hubUsername;
-    private String hubPassword;
+    private String hubApiKey;
     private String accumulatorCron;
     private String dailyDigestCron;
 
@@ -37,21 +36,12 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public String getHubUsername() {
-        return hubUsername;
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
-    public void setHubUsername(final String hubUsername) {
-        this.hubUsername = hubUsername;
-    }
-
-    @Override
-    public String getHubPassword() {
-        return hubPassword;
-    }
-
-    public void setHubPassword(final String hubPassword) {
-        this.hubPassword = hubPassword;
+    public void setHubApiKey(final String hubApiKey) {
+        this.hubApiKey = hubApiKey;
     }
 
     @Override
