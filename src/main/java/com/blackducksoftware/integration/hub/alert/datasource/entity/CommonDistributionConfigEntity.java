@@ -50,7 +50,6 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     }
 
     public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject) {
-        super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;

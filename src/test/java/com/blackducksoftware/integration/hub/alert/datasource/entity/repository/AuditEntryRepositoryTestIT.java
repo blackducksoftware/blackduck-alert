@@ -49,9 +49,9 @@ public class AuditEntryRepositoryTestIT {
         final Date middleDate = new Date(200);
         final Date mostRecent = new Date(300);
 
-        final AuditEntryEntity leastRecentEntity = new AuditEntryEntity(-1L, commonConfigId, null, leastRecent, null, null, null);
-        final AuditEntryEntity middleEntity = new AuditEntryEntity(-1L, commonConfigId, null, middleDate, null, null, null);
-        final AuditEntryEntity mostRecentEntity = new AuditEntryEntity(-1L, commonConfigId, null, mostRecent, null, null, null);
+        final AuditEntryEntity leastRecentEntity = new AuditEntryEntity(commonConfigId, null, leastRecent, null, null, null);
+        final AuditEntryEntity middleEntity = new AuditEntryEntity(commonConfigId, null, middleDate, null, null, null);
+        final AuditEntryEntity mostRecentEntity = new AuditEntryEntity(commonConfigId, null, mostRecent, null, null, null);
         auditEntryRepository.save(leastRecentEntity);
         auditEntryRepository.save(middleEntity);
         auditEntryRepository.save(mostRecentEntity);

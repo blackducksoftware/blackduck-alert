@@ -66,7 +66,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     }
 
     public ProjectData getTestMessageProjectData() {
-        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyMap());
+        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
     }
 
     public String sendTestMessage(final R restModel) throws AlertException {
