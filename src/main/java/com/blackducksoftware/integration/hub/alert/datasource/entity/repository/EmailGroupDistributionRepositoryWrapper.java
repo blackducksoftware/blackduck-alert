@@ -25,24 +25,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 
 @Component
-public class EmailGroupDistributionRepositoryWrapper extends AbstractRepositoryWrapper<EmailGroupDistributionConfigEntity, Long, EmailGroupDistributionRepository> {
+public class EmailGroupDistributionRepositoryWrapper extends SimpleKeyRepositoryWrapper<EmailGroupDistributionConfigEntity, EmailGroupDistributionRepository> {
 
     @Autowired
     public EmailGroupDistributionRepositoryWrapper(final EmailGroupDistributionRepository repository) {
         super(repository);
-    }
-
-    @Override
-    public EmailGroupDistributionConfigEntity encryptSensitiveData(final EmailGroupDistributionConfigEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public EmailGroupDistributionConfigEntity decryptSensitiveData(final EmailGroupDistributionConfigEntity entity) {
-        return entity;
     }
 }

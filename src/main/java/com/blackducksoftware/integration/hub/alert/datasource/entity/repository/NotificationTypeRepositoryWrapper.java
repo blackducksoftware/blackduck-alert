@@ -26,16 +26,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 
 @Component
-public class AuditEntryRepositoryWrapper extends SimpleKeyRepositoryWrapper<AuditEntryEntity, AuditEntryRepository> {
+public class NotificationTypeRepositoryWrapper extends SimpleKeyRepositoryWrapper<NotificationTypeEntity, NotificationTypeRepository> {
+
     @Autowired
-    public AuditEntryRepositoryWrapper(final AuditEntryRepository repository) {
+    public NotificationTypeRepositoryWrapper(final NotificationTypeRepository repository) {
         super(repository);
     }
 
-    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId) {
-        return decryptSensitiveData(getRepository().findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId));
+    public NotificationTypeEntity findByType(final String type) {
+        return decryptSensitiveData(getRepository().findByType(type));
     }
 }

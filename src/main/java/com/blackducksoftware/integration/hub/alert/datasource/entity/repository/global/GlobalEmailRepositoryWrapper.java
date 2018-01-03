@@ -25,11 +25,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
 
 @Component
-public class GlobalEmailRepositoryWrapper extends AbstractRepositoryWrapper<GlobalEmailConfigEntity, Long, GlobalEmailRepository> {
+public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<GlobalEmailConfigEntity, GlobalEmailRepository> {
 
     @Autowired
     public GlobalEmailRepositoryWrapper(final GlobalEmailRepository repository) {

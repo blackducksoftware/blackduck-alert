@@ -25,11 +25,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 
 @Component
-public class GlobalHipChatRepositoryWrapper extends AbstractRepositoryWrapper<GlobalHipChatConfigEntity, Long, GlobalHipChatRepository> {
+public class GlobalHipChatRepositoryWrapper extends SimpleKeyRepositoryWrapper<GlobalHipChatConfigEntity, GlobalHipChatRepository> {
 
     @Autowired
     public GlobalHipChatRepositoryWrapper(final GlobalHipChatRepository repository) {

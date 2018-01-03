@@ -25,24 +25,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
 
 @Component
-public class GlobalSlackRepositoryWrapper extends AbstractRepositoryWrapper<GlobalSlackConfigEntity, Long, GlobalSlackRepository> {
+public class GlobalSlackRepositoryWrapper extends SimpleKeyRepositoryWrapper<GlobalSlackConfigEntity, GlobalSlackRepository> {
 
     @Autowired
     public GlobalSlackRepositoryWrapper(final GlobalSlackRepository repository) {
         super(repository);
-    }
-
-    @Override
-    public GlobalSlackConfigEntity encryptSensitiveData(final GlobalSlackConfigEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public GlobalSlackConfigEntity decryptSensitiveData(final GlobalSlackConfigEntity entity) {
-        return entity;
     }
 }

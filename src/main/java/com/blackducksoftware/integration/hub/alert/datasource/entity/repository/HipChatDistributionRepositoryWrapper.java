@@ -25,25 +25,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 
 @Component
-public class HipChatDistributionRepositoryWrapper extends AbstractRepositoryWrapper<HipChatDistributionConfigEntity, Long, HipChatDistributionRepository> {
+public class HipChatDistributionRepositoryWrapper extends SimpleKeyRepositoryWrapper<HipChatDistributionConfigEntity, HipChatDistributionRepository> {
 
     @Autowired
     public HipChatDistributionRepositoryWrapper(final HipChatDistributionRepository repository) {
         super(repository);
     }
-
-    @Override
-    public HipChatDistributionConfigEntity encryptSensitiveData(final HipChatDistributionConfigEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public HipChatDistributionConfigEntity decryptSensitiveData(final HipChatDistributionConfigEntity entity) {
-        return entity;
-    }
-
 }

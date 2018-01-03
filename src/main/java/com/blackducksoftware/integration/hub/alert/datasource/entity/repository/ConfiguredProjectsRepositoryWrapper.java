@@ -25,11 +25,11 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 
 @Component
-public class ConfiguredProjectsRepositoryWrapper extends AbstractRepositoryWrapper<ConfiguredProjectEntity, Long, ConfiguredProjectsRepository> {
+public class ConfiguredProjectsRepositoryWrapper extends SimpleKeyRepositoryWrapper<ConfiguredProjectEntity, ConfiguredProjectsRepository> {
 
     @Autowired
     public ConfiguredProjectsRepositoryWrapper(final ConfiguredProjectsRepository repository) {
@@ -37,16 +37,6 @@ public class ConfiguredProjectsRepositoryWrapper extends AbstractRepositoryWrapp
     }
 
     public ConfiguredProjectEntity findByProjectName(final String projectName) {
-        return getRepository().findByProjectName(projectName);
-    }
-
-    @Override
-    public ConfiguredProjectEntity encryptSensitiveData(final ConfiguredProjectEntity entity) {
-        return entity;
-    }
-
-    @Override
-    public ConfiguredProjectEntity decryptSensitiveData(final ConfiguredProjectEntity entity) {
-        return entity;
+        return decryptSensitiveData(getRepository().findByProjectName(projectName));
     }
 }
