@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -43,6 +45,7 @@ import com.blackducksoftware.integration.hub.dataservice.notification.model.Noti
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
+@Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationRepository notificationRepository;
