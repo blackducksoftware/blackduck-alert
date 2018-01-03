@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,8 @@ import com.google.gson.Gson;
 
 @Component
 public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
+    private final static Logger logger = LoggerFactory.getLogger(RealTimeListener.class);
+
     private final ChannelTemplateManager channelTemplateManager;
     private final DigestNotificationProcessor notificationProcessor;
 
@@ -51,8 +55,12 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
     public void receiveMessage(final String message) {
-        final RealTimeEvent event = getEvent(message);
-        final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(DigestTypeEnum.REAL_TIME, event.getNotificationList());
-        channelTemplateManager.sendEvents(events);
+        try {
+            final RealTimeEvent event = getEvent(message);
+            final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(DigestTypeEnum.REAL_TIME, event.getNotificationList());
+            channelTemplateManager.sendEvents(events);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 }

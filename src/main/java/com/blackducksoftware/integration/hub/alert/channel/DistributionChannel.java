@@ -71,36 +71,44 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     public void setAuditEntrySuccess(final Long auditEntryId) {
         if (auditEntryId != null) {
-            final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
-            if (auditEntryEntity != null) {
-                auditEntryEntity.setStatus(StatusEnum.SUCCESS);
+            try {
+                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+                if (auditEntryEntity != null) {
+                    auditEntryEntity.setStatus(StatusEnum.SUCCESS);
 
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                getAuditEntryRepository().save(auditEntryEntity);
+                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                    getAuditEntryRepository().save(auditEntryEntity);
+                }
+            } catch (final Exception e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }
 
-    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable e) {
+    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
         if (auditEntryId != null) {
-            final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
-            if (auditEntryEntity != null) {
-                auditEntryEntity.setStatus(StatusEnum.FAILURE);
-                auditEntryEntity.setErrorMessage(errorMessage);
-                final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(e);
-                String exceptionStackTrace = "";
-                for (final String line : rootCause) {
-                    if (exceptionStackTrace.length() + line.length() < 9999) {
-                        exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
-                    } else {
-                        break;
+            try {
+                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+                if (auditEntryEntity != null) {
+                    auditEntryEntity.setStatus(StatusEnum.FAILURE);
+                    auditEntryEntity.setErrorMessage(errorMessage);
+                    final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
+                    String exceptionStackTrace = "";
+                    for (final String line : rootCause) {
+                        if (exceptionStackTrace.length() + line.length() < 9999) {
+                            exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
+                        } else {
+                            break;
+                        }
                     }
+
+                    auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
+
+                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                    getAuditEntryRepository().save(auditEntryEntity);
                 }
-
-                auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-
-                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                getAuditEntryRepository().save(auditEntryEntity);
+            } catch (final Exception e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -116,11 +124,15 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     @Override
     public void receiveMessage(final String message) {
-        logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
-        final E event = getEvent(message);
-        logger.info(String.format("%s event %s", getClass().getName(), event));
+        try {
+            logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+            final E event = getEvent(message);
+            logger.info(String.format("%s event %s", getClass().getName(), event));
 
-        handleEvent(event);
+            handleEvent(event);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 
     public void handleEvent(final E event) {
