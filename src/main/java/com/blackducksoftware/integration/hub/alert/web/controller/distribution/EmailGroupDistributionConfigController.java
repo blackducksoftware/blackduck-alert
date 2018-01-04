@@ -42,11 +42,11 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @RestController
-public class EmailGroupDistributionController extends ConfigController<EmailGroupDistributionRestModel> {
+public class EmailGroupDistributionConfigController extends ConfigController<EmailGroupDistributionRestModel> {
     private final CommonConfigHandler<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> commonConfigHandler;
 
     @Autowired
-    public EmailGroupDistributionController(final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions, final ObjectTransformer objectTransformer) {
+    public EmailGroupDistributionConfigController(final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions, final ObjectTransformer objectTransformer) {
         commonConfigHandler = new CommonConfigHandler<>(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, emailGroupDistributionConfigActions, objectTransformer);
     }
 

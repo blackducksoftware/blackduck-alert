@@ -57,13 +57,6 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     }
 
     @Override
-    public String getEmptyGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("id", null);
-        return json.toString();
-    }
-
-    @Override
     public GlobalHipChatConfigEntity createEmptyGlobalEntity() {
         return new GlobalHipChatConfigEntity();
     }

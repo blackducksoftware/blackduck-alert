@@ -26,7 +26,9 @@ public abstract class MockRestModelUtil<R extends ConfigRestModel> implements Mo
 
     public abstract String getRestModelJson();
 
-    public abstract String getEmptyRestModelJson();
+    public String getEmptyRestModelJson() {
+        return "{}";
+    }
 
     public void verifyEmptyRestModel() throws JSONException {
         final String emptyRestModel = createEmptyRestModel().toString();

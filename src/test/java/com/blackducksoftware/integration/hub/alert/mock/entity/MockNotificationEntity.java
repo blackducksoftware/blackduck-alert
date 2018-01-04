@@ -129,7 +129,8 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         final Gson gson = new Gson();
         final JsonObject json = new JsonObject();
         json.addProperty("eventKey", eventKey);
-        json.addProperty("createdAt", createdAt.toString());
+        // Gson uses locale by default thus I need to use it here
+        json.addProperty("createdAt", createdAt.toLocaleString());
         json.addProperty("notificationType", notificationType);
         json.addProperty("projectName", projectName);
         json.addProperty("projectVersion", projectVersion);
@@ -142,25 +143,6 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         final JsonElement array = gson.toJsonTree(vulnerabilityList);
         json.add("vulnerabilityList", array.getAsJsonArray());
         json.addProperty("id", id);
-        return json.toString();
-    }
-
-    @Override
-    public String getEmptyEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("eventKey", null);
-        json.add("createdAt", null);
-        json.add("notificationType", null);
-        json.add("projectName", null);
-        json.add("projectVersion", null);
-        json.add("componentName", null);
-        json.add("componentVersion", null);
-        json.add("policyRuleName", null);
-        json.add("person", null);
-        json.add("projectUrl", null);
-        json.add("projectVersionUrl", null);
-        json.add("vulnerabilityList", null);
-        json.add("id", null);
         return json.toString();
     }
 

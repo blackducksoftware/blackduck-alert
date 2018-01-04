@@ -24,8 +24,7 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.google.gson.Gson;
 
 public class NotificationRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -715566918536523106L;
@@ -115,15 +114,9 @@ public class NotificationRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
-        String[] notificationTypesToStringArray = null;
-        if (notificationTypes != null) {
-            notificationTypesToStringArray = notificationTypes.toArray(new String[notificationTypes.size()]);
-        }
-
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("notificationTypes");
-        reflectionToStringBuilder.append("notificationTypes", notificationTypesToStringArray);
-        return reflectionToStringBuilder.build();
+        // TODO exclude notificationTypes for restModel
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
 }

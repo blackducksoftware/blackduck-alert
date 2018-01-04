@@ -70,14 +70,4 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
         return json.toString();
     }
 
-    @Override
-    public String getEmptyEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("roomId", null);
-        json.add("notify", null);
-        json.add("color", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
 }

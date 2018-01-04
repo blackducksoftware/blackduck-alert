@@ -26,7 +26,9 @@ public abstract class MockGlobalEntityUtil<GE extends DatabaseEntity> implements
 
     public abstract String getGlobalEntityJson();
 
-    public abstract String getEmptyGlobalEntityJson();
+    public String getEmptyGlobalEntityJson() {
+        return "{}";
+    }
 
     public void verifyEmptyGlobalEntity() throws JSONException {
         final String emptyGlobalEntity = createEmptyGlobalEntity().toString();

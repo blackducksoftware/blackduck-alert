@@ -11,12 +11,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistributionRestModel> {
-    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+    private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private final String groupName;
     private final String id;
@@ -41,7 +40,7 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
 
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
-        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(distributionMockUtil.getCommonId(), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
+        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
                 distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, distributionMockUtil.getProjects(), distributionMockUtil.getNotifications());
         return restModel;
     }
@@ -55,16 +54,8 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("groupName", groupName);
-        distributionMockUtil.getDistributionRestModelJson(json);
-        return json.toString();
-    }
 
-    @Override
-    public String getEmptyRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.add("groupName", null);
-        distributionMockUtil.getEmptyDistributionRestModelJson(json);
-        return json.toString();
+        return distributionMockUtil.combineWithRestModelJson(json);
     }
 
 }

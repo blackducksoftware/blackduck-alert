@@ -69,14 +69,4 @@ public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<Globa
         return json.toString();
     }
 
-    @Override
-    public String getEmptyGlobalRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.add("accumulatorCron", null);
-        json.add("dailyDigestCron", null);
-        json.add("purgeDataCron", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
 }

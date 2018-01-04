@@ -61,7 +61,6 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
     public String getEmptyGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("apiKeyIsSet", apiKeyIsSet);
-        json.add("id", null);
         return json.toString();
     }
 

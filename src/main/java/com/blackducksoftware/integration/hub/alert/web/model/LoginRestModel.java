@@ -22,8 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.google.gson.Gson;
 
 public class LoginRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
@@ -97,9 +96,9 @@ public class LoginRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("hubPassword", "hubProxyPassword");
-        return reflectionToStringBuilder.build();
+        // TODO exclude hubPassword and hubProxyPassword for restModel
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
 }

@@ -26,9 +26,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Entity
@@ -43,7 +40,7 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     private String hubUsername;
 
     @Column(name = "hub_password")
-    private String hubPassword;
+    private transient String hubPassword;
 
     public GlobalHubConfigEntity() {
     }
@@ -68,13 +65,6 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
 
     public String getHubPassword() {
         return hubPassword;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("hubPassword");
-        return reflectionToStringBuilder.build();
     }
 
 }

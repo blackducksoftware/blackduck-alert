@@ -22,10 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.gson.Gson;
 
 public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
@@ -34,7 +32,7 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private String mailSmtpHost;
     private String mailSmtpUser;
     // not a javamail property, but we are going to piggy-back to get the smtp password
-    private String mailSmtpPassword;
+    private transient String mailSmtpPassword;
     private boolean mailSmtpPasswordIsSet;
     private String mailSmtpPort;
     private String mailSmtpConnectionTimeout;
@@ -156,8 +154,8 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
 
     @Override
     public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("mailSmtpPassword");
-        return reflectionToStringBuilder.build();
+        // TODO exclude mailSmtpPassword
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }

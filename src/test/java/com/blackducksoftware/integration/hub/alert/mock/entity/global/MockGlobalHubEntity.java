@@ -70,13 +70,4 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
         return json.toString();
     }
 
-    @Override
-    public String getEmptyGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("hubTimeout", null);
-        json.add("hubUsername", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
 }

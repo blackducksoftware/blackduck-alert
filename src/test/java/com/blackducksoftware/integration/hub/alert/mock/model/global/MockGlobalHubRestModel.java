@@ -143,16 +143,8 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     @Override
     public String getEmptyGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
-        json.add("hubUrl", null);
-        json.add("hubTimeout", null);
-        json.add("hubUsername", null);
         json.addProperty("hubPasswordIsSet", false);
-        json.add("hubProxyHost", null);
-        json.add("hubProxyPort", null);
-        json.add("hubProxyUsername", null);
         json.addProperty("hubProxyPasswordIsSet", false);
-        json.add("hubAlwaysTrustCertificate", null);
-        json.add("id", null);
         return json.toString();
     }
 

@@ -73,10 +73,7 @@ public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntit
     @Override
     public String getEmptyEntityJson() {
         final JsonObject json = new JsonObject();
-        json.add("webhook", null);
         json.addProperty("channelUsername", "Hub-alert");
-        json.add("channelName", null);
-        json.add("id", null);
         return json.toString();
     }
 }

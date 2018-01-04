@@ -17,6 +17,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
@@ -35,6 +36,8 @@ public class GlobalHubConfigControllerTest extends GlobalControllerTest<GlobalHu
 
     @Autowired
     GlobalHubRepository globalHubRepository;
+
+    private TestProperties testProperties;
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {
@@ -56,13 +59,21 @@ public class GlobalHubConfigControllerTest extends GlobalControllerTest<GlobalHu
         return "/configuration/global";
     }
 
-    // TODO create a custom testTestConfig controller method
     @Test
     @Override
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
+        // globalEntityRepository.deleteAll();
+        // final String username = testProperties.getProperty(TestPropertyKey.TEST_USERNAME);
+        // final String port = testProperties.getProperty(TestPropertyKey.TEST_HUB_PORT);
+        // final String password = testProperties.getProperty(TestPropertyKey.TEST_PASSWORD);
+        // final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(Integer.valueOf(port), username, password);
+        // final GlobalHubConfigEntity savedEntity = globalEntityRepository.save(newEntity);
         // final String testRestUrl = restUrl + "/test";
         // final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        // restModel.setId(String.valueOf(savedEntity.getId()));
+        // request.content(restModel.toString());
+        // request.contentType(contentType);
         // mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         assertTrue(true);
     }
