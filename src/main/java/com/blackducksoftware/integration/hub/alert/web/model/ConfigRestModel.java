@@ -26,15 +26,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class ConfigRestModel implements Serializable {
     private static final long serialVersionUID = -3734941694720407916L;
-
-    private final static Logger logger = LoggerFactory.getLogger(ConfigRestModel.class);
 
     private String id;
 
@@ -61,11 +55,5 @@ public abstract class ConfigRestModel implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, ToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.build();
     }
 }
