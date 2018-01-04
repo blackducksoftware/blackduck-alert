@@ -147,18 +147,4 @@ public class NotificationEntity extends DatabaseEntity {
     public Collection<VulnerabilityEntity> getVulnerabilityList() {
         return vulnerabilityList;
     }
-    //
-    // @Override
-    // public String toString() {
-    // String json = "";
-    // final ObjectMapper mapper = new ObjectMapper();
-    // try {
-    // json = mapper.writeValueAsString(this);
-    // } catch (final JsonProcessingException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // return json;
-    // return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
-    // }
 }
