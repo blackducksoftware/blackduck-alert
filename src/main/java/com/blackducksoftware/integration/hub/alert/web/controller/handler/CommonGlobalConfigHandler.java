@@ -40,7 +40,7 @@ public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends Confi
 
     @Override
     public ResponseEntity<String> postConfig(final R restModel) {
-        if (!configActions.repository.findAll().isEmpty()) {
+        if (!configActions.getRepository().findAll().isEmpty()) {
             return createResponse(HttpStatus.PRECONDITION_FAILED, String.format("Cannot POST because a global configuration for %s already exists!", databaseEntityClass.getSimpleName()));
         }
         return super.postConfig(restModel);

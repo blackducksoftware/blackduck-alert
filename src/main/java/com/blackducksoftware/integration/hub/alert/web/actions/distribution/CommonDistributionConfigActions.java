@@ -66,10 +66,10 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     private void addAuditEntryInfoToRestModel(final CommonDistributionConfigRestModel restModel) {
         String lastRan = "Unknown";
         String status = "Unknown";
-        final Long id = objectTransformer.stringToLong(restModel.getId());
+        final Long id = getObjectTransformer().stringToLong(restModel.getId());
         final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
         if (lastRanEntry != null) {
-            lastRan = objectTransformer.objectToString(lastRanEntry.getTimeLastSent());
+            lastRan = getObjectTransformer().objectToString(lastRanEntry.getTimeLastSent());
             status = lastRanEntry.getStatus().getDisplayName();
         }
         restModel.setLastRan(lastRan);
@@ -80,11 +80,11 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     public CommonDistributionConfigEntity saveConfig(final CommonDistributionConfigRestModel restModel) throws AlertException {
         if (restModel != null) {
             try {
-                CommonDistributionConfigEntity createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
+                CommonDistributionConfigEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
                 if (createdEntity != null) {
-                    createdEntity = commonDistributionRepository.save(createdEntity);
-                    configuredProjectsActions.saveConfiguredProjects(createdEntity, restModel);
-                    notificationTypesActions.saveNotificationTypes(createdEntity, restModel);
+                    createdEntity = getCommonDistributionRepository().save(createdEntity);
+                    getConfiguredProjectsActions().saveConfiguredProjects(createdEntity, restModel);
+                    getNotificationTypesActions().saveNotificationTypes(createdEntity, restModel);
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -97,9 +97,9 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     @Override
     public void deleteConfig(final Long id) {
         if (id != null) {
-            commonDistributionRepository.delete(id);
-            configuredProjectsActions.cleanUpConfiguredProjects();
-            notificationTypesActions.removeOldNotificationTypes(id);
+            getCommonDistributionRepository().delete(id);
+            getConfiguredProjectsActions().cleanUpConfiguredProjects();
+            getNotificationTypesActions().removeOldNotificationTypes(id);
         }
     }
 
@@ -111,7 +111,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
-        final CommonDistributionConfigEntity foundEntity = commonDistributionRepository.findOne(entity.getId());
+        final CommonDistributionConfigEntity foundEntity = getCommonDistributionRepository().findOne(entity.getId());
         if (foundEntity != null) {
             return constructRestModel(foundEntity, null);
         }
@@ -120,9 +120,9 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
-        final CommonDistributionConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
-        restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
-        restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
+        final CommonDistributionConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+        restModel.setConfiguredProjects(getConfiguredProjectsActions().getConfiguredProjects(commonEntity));
+        restModel.setNotificationTypes(getNotificationTypesActions().getNotificationTypes(commonEntity));
         return restModel;
     }
 

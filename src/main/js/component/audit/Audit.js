@@ -273,7 +273,7 @@ class Audit extends Component {
 	}
 
 
-	createCustomButtonGroup() {
+	createCustomButtonGroup(buttons) {
 		let refreshButton= null;
 		if (!this.state.autoRefresh) {
 			let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
@@ -308,7 +308,7 @@ class Audit extends Component {
 		return (
 				<div>
 					<div>
-						<CheckboxInput labelClass={styles.fieldLabel} inputClass={styles.textInput} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
+						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
