@@ -257,14 +257,6 @@ class DistributionConfiguration extends Component {
 	  }
 	}
 
-	createCustomInsertButton(onClick) {
-		return (
-			<InsertButton
-			className={tableStyles.addJobButton}
-			/>
-		);
-	}
-
 	handleSetState(name, value) {
 		this.setState({
 			[name]: value
@@ -301,14 +293,16 @@ class DistributionConfiguration extends Component {
     }
 
 
-	createCustomButtonGroup() {
+	createCustomButtonGroup(buttons) {
 		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
 		let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
 		let reloadEntries = () => this.refreshPage();
+		let insertOnClick = buttons.insertBtn.props.onClick;
+		let deleteOnClick = buttons.deleteBtn.props.onClick;
 	    return (
 	      <ButtonGroup>
-	      	<InsertButton className={tableStyles.addJobButton} />
-	      	<DeleteButton className={tableStyles.deleteJobButton} />
+	      	<InsertButton className={tableStyles.addJobButton} onClick={insertOnClick}/>
+	      	<DeleteButton className={tableStyles.deleteJobButton} onClick={deleteOnClick}/>
 	        <div className={classes} onClick={reloadEntries} >
 					 <i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
 				</div>
@@ -343,7 +337,7 @@ class DistributionConfiguration extends Component {
                                 </div>;
         }
 		var content = <div>
-						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='name' dataSort columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>

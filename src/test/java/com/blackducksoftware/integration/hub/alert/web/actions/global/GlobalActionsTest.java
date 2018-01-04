@@ -46,11 +46,11 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testDoesConfigExist() {
-        Mockito.when(configActions.repository.exists(Mockito.anyLong())).thenReturn(true);
+        Mockito.when(configActions.getRepository().exists(Mockito.anyLong())).thenReturn(true);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
-        Mockito.when(configActions.repository.exists(Mockito.anyLong())).thenReturn(false);
+        Mockito.when(configActions.getRepository().exists(Mockito.anyLong())).thenReturn(false);
         assertFalse(configActions.doesConfigExist(1L));
         assertFalse(configActions.doesConfigExist("1"));
 
@@ -62,8 +62,8 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testGetConfig() throws Exception {
-        Mockito.when(configActions.repository.findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEntity());
-        Mockito.when(configActions.repository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
+        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEntity());
+        Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
         final GR restModel = mockUtils.createGlobalRestModel();
@@ -80,8 +80,8 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.repository.findOne(Mockito.anyLong())).thenReturn(null);
-        Mockito.when(configActions.repository.findAll()).thenReturn(null);
+        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findAll()).thenReturn(null);
 
         configsById = configActions.getConfig(1L);
         allConfigs = configActions.getConfig(null);
@@ -95,27 +95,27 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     @Test
     public void testDeleteConfig() {
         configActions.deleteConfig(1L);
-        verify(configActions.repository, times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
 
-        Mockito.reset(configActions.repository);
+        Mockito.reset(configActions.getRepository());
         configActions.deleteConfig("1");
-        verify(configActions.repository, times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
 
         final String idString = null;
         final Long idLong = null;
-        Mockito.reset(configActions.repository);
+        Mockito.reset(configActions.getRepository());
         configActions.deleteConfig(idLong);
-        verify(configActions.repository, times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
 
-        Mockito.reset(configActions.repository);
+        Mockito.reset(configActions.getRepository());
         configActions.deleteConfig(idString);
-        verify(configActions.repository, times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
     }
 
     @Test
     public void testSaveConfig() throws Exception {
         final GE expectedHipChatConfigEntity = mockUtils.createGlobalEntity();
-        Mockito.when(configActions.repository.save(Mockito.any(getGlobalEntityClass()))).thenReturn(expectedHipChatConfigEntity);
+        Mockito.when(configActions.getRepository().save(Mockito.any(getGlobalEntityClass()))).thenReturn(expectedHipChatConfigEntity);
 
         GE emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
         assertNotNull(emailConfigEntity);
@@ -124,7 +124,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         emailConfigEntity = configActions.saveConfig(null);
         assertNull(emailConfigEntity);
 
-        Mockito.when(configActions.repository.save(Mockito.any(getGlobalEntityClass()))).thenThrow(new RuntimeException("test"));
+        Mockito.when(configActions.getRepository().save(Mockito.any(getGlobalEntityClass()))).thenThrow(new RuntimeException("test"));
         try {
             emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());
             fail();

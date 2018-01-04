@@ -69,9 +69,9 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public List<GlobalHubConfigRestModel> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final GlobalHubConfigEntity foundEntity = repository.findOne(id);
+            final GlobalHubConfigEntity foundEntity = getRepository().findOne(id);
             if (foundEntity != null) {
-                GlobalHubConfigRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
+                GlobalHubConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity, getConfigRestModelClass());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
                     final GlobalHubConfigRestModel maskedRestModel = maskRestModel(restModel);
@@ -80,10 +80,10 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
             }
             return Collections.emptyList();
         }
-        final List<GlobalHubConfigEntity> databaseEntities = repository.findAll();
+        final List<GlobalHubConfigEntity> databaseEntities = getRepository().findAll();
         List<GlobalHubConfigRestModel> restModels = null;
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
-            restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
+            restModels = getObjectTransformer().databaseEntitiesToConfigRestModels(databaseEntities, getConfigRestModelClass());
         } else {
             restModels = new ArrayList<>();
             restModels.add(new GlobalHubConfigRestModel());

@@ -56,8 +56,8 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
 
     @Override
     public SlackDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final SlackDistributionConfigEntity distributionEntity) throws AlertException {
-        final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
-        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        final SlackDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
+        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setChannelName(distributionEntity.getChannelName());
         restModel.setChannelUsername(distributionEntity.getChannelUsername());
         restModel.setWebhook(distributionEntity.getWebhook());

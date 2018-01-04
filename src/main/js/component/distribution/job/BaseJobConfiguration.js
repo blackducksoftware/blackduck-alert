@@ -164,10 +164,14 @@ class BaseJobConfiguration extends Component {
 						self.setState({
 							errors
 						});
+						self.setState({
+							configurationMessage: json.message
+						});
+					} else {
+						self.setState({
+							configurationMessage: json.error
+						});
 					}
-					self.setState({
-						configurationMessage: json.message
-					});
 				});
 			}
 		});
