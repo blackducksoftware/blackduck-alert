@@ -11,12 +11,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {
-    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+    private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private final String webhook;
     private final String channelName;
@@ -53,7 +52,7 @@ public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestM
 
     @Override
     public SlackDistributionRestModel createRestModel() {
-        final SlackDistributionRestModel restModel = new SlackDistributionRestModel(distributionMockUtil.getCommonId(), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
+        final SlackDistributionRestModel restModel = new SlackDistributionRestModel(String.valueOf(distributionMockUtil.getId()), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
                 distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
                 distributionMockUtil.getNotifications());
         return restModel;
@@ -70,18 +69,8 @@ public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestM
         json.addProperty("webhook", webhook);
         json.addProperty("channelUsername", channelUsername);
         json.addProperty("channelName", channelName);
-        distributionMockUtil.getDistributionRestModelJson(json);
-        return json.toString();
-    }
 
-    @Override
-    public String getEmptyRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.add("webhook", null);
-        json.add("channelUsername", null);
-        json.add("channelName", null);
-        distributionMockUtil.getEmptyDistributionRestModelJson(json);
-        return json.toString();
+        return distributionMockUtil.combineWithRestModelJson(json);
     }
 
 }

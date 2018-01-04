@@ -9,16 +9,21 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock;
+package com.blackducksoftware.integration.hub.alert.mock.model;
 
 import java.util.List;
+import java.util.Map;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.ProjectMockUtils;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-public class DistributionMockUtils {
-    private final String commonId;
+public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfigRestModel> {
+    private final String id;
     private final String distributionConfigId;
     private final String distributionType;
     private final String name;
@@ -33,18 +38,18 @@ public class DistributionMockUtils {
 
     protected static final NotificationTypeMockUtils notificationTypeMock = new NotificationTypeMockUtils();
 
-    public DistributionMockUtils() {
+    public MockCommonDistributionRestModel() {
         this("1");
     }
 
-    public DistributionMockUtils(final String distributionConfigId) {
+    private MockCommonDistributionRestModel(final String distributionConfigId) {
         this("2", distributionConfigId, SupportedChannels.HIPCHAT.toString(), "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
     }
 
-    public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
+    private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
             final List<String> notificationTypes, final String lastRan, final String status) {
         super();
-        this.commonId = id;
+        this.id = id;
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
@@ -54,10 +59,6 @@ public class DistributionMockUtils {
         this.notificationTypes = notificationTypes;
         this.lastRan = lastRan;
         this.status = status;
-    }
-
-    public String getCommonId() {
-        return commonId;
     }
 
     public String getDistributionConfigId() {
@@ -96,21 +97,24 @@ public class DistributionMockUtils {
         return status;
     }
 
-    public JsonObject getEmptyDistributionRestModelJson(final JsonObject json) {
-        json.add("distributionConfigId", null);
-        json.add("distributionType", null);
-        json.add("name", null);
-        json.add("frequency", null);
-        json.add("filterByProject", null);
-        json.add("configuredProjects", null);
-        json.add("notificationTypes", null);
-        json.add("lastRan", null);
-        json.add("status", null);
-        json.add("id", null);
-        return json;
+    @Override
+    public Long getId() {
+        return Long.valueOf(id);
     }
 
-    public JsonObject getDistributionRestModelJson(final JsonObject json) {
+    @Override
+    public CommonDistributionConfigRestModel createEmptyRestModel() {
+        return new CommonDistributionConfigRestModel();
+    }
+
+    @Override
+    public CommonDistributionConfigRestModel createRestModel() {
+        return new CommonDistributionConfigRestModel(id, distributionConfigId, distributionType, name, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing());
+    }
+
+    @Override
+    public String getRestModelJson() {
+        final JsonObject json = new JsonObject();
         json.addProperty("distributionConfigId", distributionConfigId);
         json.addProperty("distributionType", distributionType);
         json.addProperty("name", name);
@@ -118,16 +122,20 @@ public class DistributionMockUtils {
         json.addProperty("filterByProject", filterByProject);
         json.add("configuredProjects", projectMock.getProjectListingJson());
         json.add("notificationTypes", notificationTypeMock.getNotificationListingJson());
-        json.addProperty("lastRan", lastRan);
-        json.addProperty("status", status);
-        json.addProperty("id", commonId);
-        return json;
+        json.addProperty("id", id);
+        return json.toString();
     }
 
-    public CommonDistributionConfigEntity createDistributionConfigEntity() {
-        final CommonDistributionConfigEntity configEntity = new CommonDistributionConfigEntity(Long.valueOf(distributionConfigId), distributionType, name, frequency, Boolean.valueOf(filterByProject));
-        configEntity.setId(Long.valueOf(commonId));
-        return configEntity;
+    public String combineWithRestModelJson(final JsonObject jsonObject) {
+        final String distributionJson = getRestModelJson();
+        final JsonParser jsonParser = new JsonParser();
+        final JsonObject newJson = jsonParser.parse(distributionJson).getAsJsonObject();
+
+        for (final Map.Entry<String, JsonElement> entry : newJson.entrySet()) {
+            jsonObject.add(entry.getKey(), entry.getValue());
+        }
+
+        return jsonObject.toString();
     }
 
 }

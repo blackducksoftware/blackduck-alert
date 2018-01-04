@@ -26,7 +26,9 @@ public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUt
 
     public abstract String getEntityJson();
 
-    public abstract String getEmptyEntityJson();
+    public String getEmptyEntityJson() {
+        return "{}";
+    }
 
     public void verifyEmptyEntity() throws JSONException {
         final String emptyEntity = createEmptyEntity().toString();

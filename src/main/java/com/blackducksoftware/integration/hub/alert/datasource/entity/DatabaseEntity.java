@@ -31,8 +31,8 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.google.gson.Gson;
 
 @MappedSuperclass
 public abstract class DatabaseEntity implements Serializable {
@@ -66,8 +66,8 @@ public abstract class DatabaseEntity implements Serializable {
 
     @Override
     public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.build();
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
 }

@@ -179,31 +179,4 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         return json.toString();
     }
 
-    @Override
-    public String getEmptyGlobalEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("mailSmtpHost", null);
-        json.add("mailSmtpUser", null);
-        json.add("mailSmtpPort", null);
-        json.add("mailSmtpConnectionTimeout", null);
-        json.add("mailSmtpTimeout", null);
-        json.add("mailSmtpFrom", null);
-        json.add("mailSmtpLocalhost", null);
-        json.add("mailSmtpEhlo", null);
-        json.add("mailSmtpAuth", null);
-        json.add("mailSmtpDnsNotify", null);
-        json.add("mailSmtpUser", null);
-        json.add("mailSmtpPort", null);
-        json.add("mailSmtpConnectionTimeout", null);
-        json.add("mailSmtpDnsRet", null);
-        json.add("mailSmtpAllow8bitmime", null);
-        json.add("mailSmtpSendPartial", null);
-        json.add("emailTemplateDirectory", null);
-        json.add("emailTemplateLogoImage", null);
-        json.add("mailSmtpAllow8bitmime", null);
-        json.add("emailSubjectLine", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
 }

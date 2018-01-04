@@ -26,7 +26,9 @@ public abstract class MockGlobalRestModelUtil<GR extends ConfigRestModel> implem
 
     public abstract String getGlobalRestModelJson();
 
-    public abstract String getEmptyGlobalRestModelJson();
+    public String getEmptyGlobalRestModelJson() {
+        return "{}";
+    }
 
     public void verifyEmptyGlobalRestModel() throws JSONException {
         final String emptyGlobalRestModel = createEmptyGlobalRestModel().toString();

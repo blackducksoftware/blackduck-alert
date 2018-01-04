@@ -26,16 +26,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
 public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
     private static final long serialVersionUID = 2791949172564090134L;
 
     @Column(name = "api_key")
-    private String apiKey;
+    private transient String apiKey;
 
     public GlobalHipChatConfigEntity() {
     }
@@ -50,13 +47,6 @@ public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
 
     public String getApiKey() {
         return apiKey;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
-        return reflectionToStringBuilder.build();
     }
 
 }

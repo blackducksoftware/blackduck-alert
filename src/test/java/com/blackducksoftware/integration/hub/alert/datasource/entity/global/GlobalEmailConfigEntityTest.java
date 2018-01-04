@@ -57,7 +57,7 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public int emptyGlobalEntityHashCode() {
-        return 1169169065;
+        return 1308481333;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public int globalEntityHashCode() {
-        return -620287382;
+        return 1524665018;
     }
 
 }

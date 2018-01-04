@@ -27,6 +27,8 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.google.gson.Gson;
+
 public abstract class ConfigRestModel implements Serializable {
     private static final long serialVersionUID = -3734941694720407916L;
 
@@ -55,5 +57,11 @@ public abstract class ConfigRestModel implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
+    }
+
+    @Override
+    public String toString() {
+        final Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }

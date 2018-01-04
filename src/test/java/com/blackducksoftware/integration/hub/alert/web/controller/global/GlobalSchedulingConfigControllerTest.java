@@ -1,13 +1,12 @@
 package com.blackducksoftware.integration.hub.alert.web.controller.global;
 
-import static org.junit.Assert.assertTrue;
-
 import javax.transaction.Transactional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -15,6 +14,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
@@ -56,14 +58,17 @@ public class GlobalSchedulingConfigControllerTest extends GlobalControllerTest<G
         return "/configuration/global/scheduling";
     }
 
-    // TODO create a proper test for testTestConfig controller calls
     @Test
     @Override
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
-        // final String testRestUrl = restUrl + "/test";
-        // final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        // mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
-        assertTrue(true);
+        globalEntityRepository.deleteAll();
+        final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
+        final String testRestUrl = restUrl + "/test";
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        restModel.setId(String.valueOf(savedEntity.getId()));
+        request.content(restModel.toString());
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

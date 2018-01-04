@@ -57,12 +57,4 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         return json.toString();
     }
 
-    @Override
-    public String getEmptyEntityJson() {
-        final JsonObject json = new JsonObject();
-        json.add("groupName", null);
-        json.add("id", null);
-        return json.toString();
-    }
-
 }

@@ -11,12 +11,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import com.blackducksoftware.integration.hub.alert.mock.DistributionMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionRestModel> {
-    private final DistributionMockUtils distributionMockUtil = new DistributionMockUtils("1");
+    private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private final String roomId;
     private final String notify;
@@ -53,8 +52,9 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
 
     @Override
     public HipChatDistributionRestModel createRestModel() {
-        final HipChatDistributionRestModel restModel = new HipChatDistributionRestModel(distributionMockUtil.getCommonId(), roomId, notify, color, distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(), distributionMockUtil.getNotifications());
+        final HipChatDistributionRestModel restModel = new HipChatDistributionRestModel(String.valueOf(distributionMockUtil.getId()), roomId, notify, color, distributionMockUtil.getDistributionConfigId(),
+                distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
+                distributionMockUtil.getNotifications());
         return restModel;
     }
 
@@ -64,18 +64,8 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
         json.addProperty("roomId", roomId);
         json.addProperty("notify", notify);
         json.addProperty("color", color);
-        distributionMockUtil.getDistributionRestModelJson(json);
-        return json.toString();
-    }
 
-    @Override
-    public String getEmptyRestModelJson() {
-        final JsonObject json = new JsonObject();
-        json.add("roomId", null);
-        json.add("notify", null);
-        json.add("color", null);
-        distributionMockUtil.getEmptyDistributionRestModelJson(json);
-        return json.toString();
+        return distributionMockUtil.combineWithRestModelJson(json);
     }
 
     @Override
