@@ -192,7 +192,7 @@ public class GlobalProperties {
     public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
-            final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
+            final RestConnection restConnection = hubServerConfig.createApiKeyRestConnection(intLogger);
             return new HubServicesFactory(restConnection);
         }
         return null;
@@ -218,7 +218,7 @@ public class GlobalProperties {
 
     public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiKey) throws AlertException {
         final HubServerConfigBuilder hubServerConfigBuilder = createHubServerConfigBuilderWithoutAuthentication(logger, hubTimeout);
-        // TODO set hubApiKey
+        hubServerConfigBuilder.setApiKey(hubApiKey);
 
         try {
             return hubServerConfigBuilder.build();

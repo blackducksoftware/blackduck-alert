@@ -26,7 +26,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.blackducksoftware.integration.hub.Credentials;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
@@ -236,20 +235,17 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null);
 
         final String url = "https://www.google.com/";
-        final String user = "User";
-        final String password = "Password";
+        final String apiKey = "User";
         HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setHubUrl(url);
-        serverConfigBuilder.setUsername(user);
-        serverConfigBuilder.setUsername(password);
+        serverConfigBuilder.setApiKey(apiKey);
 
         // we create this spy to skip the server validation that happens in the build method
         serverConfigBuilder = Mockito.spy(serverConfigBuilder);
         Mockito.doAnswer(new Answer<HubServerConfig>() {
             @Override
             public HubServerConfig answer(final InvocationOnMock invocation) throws Throwable {
-                final Credentials hubCredentials = new Credentials(user, password);
-                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, hubCredentials, new ProxyInfo(null, 0, null, null), false);
+                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiKey, new ProxyInfo(null, 0, null, null), false);
                 return hubServerConfig;
             }
         }).when(serverConfigBuilder).build();

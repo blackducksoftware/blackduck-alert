@@ -150,8 +150,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        // TODO set apiKey
-        // hubServerConfigBuilder.setApiKey(restModel.getHubApiKey());
+        hubServerConfigBuilder.setApiKey(restModel.getHubApiKey());
         hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
         if (globalProperties.getHubTrustCertificate() != null) {
@@ -184,7 +183,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
     public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
-        return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
+        return hubServerConfig.createApiKeyRestConnection(hubServerConfigBuilder.getLogger());
     }
 
     @Override
