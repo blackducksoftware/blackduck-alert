@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,21 +42,33 @@ public class GlobalHubRepositoryWrapper extends SimpleKeyRepositoryWrapper<Globa
 
     @Override
     public GlobalHubConfigEntity encryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
-        final Integer hubTimeout = entity.getHubTimeout();
-        final String hubUsername = entity.getHubUsername();
-        final String hubPassword = PasswordEncrypter.encrypt(entity.getHubPassword());
-        final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
-        newEntity.setId(entity.getId());
-        return newEntity;
+        String hubPassword = entity.getHubPassword();
+
+        if (StringUtils.isBlank(hubPassword)) {
+            return entity;
+        } else {
+            final Integer hubTimeout = entity.getHubTimeout();
+            final String hubUsername = entity.getHubUsername();
+            hubPassword = PasswordEncrypter.encrypt(hubPassword);
+            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 
     @Override
     public GlobalHubConfigEntity decryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
-        final Integer hubTimeout = entity.getHubTimeout();
-        final String hubUsername = entity.getHubUsername();
-        final String hubPassword = PasswordDecrypter.decrypt(entity.getHubPassword());
-        final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
-        newEntity.setId(entity.getId());
-        return newEntity;
+        String hubPassword = entity.getHubPassword();
+
+        if (StringUtils.isBlank(hubPassword)) {
+            return entity;
+        } else {
+            final Integer hubTimeout = entity.getHubTimeout();
+            final String hubUsername = entity.getHubUsername();
+            hubPassword = PasswordDecrypter.decrypt(hubPassword);
+            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+            newEntity.setId(entity.getId());
+            return newEntity;
+        }
     }
 }
