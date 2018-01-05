@@ -130,6 +130,13 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
         }
+        if (StringUtils.isNotBlank(restModel.getHubApiKey())) {
+            if (restModel.getHubApiKey().length() < 64) {
+                fieldErrors.put("hubApiKey", "Not enough characters to be a Hub API Key.");
+            } else if (restModel.getHubApiKey().length() > 256) {
+                fieldErrors.put("hubApiKey", "Too many characters to be a Hub API Key.");
+            }
+        }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -143,13 +150,11 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
-        hubServerConfigBuilder.setUsername(restModel.getHubUsername());
 
         hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-
-        hubServerConfigBuilder.setPassword(restModel.getHubPassword());
+        hubServerConfigBuilder.setApiKey(restModel.getHubApiKey());
         hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
         if (globalProperties.getHubTrustCertificate() != null) {
@@ -182,13 +187,13 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
     public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
-        return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
+        return hubServerConfig.createApiKeyRestConnection(hubServerConfigBuilder.getLogger());
     }
 
     @Override
     public List<String> sensitiveFields() {
         final List<String> sensitiveFields = new ArrayList<>();
-        sensitiveFields.add("hubPassword");
+        sensitiveFields.add("hubApiKey");
         sensitiveFields.add("hubProxyPassword");
         return sensitiveFields;
     }

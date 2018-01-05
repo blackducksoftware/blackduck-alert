@@ -26,14 +26,13 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
         assertNull(restModel.getHubAlwaysTrustCertificate());
-        assertNull(restModel.getHubPassword());
+        assertNull(restModel.getHubApiKey());
         assertNull(restModel.getHubProxyHost());
         assertNull(restModel.getHubProxyPassword());
         assertNull(restModel.getHubProxyPort());
         assertNull(restModel.getHubProxyUsername());
         assertNull(restModel.getHubTimeout());
         assertNull(restModel.getHubUrl());
-        assertNull(restModel.getHubUsername());
         assertNull(restModel.getId());
     }
 
@@ -44,25 +43,24 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
 
     @Override
     public int emptyGlobalRestModelHashCode() {
-        return -1151643201;
+        return 902077419;
     }
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHubConfigRestModel restModel) {
         assertEquals(mockUtils.getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
-        assertEquals(mockUtils.getHubPassword(), restModel.getHubPassword());
+        assertEquals(mockUtils.getHubApiKey(), restModel.getHubApiKey());
         assertEquals(mockUtils.getHubProxyHost(), restModel.getHubProxyHost());
         assertEquals(mockUtils.getHubProxyPassword(), restModel.getHubProxyPassword());
         assertEquals(mockUtils.getHubProxyPort(), restModel.getHubProxyPort());
         assertEquals(mockUtils.getHubProxyUsername(), restModel.getHubProxyUsername());
         assertEquals(mockUtils.getHubTimeout(), restModel.getHubTimeout());
         assertEquals(mockUtils.getHubUrl(), restModel.getHubUrl());
-        assertEquals(mockUtils.getHubUsername(), restModel.getHubUsername());
         assertEquals(mockUtils.getId(), restModel.getId());
     }
 
     @Override
     public int globalRestModelHashCode() {
-        return 1536081842;
+        return -212692039;
     }
 }

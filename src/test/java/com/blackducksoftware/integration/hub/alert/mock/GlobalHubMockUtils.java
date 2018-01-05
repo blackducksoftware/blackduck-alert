@@ -28,7 +28,8 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String hubTimeout;
     private final String hubUsername;
     private final String hubPassword;
-    private final boolean hubPasswordIsSet;
+    private final String hubApiKey;
+    private final boolean hubApiKeyIsSet;
     private final String hubProxyHost;
     private final String hubProxyPort;
     private final String hubProxyUsername;
@@ -38,16 +39,17 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     private final String id;
 
     public GlobalHubMockUtils() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", "HubApiKey", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
-    public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
+    public GlobalHubMockUtils(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort,
             final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate, final String id) {
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
-        this.hubPasswordIsSet = hubPasswordIsSet;
+        this.hubApiKey = hubApiKey;
+        this.hubApiKeyIsSet = hubApiKeyIsSet;
         this.hubProxyHost = hubProxyHost;
         this.hubProxyPort = hubProxyPort;
         this.hubProxyUsername = hubProxyUsername;
@@ -90,6 +92,10 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         return hubPassword;
     }
 
+    public String getHubApiKey() {
+        return hubApiKey;
+    }
+
     public String getHubProxyHost() {
         return hubProxyHost;
     }
@@ -117,7 +123,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     @Override
     public GlobalHubConfigRestModel createGlobalRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubPasswordIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubApiKey, hubApiKeyIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
                 hubAlwaysTrustCertificate);
         return restModel;
     }
@@ -129,7 +135,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
 
     @Override
     public GlobalHubConfigEntity createGlobalEntity() {
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubUsername, hubPassword);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubApiKey);
         entity.setId(Long.valueOf(id));
         return entity;
     }
@@ -144,8 +150,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         final JsonObject json = new JsonObject();
         json.addProperty("hubUrl", hubUrl);
         json.addProperty("hubTimeout", hubTimeout);
-        json.addProperty("hubUsername", hubUsername);
-        json.addProperty("hubPasswordIsSet", hubPasswordIsSet);
+        json.addProperty("hubApiKeyIsSet", hubApiKeyIsSet);
         json.addProperty("hubProxyHost", hubProxyHost);
         json.addProperty("hubProxyPort", hubProxyPort);
         json.addProperty("hubProxyUsername", hubProxyUsername);
@@ -160,8 +165,7 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
         final JsonObject json = new JsonObject();
         json.add("hubUrl", null);
         json.add("hubTimeout", null);
-        json.add("hubUsername", null);
-        json.addProperty("hubPasswordIsSet", false);
+        json.addProperty("hubApiKeyIsSet", false);
         json.add("hubProxyHost", null);
         json.add("hubProxyPort", null);
         json.add("hubProxyUsername", null);
@@ -175,7 +179,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     public String getGlobalEntityJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("hubTimeout", Integer.valueOf(hubTimeout));
-        json.addProperty("hubUsername", hubUsername);
         json.addProperty("id", Long.valueOf(id));
         return json.toString();
     }
@@ -184,7 +187,6 @@ public class GlobalHubMockUtils implements MockUtils<CommonDistributionConfigRes
     public String getEmptyGlobalEntityJson() {
         final JsonObject json = new JsonObject();
         json.add("hubTimeout", null);
-        json.add("hubUsername", null);
         json.add("id", null);
         return json.toString();
     }
