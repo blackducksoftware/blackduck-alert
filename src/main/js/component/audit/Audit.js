@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
 import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
+import auditStyles from '../../../css/audit.css';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
 import EditTableCellFormatter from '../EditTableCellFormatter';
@@ -12,6 +13,8 @@ import Modal from 'react-modal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+
+var highVulnerabiltyIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban ${auditStyles.policyViolation}`} aria-hidden='true'></i>;
 
 class Audit extends Component {
 	constructor(props) {
@@ -34,33 +37,6 @@ class Audit extends Component {
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
 	}
-
-	// addDefaultEntries() {
- //        const { entries } = this.state;
- //        entries.push({
- //            id: '999',
- //            jobName: 'Test Job',
- //            eventType: 'email_group_channel',
- //            notificationType: 'High Vulnerability',
- //            timeCreated: '12/01/2017 00:00:00',
- //            timeLastSent: '12/01/2017 00:00:00',
- //            status: 'Success'
- //        });
- //        entries.push({
- //            id: '111',
- //            jobName: 'Test Hipchat',
- //            eventType: 'hipchat_channel',
- //            notificationType: 'High Vulnerability',
- //            timeCreated: '12/01/2017 00:00:00',
- //            timeLastSent: '12/01/2017 00:00:00',
- //            status: 'Failure',
- //            errorMessage: 'Could not reach Hipchat',
- //            errorStackTrace: 'Exception : could not reach hipchat \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55)'
- //        });
- //        this.setState({
-	// 		entries
-	// 	});
- //    }
 
 	componentDidMount() {
 		// run the reload now and then every 10 seconds
@@ -236,27 +212,46 @@ class Audit extends Component {
 
 	notificationTypeDataFormat(cell, row) {
 		if (cell && cell.length > 0) {
-			let cellText = '';
+			let policyViolationIcon = null;
+			let policyViolationClearedIcon = null;
+			let policyViolationOverrideIcon = null;
+			let highVulnerabiltyIcon = null;
+			let mediumVulnerabiltyIcon = null;
+			let lowVulnerabiltyIcon = null;
+			let vulnerabiltyIcon = null;
+
 			for (var i in cell) {
 				if (cell[i] === "POLICY_VIOLATION") {
-					cellText = cellText + " PV";
+					const classes = `fa fa-ban ${auditStyles.policyViolation}`;
+					policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "POLICY_VIOLATION_CLEARED") {
-					cellText = cellText + " PVC";
+					const classes = `fa fa-eraser ${auditStyles.policyViolationCleared}`;
+					policyViolationClearedIcon = <i key="policyViolationClearedIcon" alt="Policy Violation Cleared" title="Policy Violation Cleared" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "POLICY_VIOLATION_OVERRIDE") {
-					cellText = cellText + " PVO";
+					const classes = `fa fa-exclamation-circle ${auditStyles.policyViolationOverride}`;
+					policyViolationOverrideIcon = <i key="policyViolationOverrideIcon" alt="Policy Override" title="Policy Override" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "HIGH_VULNERABILITY") {
-					cellText = cellText + " HV";
+					const classes = `fa fa-shield ${auditStyles.highVulnerability}`;
+					highVulnerabiltyIcon = <i key="highVulnerabiltyIcon" alt="High Vulnerability" title="High Vulnerability" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "MEDIUM_VULNERABILITY") {
-					cellText = cellText + " MV";
+					const classes = `fa fa-shield ${auditStyles.mediumVulnerability}`;
+					mediumVulnerabiltyIcon = <i key="mediumVulnerabiltyIcon" alt="Medium Vulnerability" title="Medium Vulnerability" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "LOW_VULNERABILITY") {
-					cellText = cellText + " LV";
+					const classes = `fa fa-shield ${auditStyles.lowVulnerability}`;
+					lowVulnerabiltyIcon = <i key="lowVulnerabiltyIcon" alt="Low Vulnerability" title="Low Vulnerability" className={classes} aria-hidden='true'></i>;
 				} else if (cell[i] === "VULNERABILITY") {
-					cellText = cellText + " V";
+					const classes = `fa fa-shield ${auditStyles.vulnerability}`;
+					vulnerabiltyIcon = <i key="vulnerabiltyIcon" alt="Vulnerability" title="Vulnerability" className={classes} aria-hidden='true'></i>;
 				}
-			}
-			cellText = cellText.trim();			
+			}	
 			let data = <div>
-						{cellText}
+						{policyViolationIcon}
+						{policyViolationClearedIcon}
+						{policyViolationOverrideIcon}
+						{highVulnerabiltyIcon}
+						{mediumVulnerabiltyIcon}
+						{lowVulnerabiltyIcon}
+						{vulnerabiltyIcon}
 					</div>;
 			return data;
 		}
@@ -298,6 +293,8 @@ class Audit extends Component {
 
 	render() {
 		const auditTableOptions = {
+			defaultSortName: 'timeLastSent',
+			defaultSortOrder: 'desc',
 			btnGroup: this.createCustomButtonGroup,
 	  		noDataText: 'No events',
 	  		clearSearch: true,
@@ -315,6 +312,11 @@ class Audit extends Component {
 				<div>
 					<div>
 						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
+						<div className={auditStyles.legendContainer}>
+							<div>
+								<i className={auditStyles.legendElement} aria-hidden='true'></i>Refresh
+							</div>
+						</div>
 						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
