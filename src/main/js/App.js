@@ -33,7 +33,11 @@ class App extends Component {
 					loggedIn: true
 				});
 			}
-		});
+		})
+ 		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
+		
 	}
 
 	handleState(name, value) {

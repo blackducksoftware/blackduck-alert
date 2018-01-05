@@ -94,7 +94,10 @@ class Audit extends Component {
 					self.setEntriesFromArray(jsonArray);
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	setEntriesFromArray(jsonArray) {
@@ -183,7 +186,10 @@ class Audit extends Component {
 					self.setEntriesFromArray(jsonArray);
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	resendButton(cell, row) {

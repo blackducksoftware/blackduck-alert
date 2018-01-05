@@ -44,7 +44,10 @@ class Header extends Component {
 					});
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	//render is part of the Component lifecycle, used to render the Html
