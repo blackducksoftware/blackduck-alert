@@ -72,12 +72,12 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
     }
 
     public void saveNotificationTypes(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        final List<String> configuredProjectsFromRestModel = restModel.getNotificationTypes();
-        if (configuredProjectsFromRestModel != null) {
+        final List<String> configuredNotificationTypesFromRestModel = restModel.getNotificationTypes();
+        if (configuredNotificationTypesFromRestModel != null) {
             removeOldNotificationTypes(commonEntity.getId());
-            addNewDistributionNotificationTypes(commonEntity.getId(), configuredProjectsFromRestModel);
+            addNewDistributionNotificationTypes(commonEntity.getId(), configuredNotificationTypesFromRestModel);
         } else {
-            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
+            logger.warn("{}: List of configured notification types was null; notification types will not be updated.", commonEntity.getName());
         }
     }
 

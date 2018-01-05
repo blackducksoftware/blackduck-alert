@@ -201,7 +201,10 @@ class DistributionConfiguration extends Component {
 	    		groupError={this.state.groupError}
 	    		projectTableMessage={this.state.projectTableMessage}
 	    		handleCancel={this.cancelRowSelect}
-                onModalClose= { onModalClose }
+                onModalClose= { () => {
+                	this.fetchDistributionJobs();
+                	onModalClose();
+                }}
 		    	onSave= { onSave }
 		    	columns={ columns }
 		        validateState={ validateState }
