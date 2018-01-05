@@ -29,8 +29,8 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipCha
 @Component
 public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatEvent, HipChatDistributionRestModel> {
     @Autowired
-    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepository globalRepository, final HipChatDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
+    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepositoryWrapper globalRepository, final HipChatDistributionRepositoryWrapper localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
 

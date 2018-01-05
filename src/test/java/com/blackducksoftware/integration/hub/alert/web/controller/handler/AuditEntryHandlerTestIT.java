@@ -38,11 +38,11 @@ import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
@@ -57,13 +57,13 @@ public class AuditEntryHandlerTestIT {
     @Autowired
     private AuditEntryHandler auditEntryHandler;
     @Autowired
-    public AuditEntryRepository auditEntryRepository;
+    public AuditEntryRepositoryWrapper auditEntryRepository;
     @Autowired
-    public AuditNotificationRepository auditNotificationRepository;
+    public AuditNotificationRepositoryWrapper auditNotificationRepository;
     @Autowired
-    private NotificationRepository notificationRepository;
+    private NotificationRepositoryWrapper notificationRepository;
     @Autowired
-    private CommonDistributionRepository commonDistributionRepository;
+    private CommonDistributionRepositoryWrapper commonDistributionRepository;
 
     @After
     public void cleanup() {

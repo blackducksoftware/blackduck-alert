@@ -24,13 +24,13 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
-public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalSchedulingConfigRestModel, GlobalSchedulingConfigEntity, GlobalSchedulingConfigActions> {
+public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalSchedulingConfigRestModel, GlobalSchedulingConfigEntity, GlobalSchedulingRepositoryWrapper, GlobalSchedulingConfigActions> {
     private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
 
     public GlobalSchedulingConfigActionsTest() {
@@ -47,7 +47,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final AccumulatorConfig mockedAccumulatorConfig = Mockito.mock(AccumulatorConfig.class);
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
-        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalSchedulingRepositoryWrapper globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, objectTransformer);
         return configActions;
     }
@@ -63,7 +63,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
 
-        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalSchedulingRepositoryWrapper globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
         Mockito.when(globalSchedulingRepository.findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, new ObjectTransformer());
         configActions.configurationChangeTriggers(null);

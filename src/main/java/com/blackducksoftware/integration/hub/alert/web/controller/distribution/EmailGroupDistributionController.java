@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.EmailGroupDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -43,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailG
 
 @RestController
 public class EmailGroupDistributionController extends ConfigController<EmailGroupDistributionRestModel> {
-    private final CommonConfigHandler<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> commonConfigHandler;
+    private final CommonConfigHandler<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     public EmailGroupDistributionController(final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions, final ObjectTransformer objectTransformer) {

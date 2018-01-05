@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
@@ -33,7 +34,7 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GCA extends ConfigActions<GE, GR>> {
+public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends SimpleKeyRepositoryWrapper<GE, ?>, GCA extends ConfigActions<GE, GR, GW>> {
     private final MockUtils<?, GR, ?, GE> mockUtils;
     protected GCA configActions;
 
@@ -46,6 +47,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testDoesConfigExist() {
+
         Mockito.when(configActions.getRepository().exists(Mockito.anyLong())).thenReturn(true);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
@@ -62,6 +64,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testGetConfig() throws Exception {
+
         Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(mockUtils.createGlobalEntity());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(mockUtils.createGlobalEntity()));
 
@@ -95,26 +98,33 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     @Test
     public void testDeleteConfig() {
         configActions.deleteConfig(1L);
+
         verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
         configActions.deleteConfig("1");
+
         verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
 
         final String idString = null;
         final Long idLong = null;
+
         Mockito.reset(configActions.getRepository());
+
         configActions.deleteConfig(idLong);
         verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
+
         configActions.deleteConfig(idString);
         verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
+
     }
 
     @Test
     public void testSaveConfig() throws Exception {
         final GE expectedHipChatConfigEntity = mockUtils.createGlobalEntity();
+
         Mockito.when(configActions.getRepository().save(Mockito.any(getGlobalEntityClass()))).thenReturn(expectedHipChatConfigEntity);
 
         GE emailConfigEntity = configActions.saveConfig(mockUtils.createGlobalRestModel());

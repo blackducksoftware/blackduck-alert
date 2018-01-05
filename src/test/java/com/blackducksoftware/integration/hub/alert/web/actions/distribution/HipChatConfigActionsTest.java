@@ -15,19 +15,19 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
-public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatDistributionConfigActions> {
+public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatDistributionRepositoryWrapper, HipChatDistributionConfigActions> {
     private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
     public HipChatConfigActionsTest() {
@@ -47,13 +47,13 @@ public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRes
     @Override
     public HipChatDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
-        final HipChatDistributionRepository mockedHipChatRepository = Mockito.mock(HipChatDistributionRepository.class);
-        final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
-        final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
-        final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
+        final HipChatDistributionRepositoryWrapper mockedHipChatRepository = Mockito.mock(HipChatDistributionRepositoryWrapper.class);
+        final CommonDistributionRepositoryWrapper commonRepository = Mockito.mock(CommonDistributionRepositoryWrapper.class);
+        final ConfiguredProjectsRepositoryWrapper projectsRepository = Mockito.mock(ConfiguredProjectsRepositoryWrapper.class);
+        final DistributionProjectRepositoryWrapper distributionProjectRepository = Mockito.mock(DistributionProjectRepositoryWrapper.class);
         final ConfiguredProjectsActions<HipChatDistributionRestModel> projectsAction = new ConfiguredProjectsActions<>(projectsRepository, distributionProjectRepository);
-        final NotificationTypeRepository notificationRepository = Mockito.mock(NotificationTypeRepository.class);
-        final DistributionNotificationTypeRepository notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepository.class);
+        final NotificationTypeRepositoryWrapper notificationRepository = Mockito.mock(NotificationTypeRepositoryWrapper.class);
+        final DistributionNotificationTypeRepositoryWrapper notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
         final NotificationTypesActions<HipChatDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final HipChatDistributionConfigActions configActions = new HipChatDistributionConfigActions(commonRepository, mockedHipChatRepository, projectsAction, notificationAction, objectTransformer, hipChatManager);
         return configActions;

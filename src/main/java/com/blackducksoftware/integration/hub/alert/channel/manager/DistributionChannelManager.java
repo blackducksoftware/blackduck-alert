@@ -26,9 +26,8 @@ import java.util.Collections;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
@@ -41,11 +40,12 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Transactional
 public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel> {
     private final DistributionChannel<E, G, D> distributionChannel;
-    private final JpaRepository<G, Long> globalRepository;
-    private final JpaRepository<D, Long> localRepository;
+    private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
+    private final SimpleKeyRepositoryWrapper<D, ?> localRepository;
     private final ObjectTransformer objectTransformer;
 
-    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final JpaRepository<G, Long> globalRepository, final JpaRepository<D, Long> localRepository, final ObjectTransformer objectTransformer) {
+    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<D, ?> localRepository,
+            final ObjectTransformer objectTransformer) {
         this.distributionChannel = distributionChannel;
         this.globalRepository = globalRepository;
         this.localRepository = localRepository;
@@ -56,11 +56,11 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         return distributionChannel;
     }
 
-    public JpaRepository<G, Long> getGlobalRepository() {
+    public SimpleKeyRepositoryWrapper<G, ?> getGlobalRepository() {
         return globalRepository;
     }
 
-    public JpaRepository<D, Long> getLocalRepository() {
+    public SimpleKeyRepositoryWrapper<D, ?> getLocalRepository() {
         return localRepository;
     }
 

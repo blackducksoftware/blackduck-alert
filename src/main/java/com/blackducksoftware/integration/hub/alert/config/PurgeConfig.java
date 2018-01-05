@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
@@ -47,7 +47,7 @@ public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, Purge
     public static final String PURGE_JOB_NAME = "PurgeJob";
 
     @Autowired
-    public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepository notificationRepository,
+    public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepositoryWrapper notificationRepository,
             final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
     }

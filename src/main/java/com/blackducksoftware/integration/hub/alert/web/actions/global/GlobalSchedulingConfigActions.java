@@ -38,20 +38,20 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
 @Component
-public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel> {
+public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
     @Autowired
-    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
+    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
             final ObjectTransformer objectTransformer) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
