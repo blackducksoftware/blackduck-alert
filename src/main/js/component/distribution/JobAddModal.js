@@ -33,9 +33,10 @@ export default class JobAddModal extends Component {
 	}
 
 	handleSaveBtnClick(values) {
-		const { columns, onSave } = this.props;
+		const { columns, onSave, onModalClose } = this.props;
 	    // You should call onSave function and give the new row
-	    onSave(values);
+	 	//  onSave(values);
+	    onModalClose();
 	 }
 
 
