@@ -57,8 +57,8 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
 
     @Override
     public HipChatDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final HipChatDistributionConfigEntity distributionEntity) throws AlertException {
-        final HipChatDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
-        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        final HipChatDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
+        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setColor(distributionEntity.getColor());
         restModel.setNotify(String.valueOf(distributionEntity.getNotify()));
         restModel.setRoomId(String.valueOf(distributionEntity.getRoomId()));
