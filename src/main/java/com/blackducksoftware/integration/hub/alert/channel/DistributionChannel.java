@@ -96,7 +96,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                     final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
                     String exceptionStackTrace = "";
                     for (final String line : rootCause) {
-                        if (exceptionStackTrace.length() + line.length() < 9999) {
+                        if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
                             exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
                         } else {
                             break;
