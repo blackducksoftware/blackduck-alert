@@ -59,9 +59,7 @@ public class AuditEntryHandler extends ControllerHandler {
         List<AuditEntryRestModel> auditEntries = null;
         try {
             auditEntries = auditEntryActions.resendNotification(id);
-
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));
-
         } catch (final IntegrationException e) {
             return createResponse(HttpStatus.BAD_REQUEST, id, e.getMessage());
         } catch (final IllegalArgumentException e) {
