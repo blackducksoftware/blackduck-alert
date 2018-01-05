@@ -27,6 +27,8 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemReader;
@@ -37,6 +39,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 
+@Transactional
 public class PurgeReader implements ItemReader<List<NotificationEntity>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeReader.class);
     private final NotificationRepositoryWrapper notificationRepository;

@@ -24,6 +24,8 @@ package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import java.util.Collections;
 
+import javax.transaction.Transactional;
+
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
@@ -35,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+@Transactional
 public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel> {
     private final DistributionChannel<E, G, D> distributionChannel;
     private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;

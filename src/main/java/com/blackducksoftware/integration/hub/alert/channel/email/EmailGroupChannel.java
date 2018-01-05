@@ -79,7 +79,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     @JmsListener(destination = SupportedChannels.EMAIL_GROUP)
     @Override
     public void receiveMessage(final String message) {
-        // TODO figure out why the JMSListener sends the message back to the Queue when there is an exception even though we handle exceptions
         super.receiveMessage(message);
     }
 

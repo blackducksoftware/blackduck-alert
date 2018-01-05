@@ -29,19 +29,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.AuditEntryActions;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
+import com.google.gson.Gson;
 
 @Component
 public class AuditEntryHandler extends ControllerHandler {
-
+    private final Gson gson;
     private final AuditEntryActions auditEntryActions;
 
     @Autowired
-    public AuditEntryHandler(final ObjectTransformer objectTransformer, final AuditEntryActions auditEntryActions) {
+    public AuditEntryHandler(final ObjectTransformer objectTransformer, final Gson gson, final AuditEntryActions auditEntryActions) {
         super(objectTransformer);
+        this.gson = gson;
         this.auditEntryActions = auditEntryActions;
     }
 
@@ -54,14 +56,12 @@ public class AuditEntryHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> resendNotification(final Long id) {
-        AuditEntryEntity auditEntryEntity = null;
+        List<AuditEntryRestModel> auditEntries = null;
         try {
-            auditEntryEntity = auditEntryActions.resendNotification(id);
-            if (auditEntryEntity != null) {
-                return createResponse(HttpStatus.OK, id, "Attempting to resend notification...");
-            } else {
-                return createResponse(HttpStatus.BAD_REQUEST, id, "No audit entry with the provided id exists.");
-            }
+            auditEntries = auditEntryActions.resendNotification(id);
+            return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));
+        } catch (final IntegrationException e) {
+            return createResponse(HttpStatus.BAD_REQUEST, id, e.getMessage());
         } catch (final IllegalArgumentException e) {
             return createResponse(HttpStatus.GONE, id, e.getMessage());
         }

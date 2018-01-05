@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import TextInput from '../../field/input/TextInput';
 
-import {modalContainer} from '../../../css/main.css';
+import {modalContainer, fontAwesomeLabel} from '../../../css/main.css';
 import {fieldLabel, typeAheadField} from '../../../css/field.css';
 
 import Select from 'react-select-2';
@@ -33,10 +33,10 @@ export default class JobAddModal extends Component {
 	}
 
 	handleSaveBtnClick(values) {
-		const { columns, onSave, updateJobsTable } = this.props;
-        updateJobsTable();
+		const { columns, onSave, onModalClose } = this.props;
 	    // You should call onSave function and give the new row
-	    onSave(values);
+	 	//  onSave(values);
+	    onModalClose();
 	 }
 
 
@@ -80,15 +80,15 @@ export default class JobAddModal extends Component {
 	renderOption(option) {
 		var fontAwesomeIcon = "";
 		if (option.value === 'email_group_channel') {
-			fontAwesomeIcon = 'fa fa-envelope';
+			fontAwesomeIcon = `fa fa-envelope ${fontAwesomeLabel}`;
 		} else if (option.value === 'hipchat_channel') {
-			fontAwesomeIcon = 'fa fa-comments';
+			fontAwesomeIcon = `fa fa-comments ${fontAwesomeLabel}`;
 		} else if (option.value === 'slack_channel') {
-			fontAwesomeIcon = 'fa fa-slack';
+			fontAwesomeIcon = `fa fa-slack ${fontAwesomeLabel}`;
 		}
 	    return (<div>
 	    			<i key="icon" className={fontAwesomeIcon} aria-hidden='true'></i>
-			    	<strong key="name"> {option.label} </strong>
+			    	<strong key="name">{option.label}</strong>
 		      	</div>
 	    );
 	  }

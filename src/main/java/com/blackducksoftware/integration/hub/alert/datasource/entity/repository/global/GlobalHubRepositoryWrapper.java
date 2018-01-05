@@ -42,15 +42,14 @@ public class GlobalHubRepositoryWrapper extends SimpleKeyRepositoryWrapper<Globa
 
     @Override
     public GlobalHubConfigEntity encryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
-        String hubPassword = entity.getHubPassword();
+        String hubApiKey = entity.getHubApiKey();
 
-        if (StringUtils.isBlank(hubPassword)) {
+        if (StringUtils.isBlank(hubApiKey)) {
             return entity;
         } else {
             final Integer hubTimeout = entity.getHubTimeout();
-            final String hubUsername = entity.getHubUsername();
-            hubPassword = PasswordEncrypter.encrypt(hubPassword);
-            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+            hubApiKey = PasswordEncrypter.encrypt(hubApiKey);
+            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
             newEntity.setId(entity.getId());
             return newEntity;
         }
@@ -58,15 +57,14 @@ public class GlobalHubRepositoryWrapper extends SimpleKeyRepositoryWrapper<Globa
 
     @Override
     public GlobalHubConfigEntity decryptSensitiveData(final GlobalHubConfigEntity entity) throws EncryptionException {
-        String hubPassword = entity.getHubPassword();
+        String hubApiKey = entity.getHubApiKey();
 
-        if (StringUtils.isBlank(hubPassword)) {
+        if (StringUtils.isBlank(hubApiKey)) {
             return entity;
         } else {
             final Integer hubTimeout = entity.getHubTimeout();
-            final String hubUsername = entity.getHubUsername();
-            hubPassword = PasswordDecrypter.decrypt(hubPassword);
-            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+            hubApiKey = PasswordDecrypter.decrypt(hubApiKey);
+            final GlobalHubConfigEntity newEntity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
             newEntity.setId(entity.getId());
             return newEntity;
         }

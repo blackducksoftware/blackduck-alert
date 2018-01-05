@@ -52,8 +52,8 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
 
     @Override
     public EmailGroupDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final EmailGroupDistributionConfigEntity distributionEntity) throws AlertException {
-        final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
-        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        final EmailGroupDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
+        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setGroupName(distributionEntity.getGroupName());
         return restModel;
     }

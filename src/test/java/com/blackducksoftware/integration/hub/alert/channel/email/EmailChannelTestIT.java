@@ -19,9 +19,10 @@ public class EmailChannelTestIT extends ChannelTest {
 
     @Test
     public void sendEmailTest() throws Exception {
+
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper globalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
-        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_USERNAME), properties.getProperty(TestPropertyKey.TEST_PASSWORD));
+        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
         final GlobalSchedulingRepositoryWrapper globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
 
