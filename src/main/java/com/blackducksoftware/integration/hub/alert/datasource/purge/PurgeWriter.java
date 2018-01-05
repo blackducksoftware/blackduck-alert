@@ -31,14 +31,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 
 @Transactional
 public class PurgeWriter implements ItemWriter<List<NotificationEntity>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeWriter.class);
-    private final NotificationRepository notificationRepository;
+    private final NotificationRepositoryWrapper notificationRepository;
 
-    public PurgeWriter(final NotificationRepository notificationRepository) {
+    public PurgeWriter(final NotificationRepositoryWrapper notificationRepository) {
         this.notificationRepository = notificationRepository;
     }
 

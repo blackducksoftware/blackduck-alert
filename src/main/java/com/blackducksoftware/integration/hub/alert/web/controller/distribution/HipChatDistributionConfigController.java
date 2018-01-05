@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.HipChatDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -43,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipCha
 
 @RestController
 public class HipChatDistributionConfigController extends ConfigController<HipChatDistributionRestModel> {
-    private final CommonConfigHandler<HipChatDistributionConfigEntity, HipChatDistributionRestModel> commonConfigHandler;
+    private final CommonConfigHandler<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     public HipChatDistributionConfigController(final HipChatDistributionConfigActions hipChatDistributionConfigActions, final ObjectTransformer objectTransformer) {

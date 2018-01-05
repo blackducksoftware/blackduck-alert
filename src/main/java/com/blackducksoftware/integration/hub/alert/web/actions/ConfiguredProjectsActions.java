@@ -34,9 +34,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -44,20 +44,20 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(ConfiguredProjectsActions.class);
 
-    private final ConfiguredProjectsRepository configuredProjectsRepository;
-    private final DistributionProjectRepository distributionProjectRepository;
+    private final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
+    private final DistributionProjectRepositoryWrapper distributionProjectRepository;
 
     @Autowired
-    public ConfiguredProjectsActions(final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository) {
+    public ConfiguredProjectsActions(final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository, final DistributionProjectRepositoryWrapper distributionProjectRepository) {
         this.configuredProjectsRepository = configuredProjectsRepository;
         this.distributionProjectRepository = distributionProjectRepository;
     }
 
-    public ConfiguredProjectsRepository getConfiguredProjectsRepository() {
+    public ConfiguredProjectsRepositoryWrapper getConfiguredProjectsRepository() {
         return configuredProjectsRepository;
     }
 
-    public DistributionProjectRepository getDistributionProjectRepository() {
+    public DistributionProjectRepositoryWrapper getDistributionProjectRepository() {
         return distributionProjectRepository;
     }
 

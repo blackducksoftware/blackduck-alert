@@ -36,7 +36,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class NotificationRepositoryIT {
     @Autowired
-    private NotificationRepository repository;
+    private NotificationRepositoryWrapper repository;
 
     private NotificationEntity createNotificationEntity(final Date createdAt, final Collection<VulnerabilityEntity> vulnerabilityList) {
         final String eventKey = "event_key_for_notification";

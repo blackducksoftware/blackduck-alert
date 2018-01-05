@@ -14,12 +14,12 @@ package com.blackducksoftware.integration.hub.alert.web.actions.global;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
-public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
+public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailRepositoryWrapper, GlobalEmailConfigActions> {
     private static EmailMockUtils mockUtils = new EmailMockUtils();
 
     public GlobalEmailConfigActionsTest() {
@@ -28,14 +28,14 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
 
     @Override
     public GlobalEmailConfigActions getMockedConfigActions() {
-        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        final GlobalEmailRepositoryWrapper repository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 
     @Override
     public GlobalEmailConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        final GlobalEmailRepositoryWrapper repository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 

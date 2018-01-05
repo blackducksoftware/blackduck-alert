@@ -29,8 +29,8 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailG
 @Component
 public class EmailGroupManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent, EmailGroupDistributionRestModel> {
     @Autowired
-    public EmailGroupManager(final EmailGroupChannel distributionChannel, final GlobalEmailRepository globalRepository, final EmailGroupDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
+    public EmailGroupManager(final EmailGroupChannel distributionChannel, final GlobalEmailRepositoryWrapper globalRepository, final EmailGroupDistributionRepositoryWrapper localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
 

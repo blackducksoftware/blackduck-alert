@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,7 +41,7 @@ public class PurgeJobIT {
     @Autowired
     private PurgeConfig purgeConfig;
     @Autowired
-    private NotificationRepository notificationRepository;
+    private NotificationRepositoryWrapper notificationRepository;
 
     @After
     public void cleanup() {

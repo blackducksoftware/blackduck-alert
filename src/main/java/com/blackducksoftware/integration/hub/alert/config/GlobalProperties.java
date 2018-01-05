@@ -36,8 +36,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
@@ -49,8 +49,8 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalProperties {
-    private final GlobalHubRepository globalHubRepository;
-    private final GlobalSchedulingRepository globalSchedulingRepository;
+    private final GlobalHubRepositoryWrapper globalHubRepository;
+    private final GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -71,7 +71,7 @@ public class GlobalProperties {
     private String hubProxyPassword;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
         this.globalHubRepository = globalRepository;
         this.globalSchedulingRepository = globalSchedulingRepository;
     }

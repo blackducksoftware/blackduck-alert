@@ -34,11 +34,11 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -48,14 +48,15 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
-public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
+public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> extends ConfigActions<D, R, W> {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final CommonDistributionRepository commonDistributionRepository;
+    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final ConfiguredProjectsActions<R> configuredProjectsActions;
     private final NotificationTypesActions<R> notificationTypesActions;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final JpaRepository<D, Long> channelDistributionRepository,
+    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepositoryWrapper commonDistributionRepository, final W channelDistributionRepository,
             final ConfiguredProjectsActions<R> configuredProjectsActions, final NotificationTypesActions<R> notificationTypesActions, final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
@@ -204,7 +205,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
 
     public abstract R constructRestModel(final CommonDistributionConfigEntity commonEntity, D distributionEntity) throws AlertException;
 
-    public CommonDistributionRepository getCommonDistributionRepository() {
+    public CommonDistributionRepositoryWrapper getCommonDistributionRepository() {
         return commonDistributionRepository;
     }
 
