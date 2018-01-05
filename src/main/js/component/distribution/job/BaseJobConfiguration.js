@@ -69,7 +69,10 @@ class BaseJobConfiguration extends Component {
                 } else {
                     self.initializeValues(self.props);
                 }
-            });
+            })
+            .catch(function(error) {
+ 		 		console.log(error); 
+ 			});
         } else {
             this.initializeValues(this.props)
         }
@@ -171,7 +174,10 @@ class BaseJobConfiguration extends Component {
 					}
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleTestSubmit(event) {
@@ -226,7 +232,10 @@ class BaseJobConfiguration extends Component {
 					configurationMessage: json.message
 				});
 			});
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleChange(event) {

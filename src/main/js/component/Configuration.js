@@ -72,7 +72,10 @@ export default class Configuration extends Component {
 					}
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
     }
 
     handleSubmit(event) {
@@ -129,7 +132,10 @@ export default class Configuration extends Component {
 					});
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleTestSubmit(event) {
@@ -171,7 +177,10 @@ export default class Configuration extends Component {
 					configurationMessage: json.message
 				});
 			});
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
     handleChange(event) {

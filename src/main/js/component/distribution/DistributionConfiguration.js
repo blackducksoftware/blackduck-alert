@@ -80,7 +80,10 @@ class DistributionConfiguration extends Component {
 					}
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	retrieveGroups() {
@@ -113,7 +116,10 @@ class DistributionConfiguration extends Component {
 					}
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
     }
 
     fetchDistributionJobs() {
@@ -156,7 +162,10 @@ class DistributionConfiguration extends Component {
 					self.handleSetState('jobConfigTableMessage', json.message);
 				});
             }
-        });
+        })
+        .catch(function(error) {
+ 		 	console.log(error); 
+ 		});
     }
 
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
@@ -254,7 +263,10 @@ class DistributionConfiguration extends Component {
 					});
 				});
 				}
-			});
+			})
+			.catch(function(error) {
+ 		 		console.log(error); 
+ 			});
 		});
 	  	next();
 	  }
