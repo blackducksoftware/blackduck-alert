@@ -130,8 +130,12 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
         }
-        if (StringUtils.isBlank(restModel.getHubApiKey())) {
-            fieldErrors.put("hubApiKey", "Cannot be blank!");
+        if (StringUtils.isNotBlank(restModel.getHubApiKey())) {
+            if (restModel.getHubApiKey().length() < 64) {
+                fieldErrors.put("hubApiKey", "Not enough characters to be a Hub API Key.");
+            } else if (restModel.getHubApiKey().length() > 256) {
+                fieldErrors.put("hubApiKey", "Too many characters to be a Hub API Key.");
+            }
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
