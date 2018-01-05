@@ -98,8 +98,7 @@ public class Application {
         logger.info("Hub Proxy Password: **********");
 
         if (globalHubConfig != null) {
-            logger.info("Hub Username:       {}", globalHubConfig.getHubUsername());
-            logger.info("Hub Password:       **********");
+            logger.info("Hub API Key:        **********");
             logger.info("Hub Timeout:        {}", globalHubConfig.getHubTimeout());
         }
         logger.info("----------------------------------------");

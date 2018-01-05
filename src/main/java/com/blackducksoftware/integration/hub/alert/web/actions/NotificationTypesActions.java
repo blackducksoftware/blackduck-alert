@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+@Transactional
 @Component
 public class NotificationTypesActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(NotificationTypesActions.class);
@@ -69,12 +72,12 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
     }
 
     public void saveNotificationTypes(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        final List<String> configuredProjectsFromRestModel = restModel.getNotificationTypes();
-        if (configuredProjectsFromRestModel != null) {
+        final List<String> configuredNotificationTypesFromRestModel = restModel.getNotificationTypes();
+        if (configuredNotificationTypesFromRestModel != null) {
             removeOldNotificationTypes(commonEntity.getId());
-            addNewDistributionNotificationTypes(commonEntity.getId(), configuredProjectsFromRestModel);
+            addNewDistributionNotificationTypes(commonEntity.getId(), configuredNotificationTypesFromRestModel);
         } else {
-            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
+            logger.warn("{}: List of configured notification types was null; notification types will not be updated.", commonEntity.getName());
         }
     }
 

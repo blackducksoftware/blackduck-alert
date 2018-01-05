@@ -30,15 +30,13 @@ public class GlobalRepositoryIT {
     @Test
     public void testSaveEntity() {
         final Integer hubTimeout = 300;
-        final String hubUsername = "hub_username";
-        final String hubPassword = "hub_password";
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubUsername, hubPassword);
+        final String hubApiKey = "hub_api_key";
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
         final GlobalHubConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
         final GlobalHubConfigEntity foundEntity = repository.findOne(savedEntity.getId());
         assertEquals(hubTimeout, foundEntity.getHubTimeout());
-        assertEquals(hubUsername, foundEntity.getHubUsername());
-        assertEquals(hubPassword, foundEntity.getHubPassword());
+        assertEquals(hubApiKey, foundEntity.getHubApiKey());
     }
 }
