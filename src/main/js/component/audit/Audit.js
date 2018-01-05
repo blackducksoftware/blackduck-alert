@@ -1,31 +1,38 @@
 import React, { Component } from 'react';
 
-import { progressIcon } from '../../../css/main.css';
+import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
+import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
 
+import CheckboxInput from '../../field/input/CheckboxInput';
 import EditTableCellFormatter from '../EditTableCellFormatter';
 import AuditDetails from './AuditDetails';
 
 import Modal from 'react-modal';
 
-import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Audit extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
+		 	autoRefresh: true,
 			message: '',
 			entries: [],
 			modal: undefined
 		};
 		// this.addDefaultEntries = this.addDefaultEntries.bind(this);
+		this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
+        this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
+        this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
+        this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
 	}
 
 	// addDefaultEntries() {
@@ -55,20 +62,22 @@ class Audit extends Component {
 	// 	});
  //    }
 
-    componentWillMount() {
+	componentDidMount() {
+		// run the reload now and then every 10 seconds
+		this.reloadAuditEntries();
+		let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+		this.handleSetState('reloadInterval', reloadInterval);
+	}
+
+	componentWillUnmount() {
+		 clearInterval(this.state.reloadInterval);
+	}
+
+	reloadAuditEntries(){
 		this.setState({
 			message: 'Loading...',
 			inProgress: true
 		});
-	}
-
-	componentDidMount() {
-		this.reloadAuditEntries();
-
-		// this.addDefaultEntries();
-	}
-
-	reloadAuditEntries(){
 		var self = this;
 		fetch('/audit',{
 			credentials: "same-origin"
@@ -82,37 +91,52 @@ class Audit extends Component {
 			} else {
 				return response.json().then(jsonArray => {
 					self.handleSetState('message', '');
-					if (jsonArray != null && jsonArray.length > 0) {
-						var entries = [];
-						for (var index in jsonArray) {
-							var newEntry = {};
-							newEntry.id = jsonArray[index].id;
-				            newEntry.jobName = jsonArray[index].name;
-				            newEntry.eventType = jsonArray[index].eventType;
-				            newEntry.timeCreated = jsonArray[index].timeCreated;
-				            newEntry.timeLastSent = jsonArray[index].timeLastSent;
-				            newEntry.status =  jsonArray[index].status;
-				            newEntry.errorMessage =  jsonArray[index].errorMessage;
-				            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
-							if (jsonArray[index].notification) {
-								newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
-					            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
-								newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
-								newEntry.notificationComponentName = jsonArray[index].notification.componentName;
-								newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
-								newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
-							}
-							entries.push(newEntry);
-						}
-						self.setState({
-							entries
-						});
-					}
+					self.setEntriesFromArray(jsonArray);
 				});
 			}
 		});
 	}
 
+	setEntriesFromArray(jsonArray) {
+		if (jsonArray != null && jsonArray.length > 0) {
+			var entries = [];
+			for (var index in jsonArray) {
+				var newEntry = {};
+				newEntry.id = jsonArray[index].id;
+	            newEntry.jobName = jsonArray[index].name;
+	            newEntry.eventType = jsonArray[index].eventType;
+	            newEntry.timeCreated = jsonArray[index].timeCreated;
+	            newEntry.timeLastSent = jsonArray[index].timeLastSent;
+	            newEntry.status =  jsonArray[index].status;
+	            newEntry.errorMessage =  jsonArray[index].errorMessage;
+	            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
+				if (jsonArray[index].notification) {
+					newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
+		            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
+					newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
+					newEntry.notificationComponentName = jsonArray[index].notification.componentName;
+					newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
+					newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
+				}
+				entries.push(newEntry);
+			}
+			this.setState({
+				entries
+			});
+		}
+	}
+
+	handleAutoRefreshChange(event) {
+		const target = event.target;
+		if (target.checked) {
+			let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+			this.handleSetState('reloadInterval', reloadInterval);
+		} else {
+			clearInterval(this.state.reloadInterval);
+		}
+		const name = target.name;
+		this.handleSetState(name, target.checked);
+	}
 
 
 	handleSetState(name, value) {
@@ -133,6 +157,11 @@ class Audit extends Component {
 			currentEntry = this.state.currentRowSelected;
 		}
 
+		this.setState({
+			message: 'Sending...',
+			inProgress: true
+		});
+
 		var self = this;		
 		var resendUrl = '/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
@@ -143,13 +172,17 @@ class Audit extends Component {
 			}
 		}).then(function(response) {
 			self.handleSetState('inProgress', false);
-			var response = response.json().then(json => {
-				self.handleSetState('message', json.message);
-			});
-
-			self.reloadAuditEntries();
-
-			return response;
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('message', json.message);
+				});
+			}  else {
+				return response.json().then(json => {
+					self.handleSetState('message', '');
+					var jsonArray = JSON.parse(json.message);
+					self.setEntriesFromArray(jsonArray);
+				});
+			}
 		});
 	}
 
@@ -177,13 +210,13 @@ class Audit extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (cell === 'email_group_channel') {
-			fontAwesomeClass = 'fa fa-envelope';
+			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
             cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = 'fa fa-comments';
+			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
             cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = 'fa fa-slack';
+			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
             cellText = "Slack";
 		}
 
@@ -240,9 +273,26 @@ class Audit extends Component {
 	}
 
 
+	createCustomButtonGroup(buttons) {
+		let refreshButton= null;
+		if (!this.state.autoRefresh) {
+			let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
+			let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
+			let reloadEntries = () => this.reloadAuditEntries();
+			refreshButton = <div className={classes} onClick={reloadEntries} >
+								<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
+						</div>;
+		}
+	    return (
+	    	<ButtonGroup>
+	      		{refreshButton}
+	      	</ButtonGroup>
+	    );
+  	}
 
 	render() {
 		const auditTableOptions = {
+			btnGroup: this.createCustomButtonGroup,
 	  		noDataText: 'No events',
 	  		clearSearch: true,
 	  		expandBy : 'column',
@@ -258,6 +308,7 @@ class Audit extends Component {
 		return (
 				<div>
 					<div>
+						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>

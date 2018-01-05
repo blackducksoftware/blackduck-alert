@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.enumeration;
 import org.apache.commons.lang3.StringUtils;
 
 public enum StatusEnum {
+    PENDING("Pending"),
     SUCCESS("Success"),
     FAILURE("Failure");
 

@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -38,11 +40,12 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
+@Transactional
 public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
-    public final Class<D> databaseEntityClass;
-    public final Class<R> configRestModelClass;
-    public final JpaRepository<D, Long> repository;
-    public final ObjectTransformer objectTransformer;
+    private final Class<D> databaseEntityClass;
+    private final Class<R> configRestModelClass;
+    private final JpaRepository<D, Long> repository;
+    private final ObjectTransformer objectTransformer;
 
     public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
         this.databaseEntityClass = databaseEntityClass;
@@ -220,6 +223,22 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
         final String trimmedValue = value.trim();
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
+    }
+
+    public Class<D> getDatabaseEntityClass() {
+        return databaseEntityClass;
+    }
+
+    public Class<R> getConfigRestModelClass() {
+        return configRestModelClass;
+    }
+
+    public JpaRepository<D, Long> getRepository() {
+        return repository;
+    }
+
+    public ObjectTransformer getObjectTransformer() {
+        return objectTransformer;
     }
 
 }

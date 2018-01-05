@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+@Transactional
 @Component
 public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(ConfiguredProjectsActions.class);

@@ -138,3 +138,7 @@
     font-style: italic;
     font-weight: bold;
 }
+
+.fontAwesomeLabel {
+    padding-right: 5px;
+}
