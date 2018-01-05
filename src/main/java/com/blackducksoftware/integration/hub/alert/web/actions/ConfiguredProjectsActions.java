@@ -78,8 +78,9 @@ public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestMod
                 removeOldDistributionProjectRelations(commonEntity.getId());
                 addNewDistributionProjectRelations(commonEntity.getId(), configuredProjectsFromRestModel);
                 cleanUpConfiguredProjects();
+            } else {
+                logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
             }
-            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
         }
     }
 
