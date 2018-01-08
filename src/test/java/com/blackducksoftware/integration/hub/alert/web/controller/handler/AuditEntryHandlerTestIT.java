@@ -47,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -105,9 +106,10 @@ public class AuditEntryHandlerTestIT {
         assertEquals(savedNotificationEntity.getProjectVersionUrl(), notification.getProjectVersionUrl());
         assertNotNull(notification.getComponents());
         assertTrue(!notification.getComponents().isEmpty());
-        assertEquals(savedNotificationEntity.getComponentName(), notification.getComponents().get(0).getComponentName());
-        assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponents().get(0).getComponentVersion());
-        assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getComponents().get(0).getPolicyRuleName());
+        final ComponentRestModel component = notification.getComponents().iterator().next();
+        assertEquals(savedNotificationEntity.getComponentName(), component.getComponentName());
+        assertEquals(savedNotificationEntity.getComponentVersion(), component.getComponentVersion());
+        assertEquals(savedNotificationEntity.getPolicyRuleName(), component.getPolicyRuleName());
         assertEquals(savedNotificationEntity.getPerson(), notification.getPerson());
     }
 

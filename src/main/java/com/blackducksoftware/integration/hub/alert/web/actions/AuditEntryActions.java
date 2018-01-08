@@ -162,8 +162,8 @@ public class AuditEntryActions {
                 notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0), NotificationRestModel.class);
                 final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType()).collect(Collectors.toSet());
                 notificationRestModel.setNotificationTypes(notificationTypes);
-                final List<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName()))
-                        .collect(Collectors.toList());
+                final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName()))
+                        .collect(Collectors.toSet());
                 notificationRestModel.setComponents(components);
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
