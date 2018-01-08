@@ -22,18 +22,24 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+
 public class LoginRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
 
     private String hubUrl;
     private String hubTimeout;
     private String hubUsername;
-    private String hubPassword;
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
-    private String hubProxyPassword;
     private String hubAlwaysTrustCertificate;
+
+    @SensitiveField
+    private String hubPassword;
+
+    @SensitiveField
+    private String hubProxyPassword;
 
     public LoginRestModel() {
     }
