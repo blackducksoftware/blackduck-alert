@@ -33,7 +33,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
@@ -44,6 +43,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -53,7 +54,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class AuditEntryHandlerTestIT {
-    private final MockUtils mockUtils = new MockUtils();
+
     @Autowired
     private AuditEntryHandler auditEntryHandler;
     @Autowired
@@ -74,8 +75,10 @@ public class AuditEntryHandlerTestIT {
 
     @Test
     public void getTestIT() {
-        final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
-        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
+        final MockNotificationEntity mockNotification = new MockNotificationEntity();
+        final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
+        final NotificationEntity savedNotificationEntity = notificationRepository.save(mockNotification.createEntity());
+        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
@@ -107,12 +110,14 @@ public class AuditEntryHandlerTestIT {
 
     @Test
     public void resendNotificationTestIt() {
-        final NotificationEntity savedNotificationEntity = notificationRepository.save(mockUtils.createNotificationEntity());
-        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockUtils.createCommonDistributionConfigEntity());
+        final MockNotificationEntity mockNotification = new MockNotificationEntity();
+        final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
+        final NotificationEntity savedNotificationEntity = notificationRepository.save(mockNotification.createEntity());
+        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null));
-        auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
         final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+        auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
         final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
                 .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
         final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));

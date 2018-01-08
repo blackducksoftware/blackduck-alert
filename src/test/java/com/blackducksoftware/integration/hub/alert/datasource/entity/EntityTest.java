@@ -9,30 +9,27 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.io.ObjectStreamClass;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
-public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
-    protected final MockUtils<?, ?, E, ?> mockUtils;
-    private final Class<E> entityClass;
+public abstract class EntityTest<E extends DatabaseEntity> {
 
-    public EntityTest(final MockUtils<?, ?, E, ?> mockUtils, final Class<E> entityClass) {
-        this.mockUtils = mockUtils;
-        this.entityClass = entityClass;
-    }
+    public abstract MockEntityUtil<E> getMockUtil();
 
     @Test
-    public void testEmptyEntity() {
-        final E configEntity = mockUtils.createEmptyEntity();
-        assertEquals(entitySerialId(), ObjectStreamClass.lookup(entityClass).getSerialVersionUID());
+    public void testEmptyEntity() throws JSONException {
+        final E configEntity = getMockUtil().createEmptyEntity();
+        assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
 
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
@@ -40,12 +37,14 @@ public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
         final int configHash = configEntity.hashCode();
         assertEquals(emptyEntityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEmptyEntityJson();
-        assertEquals(expectedString, configEntity.toString());
+        final String expectedString = getMockUtil().getEmptyEntityJson();
+        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
-        final E configEntityNew = mockUtils.createEmptyEntity();
+        final E configEntityNew = getMockUtil().createEmptyEntity();
         assertEquals(configEntity, configEntityNew);
     }
+
+    public abstract Class<E> getEntityClass();
 
     public abstract void assertEntityFieldsNull(E entity);
 
@@ -54,19 +53,19 @@ public abstract class EntityTest<E extends DistributionChannelConfigEntity> {
     public abstract int emptyEntityHashCode();
 
     @Test
-    public void testEntity() {
-        final E configEntity = mockUtils.createEntity();
+    public void testEntity() throws JSONException {
+        final E configEntity = getMockUtil().createEntity();
 
         assertEntityFieldsFull(configEntity);
-        assertEquals(Long.valueOf(mockUtils.getId()), configEntity.getId());
+        assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
 
         final int configHash = configEntity.hashCode();
         assertEquals(entityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEntityJson();
-        assertEquals(expectedString, configEntity.toString());
+        final String expectedString = getMockUtil().getEntityJson();
+        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
-        final E configEntityNew = mockUtils.createEntity();
+        final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);
     }
 
