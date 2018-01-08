@@ -22,16 +22,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.model;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public abstract class Model {
 
@@ -47,28 +45,18 @@ public abstract class Model {
 
     @Override
     public String toString() {
-        final List<String> fieldsToExclude = new ArrayList<>();
-        fieldsToExclude.addAll(SensitiveFieldFinder.findSensitiveFieldNames(this.getClass()));
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-
-        for (final Field field : this.getClass().getDeclaredFields()) {
-            if (field.getType().isAssignableFrom(List.class)) {
-                fieldsToExclude.add(field.getName());
-                field.setAccessible(true);
-                try {
-                    final Object value = field.get(this);
-                    if (value != null) {
-                        final List<?> list = (List<?>) value;
-                        reflectionToStringBuilder.append(field.getName(), list.toArray(new String[list.size()]));
-                    }
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+        final Gson gson = new GsonBuilder().serializeNulls().setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(final FieldAttributes f) {
+                return null != f.getAnnotation(SensitiveField.class);
             }
-        }
 
-        reflectionToStringBuilder.setExcludeFieldNames(fieldsToExclude.toArray(new String[fieldsToExclude.size()]));
+            @Override
+            public boolean shouldSkipClass(final Class<?> clazz) {
+                return false;
+            }
+        }).create();
 
-        return reflectionToStringBuilder.build();
+        return gson.toJson(this);
     }
 }
