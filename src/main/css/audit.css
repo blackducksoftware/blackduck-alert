@@ -38,10 +38,17 @@
 	color: #a94442;
 }
 
-.legendContainer {
-	float: right;
+.inline {
+	display: inline-block;
 }
 
-.legendElement {
-	display: inline-block;
+
+.legendContainer {
+	border: #e6e6e6 1px solid;
+	width: fit-content;
+}
+
+.legendDescription {
+	composes: inline;
+	width: 150px;
 }
