@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -45,7 +46,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubCon
 
 @RestController
 public class GlobalHubConfigController extends ConfigController<GlobalHubConfigRestModel> {
-    private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel> commonConfigHandler;
+    private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     GlobalHubConfigController(final GlobalHubConfigActions configActions, final ObjectTransformer objectTransformer) {

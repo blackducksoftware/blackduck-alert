@@ -35,9 +35,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
 import com.google.gson.Gson;
@@ -48,11 +49,11 @@ public class ChannelTemplateManager {
     private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
     private final Gson gson;
     private final List<AbstractJmsTemplate> templateList;
-    private final AuditEntryRepository auditEntryRepository;
-    private final AuditNotificationRepository auditNotificationRepository;
+    private final AuditEntryRepositoryWrapper auditEntryRepository;
+    private final AuditNotificationRepositoryWrapper auditNotificationRepository;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final List<AbstractJmsTemplate> templateList) {
+    public ChannelTemplateManager(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final AuditNotificationRepositoryWrapper auditNotificationRepository, final List<AbstractJmsTemplate> templateList) {
         jmsTemplateMap = new HashMap<>();
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
@@ -93,14 +94,15 @@ public class ChannelTemplateManager {
         if (hasTemplate(destination)) {
             if (event instanceof AbstractChannelEvent) {
                 final AbstractChannelEvent channelEvent = (AbstractChannelEvent) event;
-                AuditEntryEntity savedAuditEntryEntity = null;
+                AuditEntryEntity auditEntryEntity = null;
                 if (channelEvent.getAuditEntryId() == null) {
-                    savedAuditEntryEntity = auditEntryRepository.save(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
-                    channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
+                    auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
                 } else {
-                    savedAuditEntryEntity = auditEntryRepository.findOne(channelEvent.getAuditEntryId());
-                    channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
+                    auditEntryEntity = auditEntryRepository.findOne(channelEvent.getAuditEntryId());
                 }
+                auditEntryEntity.setStatus(StatusEnum.PENDING);
+                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+                channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
                 for (final Long notificationId : channelEvent.getProjectData().getNotificationIds()) {
                     final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
                     auditNotificationRepository.save(auditNotificationRelation);

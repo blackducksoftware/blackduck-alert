@@ -29,14 +29,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -45,29 +47,27 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends ConfigActions<D, R> {
+@Transactional
+public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> extends ConfigActions<D, R, W> {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected final CommonDistributionRepository commonDistributionRepository;
-    protected final JpaRepository<D, Long> channelDistributionRepository;
-    protected final ConfiguredProjectsActions<R> configuredProjectsActions;
-    protected final NotificationTypesActions<R> notificationTypesActions;
-    protected final ObjectTransformer objectTransformer;
+    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private final ConfiguredProjectsActions<R> configuredProjectsActions;
+    private final NotificationTypesActions<R> notificationTypesActions;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final JpaRepository<D, Long> channelDistributionRepository,
+    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepositoryWrapper commonDistributionRepository, final W channelDistributionRepository,
             final ConfiguredProjectsActions<R> configuredProjectsActions, final NotificationTypesActions<R> notificationTypesActions, final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
-        this.channelDistributionRepository = channelDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
-        this.objectTransformer = objectTransformer;
     }
 
     @Override
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final D foundEntity = channelDistributionRepository.findOne(id);
+            final D foundEntity = getRepository().findOne(id);
             if (foundEntity != null) {
                 return Arrays.asList(constructRestModel(foundEntity));
             }
@@ -80,10 +80,10 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
-                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
-                CommonDistributionConfigEntity commonEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
+                D createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
+                CommonDistributionConfigEntity commonEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
                 if (createdEntity != null && commonEntity != null) {
-                    createdEntity = channelDistributionRepository.save(createdEntity);
+                    createdEntity = getRepository().save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
                     commonEntity = commonDistributionRepository.save(commonEntity);
                     configuredProjectsActions.saveConfiguredProjects(commonEntity, restModel);
@@ -109,7 +109,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
             final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findOne(id);
             if (commonEntity != null) {
                 final Long distributionConfigId = commonEntity.getDistributionConfigId();
-                channelDistributionRepository.delete(distributionConfigId);
+                getRepository().delete(distributionConfigId);
                 commonDistributionRepository.delete(id);
             }
             configuredProjectsActions.cleanUpConfiguredProjects();
@@ -156,18 +156,18 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     private void cleanUpStaleChannelConfigurations() {
         final String distributionName = getDistributionName();
         if (distributionName != null) {
-            final List<D> channelDistributionConfigEntities = channelDistributionRepository.findAll();
+            final List<D> channelDistributionConfigEntities = getRepository().findAll();
             channelDistributionConfigEntities.forEach(entity -> {
                 final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
                 if (commonEntity == null) {
-                    channelDistributionRepository.delete(entity);
+                    getRepository().delete(entity);
                 }
             });
         }
     }
 
     public List<R> constructRestModels() {
-        final List<D> allEntities = channelDistributionRepository.findAll();
+        final List<D> allEntities = getRepository().findAll();
         final List<R> constructedRestModels = new ArrayList<>();
         for (final D entity : allEntities) {
             try {
@@ -185,7 +185,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     }
 
     public R constructRestModel(final D entity) throws AlertException {
-        final D distributionEntity = channelDistributionRepository.findOne(entity.getId());
+        final D distributionEntity = getRepository().findOne(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), getDistributionName());
         if (distributionEntity != null && commonEntity != null) {
             final R restModel = constructRestModel(commonEntity, distributionEntity);
@@ -204,5 +204,17 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     public abstract String getDistributionName();
 
     public abstract R constructRestModel(final CommonDistributionConfigEntity commonEntity, D distributionEntity) throws AlertException;
+
+    public CommonDistributionRepositoryWrapper getCommonDistributionRepository() {
+        return commonDistributionRepository;
+    }
+
+    public ConfiguredProjectsActions<R> getConfiguredProjectsActions() {
+        return configuredProjectsActions;
+    }
+
+    public NotificationTypesActions<R> getNotificationTypesActions() {
+        return notificationTypesActions;
+    }
 
 }

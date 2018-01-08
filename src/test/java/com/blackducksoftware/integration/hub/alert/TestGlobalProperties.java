@@ -14,31 +14,28 @@ package com.blackducksoftware.integration.hub.alert;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 
 // TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
-    private String hubUsername;
-    private String hubPassword;
+    private String hubApiKey;
     private String accumulatorCron;
     private String dailyDigestCron;
 
     public TestGlobalProperties() {
-        this(Mockito.mock(GlobalHubRepository.class), Mockito.mock(GlobalSchedulingRepository.class));
+        this(Mockito.mock(GlobalHubRepositoryWrapper.class), Mockito.mock(GlobalSchedulingRepositoryWrapper.class));
     }
 
-    public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
-        this(globalRepository, globalSchedulingRepository, 400, "hubUsername", "hubPassword", "1 1 1 1 1 1", "2 2 2 2 2 2");
+    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
+        this(globalHubRepositoryWrapper, globalSchedulingRepository, 400, "1 1 1 1 1 1", "2 2 2 2 2 2");
     }
 
-    public TestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository, final Integer hubTimeout, final String hubUsername, final String hubPassword,
-            final String accumulatorCron, final String dailyDigestCron) {
-        super(globalRepository, globalSchedulingRepository);
+    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final Integer hubTimeout, final String accumulatorCron,
+            final String dailyDigestCron) {
+        super(globalHubRepositoryWrapper, globalSchedulingRepository);
         this.hubTimeout = hubTimeout;
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
     }
@@ -53,21 +50,12 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public String getHubUsername() {
-        return hubUsername;
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
-    public void setHubUsername(final String hubUsername) {
-        this.hubUsername = hubUsername;
-    }
-
-    @Override
-    public String getHubPassword() {
-        return hubPassword;
-    }
-
-    public void setHubPassword(final String hubPassword) {
-        this.hubPassword = hubPassword;
+    public void setHubApiKey(final String hubApiKey) {
+        this.hubApiKey = hubApiKey;
     }
 
     @Override

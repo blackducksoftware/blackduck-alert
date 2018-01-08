@@ -69,7 +69,10 @@ class BaseJobConfiguration extends Component {
                 } else {
                     self.initializeValues(self.props);
                 }
-            });
+            })
+            .catch(function(error) {
+ 		 		console.log(error); 
+ 			});
         } else {
             this.initializeValues(this.props)
         }
@@ -142,10 +145,7 @@ class BaseJobConfiguration extends Component {
 			});
 			if (response.ok) {
 				return response.json().then(json => {
-					var values = self.state.values;
-					values.id = json.id;
 					self.setState({
-						values,
 						configurationMessage: json.message
 					});
 				});
@@ -164,13 +164,20 @@ class BaseJobConfiguration extends Component {
 						self.setState({
 							errors
 						});
+						self.setState({
+							configurationMessage: json.message
+						});
+					} else {
+						self.setState({
+							configurationMessage: json.error
+						});
 					}
-					self.setState({
-						configurationMessage: json.message
-					});
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleTestSubmit(event) {
@@ -225,7 +232,10 @@ class BaseJobConfiguration extends Component {
 					configurationMessage: json.message
 				});
 			});
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleChange(event) {

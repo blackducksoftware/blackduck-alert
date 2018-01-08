@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
@@ -39,11 +39,11 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
 @Component
-public class HipChatDistributionConfigActions extends DistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
+public class HipChatDistributionConfigActions extends DistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepositoryWrapper> {
     private final HipChatManager hipChatManager;
 
     @Autowired
-    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository channelDistributionRepository,
+    public HipChatDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final HipChatDistributionRepositoryWrapper channelDistributionRepository,
             final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
             final HipChatManager hipChatManager) {
         super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
@@ -57,8 +57,8 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
 
     @Override
     public HipChatDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final HipChatDistributionConfigEntity distributionEntity) throws AlertException {
-        final HipChatDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
-        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+        final HipChatDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
+        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setColor(distributionEntity.getColor());
         restModel.setNotify(String.valueOf(distributionEntity.getNotify()));
         restModel.setRoomId(String.valueOf(distributionEntity.getRoomId()));

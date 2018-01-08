@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.CommonDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
@@ -43,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 
 @RestController
 public class CommonDistributionConfigController extends ConfigController<CommonDistributionConfigRestModel> {
-    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel> commonConfigHandler;
+    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepositoryWrapper> commonConfigHandler;
 
     @Autowired
     public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ObjectTransformer objectTransformer) {

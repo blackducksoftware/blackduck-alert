@@ -45,10 +45,10 @@ import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailPr
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.group.GroupService;
@@ -69,16 +69,16 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public EmailGroupChannel(final GlobalProperties globalProperties, final Gson gson, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
+    public EmailGroupChannel(final GlobalProperties globalProperties, final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalEmailRepositoryWrapper emailRepository,
+            final EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository) {
         super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
+
         this.globalProperties = globalProperties;
     }
 
     @JmsListener(destination = SupportedChannels.EMAIL_GROUP)
     @Override
     public void receiveMessage(final String message) {
-        // TODO figure out why the JMSListener sends the message back to the Queue when there is an exception even though we handle exceptions
         super.receiveMessage(message);
     }
 

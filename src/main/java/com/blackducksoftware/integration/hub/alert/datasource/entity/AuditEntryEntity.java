@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 @Table(schema = "alert", name = "audit_entries")
 public class AuditEntryEntity extends DatabaseEntity {
     private static final long serialVersionUID = -5848616198072005794L;
+    public static final int STACK_TRACE_CHAR_LIMIT = 10000;
 
     @Column(name = "common_config_id")
     private Long commonConfigId;
@@ -59,7 +60,7 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    @Column(name = "error_stack_trace", length = 10000)
+    @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
     public AuditEntryEntity() {

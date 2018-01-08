@@ -28,26 +28,29 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel> {
-    public final Class<D> databaseEntityClass;
-    public final Class<R> configRestModelClass;
-    public final JpaRepository<D, Long> repository;
-    public final ObjectTransformer objectTransformer;
+@Transactional
+public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> {
+    private final Class<D> databaseEntityClass;
+    private final Class<R> configRestModelClass;
+    private final W repositoryWrapper;
+    private final ObjectTransformer objectTransformer;
 
-    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final JpaRepository<D, Long> repository, final ObjectTransformer objectTransformer) {
+    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final W repositoryWrapper, final ObjectTransformer objectTransformer) {
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
-        this.repository = repository;
+        this.repositoryWrapper = repositoryWrapper;
         this.objectTransformer = objectTransformer;
     }
 
@@ -56,12 +59,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public boolean doesConfigExist(final Long id) {
-        return id != null && repository.exists(id);
+        return id != null && repositoryWrapper.exists(id);
     }
 
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final D foundEntity = repository.findOne(id);
+            final D foundEntity = repositoryWrapper.findOne(id);
             if (foundEntity != null) {
                 final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
                 if (restModel != null) {
@@ -71,7 +74,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             }
             return Collections.emptyList();
         }
-        final List<D> databaseEntities = repository.findAll();
+        final List<D> databaseEntities = repositoryWrapper.findAll();
         final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
         return maskRestModels(restModels);
     }
@@ -119,14 +122,14 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public void deleteConfig(final Long id) {
         if (id != null) {
-            repository.delete(id);
+            repositoryWrapper.delete(id);
         }
     }
 
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
-            final D savedConfig = repository.findOne(longId);
+            final D savedConfig = repositoryWrapper.findOne(longId);
             return updateNewConfigWithSavedConfig(newConfig, savedConfig);
         }
         return newConfig;
@@ -171,7 +174,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
-                    createdEntity = repository.save(createdEntity);
+                    createdEntity = repositoryWrapper.save(createdEntity);
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -186,7 +189,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             try {
                 D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
                 if (createdEntity != null) {
-                    createdEntity = repository.save(createdEntity);
+                    createdEntity = repositoryWrapper.save(createdEntity);
                     return createdEntity;
                 }
             } catch (final Exception e) {
@@ -220,6 +223,22 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
         final String trimmedValue = value.trim();
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
+    }
+
+    public Class<D> getDatabaseEntityClass() {
+        return databaseEntityClass;
+    }
+
+    public Class<R> getConfigRestModelClass() {
+        return configRestModelClass;
+    }
+
+    public W getRepository() {
+        return repositoryWrapper;
+    }
+
+    public ObjectTransformer getObjectTransformer() {
+        return objectTransformer;
     }
 
 }

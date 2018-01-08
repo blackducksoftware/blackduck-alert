@@ -54,19 +54,17 @@ public class ObjectTransformerTest {
         final GlobalHubConfigRestModel transformedConfigRestModel = objectTransformer.databaseEntityToConfigRestModel(configEntity, GlobalHubConfigRestModel.class);
 
         assertNull(transformedConfigRestModel.getHubAlwaysTrustCertificate());
-        assertEquals(restModel.getHubPassword(), transformedConfigRestModel.getHubPassword());
+        assertEquals(restModel.getHubApiKey(), transformedConfigRestModel.getHubApiKey());
         assertNull(transformedConfigRestModel.getHubProxyHost());
         assertNull(transformedConfigRestModel.getHubProxyPassword());
         assertNull(transformedConfigRestModel.getHubProxyPort());
         assertNull(transformedConfigRestModel.getHubProxyUsername());
         assertEquals(restModel.getHubTimeout(), transformedConfigRestModel.getHubTimeout());
         assertNull(transformedConfigRestModel.getHubUrl());
-        assertEquals(restModel.getHubUsername(), transformedConfigRestModel.getHubUsername());
         assertEquals(restModel.getId(), transformedConfigRestModel.getId());
 
-        assertEquals(configEntity.getHubPassword(), transformedConfigEntity.getHubPassword());
+        assertEquals(configEntity.getHubApiKey(), transformedConfigEntity.getHubApiKey());
         assertEquals(configEntity.getHubTimeout(), transformedConfigEntity.getHubTimeout());
-        assertEquals(configEntity.getHubUsername(), transformedConfigEntity.getHubUsername());
         assertEquals(configEntity.getId(), transformedConfigEntity.getId());
     }
 

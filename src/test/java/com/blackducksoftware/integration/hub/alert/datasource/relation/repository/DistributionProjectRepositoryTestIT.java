@@ -28,7 +28,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,7 +37,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class DistributionProjectRepositoryTestIT {
 
     @Autowired
-    private DistributionProjectRepository distributionProjectRepository;
+    private DistributionProjectRepositoryWrapper distributionProjectRepository;
 
     @Test
     public void saveEntityTestIT() {

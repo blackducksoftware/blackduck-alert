@@ -14,24 +14,24 @@ package com.blackducksoftware.integration.hub.alert.web.actions.global;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
-public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailConfigActions> {
+public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailConfigRestModel, GlobalEmailConfigEntity, GlobalEmailRepositoryWrapper, GlobalEmailConfigActions> {
 
     @Override
     public GlobalEmailConfigActions getMockedConfigActions() {
-        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        final GlobalEmailRepositoryWrapper repository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 
     @Override
     public GlobalEmailConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final GlobalEmailRepository repository = Mockito.mock(GlobalEmailRepository.class);
+        final GlobalEmailRepositoryWrapper repository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
         return new GlobalEmailConfigActions(repository, objectTransformer);
     }
 

@@ -36,19 +36,15 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
-    @Column(name = "hub_username")
-    private String hubUsername;
-
-    @Column(name = "hub_password")
-    private transient String hubPassword;
+    @Column(name = "hub_api_key")
+    private transient String hubApiKey;
 
     public GlobalHubConfigEntity() {
     }
 
-    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword) {
+    public GlobalHubConfigEntity(final Integer hubTimeout, final String hubApiKey) {
         this.hubTimeout = hubTimeout;
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+        this.hubApiKey = hubApiKey;
     }
 
     public static long getSerialversionuid() {
@@ -59,12 +55,8 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
         return hubTimeout;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
-    }
-
-    public String getHubPassword() {
-        return hubPassword;
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
 }
