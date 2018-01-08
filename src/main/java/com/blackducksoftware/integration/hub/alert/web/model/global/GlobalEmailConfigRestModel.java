@@ -22,9 +22,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalEmailConfigRestModel extends ConfigRestModel {
@@ -154,10 +151,4 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         return emailSubjectLine;
     }
 
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("mailSmtpPassword");
-        return reflectionToStringBuilder.build();
-    }
 }
