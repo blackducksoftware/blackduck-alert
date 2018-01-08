@@ -1,10 +1,17 @@
-/bin/
-.gradle/
-.project
-.classpath
-.settings/
-build/
+# operating system
 .DS_Store
+
+# ide
+.settings/
+.classpath
+.project
+bin/
+.idea
+
+# build tool
+.gradle/
+build/
+
 classes/
 log/
 src/test/resources/application.properties
@@ -15,4 +22,3 @@ node_modules
 data/
 sonar-project.properties
 .scannerwork/
-
