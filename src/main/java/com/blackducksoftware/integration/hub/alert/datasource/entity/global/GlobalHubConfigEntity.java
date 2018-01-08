@@ -26,9 +26,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Entity
@@ -39,6 +37,7 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
+    @SensitiveField
     @Column(name = "hub_api_key")
     private String hubApiKey;
 
@@ -60,13 +59,6 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
 
     public String getHubApiKey() {
         return hubApiKey;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("hubApiKey");
-        return reflectionToStringBuilder.build();
     }
 
 }

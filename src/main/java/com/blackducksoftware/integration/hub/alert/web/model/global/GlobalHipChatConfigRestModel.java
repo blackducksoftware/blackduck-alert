@@ -22,11 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
+    @SensitiveField
     private String apiKey;
     private boolean apiKeyIsSet;
 
