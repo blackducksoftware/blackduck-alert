@@ -81,8 +81,6 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return maskRestModels(restModels);
     }
 
-    public abstract List<String> sensitiveFields();
-
     public R maskRestModel(final R restModel) throws AlertException {
         try {
             final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
@@ -145,26 +143,25 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
         try {
             final Class newConfigClass = newConfig.getClass();
-            for (final String fieldName : sensitiveFields()) {
-                Field field = null;
-                try {
-                    field = newConfigClass.getDeclaredField(fieldName);
-                } catch (final NoSuchFieldException e) {
-                    continue;
-                }
+
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
+            for (final Field field : sensitiveFields) {
                 field.setAccessible(true);
-                final String newValue = (String) field.get(newConfig);
-                if (StringUtils.isBlank(newValue) && savedConfig != null) {
-                    final Class savedConfigClass = savedConfig.getClass();
-                    Field savedField = null;
-                    try {
-                        savedField = savedConfigClass.getDeclaredField(fieldName);
-                    } catch (final NoSuchFieldException e) {
-                        continue;
+                final Object value = field.get(newConfig);
+                if (value != null) {
+                    final String newValue = (String) value;
+                    if (StringUtils.isBlank(newValue) && savedConfig != null) {
+                        final Class savedConfigClass = savedConfig.getClass();
+                        Field savedField = null;
+                        try {
+                            savedField = savedConfigClass.getDeclaredField(field.getName());
+                        } catch (final NoSuchFieldException e) {
+                            continue;
+                        }
+                        savedField.setAccessible(true);
+                        final String savedValue = (String) savedField.get(savedConfig);
+                        field.set(newConfig, savedValue);
                     }
-                    savedField.setAccessible(true);
-                    final String savedValue = (String) savedField.get(savedConfig);
-                    field.set(newConfig, savedValue);
                 }
             }
         } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
