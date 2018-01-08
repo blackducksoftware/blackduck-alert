@@ -355,11 +355,11 @@ class DistributionConfiguration extends Component {
 						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='name' dataSort columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='lastRan' dataSort columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' dataSort columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
+	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
+                            <TableHeaderColumn dataField='' width='65' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
