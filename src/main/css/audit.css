@@ -1,0 +1,54 @@
+.notification {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.highVulnerability {
+	composes: notification;
+	color: #9c251f;
+}
+
+.mediumVulnerability {
+	composes: notification;
+	color: #e78c87;
+}
+
+.lowVulnerability {
+	composes: notification;
+	color: #999;
+}
+
+.vulnerability {
+	composes: notification;
+	color: rgb(221, 221, 221);
+}
+
+.policyViolationCleared {
+	composes: notification;
+	color: #3c763d;
+}
+
+.policyViolationOverride {
+	composes: notification;
+	color: #444;
+}
+
+.policyViolation {
+	composes: notification;
+	color: #a94442;
+}
+
+.inline {
+	display: inline-block;
+}
+
+
+.legendContainer {
+	border: #e6e6e6 1px solid;
+	width: fit-content;
+}
+
+.legendDescription {
+	composes: inline;
+	width: 150px;
+}
