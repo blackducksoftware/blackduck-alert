@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class ObjectTransformer {
@@ -104,6 +105,9 @@ public class ObjectTransformer {
                         } else if (Date.class == field.getType()) {
                             final Date oldField = (Date) field.get(databaseEntity);
                             newField.set(newClassObject, objectToString(oldField));
+                        } else if (NotificationCategoryEnum.class == field.getType()) {
+                            final NotificationCategoryEnum oldField = (NotificationCategoryEnum) field.get(databaseEntity);
+                            newField.set(newClassObject, notificationCategoryEnumToString(oldField));
                         } else if (StatusEnum.class == field.getType()) {
                             final StatusEnum oldField = (StatusEnum) field.get(databaseEntity);
                             newField.set(newClassObject, statusEnumToString(oldField));
@@ -180,6 +184,8 @@ public class ObjectTransformer {
                             newField.set(newClassObject, stringToBoolean(oldField));
                         } else if (Date.class == field.getType()) {
                             newField.set(newClassObject, stringToDate(oldField));
+                        } else if (NotificationCategoryEnum.class == field.getType()) {
+                            newField.set(newClassObject, stringToNotificationCategoryEnum(oldField));
                         } else if (StatusEnum.class == field.getType()) {
                             newField.set(newClassObject, stringToStatusEnum(oldField));
                         } else {
@@ -244,6 +250,20 @@ public class ObjectTransformer {
             }
         }
         return null;
+    }
+
+    public NotificationCategoryEnum stringToNotificationCategoryEnum(final String value) {
+        if (value != null) {
+            try {
+                return NotificationCategoryEnum.valueOf(value);
+            } catch (final IllegalArgumentException e) {
+            }
+        }
+        return null;
+    }
+
+    public String notificationCategoryEnumToString(final NotificationCategoryEnum notificationCategoryEnum) {
+        return notificationCategoryEnum.name();
     }
 
     public StatusEnum stringToStatusEnum(final String value) {

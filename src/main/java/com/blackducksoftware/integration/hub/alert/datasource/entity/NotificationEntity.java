@@ -37,6 +37,8 @@ import javax.persistence.TemporalType;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
 @Entity
 @Table(schema = "alert", name = "notification_events")
 public class NotificationEntity extends DatabaseEntity {
@@ -50,7 +52,7 @@ public class NotificationEntity extends DatabaseEntity {
     private Date createdAt;
 
     @Column(name = "notification_type")
-    private String notificationType;
+    private NotificationCategoryEnum notificationType;
 
     @Column(name = "project_name")
     private String projectName;
@@ -83,7 +85,7 @@ public class NotificationEntity extends DatabaseEntity {
     public NotificationEntity() {
     }
 
-    public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
+    public NotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
             final String componentName, final String componentVersion, final String policyRuleName, final String person, final Collection<VulnerabilityEntity> vulnerabilityList) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -111,7 +113,7 @@ public class NotificationEntity extends DatabaseEntity {
         return createdAt;
     }
 
-    public String getNotificationType() {
+    public NotificationCategoryEnum getNotificationType() {
         return notificationType;
     }
 

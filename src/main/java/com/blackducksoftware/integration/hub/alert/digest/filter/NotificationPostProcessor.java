@@ -108,7 +108,7 @@ public class NotificationPostProcessor {
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
             for (final NotificationCategoryEnum category : projectData.getCategoryMap().keySet()) {
-                if (category.toString().equalsIgnoreCase(foundEntity.getType())) {
+                if (category.equals(foundEntity.getType())) {
                     return true;
                 }
             }

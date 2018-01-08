@@ -55,7 +55,7 @@ public class SlackMockUtils extends DistributionMockUtils implements MockUtils<S
     @Override
     public SlackDistributionRestModel createRestModel() {
         final SlackDistributionRestModel restModel = new SlackDistributionRestModel(getCommonId(), webhook, channelUsername, channelName, getDistributionConfigId(), getDistributionType(), getName(), getFrequency(), getFilterByProject(),
-                getProjects(), getNotifications());
+                getProjects(), getNotificationsAsStrings());
         return restModel;
     }
 

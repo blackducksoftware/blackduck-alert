@@ -74,7 +74,7 @@ public class DigestRemovalProcessor {
     }
 
     private boolean processPolicyNotifications(final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
-        final String notificationType = entity.getNotificationType();
+        final String notificationType = entity.getNotificationType().name();
         if (NotificationCategoryEnum.POLICY_VIOLATION.name().equals(notificationType)) {
             categoryMap.put(notificationType, entity);
             return true;
@@ -93,7 +93,7 @@ public class DigestRemovalProcessor {
     }
 
     private boolean processVulnerabilityNotifications(final String cacheKey, final Map<String, NotificationEntity> categoryMap, final NotificationEntity entity) {
-        final String notificationType = entity.getNotificationType();
+        final String notificationType = entity.getNotificationType().name();
         final Collection<VulnerabilityEntity> vulnerabilities = entity.getVulnerabilityList();
         final Map<String, Set<String>> vulnerabilityCategoryMap = vulnerabilityCache.containsKey(cacheKey) ? vulnerabilityCache.get(cacheKey) : new HashMap<>();
         Set<String> vulnerabilityIds;
