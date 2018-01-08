@@ -11,12 +11,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import org.mockito.Mockito;
-
-import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
 
@@ -25,7 +19,8 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     private final String hubTimeout;
     private final String hubUsername;
     private final String hubPassword;
-    private final boolean hubPasswordIsSet;
+    private final String hubApiKey;
+    private final boolean hubApiKeyIsSet;
     private final String hubProxyHost;
     private final String hubProxyPort;
     private final String hubProxyUsername;
@@ -35,16 +30,17 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     private final String id;
 
     public MockGlobalHubRestModel() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", "HubApiKey", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
-    private MockGlobalHubRestModel(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
+    private MockGlobalHubRestModel(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort,
             final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate, final String id) {
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
-        this.hubPasswordIsSet = hubPasswordIsSet;
+        this.hubApiKey = hubApiKey;
+        this.hubApiKeyIsSet = hubApiKeyIsSet;
         this.hubProxyHost = hubProxyHost;
         this.hubProxyPort = hubProxyPort;
         this.hubProxyUsername = hubProxyUsername;
@@ -52,23 +48,6 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
         this.hubProxyPasswordIsSet = hubProxyPasswordIsSet;
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
         this.id = id;
-    }
-
-    public GlobalProperties createTestGlobalProperties() {
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository mockedScheduledRepository = Mockito.mock(GlobalSchedulingRepository.class);
-        return createTestGlobalProperties(mockedGlobalRepository, mockedScheduledRepository);
-    }
-
-    public GlobalProperties createTestGlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository, globalSchedulingRepository);
-        globalProperties.setHubUrl(hubUrl);
-        globalProperties.setHubTrustCertificate(Boolean.valueOf(hubAlwaysTrustCertificate));
-        globalProperties.setHubProxyHost(hubProxyHost);
-        globalProperties.setHubProxyPort(hubProxyPort);
-        globalProperties.setHubProxyUsername(hubProxyUsername);
-        globalProperties.setHubProxyPassword(hubProxyPassword);
-        return globalProperties;
     }
 
     public String getHubUrl() {
@@ -85,6 +64,10 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
 
     public String getHubPassword() {
         return hubPassword;
+    }
+
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
     public String getHubProxyHost() {
@@ -114,7 +97,7 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
 
     @Override
     public GlobalHubConfigRestModel createGlobalRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubUsername, hubPassword, hubPasswordIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
+        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubApiKey, hubApiKeyIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
                 hubAlwaysTrustCertificate);
         return restModel;
     }
@@ -129,8 +112,7 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
         final JsonObject json = new JsonObject();
         json.addProperty("hubUrl", hubUrl);
         json.addProperty("hubTimeout", hubTimeout);
-        json.addProperty("hubUsername", hubUsername);
-        json.addProperty("hubPasswordIsSet", hubPasswordIsSet);
+        json.addProperty("hubApiKeyIsSet", hubApiKeyIsSet);
         json.addProperty("hubProxyHost", hubProxyHost);
         json.addProperty("hubProxyPort", hubProxyPort);
         json.addProperty("hubProxyUsername", hubProxyUsername);
@@ -143,7 +125,7 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     @Override
     public String getEmptyGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("hubPasswordIsSet", false);
+        json.addProperty("hubApiKeyIsSet", false);
         json.addProperty("hubProxyPasswordIsSet", false);
         return json.toString();
     }

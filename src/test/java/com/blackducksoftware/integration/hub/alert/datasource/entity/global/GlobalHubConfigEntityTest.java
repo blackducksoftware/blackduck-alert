@@ -26,9 +26,8 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalHubConfigEntity entity) {
-        assertNull(entity.getHubPassword());
         assertNull(entity.getHubTimeout());
-        assertNull(entity.getHubUsername());
+        assertNull(entity.getHubApiKey());
     }
 
     @Override
@@ -38,19 +37,18 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
 
     @Override
     public int emptyGlobalEntityHashCode() {
-        return 861101;
+        return 23273;
     }
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalHubConfigEntity entity) {
-        assertEquals(getMockUtil().getHubPassword(), entity.getHubPassword());
         assertEquals(getMockUtil().getHubTimeout(), entity.getHubTimeout());
-        assertEquals(getMockUtil().getHubUsername(), entity.getHubUsername());
+        assertEquals(getMockUtil().getHubApiKey(), entity.getHubApiKey());
     }
 
     @Override
     public int globalEntityHashCode() {
-        return -1346241695;
+        return 39702;
     }
 
     @Override

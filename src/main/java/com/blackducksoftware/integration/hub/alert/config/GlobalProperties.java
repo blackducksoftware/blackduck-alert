@@ -36,8 +36,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
@@ -49,8 +49,8 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class GlobalProperties {
-    private final GlobalHubRepository globalHubRepository;
-    private final GlobalSchedulingRepository globalSchedulingRepository;
+    private final GlobalHubRepositoryWrapper globalHubRepository;
+    private final GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -71,7 +71,7 @@ public class GlobalProperties {
     private String hubProxyPassword;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepository globalRepository, final GlobalSchedulingRepository globalSchedulingRepository) {
+    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
         this.globalHubRepository = globalRepository;
         this.globalSchedulingRepository = globalSchedulingRepository;
     }
@@ -192,7 +192,7 @@ public class GlobalProperties {
     public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
-            final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(intLogger);
+            final RestConnection restConnection = hubServerConfig.createApiKeyRestConnection(intLogger);
             return new HubServicesFactory(restConnection);
         }
         return null;
@@ -211,29 +211,50 @@ public class GlobalProperties {
     public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
         final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
         if (globalConfigEntity != null) {
-            final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-            hubServerConfigBuilder.setHubUrl(getHubUrl());
-            hubServerConfigBuilder.setTimeout(globalConfigEntity.getHubTimeout());
-            hubServerConfigBuilder.setUsername(globalConfigEntity.getHubUsername());
-            hubServerConfigBuilder.setPassword(globalConfigEntity.getHubPassword());
-
-            hubServerConfigBuilder.setProxyHost(getHubProxyHost());
-            hubServerConfigBuilder.setProxyPort(getHubProxyPort());
-            hubServerConfigBuilder.setProxyUsername(getHubProxyUsername());
-            hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
-
-            if (hubTrustCertificate != null) {
-                hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
-            }
-            hubServerConfigBuilder.setLogger(logger);
-
-            try {
-                return hubServerConfigBuilder.build();
-            } catch (final IllegalStateException e) {
-                throw new AlertException(e.getMessage(), e);
-            }
+            return createHubServerConfig(logger, globalConfigEntity.getHubTimeout(), globalConfigEntity.getHubApiKey());
         }
         return null;
+    }
+
+    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiKey) throws AlertException {
+        final HubServerConfigBuilder hubServerConfigBuilder = createHubServerConfigBuilderWithoutAuthentication(logger, hubTimeout);
+        hubServerConfigBuilder.setApiKey(hubApiKey);
+
+        try {
+            return hubServerConfigBuilder.build();
+        } catch (final IllegalStateException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+    }
+
+    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubUsername, final String hubPassword) throws AlertException {
+        final HubServerConfigBuilder hubServerConfigBuilder = createHubServerConfigBuilderWithoutAuthentication(logger, hubTimeout);
+        hubServerConfigBuilder.setUsername(hubUsername);
+        hubServerConfigBuilder.setPassword(hubPassword);
+
+        try {
+            return hubServerConfigBuilder.build();
+        } catch (final IllegalStateException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+    }
+
+    private HubServerConfigBuilder createHubServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int hubTimeout) {
+        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+        hubServerConfigBuilder.setHubUrl(getHubUrl());
+        hubServerConfigBuilder.setTimeout(hubTimeout);
+
+        hubServerConfigBuilder.setProxyHost(getHubProxyHost());
+        hubServerConfigBuilder.setProxyPort(getHubProxyPort());
+        hubServerConfigBuilder.setProxyUsername(getHubProxyUsername());
+        hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
+
+        if (hubTrustCertificate != null) {
+            hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
+        }
+        hubServerConfigBuilder.setLogger(logger);
+
+        return hubServerConfigBuilder;
     }
 
     public Integer getHubTimeout() {
@@ -244,18 +265,10 @@ public class GlobalProperties {
         return null;
     }
 
-    public String getHubUsername() {
+    public String getHubApiKey() {
         final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
-            return getHubConfig().getHubUsername();
-        }
-        return null;
-    }
-
-    public String getHubPassword() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getHubConfig().getHubPassword();
+            return getHubConfig().getHubApiKey();
         }
         return null;
     }

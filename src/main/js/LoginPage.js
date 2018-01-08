@@ -75,7 +75,10 @@ class LoginPage extends Configuration {
 					});
 				});
 			}
-		});
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
 	}
 
 	handleAdvancedClicked(event){

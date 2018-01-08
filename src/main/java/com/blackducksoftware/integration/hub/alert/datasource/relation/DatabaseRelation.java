@@ -26,32 +26,13 @@ import java.io.Serializable;
 
 import javax.persistence.MappedSuperclass;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
 @MappedSuperclass
-public abstract class DatabaseRelation implements Serializable {
-    private static final long serialVersionUID = 4000317230253976836L;
+public abstract class DatabaseRelation extends BaseEntity implements Serializable {
+    private static final long serialVersionUID = -5043273843104292706L;
 
     public DatabaseRelation() {
+        super();
     }
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.build();
-    }
-
 }

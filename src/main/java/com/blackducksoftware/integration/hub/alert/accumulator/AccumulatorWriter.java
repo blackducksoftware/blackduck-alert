@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -35,7 +37,7 @@ import org.springframework.batch.item.ItemWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
@@ -43,12 +45,13 @@ import com.blackducksoftware.integration.hub.dataservice.notification.model.Noti
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
+@Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
-    private final NotificationRepository notificationRepository;
+    private final NotificationRepositoryWrapper notificationRepository;
     private final ChannelTemplateManager channelTemplateManager;
 
-    public AccumulatorWriter(final NotificationRepository notificationRepository, final ChannelTemplateManager channelTemplateManager) {
+    public AccumulatorWriter(final NotificationRepositoryWrapper notificationRepository, final ChannelTemplateManager channelTemplateManager) {
         this.notificationRepository = notificationRepository;
         this.channelTemplateManager = channelTemplateManager;
     }

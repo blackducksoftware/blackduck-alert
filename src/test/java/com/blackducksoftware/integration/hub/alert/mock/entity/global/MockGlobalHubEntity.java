@@ -16,19 +16,17 @@ import com.google.gson.JsonObject;
 
 public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEntity> {
     private final Integer hubTimeout;
-    private final String hubUsername;
-    private final String hubPassword;
+    private final String hubApiKey;
     private final Long id;
 
     public MockGlobalHubEntity() {
-        this(444, "HubUsername", "HubPassword", 1L);
+        this(444, "HubApiKey", 1L);
     }
 
-    private MockGlobalHubEntity(final Integer hubTimeout, final String hubUsername, final String hubPassword, final Long id) {
+    private MockGlobalHubEntity(final Integer hubTimeout, final String hubApiKey, final Long id) {
         super();
         this.hubTimeout = hubTimeout;
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+        this.hubApiKey = hubApiKey;
         this.id = id;
     }
 
@@ -36,12 +34,8 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
         return hubTimeout;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
-    }
-
-    public String getHubPassword() {
-        return hubPassword;
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
     @Override
@@ -51,7 +45,7 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
 
     @Override
     public GlobalHubConfigEntity createGlobalEntity() {
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubUsername, hubPassword);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(Integer.valueOf(hubTimeout), hubApiKey);
         entity.setId(id);
         return entity;
     }
@@ -65,7 +59,6 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
     public String getGlobalEntityJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("hubTimeout", hubTimeout);
-        json.addProperty("hubUsername", hubUsername);
         json.addProperty("id", id);
         return json.toString();
     }

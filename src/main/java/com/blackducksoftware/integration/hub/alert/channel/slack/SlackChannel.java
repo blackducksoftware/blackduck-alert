@@ -38,9 +38,9 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -63,7 +63,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public SlackChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository,
+    public SlackChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final GlobalProperties globalProperties) {
         super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
         this.globalProperties = globalProperties;

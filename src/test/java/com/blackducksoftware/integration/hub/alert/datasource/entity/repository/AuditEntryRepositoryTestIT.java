@@ -39,7 +39,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class AuditEntryRepositoryTestIT {
 
     @Autowired
-    private AuditEntryRepository auditEntryRepository;
+    private AuditEntryRepositoryWrapper auditEntryRepository;
 
     @Test
     public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {

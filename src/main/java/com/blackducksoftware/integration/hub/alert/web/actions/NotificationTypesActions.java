@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,29 +34,30 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+@Transactional
 @Component
 public class NotificationTypesActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(NotificationTypesActions.class);
 
-    private final NotificationTypeRepository notificationTypeRepository;
-    private final DistributionNotificationTypeRepository distributionNotificationTypeRepository;
+    private final NotificationTypeRepositoryWrapper notificationTypeRepository;
+    private final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
 
     @Autowired
-    public NotificationTypesActions(final NotificationTypeRepository notificationTypeRepository, final DistributionNotificationTypeRepository distributionNotificationTypeRepository) {
+    public NotificationTypesActions(final NotificationTypeRepositoryWrapper notificationTypeRepository, final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository) {
         this.notificationTypeRepository = notificationTypeRepository;
         this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;
     }
 
-    public NotificationTypeRepository getNotificationTypeRepository() {
+    public NotificationTypeRepositoryWrapper getNotificationTypeRepository() {
         return notificationTypeRepository;
     }
 
-    public DistributionNotificationTypeRepository getDistributionNotificationTypeRepository() {
+    public DistributionNotificationTypeRepositoryWrapper getDistributionNotificationTypeRepository() {
         return distributionNotificationTypeRepository;
     }
 
@@ -69,12 +72,12 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
     }
 
     public void saveNotificationTypes(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        final List<String> configuredProjectsFromRestModel = restModel.getNotificationTypes();
-        if (configuredProjectsFromRestModel != null) {
+        final List<String> configuredNotificationTypesFromRestModel = restModel.getNotificationTypes();
+        if (configuredNotificationTypesFromRestModel != null) {
             removeOldNotificationTypes(commonEntity.getId());
-            addNewDistributionNotificationTypes(commonEntity.getId(), configuredProjectsFromRestModel);
+            addNewDistributionNotificationTypes(commonEntity.getId(), configuredNotificationTypesFromRestModel);
         } else {
-            logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
+            logger.warn("{}: List of configured notification types was null; notification types will not be updated.", commonEntity.getName());
         }
     }
 

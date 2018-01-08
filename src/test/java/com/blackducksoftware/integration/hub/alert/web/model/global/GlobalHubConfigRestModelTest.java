@@ -22,14 +22,13 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
         assertNull(restModel.getHubAlwaysTrustCertificate());
-        assertNull(restModel.getHubPassword());
+        assertNull(restModel.getHubApiKey());
         assertNull(restModel.getHubProxyHost());
         assertNull(restModel.getHubProxyPassword());
         assertNull(restModel.getHubProxyPort());
         assertNull(restModel.getHubProxyUsername());
         assertNull(restModel.getHubTimeout());
         assertNull(restModel.getHubUrl());
-        assertNull(restModel.getHubUsername());
     }
 
     @Override
@@ -39,25 +38,23 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
 
     @Override
     public int emptyGlobalRestModelHashCode() {
-        return 1999391507;
+        return 1044014367;
     }
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHubConfigRestModel restModel) {
         assertEquals(getMockUtil().getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
-        assertEquals(getMockUtil().getHubPassword(), restModel.getHubPassword());
         assertEquals(getMockUtil().getHubProxyHost(), restModel.getHubProxyHost());
         assertEquals(getMockUtil().getHubProxyPassword(), restModel.getHubProxyPassword());
         assertEquals(getMockUtil().getHubProxyPort(), restModel.getHubProxyPort());
         assertEquals(getMockUtil().getHubProxyUsername(), restModel.getHubProxyUsername());
         assertEquals(getMockUtil().getHubTimeout(), restModel.getHubTimeout());
         assertEquals(getMockUtil().getHubUrl(), restModel.getHubUrl());
-        assertEquals(getMockUtil().getHubUsername(), restModel.getHubUsername());
     }
 
     @Override
     public int globalRestModelHashCode() {
-        return 1896249830;
+        return 2098465259;
     }
 
     @Override

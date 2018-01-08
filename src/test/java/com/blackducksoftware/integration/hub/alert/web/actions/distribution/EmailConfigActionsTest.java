@@ -15,12 +15,12 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEmailEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -28,7 +28,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProject
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
-public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGroupDistributionConfigActions> {
+public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGroupDistributionRepositoryWrapper, EmailGroupDistributionConfigActions> {
 
     @Override
     public EmailGroupDistributionConfigActions getMockedConfigActions() {
@@ -43,13 +43,13 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
     @Override
     public EmailGroupDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final EmailGroupManager emailManager = Mockito.mock(EmailGroupManager.class);
-        final EmailGroupDistributionRepository mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepository.class);
-        final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
-        final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
-        final DistributionProjectRepository distributionProjectRepository = Mockito.mock(DistributionProjectRepository.class);
+        final EmailGroupDistributionRepositoryWrapper mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
+        final CommonDistributionRepositoryWrapper commonRepository = Mockito.mock(CommonDistributionRepositoryWrapper.class);
+        final ConfiguredProjectsRepositoryWrapper projectsRepository = Mockito.mock(ConfiguredProjectsRepositoryWrapper.class);
+        final DistributionProjectRepositoryWrapper distributionProjectRepository = Mockito.mock(DistributionProjectRepositoryWrapper.class);
         final ConfiguredProjectsActions<EmailGroupDistributionRestModel> projectsAction = new ConfiguredProjectsActions<>(projectsRepository, distributionProjectRepository);
-        final NotificationTypeRepository notificationRepository = Mockito.mock(NotificationTypeRepository.class);
-        final DistributionNotificationTypeRepository notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepository.class);
+        final NotificationTypeRepositoryWrapper notificationRepository = Mockito.mock(NotificationTypeRepositoryWrapper.class);
+        final DistributionNotificationTypeRepositoryWrapper notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
         final NotificationTypesActions<EmailGroupDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions = new EmailGroupDistributionConfigActions(commonRepository, mockedEmailRepository, projectsAction, notificationAction, objectTransformer, emailManager);
         return emailGroupDistributionConfigActions;

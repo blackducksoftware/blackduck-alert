@@ -29,9 +29,8 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     private String hubUrl;
     private String hubTimeout;
-    private String hubUsername;
-    private transient String hubPassword;
-    private boolean hubPasswordIsSet;
+    private transient String hubApiKey;
+    private boolean hubApiKeyIsSet;
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
@@ -42,14 +41,13 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
     public GlobalHubConfigRestModel() {
     }
 
-    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final boolean hubPasswordIsSet, final String hubProxyHost, final String hubProxyPort,
-            final String hubProxyUsername, final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate) {
+    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
+            final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate) {
         super(id);
         this.hubUrl = hubUrl;
         this.hubTimeout = hubTimeout;
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
-        this.hubPasswordIsSet = hubPasswordIsSet;
+        this.hubApiKey = hubApiKey;
+        this.hubApiKeyIsSet = hubApiKeyIsSet;
         this.hubProxyHost = hubProxyHost;
         this.hubProxyPort = hubProxyPort;
         this.hubProxyUsername = hubProxyUsername;
@@ -78,20 +76,16 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
         this.hubTimeout = hubTimeout;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
+    public String getHubApiKey() {
+        return hubApiKey;
     }
 
-    public String getHubPassword() {
-        return hubPassword;
+    public boolean isHubApiKeyIsSet() {
+        return hubApiKeyIsSet;
     }
 
-    public boolean isHubPasswordIsSet() {
-        return hubPasswordIsSet;
-    }
-
-    public void setHubPasswordIsSet(final boolean hubPasswordIsSet) {
-        this.hubPasswordIsSet = hubPasswordIsSet;
+    public void setHubApiKeyIsSet(final boolean hubApiKeyIsSet) {
+        this.hubApiKeyIsSet = hubApiKeyIsSet;
     }
 
     public String getHubProxyHost() {

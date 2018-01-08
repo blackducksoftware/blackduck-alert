@@ -26,12 +26,11 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.blackducksoftware.integration.hub.Credentials;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
@@ -44,14 +43,13 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.validator.HubServerConfigValidator;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
-public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubConfigActions> {
+public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubRepositoryWrapper, GlobalHubConfigActions> {
 
     @Override
     public GlobalHubConfigActions getMockedConfigActions() {
-        final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
-        final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalSchedulingRepositoryWrapper globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
+        final GlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
 
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
         return configActions;
@@ -59,10 +57,9 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
 
     @Override
     public GlobalHubConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
-        final GlobalProperties globalProperties = mockUtils.createTestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalSchedulingRepositoryWrapper globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
+        final GlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, globalSchedulingRepository);
 
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
         return configActions;
@@ -76,14 +73,16 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     @Test
     @Override
     public void testGetConfig() throws Exception {
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
-        final GlobalSchedulingRepository schedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
-        final GlobalProperties globalProperties = getGlobalRestModelMockUtil().createTestGlobalProperties(mockedGlobalRepository, schedulingRepository);
-        final GlobalHubConfigRestModel defaultRestModel = getGlobalRestModelMockUtil().createGlobalRestModel();
+        final GlobalSchedulingRepositoryWrapper schedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
+        final GlobalHubConfigEntity databaseEntity = getGlobalEntityMockUtil().createGlobalEntity();
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, schedulingRepository);
 
-        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
+        final GlobalHubConfigRestModel defaultRestModel = objectTransformer.databaseEntityToConfigRestModel(databaseEntity, GlobalHubConfigRestModel.class);
         final GlobalHubConfigRestModel maskedRestModel = configActions.maskRestModel(defaultRestModel);
         List<GlobalHubConfigRestModel> globalConfigsById = configActions.getConfig(1L);
         List<GlobalHubConfigRestModel> allGlobalConfigs = configActions.getConfig(null);
@@ -112,24 +111,22 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         assertTrue(allGlobalConfigs.size() == 1);
 
         final GlobalHubConfigRestModel environmentGlobalConfig = allGlobalConfigs.get(0);
-        assertEquals(getGlobalRestModelMockUtil().getHubAlwaysTrustCertificate(), environmentGlobalConfig.getHubAlwaysTrustCertificate());
-        assertNull(environmentGlobalConfig.getHubPassword());
-        assertEquals(getGlobalRestModelMockUtil().getHubProxyHost(), environmentGlobalConfig.getHubProxyHost());
+        assertEquals(maskedRestModel.getHubAlwaysTrustCertificate(), environmentGlobalConfig.getHubAlwaysTrustCertificate());
+        assertNull(environmentGlobalConfig.getHubApiKey());
+        assertEquals(maskedRestModel.getHubProxyHost(), environmentGlobalConfig.getHubProxyHost());
         assertNull(environmentGlobalConfig.getHubProxyPassword());
-        assertEquals(getGlobalRestModelMockUtil().getHubProxyPort(), environmentGlobalConfig.getHubProxyPort());
-        assertEquals(getGlobalRestModelMockUtil().getHubProxyUsername(), environmentGlobalConfig.getHubProxyUsername());
+        assertEquals(maskedRestModel.getHubProxyPort(), environmentGlobalConfig.getHubProxyPort());
+        assertEquals(maskedRestModel.getHubProxyUsername(), environmentGlobalConfig.getHubProxyUsername());
         assertNull(environmentGlobalConfig.getHubTimeout());
-        assertEquals(getGlobalRestModelMockUtil().getHubUrl(), environmentGlobalConfig.getHubUrl());
-        assertNull(environmentGlobalConfig.getHubUsername());
+        assertEquals(maskedRestModel.getHubUrl(), environmentGlobalConfig.getHubUrl());
         assertNull(environmentGlobalConfig.getId());
-
     }
 
     @Test
     public void testTestConfig() throws Exception {
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository mockedSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalSchedulingRepositoryWrapper mockedSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, mockedSchedulingRepository);
         GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
 
@@ -171,8 +168,8 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     public void testChannelTestConfig() throws Exception {
         final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalSchedulingRepository mockedSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalSchedulingRepositoryWrapper mockedSchedulingRepository = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, mockedSchedulingRepository);
         GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
         configActions = Mockito.spy(configActions);
@@ -231,20 +228,17 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null);
 
         final String url = "https://www.google.com/";
-        final String user = "User";
-        final String password = "Password";
+        final String apiKey = "User";
         HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setHubUrl(url);
-        serverConfigBuilder.setUsername(user);
-        serverConfigBuilder.setUsername(password);
+        serverConfigBuilder.setApiKey(apiKey);
 
         // we create this spy to skip the server validation that happens in the build method
         serverConfigBuilder = Mockito.spy(serverConfigBuilder);
         Mockito.doAnswer(new Answer<HubServerConfig>() {
             @Override
             public HubServerConfig answer(final InvocationOnMock invocation) throws Throwable {
-                final Credentials hubCredentials = new Credentials(user, password);
-                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, hubCredentials, new ProxyInfo(null, 0, null, null), false);
+                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiKey, new ProxyInfo(null, 0, null, null), false);
                 return hubServerConfig;
             }
         }).when(serverConfigBuilder).build();
