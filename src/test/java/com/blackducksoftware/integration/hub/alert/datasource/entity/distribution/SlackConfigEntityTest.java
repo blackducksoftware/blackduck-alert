@@ -14,14 +14,14 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.distributi
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
 
 public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
-    private static final SlackMockUtils mockUtils = new SlackMockUtils();
 
-    public SlackConfigEntityTest() {
-        super(mockUtils, SlackDistributionConfigEntity.class);
+    @Override
+    public MockSlackEntity getMockUtil() {
+        return new MockSlackEntity();
     }
 
     @Override
@@ -43,13 +43,19 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEnt
 
     @Override
     public void assertEntityFieldsFull(final SlackDistributionConfigEntity entity) {
-        assertEquals(mockUtils.getWebhook(), entity.getWebhook());
-        assertEquals(mockUtils.getChannelName(), entity.getChannelName());
-        assertEquals(mockUtils.getChannelUsername(), entity.getChannelUsername());
+        assertEquals(getMockUtil().getWebhook(), entity.getWebhook());
+        assertEquals(getMockUtil().getChannelName(), entity.getChannelName());
+        assertEquals(getMockUtil().getChannelUsername(), entity.getChannelUsername());
     }
 
     @Override
     public int entityHashCode() {
         return 584468116;
     }
+
+    @Override
+    public Class<SlackDistributionConfigEntity> getEntityClass() {
+        return SlackDistributionConfigEntity.class;
+    }
+
 }

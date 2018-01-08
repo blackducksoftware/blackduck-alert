@@ -45,7 +45,7 @@ public abstract class Model {
 
     @Override
     public String toString() {
-        final Gson gson = new GsonBuilder().serializeNulls().setExclusionStrategies(new ExclusionStrategy() {
+        final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(final FieldAttributes f) {
                 return null != f.getAnnotation(SensitiveField.class);

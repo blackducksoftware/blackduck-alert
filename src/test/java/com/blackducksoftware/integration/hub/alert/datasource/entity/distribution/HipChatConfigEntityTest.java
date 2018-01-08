@@ -14,14 +14,19 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.distributi
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
 
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
 
-    // TODO create an abstract method to set MockUtils to avoid static (Do this everywhere necessary)
-    public HipChatConfigEntityTest() {
-        super(mockUtils, HipChatDistributionConfigEntity.class);
+    @Override
+    public MockHipChatEntity getMockUtil() {
+        return new MockHipChatEntity();
+    }
+
+    @Override
+    public Class<HipChatDistributionConfigEntity> getEntityClass() {
+        return HipChatDistributionConfigEntity.class;
     }
 
     @Override
@@ -43,13 +48,14 @@ public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfi
 
     @Override
     public void assertEntityFieldsFull(final HipChatDistributionConfigEntity entity) {
-        assertEquals(Integer.valueOf(mockUtils.getRoomId()), entity.getRoomId());
-        assertEquals(Boolean.valueOf(mockUtils.getNotify()), entity.getNotify());
-        assertEquals(mockUtils.getColor(), entity.getColor());
+        assertEquals(getMockUtil().getRoomId(), entity.getRoomId());
+        assertEquals(getMockUtil().isNotify(), entity.getNotify());
+        assertEquals(getMockUtil().getColor(), entity.getColor());
     }
 
     @Override
     public int entityHashCode() {
         return -789557399;
     }
+
 }

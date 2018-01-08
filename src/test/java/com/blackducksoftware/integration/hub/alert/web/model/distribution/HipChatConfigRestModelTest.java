@@ -14,14 +14,10 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
 public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
-
-    public HipChatConfigRestModelTest() {
-        super(mockUtils, HipChatDistributionRestModel.class);
-    }
 
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
@@ -42,14 +38,24 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public void assertRestModelFieldsFull(final HipChatDistributionRestModel restModel) {
-        assertEquals(mockUtils.getRoomId(), restModel.getRoomId());
-        assertEquals(mockUtils.getNotify(), restModel.getNotify());
-        assertEquals(mockUtils.getColor(), restModel.getColor());
+        assertEquals(getMockUtil().getRoomId(), restModel.getRoomId());
+        assertEquals(getMockUtil().getNotify(), restModel.getNotify());
+        assertEquals(getMockUtil().getColor(), restModel.getColor());
     }
 
     @Override
     public int restModelHashCode() {
-        return 1529350275;
+        return 2091601255;
+    }
+
+    @Override
+    public Class<HipChatDistributionRestModel> getRestModelClass() {
+        return HipChatDistributionRestModel.class;
+    }
+
+    @Override
+    public MockHipChatRestModel getMockUtil() {
+        return new MockHipChatRestModel();
     }
 
 }
