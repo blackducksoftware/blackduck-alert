@@ -38,13 +38,4 @@ public class SensitiveFieldFinder {
         return fields;
     }
 
-    public static Set<String> findSensitiveFieldNames(final Class<?> clazz) {
-        final Set<String> fields = new HashSet<>();
-        for (final Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(SensitiveField.class)) {
-                fields.add(field.getName());
-            }
-        }
-        return fields;
-    }
 }
