@@ -14,14 +14,10 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalSchedulingEntity;
 
 public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSchedulingConfigEntity> {
-    private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
-
-    public GlobalSchedulingConfigEntityTest() {
-        super(mockUtils, GlobalSchedulingConfigEntity.class);
-    }
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalSchedulingConfigEntity entity) {
@@ -42,14 +38,24 @@ public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSch
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalSchedulingConfigEntity entity) {
-        assertEquals(mockUtils.getAccumulatorCron(), entity.getAccumulatorCron());
-        assertEquals(mockUtils.getDailyDigestCron(), entity.getDailyDigestCron());
-        assertEquals(mockUtils.getPurgeDataCron(), entity.getPurgeDataCron());
+        assertEquals(getMockUtil().getAccumulatorCron(), entity.getAccumulatorCron());
+        assertEquals(getMockUtil().getDailyDigestCron(), entity.getDailyDigestCron());
+        assertEquals(getMockUtil().getPurgeDataCron(), entity.getPurgeDataCron());
     }
 
     @Override
     public int globalEntityHashCode() {
         return -1636279562;
+    }
+
+    @Override
+    public Class<GlobalSchedulingConfigEntity> getGlobalEntityClass() {
+        return GlobalSchedulingConfigEntity.class;
+    }
+
+    @Override
+    public MockGlobalSchedulingEntity getMockUtil() {
+        return new MockGlobalSchedulingEntity();
     }
 
 }

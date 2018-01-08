@@ -14,21 +14,16 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
 public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEmailConfigRestModel> {
-    private static final EmailMockUtils mockUtils = new EmailMockUtils();
-
-    public GlobalEmailConfigRestModelTest() {
-        super(mockUtils, GlobalEmailConfigRestModel.class);
-    }
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
         assertNull(restModel.getEmailSubjectLine());
         assertNull(restModel.getEmailTemplateDirectory());
         assertNull(restModel.getEmailTemplateLogoImage());
-        assertNull(restModel.getId());
         assertNull(restModel.getMailSmtpAllow8bitmime());
         assertNull(restModel.getMailSmtpAuth());
         assertNull(restModel.getMailSmtpConnectionTimeout());
@@ -57,28 +52,38 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
-        assertEquals(mockUtils.getEmailSubjectLine(), restModel.getEmailSubjectLine());
-        assertEquals(mockUtils.getEmailTemplateDirectory(), restModel.getEmailTemplateDirectory());
-        assertEquals(mockUtils.getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
-        assertEquals(mockUtils.getMailSmtpAllow8bitmime(), restModel.getMailSmtpAllow8bitmime());
-        assertEquals(mockUtils.getMailSmtpAuth(), restModel.getMailSmtpAuth());
-        assertEquals(mockUtils.getMailSmtpConnectionTimeout(), restModel.getMailSmtpConnectionTimeout());
-        assertEquals(mockUtils.getMailSmtpDnsNotify(), restModel.getMailSmtpDnsNotify());
-        assertEquals(mockUtils.getMailSmtpDnsRet(), restModel.getMailSmtpDnsRet());
-        assertEquals(mockUtils.getMailSmtpEhlo(), restModel.getMailSmtpEhlo());
-        assertEquals(mockUtils.getMailSmtpFrom(), restModel.getMailSmtpFrom());
-        assertEquals(mockUtils.getMailSmtpHost(), restModel.getMailSmtpHost());
-        assertEquals(mockUtils.getMailSmtpLocalhost(), restModel.getMailSmtpLocalhost());
-        assertEquals(mockUtils.getMailSmtpPassword(), restModel.getMailSmtpPassword());
-        assertEquals(mockUtils.getMailSmtpPort(), restModel.getMailSmtpPort());
-        assertEquals(mockUtils.getMailSmtpSendPartial(), restModel.getMailSmtpSendPartial());
-        assertEquals(mockUtils.getMailSmtpTimeout(), restModel.getMailSmtpTimeout());
-        assertEquals(mockUtils.getMailSmtpUser(), restModel.getMailSmtpUser());
+        assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
+        assertEquals(getMockUtil().getEmailTemplateDirectory(), restModel.getEmailTemplateDirectory());
+        assertEquals(getMockUtil().getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
+        assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), restModel.getMailSmtpAllow8bitmime());
+        assertEquals(getMockUtil().getMailSmtpAuth(), restModel.getMailSmtpAuth());
+        assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), restModel.getMailSmtpConnectionTimeout());
+        assertEquals(getMockUtil().getMailSmtpDnsNotify(), restModel.getMailSmtpDnsNotify());
+        assertEquals(getMockUtil().getMailSmtpDnsRet(), restModel.getMailSmtpDnsRet());
+        assertEquals(getMockUtil().getMailSmtpEhlo(), restModel.getMailSmtpEhlo());
+        assertEquals(getMockUtil().getMailSmtpFrom(), restModel.getMailSmtpFrom());
+        assertEquals(getMockUtil().getMailSmtpHost(), restModel.getMailSmtpHost());
+        assertEquals(getMockUtil().getMailSmtpLocalhost(), restModel.getMailSmtpLocalhost());
+        assertEquals(getMockUtil().getMailSmtpPassword(), restModel.getMailSmtpPassword());
+        assertEquals(getMockUtil().getMailSmtpPort(), restModel.getMailSmtpPort());
+        assertEquals(getMockUtil().getMailSmtpSendPartial(), restModel.getMailSmtpSendPartial());
+        assertEquals(getMockUtil().getMailSmtpTimeout(), restModel.getMailSmtpTimeout());
+        assertEquals(getMockUtil().getMailSmtpUser(), restModel.getMailSmtpUser());
     }
 
     @Override
     public int globalRestModelHashCode() {
         return 1485333119;
+    }
+
+    @Override
+    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
+        return GlobalEmailConfigRestModel.class;
+    }
+
+    @Override
+    public MockEmailGlobalRestModel getMockUtil() {
+        return new MockEmailGlobalRestModel();
     }
 
 }

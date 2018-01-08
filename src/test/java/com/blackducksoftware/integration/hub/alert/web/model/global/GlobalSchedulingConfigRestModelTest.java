@@ -14,14 +14,10 @@ package com.blackducksoftware.integration.hub.alert.web.model.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.GlobalSchedulingMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
 public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<GlobalSchedulingConfigRestModel> {
-    private static final GlobalSchedulingMockUtils mockUtils = new GlobalSchedulingMockUtils();
-
-    public GlobalSchedulingConfigRestModelTest() {
-        super(mockUtils, GlobalSchedulingConfigRestModel.class);
-    }
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalSchedulingConfigRestModel restModel) {
@@ -42,14 +38,24 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalSchedulingConfigRestModel restModel) {
-        assertEquals(mockUtils.getAccumulatorCron(), restModel.getAccumulatorCron());
-        assertEquals(mockUtils.getDailyDigestCron(), restModel.getDailyDigestCron());
-        assertEquals(mockUtils.getPurgeDataCron(), restModel.getPurgeDataCron());
+        assertEquals(getMockUtil().getAccumulatorCron(), restModel.getAccumulatorCron());
+        assertEquals(getMockUtil().getDailyDigestCron(), restModel.getDailyDigestCron());
+        assertEquals(getMockUtil().getPurgeDataCron(), restModel.getPurgeDataCron());
     }
 
     @Override
     public int globalRestModelHashCode() {
         return -1636279514;
+    }
+
+    @Override
+    public Class<GlobalSchedulingConfigRestModel> getGlobalRestModelClass() {
+        return GlobalSchedulingConfigRestModel.class;
+    }
+
+    @Override
+    public MockGlobalSchedulingRestModel getMockUtil() {
+        return new MockGlobalSchedulingRestModel();
     }
 
 }

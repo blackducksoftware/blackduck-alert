@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
+package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -19,21 +19,16 @@ import java.io.ObjectStreamClass;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 
 public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
-    private final MockUtils<?, ?, ?, GE> mockUtils;
-    private final Class<GE> globalEntityClass;
 
-    public GlobalEntityTest(final MockUtils<?, ?, ?, GE> mockUtils, final Class<GE> globalEntityClass) {
-        this.mockUtils = mockUtils;
-        this.globalEntityClass = globalEntityClass;
-    }
+    public abstract MockGlobalEntityUtil<GE> getMockUtil();
 
     @Test
     public void testEmptyGlobalEntity() {
-        final GE configEntity = mockUtils.createEmptyGlobalEntity();
-        assertEquals(globalEntitySerialId(), ObjectStreamClass.lookup(globalEntityClass).getSerialVersionUID());
+        final GE configEntity = getMockUtil().createEmptyGlobalEntity();
+        assertEquals(globalEntitySerialId(), ObjectStreamClass.lookup(getGlobalEntityClass()).getSerialVersionUID());
 
         assertGlobalEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
@@ -41,12 +36,14 @@ public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
         final int configHash = configEntity.hashCode();
         assertEquals(emptyGlobalEntityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getEmptyGlobalEntityJson();
+        final String expectedString = getMockUtil().getEmptyGlobalEntityJson();
         assertEquals(expectedString, configEntity.toString());
 
-        final GE configEntityNew = mockUtils.createEmptyGlobalEntity();
+        final GE configEntityNew = getMockUtil().createEmptyGlobalEntity();
         assertEquals(configEntity, configEntityNew);
     }
+
+    public abstract Class<GE> getGlobalEntityClass();
 
     public abstract void assertGlobalEntityFieldsNull(GE entity);
 
@@ -56,18 +53,18 @@ public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
 
     @Test
     public void testGlobalEntity() {
-        final GE configEntity = mockUtils.createGlobalEntity();
+        final GE configEntity = getMockUtil().createGlobalEntity();
 
         assertGlobalEntityFieldsFull(configEntity);
-        assertEquals(Long.valueOf(mockUtils.getId()), configEntity.getId());
+        assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
 
         final int configHash = configEntity.hashCode();
         assertEquals(globalEntityHashCode(), configHash);
 
-        final String expectedString = mockUtils.getGlobalEntityJson();
+        final String expectedString = getMockUtil().getGlobalEntityJson();
         assertEquals(expectedString, configEntity.toString());
 
-        final GE configEntityNew = mockUtils.createGlobalEntity();
+        final GE configEntityNew = getMockUtil().createGlobalEntity();
         assertEquals(configEntity, configEntityNew);
     }
 
