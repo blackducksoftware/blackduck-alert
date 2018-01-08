@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Date;
 import java.util.List;
@@ -94,14 +95,16 @@ public class AuditEntryHandlerTestIT {
         final NotificationRestModel notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
-        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationTypes().get(0));
+        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationTypes().iterator().next());
         assertEquals(savedNotificationEntity.getProjectName(), notification.getProjectName());
         assertEquals(savedNotificationEntity.getProjectVersion(), notification.getProjectVersion());
         assertEquals(savedNotificationEntity.getProjectUrl(), notification.getProjectUrl());
         assertEquals(savedNotificationEntity.getProjectVersionUrl(), notification.getProjectVersionUrl());
-        assertEquals(savedNotificationEntity.getComponentName(), notification.getComponentName());
-        assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponentVersion());
-        assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getPolicyRuleName());
+        assertNotNull(notification.getComponents());
+        assertTrue(!notification.getComponents().isEmpty());
+        assertEquals(savedNotificationEntity.getComponentName(), notification.getComponents().get(0).getComponentName());
+        assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponents().get(0).getComponentVersion());
+        assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getComponents().get(0).getPolicyRuleName());
         assertEquals(savedNotificationEntity.getPerson(), notification.getPerson());
     }
 

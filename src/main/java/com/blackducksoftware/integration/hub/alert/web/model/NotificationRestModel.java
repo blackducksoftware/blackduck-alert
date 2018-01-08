@@ -23,18 +23,17 @@
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.util.List;
+import java.util.Set;
 
 public class NotificationRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -715566918536523106L;
 
     private String eventKey;
     private String createdAt;
-    private List<String> notificationTypes;
+    private Set<String> notificationTypes;
     private String projectName;
     private String projectVersion;
-    private String componentName;
-    private String componentVersion;
-    private String policyRuleName;
+    private List<ComponentRestModel> components;
     private String person;
     private String projectUrl;
     private String projectVersionUrl;
@@ -42,17 +41,14 @@ public class NotificationRestModel extends ConfigRestModel {
     public NotificationRestModel() {
     }
 
-    public NotificationRestModel(final String id, final String eventKey, final String createdAt, final List<String> notificationTypes, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl) {
-        super(id);
+    public NotificationRestModel(final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final List<ComponentRestModel> components, final String person,
+            final String projectUrl, final String projectVersionUrl) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationTypes = notificationTypes;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
-        this.componentName = componentName;
-        this.componentVersion = componentVersion;
-        this.policyRuleName = policyRuleName;
+        this.components = components;
         this.person = person;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
@@ -70,11 +66,11 @@ public class NotificationRestModel extends ConfigRestModel {
         return createdAt;
     }
 
-    public List<String> getNotificationTypes() {
+    public Set<String> getNotificationTypes() {
         return notificationTypes;
     }
 
-    public void setNotificationTypes(final List<String> notificationTypes) {
+    public void setNotificationTypes(final Set<String> notificationTypes) {
         this.notificationTypes = notificationTypes;
     }
 
@@ -86,16 +82,12 @@ public class NotificationRestModel extends ConfigRestModel {
         return projectVersion;
     }
 
-    public String getComponentName() {
-        return componentName;
+    public List<ComponentRestModel> getComponents() {
+        return components;
     }
 
-    public String getComponentVersion() {
-        return componentVersion;
-    }
-
-    public String getPolicyRuleName() {
-        return policyRuleName;
+    public void setComponents(final List<ComponentRestModel> components) {
+        this.components = components;
     }
 
     public String getPerson() {
