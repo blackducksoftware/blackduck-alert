@@ -49,7 +49,7 @@ class AuditDetails extends Component {
 						{cellText}
 					</div>;
 
-		return eventType;
+		return <LabeledField label="Event Type" field={eventType} />;
 	}
 
 
@@ -75,8 +75,7 @@ class AuditDetails extends Component {
 			notificationPolicyRuleName = <TextInput label="Policy Rule Name" readOnly={true} name="notificationPolicyRuleName" value={this.state.values.notificationPolicyRuleName}></TextInput>;
 		}
 
-		var eventTypeData = this.getEventType();
-		var eventTypeField = <LabeledField label="Event Type" field={eventTypeData} />
+		var eventType = this.getEventType();
 
 		var errorMessage = null;
 		if (this.state.values.errorMessage) {
@@ -93,7 +92,7 @@ class AuditDetails extends Component {
 				{notificationComponentName}
 				{notificationComponentVersion}
 				{notificationPolicyRuleName}
-				{eventTypeField}
+				{eventType}
 				{errorMessage}
 				{errorStackTrace}
 			</div>
