@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.google.gson.Gson;
 
 public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -4723009315760610084L;
@@ -113,12 +112,6 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     public void setStatus(final String status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        final Gson gson = new Gson();
-        return gson.toJson(this);
     }
 
 }

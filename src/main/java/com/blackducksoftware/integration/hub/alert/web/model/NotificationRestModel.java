@@ -24,8 +24,6 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.util.List;
 
-import com.google.gson.Gson;
-
 public class NotificationRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -715566918536523106L;
 
@@ -110,13 +108,6 @@ public class NotificationRestModel extends ConfigRestModel {
 
     public String getProjectVersionUrl() {
         return projectVersionUrl;
-    }
-
-    @Override
-    public String toString() {
-        // TODO exclude notificationTypes for restModel
-        final Gson gson = new Gson();
-        return gson.toJson(this);
     }
 
 }
