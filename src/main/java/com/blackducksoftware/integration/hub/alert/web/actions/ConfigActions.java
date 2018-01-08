@@ -27,12 +27,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -79,22 +81,24 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return maskRestModels(restModels);
     }
 
-    public abstract List<String> sensitiveFields();
-
     public R maskRestModel(final R restModel) throws AlertException {
         try {
             final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
-            for (final String fieldName : sensitiveFields()) {
-                boolean isFieldSet = false;
-                final Field field = restModelClass.getDeclaredField(fieldName);
-                field.setAccessible(true);
-                final String sensitiveFieldValue = (String) field.get(restModel);
-                if (StringUtils.isNotBlank(sensitiveFieldValue)) {
-                    isFieldSet = true;
-                }
-                field.set(restModel, null);
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
 
-                final Field fieldIsSet = restModelClass.getDeclaredField(fieldName + "IsSet");
+            for (final Field sensitiveField : sensitiveFields) {
+                boolean isFieldSet = false;
+                sensitiveField.setAccessible(true);
+                final Object sensitiveFieldValue = sensitiveField.get(restModel);
+                if (sensitiveFieldValue != null) {
+                    final String sensitiveFieldString = (String) sensitiveFieldValue;
+                    if (StringUtils.isNotBlank(sensitiveFieldString)) {
+                        isFieldSet = true;
+                    }
+                }
+                sensitiveField.set(restModel, null);
+
+                final Field fieldIsSet = restModelClass.getDeclaredField(sensitiveField.getName() + "IsSet");
                 fieldIsSet.setAccessible(true);
                 final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(restModel);
                 if (!sensitiveIsSetFieldValue) {
@@ -139,26 +143,25 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
         try {
             final Class newConfigClass = newConfig.getClass();
-            for (final String fieldName : sensitiveFields()) {
-                Field field = null;
-                try {
-                    field = newConfigClass.getDeclaredField(fieldName);
-                } catch (final NoSuchFieldException e) {
-                    continue;
-                }
+
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
+            for (final Field field : sensitiveFields) {
                 field.setAccessible(true);
-                final String newValue = (String) field.get(newConfig);
-                if (StringUtils.isBlank(newValue) && savedConfig != null) {
-                    final Class savedConfigClass = savedConfig.getClass();
-                    Field savedField = null;
-                    try {
-                        savedField = savedConfigClass.getDeclaredField(fieldName);
-                    } catch (final NoSuchFieldException e) {
-                        continue;
+                final Object value = field.get(newConfig);
+                if (value != null) {
+                    final String newValue = (String) value;
+                    if (StringUtils.isBlank(newValue) && savedConfig != null) {
+                        final Class savedConfigClass = savedConfig.getClass();
+                        Field savedField = null;
+                        try {
+                            savedField = savedConfigClass.getDeclaredField(field.getName());
+                        } catch (final NoSuchFieldException e) {
+                            continue;
+                        }
+                        savedField.setAccessible(true);
+                        final String savedValue = (String) savedField.get(savedConfig);
+                        field.set(newConfig, savedValue);
                     }
-                    savedField.setAccessible(true);
-                    final String savedValue = (String) savedField.get(savedConfig);
-                    field.set(newConfig, savedValue);
                 }
             }
         } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {

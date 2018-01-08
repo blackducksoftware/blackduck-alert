@@ -20,36 +20,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
+package com.blackducksoftware.integration.hub.alert.annotation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
-
-@Entity
-@Table(schema = "alert", name = "global_hipchat_config")
-public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 2791949172564090134L;
-
-    @SensitiveField
-    @Column(name = "api_key")
-    private String apiKey;
-
-    public GlobalHipChatConfigEntity() {
-    }
-
-    public GlobalHipChatConfigEntity(final String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface SensitiveField {
 
 }

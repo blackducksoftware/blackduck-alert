@@ -20,28 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.model;
+package com.blackducksoftware.integration.hub.alert.annotation;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
-public abstract class HubModel {
+public class SensitiveFieldFinder {
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+    public static Set<Field> findSensitiveFields(final Class<?> clazz) {
+        final Set<Field> fields = new HashSet<>();
+        for (final Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(SensitiveField.class)) {
+                fields.add(field);
+            }
+        }
+        return fields;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.toString();
-    }
 }

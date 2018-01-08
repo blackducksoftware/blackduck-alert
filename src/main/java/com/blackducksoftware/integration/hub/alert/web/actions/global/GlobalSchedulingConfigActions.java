@@ -22,9 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -57,11 +55,6 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
-    }
-
-    @Override
-    public List<String> sensitiveFields() {
-        return Collections.emptyList();
     }
 
     @Override
