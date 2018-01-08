@@ -22,14 +22,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 8852683250883814613L;
 
+    @SensitiveField
     private String apiKey;
     private boolean apiKeyIsSet;
 
@@ -54,10 +53,4 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
         return apiKeyIsSet;
     }
 
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("apiKey");
-        return reflectionToStringBuilder.build();
-    }
 }
