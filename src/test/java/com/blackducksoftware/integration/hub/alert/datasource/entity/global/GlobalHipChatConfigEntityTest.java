@@ -31,7 +31,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
 
     @Override
     public int emptyGlobalEntityHashCode() {
-        return 629;
+        return 23273;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
 
     @Override
     public int globalEntityHashCode() {
-        return 630;
+        return -215716445;
     }
 
     @Override

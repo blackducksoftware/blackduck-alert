@@ -22,8 +22,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.google.gson.Gson;
 
 public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
@@ -31,9 +31,12 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     private String mailSmtpHost;
     private String mailSmtpUser;
+
     // not a javamail property, but we are going to piggy-back to get the smtp password
-    private transient String mailSmtpPassword;
+    @SensitiveField
+    private String mailSmtpPassword;
     private boolean mailSmtpPasswordIsSet;
+
     private String mailSmtpPort;
     private String mailSmtpConnectionTimeout;
     private String mailSmtpTimeout;
@@ -152,10 +155,4 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         return emailSubjectLine;
     }
 
-    @Override
-    public String toString() {
-        // TODO exclude mailSmtpPassword
-        final Gson gson = new Gson();
-        return gson.toJson(this);
-    }
 }

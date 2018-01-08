@@ -20,36 +20,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
+package com.blackducksoftware.integration.hub.alert.annotation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+public class SensitiveFieldFinder {
 
-@Entity
-@Table(schema = "alert", name = "global_hipchat_config")
-public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 2791949172564090134L;
-
-    @SensitiveField
-    @Column(name = "api_key")
-    private String apiKey;
-
-    public GlobalHipChatConfigEntity() {
-    }
-
-    public GlobalHipChatConfigEntity(final String apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
-    public String getApiKey() {
-        return apiKey;
+    public static Set<Field> findSensitiveFields(final Class<?> clazz) {
+        final Set<Field> fields = new HashSet<>();
+        for (final Field field : clazz.getDeclaredFields()) {
+            if (field.isAnnotationPresent(SensitiveField.class)) {
+                fields.add(field);
+            }
+        }
+        return fields;
     }
 
 }

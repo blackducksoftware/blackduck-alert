@@ -26,6 +26,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+
 @Entity
 @Table(schema = "alert", name = "global_email_config")
 public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
@@ -39,8 +41,9 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     private String mailSmtpUser;
 
     // not a javamail property, but we are going to piggy-back to get the smtp password
+    @SensitiveField
     @Column(name = "mail_smtp_password")
-    private transient String mailSmtpPassword;
+    private String mailSmtpPassword;
 
     @Column(name = "mail_smtp_port")
     private Integer mailSmtpPort;
