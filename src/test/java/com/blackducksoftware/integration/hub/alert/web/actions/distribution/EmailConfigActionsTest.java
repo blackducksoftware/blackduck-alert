@@ -21,18 +21,14 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEmailEntity;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGroupDistributionRepositoryWrapper, EmailGroupDistributionConfigActions> {
-    private static final EmailMockUtils mockUtils = new EmailMockUtils();
-
-    public EmailConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public EmailGroupDistributionConfigActions getMockedConfigActions() {
@@ -57,6 +53,16 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
         final NotificationTypesActions<EmailGroupDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions = new EmailGroupDistributionConfigActions(commonRepository, mockedEmailRepository, projectsAction, notificationAction, objectTransformer, emailManager);
         return emailGroupDistributionConfigActions;
+    }
+
+    @Override
+    public MockEmailEntity getEntityMockUtil() {
+        return new MockEmailEntity();
+    }
+
+    @Override
+    public MockEmailRestModel getRestMockUtil() {
+        return new MockEmailRestModel();
     }
 
 }

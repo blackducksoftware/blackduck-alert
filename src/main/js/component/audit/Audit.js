@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
 import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
+import auditStyles from '../../../css/audit.css';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
 import EditTableCellFormatter from '../EditTableCellFormatter';
@@ -12,6 +13,15 @@ import Modal from 'react-modal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+
+var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban ${auditStyles.policyViolation}`} aria-hidden='true'></i>;
+var policyViolationClearedIcon = <i key="policyViolationClearedIcon" alt="Policy Violation Cleared" title="Policy Violation Cleared" className={`fa fa-eraser ${auditStyles.policyViolationCleared}`} aria-hidden='true'></i>;
+var policyViolationOverrideIcon = <i key="policyViolationOverrideIcon" alt="Policy Override" title="Policy Override" className={`fa fa-exclamation-circle ${auditStyles.policyViolationOverride}`} aria-hidden='true'></i>;
+var highVulnerabilityIcon = <i key="highVulnerabilityIcon" alt="High Vulnerability" title="High Vulnerability" className={`fa fa-shield ${auditStyles.highVulnerability}`} aria-hidden='true'></i>;
+var mediumVulnerabilityIcon = <i key="mediumVulnerabilityIcon" alt="Medium Vulnerability" title="Medium Vulnerability" className={`fa fa-shield ${auditStyles.mediumVulnerability}`} aria-hidden='true'></i>;
+var lowVulnerabilityIcon = <i key="lowVulnerabilityIcon" alt="Low Vulnerability" title="Low Vulnerability" className={`fa fa-shield ${auditStyles.lowVulnerability}`} aria-hidden='true'></i>;
+var vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="Vulnerability" className={`fa fa-shield ${auditStyles.vulnerability}`} aria-hidden='true'></i>;
+
 
 class Audit extends Component {
 	constructor(props) {
@@ -34,33 +44,6 @@ class Audit extends Component {
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
 	}
-
-	// addDefaultEntries() {
- //        const { entries } = this.state;
- //        entries.push({
- //            id: '999',
- //            jobName: 'Test Job',
- //            eventType: 'email_group_channel',
- //            notificationType: 'High Vulnerability',
- //            timeCreated: '12/01/2017 00:00:00',
- //            timeLastSent: '12/01/2017 00:00:00',
- //            status: 'Success'
- //        });
- //        entries.push({
- //            id: '111',
- //            jobName: 'Test Hipchat',
- //            eventType: 'hipchat_channel',
- //            notificationType: 'High Vulnerability',
- //            timeCreated: '12/01/2017 00:00:00',
- //            timeLastSent: '12/01/2017 00:00:00',
- //            status: 'Failure',
- //            errorMessage: 'Could not reach Hipchat',
- //            errorStackTrace: 'Exception : could not reach hipchat \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55) \n at someClass(line:55)'
- //        });
- //        this.setState({
-	// 		entries
-	// 	});
- //    }
 
 	componentDidMount() {
 		// run the reload now and then every 10 seconds
@@ -236,27 +219,39 @@ class Audit extends Component {
 
 	notificationTypeDataFormat(cell, row) {
 		if (cell && cell.length > 0) {
-			let cellText = '';
+			let policyViolation = null;
+			let policyViolationCleared = null;
+			let policyViolationOverride = null;
+			let highVulnerability = null;
+			let mediumVulnerability = null;
+			let lowVulnerability = null;
+			let vulnerability = null;
+
 			for (var i in cell) {
 				if (cell[i] === "POLICY_VIOLATION") {
-					cellText = cellText + " PV";
+					policyViolation = policyViolationIcon;
 				} else if (cell[i] === "POLICY_VIOLATION_CLEARED") {
-					cellText = cellText + " PVC";
+					policyViolationCleared = policyViolationClearedIcon;
 				} else if (cell[i] === "POLICY_VIOLATION_OVERRIDE") {
-					cellText = cellText + " PVO";
+					policyViolationOverride = policyViolationOverrideIcon;
 				} else if (cell[i] === "HIGH_VULNERABILITY") {
-					cellText = cellText + " HV";
+					highVulnerability = highVulnerabilityIcon;
 				} else if (cell[i] === "MEDIUM_VULNERABILITY") {
-					cellText = cellText + " MV";
+					mediumVulnerability = mediumVulnerabilityIcon;
 				} else if (cell[i] === "LOW_VULNERABILITY") {
-					cellText = cellText + " LV";
+					lowVulnerability = lowVulnerabilityIcon;
 				} else if (cell[i] === "VULNERABILITY") {
-					cellText = cellText + " V";
+					vulnerability = vulnerabilityIcon;
 				}
-			}
-			cellText = cellText.trim();			
+			}	
 			let data = <div>
-						{cellText}
+						{policyViolation}
+						{policyViolationCleared}
+						{policyViolationOverride}
+						{highVulnerability}
+						{mediumVulnerability}
+						{lowVulnerability}
+						{vulnerability}
 					</div>;
 			return data;
 		}
@@ -298,6 +293,8 @@ class Audit extends Component {
 
 	render() {
 		const auditTableOptions = {
+			defaultSortName: 'timeLastSent',
+			defaultSortOrder: 'desc',
 			btnGroup: this.createCustomButtonGroup,
 	  		noDataText: 'No events',
 	  		clearSearch: true,
@@ -314,16 +311,61 @@ class Audit extends Component {
 		return (
 				<div>
 					<div>
+						<div className={auditStyles.legendContainer}>
+							<div className={`${auditStyles.inline}`}>
+								{highVulnerabilityIcon}
+								<div className={auditStyles.legendDescription}>
+									High Vulnerability
+								</div>
+							</div>
+							<div className={`${auditStyles.inline}`}>
+								{lowVulnerabilityIcon}
+								<div className={auditStyles.legendDescription}>
+									Low Vulnerability
+								</div>
+							</div>
+							<div className={`${auditStyles.inline}`}>
+								{policyViolationIcon}
+								<div className={auditStyles.legendDescription}>
+									Policy Violation
+								</div>
+							</div>
+							<div className={`${auditStyles.inline}`}>
+								{policyViolationClearedIcon}
+								<div className={auditStyles.legendDescription}>
+									Policy Violation Cleared
+								</div>
+							</div>
+							<br />
+							<div className={`${auditStyles.inline}`}>
+								{mediumVulnerabilityIcon}
+								<div className={auditStyles.legendDescription}>
+									Medium Vulnerability
+								</div>
+							</div>
+							<div className={`${auditStyles.inline}`}>
+								{vulnerabilityIcon}
+								<div className={auditStyles.legendDescription}>
+									Vulnerability
+								</div>
+							</div>
+							<div className={`${auditStyles.inline}`}>
+								{policyViolationOverrideIcon}
+								<div className={auditStyles.legendDescription}>
+									Policy Override
+								</div>
+							</div>
+						</div>
 						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='jobName' dataSort columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='eventType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Event Type</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='notificationTypes' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='timeCreated' dataSort columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='timeLastSent' dataSort columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
-	                        <TableHeaderColumn dataField='' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
+	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Project Name</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' width='75' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
+	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}
 	  					<p name="message">{this.state.message}</p>

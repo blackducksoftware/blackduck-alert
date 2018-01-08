@@ -21,18 +21,14 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.mock.SlackMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.SlackDistributionRestModel;
 
 public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionRepositoryWrapper, SlackDistributionConfigActions> {
-    private static final SlackMockUtils mockUtils = new SlackMockUtils();
-
-    public SlackConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public SlackDistributionConfigActions getMockedConfigActions() {
@@ -57,6 +53,16 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
         final NotificationTypesActions<SlackDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, mockedSlackRepository, projectsAction, notificationAction, objectTransformer, slackManager);
         return configActions;
+    }
+
+    @Override
+    public MockSlackEntity getEntityMockUtil() {
+        return new MockSlackEntity();
+    }
+
+    @Override
+    public MockSlackRestModel getRestMockUtil() {
+        return new MockSlackRestModel();
     }
 
 }
