@@ -8,6 +8,9 @@ import TextInput from '../../field/input/TextInput';
 import LabeledField from '../../field/input/LabeledField';
 import TextArea from '../../field/input/TextArea';
 
+import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
+import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+
 class AuditDetails extends Component {
 	constructor(props) {
 		super(props);
@@ -15,9 +18,7 @@ class AuditDetails extends Component {
 		let values = {};
 		values.notificationProjectName = currentEntry.notificationProjectName;
 		values.notificationProjectVersion = currentEntry.notificationProjectVersion;
-		values.notificationComponentName = currentEntry.notificationComponentName;
-		values.notificationComponentVersion = currentEntry.notificationComponentVersion;
-		values.notificationPolicyRuleName = currentEntry.notificationPolicyRuleName;
+		values.components = currentEntry.components;
 
 		values.eventType = currentEntry.eventType;
 
@@ -54,27 +55,10 @@ class AuditDetails extends Component {
 
 
 	render(content) {
-		var notificationProjectName = null;
-		if (this.state.values.notificationProjectName) {
-			notificationProjectName = <TextInput label="Project Name" readOnly={true} name="notificationProjectName" value={this.state.values.notificationProjectName}></TextInput>;
-		}
 		var notificationProjectVersion = null;
 		if (this.state.values.notificationProjectVersion) {
 			notificationProjectVersion = <TextInput label="Project Version" readOnly={true} name="notificationProjectVersion" value={this.state.values.notificationProjectVersion}></TextInput>;
 		}
-		var notificationComponentName = null;
-		if (this.state.values.notificationComponentName) {
-			notificationComponentName = <TextInput label="Component Name" readOnly={true} name="notificationComponentName" value={this.state.values.notificationComponentName}></TextInput>;
-		}
-		var notificationComponentVersion = null;
-		if (this.state.values.notificationComponentVersion) {
-			notificationComponentVersion = <TextInput label="Component Version" readOnly={true} name="notificationComponentVersion" value={this.state.values.notificationComponentVersion}></TextInput>;
-		}
-		var notificationPolicyRuleName = null;
-		if (this.state.values.notificationPolicyRuleName) {
-			notificationPolicyRuleName = <TextInput label="Policy Rule Name" readOnly={true} name="notificationPolicyRuleName" value={this.state.values.notificationPolicyRuleName}></TextInput>;
-		}
-
 		var eventType = this.getEventType();
 
 		var errorMessage = null;
@@ -89,10 +73,12 @@ class AuditDetails extends Component {
 		return(
 			<div className={tableStyles.expandableContainer}>
 				{notificationProjectVersion}
-				{notificationComponentName}
-				{notificationComponentVersion}
-				{notificationPolicyRuleName}
 				{eventType}
+				<BootstrapTable data={this.state.values.components} containerClass={tableStyles.auditDetailsTable} striped hover condensed trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.auditDetailsTableBody} >
+                    <TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName={tableStyles.tableCell}>Component</TableHeaderColumn>
+                    <TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName={tableStyles.tableCell}>Version</TableHeaderColumn>
+                    <TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName={tableStyles.tableCell}>Policy Rule</TableHeaderColumn>
+                </BootstrapTable>
 				{errorMessage}
 				{errorStackTrace}
 			</div>
