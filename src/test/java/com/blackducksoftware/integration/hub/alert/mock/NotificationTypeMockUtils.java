@@ -58,6 +58,10 @@ public class NotificationTypeMockUtils {
         return Arrays.asList(type1, type2);
     }
 
+    public List<String> createNotificiationTypeListingAsStrings() {
+        return Arrays.asList(type1.name(), type2.name());
+    }
+
     public JsonArray getNotificationListingJson() {
         final JsonArray json = new JsonArray();
         json.add(type1.name());

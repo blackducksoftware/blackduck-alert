@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 
+import { fontAwesomeLabel } from '../../../css/main.css';
+import { inline } from '../../../css/audit.css';
 import tableStyles from '../../../css/table.css';
 
 import TextInput from '../../field/input/TextInput';
+import LabeledField from '../../field/input/LabeledField';
 import TextArea from '../../field/input/TextArea';
 
 class AuditDetails extends Component {
@@ -16,6 +19,8 @@ class AuditDetails extends Component {
 		values.notificationComponentVersion = currentEntry.notificationComponentVersion;
 		values.notificationPolicyRuleName = currentEntry.notificationPolicyRuleName;
 
+		values.eventType = currentEntry.eventType;
+
 		values.errorMessage = currentEntry.errorMessage;
 		values.errorStackTrace = currentEntry.errorStackTrace;
 		this.state = {
@@ -23,6 +28,30 @@ class AuditDetails extends Component {
 			values
 		};
 	}
+
+	getEventType() {
+		var eventType = null;
+		let fontAwesomeClass = "";
+        let cellText = '';
+		if (this.state.values.eventType === 'email_group_channel') {
+			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
+            cellText = "Group Email";
+		} else if (this.state.values.eventType === 'hipchat_channel') {
+			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
+            cellText = "HipChat";
+		} else if (this.state.values.eventType === 'slack_channel') {
+			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
+            cellText = "Slack";
+		}
+
+		eventType = <div className={inline} >
+						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
+						{cellText}
+					</div>;
+
+		return <LabeledField label="Event Type" field={eventType} />;
+	}
+
 
 	render(content) {
 		var notificationProjectName = null;
@@ -46,6 +75,8 @@ class AuditDetails extends Component {
 			notificationPolicyRuleName = <TextInput label="Policy Rule Name" readOnly={true} name="notificationPolicyRuleName" value={this.state.values.notificationPolicyRuleName}></TextInput>;
 		}
 
+		var eventType = this.getEventType();
+
 		var errorMessage = null;
 		if (this.state.values.errorMessage) {
 			errorMessage = <TextInput label="Error" readOnly={true} name="errorMessage" value={this.state.values.errorMessage}></TextInput>;
@@ -54,13 +85,14 @@ class AuditDetails extends Component {
 		if (this.state.values.errorStackTrace) {
 			errorStackTrace = <TextArea label="Stack Trace" readOnly={true} name="errorStackTrace" value={this.state.values.errorStackTrace}></TextArea>;
 		}
+
 		return(
 			<div className={tableStyles.expandableContainer}>
-				{notificationProjectName}
 				{notificationProjectVersion}
 				{notificationComponentName}
 				{notificationComponentVersion}
 				{notificationPolicyRuleName}
+				{eventType}
 				{errorMessage}
 				{errorStackTrace}
 			</div>

@@ -22,7 +22,9 @@
  */
 package com.blackducksoftware.integration.hub.model;
 
-public class HubProject extends HubModel {
+import com.blackducksoftware.integration.hub.alert.model.Model;
+
+public class HubProject extends Model {
     public String name;
 
 }
