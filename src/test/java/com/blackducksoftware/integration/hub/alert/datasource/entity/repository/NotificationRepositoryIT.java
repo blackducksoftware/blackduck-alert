@@ -27,6 +27,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -40,7 +41,7 @@ public class NotificationRepositoryIT {
 
     private NotificationEntity createNotificationEntity(final Date createdAt, final Collection<VulnerabilityEntity> vulnerabilityList) {
         final String eventKey = "event_key_for_notification";
-        final String notificationType = "notificationType";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String componentName = "componentName";

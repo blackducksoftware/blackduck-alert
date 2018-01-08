@@ -21,6 +21,8 @@ import java.util.List;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
 public class NotificationEntityTest {
 
     @Test
@@ -54,7 +56,7 @@ public class NotificationEntityTest {
         final Long id = 123L;
         final String eventKey = "EventKey";
         final Date createdAt = new Date(System.currentTimeMillis());
-        final String notificationType = "NotificationType";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "ProjectName";
         final String projectUrl = "projectUrl";
         final String projectVersion = "ProjectVersion";
@@ -89,7 +91,7 @@ public class NotificationEntityTest {
         assertEquals(HashCodeBuilder.reflectionHashCode(notificationEntity), notificationEntity.hashCode());
 
         final String expectedString = "{\"eventKey\":\"EventKey\",\"createdAt\":\"" + createdAt.toString()
-                + "\",\"notificationType\":\"NotificationType\",\"projectName\":\"ProjectName\",\"projectVersion\":\"ProjectVersion\",\"componentName\":\"ComponentName\",\"componentVersion\":\"ComponentVersion\",\"policyRuleName\":\"PolicyRuleName\",\"person\":\"Person\",\"projectUrl\":\"projectUrl\",\"projectVersionUrl\":\"projectVersionUrl\",\"vulnerabilityList\":[{\"vulnerabilityId\":\"VulnerabilityId\",\"operation\":\"VulnerabilityOperation\",\"id\":null}],\"id\":123}";
+                + "\",\"notificationType\":\"VULNERABILITY\",\"projectName\":\"ProjectName\",\"projectVersion\":\"ProjectVersion\",\"componentName\":\"ComponentName\",\"componentVersion\":\"ComponentVersion\",\"policyRuleName\":\"PolicyRuleName\",\"person\":\"Person\",\"projectUrl\":\"projectUrl\",\"projectVersionUrl\":\"projectVersionUrl\",\"vulnerabilityList\":[{\"vulnerabilityId\":\"VulnerabilityId\",\"operation\":\"VulnerabilityOperation\",\"id\":null}],\"id\":123}";
         assertEquals(expectedString, notificationEntity.toString());
 
         final NotificationEntity notificationEntityNew = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,

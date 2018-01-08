@@ -12,8 +12,10 @@
 package com.blackducksoftware.integration.hub.alert.mock;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.JsonObject;
 
 public class DistributionMockUtils {
@@ -24,7 +26,7 @@ public class DistributionMockUtils {
     private final String frequency;
     private final String filterByProject;
     private final List<String> configuredProjects;
-    private final List<String> notificationTypes;
+    private final List<NotificationCategoryEnum> notificationTypes;
 
     protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
 
@@ -39,7 +41,7 @@ public class DistributionMockUtils {
     }
 
     public DistributionMockUtils(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
-            final List<String> notificationTypes) {
+            final List<NotificationCategoryEnum> notificationTypes) {
         super();
         this.commonId = id;
         this.distributionConfigId = distributionConfigId;
@@ -79,8 +81,12 @@ public class DistributionMockUtils {
         return configuredProjects;
     }
 
-    public List<String> getNotifications() {
+    public List<NotificationCategoryEnum> getNotifications() {
         return notificationTypes;
+    }
+
+    public List<String> getNotificationsAsStrings() {
+        return notificationTypes.stream().map(type -> type.name()).collect(Collectors.toList());
     }
 
     public JsonObject getEmptyDistributionRestModelJson(final JsonObject json) {

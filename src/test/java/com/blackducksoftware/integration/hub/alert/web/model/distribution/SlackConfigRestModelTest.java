@@ -49,7 +49,8 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public int restModelHashCode() {
-        return 1121637151;
+        return -331374090;
+
     }
 
 }

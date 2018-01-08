@@ -50,17 +50,17 @@ public class ProjectDataFactory {
     public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationEntity> notifications, final DigestTypeEnum digestType) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationEntity entity : notifications) {
-            final String projectKey = entity.getEventKey();
+            final String projectKey = entity.getProjectName() + entity.getProjectVersion();
 
-            ProjectDataBuilder projectBuilder;
+            ProjectDataBuilder projectDataBuilder;
             if (projectDataMap.containsKey(projectKey)) {
-                projectBuilder = projectDataMap.get(projectKey);
+                projectDataBuilder = projectDataMap.get(projectKey);
             } else {
-                projectBuilder = getProjectDataBuilder(entity, digestType);
-                projectDataMap.put(projectKey, projectBuilder);
+                projectDataBuilder = getProjectDataBuilder(entity, digestType);
+                projectDataMap.put(projectKey, projectDataBuilder);
             }
-            projectBuilder.addNotificationId(entity.getId());
-            final CategoryDataBuilder categoryDataBuilder = getCategoryDataBuilder(entity, projectBuilder.getCategoryBuilderMap());
+            projectDataBuilder.addNotificationId(entity.getId());
+            final CategoryDataBuilder categoryDataBuilder = getCategoryDataBuilder(entity, projectDataBuilder.getCategoryBuilderMap());
             addCategoryData(entity, categoryDataBuilder);
         }
         return collectProjectDataFromMap(projectDataMap);
@@ -71,12 +71,12 @@ public class ProjectDataFactory {
     }
 
     public ProjectData createProjectData(final NotificationEntity notification, final DigestTypeEnum digestType) {
-        final ProjectDataBuilder projectBuilder = getProjectDataBuilder(notification, digestType);
-        projectBuilder.addNotificationId(notification.getId());
-        final CategoryDataBuilder categoryData = new CategoryDataBuilder();
-        categoryData.setCategoryKey(getCategoryKey(notification).name());
+        final ProjectDataBuilder projectDataBuilder = getProjectDataBuilder(notification, digestType);
+        projectDataBuilder.addNotificationId(notification.getId());
+        final CategoryDataBuilder categoryData = getCategoryDataBuilder(notification, projectDataBuilder.getCategoryBuilderMap());
+        categoryData.setCategoryKey(notification.getNotificationType().name());
         addCategoryData(notification, categoryData);
-        return projectBuilder.build();
+        return projectDataBuilder.build();
     }
 
     // get category map from the project or create the project data if it doesn't exist
@@ -91,7 +91,7 @@ public class ProjectDataFactory {
 
     private CategoryDataBuilder getCategoryDataBuilder(final NotificationEntity notification, final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap) {
         CategoryDataBuilder categoryData;
-        final NotificationCategoryEnum categoryKey = getCategoryKey(notification);
+        final NotificationCategoryEnum categoryKey = notification.getNotificationType();
         if (!categoryBuilderMap.containsKey(categoryKey)) {
             categoryData = new CategoryDataBuilder();
             categoryData.setCategoryKey(categoryKey.name());
@@ -104,7 +104,7 @@ public class ProjectDataFactory {
     // get the category data object to be able to add items.
     private void addCategoryData(final NotificationEntity notification, final CategoryDataBuilder categoryData) {
         final Map<String, Object> dataSet = new HashMap<>();
-        final NotificationCategoryEnum categoryKey = getCategoryKey(notification);
+        final NotificationCategoryEnum categoryKey = notification.getNotificationType();
 
         int count = 1;
         if (categoryKey == NotificationCategoryEnum.HIGH_VULNERABILITY || categoryKey == NotificationCategoryEnum.MEDIUM_VULNERABILITY || categoryKey == NotificationCategoryEnum.LOW_VULNERABILITY) {
@@ -121,10 +121,6 @@ public class ProjectDataFactory {
         dataSet.put(ItemTypeEnum.COUNT.name(), count);
 
         categoryData.addItem(new ItemData(dataSet));
-    }
-
-    private NotificationCategoryEnum getCategoryKey(final NotificationEntity notification) {
-        return NotificationCategoryEnum.valueOf(notification.getNotificationType());
     }
 
     private Set<String> getVulnerabilityIdSet(final NotificationEntity notification) {

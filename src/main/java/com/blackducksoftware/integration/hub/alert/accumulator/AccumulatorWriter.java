@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
 @Transactional
@@ -66,7 +67,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                     final String eventKey = notification.getEventKey();
                     final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
                     final Date createdAt = content.getCreatedAt();
-                    final String notificationType = notification.getCategoryType().toString();
+                    final NotificationCategoryEnum notificationType = notification.getCategoryType();
                     final String projectName = content.getProjectVersion().getProjectName();
                     final String projectUrl = content.getProjectVersion().getProjectLink();
                     final String projectVersion = content.getProjectVersion().getProjectVersionName();
