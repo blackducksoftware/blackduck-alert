@@ -22,6 +22,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model.global;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalHubConfigRestModel extends ConfigRestModel {
@@ -29,13 +30,19 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     private String hubUrl;
     private String hubTimeout;
-    private transient String hubApiKey;
+
+    @SensitiveField
+    private String hubApiKey;
     private boolean hubApiKeyIsSet;
+
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
-    private transient String hubProxyPassword;
+
+    @SensitiveField
+    private String hubProxyPassword;
     private boolean hubProxyPasswordIsSet;
+
     private String hubAlwaysTrustCertificate;
 
     public GlobalHubConfigRestModel() {

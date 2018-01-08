@@ -26,6 +26,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Entity
@@ -36,8 +37,9 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
+    @SensitiveField
     @Column(name = "hub_api_key")
-    private transient String hubApiKey;
+    private String hubApiKey;
 
     public GlobalHubConfigEntity() {
     }

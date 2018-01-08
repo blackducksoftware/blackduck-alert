@@ -148,11 +148,6 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return "Valid";
     }
 
-    @Override
-    public List<String> sensitiveFields() {
-        return Collections.emptyList();
-    }
-
     private void cleanUpStaleChannelConfigurations() {
         final String distributionName = getDistributionName();
         if (distributionName != null) {

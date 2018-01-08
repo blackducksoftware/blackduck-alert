@@ -24,12 +24,9 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import com.blackducksoftware.integration.hub.alert.model.Model;
 
-import com.google.gson.Gson;
-
-public abstract class ConfigRestModel implements Serializable {
+public abstract class ConfigRestModel extends Model implements Serializable {
     private static final long serialVersionUID = -3734941694720407916L;
 
     private String id;
@@ -49,19 +46,4 @@ public abstract class ConfigRestModel implements Serializable {
         this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
-    @Override
-    public String toString() {
-        final Gson gson = new Gson();
-        return gson.toJson(this);
-    }
 }

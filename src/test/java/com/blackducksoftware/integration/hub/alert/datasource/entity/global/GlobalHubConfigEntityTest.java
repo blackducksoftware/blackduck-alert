@@ -37,7 +37,7 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
 
     @Override
     public int emptyGlobalEntityHashCode() {
-        return 23273;
+        return 861101;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
 
     @Override
     public int globalEntityHashCode() {
-        return 39702;
+        return -1088377652;
     }
 
     @Override
