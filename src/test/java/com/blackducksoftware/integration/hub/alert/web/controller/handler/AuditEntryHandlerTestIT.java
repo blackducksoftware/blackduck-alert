@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
+import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.MockUtils;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
@@ -48,6 +50,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
+@Category(DatabaseSetupRequiredTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
