@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.google.gson.JsonObject;
 
 public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubConfigRestModel> {

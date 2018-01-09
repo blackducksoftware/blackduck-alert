@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
 import com.google.gson.JsonObject;
 
 public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<GlobalSchedulingConfigRestModel> {

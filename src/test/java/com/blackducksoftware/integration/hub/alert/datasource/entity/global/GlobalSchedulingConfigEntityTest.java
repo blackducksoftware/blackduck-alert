@@ -16,6 +16,7 @@ import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalSchedulingEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 
 public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSchedulingConfigEntity> {
 
