@@ -174,4 +174,8 @@ task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
-task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {}
+task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
+    dockerLogin.mustRunAfter build
+    buildDockerImage.mustRunAfter dockerLogin
+    pushImage.mustRunAfter buildDockerImage    
+}

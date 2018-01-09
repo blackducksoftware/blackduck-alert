@@ -39,10 +39,15 @@
 .title {
     margin-left: auto;
     margin-right: auto;
-    font-size: 18px;
+    font-size: 24px;
+    font-style: bold;
     text-align: center;
 }
 
-.logo {
+.loginSpacer {
+    min-width: 150px;
+}
+
+.blackduckLogo {
     margin-top: 4px;
 }
