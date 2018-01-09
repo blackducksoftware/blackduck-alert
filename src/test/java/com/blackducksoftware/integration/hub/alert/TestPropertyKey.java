@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.hub.alert;
 
 public enum TestPropertyKey {
     TEST_HUB_SERVER_URL("blackduck.hub.url"),
+    TEST_HUB_PORT("blackduck.hub.port"),
     TEST_USERNAME("blackduck.hub.username"),
     TEST_PASSWORD("blackduck.hub.password"),
     TEST_HUB_API_KEY("blackduck.hub.api.key"),

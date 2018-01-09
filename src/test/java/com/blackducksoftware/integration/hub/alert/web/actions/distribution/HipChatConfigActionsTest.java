@@ -21,18 +21,14 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.mock.HipChatMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 
 public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatDistributionRepositoryWrapper, HipChatDistributionConfigActions> {
-    private static final HipChatMockUtils mockUtils = new HipChatMockUtils();
-
-    public HipChatConfigActionsTest() {
-        super(mockUtils);
-    }
 
     @Override
     public HipChatDistributionConfigActions getMockedConfigActions() {
@@ -57,5 +53,15 @@ public class HipChatConfigActionsTest extends ActionsTest<HipChatDistributionRes
         final NotificationTypesActions<HipChatDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
         final HipChatDistributionConfigActions configActions = new HipChatDistributionConfigActions(commonRepository, mockedHipChatRepository, projectsAction, notificationAction, objectTransformer, hipChatManager);
         return configActions;
+    }
+
+    @Override
+    public MockHipChatEntity getEntityMockUtil() {
+        return new MockHipChatEntity();
+    }
+
+    @Override
+    public MockHipChatRestModel getRestMockUtil() {
+        return new MockHipChatRestModel();
     }
 }

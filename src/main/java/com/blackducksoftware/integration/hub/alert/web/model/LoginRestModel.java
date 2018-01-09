@@ -23,8 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 
 public class LoginRestModel extends ConfigRestModel {
     private static final long serialVersionUID = 9172607945030111585L;
@@ -32,12 +31,16 @@ public class LoginRestModel extends ConfigRestModel {
     private String hubUrl;
     private String hubTimeout;
     private String hubUsername;
-    private String hubPassword;
     private String hubProxyHost;
     private String hubProxyPort;
     private String hubProxyUsername;
-    private String hubProxyPassword;
     private String hubAlwaysTrustCertificate;
+
+    @SensitiveField
+    private String hubPassword;
+
+    @SensitiveField
+    private String hubProxyPassword;
 
     public LoginRestModel() {
     }
@@ -94,13 +97,6 @@ public class LoginRestModel extends ConfigRestModel {
 
     public String getHubAlwaysTrustCertificate() {
         return hubAlwaysTrustCertificate;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("hubPassword", "hubProxyPassword");
-        return reflectionToStringBuilder.build();
     }
 
 }

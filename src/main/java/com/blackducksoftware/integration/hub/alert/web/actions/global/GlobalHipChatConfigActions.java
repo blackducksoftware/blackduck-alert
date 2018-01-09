@@ -23,9 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,13 +50,6 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
         // TODO decide how to test the API key
         return "Not implemented.";
-    }
-
-    @Override
-    public List<String> sensitiveFields() {
-        final List<String> sensitiveFields = new ArrayList<>();
-        sensitiveFields.add("apiKey");
-        return sensitiveFields;
     }
 
 }
