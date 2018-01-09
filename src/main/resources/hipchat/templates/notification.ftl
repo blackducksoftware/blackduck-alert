@@ -3,22 +3,21 @@
         <br />- - - - - - - - - - - - - - - - - - - -
         <br />Type: ${categoryItem.categoryKey}
         <br />Number of Changes: ${categoryItem.itemCount}
+        <br />
         <#list categoryItem.itemList as item>
             <#if item.dataSet?? && item.dataSet?size gt 0>
-                <p>
-                    <#if item.dataSet.COUNT??>
-                        Vulnerability Count: ${item.dataSet.COUNT}
-                    </#if>
-                    <#if item.dataSet.RULE??>
-                        Rule: ${item.dataSet.RULE}
-                    </#if>
-                </p>
-                <p>  Component: ${item.dataSet.COMPONENT} [${item.dataSet.VERSION}]</p>
+                <#if item.dataSet.RULE??>
+                    <br /> Rule: ${item.dataSet.RULE}
+                </#if>
+                <#if item.dataSet.COUNT??>
+                    <br /> Vulnerability Count: ${item.dataSet.COUNT}
+                </#if>
+                <br /> Component: ${item.dataSet.COMPONENT} [${item.dataSet.VERSION}]
             </#if>
+            <br />
         </#list>
     </#if>
 </#macro>
-
 
 <strong> ${projectName} > ${projectVersion} </strong>
 <#if categoryMap??>

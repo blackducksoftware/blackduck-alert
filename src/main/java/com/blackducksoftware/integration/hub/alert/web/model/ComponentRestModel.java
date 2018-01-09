@@ -28,14 +28,16 @@ public class ComponentRestModel extends ConfigRestModel {
     private String componentName;
     private String componentVersion;
     private String policyRuleName;
+    private String policyRuleUser;
 
     public ComponentRestModel() {
     }
 
-    public ComponentRestModel(final String componentName, final String componentVersion, final String policyRuleName) {
+    public ComponentRestModel(final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
+        this.policyRuleUser = policyRuleUser;
     }
 
     public String getComponentName() {
@@ -48,6 +50,10 @@ public class ComponentRestModel extends ConfigRestModel {
 
     public String getPolicyRuleName() {
         return policyRuleName;
+    }
+
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
 }

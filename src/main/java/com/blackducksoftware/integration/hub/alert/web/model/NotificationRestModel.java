@@ -33,22 +33,21 @@ public class NotificationRestModel extends ConfigRestModel {
     private String projectName;
     private String projectVersion;
     private Set<ComponentRestModel> components;
-    private String person;
     private String projectUrl;
     private String projectVersionUrl;
 
     public NotificationRestModel() {
     }
 
-    public NotificationRestModel(final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentRestModel> components, final String person,
+    public NotificationRestModel(final String id, final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentRestModel> components,
             final String projectUrl, final String projectVersionUrl) {
+        super(id);
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationTypes = notificationTypes;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
         this.components = components;
-        this.person = person;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
     }
@@ -87,10 +86,6 @@ public class NotificationRestModel extends ConfigRestModel {
 
     public void setComponents(final Set<ComponentRestModel> components) {
         this.components = components;
-    }
-
-    public String getPerson() {
-        return person;
     }
 
     public String getProjectUrl() {
