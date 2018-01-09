@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Transactional
 @Component
@@ -66,7 +67,7 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
         final List<String> notificationTypes = new ArrayList<>(foundRelations.size());
         for (final DistributionNotificationTypeRelation relation : foundRelations) {
             final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(relation.getNotificationTypeId());
-            notificationTypes.add(foundEntity.getType());
+            notificationTypes.add(foundEntity.getType().name());
         }
         return notificationTypes;
     }
@@ -88,12 +89,13 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
 
     private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         for (final String notificationType : notificationTypesFromRestModel) {
+            final NotificationCategoryEnum notificationTypeEnum = NotificationCategoryEnum.valueOf(notificationType);
             Long notificationTypeId;
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findByType(notificationType);
+            final NotificationTypeEntity foundEntity = notificationTypeRepository.findByType(notificationTypeEnum);
             if (foundEntity != null) {
                 notificationTypeId = foundEntity.getId();
             } else {
-                final NotificationTypeEntity createdEntity = notificationTypeRepository.save(new NotificationTypeEntity(notificationType));
+                final NotificationTypeEntity createdEntity = notificationTypeRepository.save(new NotificationTypeEntity(notificationTypeEnum));
                 notificationTypeId = createdEntity.getId();
             }
             distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationTypeId));

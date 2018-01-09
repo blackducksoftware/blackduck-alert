@@ -26,19 +26,21 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
 @Entity
 @Table(schema = "alert", name = "notification_types")
 public class NotificationTypeEntity extends DatabaseEntity {
     private static final long serialVersionUID = 6250696874570412937L;
 
     @Column
-    private String type;
+    private NotificationCategoryEnum type;
 
     public NotificationTypeEntity() {
 
     }
 
-    public NotificationTypeEntity(final String type) {
+    public NotificationTypeEntity(final NotificationCategoryEnum type) {
         this.type = type;
     }
 
@@ -46,7 +48,7 @@ public class NotificationTypeEntity extends DatabaseEntity {
         return serialVersionUID;
     }
 
-    public String getType() {
+    public NotificationCategoryEnum getType() {
         return type;
     }
 
