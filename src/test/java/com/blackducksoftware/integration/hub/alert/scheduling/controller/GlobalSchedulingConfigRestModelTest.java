@@ -9,12 +9,11 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model.global;
+package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 

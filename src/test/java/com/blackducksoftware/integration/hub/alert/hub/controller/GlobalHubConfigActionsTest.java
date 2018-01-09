@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions.global;
+package com.blackducksoftware.integration.hub.alert.hub.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -33,10 +33,11 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
+import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
+import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
