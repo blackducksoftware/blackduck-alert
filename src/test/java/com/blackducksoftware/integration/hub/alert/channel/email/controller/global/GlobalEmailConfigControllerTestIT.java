@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.global;
+package com.blackducksoftware.integration.hub.alert.channel.email.controller.global;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
