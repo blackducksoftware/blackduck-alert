@@ -2,8 +2,7 @@
 
 import React, { Component } from 'react';
 
-import { submitButtons, submitContainers, header, fixedHeader, title } from '../../css/header.css';
-import logo from '../../img/BDTextLogo.png';
+import { submitButtons, submitContainers, header, fixedHeader, title, blackduckLogo, loginSpacer } from '../../css/header.css';
 
 class Header extends Component {
 	//constructor is part of the Component lifecycle
@@ -55,7 +54,9 @@ class Header extends Component {
 		let logout = "";
 		if (this.props.includeLogout === true){
 			logout = <div className={submitContainers}><input className={submitButtons} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
-		}
+		} else {
+            logout = <div className={submitContainers}><div className={loginSpacer}></div></div>
+        }
 		let headerClass = header;
 		if (this.props.fixed === true){
 			headerClass = fixedHeader;
@@ -63,7 +64,7 @@ class Header extends Component {
 
 		return (
 			<div className={headerClass}>
-                <div>
+                <div className={blackduckLogo}>
                     <svg width="150px" height="17px" viewBox="0 0 150 17" version="1.1">
                         <desc>Created with Sketch.</desc>
                         <defs>
