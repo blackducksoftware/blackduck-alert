@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.hub.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

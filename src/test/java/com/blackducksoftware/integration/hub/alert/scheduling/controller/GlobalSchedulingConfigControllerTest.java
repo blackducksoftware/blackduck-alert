@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.global;
+package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
 import javax.transaction.Transactional;
 
@@ -20,9 +20,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalSchedulingEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
