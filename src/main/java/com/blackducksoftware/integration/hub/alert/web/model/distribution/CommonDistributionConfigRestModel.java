@@ -25,9 +25,6 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 
 import java.util.List;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class CommonDistributionConfigRestModel extends ConfigRestModel {
@@ -116,24 +113,6 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
 
     public void setStatus(final String status) {
         this.status = status;
-    }
-
-    @Override
-    public String toString() {
-        String[] configuredProjectsToStringArray = null;
-        if (configuredProjects != null) {
-            configuredProjectsToStringArray = configuredProjects.toArray(new String[configuredProjects.size()]);
-        }
-        String[] notificationTypesToStringArray = null;
-        if (notificationTypes != null) {
-            notificationTypesToStringArray = notificationTypes.toArray(new String[notificationTypes.size()]);
-        }
-
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("configuredProjects", "notificationTypes");
-        reflectionToStringBuilder.append("configuredProjects", configuredProjectsToStringArray);
-        reflectionToStringBuilder.append("notificationTypes", notificationTypesToStringArray);
-        return reflectionToStringBuilder.build();
     }
 
 }

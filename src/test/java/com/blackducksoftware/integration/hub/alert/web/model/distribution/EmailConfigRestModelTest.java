@@ -14,14 +14,10 @@ package com.blackducksoftware.integration.hub.alert.web.model.distribution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.mock.EmailMockUtils;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockEmailRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
 public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributionRestModel> {
-    private static final EmailMockUtils mockUtils = new EmailMockUtils();
-
-    public EmailConfigRestModelTest() {
-        super(mockUtils, EmailGroupDistributionRestModel.class);
-    }
 
     @Override
     public void assertRestModelFieldsNull(final EmailGroupDistributionRestModel restModel) {
@@ -40,12 +36,22 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
 
     @Override
     public void assertRestModelFieldsFull(final EmailGroupDistributionRestModel restModel) {
-        assertEquals(mockUtils.getEmailGroup(), restModel.getGroupName());
+        assertEquals(getMockUtil().getGroupName(), restModel.getGroupName());
     }
 
     @Override
     public int restModelHashCode() {
-        return 50228440;
+        return -405249653;
+    }
+
+    @Override
+    public Class<EmailGroupDistributionRestModel> getRestModelClass() {
+        return EmailGroupDistributionRestModel.class;
+    }
+
+    @Override
+    public MockEmailRestModel getMockUtil() {
+        return new MockEmailRestModel();
     }
 
 }

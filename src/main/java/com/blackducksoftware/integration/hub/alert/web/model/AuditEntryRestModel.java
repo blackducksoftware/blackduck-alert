@@ -23,9 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 public class AuditEntryRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -8714295254107315501L;
 
@@ -88,12 +85,6 @@ public class AuditEntryRestModel extends ConfigRestModel {
 
     public String getErrorStackTrace() {
         return errorStackTrace;
-    }
-
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        return reflectionToStringBuilder.build();
     }
 
 }

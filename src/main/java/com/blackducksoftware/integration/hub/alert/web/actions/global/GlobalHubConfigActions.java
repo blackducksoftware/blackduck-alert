@@ -190,13 +190,4 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
         return hubServerConfig.createApiKeyRestConnection(hubServerConfigBuilder.getLogger());
     }
-
-    @Override
-    public List<String> sensitiveFields() {
-        final List<String> sensitiveFields = new ArrayList<>();
-        sensitiveFields.add("hubApiKey");
-        sensitiveFields.add("hubProxyPassword");
-        return sensitiveFields;
-    }
-
 }

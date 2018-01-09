@@ -27,8 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import org.apache.commons.lang3.builder.RecursiveToStringStyle;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 
 @Entity
 @Table(schema = "alert", name = "global_email_config")
@@ -43,6 +42,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     private String mailSmtpUser;
 
     // not a javamail property, but we are going to piggy-back to get the smtp password
+    @SensitiveField
     @Column(name = "mail_smtp_password")
     private String mailSmtpPassword;
 
@@ -185,10 +185,4 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return emailSubjectLine;
     }
 
-    @Override
-    public String toString() {
-        final ReflectionToStringBuilder reflectionToStringBuilder = new ReflectionToStringBuilder(this, RecursiveToStringStyle.JSON_STYLE);
-        reflectionToStringBuilder.setExcludeFieldNames("mailSmtpPassword");
-        return reflectionToStringBuilder.build();
-    }
 }
