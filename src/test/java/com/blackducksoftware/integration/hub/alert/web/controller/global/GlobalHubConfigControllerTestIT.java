@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
@@ -19,7 +18,8 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     @Autowired
     GlobalHubRepository globalHubRepository;
 
-    private TestProperties testProperties;
+    // TODO uncomment when the test below is fixed
+    // private TestProperties testProperties;
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {
@@ -45,6 +45,7 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     @Override
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
+        // TODO fix this
         // globalEntityRepository.deleteAll();
         // final String username = testProperties.getProperty(TestPropertyKey.TEST_USERNAME);
         // final String port = testProperties.getProperty(TestPropertyKey.TEST_HUB_PORT);

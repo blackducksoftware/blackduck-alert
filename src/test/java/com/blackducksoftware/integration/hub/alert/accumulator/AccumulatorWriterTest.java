@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
@@ -55,7 +56,7 @@ public class AccumulatorWriterTest {
 
         dataSet.put(ItemTypeEnum.RULE.name(), "policyRuleName");
         dataSet.put(ItemTypeEnum.PERSON.name(), "policyUserName");
-        dataSet.put(VulnerabilityCache.VULNERABILITY_OPERATION, "operationName");
+        dataSet.put(VulnerabilityCache.VULNERABILITY_OPERATION, VulnerabilityOperationEnum.ADD.name());
 
         final Set<String> vulnSet = new HashSet<>();
         vulnSet.add("vulnerabilityId");

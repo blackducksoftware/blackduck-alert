@@ -162,7 +162,7 @@ public class AuditEntryActions {
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
             }
-            final List<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType()).collect(Collectors.toList());
+            final List<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toList());
             notificationRestModel.setNotificationTypes(notificationTypes);
         }
 
