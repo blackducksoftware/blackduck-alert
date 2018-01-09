@@ -64,7 +64,7 @@
 
 .tableScrollableBody {
     composes: scrollable;
-    height: 66vh !important;
+    height: 55vh !important;
     width: 100%;
 }
 
@@ -74,4 +74,16 @@
     background-color: white;
     height: 98%;
     width: 98%;
+    overflow-y: scroll !important;
+}
+
+.auditDetailsTable {
+    composes: table;
+    margin-left: 10px;
+    margin-right: 5px;
+}
+
+.auditDetailsTableBody {
+    composes: scrollable;
+    height: 150px !important;
 }

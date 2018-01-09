@@ -2,12 +2,12 @@ package com.blackducksoftware.integration.hub.alert.web.controller.global;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepository;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
 
 public class GlobalEmailConfigControllerTestIT extends GlobalControllerTest<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepository> {
 

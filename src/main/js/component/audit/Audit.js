@@ -100,9 +100,7 @@ class Audit extends Component {
 					newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
 		            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
 					newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
-					newEntry.notificationComponentName = jsonArray[index].notification.componentName;
-					newEntry.notificationComponentVersion = jsonArray[index].notification.componentVersion;
-					newEntry.notificationPolicyRuleName = jsonArray[index].notification.policyRuleName;
+					newEntry.components = jsonArray[index].notification.components;
 				}
 				entries.push(newEntry);
 			}

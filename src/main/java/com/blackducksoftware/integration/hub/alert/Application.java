@@ -55,13 +55,13 @@ import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.**.repository" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.**.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
