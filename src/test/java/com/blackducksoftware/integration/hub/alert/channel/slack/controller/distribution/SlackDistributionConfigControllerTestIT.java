@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

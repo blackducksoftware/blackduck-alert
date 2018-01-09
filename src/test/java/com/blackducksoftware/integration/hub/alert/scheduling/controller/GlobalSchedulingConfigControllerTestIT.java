@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.global;
+package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.scheduling.controller.MockGlobalSchedulingRestModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;

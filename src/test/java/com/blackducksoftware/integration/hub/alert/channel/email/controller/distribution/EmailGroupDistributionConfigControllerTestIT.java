@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
