@@ -35,7 +35,7 @@ public class NotificationRestModel extends ConfigRestModel {
     private String componentName;
     private String componentVersion;
     private String policyRuleName;
-    private String person;
+    private String policyRuleUser;
     private String projectUrl;
     private String projectVersionUrl;
 
@@ -43,7 +43,7 @@ public class NotificationRestModel extends ConfigRestModel {
     }
 
     public NotificationRestModel(final String id, final String eventKey, final String createdAt, final List<String> notificationTypes, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl) {
+            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl) {
         super(id);
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -53,7 +53,7 @@ public class NotificationRestModel extends ConfigRestModel {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
-        this.person = person;
+        this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
     }
@@ -98,8 +98,8 @@ public class NotificationRestModel extends ConfigRestModel {
         return policyRuleName;
     }
 
-    public String getPerson() {
-        return person;
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
     public String getProjectUrl() {

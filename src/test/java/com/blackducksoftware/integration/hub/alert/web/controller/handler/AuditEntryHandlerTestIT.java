@@ -105,7 +105,7 @@ public class AuditEntryHandlerTestIT {
         assertEquals(savedNotificationEntity.getComponentName(), notification.getComponentName());
         assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponentVersion());
         assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getPolicyRuleName());
-        assertEquals(savedNotificationEntity.getPerson(), notification.getPerson());
+        assertEquals(savedNotificationEntity.getPolicyRuleUser(), notification.getPolicyRuleUser());
     }
 
     @Test

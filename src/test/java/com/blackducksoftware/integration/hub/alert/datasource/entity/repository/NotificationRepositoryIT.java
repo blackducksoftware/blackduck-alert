@@ -83,7 +83,7 @@ public class NotificationRepositoryIT {
         assertEquals(entity.getComponentName(), foundEntity.getComponentName());
         assertEquals(entity.getComponentVersion(), foundEntity.getComponentVersion());
         assertEquals(entity.getPolicyRuleName(), foundEntity.getPolicyRuleName());
-        assertEquals(entity.getPerson(), foundEntity.getPerson());
+        assertEquals(entity.getPolicyRuleUser(), foundEntity.getPolicyRuleUser());
         assertEquals(entity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 
@@ -100,7 +100,7 @@ public class NotificationRepositoryIT {
         assertEquals(savedEntity.getComponentName(), foundEntity.getComponentName());
         assertEquals(savedEntity.getComponentVersion(), foundEntity.getComponentVersion());
         assertEquals(savedEntity.getPolicyRuleName(), foundEntity.getPolicyRuleName());
-        assertEquals(savedEntity.getPerson(), foundEntity.getPerson());
+        assertEquals(savedEntity.getPolicyRuleUser(), foundEntity.getPolicyRuleUser());
         assertEquals(savedEntity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 

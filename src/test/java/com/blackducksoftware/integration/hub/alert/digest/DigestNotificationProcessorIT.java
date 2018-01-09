@@ -45,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -81,7 +82,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
@@ -113,7 +114,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
@@ -147,7 +148,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
