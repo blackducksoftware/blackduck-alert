@@ -9,13 +9,15 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution;
 
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
@@ -23,11 +25,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.distribution.ActionsTest;
 
 public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestModel, SlackDistributionConfigEntity, SlackDistributionRepositoryWrapper, SlackDistributionConfigActions> {
 

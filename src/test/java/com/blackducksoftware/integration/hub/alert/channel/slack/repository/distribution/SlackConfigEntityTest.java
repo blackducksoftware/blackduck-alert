@@ -9,14 +9,14 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
 
 public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
 

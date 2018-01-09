@@ -9,9 +9,11 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock.model;
+package com.blackducksoftware.integration.hub.alert.channel.slack.mock;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockCommonDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.google.gson.JsonObject;
 
 public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {

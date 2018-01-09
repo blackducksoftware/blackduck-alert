@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global;
 
 import static org.junit.Assert.assertEquals;
 
