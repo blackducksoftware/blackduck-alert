@@ -25,20 +25,20 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalHubEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockEmailGlobalRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockHipChatGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
+import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHipChatConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalHubConfigRestModel;
 
 public class ObjectTransformerTest {
 
