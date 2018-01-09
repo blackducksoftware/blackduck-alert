@@ -66,8 +66,8 @@ public class NotificationEntity extends DatabaseEntity {
     @Column(name = "policy_rule_name")
     private String policyRuleName;
 
-    @Column(name = "person")
-    private String person;
+    @Column(name = "policy_rule_user")
+    private String policyRuleUser;
 
     @Column(name = "project_url")
     private String projectUrl;
@@ -92,7 +92,7 @@ public class NotificationEntity extends DatabaseEntity {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
-        this.person = person;
+        this.policyRuleUser = person;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
         this.vulnerabilityList = vulnerabilityList;
@@ -134,8 +134,8 @@ public class NotificationEntity extends DatabaseEntity {
         return policyRuleName;
     }
 
-    public String getPerson() {
-        return person;
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
     public String getProjectUrl() {

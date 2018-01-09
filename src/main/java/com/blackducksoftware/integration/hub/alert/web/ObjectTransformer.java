@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -105,6 +106,9 @@ public class ObjectTransformer {
                         } else if (Date.class == field.getType()) {
                             final Date oldField = (Date) field.get(databaseEntity);
                             newField.set(newClassObject, objectToString(oldField));
+                        } else if (DigestTypeEnum.class == field.getType()) {
+                            final DigestTypeEnum oldField = (DigestTypeEnum) field.get(databaseEntity);
+                            newField.set(newClassObject, digestTypeEnumToString(oldField));
                         } else if (NotificationCategoryEnum.class == field.getType()) {
                             final NotificationCategoryEnum oldField = (NotificationCategoryEnum) field.get(databaseEntity);
                             newField.set(newClassObject, notificationCategoryEnumToString(oldField));
@@ -182,11 +186,13 @@ public class ObjectTransformer {
                             newField.set(newClassObject, stringToLong(oldField));
                         } else if (Boolean.class == newField.getType()) {
                             newField.set(newClassObject, stringToBoolean(oldField));
-                        } else if (Date.class == field.getType()) {
+                        } else if (Date.class == newField.getType()) {
                             newField.set(newClassObject, stringToDate(oldField));
-                        } else if (NotificationCategoryEnum.class == field.getType()) {
+                        } else if (DigestTypeEnum.class == newField.getType()) {
+                            newField.set(newClassObject, stringToDigestTypeEnum(oldField));
+                        } else if (NotificationCategoryEnum.class == newField.getType()) {
                             newField.set(newClassObject, stringToNotificationCategoryEnum(oldField));
-                        } else if (StatusEnum.class == field.getType()) {
+                        } else if (StatusEnum.class == newField.getType()) {
                             newField.set(newClassObject, stringToStatusEnum(oldField));
                         } else {
                             throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
@@ -250,6 +256,20 @@ public class ObjectTransformer {
             }
         }
         return null;
+    }
+
+    public DigestTypeEnum stringToDigestTypeEnum(final String value) {
+        if (value != null) {
+            try {
+                return DigestTypeEnum.valueOf(value);
+            } catch (final IllegalArgumentException e) {
+            }
+        }
+        return null;
+    }
+
+    public String digestTypeEnumToString(final DigestTypeEnum digestTypeEnum) {
+        return digestTypeEnum.name();
     }
 
     public NotificationCategoryEnum stringToNotificationCategoryEnum(final String value) {

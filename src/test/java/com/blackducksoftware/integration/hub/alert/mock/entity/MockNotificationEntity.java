@@ -31,19 +31,19 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     private final String componentName;
     private final String componentVersion;
     private final String policyRuleName;
-    private final String person;
+    private final String policyRuleUser;
     private final String projectUrl;
     private final String projectVersionUrl;
     private final Collection<VulnerabilityEntity> vulnerabilityList;
     private final Long id;
 
     public MockNotificationEntity() {
-        this("_event_key_", new Date(400), NotificationCategoryEnum.POLICY_VIOLATION, "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "person", "projectUrl", "projectVersionUrl",
+        this("_event_key_", new Date(400), NotificationCategoryEnum.POLICY_VIOLATION, "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "policyRuleUser", "projectUrl", "projectVersionUrl",
                 Arrays.asList(new MockVulnerabilityEntity().createEntity()), 1L);
     }
 
     private MockNotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String person, final String projectUrl, final String projectVersionUrl, final Collection<VulnerabilityEntity> vulnerabilityList, final Long id) {
+            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Collection<VulnerabilityEntity> vulnerabilityList, final Long id) {
         super();
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -53,7 +53,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
-        this.person = person;
+        this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
         this.vulnerabilityList = vulnerabilityList;
@@ -92,8 +92,8 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         return policyRuleName;
     }
 
-    public String getPerson() {
-        return person;
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
     public String getProjectUrl() {
@@ -115,7 +115,8 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
 
     @Override
     public NotificationEntity createEntity() {
-        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList);
+        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser,
+                vulnerabilityList);
         entity.setId(id);
         return entity;
     }
@@ -139,7 +140,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         json.addProperty("componentName", componentName);
         json.addProperty("componentVersion", componentVersion);
         json.addProperty("policyRuleName", policyRuleName);
-        json.addProperty("person", person);
+        json.addProperty("policyRuleUser", policyRuleUser);
         json.addProperty("projectUrl", projectUrl);
         json.addProperty("projectVersionUrl", projectVersionUrl);
         final JsonElement array = gson.toJsonTree(vulnerabilityList);

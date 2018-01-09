@@ -14,7 +14,9 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 
@@ -37,7 +39,7 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
         assertNull(entity.getCreatedAt());
         assertNull(entity.getEventKey());
         assertNull(entity.getNotificationType());
-        assertNull(entity.getPerson());
+        assertNull(entity.getPolicyRuleUser());
         assertNull(entity.getPolicyRuleName());
         assertNull(entity.getProjectName());
         assertNull(entity.getProjectUrl());
@@ -63,7 +65,7 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
         assertEquals(getMockUtil().getCreatedAt(), entity.getCreatedAt());
         assertEquals(getMockUtil().getEventKey(), entity.getEventKey());
         assertEquals(getMockUtil().getNotificationType(), entity.getNotificationType());
-        assertEquals(getMockUtil().getPerson(), entity.getPerson());
+        assertEquals(getMockUtil().getPolicyRuleUser(), entity.getPolicyRuleUser());
         assertEquals(getMockUtil().getPolicyRuleName(), entity.getPolicyRuleName());
         assertEquals(getMockUtil().getProjectName(), entity.getProjectName());
         assertEquals(getMockUtil().getProjectUrl(), entity.getProjectUrl());
@@ -79,8 +81,22 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
 
     @Override
     @Test
-    public void testEntity() {
+    public void testEntity() throws JSONException {
         // TODO figure out why the hash code keeps changing
+        final NotificationEntity configEntity = getMockUtil().createEntity();
+
+        assertEntityFieldsFull(configEntity);
+        assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
+
+        // TODO figure out why the hash code keeps changing
+        // final int configHash = configEntity.hashCode();
+        // assertEquals(entityHashCode(), configHash);
+
+        final String expectedString = getMockUtil().getEntityJson();
+        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
+
+        final NotificationEntity configEntityNew = getMockUtil().createEntity();
+        assertEquals(configEntity, configEntityNew);
     }
 
 }

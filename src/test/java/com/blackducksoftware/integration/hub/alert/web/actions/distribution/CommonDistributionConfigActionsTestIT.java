@@ -87,7 +87,7 @@ public class CommonDistributionConfigActionsTestIT {
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
-        assertEquals(frequency, savedEntity.getFrequency());
+        assertEquals(frequency, savedEntity.getFrequency().name());
         assertEquals(filterByProject, savedEntity.getFilterByProject().toString());
         assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
         assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
