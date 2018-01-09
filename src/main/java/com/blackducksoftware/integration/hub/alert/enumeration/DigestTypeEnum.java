@@ -20,10 +20,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.processor;
+package com.blackducksoftware.integration.hub.alert.enumeration;
 
-public enum VulnerabilityOperation {
-    ADD,
-    UPDATE,
-    DELETE
+public enum DigestTypeEnum {
+    DAILY("Daily Digest"),
+    REAL_TIME("Real Time Digest");
+
+    private final String displayName;
+
+    private DigestTypeEnum(final String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
 }

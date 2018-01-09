@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email.controller.dis
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
@@ -42,7 +41,8 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
 
     @Override
     public int restModelHashCode() {
-        return -405249653;
+        return -21450070;
+
     }
 
     @Override

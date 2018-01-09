@@ -43,7 +43,7 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
         final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, distributionMockUtil.getProjects(), distributionMockUtil.getNotifications());
+                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, distributionMockUtil.getProjects(), distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }
 

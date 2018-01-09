@@ -33,8 +33,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.audit.controller.AuditEntryHandler;
-import com.blackducksoftware.integration.hub.alert.audit.controller.AuditEntryRestModel;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
@@ -98,7 +96,7 @@ public class AuditEntryHandlerTestIT {
         final NotificationRestModel notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
-        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationTypes().get(0));
+        assertEquals(savedNotificationEntity.getNotificationType().name(), notification.getNotificationTypes().get(0));
         assertEquals(savedNotificationEntity.getProjectName(), notification.getProjectName());
         assertEquals(savedNotificationEntity.getProjectVersion(), notification.getProjectVersion());
         assertEquals(savedNotificationEntity.getProjectUrl(), notification.getProjectUrl());
@@ -106,7 +104,7 @@ public class AuditEntryHandlerTestIT {
         assertEquals(savedNotificationEntity.getComponentName(), notification.getComponentName());
         assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponentVersion());
         assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getPolicyRuleName());
-        assertEquals(savedNotificationEntity.getPerson(), notification.getPerson());
+        assertEquals(savedNotificationEntity.getPolicyRuleUser(), notification.getPolicyRuleUser());
     }
 
     @Test

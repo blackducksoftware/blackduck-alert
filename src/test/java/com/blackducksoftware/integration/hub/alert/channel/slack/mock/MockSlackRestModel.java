@@ -56,7 +56,7 @@ public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestM
     public SlackDistributionRestModel createRestModel() {
         final SlackDistributionRestModel restModel = new SlackDistributionRestModel(String.valueOf(distributionMockUtil.getId()), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
                 distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
-                distributionMockUtil.getNotifications());
+                distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }
 
