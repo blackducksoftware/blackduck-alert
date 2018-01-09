@@ -27,6 +27,8 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -40,7 +42,7 @@ public class NotificationRepositoryIT {
 
     private NotificationEntity createNotificationEntity(final Date createdAt, final Collection<VulnerabilityEntity> vulnerabilityList) {
         final String eventKey = "event_key_for_notification";
-        final String notificationType = "notificationType";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "projectName";
         final String projectVersion = "projectVersion";
         final String componentName = "componentName";
@@ -54,7 +56,7 @@ public class NotificationRepositoryIT {
     private Collection<VulnerabilityEntity> createVulnerabilityEntity() {
         final Collection<VulnerabilityEntity> entityList = new ArrayList<>();
         for (int index = 0; index < 10; index++) {
-            final VulnerabilityEntity entity = new VulnerabilityEntity("vulnerability" + index, "add");
+            final VulnerabilityEntity entity = new VulnerabilityEntity("vulnerability" + index, VulnerabilityOperationEnum.ADD);
             entityList.add(entity);
         }
         return entityList;
@@ -82,7 +84,7 @@ public class NotificationRepositoryIT {
         assertEquals(entity.getComponentName(), foundEntity.getComponentName());
         assertEquals(entity.getComponentVersion(), foundEntity.getComponentVersion());
         assertEquals(entity.getPolicyRuleName(), foundEntity.getPolicyRuleName());
-        assertEquals(entity.getPerson(), foundEntity.getPerson());
+        assertEquals(entity.getPolicyRuleUser(), foundEntity.getPolicyRuleUser());
         assertEquals(entity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 
@@ -99,7 +101,7 @@ public class NotificationRepositoryIT {
         assertEquals(savedEntity.getComponentName(), foundEntity.getComponentName());
         assertEquals(savedEntity.getComponentVersion(), foundEntity.getComponentVersion());
         assertEquals(savedEntity.getPolicyRuleName(), foundEntity.getPolicyRuleName());
-        assertEquals(savedEntity.getPerson(), foundEntity.getPerson());
+        assertEquals(savedEntity.getPolicyRuleUser(), foundEntity.getPolicyRuleUser());
         assertEquals(savedEntity.getVulnerabilityList(), foundEntity.getVulnerabilityList());
     }
 

@@ -13,11 +13,14 @@ package com.blackducksoftware.integration.hub.alert.mock.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -30,7 +33,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     private final String frequency;
     private final String filterByProject;
     private final List<String> configuredProjects;
-    private final List<String> notificationTypes;
+    private final List<NotificationCategoryEnum> notificationTypes;
     private final String lastRan;
     private final String status;
 
@@ -43,11 +46,11 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
-        this("2", distributionConfigId, SupportedChannels.HIPCHAT.toString(), "Name", "1 1 1 1 1 1", "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
+        this("2", distributionConfigId, SupportedChannels.HIPCHAT.toString(), "Name", DigestTypeEnum.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
-            final List<String> notificationTypes, final String lastRan, final String status) {
+            final List<NotificationCategoryEnum> notificationTypes, final String lastRan, final String status) {
         super();
         this.id = id;
         this.distributionConfigId = distributionConfigId;
@@ -85,8 +88,12 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         return configuredProjects;
     }
 
-    public List<String> getNotifications() {
+    public List<NotificationCategoryEnum> getNotifications() {
         return notificationTypes;
+    }
+
+    public List<String> getNotificationsAsStrings() {
+        return notificationTypes.stream().map(notificationType -> notificationType.name()).collect(Collectors.toList());
     }
 
     public String getLastRan() {
@@ -109,7 +116,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     @Override
     public CommonDistributionConfigRestModel createRestModel() {
-        return new CommonDistributionConfigRestModel(id, distributionConfigId, distributionType, name, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing());
+        return new CommonDistributionConfigRestModel(id, distributionConfigId, distributionType, name, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings());
     }
 
     @Override

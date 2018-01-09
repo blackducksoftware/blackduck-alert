@@ -26,15 +26,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
 
 @Component
 public class EmailGroupManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent, EmailGroupDistributionRestModel> {

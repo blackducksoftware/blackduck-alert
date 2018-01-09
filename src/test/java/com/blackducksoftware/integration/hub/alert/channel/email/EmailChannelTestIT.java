@@ -7,13 +7,13 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 
 public class EmailChannelTestIT extends ChannelTest {
 
