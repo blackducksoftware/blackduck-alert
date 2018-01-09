@@ -18,10 +18,11 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 
-// TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
     private String hubApiKey;
@@ -96,6 +97,10 @@ public class TestGlobalProperties extends GlobalProperties {
         return new GlobalHubConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
     }
 
-    // TODO override getHubConfig with credentials
+    @Override
+    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubUsername, final String hubPassword) throws AlertException {
+        return super.createHubServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_USERNAME),
+                testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
+    }
 
 }

@@ -3,7 +3,9 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -11,9 +13,11 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
@@ -28,6 +32,16 @@ public class AccumulatorWriterTest {
 
         final String eventKey = "_event_key_";
         final NotificationCategoryEnum categoryType = NotificationCategoryEnum.HIGH_VULNERABILITY;
+
+        final NotificationEvent notificationEvent = new NotificationEvent(eventKey, categoryType, generateDataSet());
+        final DBStoreEvent storeEvent = new DBStoreEvent(Arrays.asList(notificationEvent));
+
+        accumulatorWriter.write(Arrays.asList(storeEvent));
+
+        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
+    }
+
+    private Map<String, Object> generateDataSet() {
         final Map<String, Object> dataSet = new HashMap<>();
 
         final Date createdAt = new Date();
@@ -39,11 +53,14 @@ public class AccumulatorWriterTest {
         final String componentIssueUrl = "ddd";
         dataSet.put(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT, new NotificationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentVersionUrl, componentIssueUrl));
 
-        final NotificationEvent notificationEvent = new NotificationEvent(eventKey, categoryType, dataSet);
-        final DBStoreEvent storeEvent = new DBStoreEvent(Arrays.asList(notificationEvent));
+        dataSet.put(ItemTypeEnum.RULE.name(), "policyRuleName");
+        dataSet.put(ItemTypeEnum.PERSON.name(), "policyUserName");
+        dataSet.put(VulnerabilityCache.VULNERABILITY_OPERATION, "operationName");
 
-        accumulatorWriter.write(Arrays.asList(storeEvent));
+        final Set<String> vulnSet = new HashSet<>();
+        vulnSet.add("vulnerabilityId");
+        dataSet.put(VulnerabilityCache.VULNERABILITY_ID_SET, vulnSet);
 
-        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
+        return dataSet;
     }
 }

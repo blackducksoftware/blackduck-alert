@@ -1,6 +1,7 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.SortedSet;
@@ -41,5 +42,10 @@ public class AccumulatorProcessorTestIT {
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
+
+        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null);
+
+        final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
+        assertNull(storeEventNull);
     }
 }
