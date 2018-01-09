@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model;
 
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistributionRestModel> {

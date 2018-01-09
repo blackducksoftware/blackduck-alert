@@ -61,7 +61,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.**.datasource.**.repository" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.hub.alert.**.repository" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling

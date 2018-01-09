@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {

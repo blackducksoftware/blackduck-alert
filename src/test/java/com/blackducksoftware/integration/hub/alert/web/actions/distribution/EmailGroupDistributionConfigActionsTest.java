@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionConfigActions;
 
 public class EmailGroupDistributionConfigActionsTest {
     @Test

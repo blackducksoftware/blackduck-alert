@@ -13,13 +13,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.HipChatDistributionRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
