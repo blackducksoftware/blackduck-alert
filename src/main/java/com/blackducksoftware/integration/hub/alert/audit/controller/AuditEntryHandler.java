@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller.handler;
+package com.blackducksoftware.integration.hub.alert.audit.controller;
 
 import java.util.List;
 
@@ -31,8 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.AuditEntryActions;
-import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
 import com.google.gson.Gson;
 
 @Component

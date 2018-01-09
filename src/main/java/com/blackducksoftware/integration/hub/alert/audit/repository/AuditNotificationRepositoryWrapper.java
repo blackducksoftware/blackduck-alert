@@ -20,16 +20,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation.repository;
+package com.blackducksoftware.integration.hub.alert.audit.repository;
 
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
+import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelationPK;
 import com.blackducksoftware.integration.hub.alert.datasource.AbstractRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
 
 @Component
 public class AuditNotificationRepositoryWrapper extends AbstractRepositoryWrapper<AuditNotificationRelation, AuditNotificationRelationPK, AuditNotificationRepository> {
