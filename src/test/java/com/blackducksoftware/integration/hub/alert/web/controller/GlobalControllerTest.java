@@ -1,7 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.nio.charset.Charset;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -109,7 +108,6 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     public void testPutConfig() throws Exception {
         globalEntityRepository.deleteAll();
         final GE savedEntity = globalEntityRepository.save(entity);
-        final List<GE> test = globalEntityRepository.findAll();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(restModel.toString());

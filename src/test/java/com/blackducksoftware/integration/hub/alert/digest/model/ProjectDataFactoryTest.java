@@ -1,0 +1,167 @@
+/*
+ * Copyright (C) 2018 Black Duck Software Inc.
+ * http://www.blackducksoftware.com/
+ * All rights reserved.
+ *
+ * This software is the confidential and proprietary information of
+ * Black Duck Software ("Confidential Information"). You shall not
+ * disclose such Confidential Information and shall use it only in
+ * accordance with the terms of the license agreement you entered into
+ * with Black Duck Software.
+ */
+package com.blackducksoftware.integration.hub.alert.digest.model;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+
+import org.junit.Test;
+
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
+import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
+public class ProjectDataFactoryTest {
+
+    @Test
+    public void createProjectDataCollectionTest() {
+        final Collection<NotificationEntity> notifications = createNotificationCollection();
+
+        final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
+        final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notifications);
+
+        assertFieldsForMultiple(notifications, projectData, DigestTypeEnum.REAL_TIME);
+    }
+
+    @Test
+    public void createProjectDataCollectionWithDigestTypeTest() {
+        final Collection<NotificationEntity> notifications = createNotificationCollection();
+
+        final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
+        final DigestTypeEnum digestType = DigestTypeEnum.DAILY;
+        final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notifications, digestType);
+
+        assertFieldsForMultiple(notifications, projectData, digestType);
+    }
+
+    @Test
+    public void createProjectDataTest() {
+        final NotificationEntity notification = createVulnerabilityNotification();
+
+        final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
+        final ProjectData projectData = projectDataFactory.createProjectData(notification);
+
+        assertFields(notification, projectData);
+        assertEquals(DigestTypeEnum.REAL_TIME, projectData.getDigestType());
+    }
+
+    @Test
+    public void createProjectDataWithDigestTypeTest() {
+        final NotificationEntity notification = createPolicyNotification();
+
+        final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
+        DigestTypeEnum digestType = DigestTypeEnum.DAILY;
+        ProjectData projectData = projectDataFactory.createProjectData(notification, digestType);
+
+        assertFields(notification, projectData);
+        assertEquals(digestType, projectData.getDigestType());
+
+        digestType = DigestTypeEnum.REAL_TIME;
+        projectData = projectDataFactory.createProjectData(notification, digestType);
+        assertFields(notification, projectData);
+        assertEquals(digestType, projectData.getDigestType());
+    }
+
+    private void assertFieldsForMultiple(final Collection<NotificationEntity> notifications, final Collection<ProjectData> projectData, final DigestTypeEnum digestType) {
+        for (final NotificationEntity notification : notifications) {
+            final ProjectData projData = find(projectData, notification.getProjectName(), notification.getProjectVersion());
+            assertFields(notification, projData);
+            assertEquals(digestType, projData.getDigestType());
+        }
+    }
+
+    private ProjectData find(final Collection<ProjectData> projectData, final String projectName, final String projectVersion) {
+        for (final ProjectData projData : projectData) {
+            if (projData.getProjectName().equals(projectName) && projData.getProjectVersion().equals(projectVersion)) {
+                return projData;
+            }
+        }
+        return null;
+    }
+
+    private void assertFields(final NotificationEntity notification, final ProjectData projectData) {
+        assertEquals(notification.getProjectName() + notification.getProjectVersion(), projectData.getProjectKey());
+        assertEquals(notification.getProjectName(), projectData.getProjectName());
+        assertEquals(notification.getProjectVersion(), projectData.getProjectVersion());
+
+        final CategoryData categoryData = projectData.getCategoryMap().get(notification.getNotificationType());
+        final ItemData itemData = categoryData.getItemList().get(0);
+        assertEquals(notification.getNotificationType().name(), categoryData.getCategoryKey());
+        assertEquals(notification.getPolicyRuleName(), itemData.getDataSet().get(ItemTypeEnum.RULE.name()));
+        assertEquals(notification.getComponentName(), itemData.getDataSet().get(ItemTypeEnum.COMPONENT.name()));
+        assertEquals(notification.getComponentVersion(), itemData.getDataSet().get(ItemTypeEnum.VERSION.name()));
+    }
+
+    private Collection<NotificationEntity> createNotificationCollection() {
+        final String differentProject = "Different Project";
+        final String differentVersion = "Different Project Version";
+        return Arrays.asList(createVulnerabilityNotification(), createPolicyNotification(), createVulnerabilityNotification(differentProject, differentVersion), createPolicyNotification(differentProject, differentVersion),
+                createPolicyNotification("One More", "1.0.0"));
+    }
+
+    private NotificationEntity createVulnerabilityNotification() {
+        return createVulnerabilityNotification("Project Name", "Project Version");
+    }
+
+    private NotificationEntity createVulnerabilityNotification(final String projectName, final String projectVersion) {
+        final String eventKey = "key";
+        final Date createdAt = new Date();
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.MEDIUM_VULNERABILITY;
+        final String projectUrl = "http://localhost:8080";
+        final String projectVersionUrl = "http://localhost:8080";
+        final String componentName = "Component";
+        final String componentVersion = "Component Version";
+        final String policyRuleName = null;
+        final String policyRuleUser = null;
+
+        final String vulnerabilityId = NotificationCategoryEnum.VULNERABILITY.name();
+        final VulnerabilityOperationEnum vulnerabilityOperation = VulnerabilityOperationEnum.ADD;
+        final Collection<VulnerabilityEntity> vulnerabilityList = Arrays.asList(new VulnerabilityEntity(vulnerabilityId, vulnerabilityOperation));
+
+        final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser,
+                vulnerabilityList);
+        notification.setId(1L);
+        return notification;
+    }
+
+    private NotificationEntity createPolicyNotification() {
+        return createPolicyNotification("Project Name", "Project Version");
+    }
+
+    private NotificationEntity createPolicyNotification(final String projectName, final String projectVersion) {
+        final String eventKey = "key";
+        final Date createdAt = new Date();
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.POLICY_VIOLATION;
+        final String projectUrl = "http://localhost:8080";
+        final String projectVersionUrl = "http://localhost:8080";
+        final String componentName = "Other Component";
+        final String componentVersion = "Other Component Version";
+        final String policyRuleName = "Policy Rule Name";
+        final String person = "Person";
+
+        final String vulnerabilityId = NotificationCategoryEnum.VULNERABILITY.name();
+        final VulnerabilityOperationEnum vulnerabilityOperation = VulnerabilityOperationEnum.ADD;
+        final Collection<VulnerabilityEntity> vulnerabilityList = Arrays.asList(new VulnerabilityEntity(vulnerabilityId, vulnerabilityOperation));
+
+        final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
+                vulnerabilityList);
+        notification.setId(1L);
+        return notification;
+    }
+
+}

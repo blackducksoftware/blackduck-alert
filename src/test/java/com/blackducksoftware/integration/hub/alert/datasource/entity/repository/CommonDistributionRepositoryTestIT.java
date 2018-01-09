@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,7 +45,7 @@ public class CommonDistributionRepositoryTestIT {
         final Long distributionConfigId = 1L;
         final String distributionType = SupportedChannels.EMAIL_GROUP;
         final String name = "My Config";
-        final String frequency = "DAILY";
+        final DigestTypeEnum frequency = DigestTypeEnum.DAILY;
         final Boolean filterByProject = Boolean.TRUE;
         final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);

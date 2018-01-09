@@ -41,7 +41,8 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
 
     @Override
     public int restModelHashCode() {
-        return -405249653;
+        return -21450070;
+
     }
 
     @Override
