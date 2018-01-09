@@ -45,9 +45,11 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -80,7 +82,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
@@ -93,10 +95,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", "", "", "Test Component", "Test Component Version",
-                "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(System.currentTimeMillis()), "POLICY_VIOLATION", "Project that we don't care about", "", "", "", "Test Component",
+        final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", "", "", "Test Component",
                 "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, "Project that we don't care about", "", "", "",
+                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(nonApplicableNotification);
 
@@ -112,7 +114,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
@@ -127,10 +129,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new ArrayList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-                "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-                "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
+                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
+                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(otherApplicableNotification);
 
@@ -146,7 +148,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = SupportedChannels.HIPCHAT;
         final String name = "Config Name";
-        final String frequency = "REAL_TIME";
+        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
@@ -161,10 +163,10 @@ public class DigestNotificationProcessorIT {
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
         final List<NotificationEntity> notificationList = new LinkedList<>();
-        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION", projectName, "", projectVersionName, "", "Test Component", "Test Component Version",
-                "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), "POLICY_VIOLATION_CLEARED", projectName, "", projectVersionName, "", "Test Component",
+        final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
                 "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+        final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, projectName, "", projectVersionName, "",
+                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
         notificationList.add(applicableNotification);
         notificationList.add(nonApplicableNotification);
 
