@@ -17,7 +17,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
@@ -37,7 +36,8 @@ public class GlobalHubConfigControllerTest extends GlobalControllerTest<GlobalHu
     @Autowired
     GlobalHubRepository globalHubRepository;
 
-    private TestProperties testProperties;
+    // TODO uncomment when the test below is fixed
+    // private TestProperties testProperties;
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {
