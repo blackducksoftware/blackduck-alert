@@ -2,21 +2,22 @@ package com.blackducksoftware.integration.hub.alert.mock.entity;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.google.gson.JsonObject;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
     private final Long distributionConfigId;
     private final String distributionType;
     private final String name;
-    private final String frequency;
+    private final DigestTypeEnum frequency;
     private final Boolean filterByProject;
     private final Long id;
 
     public MockCommonDistributionEntity() {
-        this(1L, SupportedChannels.HIPCHAT.toString(), "Name", "1 1 1 1 1 1", true, 2L);
+        this(1L, SupportedChannels.HIPCHAT.toString(), "Name", DigestTypeEnum.REAL_TIME, true, 2L);
     }
 
-    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject, final Long id) {
+    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestTypeEnum frequency, final Boolean filterByProject, final Long id) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -38,7 +39,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         return name;
     }
 
-    public String getFrequency() {
+    public DigestTypeEnum getFrequency() {
         return frequency;
     }
 
@@ -70,7 +71,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         json.addProperty("distributionConfigId", distributionConfigId);
         json.addProperty("distributionType", distributionType);
         json.addProperty("name", name);
-        json.addProperty("frequency", frequency);
+        json.addProperty("frequency", frequency.name());
         json.addProperty("filterByProject", filterByProject);
         return json.toString();
     }

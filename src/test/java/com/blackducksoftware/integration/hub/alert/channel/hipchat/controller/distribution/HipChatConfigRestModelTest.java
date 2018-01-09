@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.d
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
@@ -46,7 +45,8 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
 
     @Override
     public int restModelHashCode() {
-        return 2091601255;
+        return -1819566458;
+
     }
 
     @Override

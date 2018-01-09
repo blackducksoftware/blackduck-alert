@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack.controller.dis
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
@@ -46,7 +45,8 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
 
     @Override
     public int restModelHashCode() {
-        return 1683888131;
+        return 2067687714;
+
     }
 
     @Override

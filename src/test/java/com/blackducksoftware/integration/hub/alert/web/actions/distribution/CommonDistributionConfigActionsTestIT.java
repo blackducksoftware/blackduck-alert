@@ -75,7 +75,7 @@ public class CommonDistributionConfigActionsTestIT {
         final String frequency = "DAILY";
         final String filterByProject = "true";
         final List<String> projectList = Arrays.asList("Project 1", "Project 2", "Project 3");
-        final List<String> notificationTypeList = Arrays.asList("TYPE_1", "TYPE_2");
+        final List<String> notificationTypeList = Arrays.asList("POLICY_VIOLATION", "VULNERABILITY");
         final Date lastRan = new Date(System.currentTimeMillis());
         final StatusEnum status = StatusEnum.SUCCESS;
 
@@ -87,7 +87,7 @@ public class CommonDistributionConfigActionsTestIT {
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
-        assertEquals(frequency, savedEntity.getFrequency());
+        assertEquals(frequency, savedEntity.getFrequency().name());
         assertEquals(filterByProject, savedEntity.getFilterByProject().toString());
         assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
         assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
