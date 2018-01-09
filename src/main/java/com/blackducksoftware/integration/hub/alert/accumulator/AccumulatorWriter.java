@@ -95,9 +95,9 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         if (notification.getDataSet().containsKey(key)) {
             final String rule = (String) notification.getDataSet().get(key);
             return rule;
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     private String getPerson(final NotificationEvent notification) {
@@ -105,9 +105,9 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         if (notification.getDataSet().containsKey(key)) {
             final String person = (String) notification.getDataSet().get(key);
             return person;
-        } else {
-            return "";
         }
+
+        return "";
     }
 
     // The dataset contains string keys and object values. Therefore we need to type cast because the contents are various types.

@@ -43,13 +43,11 @@ import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
-    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
-            final IntLogger intLogger) {
+    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService, final HubService hubService, final VulnerabilityService vulnerabilityService, final IntLogger intLogger) {
         init(projectService, projectAssignmentService, hubService, vulnerabilityService, intLogger);
     }
 
-    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentService, final HubService hubService, final VulnerabilityService vulnerabilityService,
-            final IntLogger intLogger) {
+    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentService, final HubService hubService, final VulnerabilityService vulnerabilityService, final IntLogger intLogger) {
         final MapProcessorCache policyCache = new UserNotificationCache(projectService, projectAssignMentService);
         final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, projectAssignMentService, hubService, vulnerabilityService, new MetaHandler(intLogger));
         getCacheList().add(policyCache);
