@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

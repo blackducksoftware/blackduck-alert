@@ -9,9 +9,10 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock.entity;
+package com.blackducksoftware.integration.hub.alert.channel.slack.mock;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;
 
 public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntity> {

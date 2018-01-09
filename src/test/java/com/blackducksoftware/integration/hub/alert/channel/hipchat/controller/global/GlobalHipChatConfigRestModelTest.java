@@ -9,13 +9,13 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.model.global;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockHipChatGlobalRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
 public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<GlobalHipChatConfigRestModel> {

@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution;
 
 import javax.transaction.Transactional;
 
@@ -14,11 +14,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.global;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global;
 
 import javax.transaction.Transactional;
 
@@ -14,11 +14,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

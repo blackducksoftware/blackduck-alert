@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert.web.controller.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution;
 
 import javax.transaction.Transactional;
 
@@ -14,13 +14,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.hub.alert.mock.model.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

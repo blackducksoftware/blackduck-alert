@@ -9,14 +9,14 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.distribution;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
-import com.blackducksoftware.integration.hub.alert.mock.entity.MockHipChatEntity;
 
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
 

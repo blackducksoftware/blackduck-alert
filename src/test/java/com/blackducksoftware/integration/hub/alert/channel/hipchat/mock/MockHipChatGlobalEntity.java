@@ -9,9 +9,10 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.mock.entity.global;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.mock;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.google.gson.JsonObject;
 
 public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatConfigEntity> {

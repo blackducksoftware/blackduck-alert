@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
