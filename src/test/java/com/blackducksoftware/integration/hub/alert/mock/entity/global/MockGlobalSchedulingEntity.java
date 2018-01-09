@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.google.gson.JsonObject;
 
 public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSchedulingConfigEntity> {
