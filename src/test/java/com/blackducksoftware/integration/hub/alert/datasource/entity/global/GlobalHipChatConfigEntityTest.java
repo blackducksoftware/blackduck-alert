@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockHipChatGlobalEntity;
 

@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity.global;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.google.gson.JsonObject;
 
 public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfigEntity> {

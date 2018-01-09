@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.model.global;
 
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.google.gson.JsonObject;
 
 public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmailConfigRestModel> {
