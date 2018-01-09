@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Date;
 import java.util.List;
@@ -46,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -97,15 +99,18 @@ public class AuditEntryHandlerTestIT {
         final NotificationRestModel notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
-        assertEquals(savedNotificationEntity.getNotificationType().name(), notification.getNotificationTypes().get(0));
+        assertEquals(savedNotificationEntity.getNotificationType().name(), notification.getNotificationTypes().iterator().next());
         assertEquals(savedNotificationEntity.getProjectName(), notification.getProjectName());
         assertEquals(savedNotificationEntity.getProjectVersion(), notification.getProjectVersion());
         assertEquals(savedNotificationEntity.getProjectUrl(), notification.getProjectUrl());
         assertEquals(savedNotificationEntity.getProjectVersionUrl(), notification.getProjectVersionUrl());
-        assertEquals(savedNotificationEntity.getComponentName(), notification.getComponentName());
-        assertEquals(savedNotificationEntity.getComponentVersion(), notification.getComponentVersion());
-        assertEquals(savedNotificationEntity.getPolicyRuleName(), notification.getPolicyRuleName());
-        assertEquals(savedNotificationEntity.getPolicyRuleUser(), notification.getPolicyRuleUser());
+        assertNotNull(notification.getComponents());
+        assertTrue(!notification.getComponents().isEmpty());
+        final ComponentRestModel component = notification.getComponents().iterator().next();
+        assertEquals(savedNotificationEntity.getComponentName(), component.getComponentName());
+        assertEquals(savedNotificationEntity.getComponentVersion(), component.getComponentVersion());
+        assertEquals(savedNotificationEntity.getPolicyRuleName(), component.getPolicyRuleName());
+        assertEquals(savedNotificationEntity.getPolicyRuleUser(), component.getPolicyRuleUser());
     }
 
     @Test
