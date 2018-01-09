@@ -13,9 +13,13 @@ package com.blackducksoftware.integration.hub.alert;
 
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.log.IntLogger;
 
 // TODO Are GlobalProperties something we may want to create a mock object with?
 public class TestGlobalProperties extends GlobalProperties {
@@ -23,6 +27,8 @@ public class TestGlobalProperties extends GlobalProperties {
     private String hubApiKey;
     private String accumulatorCron;
     private String dailyDigestCron;
+
+    private final TestProperties testProperties;
 
     public TestGlobalProperties() {
         this(Mockito.mock(GlobalHubRepositoryWrapper.class), Mockito.mock(GlobalSchedulingRepositoryWrapper.class));
@@ -38,6 +44,8 @@ public class TestGlobalProperties extends GlobalProperties {
         this.hubTimeout = hubTimeout;
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
+
+        testProperties = new TestProperties();
     }
 
     @Override
@@ -75,5 +83,19 @@ public class TestGlobalProperties extends GlobalProperties {
     public void setDailyDigestCron(final String dailyDigestCron) {
         this.dailyDigestCron = dailyDigestCron;
     }
+
+    @Override
+    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
+        setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        setHubTrustCertificate(true);
+        return super.createHubServicesFactory(intLogger);
+    }
+
+    @Override
+    public GlobalHubConfigEntity getHubConfig() {
+        return new GlobalHubConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
+    }
+
+    // TODO override getHubConfig with credentials
 
 }
