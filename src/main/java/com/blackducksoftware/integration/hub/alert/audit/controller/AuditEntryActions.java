@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.audit.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -52,6 +53,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFacto
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
@@ -156,13 +158,15 @@ public class AuditEntryActions {
         NotificationRestModel notificationRestModel = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
             try {
-                // TODO check to see the notificationTypes field does not mess up the conversion
                 notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0), NotificationRestModel.class);
+                final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
+                notificationRestModel.setNotificationTypes(notificationTypes);
+                final Set<ComponentRestModel> components = notifications.stream()
+                        .map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(), notification.getPolicyRuleUser())).collect(Collectors.toSet());
+                notificationRestModel.setComponents(components);
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
             }
-            final List<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toList());
-            notificationRestModel.setNotificationTypes(notificationTypes);
         }
 
         String distributionConfigName = null;
