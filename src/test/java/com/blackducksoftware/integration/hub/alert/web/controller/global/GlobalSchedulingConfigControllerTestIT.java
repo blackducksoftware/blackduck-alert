@@ -8,12 +8,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalSchedulingEntity;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalSchedulingRestModel;
+import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.scheduling.controller.MockGlobalSchedulingRestModel;
+import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
-import com.blackducksoftware.integration.hub.alert.web.model.global.GlobalSchedulingConfigRestModel;
 
 public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
 
