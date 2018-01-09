@@ -146,3 +146,7 @@ task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
 }
 
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {}
+
+test { useJUnit { excludeCategories 'com.blackducksoftware.integration.DatabaseSetupRequiredTest' } }
+
+task testDatabaseSetupRequired(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.DatabaseSetupRequiredTest' } }
