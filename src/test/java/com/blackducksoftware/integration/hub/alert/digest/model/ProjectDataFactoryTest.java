@@ -22,6 +22,7 @@ import org.junit.Test;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
@@ -129,7 +130,7 @@ public class ProjectDataFactoryTest {
         final String policyRuleUser = null;
 
         final String vulnerabilityId = NotificationCategoryEnum.VULNERABILITY.name();
-        final String vulnerabilityOperation = "op";
+        final VulnerabilityOperationEnum vulnerabilityOperation = VulnerabilityOperationEnum.ADD;
         final Collection<VulnerabilityEntity> vulnerabilityList = Arrays.asList(new VulnerabilityEntity(vulnerabilityId, vulnerabilityOperation));
 
         final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser,
@@ -154,7 +155,7 @@ public class ProjectDataFactoryTest {
         final String person = "Person";
 
         final String vulnerabilityId = NotificationCategoryEnum.VULNERABILITY.name();
-        final String vulnerabilityOperation = "op";
+        final VulnerabilityOperationEnum vulnerabilityOperation = VulnerabilityOperationEnum.ADD;
         final Collection<VulnerabilityEntity> vulnerabilityList = Arrays.asList(new VulnerabilityEntity(vulnerabilityId, vulnerabilityOperation));
 
         final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
