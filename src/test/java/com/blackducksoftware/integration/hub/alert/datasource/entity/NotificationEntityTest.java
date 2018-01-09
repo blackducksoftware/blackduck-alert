@@ -82,7 +82,6 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
     @Override
     @Test
     public void testEntity() throws JSONException {
-        // TODO figure out why the hash code keeps changing
         final NotificationEntity configEntity = getMockUtil().createEntity();
 
         assertEntityFieldsFull(configEntity);
