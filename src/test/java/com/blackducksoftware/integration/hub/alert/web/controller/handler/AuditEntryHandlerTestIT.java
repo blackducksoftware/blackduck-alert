@@ -99,7 +99,7 @@ public class AuditEntryHandlerTestIT {
         final NotificationRestModel notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
-        assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationTypes().iterator().next());
+        assertEquals(savedNotificationEntity.getNotificationType().name(), notification.getNotificationTypes().iterator().next());
         assertEquals(savedNotificationEntity.getProjectName(), notification.getProjectName());
         assertEquals(savedNotificationEntity.getProjectVersion(), notification.getProjectVersion());
         assertEquals(savedNotificationEntity.getProjectUrl(), notification.getProjectUrl());
