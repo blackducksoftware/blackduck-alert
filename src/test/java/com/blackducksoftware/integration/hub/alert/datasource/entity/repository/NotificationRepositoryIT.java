@@ -27,6 +27,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -55,7 +56,7 @@ public class NotificationRepositoryIT {
     private Collection<VulnerabilityEntity> createVulnerabilityEntity() {
         final Collection<VulnerabilityEntity> entityList = new ArrayList<>();
         for (int index = 0; index < 10; index++) {
-            final VulnerabilityEntity entity = new VulnerabilityEntity("vulnerability" + index, "add");
+            final VulnerabilityEntity entity = new VulnerabilityEntity("vulnerability" + index, VulnerabilityOperationEnum.ADD);
             entityList.add(entity);
         }
         return entityList;

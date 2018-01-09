@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManage
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
@@ -122,7 +123,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
             if (!vulnerabilitySet.isEmpty()) {
                 vulnerabilitySet.forEach(vulnerability -> {
-                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, operationName);
+                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, VulnerabilityOperationEnum.valueOf(operationName));
                     vulnerabilityList.add(vulnerabilityEntity);
                 });
             }
