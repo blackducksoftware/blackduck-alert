@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.relation;
+package com.blackducksoftware.integration.hub.alert.audit.repository.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +28,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.datasource.relation.key.AuditNotificationRelationPK;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseRelation;
 
 @Entity
 @IdClass(AuditNotificationRelationPK.class)

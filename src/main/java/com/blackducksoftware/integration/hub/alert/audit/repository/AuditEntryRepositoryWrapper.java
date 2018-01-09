@@ -20,14 +20,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
+package com.blackducksoftware.integration.hub.alert.audit.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
 
 @Component
 public class AuditEntryRepositoryWrapper extends SimpleKeyRepositoryWrapper<AuditEntryEntity, AuditEntryRepository> {

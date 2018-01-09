@@ -20,7 +20,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.audit.controller;
 
 import java.util.List;
 
@@ -31,9 +31,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.blackducksoftware.integration.hub.alert.web.controller.handler.AuditEntryHandler;
-import com.blackducksoftware.integration.hub.alert.web.model.AuditEntryRestModel;
 
 @RestController
 public class AuditEntryController {

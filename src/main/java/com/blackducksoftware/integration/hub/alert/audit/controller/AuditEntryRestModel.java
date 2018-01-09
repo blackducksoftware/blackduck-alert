@@ -20,7 +20,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.model;
+package com.blackducksoftware.integration.hub.alert.audit.controller;
+
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 
 public class AuditEntryRestModel extends ConfigRestModel {
     private static final long serialVersionUID = -8714295254107315501L;
