@@ -83,7 +83,7 @@ public class NotificationEntity extends DatabaseEntity {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
-            final String componentName, final String componentVersion, final String policyRuleName, final String person, final Collection<VulnerabilityEntity> vulnerabilityList) {
+            final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser, final Collection<VulnerabilityEntity> vulnerabilityList) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -92,7 +92,7 @@ public class NotificationEntity extends DatabaseEntity {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
-        this.policyRuleUser = person;
+        this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
         this.vulnerabilityList = vulnerabilityList;
