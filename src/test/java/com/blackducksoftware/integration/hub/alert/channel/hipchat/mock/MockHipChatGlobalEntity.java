@@ -16,9 +16,9 @@ import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobal
 import com.google.gson.JsonObject;
 
 public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatConfigEntity> {
-    private final String apiKey;
-    private final boolean apiKeyIsSet;
-    private final Long id;
+    private String apiKey;
+    private boolean apiKeyIsSet;
+    private Long id;
 
     public MockHipChatGlobalEntity() {
         this("ApiKey", false, 1L);
@@ -36,6 +36,18 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
 
     public boolean isApiKeyIsSet() {
         return apiKeyIsSet;
+    }
+
+    public void setApiKey(final String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public void setApiKeyIsSet(final boolean apiKeyIsSet) {
+        this.apiKeyIsSet = apiKeyIsSet;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override
