@@ -11,10 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +19,7 @@ import java.util.HashMap;
 import org.junit.After;
 import org.junit.Before;
 
+import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -33,43 +31,18 @@ import com.google.gson.Gson;
 public class ChannelTest {
     protected Gson gson;
     protected TestProperties properties;
-
-    private OutputStream systemOut;
-    private OutputStream systemErr;
-    private OutputStream loggerOutput;
+    protected OutputLogger outputLogger;
 
     @Before
     public void init() throws IOException {
-        systemOut = System.out;
-        systemErr = System.err;
-        loggerOutput = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(loggerOutput));
-        System.setErr(new PrintStream(loggerOutput));
-
         gson = new Gson();
         properties = new TestProperties();
+        outputLogger = new OutputLogger();
     }
 
     @After
     public void cleanup() throws IOException {
-        loggerOutput.close();
-        System.setOut(new PrintStream(systemOut));
-        System.setErr(new PrintStream(systemErr));
-        printLoggerOutput();
-    }
-
-    public String getLineContainingText(final String text) throws IOException {
-        loggerOutput.flush();
-        final String[] consoleLines = loggerOutput.toString().split("\n");
-
-        String lineContainingText = "";
-        for (final String line : consoleLines) {
-            if (line.contains(text)) {
-                lineContainingText = line;
-                break;
-            }
-        }
-        return lineContainingText;
+        outputLogger.cleanup();
     }
 
     protected CategoryData createMockPolicyViolation() {
@@ -97,18 +70,5 @@ public class ChannelTest {
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
         return projectData;
-    }
-
-    // For ease of debugging
-    private void printLoggerOutput() {
-        try {
-            loggerOutput.flush();
-        } catch (final IOException e) {
-            // Irrelevant to the test
-        }
-        final String[] consoleLines = loggerOutput.toString().split("\n");
-        for (final String line : consoleLines) {
-            System.out.println(line);
-        }
     }
 }
