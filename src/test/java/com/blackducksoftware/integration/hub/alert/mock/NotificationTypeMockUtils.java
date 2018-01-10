@@ -16,17 +16,18 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.JsonArray;
 
 public class NotificationTypeMockUtils {
-    private final String type1;
-    private final String type2;
+    private final NotificationCategoryEnum type1;
+    private final NotificationCategoryEnum type2;
 
     public NotificationTypeMockUtils() {
-        this("type1", "type2");
+        this(NotificationCategoryEnum.POLICY_VIOLATION, NotificationCategoryEnum.VULNERABILITY);
     }
 
-    public NotificationTypeMockUtils(final String type1, final String type2) {
+    public NotificationTypeMockUtils(final NotificationCategoryEnum type1, final NotificationCategoryEnum type2) {
         this.type1 = type1;
         this.type2 = type2;
     }
@@ -39,11 +40,11 @@ public class NotificationTypeMockUtils {
         return new NotificationTypeEntity(type2);
     }
 
-    public String getType1() {
+    public NotificationCategoryEnum getType1() {
         return type1;
     }
 
-    public String getType2() {
+    public NotificationCategoryEnum getType2() {
         return type2;
     }
 
@@ -53,14 +54,18 @@ public class NotificationTypeMockUtils {
         return Arrays.asList(relation1, relation2);
     }
 
-    public List<String> createNotificiationTypeListing() {
+    public List<NotificationCategoryEnum> createNotificiationTypeListing() {
         return Arrays.asList(type1, type2);
+    }
+
+    public List<String> createNotificiationTypeListingAsStrings() {
+        return Arrays.asList(type1.name(), type2.name());
     }
 
     public JsonArray getNotificationListingJson() {
         final JsonArray json = new JsonArray();
-        json.add(type1);
-        json.add(type2);
+        json.add(type1.name());
+        json.add(type2.name());
         return json;
     }
 }

@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
-import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.google.gson.Gson;

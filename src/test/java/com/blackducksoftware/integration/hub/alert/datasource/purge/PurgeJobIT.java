@@ -32,6 +32,7 @@ import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(DatabaseSetupRequiredTest.class)
@@ -99,7 +100,7 @@ public class PurgeJobIT {
     public void testReaderWithData() throws Exception {
         final List<NotificationEntity> entityList = new ArrayList<>();
         final String eventKey = "eventKey";
-        final String notificationType = "notificationType";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "ProjectName";
         final String projectUrl = "ProjectUrl";
         final String projectVersion = "ProjectVersion";
@@ -173,7 +174,7 @@ public class PurgeJobIT {
     public void testWriterWithData() throws Exception {
         final List<NotificationEntity> entityList = new ArrayList<>();
         final String eventKey = "eventKey";
-        final String notificationType = "notificationType";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "ProjectName";
         final String projectUrl = "ProjectUrl";
         final String projectVersion = "ProjectVersion";
