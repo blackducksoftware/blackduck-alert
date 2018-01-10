@@ -35,10 +35,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;

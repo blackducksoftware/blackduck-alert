@@ -27,6 +27,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+
 @Entity
 @Table(schema = "alert", name = "common_distribution_config")
 public class CommonDistributionConfigEntity extends DatabaseEntity {
@@ -42,7 +44,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     private String name;
 
     @Column(name = "frequency")
-    private String frequency;
+    private DigestTypeEnum frequency;
 
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
@@ -50,7 +52,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     public CommonDistributionConfigEntity() {
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String frequency, final Boolean filterByProject) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestTypeEnum frequency, final Boolean filterByProject) {
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
@@ -78,7 +80,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         return name;
     }
 
-    public String getFrequency() {
+    public DigestTypeEnum getFrequency() {
         return frequency;
     }
 

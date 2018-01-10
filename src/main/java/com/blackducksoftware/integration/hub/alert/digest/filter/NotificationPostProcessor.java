@@ -30,7 +30,6 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,8 +42,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.digest.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Transactional
@@ -97,9 +96,8 @@ public class NotificationPostProcessor {
 
     public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
         final DigestTypeEnum digestTypeEnum = projectData.getDigestType();
-        final String digestName = digestTypeEnum.name();
-        if (StringUtils.isNotBlank(commonDistributionConfigEntity.getFrequency())) {
-            return commonDistributionConfigEntity.getFrequency().equals(digestName);
+        if (commonDistributionConfigEntity.getFrequency() != null) {
+            return commonDistributionConfigEntity.getFrequency().equals(digestTypeEnum);
         }
         return false;
     }
@@ -109,7 +107,7 @@ public class NotificationPostProcessor {
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
             for (final NotificationCategoryEnum category : projectData.getCategoryMap().keySet()) {
-                if (category.toString().equalsIgnoreCase(foundEntity.getType())) {
+                if (category.equals(foundEntity.getType())) {
                     return true;
                 }
             }

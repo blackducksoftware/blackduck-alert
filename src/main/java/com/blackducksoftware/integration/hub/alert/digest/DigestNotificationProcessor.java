@@ -34,6 +34,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 @Component

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class NotificationTypeRepositoryWrapper extends SimpleKeyRepositoryWrapper<NotificationTypeEntity, NotificationTypeRepository> {
@@ -38,7 +39,7 @@ public class NotificationTypeRepositoryWrapper extends SimpleKeyRepositoryWrappe
         super(repository);
     }
 
-    public NotificationTypeEntity findByType(final String type) {
+    public NotificationTypeEntity findByType(final NotificationCategoryEnum type) {
         final NotificationTypeEntity entity = getRepository().findByType(type);
         try {
             return decryptSensitiveData(entity);

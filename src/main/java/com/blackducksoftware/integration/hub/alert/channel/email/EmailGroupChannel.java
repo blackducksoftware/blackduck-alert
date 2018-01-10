@@ -38,18 +38,16 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.email.model.EmailTarget;
-import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailMessagingService;
-import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.EmailGroupDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.group.GroupService;
@@ -136,7 +134,12 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                     userGroupView = group;
                 }
             }
+            if (userGroupView == null) {
+                throw new AlertException("Could not find the Hub group: " + hubGroup);
+            }
             return getEmailAddressesForGroup(groupService, userGroupView);
+        } catch (final AlertException e) {
+            throw e;
         } catch (final IntegrationException e) {
             throw new AlertException(e);
         }
@@ -144,6 +147,8 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
 
     private List<String> getEmailAddressesForGroup(final GroupService groupService, final UserGroupView group) throws AlertException {
         try {
+            logger.info(group.toString());
+            logger.info(group.json);
             final List<UserView> users = groupService.getAllUsersForGroup(group);
             return users.stream().map(user -> user.email).collect(Collectors.toList());
         } catch (final IntegrationException e) {

@@ -35,6 +35,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
 @Entity
 @Table(schema = "alert", name = "notification_events")
 public class NotificationEntity extends DatabaseEntity {
@@ -48,7 +50,7 @@ public class NotificationEntity extends DatabaseEntity {
     private Date createdAt;
 
     @Column(name = "notification_type")
-    private String notificationType;
+    private NotificationCategoryEnum notificationType;
 
     @Column(name = "project_name")
     private String projectName;
@@ -65,8 +67,8 @@ public class NotificationEntity extends DatabaseEntity {
     @Column(name = "policy_rule_name")
     private String policyRuleName;
 
-    @Column(name = "person")
-    private String person;
+    @Column(name = "policy_rule_user")
+    private String policyRuleUser;
 
     @Column(name = "project_url")
     private String projectUrl;
@@ -81,8 +83,8 @@ public class NotificationEntity extends DatabaseEntity {
     public NotificationEntity() {
     }
 
-    public NotificationEntity(final String eventKey, final Date createdAt, final String notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
-            final String componentName, final String componentVersion, final String policyRuleName, final String person, final Collection<VulnerabilityEntity> vulnerabilityList) {
+    public NotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
+            final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser, final Collection<VulnerabilityEntity> vulnerabilityList) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -91,7 +93,7 @@ public class NotificationEntity extends DatabaseEntity {
         this.componentName = componentName;
         this.componentVersion = componentVersion;
         this.policyRuleName = policyRuleName;
-        this.person = person;
+        this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
         this.vulnerabilityList = vulnerabilityList;
@@ -109,7 +111,7 @@ public class NotificationEntity extends DatabaseEntity {
         return createdAt;
     }
 
-    public String getNotificationType() {
+    public NotificationCategoryEnum getNotificationType() {
         return notificationType;
     }
 
@@ -133,8 +135,8 @@ public class NotificationEntity extends DatabaseEntity {
         return policyRuleName;
     }
 
-    public String getPerson() {
-        return person;
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
     public String getProjectUrl() {

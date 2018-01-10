@@ -39,11 +39,13 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManage
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
 @Transactional
@@ -67,7 +69,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                     final String eventKey = notification.getEventKey();
                     final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
                     final Date createdAt = content.getCreatedAt();
-                    final String notificationType = notification.getCategoryType().toString();
+                    final NotificationCategoryEnum notificationType = notification.getCategoryType();
                     final String projectName = content.getProjectVersion().getProjectName();
                     final String projectUrl = content.getProjectVersion().getProjectLink();
                     final String projectVersion = content.getProjectVersion().getProjectVersionName();
@@ -122,7 +124,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
             if (!vulnerabilitySet.isEmpty()) {
                 vulnerabilitySet.forEach(vulnerability -> {
-                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, operationName);
+                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, VulnerabilityOperationEnum.valueOf(operationName));
                     vulnerabilityList.add(vulnerabilityEntity);
                 });
             }

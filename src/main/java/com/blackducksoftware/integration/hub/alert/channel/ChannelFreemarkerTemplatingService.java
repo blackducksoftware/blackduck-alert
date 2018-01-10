@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
-import com.blackducksoftware.integration.hub.alert.channel.email.service.EmailProperties;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailProperties;
 
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
