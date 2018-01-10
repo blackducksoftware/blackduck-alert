@@ -133,7 +133,12 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                     userGroupView = group;
                 }
             }
+            if (userGroupView == null) {
+                throw new AlertException("Could not find the Hub group: " + hubGroup);
+            }
             return getEmailAddressesForGroup(groupService, userGroupView);
+        } catch (final AlertException e) {
+            throw e;
         } catch (final IntegrationException e) {
             throw new AlertException(e);
         }
@@ -141,6 +146,8 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
 
     private List<String> getEmailAddressesForGroup(final GroupService groupService, final UserGroupView group) throws AlertException {
         try {
+            logger.info(group.toString());
+            logger.info(group.json);
             final List<UserView> users = groupService.getAllUsersForGroup(group);
             return users.stream().map(user -> user.email).collect(Collectors.toList());
         } catch (final IntegrationException e) {
