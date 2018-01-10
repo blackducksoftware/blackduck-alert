@@ -36,12 +36,15 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
+import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class ProjectDataFactory {
+    public final static String VULNERABILITY_ADDED_ID_SET = "vulnerabilityAddedIdSet";
+    public final static String VULNERABILITY_UPDATED_ID_SET = "vulnerabilityUpdatedIdSet";
+    public final static String VULNERABILITY_DELETED_ID_SET = "vulnerabilityDeletedIdSet";
 
     public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationEntity> notifications) {
         return createProjectDataCollection(notifications, DigestTypeEnum.REAL_TIME);
@@ -106,10 +109,14 @@ public class ProjectDataFactory {
         final Map<String, Object> dataSet = new HashMap<>();
         final NotificationCategoryEnum categoryKey = notification.getNotificationType();
 
-        int count = 1;
+        int countAdded = 0;
+        int countUpdated = 0;
+        int countDeleted = 0;
         if (categoryKey == NotificationCategoryEnum.HIGH_VULNERABILITY || categoryKey == NotificationCategoryEnum.MEDIUM_VULNERABILITY || categoryKey == NotificationCategoryEnum.LOW_VULNERABILITY) {
-            count = notification.getVulnerabilityList().size();
-            dataSet.put(VulnerabilityCache.VULNERABILITY_ID_SET, getVulnerabilityIdSet(notification));
+            addVulnerabilitySets(dataSet, notification);
+            countAdded = dataSet.containsKey(VULNERABILITY_ADDED_ID_SET) ? ((Set<?>) dataSet.get(VULNERABILITY_ADDED_ID_SET)).size() : 0;
+            countUpdated = dataSet.containsKey(VULNERABILITY_UPDATED_ID_SET) ? ((Set<?>) dataSet.get(VULNERABILITY_UPDATED_ID_SET)).size() : 0;
+            countDeleted = dataSet.containsKey(VULNERABILITY_DELETED_ID_SET) ? ((Set<?>) dataSet.get(VULNERABILITY_DELETED_ID_SET)).size() : 0;
         }
 
         if (StringUtils.isNotBlank(notification.getPolicyRuleName())) {
@@ -118,20 +125,44 @@ public class ProjectDataFactory {
 
         dataSet.put(ItemTypeEnum.COMPONENT.name(), notification.getComponentName());
         dataSet.put(ItemTypeEnum.VERSION.name(), notification.getComponentVersion());
-        dataSet.put(ItemTypeEnum.COUNT.name(), count);
+        if (countAdded > 0) {
+            dataSet.put("ADDED", countAdded);
+        }
+        if (countUpdated > 0) {
+            dataSet.put("UPDATED", countUpdated);
+        }
+        if (countDeleted > 0) {
+            dataSet.put("DELETED", countDeleted);
+        }
 
         categoryData.addItem(new ItemData(dataSet));
     }
 
-    private Set<String> getVulnerabilityIdSet(final NotificationEntity notification) {
+    private void addVulnerabilitySets(final Map<String, Object> dataSet, final NotificationEntity notification) {
         final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
-        final Set<String> idSet = new HashSet<>();
+        final Set<String> addedIdSet = new HashSet<>();
+        final Set<String> updatedIdSet = new HashSet<>();
+        final Set<String> deletedIdSet = new HashSet<>();
         if (vulnerabilityList != null && !vulnerabilityList.isEmpty()) {
             vulnerabilityList.forEach(vulnerability -> {
-                idSet.add(vulnerability.getVulnerabilityId());
+                if (vulnerability.getOperation() == VulnerabilityOperationEnum.ADD) {
+                    addedIdSet.add(vulnerability.getVulnerabilityId());
+                } else if (vulnerability.getOperation() == VulnerabilityOperationEnum.UPDATE) {
+                    updatedIdSet.add(vulnerability.getVulnerabilityId());
+                } else {
+                    deletedIdSet.add(vulnerability.getVulnerabilityId());
+                }
             });
         }
-        return idSet;
+        if (!addedIdSet.isEmpty()) {
+            dataSet.put(VULNERABILITY_ADDED_ID_SET, addedIdSet);
+        }
+        if (!updatedIdSet.isEmpty()) {
+            dataSet.put(VULNERABILITY_UPDATED_ID_SET, updatedIdSet);
+        }
+        if (!deletedIdSet.isEmpty()) {
+            dataSet.put(VULNERABILITY_DELETED_ID_SET, deletedIdSet);
+        }
     }
 
     private Collection<ProjectData> collectProjectDataFromMap(final Map<String, ProjectDataBuilder> projectDataMap) {
