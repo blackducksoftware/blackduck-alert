@@ -23,15 +23,15 @@
     text-align: center;
     padding: 5px 10px 5px 10px;
     font-size: 1em;
-    display: inline-block;
+    display: inline-flex;
     height: 30px;
     line-height: normal;
 }
 
 .submitContainers {
 	padding-right: 10px;
-    display: inline-block;
-    margin: 5px;
+    display: inline-flex;
+    margin: 10px;
     text-align: right;
     float: right;
 }
@@ -39,10 +39,15 @@
 .title {
     margin-left: auto;
     margin-right: auto;
-    font-size: 18px;
+    font-size: 24px;
+    font-style: bold;
     text-align: center;
 }
 
-.logo {
+.loginSpacer {
+    min-width: 150px;
+}
+
+.blackduckLogo {
     margin-top: 4px;
 }
