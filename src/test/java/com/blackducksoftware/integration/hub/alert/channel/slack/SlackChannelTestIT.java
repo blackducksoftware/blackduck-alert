@@ -45,8 +45,8 @@ public class SlackChannelTestIT extends ChannelTest {
 
         slackChannel.sendMessage(event, config);
 
-        final String actual = getLineContainingText("Successfully sent a slack message!");
-        assertTrue(!actual.isEmpty());
+        final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack message!");
+        assertTrue(actual);
     }
 
 }
