@@ -53,9 +53,9 @@ class Header extends Component {
 	render() {
 		let logout = "";
 		if (this.props.includeLogout === true){
-			logout = <div className={submitContainers}><input className={submitButtons} type="submit" onClick={this.handleLogout} value="Logout"></input></div>;
+			logout = <input className={submitButtons} type="submit" onClick={this.handleLogout} value="Logout"></input>;
 		} else {
-            logout = <div className={submitContainers}><div className={loginSpacer}></div></div>
+            logout = <div className={loginSpacer}></div>
         }
 		let headerClass = header;
 		if (this.props.fixed === true){
@@ -98,7 +98,9 @@ class Header extends Component {
                     </svg>
                 </div>
                 <div className={title}>Alert</div>
-				{logout}
+                <div className={submitContainers}>
+				    {logout}
+                </div>
 			</div>
 		)
 	}
