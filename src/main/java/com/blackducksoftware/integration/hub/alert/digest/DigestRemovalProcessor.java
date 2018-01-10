@@ -103,7 +103,6 @@ public class DigestRemovalProcessor {
             vulnerabilityIds = new HashSet<>();
             vulnerabilityCategoryMap.put(notificationType, vulnerabilityIds);
         }
-
         if (!vulnerabilities.isEmpty()) {
             vulnerabilities.forEach(vulnerabilityEntity -> {
                 final VulnerabilityOperationEnum operation = vulnerabilityEntity.getOperation();
@@ -115,7 +114,6 @@ public class DigestRemovalProcessor {
                 }
             });
         }
-
         if (vulnerabilityIds.isEmpty()) {
             vulnerabilityCategoryMap.remove(notificationType);
             categoryMap.remove(notificationType);
