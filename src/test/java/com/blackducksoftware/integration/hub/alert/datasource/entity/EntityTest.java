@@ -22,10 +22,11 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
-public abstract class EntityTest<E extends DatabaseEntity> {
+public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntityTest<E> {
 
     public abstract MockEntityUtil<E> getMockUtil();
 
+    @Override
     @Test
     public void testEmptyEntity() throws JSONException {
         final E configEntity = getMockUtil().createEmptyEntity();
@@ -44,14 +45,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         assertEquals(configEntity, configEntityNew);
     }
 
-    public abstract Class<E> getEntityClass();
-
-    public abstract void assertEntityFieldsNull(E entity);
-
-    public abstract long entitySerialId();
-
-    public abstract int emptyEntityHashCode();
-
+    @Override
     @Test
     public void testEntity() throws JSONException {
         final E configEntity = getMockUtil().createEntity();
@@ -68,9 +62,5 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);
     }
-
-    public abstract void assertEntityFieldsFull(E entity);
-
-    public abstract int entityHashCode();
 
 }
