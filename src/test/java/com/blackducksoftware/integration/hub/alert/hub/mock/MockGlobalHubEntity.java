@@ -16,9 +16,9 @@ import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobal
 import com.google.gson.JsonObject;
 
 public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEntity> {
-    private final Integer hubTimeout;
-    private final String hubApiKey;
-    private final Long id;
+    private Integer hubTimeout;
+    private String hubApiKey;
+    private Long id;
 
     public MockGlobalHubEntity() {
         this(444, "HubApiKey", 1L);
@@ -28,6 +28,18 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
         super();
         this.hubTimeout = hubTimeout;
         this.hubApiKey = hubApiKey;
+        this.id = id;
+    }
+
+    public void setHubTimeout(final Integer hubTimeout) {
+        this.hubTimeout = hubTimeout;
+    }
+
+    public void setHubApiKey(final String hubApiKey) {
+        this.hubApiKey = hubApiKey;
+    }
+
+    public void setId(final Long id) {
         this.id = id;
     }
 
