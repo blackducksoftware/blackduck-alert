@@ -44,10 +44,6 @@ public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepos
         return decryptSensitiveData(getRepository().findByCommonDistributionConfigId(commonDistributionConfigId));
     }
 
-    public List<DistributionNotificationTypeRelation> findByNotificationTypeId(final Long notificationTypeId) {
-        return decryptSensitiveData(getRepository().findByNotificationTypeId(notificationTypeId));
-    }
-
     @Override
     public DistributionNotificationTypeRelation encryptSensitiveData(final DistributionNotificationTypeRelation entity) {
         return entity;
