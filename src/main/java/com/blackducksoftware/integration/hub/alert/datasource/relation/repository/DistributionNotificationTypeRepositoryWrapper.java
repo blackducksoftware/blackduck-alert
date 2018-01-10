@@ -43,6 +43,7 @@ public class DistributionNotificationTypeRepositoryWrapper extends AbstractRepos
         return decryptSensitiveData(getRepository().findByCommonDistributionConfigId(commonDistributionConfigId));
     }
 
+    // TODO since this isn't used anywhere, should we remove this query?
     public List<DistributionNotificationTypeRelation> findByNotificationTypeId(final Long notificationTypeId) {
         return decryptSensitiveData(getRepository().findByNotificationTypeId(notificationTypeId));
     }

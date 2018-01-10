@@ -26,16 +26,16 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfigRestModel> {
-    private final String id;
-    private final String distributionConfigId;
-    private final String distributionType;
-    private final String name;
-    private final String frequency;
-    private final String filterByProject;
-    private final List<String> configuredProjects;
-    private final List<NotificationCategoryEnum> notificationTypes;
-    private final String lastRan;
-    private final String status;
+    private String id;
+    private String distributionConfigId;
+    private String distributionType;
+    private String name;
+    private String frequency;
+    private String filterByProject;
+    private List<String> configuredProjects;
+    private List<NotificationCategoryEnum> notificationTypes;
+    private String lastRan;
+    private String status;
 
     protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
 
@@ -102,6 +102,46 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     public String getStatus() {
         return status;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
+    }
+
+    public void setDistributionConfigId(final String distributionConfigId) {
+        this.distributionConfigId = distributionConfigId;
+    }
+
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setFrequency(final String frequency) {
+        this.frequency = frequency;
+    }
+
+    public void setFilterByProject(final String filterByProject) {
+        this.filterByProject = filterByProject;
+    }
+
+    public void setConfiguredProjects(final List<String> configuredProjects) {
+        this.configuredProjects = configuredProjects;
+    }
+
+    public void setNotificationTypes(final List<NotificationCategoryEnum> notificationTypes) {
+        this.notificationTypes = notificationTypes;
+    }
+
+    public void setLastRan(final String lastRan) {
+        this.lastRan = lastRan;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
     }
 
     @Override
