@@ -36,3 +36,9 @@
 	composes: textInput inline;
     top: 10px;
 }
+
+.emptyLabel {
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+}

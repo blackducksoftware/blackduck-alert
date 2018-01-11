@@ -5,7 +5,7 @@ import TextInput from '../../field/input/TextInput';
 import ServerConfiguration from './ServerConfiguration';
 
 import { alignCenter } from '../../../css/main.css';
-
+import { emptyLabel } from '../../../css/field.css';
 class SlackConfiguration extends ServerConfiguration {
 	constructor(props) {
 		super(props);
@@ -14,7 +14,8 @@ class SlackConfiguration extends ServerConfiguration {
 	render() {
         let content =
             <div>
-			</div>;
+                <label className={emptyLabel}>No Slack server configuration required here.</label>
+            </div>;
         return super.render(content);
 	}
 };
