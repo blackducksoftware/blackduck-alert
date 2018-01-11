@@ -169,8 +169,12 @@ class DistributionConfiguration extends Component {
     }
 
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
-		var className = tableStyles.statusSuccess;
-		if (fieldValue === 'Failure') {
+		var className = null;
+		if (fieldValue === 'Pending') {
+			className = tableStyles.statusPending;
+		} else if (fieldValue === 'Success') {
+			className = tableStyles.statusSuccess;
+		} else if (fieldValue === 'Failure') {
 			className = tableStyles.statusFailure;
 		}
 		className = `${className} ${tableStyles.tableCell}`
