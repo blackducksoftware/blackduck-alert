@@ -40,15 +40,13 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
-        final String emailTemplate = properties.getProperty(TestPropertyKey.TEST_EMAIL_TEMPLATE);
-        final String logo = properties.getProperty(TestPropertyKey.TEST_EMAIL_LOGO);
         final String subjectLine = "Test Subject Line";
-        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, emailTemplate, logo, subjectLine);
+        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailConfigEntity).when(emailChannel).getGlobalConfigEntity();
 
-        emailChannel.sendMessage(Arrays.asList(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), event);
+        emailChannel.sendMessage(Arrays.asList(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)), event, subjectLine);
     }
 
 }
