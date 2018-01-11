@@ -63,6 +63,7 @@ public class EmailMessagingService {
 
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
+        // TODO determine the actual image location for deployment from the classpath in the jar
         this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates");
     }
 
@@ -77,7 +78,7 @@ public class EmailMessagingService {
 
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-
+        // TODO allow the ability to upload the image files or use a URL to an image
         addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png");
         final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
