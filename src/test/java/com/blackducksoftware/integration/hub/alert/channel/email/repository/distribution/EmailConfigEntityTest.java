@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
 
 public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConfigEntity> {
@@ -42,7 +41,7 @@ public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConf
 
     @Override
     public int emptyEntityHashCode() {
-        return 23273;
+        return 31860737;
     }
 
     @Override
@@ -52,7 +51,7 @@ public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConf
 
     @Override
     public int entityHashCode() {
-        return 957142140;
+        return -324778974;
     }
 
 }
