@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 
 public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
@@ -52,16 +51,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
     }
 
     @Override
-    public long globalEntitySerialId() {
-        return GlobalEmailConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalEntityHashCode() {
-        return 1169169065;
-    }
-
-    @Override
     public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
         assertEquals(getMockUtil().getEmailSubjectLine(), entity.getEmailSubjectLine());
         assertEquals(getMockUtil().getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
@@ -80,11 +69,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
         assertEquals(getMockUtil().getMailSmtpSendPartial(), entity.getMailSmtpSendPartial());
         assertEquals(getMockUtil().getMailSmtpTimeout(), entity.getMailSmtpTimeout());
         assertEquals(getMockUtil().getMailSmtpUser(), entity.getMailSmtpUser());
-    }
-
-    @Override
-    public int globalEntityHashCode() {
-        return -620287382;
     }
 
 }

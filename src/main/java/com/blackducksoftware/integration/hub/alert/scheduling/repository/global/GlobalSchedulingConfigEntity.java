@@ -32,8 +32,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 @Entity
 @Table(schema = "alert", name = "global_scheduling_config")
 public class GlobalSchedulingConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 8463934888905338203L;
-
     @Column(name = "alert_accumulator_cron")
     private String accumulatorCron;
 
@@ -51,10 +49,6 @@ public class GlobalSchedulingConfigEntity extends DatabaseEntity {
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
         this.purgeDataCron = purgeDataCron;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getAccumulatorCron() {

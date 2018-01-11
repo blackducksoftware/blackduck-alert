@@ -28,8 +28,6 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
-    private static final long serialVersionUID = -4728604702503057780L;
-
     private String groupName;
 
     public EmailGroupDistributionRestModel() {
@@ -39,10 +37,6 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
             final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getGroupName() {

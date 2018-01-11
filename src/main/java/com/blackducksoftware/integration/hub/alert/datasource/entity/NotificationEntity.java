@@ -40,8 +40,6 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 @Entity
 @Table(schema = "alert", name = "notification_events")
 public class NotificationEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -1194014350183607831L;
-
     @Column(name = "event_key")
     private String eventKey;
 
@@ -97,10 +95,6 @@ public class NotificationEntity extends DatabaseEntity {
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
         this.vulnerabilityList = vulnerabilityList;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getEventKey() {

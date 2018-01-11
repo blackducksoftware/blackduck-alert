@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.g
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
@@ -26,23 +25,8 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<Global
     }
 
     @Override
-    public long globalRestModelSerialId() {
-        return GlobalHipChatConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalRestModelHashCode() {
-        return 906870;
-    }
-
-    @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHipChatConfigRestModel restModel) {
         assertEquals(getMockUtil().getApiKey(), restModel.getApiKey());
-    }
-
-    @Override
-    public int globalRestModelHashCode() {
-        return 608471908;
     }
 
     @Override

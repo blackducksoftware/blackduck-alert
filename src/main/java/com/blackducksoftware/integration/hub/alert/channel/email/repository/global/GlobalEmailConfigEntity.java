@@ -33,8 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 @Entity
 @Table(schema = "alert", name = "global_email_config")
 public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 4122029411365267232L;
-
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     @Column(name = "mail_smtp_host")
     private String mailSmtpHost;
@@ -112,10 +110,6 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         this.emailTemplateDirectory = emailTemplateDirectory;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getMailSmtpHost() {

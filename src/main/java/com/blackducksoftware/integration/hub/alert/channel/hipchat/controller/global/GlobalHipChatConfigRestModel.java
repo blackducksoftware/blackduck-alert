@@ -27,8 +27,6 @@ import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalHipChatConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = 8852683250883814613L;
-
     @SensitiveField
     private String apiKey;
     private boolean apiKeyIsSet;
@@ -40,10 +38,6 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
         super(id);
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getApiKey() {

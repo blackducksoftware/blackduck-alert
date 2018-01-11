@@ -27,26 +27,10 @@ public class SlackConfigRestModelTest extends RestModelTest<SlackDistributionRes
     }
 
     @Override
-    public long restModelSerialId() {
-        return SlackDistributionRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyRestModelHashCode() {
-        return -1862761851;
-    }
-
-    @Override
     public void assertRestModelFieldsFull(final SlackDistributionRestModel restModel) {
         assertEquals(getMockUtil().getWebhook(), restModel.getWebhook());
         assertEquals(getMockUtil().getChannelName(), restModel.getChannelName());
         assertEquals(getMockUtil().getChannelUsername(), restModel.getChannelUsername());
-    }
-
-    @Override
-    public int restModelHashCode() {
-        return 2067687714;
-
     }
 
     @Override

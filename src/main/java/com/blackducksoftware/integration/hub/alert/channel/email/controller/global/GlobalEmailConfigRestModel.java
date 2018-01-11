@@ -27,8 +27,6 @@ import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalEmailConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = 9172607945030111585L;
-
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     private String mailSmtpHost;
     private String mailSmtpUser;
@@ -78,10 +76,6 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         this.emailTemplateDirectory = emailTemplateDirectory;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getMailSmtpHost() {

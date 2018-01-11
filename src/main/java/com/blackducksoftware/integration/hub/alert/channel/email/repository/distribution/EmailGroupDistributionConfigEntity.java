@@ -32,7 +32,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 @Entity
 @Table(schema = "alert", name = "email_group_distribution_config")
 public class EmailGroupDistributionConfigEntity extends DistributionChannelConfigEntity {
-    private static final long serialVersionUID = -2969530122554864181L;
 
     @Column(name = "group_name")
     private String groupName;
@@ -42,10 +41,6 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
 
     public EmailGroupDistributionConfigEntity(final String groupName) {
         this.groupName = groupName;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getGroupName() {

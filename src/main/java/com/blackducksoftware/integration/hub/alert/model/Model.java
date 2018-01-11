@@ -23,27 +23,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.util.Stringable;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public abstract class Model {
-
-    @Override
-    public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
-    }
-
+public abstract class Model extends Stringable {
     @Override
     public String toString() {
         final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {

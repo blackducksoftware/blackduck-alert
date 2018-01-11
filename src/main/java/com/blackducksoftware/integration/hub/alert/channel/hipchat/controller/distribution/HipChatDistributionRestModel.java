@@ -28,8 +28,6 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public class HipChatDistributionRestModel extends CommonDistributionConfigRestModel {
-    private static final long serialVersionUID = -1179576393408142603L;
-
     private String roomId;
     private String notify;
     private String color;
@@ -44,10 +42,6 @@ public class HipChatDistributionRestModel extends CommonDistributionConfigRestMo
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getRoomId() {

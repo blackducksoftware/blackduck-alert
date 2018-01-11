@@ -14,10 +14,6 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import org.json.JSONException;
-import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
 
 public class NotificationEntityTest extends EntityTest<NotificationEntity> {
@@ -49,16 +45,6 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
     }
 
     @Override
-    public long entitySerialId() {
-        return NotificationEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return -1862761851;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final NotificationEntity entity) {
         assertEquals(getMockUtil().getComponentName(), entity.getComponentName());
         assertEquals(getMockUtil().getComponentVersion(), entity.getComponentVersion());
@@ -72,30 +58,6 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
         assertEquals(getMockUtil().getProjectVersion(), entity.getProjectVersion());
         assertEquals(getMockUtil().getProjectVersionUrl(), entity.getProjectVersionUrl());
         assertEquals(getMockUtil().getVulnerabilityList(), entity.getVulnerabilityList());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return 1038963148;
-    }
-
-    @Override
-    @Test
-    public void testEntity() throws JSONException {
-        final NotificationEntity configEntity = getMockUtil().createEntity();
-
-        assertEntityFieldsFull(configEntity);
-        assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
-
-        // TODO figure out why the hash code keeps changing
-        // final int configHash = configEntity.hashCode();
-        // assertEquals(entityHashCode(), configHash);
-
-        final String expectedString = getMockUtil().getEntityJson();
-        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
-
-        final NotificationEntity configEntityNew = getMockUtil().createEntity();
-        assertEquals(configEntity, configEntityNew);
     }
 
 }
