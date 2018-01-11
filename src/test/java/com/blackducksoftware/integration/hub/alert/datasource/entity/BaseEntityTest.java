@@ -18,9 +18,6 @@ public interface BaseEntityTest<B extends BaseEntity> {
     public void testEntity() throws JSONException;
     public Class<B> getEntityClass();
     public void assertEntityFieldsNull(final B entity);
-    public long entitySerialId();
-    public int emptyEntityHashCode();
     public void assertEntityFieldsFull(final B entity);
-    public int entityHashCode();
 
 }

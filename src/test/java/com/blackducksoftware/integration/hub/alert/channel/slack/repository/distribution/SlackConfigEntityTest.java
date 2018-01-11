@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
 
 public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
@@ -33,25 +32,10 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEnt
     }
 
     @Override
-    public long entitySerialId() {
-        return SlackDistributionConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return -1152428859;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final SlackDistributionConfigEntity entity) {
         assertEquals(getMockUtil().getWebhook(), entity.getWebhook());
         assertEquals(getMockUtil().getChannelName(), entity.getChannelName());
         assertEquals(getMockUtil().getChannelUsername(), entity.getChannelUsername());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return 584468116;
     }
 
     @Override

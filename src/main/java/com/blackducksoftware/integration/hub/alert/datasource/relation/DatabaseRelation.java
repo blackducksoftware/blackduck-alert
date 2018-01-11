@@ -23,16 +23,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.relation;
 
-import java.io.Serializable;
-
 import javax.persistence.MappedSuperclass;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
 @MappedSuperclass
-public abstract class DatabaseRelation extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -5043273843104292706L;
-
+public abstract class DatabaseRelation extends BaseEntity {
     public DatabaseRelation() {
         super();
     }

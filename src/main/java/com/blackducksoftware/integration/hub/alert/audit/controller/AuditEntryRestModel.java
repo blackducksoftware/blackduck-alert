@@ -27,7 +27,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 
 public class AuditEntryRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -8714295254107315501L;
 
     private String name;
     private String eventType;
@@ -52,10 +51,6 @@ public class AuditEntryRestModel extends ConfigRestModel {
         this.notification = notification;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getName() {

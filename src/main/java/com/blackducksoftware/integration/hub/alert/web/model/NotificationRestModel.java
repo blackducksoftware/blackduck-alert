@@ -26,8 +26,6 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import java.util.Set;
 
 public class NotificationRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -715566918536523106L;
-
     private String eventKey;
     private String createdAt;
     private Set<String> notificationTypes;
@@ -51,10 +49,6 @@ public class NotificationRestModel extends ConfigRestModel {
         this.components = components;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getEventKey() {

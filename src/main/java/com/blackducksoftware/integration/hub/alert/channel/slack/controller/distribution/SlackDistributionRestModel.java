@@ -28,8 +28,6 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
-    private static final long serialVersionUID = -3032738984577328749L;
-
     private String webhook;
     private String channelUsername;
     private String channelName;
@@ -44,10 +42,6 @@ public class SlackDistributionRestModel extends CommonDistributionConfigRestMode
         this.webhook = webhook;
         this.channelUsername = channelUsername;
         this.channelName = channelName;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getWebhook() {

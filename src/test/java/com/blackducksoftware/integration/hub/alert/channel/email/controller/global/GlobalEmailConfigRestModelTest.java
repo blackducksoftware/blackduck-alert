@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email.controller.glo
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
@@ -42,16 +41,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     }
 
     @Override
-    public long globalRestModelSerialId() {
-        return GlobalEmailConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalRestModelHashCode() {
-        return 1021354782;
-    }
-
-    @Override
     public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
         assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
         assertEquals(getMockUtil().getEmailTemplateDirectory(), restModel.getEmailTemplateDirectory());
@@ -70,11 +59,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
         assertEquals(getMockUtil().getMailSmtpSendPartial(), restModel.getMailSmtpSendPartial());
         assertEquals(getMockUtil().getMailSmtpTimeout(), restModel.getMailSmtpTimeout());
         assertEquals(getMockUtil().getMailSmtpUser(), restModel.getMailSmtpUser());
-    }
-
-    @Override
-    public int globalRestModelHashCode() {
-        return 1485333119;
     }
 
     @Override

@@ -33,16 +33,6 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     }
 
     @Override
-    public long globalRestModelSerialId() {
-        return GlobalHubConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalRestModelHashCode() {
-        return 902077419;
-    }
-
-    @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHubConfigRestModel restModel) {
         assertEquals(getMockUtil().getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
         assertEquals(getMockUtil().getHubProxyHost(), restModel.getHubProxyHost());
@@ -51,11 +41,6 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
         assertEquals(getMockUtil().getHubProxyUsername(), restModel.getHubProxyUsername());
         assertEquals(getMockUtil().getHubTimeout(), restModel.getHubTimeout());
         assertEquals(getMockUtil().getHubUrl(), restModel.getHubUrl());
-    }
-
-    @Override
-    public int globalRestModelHashCode() {
-        return -212692039;
     }
 
     @Override

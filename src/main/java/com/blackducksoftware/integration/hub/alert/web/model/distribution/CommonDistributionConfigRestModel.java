@@ -28,8 +28,6 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class CommonDistributionConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -4723009315760610084L;
-
     private String distributionConfigId;
     private String distributionType;
     private String name;
@@ -53,10 +51,6 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
         this.notificationTypes = notificationTypes;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getDistributionConfigId() {
