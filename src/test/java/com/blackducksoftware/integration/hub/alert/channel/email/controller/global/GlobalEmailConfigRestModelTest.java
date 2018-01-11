@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email.controller.glo
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
@@ -22,9 +21,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
-        assertNull(restModel.getEmailSubjectLine());
-        assertNull(restModel.getEmailTemplateDirectory());
-        assertNull(restModel.getEmailTemplateLogoImage());
         assertNull(restModel.getMailSmtpAllow8bitmime());
         assertNull(restModel.getMailSmtpAuth());
         assertNull(restModel.getMailSmtpConnectionTimeout());
@@ -48,14 +44,11 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public int emptyGlobalRestModelHashCode() {
-        return 1021354782;
+        return -1668261706;
     }
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
-        assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
-        assertEquals(getMockUtil().getEmailTemplateDirectory(), restModel.getEmailTemplateDirectory());
-        assertEquals(getMockUtil().getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), restModel.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), restModel.getMailSmtpAuth());
         assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), restModel.getMailSmtpConnectionTimeout());
@@ -74,7 +67,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public int globalRestModelHashCode() {
-        return 1485333119;
+        return 95018;
     }
 
     @Override

@@ -31,19 +31,15 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     private final String mailSmtpDnsRet;
     private final String mailSmtpAllow8bitmime;
     private final String mailSmtpSendPartial;
-    private final String emailTemplateDirectory;
-    private final String emailTemplateLogoImage;
-    private final String emailSubjectLine;
     private final String id;
 
     public MockEmailGlobalRestModel() {
-        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "EmailTemplateDirectory",
-                "EmailTemplateLogoImage", "EmailSubjectLine", "1");
+        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "1");
     }
 
     private MockEmailGlobalRestModel(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort, final String mailSmtpConnectionTimeout,
             final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final String id) {
+            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String id) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -59,9 +55,6 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         this.mailSmtpDnsRet = mailSmtpDnsRet;
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
-        this.emailTemplateDirectory = emailTemplateDirectory;
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
-        this.emailSubjectLine = emailSubjectLine;
         this.id = id;
     }
 
@@ -125,18 +118,6 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         return mailSmtpSendPartial;
     }
 
-    public String getEmailTemplateDirectory() {
-        return emailTemplateDirectory;
-    }
-
-    public String getEmailTemplateLogoImage() {
-        return emailTemplateLogoImage;
-    }
-
-    public String getEmailSubjectLine() {
-        return emailSubjectLine;
-    }
-
     @Override
     public Long getId() {
         return Long.valueOf(id);
@@ -145,7 +126,7 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     @Override
     public GlobalEmailConfigRestModel createGlobalRestModel() {
         final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom,
-                mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+                mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
         return restModel;
     }
 
@@ -171,9 +152,6 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         json.addProperty("mailSmtpDnsRet", mailSmtpDnsRet);
         json.addProperty("mailSmtpAllow8bitmime", mailSmtpAllow8bitmime);
         json.addProperty("mailSmtpSendPartial", mailSmtpSendPartial);
-        json.addProperty("emailTemplateDirectory", emailTemplateDirectory);
-        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
-        json.addProperty("emailSubjectLine", emailSubjectLine);
         json.addProperty("id", id);
         return json.toString();
     }
