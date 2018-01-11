@@ -65,8 +65,7 @@ public class LoginHandler extends ControllerHandler {
     public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
         final HttpSession session = request.getSession(false);
         if (session != null) {
-            // TODO figure out timeout
-            session.setMaxInactiveInterval(300);
+            session.setMaxInactiveInterval(600);
         }
 
         return authenticateUser(loginRestModel);
