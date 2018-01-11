@@ -21,14 +21,18 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
 
     private final String groupName;
     private final String id;
+    private final String emailTemplateLogoImage;
+    private final String emailSubjectLine;
 
     public MockEmailRestModel() {
-        this("groupName", "1");
+        this("groupName", "1", "emailTemplateLogoImage", "emailSubjectLine");
     }
 
-    private MockEmailRestModel(final String groupName, final String id) {
+    private MockEmailRestModel(final String groupName, final String id, final String emailTemplateLogoImage, final String emailSubjectLine) {
         this.groupName = groupName;
         this.id = id;
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public String getGroupName() {
@@ -40,10 +44,19 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
         return Long.valueOf(id);
     }
 
+    public String getEmailTemplateLogoImage() {
+        return emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
+    }
+
     @Override
     public EmailGroupDistributionRestModel createRestModel() {
         final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, distributionMockUtil.getProjects(), distributionMockUtil.getNotificationsAsStrings());
+                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, emailTemplateLogoImage, emailSubjectLine, distributionMockUtil.getProjects(),
+                distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }
 
@@ -56,6 +69,8 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("groupName", groupName);
+        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
+        json.addProperty("emailSubjectLine", emailSubjectLine);
 
         return distributionMockUtil.combineWithRestModelJson(json);
     }

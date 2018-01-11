@@ -21,9 +21,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
-        assertNull(restModel.getEmailSubjectLine());
-        assertNull(restModel.getEmailTemplateDirectory());
-        assertNull(restModel.getEmailTemplateLogoImage());
         assertNull(restModel.getMailSmtpAllow8bitmime());
         assertNull(restModel.getMailSmtpAuth());
         assertNull(restModel.getMailSmtpConnectionTimeout());
@@ -42,9 +39,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
-        assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
-        assertEquals(getMockUtil().getEmailTemplateDirectory(), restModel.getEmailTemplateDirectory());
-        assertEquals(getMockUtil().getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), restModel.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), restModel.getMailSmtpAuth());
         assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), restModel.getMailSmtpConnectionTimeout());

@@ -29,14 +29,18 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 
 public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
     private String groupName;
+    private String emailTemplateLogoImage;
+    private String emailSubjectLine;
 
     public EmailGroupDistributionRestModel() {
     }
 
     public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
-            final List<String> configuredProjects, final List<String> notificationTypes) {
+            final String emailTemplateLogoImage, final String emailSubjectLine, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public String getGroupName() {
@@ -45,6 +49,22 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
 
     public void setGroupName(final String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getEmailTemplateLogoImage() {
+        return emailTemplateLogoImage;
+    }
+
+    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
+    }
+
+    public void setEmailSubjectLine(final String emailSubjectLine) {
+        this.emailSubjectLine = emailSubjectLine;
     }
 
 }
