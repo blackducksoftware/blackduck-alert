@@ -47,16 +47,13 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private String mailSmtpDnsRet;
     private String mailSmtpAllow8bitmime;
     private String mailSmtpSendPartial;
-    private String emailTemplateDirectory;
-    private String emailTemplateLogoImage;
-    private String emailSubjectLine;
 
     public GlobalEmailConfigRestModel() {
     }
 
     public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
             final String mailSmtpConnectionTimeout, final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify,
-            final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
+            final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
@@ -73,9 +70,6 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         this.mailSmtpDnsRet = mailSmtpDnsRet;
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
-        this.emailTemplateDirectory = emailTemplateDirectory;
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
-        this.emailSubjectLine = emailSubjectLine;
     }
 
     public String getMailSmtpHost() {
@@ -136,18 +130,6 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
 
     public String getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
-    }
-
-    public String getEmailTemplateDirectory() {
-        return emailTemplateDirectory;
-    }
-
-    public String getEmailTemplateLogoImage() {
-        return emailTemplateLogoImage;
-    }
-
-    public String getEmailSubjectLine() {
-        return emailSubjectLine;
     }
 
 }

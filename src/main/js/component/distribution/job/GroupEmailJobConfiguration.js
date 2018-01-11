@@ -28,6 +28,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     initializeValues(data) {
         super.initializeValues(data);
         let groupName = data.groupName || this.props.groupName;
+        let emailSubjectLine = data.emailSubjectLine || this.props.emailSubjectLine;
         const { groups } = this.props;
         let groupOptions= new Array();
         if (groups && groups.length > 0) {
@@ -74,6 +75,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         }
         this.state.groupOptions = groupOptions;
         super.handleStateValues('groupName', groupName);
+        super.handleStateValues('emailSubjectLine', emailSubjectLine);
 
     }
 
@@ -114,6 +116,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		}
 		let content =
 					<div>
+                        <TextInput label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError}></TextInput>
 						<label className={fieldLabel}>Group</label>
 						<Select className={typeAheadField}
 							onChange={this.handleGroupsChanged}

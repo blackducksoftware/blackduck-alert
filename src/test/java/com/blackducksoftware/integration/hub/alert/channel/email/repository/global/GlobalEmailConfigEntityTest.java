@@ -31,9 +31,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalEmailConfigEntity entity) {
-        assertNull(entity.getEmailSubjectLine());
-        assertNull(entity.getEmailTemplateDirectory());
-        assertNull(entity.getEmailTemplateLogoImage());
         assertNull(entity.getMailSmtpAllow8bitmime());
         assertNull(entity.getMailSmtpAuth());
         assertNull(entity.getMailSmtpConnectionTimeout());
@@ -52,9 +49,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
-        assertEquals(getMockUtil().getEmailSubjectLine(), entity.getEmailSubjectLine());
-        assertEquals(getMockUtil().getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
-        assertEquals(getMockUtil().getEmailTemplateLogoImage(), entity.getEmailTemplateLogoImage());
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), entity.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), entity.getMailSmtpAuth());
         assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), entity.getMailSmtpConnectionTimeout());

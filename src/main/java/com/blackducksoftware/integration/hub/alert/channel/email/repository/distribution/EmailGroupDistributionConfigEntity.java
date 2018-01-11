@@ -36,15 +36,31 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
     @Column(name = "group_name")
     private String groupName;
 
+    @Column(name = "email_template_logo_image")
+    private String emailTemplateLogoImage;
+
+    @Column(name = "email_subject_line")
+    private String emailSubjectLine;
+
     public EmailGroupDistributionConfigEntity() {
     }
 
-    public EmailGroupDistributionConfigEntity(final String groupName) {
+    public EmailGroupDistributionConfigEntity(final String groupName, final String emailTemplateLogoImage, final String emailSubjectLine) {
         this.groupName = groupName;
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getEmailTemplateLogoImage() {
+        return emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
     }
 
 }
