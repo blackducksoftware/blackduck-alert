@@ -46,14 +46,22 @@ class Audit extends Component {
 	}
 
 	componentDidMount() {
-		// run the reload now and then every 10 seconds
 		this.reloadAuditEntries();
+		this.startAutoReload();
+	}
+
+	startAutoReload() {
+		// run the reload now and then every 10 seconds
 		let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
 		this.handleSetState('reloadInterval', reloadInterval);
 	}
 
+	cancelAutoReload() {
+		clearInterval(this.state.reloadInterval);
+	}
+
 	componentWillUnmount() {
-		 clearInterval(this.state.reloadInterval);
+		this.cancelAutoReload();
 	}
 
 	reloadAuditEntries(){
@@ -113,10 +121,9 @@ class Audit extends Component {
 	handleAutoRefreshChange(event) {
 		const target = event.target;
 		if (target.checked) {
-			let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
-			this.handleSetState('reloadInterval', reloadInterval);
+			this.startAutoReload();
 		} else {
-			clearInterval(this.state.reloadInterval);
+			this.cancelAutoReload();
 		}
 		const name = target.name;
 		this.handleSetState(name, target.checked);
@@ -183,11 +190,11 @@ class Audit extends Component {
 
     statusColumnDataFormat(cell, row) {
 		var statusClass = null;
-		if (fieldValue === 'Pending') {
+		if (cell === 'Pending') {
 			statusClass = tableStyles.statusPending;
-		} else if (fieldValue === 'Success') {
+		} else if (cell === 'Success') {
 			statusClass = tableStyles.statusSuccess;
-		} else if (fieldValue === 'Failure') {
+		} else if (cell === 'Failure') {
 			statusClass = tableStyles.statusFailure;
 		}
 		let data = <div className={statusClass} aria-hidden='true'>
