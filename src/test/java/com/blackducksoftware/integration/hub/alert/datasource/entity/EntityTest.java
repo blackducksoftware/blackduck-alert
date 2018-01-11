@@ -14,8 +14,6 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ObjectStreamClass;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -30,13 +28,8 @@ public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntity
     @Test
     public void testEmptyEntity() throws JSONException {
         final E configEntity = getMockUtil().createEmptyEntity();
-        assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
-
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
-
-        final int configHash = configEntity.hashCode();
-        assertEquals(emptyEntityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEmptyEntityJson();
         JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
@@ -52,9 +45,6 @@ public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntity
 
         assertEntityFieldsFull(configEntity);
         assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
-
-        final int configHash = configEntity.hashCode();
-        assertEquals(entityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEntityJson();
         JSONAssert.assertEquals(expectedString, configEntity.toString(), false);

@@ -23,13 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
-import java.io.Serializable;
-
 import com.blackducksoftware.integration.hub.alert.model.Model;
 
-public abstract class ConfigRestModel extends Model implements Serializable {
-    private static final long serialVersionUID = -3734941694720407916L;
-
+public abstract class ConfigRestModel extends Model {
     private String id;
 
     public ConfigRestModel() {

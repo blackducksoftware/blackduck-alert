@@ -32,5 +32,4 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 @Entity
 @Table(schema = "alert", name = "global_slack_config")
 public class GlobalSlackConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 1L;
 }

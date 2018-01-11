@@ -33,8 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 @Entity
 @Table(schema = "alert", name = "global_hub_config")
 public class GlobalHubConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 9172607945030111585L;
-
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
@@ -48,10 +46,6 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     public GlobalHubConfigEntity(final Integer hubTimeout, final String hubApiKey) {
         this.hubTimeout = hubTimeout;
         this.hubApiKey = hubApiKey;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Integer getHubTimeout() {

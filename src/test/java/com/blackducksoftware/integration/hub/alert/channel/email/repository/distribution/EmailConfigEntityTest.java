@@ -35,23 +35,8 @@ public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConf
     }
 
     @Override
-    public long entitySerialId() {
-        return EmailGroupDistributionConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return 31860737;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final EmailGroupDistributionConfigEntity entity) {
         assertEquals(getMockUtil().getGroupName(), entity.getGroupName());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return -324778974;
     }
 
 }

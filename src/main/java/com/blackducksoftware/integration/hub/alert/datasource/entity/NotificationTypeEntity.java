@@ -32,8 +32,6 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 @Entity
 @Table(schema = "alert", name = "notification_types")
 public class NotificationTypeEntity extends DatabaseEntity {
-    private static final long serialVersionUID = 6250696874570412937L;
-
     @Column
     private NotificationCategoryEnum type;
 
@@ -43,10 +41,6 @@ public class NotificationTypeEntity extends DatabaseEntity {
 
     public NotificationTypeEntity(final NotificationCategoryEnum type) {
         this.type = type;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public NotificationCategoryEnum getType() {

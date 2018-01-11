@@ -35,8 +35,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.key.Distr
 @IdClass(DistributionProjectRelationPK.class)
 @Table(schema = "alert", name = "distribution_project_relation")
 public class DistributionProjectRelation extends DatabaseRelation {
-    private static final long serialVersionUID = 6656775537871602933L;
-
     @Id
     @Column(name = "common_distribution_config_id")
     private Long commonDistributionConfigId;
@@ -52,10 +50,6 @@ public class DistributionProjectRelation extends DatabaseRelation {
         super();
         this.commonDistributionConfigId = commonDistributionConfigId;
         this.projectId = projectId;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Long getCommonDistributionConfigId() {

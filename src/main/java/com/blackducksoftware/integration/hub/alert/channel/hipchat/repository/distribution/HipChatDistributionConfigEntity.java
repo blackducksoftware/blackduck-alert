@@ -32,8 +32,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 @Entity
 @Table(schema = "alert", name = "hip_chat_distribution_config")
 public class HipChatDistributionConfigEntity extends DistributionChannelConfigEntity {
-    private static final long serialVersionUID = 8645967062445661540L;
-
     @Column(name = "room_id")
     private Integer roomId;
 
@@ -50,10 +48,6 @@ public class HipChatDistributionConfigEntity extends DistributionChannelConfigEn
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Integer getRoomId() {

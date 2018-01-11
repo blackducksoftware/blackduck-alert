@@ -330,7 +330,6 @@ class BaseJobConfiguration extends Component {
 							<label className={fieldLabel}>Frequency</label>
 							<Select className={typeAheadField}
 								onChange={this.handleFrequencyChanged}
-							    clearble={true}
                                 searchable={true}
 							    options={this.state.frequencyOptions}
 							    placeholder='Choose the frequency'
@@ -341,7 +340,6 @@ class BaseJobConfiguration extends Component {
 							<label className={fieldLabel}>Notification Types</label>
 							<Select className={typeAheadField}
 								onChange={this.handleNotificationChanged}
-							    clearble={true}
                                 searchable={true}
 							    multi
                                 removeSelected={true}

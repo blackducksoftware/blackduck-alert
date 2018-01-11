@@ -31,24 +31,9 @@ public class AuditNotificationRelationTest extends RelationTest<AuditNotificatio
     }
 
     @Override
-    public long entitySerialId() {
-        return AuditNotificationRelation.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return 23273;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final AuditNotificationRelation entity) {
         assertNotNull(entity.getAuditEntryId());
         assertNotNull(entity.getNotificationId());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return 23771;
     }
 
     @Override

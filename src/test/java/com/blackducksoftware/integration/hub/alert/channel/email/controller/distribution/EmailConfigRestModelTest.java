@@ -25,24 +25,8 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
     }
 
     @Override
-    public long restModelSerialId() {
-        return EmailGroupDistributionRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyRestModelHashCode() {
-        return -1862761851;
-    }
-
-    @Override
     public void assertRestModelFieldsFull(final EmailGroupDistributionRestModel restModel) {
         assertEquals(getMockUtil().getGroupName(), restModel.getGroupName());
-    }
-
-    @Override
-    public int restModelHashCode() {
-        return -1214099480;
-
     }
 
     @Override
