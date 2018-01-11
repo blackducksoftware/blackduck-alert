@@ -85,10 +85,11 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
+            final String subjectLine = emailConfigEntity.getEmailSubjectLine();
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
                 final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupService(), hubGroupName);
-                sendMessage(emailAddresses, event);
+                sendMessage(emailAddresses, event, subjectLine);
                 setAuditEntrySuccess(event.getAuditEntryId());
             } catch (final IntegrationException e) {
                 setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
@@ -102,14 +103,15 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent event) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, MessagingException, IOException, TemplateException {
+    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent event, final String subjectLine)
+            throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, MessagingException, IOException, TemplateException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
 
         final ProjectData data = event.getProjectData();
 
         final HashMap<String, Object> model = new HashMap<>();
-        model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, getGlobalConfigEntity().getEmailSubjectLine());
+        model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
         model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getDisplayName());
         model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
 

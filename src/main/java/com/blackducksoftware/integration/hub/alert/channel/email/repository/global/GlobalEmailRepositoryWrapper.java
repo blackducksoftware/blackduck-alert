@@ -60,11 +60,8 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
             final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
             final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
             final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-            final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
-            final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
-            final String emailSubjectLine = entity.getEmailSubjectLine();
             final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
             newEntity.setId(entity.getId());
             return newEntity;
         }
@@ -90,11 +87,8 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
             final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
             final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
             final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-            final String emailTemplateDirectory = entity.getEmailTemplateDirectory();
-            final String emailTemplateLogoImage = entity.getEmailTemplateLogoImage();
-            final String emailSubjectLine = entity.getEmailSubjectLine();
             final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
             newEntity.setId(entity.getId());
             return newEntity;
         }
