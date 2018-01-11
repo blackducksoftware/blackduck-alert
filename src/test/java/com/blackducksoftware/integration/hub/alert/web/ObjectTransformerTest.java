@@ -242,7 +242,6 @@ public class ObjectTransformerTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class TestDatabaseEntity extends DatabaseEntity {
         public Map<String, String> map;
 
@@ -250,7 +249,6 @@ public class ObjectTransformerTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class TestConfigRestModel extends ConfigRestModel {
         public String map;
 
@@ -258,7 +256,6 @@ public class ObjectTransformerTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class TestDatabaseEntityDifferentField extends DatabaseEntity {
         public Map<String, String> newMap;
 
@@ -266,7 +263,6 @@ public class ObjectTransformerTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class TestConfigRestModelDifferentField extends ConfigRestModel {
         public String newMap;
 
@@ -274,12 +270,10 @@ public class ObjectTransformerTest {
         }
     }
 
-    @SuppressWarnings("serial")
     public class TestDatabaseEntityInstantiationException extends DatabaseEntity {
         public Map<String, String> map;
     }
 
-    @SuppressWarnings("serial")
     public class TestConfigRestModelInstantiationException extends ConfigRestModel {
         public String map;
     }

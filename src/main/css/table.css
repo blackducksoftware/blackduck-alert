@@ -1,9 +1,13 @@
 .statusSuccess {
-	color: green;
+	color: #3c763d;
 }
 
 .statusFailure {
-	color: red;
+	color: #9c251f;
+}
+
+.statusPending {
+    color: #999;
 }
 
 .tableButton {

@@ -28,25 +28,10 @@ public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSch
     }
 
     @Override
-    public long globalEntitySerialId() {
-        return GlobalSchedulingConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalEntityHashCode() {
-        return 31860737;
-    }
-
-    @Override
     public void assertGlobalEntityFieldsFull(final GlobalSchedulingConfigEntity entity) {
         assertEquals(getMockUtil().getAccumulatorCron(), entity.getAccumulatorCron());
         assertEquals(getMockUtil().getDailyDigestCron(), entity.getDailyDigestCron());
         assertEquals(getMockUtil().getPurgeDataCron(), entity.getPurgeDataCron());
-    }
-
-    @Override
-    public int globalEntityHashCode() {
-        return -1636279562;
     }
 
     @Override

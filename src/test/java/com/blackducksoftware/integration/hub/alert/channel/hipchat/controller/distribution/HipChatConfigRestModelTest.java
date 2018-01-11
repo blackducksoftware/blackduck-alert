@@ -27,26 +27,10 @@ public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributio
     }
 
     @Override
-    public long restModelSerialId() {
-        return HipChatDistributionRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyRestModelHashCode() {
-        return -1862761851;
-    }
-
-    @Override
     public void assertRestModelFieldsFull(final HipChatDistributionRestModel restModel) {
         assertEquals(getMockUtil().getRoomId(), restModel.getRoomId());
         assertEquals(getMockUtil().getNotify(), restModel.getNotify());
         assertEquals(getMockUtil().getColor(), restModel.getColor());
-    }
-
-    @Override
-    public int restModelHashCode() {
-        return -1819566458;
-
     }
 
     @Override

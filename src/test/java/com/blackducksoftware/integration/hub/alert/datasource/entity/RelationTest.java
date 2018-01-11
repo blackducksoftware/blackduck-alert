@@ -13,8 +13,6 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ObjectStreamClass;
-
 import org.json.JSONException;
 import org.junit.Test;
 
@@ -25,11 +23,6 @@ public abstract class RelationTest<R extends DatabaseRelation> implements BaseEn
     @Test
     public void testEmptyEntity() throws JSONException {
         final R configEntity = createMockEmptyRelation();
-        assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
-
-        final int configHash = configEntity.hashCode();
-        assertEquals(emptyEntityHashCode(), configHash);
-
         final R configEntityNew = createMockEmptyRelation();
         assertEquals(configEntity, configEntityNew);
     }
@@ -41,10 +34,6 @@ public abstract class RelationTest<R extends DatabaseRelation> implements BaseEn
         final Long secondId = 17L;
 
         final R configEntity = createMockRelation(firstId, secondId);
-
-        final int configHash = configEntity.hashCode();
-        assertEquals(entityHashCode(), configHash);
-
         final R configEntityNew = createMockRelation(firstId, secondId);
         assertEquals(configEntity, configEntityNew);
     }

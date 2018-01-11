@@ -33,8 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
 public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 2791949172564090134L;
-
     @SensitiveField
     @Column(name = "api_key")
     private String apiKey;
@@ -44,10 +42,6 @@ public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
 
     public GlobalHipChatConfigEntity(final String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getApiKey() {

@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 
 public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
@@ -26,23 +25,8 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
     }
 
     @Override
-    public long globalEntitySerialId() {
-        return GlobalHipChatConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalEntityHashCode() {
-        return 23273;
-    }
-
-    @Override
     public void assertGlobalEntityFieldsFull(final GlobalHipChatConfigEntity entity) {
         assertEquals(getMockUtil().getApiKey(), entity.getApiKey());
-    }
-
-    @Override
-    public int globalEntityHashCode() {
-        return -215716445;
     }
 
     @Override

@@ -35,8 +35,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.DatabaseR
 @IdClass(AuditNotificationRelationPK.class)
 @Table(schema = "alert", name = "audit_notification_relation")
 public class AuditNotificationRelation extends DatabaseRelation {
-    private static final long serialVersionUID = -6168171736942951164L;
-
     @Id
     @Column(name = "audit_entry_id")
     private Long auditEntryId;
@@ -52,10 +50,6 @@ public class AuditNotificationRelation extends DatabaseRelation {
         super();
         this.auditEntryId = auditEntryId;
         this.notificationId = notificationId;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Long getAuditEntryId() {

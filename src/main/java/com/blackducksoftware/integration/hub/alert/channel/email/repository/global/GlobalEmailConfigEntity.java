@@ -33,8 +33,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 @Entity
 @Table(schema = "alert", name = "global_email_config")
 public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 8545839704066666091L;
-
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     @Column(name = "mail_smtp_host")
     private String mailSmtpHost;
@@ -101,10 +99,6 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
 
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getMailSmtpHost() {

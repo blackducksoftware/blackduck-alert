@@ -23,17 +23,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class DatabaseEntity extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = -655751104442653527L;
-
+public abstract class DatabaseEntity extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(name = "id")

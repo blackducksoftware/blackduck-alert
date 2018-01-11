@@ -11,6 +11,8 @@ import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 import EditTableCellFormatter from '../EditTableCellFormatter';
 
+import CheckboxInput from '../../field/input/CheckboxInput';
+
 import JobAddModal from './JobAddModal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton, ButtonGroup} from 'react-bootstrap-table';
@@ -20,6 +22,7 @@ class DistributionConfiguration extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
+		 	autoRefresh: true,
 			configurationMessage: '',
 			errors: {},
 			jobs: [],
@@ -28,6 +31,7 @@ class DistributionConfiguration extends Component {
 			waitingForProjects: true,
 			waitingForGroups: true
 		};
+		this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
 		this.createCustomModal = this.createCustomModal.bind(this);
 		this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
 		this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -38,17 +42,32 @@ class DistributionConfiguration extends Component {
 	}
 
     componentDidMount() {
-    	this.refreshPage();
-    }
+		this.retrieveProjects();
+    	this.retrieveGroups();
+		this.reloadPage();
+		this.startAutoReload();
+	}
 
-    refreshPage(){
+	componentWillUnmount() {
+		 this.cancelAutoReload();
+	}
+
+	startAutoReload() {
+		// run the reload now and then every 10 seconds
+		let reloadInterval = setInterval(() => this.reloadPage(), 10000);
+		this.handleSetState('reloadInterval', reloadInterval);
+	}
+
+	cancelAutoReload() {
+		clearInterval(this.state.reloadInterval);
+	}
+
+    reloadPage() {
     	this.setState({
 			jobConfigTableMessage: 'Loading...',
 			inProgress: true
 		});
     	this.fetchDistributionJobs();
-    	this.retrieveProjects();
-    	this.retrieveGroups();
     }
 
 	retrieveProjects() {
@@ -169,8 +188,12 @@ class DistributionConfiguration extends Component {
     }
 
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
-		var className = tableStyles.statusSuccess;
-		if (fieldValue === 'Failure') {
+		var className = null;
+		if (fieldValue === 'Pending') {
+			className = tableStyles.statusPending;
+		} else if (fieldValue === 'Success') {
+			className = tableStyles.statusSuccess;
+		} else if (fieldValue === 'Failure') {
 			className = tableStyles.statusFailure;
 		}
 		className = `${className} ${tableStyles.tableCell}`
@@ -272,6 +295,17 @@ class DistributionConfiguration extends Component {
 	  }
 	}
 
+	handleAutoRefreshChange(event) {
+		const target = event.target;
+		if (target.checked) {
+			this.startAutoReload();
+		} else {
+			this.cancelAutoReload();
+		}
+		const name = target.name;
+		this.handleSetState(name, target.checked);
+	}
+
 	handleSetState(name, value) {
 		this.setState({
 			[name]: value
@@ -311,16 +345,20 @@ class DistributionConfiguration extends Component {
 	createCustomButtonGroup(buttons) {
 		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
 		let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
-		let reloadEntries = () => this.refreshPage();
 		let insertOnClick = buttons.insertBtn.props.onClick;
 		let deleteOnClick = buttons.deleteBtn.props.onClick;
+		let reloadEntries = () => this.reloadPage();
+		let refreshButton= null;
+		if (!this.state.autoRefresh) {
+			refreshButton =  <div className={classes} onClick={reloadEntries} >
+					 			<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
+							</div>;
+		}
 	    return (
 	      <ButtonGroup>
 	      	<InsertButton className={tableStyles.addJobButton} onClick={insertOnClick}/>
 	      	<DeleteButton className={tableStyles.deleteJobButton} onClick={deleteOnClick}/>
-	        <div className={classes} onClick={reloadEntries} >
-					 <i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
-				</div>
+	      	{refreshButton}
 	      </ButtonGroup>
 	    );
   	}
@@ -352,6 +390,7 @@ class DistributionConfiguration extends Component {
                                 </div>;
         }
 		var content = <div>
+						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>

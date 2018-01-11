@@ -91,7 +91,7 @@ public class GlobalSchedulingConfigController extends ConfigController<GlobalSch
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/scheduling/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.testConfig(restModel);
+        return commonConfigHandler.doNotAllowHttpMethod();
     }
 
 }

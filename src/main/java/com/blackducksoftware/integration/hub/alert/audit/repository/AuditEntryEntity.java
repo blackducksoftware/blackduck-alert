@@ -40,7 +40,6 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 @Entity
 @Table(schema = "alert", name = "audit_entries")
 public class AuditEntryEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -5848616198072005794L;
     public static final int STACK_TRACE_CHAR_LIMIT = 10000;
 
     @Column(name = "common_config_id")
@@ -76,10 +75,6 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.status = status;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Long getCommonConfigId() {

@@ -31,27 +31,12 @@ public class CommonDistributionConfigEntityTest extends EntityTest<CommonDistrib
     }
 
     @Override
-    public long entitySerialId() {
-        return CommonDistributionConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return 667675993;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final CommonDistributionConfigEntity entity) {
         assertEquals(getMockUtil().getDistributionConfigId(), entity.getDistributionConfigId());
         assertEquals(getMockUtil().getDistributionType(), entity.getDistributionType());
         assertEquals(getMockUtil().getFilterByProject(), entity.getFilterByProject());
         assertEquals(getMockUtil().getFrequency(), entity.getFrequency());
         assertEquals(getMockUtil().getName(), entity.getName());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return 616586370;
     }
 
     @Test
@@ -61,10 +46,6 @@ public class CommonDistributionConfigEntityTest extends EntityTest<CommonDistrib
 
         assertEntityFieldsFull(configEntity);
         assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
-
-        // TODO figure out what Gavin did to fix the hash issue
-        // final int configHash = configEntity.hashCode();
-        // assertEquals(entityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEntityJson();
         JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
