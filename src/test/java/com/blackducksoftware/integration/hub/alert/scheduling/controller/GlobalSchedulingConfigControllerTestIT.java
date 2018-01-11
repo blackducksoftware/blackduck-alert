@@ -8,7 +8,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
@@ -50,6 +49,6 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(restModel.toString());
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 }

@@ -19,9 +19,10 @@ public class RealTimeListenerTest {
         final Gson gson = new Gson();
         final MockNotificationEntity notificationEntity = new MockNotificationEntity();
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
-        final NotificationEventManager notificationEventManager = Mockito.mock(NotificationEventManager.class);
-        final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, notificationEventManager);
+        final ProjectDataFactory projectDataFactory = Mockito.mock(ProjectDataFactory.class);
+        final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
+
+        final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
 
         final RealTimeEvent realTimeEvent = new RealTimeEvent(Arrays.asList(notificationEntity.createEntity()));
         final String realTimeEventString = gson.toJson(realTimeEvent);
