@@ -182,8 +182,12 @@ class Audit extends Component {
     }
 
     statusColumnDataFormat(cell, row) {
-		var statusClass = tableStyles.statusSuccess;
-		if (cell === 'Failure') {
+		var statusClass = null;
+		if (fieldValue === 'Pending') {
+			statusClass = tableStyles.statusPending;
+		} else if (fieldValue === 'Success') {
+			statusClass = tableStyles.statusSuccess;
+		} else if (fieldValue === 'Failure') {
 			statusClass = tableStyles.statusFailure;
 		}
 		let data = <div className={statusClass} aria-hidden='true'>
