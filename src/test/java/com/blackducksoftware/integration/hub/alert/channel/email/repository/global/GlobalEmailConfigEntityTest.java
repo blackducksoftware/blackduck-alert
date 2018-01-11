@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.GlobalEntityTest;
 
 public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
@@ -32,9 +31,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalEmailConfigEntity entity) {
-        assertNull(entity.getEmailSubjectLine());
-        assertNull(entity.getEmailTemplateDirectory());
-        assertNull(entity.getEmailTemplateLogoImage());
         assertNull(entity.getMailSmtpAllow8bitmime());
         assertNull(entity.getMailSmtpAuth());
         assertNull(entity.getMailSmtpConnectionTimeout());
@@ -58,14 +54,11 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public int emptyGlobalEntityHashCode() {
-        return 1169169065;
+        return 1089599805;
     }
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
-        assertEquals(getMockUtil().getEmailSubjectLine(), entity.getEmailSubjectLine());
-        assertEquals(getMockUtil().getEmailTemplateDirectory(), entity.getEmailTemplateDirectory());
-        assertEquals(getMockUtil().getEmailTemplateLogoImage(), entity.getEmailTemplateLogoImage());
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), entity.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), entity.getMailSmtpAuth());
         assertEquals(getMockUtil().getMailSmtpConnectionTimeout(), entity.getMailSmtpConnectionTimeout());
@@ -84,7 +77,7 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
 
     @Override
     public int globalEntityHashCode() {
-        return -620287382;
+        return -1115978415;
     }
 
 }

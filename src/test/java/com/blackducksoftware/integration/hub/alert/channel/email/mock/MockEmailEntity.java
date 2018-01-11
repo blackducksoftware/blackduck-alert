@@ -18,15 +18,19 @@ import com.google.gson.JsonObject;
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
     private final String groupName;
     private final Long id;
+    private final String emailTemplateLogoImage;
+    private final String emailSubjectLine;
 
     public MockEmailEntity() {
-        this("groupName", 1L);
+        this("groupName", 1L, "emailTemplateLogoImage", "emailSubjectLine");
     }
 
-    private MockEmailEntity(final String groupName, final Long id) {
+    private MockEmailEntity(final String groupName, final Long id, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super();
         this.groupName = groupName;
         this.id = id;
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public String getGroupName() {
@@ -40,7 +44,7 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
 
     @Override
     public EmailGroupDistributionConfigEntity createEntity() {
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName);
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName, emailTemplateLogoImage, emailSubjectLine);
         entity.setId(id);
         return entity;
     }
@@ -55,6 +59,8 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         final JsonObject json = new JsonObject();
         json.addProperty("groupName", groupName);
         json.addProperty("id", Long.valueOf(id));
+        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
+        json.addProperty("emailSubjectLine", emailSubjectLine);
         return json.toString();
     }
 
