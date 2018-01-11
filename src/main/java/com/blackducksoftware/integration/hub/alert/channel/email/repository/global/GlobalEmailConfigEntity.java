@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 @Entity
 @Table(schema = "alert", name = "global_email_config")
 public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
-    private static final long serialVersionUID = 4122029411365267232L;
+    private static final long serialVersionUID = 8545839704066666091L;
 
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
     @Column(name = "mail_smtp_host")
@@ -80,21 +80,12 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     @Column(name = "mail_smtp_send_partial")
     private Boolean mailSmtpSendPartial;
 
-    @Column(name = "email_template_directory")
-    private String emailTemplateDirectory;
-
-    @Column(name = "email_template_logo_image")
-    private String emailTemplateLogoImage;
-
-    @Column(name = "email_subject_line")
-    private String emailSubjectLine;
-
     public GlobalEmailConfigEntity() {
     }
 
     public GlobalEmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet, final Boolean mailSmtpAllow8bitmime,
-            final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine) {
+            final Boolean mailSmtpSendPartial) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -109,9 +100,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         this.mailSmtpDnsRet = mailSmtpDnsRet;
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
-        this.emailTemplateDirectory = emailTemplateDirectory;
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
-        this.emailSubjectLine = emailSubjectLine;
+
     }
 
     public static long getSerialversionuid() {
@@ -172,18 +161,6 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
 
     public Boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
-    }
-
-    public String getEmailTemplateDirectory() {
-        return emailTemplateDirectory;
-    }
-
-    public String getEmailTemplateLogoImage() {
-        return emailTemplateLogoImage;
-    }
-
-    public String getEmailSubjectLine() {
-        return emailSubjectLine;
     }
 
 }

@@ -28,17 +28,21 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
-    private static final long serialVersionUID = -4728604702503057780L;
+    private static final long serialVersionUID = -788699253586880472L;
 
     private String groupName;
+    private String emailTemplateLogoImage;
+    private String emailSubjectLine;
 
     public EmailGroupDistributionRestModel() {
     }
 
     public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
-            final List<String> configuredProjects, final List<String> notificationTypes) {
+            final String emailTemplateLogoImage, final String emailSubjectLine, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
     }
 
     public static long getSerialversionuid() {
@@ -51,6 +55,22 @@ public class EmailGroupDistributionRestModel extends CommonDistributionConfigRes
 
     public void setGroupName(final String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getEmailTemplateLogoImage() {
+        return emailTemplateLogoImage;
+    }
+
+    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
+    }
+
+    public void setEmailSubjectLine(final String emailSubjectLine) {
+        this.emailSubjectLine = emailSubjectLine;
     }
 
 }

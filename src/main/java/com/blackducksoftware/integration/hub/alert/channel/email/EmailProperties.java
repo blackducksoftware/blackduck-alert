@@ -68,8 +68,6 @@ public class EmailProperties {
     public static final String TEMPLATE_KEY_EMAIL_CATEGORY = "emailCategory";
 
     private String mailSmtpPassword;
-    private String emailTemplateDirectory;
-    private String emailTemplateLogoImage;
 
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
 
@@ -96,8 +94,6 @@ public class EmailProperties {
         addJavaMailOption(JAVAMAIL_SEND_PARTIAL_KEY, emailConfigEntity.getMailSmtpSendPartial());
 
         this.mailSmtpPassword = emailConfigEntity.getMailSmtpPassword();
-        this.emailTemplateDirectory = emailConfigEntity.getEmailTemplateDirectory();
-        this.emailTemplateLogoImage = emailConfigEntity.getEmailTemplateLogoImage();
     }
 
     private void addJavaMailOption(final String key, final String value) {
@@ -128,14 +124,6 @@ public class EmailProperties {
 
     public String getMailSmtpPassword() {
         return mailSmtpPassword;
-    }
-
-    public String getEmailTemplateDirectory() {
-        return emailTemplateDirectory;
-    }
-
-    public String getEmailTemplateLogoImage() {
-        return emailTemplateLogoImage;
     }
 
 }
