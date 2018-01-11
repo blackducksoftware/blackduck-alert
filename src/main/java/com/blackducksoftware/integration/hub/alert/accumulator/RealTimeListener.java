@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -33,7 +34,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
+import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
@@ -44,13 +47,15 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     private final static Logger logger = LoggerFactory.getLogger(RealTimeListener.class);
 
     private final ChannelTemplateManager channelTemplateManager;
-    private final DigestNotificationProcessor notificationProcessor;
+    private final ProjectDataFactory projectDataFactory;
+    private final NotificationEventManager eventManager;
 
     @Autowired
-    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor) {
+    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
         super(gson, RealTimeEvent.class);
         this.channelTemplateManager = channelTemplateManager;
-        this.notificationProcessor = notificationProcessor;
+        this.projectDataFactory = projectDataFactory;
+        this.eventManager = eventManager;
     }
 
     @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
@@ -58,7 +63,8 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     public void receiveMessage(final String message) {
         try {
             final RealTimeEvent event = getEvent(message);
-            final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(DigestTypeEnum.REAL_TIME, event.getNotificationList());
+            final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(event.getNotificationList(), DigestTypeEnum.REAL_TIME);
+            final List<AbstractChannelEvent> events = eventManager.createChannelEvents(projectDataCollection);
             channelTemplateManager.sendEvents(events);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);

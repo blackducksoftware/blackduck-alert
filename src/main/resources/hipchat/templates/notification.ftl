@@ -9,8 +9,14 @@
                 <#if item.dataSet.RULE??>
                     <br /> Rule: ${item.dataSet.RULE}
                 </#if>
-                <#if item.dataSet.COUNT??>
-                    <br /> Vulnerability Count: ${item.dataSet.COUNT}
+                <#if item.dataSet.ADDED??>
+                    <br /> Vulnerability Count Added: ${item.dataSet.ADDED}
+                </#if>
+                <#if item.dataSet.UPDATED??>
+                    <br /> Vulnerability Count Updated : ${item.dataSet.UPDATED}
+                </#if>
+                <#if item.dataSet.DELETED??>
+                    <br /> Vulnerability Count Deleted: ${item.dataSet.DELETED}
                 </#if>
                 <br /> Component: ${item.dataSet.COMPONENT} [${item.dataSet.VERSION}]
             </#if>
