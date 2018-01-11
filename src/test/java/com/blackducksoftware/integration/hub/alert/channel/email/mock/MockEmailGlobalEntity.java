@@ -31,19 +31,15 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
     private String mailSmtpDnsRet;
     private Boolean mailSmtpAllow8bitmime;
     private Boolean mailSmtpSendPartial;
-    private String emailTemplateDirectory;
-    private String emailTemplateLogoImage;
-    private String emailSubjectLine;
     private Long id;
 
     public MockEmailGlobalEntity() {
-        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, 99, 400, 500, "MailSmtpFrom", "MailSmtpLocalhost", true, false, "MailSmtpDnsNotify", "MailSmtpDnsRet", true, false, "EmailTemplateDirectory", "EmailTemplateLogoImage",
-                "EmailSubjectLine", 1L);
+        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, 99, 400, 500, "MailSmtpFrom", "MailSmtpLocalhost", true, false, "MailSmtpDnsNotify", "MailSmtpDnsRet", true, false, 1L);
     }
 
     private MockEmailGlobalEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout,
             final Integer mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial, final String emailTemplateDirectory, final String emailTemplateLogoImage, final String emailSubjectLine, final Long id) {
+            final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial, final Long id) {
         super();
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
@@ -60,9 +56,6 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         this.mailSmtpDnsRet = mailSmtpDnsRet;
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
         this.mailSmtpSendPartial = mailSmtpSendPartial;
-        this.emailTemplateDirectory = emailTemplateDirectory;
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
-        this.emailSubjectLine = emailSubjectLine;
         this.id = id;
     }
 
@@ -126,18 +119,6 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         return mailSmtpSendPartial;
     }
 
-    public String getEmailTemplateDirectory() {
-        return emailTemplateDirectory;
-    }
-
-    public String getEmailTemplateLogoImage() {
-        return emailTemplateLogoImage;
-    }
-
-    public String getEmailSubjectLine() {
-        return emailSubjectLine;
-    }
-
     public void setMailSmtpHost(final String mailSmtpHost) {
         this.mailSmtpHost = mailSmtpHost;
     }
@@ -198,18 +179,6 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         this.mailSmtpSendPartial = mailSmtpSendPartial;
     }
 
-    public void setEmailTemplateDirectory(final String emailTemplateDirectory) {
-        this.emailTemplateDirectory = emailTemplateDirectory;
-    }
-
-    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
-        this.emailTemplateLogoImage = emailTemplateLogoImage;
-    }
-
-    public void setEmailSubjectLine(final String emailSubjectLine) {
-        this.emailSubjectLine = emailSubjectLine;
-    }
-
     public void setId(final Long id) {
         this.id = id;
     }
@@ -222,8 +191,7 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
     @Override
     public GlobalEmailConfigEntity createGlobalEntity() {
         final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, Integer.valueOf(mailSmtpPort), Integer.valueOf(mailSmtpConnectionTimeout), Integer.valueOf(mailSmtpTimeout),
-                mailSmtpFrom, mailSmtpLocalhost, Boolean.valueOf(mailSmtpEhlo), Boolean.valueOf(mailSmtpAuth), mailSmtpDnsNotify, mailSmtpDnsRet, Boolean.valueOf(mailSmtpAllow8bitmime), Boolean.valueOf(mailSmtpSendPartial),
-                emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+                mailSmtpFrom, mailSmtpLocalhost, Boolean.valueOf(mailSmtpEhlo), Boolean.valueOf(mailSmtpAuth), mailSmtpDnsNotify, mailSmtpDnsRet, Boolean.valueOf(mailSmtpAllow8bitmime), Boolean.valueOf(mailSmtpSendPartial));
         entity.setId(id);
         return entity;
     }
@@ -249,9 +217,6 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         json.addProperty("mailSmtpDnsRet", mailSmtpDnsRet);
         json.addProperty("mailSmtpAllow8bitmime", mailSmtpAllow8bitmime);
         json.addProperty("mailSmtpSendPartial", mailSmtpSendPartial);
-        json.addProperty("emailTemplateDirectory", emailTemplateDirectory);
-        json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
-        json.addProperty("emailSubjectLine", emailSubjectLine);
         json.addProperty("id", id);
         return json.toString();
     }

@@ -53,8 +53,12 @@
                                      Rule: ${item_value}
                                    <#elseif itemType == "COMPONENT">
                                      Component: ${item_value} 
-                                   <#elseif itemType == "COUNT">
-                                     (${item_value})
+                                   <#elseif itemType == "ADDED">
+                                     Added (${item_value})
+                                   <#elseif itemType == "UPDATED">
+                                     Updated (${item_value})
+                                   <#elseif itemType == "DELETED">
+                                     Deleted (${item_value})
                                    <#elseif itemType == "PERSON">
                                      By: ${item_value}
                                    <#elseif itemType == "VERSION">

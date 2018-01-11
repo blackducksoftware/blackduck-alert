@@ -45,11 +45,8 @@ public class GlobalEmailRepositoryIT {
         final String mailSmtpDnsRet = "smtp_dsn_ret";
         final Boolean mailSmtpAllow8bitmime = true;
         final Boolean mailSmtpSendPartial = true;
-        final String emailTemplateDirectory = "template_directory_path";
-        final String emailTemplateLogoImage = "logo_image_path";
-        final String emailSubjectLine = "email_subject_line";
         final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo, mailSmtpAuth,
-                mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, emailTemplateDirectory, emailTemplateLogoImage, emailSubjectLine);
+                mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
         final GlobalEmailConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
@@ -68,8 +65,5 @@ public class GlobalEmailRepositoryIT {
         assertEquals(mailSmtpDnsRet, foundEntity.getMailSmtpDnsRet());
         assertEquals(mailSmtpAllow8bitmime, foundEntity.getMailSmtpAllow8bitmime());
         assertEquals(mailSmtpSendPartial, foundEntity.getMailSmtpSendPartial());
-        assertEquals(emailTemplateDirectory, foundEntity.getEmailTemplateDirectory());
-        assertEquals(emailTemplateLogoImage, foundEntity.getEmailTemplateLogoImage());
-        assertEquals(emailSubjectLine, foundEntity.getEmailSubjectLine());
     }
 }

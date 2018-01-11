@@ -28,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -45,11 +43,15 @@ public class EmailDistributionRepositoryTestIT {
     @Test
     public void saveEntityTestIT() {
         final String groupName = "Hub Group";
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName);
+        final String emailTemplateLogoImage = "IT Test Logo";
+        final String emailSubjectLine = "IT Test Subject Line";
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName, emailTemplateLogoImage, emailSubjectLine);
         final EmailGroupDistributionConfigEntity savedEntity = emailGroupDistributionRepository.save(entity);
         assertEquals(1, emailGroupDistributionRepository.count());
         assertNotNull(savedEntity.getId());
         assertEquals(groupName, savedEntity.getGroupName());
+        assertEquals(emailTemplateLogoImage, savedEntity.getEmailTemplateLogoImage());
+        assertEquals(emailSubjectLine, savedEntity.getEmailSubjectLine());
     }
 
 }
