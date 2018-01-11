@@ -56,6 +56,8 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
         final EmailGroupDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
         restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setGroupName(distributionEntity.getGroupName());
+        restModel.setEmailTemplateLogoImage(distributionEntity.getEmailTemplateLogoImage());
+        restModel.setEmailSubjectLine(distributionEntity.getEmailSubjectLine());
         return restModel;
     }
 
