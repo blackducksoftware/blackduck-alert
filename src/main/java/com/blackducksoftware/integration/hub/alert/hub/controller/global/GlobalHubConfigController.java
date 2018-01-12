@@ -48,7 +48,7 @@ public class GlobalHubConfigController extends ConfigController<GlobalHubConfigR
     private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> commonConfigHandler;
 
     @Autowired
-    GlobalHubConfigController(final GlobalHubConfigActions configActions, final ObjectTransformer objectTransformer) {
+    public GlobalHubConfigController(final GlobalHubConfigActions configActions, final ObjectTransformer objectTransformer) {
         commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions, objectTransformer);
     }
 
