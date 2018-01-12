@@ -14,12 +14,9 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ObjectStreamClass;
-
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
 
@@ -28,13 +25,9 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
     @Test
     public void testEmptyGlobalRestModel() {
         final GR configRestModel = getMockUtil().createEmptyGlobalRestModel();
-        assertEquals(globalRestModelSerialId(), ObjectStreamClass.lookup(getGlobalRestModelClass()).getSerialVersionUID());
 
         assertGlobalRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
-
-        final int configHash = configRestModel.hashCode();
-        assertEquals(emptyGlobalRestModelHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEmptyGlobalRestModelJson();
         assertEquals(expectedString, configRestModel.toString());
@@ -47,19 +40,12 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
 
     public abstract void assertGlobalRestModelFieldsNull(GR restModel);
 
-    public abstract long globalRestModelSerialId();
-
-    public abstract int emptyGlobalRestModelHashCode();
-
     @Test
     public void testGlobalRestModel() {
         final GR configRestModel = getMockUtil().createGlobalRestModel();
 
         assertGlobalRestModelFieldsFull(configRestModel);
         assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getId());
-
-        final int configHash = configRestModel.hashCode();
-        assertEquals(globalRestModelHashCode(), configHash);
 
         final String expectedString = getMockUtil().getGlobalRestModelJson();
         assertEquals(expectedString, configRestModel.toString());
@@ -69,6 +55,4 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
     }
 
     public abstract void assertGlobalRestModelFieldsFull(GR restModel);
-
-    public abstract int globalRestModelHashCode();
 }

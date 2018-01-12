@@ -25,9 +25,8 @@ package com.blackducksoftware.integration.hub.alert.audit.repository.relation;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class AuditNotificationRelationPK implements Serializable {
-    private static final long serialVersionUID = -7710698140802321977L;
-
     public Long auditEntryId;
     public Long notificationId;
 

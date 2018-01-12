@@ -48,16 +48,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
     }
 
     @Override
-    public long globalEntitySerialId() {
-        return GlobalEmailConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalEntityHashCode() {
-        return 1089599805;
-    }
-
-    @Override
     public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), entity.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), entity.getMailSmtpAuth());
@@ -73,11 +63,6 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
         assertEquals(getMockUtil().getMailSmtpSendPartial(), entity.getMailSmtpSendPartial());
         assertEquals(getMockUtil().getMailSmtpTimeout(), entity.getMailSmtpTimeout());
         assertEquals(getMockUtil().getMailSmtpUser(), entity.getMailSmtpUser());
-    }
-
-    @Override
-    public int globalEntityHashCode() {
-        return -1115978415;
     }
 
 }

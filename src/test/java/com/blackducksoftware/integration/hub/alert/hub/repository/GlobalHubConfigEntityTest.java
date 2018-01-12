@@ -32,24 +32,9 @@ public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigE
     }
 
     @Override
-    public long globalEntitySerialId() {
-        return GlobalHubConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalEntityHashCode() {
-        return 861101;
-    }
-
-    @Override
     public void assertGlobalEntityFieldsFull(final GlobalHubConfigEntity entity) {
         assertEquals(getMockUtil().getHubTimeout(), entity.getHubTimeout());
         assertEquals(getMockUtil().getHubApiKey(), entity.getHubApiKey());
-    }
-
-    @Override
-    public int globalEntityHashCode() {
-        return -1088377652;
     }
 
     @Override

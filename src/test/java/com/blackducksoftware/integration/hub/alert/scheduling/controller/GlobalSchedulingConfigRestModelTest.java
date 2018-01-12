@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.hub.alert.scheduling.controller.GlobalSchedulingConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
 
 public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<GlobalSchedulingConfigRestModel> {
@@ -27,25 +26,10 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
     }
 
     @Override
-    public long globalRestModelSerialId() {
-        return GlobalSchedulingConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalRestModelHashCode() {
-        return 31860737;
-    }
-
-    @Override
     public void assertGlobalRestModelFieldsFull(final GlobalSchedulingConfigRestModel restModel) {
         assertEquals(getMockUtil().getAccumulatorCron(), restModel.getAccumulatorCron());
         assertEquals(getMockUtil().getDailyDigestCron(), restModel.getDailyDigestCron());
         assertEquals(getMockUtil().getPurgeDataCron(), restModel.getPurgeDataCron());
-    }
-
-    @Override
-    public int globalRestModelHashCode() {
-        return -1636279514;
     }
 
     @Override

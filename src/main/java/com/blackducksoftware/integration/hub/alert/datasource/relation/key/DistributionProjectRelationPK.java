@@ -25,9 +25,8 @@ package com.blackducksoftware.integration.hub.alert.datasource.relation.key;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class DistributionProjectRelationPK implements Serializable {
-    private static final long serialVersionUID = -894281261527215535L;
-
     public Long commonDistributionConfigId;
     public Long projectId;
 

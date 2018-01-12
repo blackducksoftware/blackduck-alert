@@ -29,8 +29,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 
 @MappedSuperclass
 public abstract class GlobalChannelConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -7950913676089377807L;
-
     public GlobalChannelConfigEntity() {
     }
 

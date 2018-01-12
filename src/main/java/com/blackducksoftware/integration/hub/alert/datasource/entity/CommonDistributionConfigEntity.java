@@ -32,8 +32,6 @@ import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 @Entity
 @Table(schema = "alert", name = "common_distribution_config")
 public class CommonDistributionConfigEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -5540731937498292829L;
-
     @Column(name = "distribution_config_id")
     private Long distributionConfigId;
 
@@ -58,10 +56,6 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         this.name = name;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public Long getDistributionConfigId() {

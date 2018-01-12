@@ -14,28 +14,22 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ObjectStreamClass;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 
-public abstract class EntityTest<E extends DatabaseEntity> {
+public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntityTest<E> {
 
     public abstract MockEntityUtil<E> getMockUtil();
 
+    @Override
     @Test
     public void testEmptyEntity() throws JSONException {
         final E configEntity = getMockUtil().createEmptyEntity();
-        assertEquals(entitySerialId(), ObjectStreamClass.lookup(getEntityClass()).getSerialVersionUID());
-
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
-
-        final int configHash = configEntity.hashCode();
-        assertEquals(emptyEntityHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEmptyEntityJson();
         JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
@@ -44,14 +38,7 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         assertEquals(configEntity, configEntityNew);
     }
 
-    public abstract Class<E> getEntityClass();
-
-    public abstract void assertEntityFieldsNull(E entity);
-
-    public abstract long entitySerialId();
-
-    public abstract int emptyEntityHashCode();
-
+    @Override
     @Test
     public void testEntity() throws JSONException {
         final E configEntity = getMockUtil().createEntity();
@@ -59,18 +46,11 @@ public abstract class EntityTest<E extends DatabaseEntity> {
         assertEntityFieldsFull(configEntity);
         assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
 
-        final int configHash = configEntity.hashCode();
-        assertEquals(entityHashCode(), configHash);
-
         final String expectedString = getMockUtil().getEntityJson();
         JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
         final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);
     }
-
-    public abstract void assertEntityFieldsFull(E entity);
-
-    public abstract int entityHashCode();
 
 }

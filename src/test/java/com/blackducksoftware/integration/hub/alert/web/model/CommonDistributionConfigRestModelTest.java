@@ -34,16 +34,6 @@ public class CommonDistributionConfigRestModelTest extends RestModelTest<CommonD
     }
 
     @Override
-    public long restModelSerialId() {
-        return CommonDistributionConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyRestModelHashCode() {
-        return -2120005431;
-    }
-
-    @Override
     public void assertRestModelFieldsFull(final CommonDistributionConfigRestModel restModel) {
         assertEquals(getMockUtil().getDistributionConfigId(), restModel.getDistributionConfigId());
         assertEquals(getMockUtil().getDistributionType(), restModel.getDistributionType());
@@ -54,11 +44,6 @@ public class CommonDistributionConfigRestModelTest extends RestModelTest<CommonD
         assertEquals(getMockUtil().getStatus(), restModel.getStatus());
         assertEquals(getMockUtil().getNotificationsAsStrings(), restModel.getNotificationTypes());
         assertEquals(getMockUtil().getProjects(), restModel.getConfiguredProjects());
-    }
-
-    @Override
-    public int restModelHashCode() {
-        return -596035189;
     }
 
 }

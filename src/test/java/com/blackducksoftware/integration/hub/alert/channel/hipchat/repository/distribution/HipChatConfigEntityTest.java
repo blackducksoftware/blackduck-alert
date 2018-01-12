@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.EntityTest;
 
 public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfigEntity> {
@@ -38,25 +37,10 @@ public class HipChatConfigEntityTest extends EntityTest<HipChatDistributionConfi
     }
 
     @Override
-    public long entitySerialId() {
-        return HipChatDistributionConfigEntity.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyEntityHashCode() {
-        return 31860737;
-    }
-
-    @Override
     public void assertEntityFieldsFull(final HipChatDistributionConfigEntity entity) {
         assertEquals(getMockUtil().getRoomId(), entity.getRoomId());
         assertEquals(getMockUtil().isNotify(), entity.getNotify());
         assertEquals(getMockUtil().getColor(), entity.getColor());
-    }
-
-    @Override
-    public int entityHashCode() {
-        return -789557399;
     }
 
 }
