@@ -28,4 +28,8 @@ public class AccumulatorConfigTest extends CommonConfigTest<AccumulatorReader, A
         return new AccumulatorConfig(simpleJobLauncher, null, null, null, null, null, null, null, null);
     }
 
+    @Override
+    public void testCreateStep() {
+    }
+
 }
