@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNull;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
 
-public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributionRestModel> {
+public class EmailGroupDistributionRestModelTest extends RestModelTest<EmailGroupDistributionRestModel> {
 
     @Override
     public void assertRestModelFieldsNull(final EmailGroupDistributionRestModel restModel) {
@@ -26,6 +26,8 @@ public class EmailConfigRestModelTest extends RestModelTest<EmailGroupDistributi
 
     @Override
     public void assertRestModelFieldsFull(final EmailGroupDistributionRestModel restModel) {
+        assertEquals(getMockUtil().getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
+        assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
         assertEquals(getMockUtil().getGroupName(), restModel.getGroupName());
     }
 
