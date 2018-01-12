@@ -151,17 +151,20 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
                         }
 
                         if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED)) {
-                            messageBuilder.append("Vulnerability Count Added: " + dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED));
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED);
+                            messageBuilder.append("Vulnerability Count Added: " + numericValue.intValue());
                             messageBuilder.append(System.lineSeparator());
                         }
 
                         if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED)) {
-                            messageBuilder.append("Vulnerability Count Updated: " + dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED));
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED);
+                            messageBuilder.append("Vulnerability Count Updated: " + numericValue.intValue());
                             messageBuilder.append(System.lineSeparator());
                         }
 
                         if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED)) {
-                            messageBuilder.append("Vulnerability Count Deleted: " + dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED));
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED);
+                            messageBuilder.append("Vulnerability Count Deleted: " + numericValue.intValue());
                             messageBuilder.append(System.lineSeparator());
                         }
 
