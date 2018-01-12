@@ -28,4 +28,8 @@ public class DailyDigestBatchConfigTest extends CommonConfigTest<DailyItemReader
         return new DailyDigestBatchConfig(simpleJobLauncher, null, null, null, null, null, null, null, null);
     }
 
+    @Override
+    public void testCreateStep() {
+    }
+
 }

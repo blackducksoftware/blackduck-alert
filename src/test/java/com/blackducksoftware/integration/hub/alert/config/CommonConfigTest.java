@@ -34,20 +34,8 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger.cleanup();
     }
 
-    // TODO figure out this test
-    // @Test
-    // public void testCreateStep() {
-    // final StepBuilderFactory stepBuilderFactory = Mockito.mock(StepBuilderFactory.class);
-    // final StepBuilder stepBuilder = Mockito.mock(StepBuilder.class);
-    // Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(new SimpleStepBuilder());
-    // Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
-    // final C config = getConfigWithPassedParams(stepBuilderFactory);
-    //
-    // final Step step = config.createStep(config.reader(), config.processor(), config.writer());
-    // assertEquals(getStepName(), step.getName());
-    // }
-
-    // public abstract C getConfigWithPassedParams(StepBuilderFactory stepBuilderFactory);
+    @Test
+    public abstract void testCreateStep();
 
     @Test
     public void testReader() {
