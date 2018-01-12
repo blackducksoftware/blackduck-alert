@@ -24,7 +24,6 @@
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 public class ComponentRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -3862100146670848962L;
 
     private String componentName;
     private String componentVersion;

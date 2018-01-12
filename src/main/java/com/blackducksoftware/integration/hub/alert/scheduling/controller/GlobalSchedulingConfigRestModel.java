@@ -26,8 +26,6 @@ package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
-    private static final long serialVersionUID = -9134645093354671571L;
-
     private String accumulatorCron;
     private String dailyDigestCron;
     private String purgeDataCron;
@@ -41,10 +39,6 @@ public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
         this.accumulatorCron = accumulatorCron;
         this.dailyDigestCron = dailyDigestCron;
         this.purgeDataCron = purgeDataCron;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getAccumulatorCron() {

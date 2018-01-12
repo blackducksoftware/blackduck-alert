@@ -38,16 +38,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     }
 
     @Override
-    public long globalRestModelSerialId() {
-        return GlobalEmailConfigRestModel.getSerialversionuid();
-    }
-
-    @Override
-    public int emptyGlobalRestModelHashCode() {
-        return -1668261706;
-    }
-
-    @Override
     public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
         assertEquals(getMockUtil().getMailSmtpAllow8bitmime(), restModel.getMailSmtpAllow8bitmime());
         assertEquals(getMockUtil().getMailSmtpAuth(), restModel.getMailSmtpAuth());
@@ -63,11 +53,6 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
         assertEquals(getMockUtil().getMailSmtpSendPartial(), restModel.getMailSmtpSendPartial());
         assertEquals(getMockUtil().getMailSmtpTimeout(), restModel.getMailSmtpTimeout());
         assertEquals(getMockUtil().getMailSmtpUser(), restModel.getMailSmtpUser());
-    }
-
-    @Override
-    public int globalRestModelHashCode() {
-        return 95018;
     }
 
     @Override

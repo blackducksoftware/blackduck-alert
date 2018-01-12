@@ -14,8 +14,6 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.io.ObjectStreamClass;
-
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -30,13 +28,9 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel>
     @Test
     public void testEmptyRestModel() throws JSONException {
         final R configRestModel = getMockUtil().createEmptyRestModel();
-        assertEquals(restModelSerialId(), ObjectStreamClass.lookup(getRestModelClass()).getSerialVersionUID());
 
         assertRestModelFieldsNull(configRestModel);
         assertNull(configRestModel.getId());
-
-        final int configHash = configRestModel.hashCode();
-        assertEquals(emptyRestModelHashCode(), configHash);
 
         final String expectedString = getMockUtil().getEmptyRestModelJson();
         JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
@@ -49,19 +43,12 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel>
 
     public abstract void assertRestModelFieldsNull(R restModel);
 
-    public abstract long restModelSerialId();
-
-    public abstract int emptyRestModelHashCode();
-
     @Test
     public void testRestModel() throws JSONException {
         final R configRestModel = getMockUtil().createRestModel();
 
         assertRestModelFieldsFull(configRestModel);
         assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getDistributionConfigId());
-
-        final int configHash = configRestModel.hashCode();
-        assertEquals(restModelHashCode(), configHash);
 
         final String expectedString = getMockUtil().getRestModelJson();
         JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
@@ -72,5 +59,4 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel>
 
     public abstract void assertRestModelFieldsFull(R restModel);
 
-    public abstract int restModelHashCode();
 }

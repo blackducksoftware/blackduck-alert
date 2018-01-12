@@ -30,8 +30,6 @@ import javax.persistence.Table;
 @Entity
 @Table(schema = "alert", name = "configured_projects")
 public class ConfiguredProjectEntity extends DatabaseEntity {
-    private static final long serialVersionUID = -4963256809935957135L;
-
     @Column(name = "project_name")
     private String projectName;
 
@@ -40,10 +38,6 @@ public class ConfiguredProjectEntity extends DatabaseEntity {
 
     public ConfiguredProjectEntity(final String projectName) {
         this.projectName = projectName;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public String getProjectName() {
