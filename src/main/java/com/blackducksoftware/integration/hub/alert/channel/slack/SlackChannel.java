@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.hub.alert.channel.slack;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -122,11 +124,9 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
 
     protected String createMessage(final ProjectData projectData) {
         final StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("*");
         messageBuilder.append(projectData.getProjectName());
-        messageBuilder.append(" ");
+        messageBuilder.append(" > ");
         messageBuilder.append(projectData.getProjectVersion());
-        messageBuilder.append("*");
         messageBuilder.append(System.lineSeparator());
 
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
@@ -134,6 +134,8 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
             for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
                 final CategoryData data = categoryMap.get(category);
                 if (data != null) {
+                    messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+                    messageBuilder.append(System.lineSeparator());
                     messageBuilder.append("Type: ");
                     messageBuilder.append(data.getCategoryKey());
                     messageBuilder.append(System.lineSeparator());
@@ -142,16 +144,38 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
                     for (final ItemData item : data.getItemList()) {
                         messageBuilder.append(System.lineSeparator());
                         final Map<String, Object> dataSet = item.getDataSet();
-                        messageBuilder.append("Rule: _" + dataSet.get(ItemTypeEnum.RULE.toString()));
-                        messageBuilder.append("_" + System.lineSeparator());
-                        messageBuilder.append("Component: _" + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        messageBuilder.append("_ [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
+                        final String ruleKey = ItemTypeEnum.RULE.toString();
+                        if (dataSet.containsKey(ruleKey) && StringUtils.isNotBlank(dataSet.get(ruleKey).toString())) {
+                            messageBuilder.append("Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                            messageBuilder.append(System.lineSeparator());
+                        }
+
+                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED)) {
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED);
+                            messageBuilder.append("Vulnerability Count Added: " + numericValue.intValue());
+                            messageBuilder.append(System.lineSeparator());
+                        }
+
+                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED)) {
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED);
+                            messageBuilder.append("Vulnerability Count Updated: " + numericValue.intValue());
+                            messageBuilder.append(System.lineSeparator());
+                        }
+
+                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED)) {
+                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED);
+                            messageBuilder.append("Vulnerability Count Deleted: " + numericValue.intValue());
+                            messageBuilder.append(System.lineSeparator());
+                        }
+
+                        messageBuilder.append("Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                        messageBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
                     }
                     messageBuilder.append(System.lineSeparator());
                 }
             }
         } else {
-            messageBuilder.append("_A notification was received, but it was empty._");
+            messageBuilder.append(" A notification was received, but it was empty.");
         }
         return messageBuilder.toString();
     }

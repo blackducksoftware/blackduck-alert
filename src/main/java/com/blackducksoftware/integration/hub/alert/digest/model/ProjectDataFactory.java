@@ -43,6 +43,9 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 
 @Component
 public class ProjectDataFactory {
+    public final static String VULNERABILITY_COUNT_KEY_DELETED = "DELETED";
+    public final static String VULNERABILITY_COUNT_KEY_UPDATED = "UPDATED";
+    public final static String VULNERABILITY_COUNT_KEY_ADDED = "ADDED";
     public final static String VULNERABILITY_ADDED_ID_SET = "vulnerabilityAddedIdSet";
     public final static String VULNERABILITY_UPDATED_ID_SET = "vulnerabilityUpdatedIdSet";
     public final static String VULNERABILITY_DELETED_ID_SET = "vulnerabilityDeletedIdSet";
@@ -127,13 +130,13 @@ public class ProjectDataFactory {
         dataSet.put(ItemTypeEnum.COMPONENT.name(), notification.getComponentName());
         dataSet.put(ItemTypeEnum.VERSION.name(), notification.getComponentVersion());
         if (countAdded > 0) {
-            dataSet.put("ADDED", countAdded);
+            dataSet.put(VULNERABILITY_COUNT_KEY_ADDED, countAdded);
         }
         if (countUpdated > 0) {
-            dataSet.put("UPDATED", countUpdated);
+            dataSet.put(VULNERABILITY_COUNT_KEY_UPDATED, countUpdated);
         }
         if (countDeleted > 0) {
-            dataSet.put("DELETED", countDeleted);
+            dataSet.put(VULNERABILITY_COUNT_KEY_DELETED, countDeleted);
         }
 
         categoryData.addItem(new ItemData(dataSet));
