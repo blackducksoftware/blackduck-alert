@@ -44,6 +44,7 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
     compile 'org.springframework.security:spring-security-config:4.2.3.RELEASE'
+    compile 'org.liquibase:liquibase-core'
     runtime 'com.h2database:h2'
 
     compile 'org.jsoup:jsoup:1.9.2'
