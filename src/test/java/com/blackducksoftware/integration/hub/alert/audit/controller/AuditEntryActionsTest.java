@@ -77,8 +77,10 @@ public class AuditEntryActionsTest {
         final AuditNotificationRepositoryWrapper auditNotificationRepository = Mockito.mock(AuditNotificationRepositoryWrapper.class);
         final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        final MockNotificationEntity mockNotificationEntity = new MockNotificationEntity();
         Mockito.when(auditEntryRepository.findOne(Mockito.anyLong())).thenReturn(mockAuditEntryEntity.createEmptyEntity());
         Mockito.when(commonDistributionRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(notificationRepository.findAll(Mockito.any())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationRepository, auditNotificationRepository, commonDistributionRepositoryWrapper, null, null, null, null);
 
         List<AuditEntryRestModel> restModel = null;
