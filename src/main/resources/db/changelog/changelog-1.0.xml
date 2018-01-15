@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.0.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <preConditions>
+        <runningAs username="sa"/>
+    </preConditions>
+    <!--  
+    <changeSet id="create-common_distribution_config-1" author="psantos">
+      <createTable tableName="common_distribution_config" schemaName="alert">
+      	<column name="distribution_config_id" type="BIGINT"/>
+      	<column name="distribution_type" type="VARCHAR(100)"/>
+      	<column name="name" type="VARCHAR(255)"/>
+      	<column name="frequency" type=""/>
+      	<column name="filter_by_project" type="BOOLEAN"/>
+      </createTable>
+    </changeSet>
+    <changeSet id="" author="psantos">
+    </changeSet>
+    -->
+</databaseChangeLog>
