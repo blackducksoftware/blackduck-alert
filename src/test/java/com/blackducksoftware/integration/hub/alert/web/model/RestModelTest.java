@@ -1,14 +1,3 @@
-/*
- * Copyright (C) 2017 Black Duck Software Inc.
- * http://www.blackducksoftware.com/
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Black Duck Software ("Confidential Information"). You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Black Duck Software.
- */
 package com.blackducksoftware.integration.hub.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
@@ -19,9 +8,8 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class RestModelTest<R extends CommonDistributionConfigRestModel> {
+public abstract class RestModelTest<R extends ConfigRestModel> {
 
     public abstract MockRestModelUtil<R> getMockUtil();
 
@@ -45,18 +33,21 @@ public abstract class RestModelTest<R extends CommonDistributionConfigRestModel>
 
     @Test
     public void testRestModel() throws JSONException {
-        final R configRestModel = getMockUtil().createRestModel();
+        final R restModel = getMockUtil().createRestModel();
 
-        assertRestModelFieldsFull(configRestModel);
-        assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getDistributionConfigId());
+        assertRestModelFieldsFull(restModel);
+        testId(restModel);
 
         final String expectedString = getMockUtil().getRestModelJson();
-        JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
+        JSONAssert.assertEquals(expectedString, restModel.toString(), false);
 
         final R configRestModelNew = getMockUtil().createRestModel();
-        JSONAssert.assertEquals(configRestModel.toString(), configRestModelNew.toString(), false);
+        JSONAssert.assertEquals(restModel.toString(), configRestModelNew.toString(), false);
+    }
+
+    public void testId(final R restModel) {
+        assertEquals(String.valueOf(getMockUtil().getId()), restModel.getId());
     }
 
     public abstract void assertRestModelFieldsFull(R restModel);
-
 }
