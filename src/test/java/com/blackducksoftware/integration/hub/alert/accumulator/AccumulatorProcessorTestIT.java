@@ -16,12 +16,17 @@ import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionMod
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
+import com.blackducksoftware.integration.log.LogLevel;
+import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
 public class AccumulatorProcessorTestIT {
 
     @Test
     public void testProcess() throws Exception {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
+        // Do this to confirm the properties are set
+        globalProperties.createHubServicesFactory(new PrintStreamIntLogger(System.out, LogLevel.INFO));
+
         final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
 
         final Date createdAt = new Date();
