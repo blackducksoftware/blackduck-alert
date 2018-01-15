@@ -46,28 +46,29 @@
                         <#list categoryItem.itemList as item>
                             <#if item.dataSet?? && item.dataSet?size gt 0>
                                <div>
-                               <#list item.dataSet as item_key, item_value>
-                                   <#assign itemType="${item_key}">
                                    <div style="font-family: monospace;font-size: 14px;color: #445B68;padding-right: 15px;display: inline-block;">
-                                   <#if itemType == "RULE">
-                                     Rule: ${item_value}
-                                   <#elseif itemType == "COMPONENT">
-                                     Component: ${item_value} 
-                                   <#elseif itemType == "ADDED">
-                                     Added (${item_value})
-                                   <#elseif itemType == "UPDATED">
-                                     Updated (${item_value})
-                                   <#elseif itemType == "DELETED">
-                                     Deleted (${item_value})
-                                   <#elseif itemType == "PERSON">
-                                     By: ${item_value}
-                                   <#elseif itemType == "VERSION">
-                                     ${item_value}
-                                   <#else>
+                                   Component: ${item.dataSet.COMPONENT} 
+                                   <#if item.dataSet.VERSION??>
+                                     [${item.dataSet.VERSION}]
+                                   </#if>
+                                   <#if item.dataSet.RULE??>
+                                     RULE: ${item.dataSet.RULE}
+                                   </#if>
+                                   <#if item.dataSet.ADDED??>
+                                     Added (${item.dataSet.ADDED})
+                                   </#if>
+                                   <#if item.dataSet.UPDATED??>
+                                     Updated (${item.dataSet.UPDATED})
+                                   </#if>
+                                   <#if item.dataSet.DELETED??>
+                                     Deleted (${item.dataSet.DELETED})
+                                   </#if>
+                                   <#if item.dataSet.PERSON??>
+                                     By (${item.dataSet.PERSON})
                                    </#if>
                                    </div>
-                               </#list>
                                </div>
+                               <br/>
                             </#if>
                             <@moreItems item.dataSet?size/>
                         </#list>
