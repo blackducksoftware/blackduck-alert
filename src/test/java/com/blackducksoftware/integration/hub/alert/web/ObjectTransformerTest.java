@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +36,15 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.ConversionTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 public class ObjectTransformerTest {
 
@@ -182,6 +188,79 @@ public class ObjectTransformerTest {
     }
 
     @Test
+    public void stringToDateTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        final String invalidDate = "123-15-35";
+        final String validDate = "2010-12-31";
+
+        assertNull(objectTransformer.stringToDate(null));
+        assertNull(objectTransformer.stringToDate(""));
+        assertNull(objectTransformer.stringToDate(invalidDate));
+        assertNotNull(objectTransformer.stringToDate(validDate));
+    }
+
+    @Test
+    public void stringToDigestTypeEnumTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertNull(objectTransformer.stringToDigestTypeEnum(null));
+        assertNull(objectTransformer.stringToDigestTypeEnum(""));
+        assertEquals(DigestTypeEnum.DAILY, objectTransformer.stringToDigestTypeEnum(DigestTypeEnum.DAILY.name()));
+        assertEquals(DigestTypeEnum.REAL_TIME, objectTransformer.stringToDigestTypeEnum(DigestTypeEnum.REAL_TIME.name()));
+    }
+
+    @Test
+    public void digestTypeEnumToStringTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertNull(objectTransformer.digestTypeEnumToString(null));
+        assertEquals(DigestTypeEnum.DAILY.name(), objectTransformer.digestTypeEnumToString(DigestTypeEnum.DAILY));
+        assertEquals(DigestTypeEnum.REAL_TIME.name(), objectTransformer.digestTypeEnumToString(DigestTypeEnum.REAL_TIME));
+    }
+
+    @Test
+    public void stringToNotificationCategoryEnumTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertNull(objectTransformer.stringToNotificationCategoryEnum(null));
+        assertNull(objectTransformer.stringToNotificationCategoryEnum(""));
+        assertEquals(NotificationCategoryEnum.HIGH_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.HIGH_VULNERABILITY.name()));
+        assertEquals(NotificationCategoryEnum.MEDIUM_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.MEDIUM_VULNERABILITY.name()));
+        assertEquals(NotificationCategoryEnum.LOW_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.LOW_VULNERABILITY.name()));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION.name()));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name()));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name()));
+    }
+
+    @Test
+    public void notificationCategoryEnumToStringTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertNull(objectTransformer.notificationCategoryEnumToString(null));
+        assertEquals(NotificationCategoryEnum.HIGH_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.HIGH_VULNERABILITY));
+        assertEquals(NotificationCategoryEnum.MEDIUM_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.MEDIUM_VULNERABILITY));
+        assertEquals(NotificationCategoryEnum.LOW_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.LOW_VULNERABILITY));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED));
+        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE));
+    }
+
+    @Test
+    public void stringToStatusEnumTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(null));
+        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(""));
+        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(StatusEnum.FAILURE.name()));
+        assertEquals(StatusEnum.PENDING, objectTransformer.stringToStatusEnum(StatusEnum.PENDING.name()));
+        assertEquals(StatusEnum.SUCCESS, objectTransformer.stringToStatusEnum(StatusEnum.SUCCESS.name()));
+    }
+
+    @Test
+    public void statusEnumToStringTest() {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        assertNull(objectTransformer.statusEnumToString(null));
+        assertEquals(StatusEnum.FAILURE.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.FAILURE));
+        assertEquals(StatusEnum.PENDING.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.PENDING));
+        assertEquals(StatusEnum.SUCCESS.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.SUCCESS));
+    }
+
+    @Test
     public void testObjectToString() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         assertNull(objectTransformer.objectToString(null));
@@ -239,6 +318,72 @@ public class ObjectTransformerTest {
         } catch (final Exception e) {
             final String expectedMessage = String.format("Could not transform object %s to %s:", TestDatabaseEntity.class.getSimpleName(), TestConfigRestModelInstantiationException.class.getSimpleName());
             assertTrue(e.getMessage().contains(expectedMessage));
+        }
+    }
+
+    @Test
+    public void performConversionWithInvalidConversionTypeTest() throws AlertException {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+
+        Exception caughtException = null;
+        try {
+            objectTransformer.performConversion(new TestConfigRestModel(), TestDatabaseEntity.class, null);
+        } catch (final Exception e) {
+            caughtException = e;
+        }
+        assertNotNull(caughtException);
+        assertTrue(caughtException instanceof UnsupportedOperationException);
+    }
+
+    @Test
+    public void specificDatabaseEntityConversionTest() throws AlertException {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+
+        final TestSpecificDatabaseEntity entity = new TestSpecificDatabaseEntity();
+        entity.date = new Date(12345l);
+        entity.digestType = DigestTypeEnum.DAILY;
+        entity.status = StatusEnum.PENDING;
+
+        final TestSpecificConfigRestModel restModel = objectTransformer.performConversion(entity, TestSpecificConfigRestModel.class, ConversionTypeEnum.ENTITY_TO_REST_MODEL);
+        assertNotNull(restModel);
+        assertEquals(entity.date.toString(), restModel.date);
+        assertEquals(entity.digestType.toString(), restModel.digestType);
+        assertTrue(entity.status.toString().equalsIgnoreCase(restModel.status));
+    }
+
+    @Test
+    public void specificRestModelConversionTest() throws AlertException {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+
+        final TestSpecificConfigRestModel restModel = new TestSpecificConfigRestModel();
+        restModel.date = new Date(12345l).toString();
+        restModel.digestType = DigestTypeEnum.DAILY.name();
+        restModel.status = StatusEnum.PENDING.toString();
+
+        final TestSpecificDatabaseEntity entity = objectTransformer.performConversion(restModel, TestSpecificDatabaseEntity.class, ConversionTypeEnum.REST_MODEL_TO_ENTITY);
+        assertNotNull(restModel);
+        assertEquals(restModel.date, entity.date.toString());
+        assertEquals(restModel.digestType, entity.digestType.name());
+        assertTrue(restModel.status.equalsIgnoreCase(entity.status.toString()));
+    }
+
+    public static class TestSpecificDatabaseEntity extends DatabaseEntity {
+        public Date date;
+        public DigestTypeEnum digestType;
+        public NotificationCategoryEnum notificationCategory;
+        public StatusEnum status;
+
+        public TestSpecificDatabaseEntity() {
+        }
+    }
+
+    public static class TestSpecificConfigRestModel extends ConfigRestModel {
+        public String date;
+        public String digestType;
+        public String notificationCategory;
+        public String status;
+
+        public TestSpecificConfigRestModel() {
         }
     }
 
