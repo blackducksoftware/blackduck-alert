@@ -37,9 +37,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.ConversionTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.model.Model;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
@@ -59,78 +61,7 @@ public class ObjectTransformer {
     }
 
     public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws AlertException {
-        if (databaseEntity != null && newClass != null) {
-            final String databaseEntityClassName = databaseEntity.getClass().getSimpleName();
-            final String newClassName = newClass.getSimpleName();
-            try {
-                final T newClassObject = newClass.newInstance();
-
-                final List<Field> fields = new ArrayList<>();
-                Class<?> databaseEntityClassHierarchy = databaseEntity.getClass();
-                while (databaseEntityClassHierarchy != null) {
-                    fields.addAll(Arrays.asList(databaseEntityClassHierarchy.getDeclaredFields()));
-                    databaseEntityClassHierarchy = databaseEntityClassHierarchy.getSuperclass();
-                }
-
-                final Map<String, Field> newFieldMap = new HashMap<>();
-                Class<?> newClassHierarchy = newClassObject.getClass();
-                while (newClassHierarchy != null) {
-                    for (final Field field : newClassHierarchy.getDeclaredFields()) {
-                        newFieldMap.put(field.getName(), field);
-                    }
-                    newClassHierarchy = newClassHierarchy.getSuperclass();
-                }
-                for (final Field field : fields) {
-                    try {
-                        if (Modifier.isStatic(field.getModifiers())) {
-                            continue;
-                        }
-                        field.setAccessible(true);
-                        final String fieldName = field.getName();
-                        final Field newField = newFieldMap.get(fieldName);
-                        if (newField == null) {
-                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClassName);
-                        }
-                        newField.setAccessible(true);
-                        if (String.class == field.getType()) {
-                            final String oldField = (String) field.get(databaseEntity);
-                            newField.set(newClassObject, oldField);
-                        } else if (Integer.class == field.getType()) {
-                            final Integer oldField = (Integer) field.get(databaseEntity);
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Long.class == field.getType()) {
-                            final Long oldField = (Long) field.get(databaseEntity);
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Boolean.class == field.getType()) {
-                            final Boolean oldField = (Boolean) field.get(databaseEntity);
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (Date.class == field.getType()) {
-                            final Date oldField = (Date) field.get(databaseEntity);
-                            newField.set(newClassObject, objectToString(oldField));
-                        } else if (DigestTypeEnum.class == field.getType()) {
-                            final DigestTypeEnum oldField = (DigestTypeEnum) field.get(databaseEntity);
-                            newField.set(newClassObject, digestTypeEnumToString(oldField));
-                        } else if (NotificationCategoryEnum.class == field.getType()) {
-                            final NotificationCategoryEnum oldField = (NotificationCategoryEnum) field.get(databaseEntity);
-                            newField.set(newClassObject, notificationCategoryEnumToString(oldField));
-                        } else if (StatusEnum.class == field.getType()) {
-                            final StatusEnum oldField = (StatusEnum) field.get(databaseEntity);
-                            newField.set(newClassObject, statusEnumToString(oldField));
-                        } else {
-                            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", databaseEntityClassName, newClassName, field.getName(),
-                                    field.getType().getSimpleName(), newField.getType().getSimpleName()));
-                        }
-                    } catch (final NoSuchFieldException e) {
-                        logger.trace(String.format("Could not find field %s from %s in %s", field.getName(), databaseEntityClassName, newClassName));
-                        continue;
-                    }
-                }
-                return newClassObject;
-            } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new AlertException(String.format("Could not transform object %s to %s: %s", databaseEntityClassName, newClassName, e.toString()));
-            }
-        }
-        return null;
+        return performConversion(databaseEntity, newClass, ConversionTypeEnum.ENTITY_TO_REST_MODEL);
     }
 
     public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws AlertException {
@@ -145,73 +76,129 @@ public class ObjectTransformer {
     }
 
     public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws AlertException {
-        if (configRestModel != null && newClass != null) {
-            final String configRestModelClassName = configRestModel.getClass().getSimpleName();
-            final String newClassName = newClass.getSimpleName();
+        return performConversion(configRestModel, newClass, ConversionTypeEnum.REST_MODEL_TO_ENTITY);
+    }
+
+    public <FROM extends Model, TO extends Model> TO performConversion(final FROM fromObject, final Class<TO> toClass, final ConversionTypeEnum conversionType) throws AlertException {
+        if (fromObject != null && toClass != null) {
+            final String fromClassName = fromObject.getClass().getSimpleName();
+            final String toClassName = toClass.getSimpleName();
             try {
-                final T newClassObject = newClass.newInstance();
+                final TO toObject = toClass.newInstance();
+                final Map<String, Field> newFieldMap = createNewFieldMap(toObject);
 
-                final List<Field> fields = new ArrayList<>();
-                Class<?> configRestModelClassHierarchy = configRestModel.getClass();
-                while (configRestModelClassHierarchy != null) {
-                    fields.addAll(Arrays.asList(configRestModelClassHierarchy.getDeclaredFields()));
-                    configRestModelClassHierarchy = configRestModelClassHierarchy.getSuperclass();
-                }
-
-                final Map<String, Field> newFieldMap = new HashMap<>();
-                Class<?> newClassHierarchy = newClassObject.getClass();
-                while (newClassHierarchy != null) {
-                    for (final Field field : newClassHierarchy.getDeclaredFields()) {
-                        newFieldMap.put(field.getName(), field);
-                    }
-                    newClassHierarchy = newClassHierarchy.getSuperclass();
-                }
-                for (final Field field : fields) {
+                final List<Field> oldFieldList = createOldFieldList(fromObject);
+                for (final Field oldField : oldFieldList) {
                     try {
-                        if (Modifier.isStatic(field.getModifiers())) {
+                        if (Modifier.isStatic(oldField.getModifiers())) {
                             continue;
                         }
-                        field.setAccessible(true);
-                        final String fieldName = field.getName();
-                        final Field newField = newFieldMap.get(fieldName);
+                        oldField.setAccessible(true);
+                        final String oldFieldName = oldField.getName();
+                        final Field newField = newFieldMap.get(oldFieldName);
                         if (newField == null) {
-                            throw new NoSuchFieldException("Could not find field '" + fieldName + "' in class " + newClassName);
+                            throw new NoSuchFieldException("Could not find field '" + oldFieldName + "' in class " + toClassName);
                         }
                         newField.setAccessible(true);
-                        final String oldField = (String) field.get(configRestModel);
-                        if (String.class == newField.getType()) {
-                            newField.set(newClassObject, oldField);
-                        } else if (Integer.class == newField.getType()) {
-                            newField.set(newClassObject, stringToInteger(oldField));
-                        } else if (Long.class == newField.getType()) {
-                            newField.set(newClassObject, stringToLong(oldField));
-                        } else if (Boolean.class == newField.getType()) {
-                            newField.set(newClassObject, stringToBoolean(oldField));
-                        } else if (Date.class == newField.getType()) {
-                            newField.set(newClassObject, stringToDate(oldField));
-                        } else if (DigestTypeEnum.class == newField.getType()) {
-                            newField.set(newClassObject, stringToDigestTypeEnum(oldField));
-                        } else if (NotificationCategoryEnum.class == newField.getType()) {
-                            newField.set(newClassObject, stringToNotificationCategoryEnum(oldField));
-                        } else if (StatusEnum.class == newField.getType()) {
-                            newField.set(newClassObject, stringToStatusEnum(oldField));
+                        if (ConversionTypeEnum.ENTITY_TO_REST_MODEL.equals(conversionType)) {
+                            setFieldToString(oldField, newField, fromObject, toObject);
+                        } else if (ConversionTypeEnum.REST_MODEL_TO_ENTITY.equals(conversionType)) {
+                            setFieldFromString(oldField, newField, fromObject, toObject);
                         } else {
-                            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", configRestModelClassName, newClassName, field.getName(),
-                                    field.getType().getSimpleName(), newField.getType().getSimpleName()));
+                            throw new UnsupportedOperationException(String.format("{} does not support the conversion type: {}", getClass().getSimpleName(), conversionType));
                         }
                     } catch (final NoSuchFieldException e) {
-                        logger.trace(String.format("Could not find field %s from %s in %s", field.getName(), configRestModelClassName, newClassName));
+                        logger.trace(String.format("Could not find field %s from %s in %s", oldField.getName(), fromClassName, toClassName));
                         continue;
                     }
                 }
-                return newClassObject;
-            } catch (final AlertException e) {
-                throw e;
+                return toObject;
             } catch (IllegalAccessException | InstantiationException | SecurityException e) {
-                throw new AlertException(String.format("Could not transform object %s to %s: %s", configRestModelClassName, newClassName, e.toString()), e);
+                throw new AlertException(String.format("Could not transform object %s to %s: %s", fromClassName, toClassName, e.toString()), e);
             }
         }
         return null;
+    }
+
+    private Map<String, Field> createNewFieldMap(final Object newClassObject) {
+        final Map<String, Field> newFieldMap = new HashMap<>();
+        Class<?> newClassHierarchy = newClassObject.getClass();
+        while (newClassHierarchy != null) {
+            for (final Field field : newClassHierarchy.getDeclaredFields()) {
+                newFieldMap.put(field.getName(), field);
+            }
+            newClassHierarchy = newClassHierarchy.getSuperclass();
+        }
+        return newFieldMap;
+    }
+
+    private List<Field> createOldFieldList(final Object fromObject) {
+        final List<Field> oldFieldList = new ArrayList<>();
+        Class<?> fromObjectClassHierarchy = fromObject.getClass();
+        while (fromObjectClassHierarchy != null) {
+            oldFieldList.addAll(Arrays.asList(fromObjectClassHierarchy.getDeclaredFields()));
+            fromObjectClassHierarchy = fromObjectClassHierarchy.getSuperclass();
+        }
+        return oldFieldList;
+    }
+
+    private <FROM extends Model, TO extends Model> void setFieldToString(final Field oldField, final Field newField, final FROM oldClassObject, final TO newClassObject)
+            throws IllegalArgumentException, IllegalAccessException, AlertException {
+        final Class<?> oldFieldType = oldField.getType();
+        if (String.class == oldFieldType) {
+            final String stringField = (String) oldField.get(oldClassObject);
+            newField.set(newClassObject, stringField);
+        } else if (Integer.class == oldFieldType) {
+            final Integer integerField = (Integer) oldField.get(oldClassObject);
+            newField.set(newClassObject, objectToString(integerField));
+        } else if (Long.class == oldFieldType) {
+            final Long longField = (Long) oldField.get(oldClassObject);
+            newField.set(newClassObject, objectToString(longField));
+        } else if (Boolean.class == oldFieldType) {
+            final Boolean booleanField = (Boolean) oldField.get(oldClassObject);
+            newField.set(newClassObject, objectToString(booleanField));
+        } else if (Date.class == oldFieldType || java.sql.Date.class == oldFieldType) {
+            final Date dateField = (Date) oldField.get(oldClassObject);
+            newField.set(newClassObject, objectToString(dateField));
+        } else if (DigestTypeEnum.class == oldFieldType) {
+            final DigestTypeEnum digestTypeField = (DigestTypeEnum) oldField.get(oldClassObject);
+            newField.set(newClassObject, digestTypeEnumToString(digestTypeField));
+        } else if (NotificationCategoryEnum.class == oldFieldType) {
+            final NotificationCategoryEnum notificationCategoryField = (NotificationCategoryEnum) oldField.get(oldClassObject);
+            newField.set(newClassObject, notificationCategoryEnumToString(notificationCategoryField));
+        } else if (StatusEnum.class == oldFieldType) {
+            final StatusEnum statusField = (StatusEnum) oldField.get(oldClassObject);
+            newField.set(newClassObject, statusEnumToString(statusField));
+        } else {
+            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", oldClassObject.getClass().getSimpleName(),
+                    newClassObject.getClass().getSimpleName(), oldField.getName(), oldFieldType.getSimpleName(), newField.getType().getSimpleName()));
+        }
+    }
+
+    private <FROM extends Model, TO extends Model> void setFieldFromString(final Field oldField, final Field newField, final FROM oldClassObject, final TO newClassObject)
+            throws IllegalArgumentException, IllegalAccessException, AlertException {
+        final String oldFieldString = (String) oldField.get(oldClassObject);
+        final Class<?> newFieldType = newField.getType();
+        if (String.class == newFieldType) {
+            newField.set(newClassObject, oldFieldString);
+        } else if (Integer.class == newFieldType) {
+            newField.set(newClassObject, stringToInteger(oldFieldString));
+        } else if (Long.class == newFieldType) {
+            newField.set(newClassObject, stringToLong(oldFieldString));
+        } else if (Boolean.class == newFieldType) {
+            newField.set(newClassObject, stringToBoolean(oldFieldString));
+        } else if (Date.class == newFieldType || java.sql.Date.class == newFieldType) {
+            newField.set(newClassObject, stringToDate(oldFieldString));
+        } else if (DigestTypeEnum.class == newFieldType) {
+            newField.set(newClassObject, stringToDigestTypeEnum(oldFieldString));
+        } else if (NotificationCategoryEnum.class == newFieldType) {
+            newField.set(newClassObject, stringToNotificationCategoryEnum(oldFieldString));
+        } else if (StatusEnum.class == newFieldType) {
+            newField.set(newClassObject, stringToStatusEnum(oldFieldString));
+        } else {
+            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", oldClassObject.getClass().getSimpleName(),
+                    newClassObject.getClass().getSimpleName(), oldField.getName(), oldField.getType().getSimpleName(), newFieldType.getSimpleName()));
+        }
     }
 
     public Integer stringToInteger(final String value) {
@@ -270,7 +257,10 @@ public class ObjectTransformer {
     }
 
     public String digestTypeEnumToString(final DigestTypeEnum digestTypeEnum) {
-        return digestTypeEnum.name();
+        if (digestTypeEnum != null) {
+            return digestTypeEnum.name();
+        }
+        return null;
     }
 
     public NotificationCategoryEnum stringToNotificationCategoryEnum(final String value) {
@@ -284,13 +274,16 @@ public class ObjectTransformer {
     }
 
     public String notificationCategoryEnumToString(final NotificationCategoryEnum notificationCategoryEnum) {
-        return notificationCategoryEnum.name();
+        if (notificationCategoryEnum != null) {
+            return notificationCategoryEnum.name();
+        }
+        return null;
     }
 
     public StatusEnum stringToStatusEnum(final String value) {
         if (value != null) {
             try {
-                return StatusEnum.getStatusEnumFromString(value);
+                return StatusEnum.valueOf(value);
             } catch (final IllegalArgumentException e) {
             }
         }
@@ -298,7 +291,10 @@ public class ObjectTransformer {
     }
 
     public String statusEnumToString(final StatusEnum statusEnum) {
-        return statusEnum.getDisplayName();
+        if (statusEnum != null) {
+            return statusEnum.getDisplayName();
+        }
+        return null;
     }
 
     public String objectToString(final Object value) {
