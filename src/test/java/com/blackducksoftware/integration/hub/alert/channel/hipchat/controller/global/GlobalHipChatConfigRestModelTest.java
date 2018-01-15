@@ -27,6 +27,7 @@ public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<Global
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalHipChatConfigRestModel restModel) {
         assertEquals(getMockUtil().getApiKey(), restModel.getApiKey());
+        assertEquals(getMockUtil().isApiKeyIsSet(), restModel.isApiKeyIsSet());
     }
 
     @Override
