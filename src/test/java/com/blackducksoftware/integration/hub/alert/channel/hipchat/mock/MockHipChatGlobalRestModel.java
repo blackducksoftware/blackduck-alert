@@ -34,6 +34,10 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
         return apiKey;
     }
 
+    public boolean isApiKeyIsSet() {
+        return apiKeyIsSet;
+    }
+
     @Override
     public Long getId() {
         return Long.valueOf(id);
