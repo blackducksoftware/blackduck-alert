@@ -23,8 +23,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -90,6 +93,28 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
                 logger.info("Un-Scheduling " + this.getClass().getSimpleName());
                 future.cancel(false);
             }
+        }
+    }
+
+    public Long getMillisecondsToNextRun() {
+        if (future == null || future.isCancelled() || future.isDone()) {
+            return null;
+        } else {
+            return future.getDelay(TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public String getFormatedTimeToNextRun() {
+        final Long msToNextRun = getMillisecondsToNextRun();
+        if (msToNextRun == null) {
+            return null;
+        } else {
+            final Long hours = TimeUnit.MILLISECONDS.toHours(msToNextRun);
+            final Long minutes = TimeUnit.MILLISECONDS.toMinutes(msToNextRun - TimeUnit.HOURS.toMillis(hours));
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(msToNextRun - (TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes)));
+
+            final String formattedString = LocalTime.of(hours.intValue(), minutes.intValue(), seconds.intValue()).format(DateTimeFormatter.ofPattern("H:mm:ss"));
+            return formattedString;
         }
     }
 

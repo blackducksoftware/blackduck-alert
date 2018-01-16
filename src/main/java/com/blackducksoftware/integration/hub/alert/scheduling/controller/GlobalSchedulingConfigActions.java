@@ -23,7 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -36,6 +39,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
@@ -58,16 +62,31 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     }
 
     @Override
-    public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
-            try {
-                new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("accumulatorCron", e.getMessage());
+    public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
+        GlobalSchedulingConfigEntity databaseEntity = getRepository().findOne(id);
+        if (id != null) {
+            databaseEntity = getRepository().findOne(id);
+        } else {
+            final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
+            if (!databaseEntities.isEmpty()) {
+                databaseEntity = databaseEntities.get(0);
             }
         }
+        if (databaseEntity != null) {
+            final GlobalSchedulingConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel.setAccumulatorNextRun(accumulatorConfig.getFormatedTimeToNextRun());
+            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedTimeToNextRun());
+            restModel.setPurgeDataNextRun(purgeConfig.getFormatedTimeToNextRun());
+            final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
+            restModels.add(restModel);
+            return restModels;
+        }
+        return Collections.emptyList();
+    }
 
+    @Override
+    public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
             try {
                 new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
@@ -91,13 +110,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Override
     public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
-        return "Not Implemented.";
+        return null;
     }
 
     @Override
     public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
         if (restModel != null) {
-            accumulatorConfig.scheduleJobExecution(restModel.getAccumulatorCron());
             dailyDigestBatchConfig.scheduleJobExecution(restModel.getDailyDigestCron());
             purgeConfig.scheduleJobExecution(restModel.getPurgeDataCron());
         }
