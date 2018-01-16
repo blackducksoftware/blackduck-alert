@@ -27,24 +27,21 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.model.Model;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 @Component
 public class ObjectTransformer {
@@ -126,6 +123,29 @@ public class ObjectTransformer {
         return null;
     }
 
+    public <T extends Object> T stringToObject(final String value, final Class<T> toClass) {
+        if (conversionService.canConvert(String.class, toClass)) {
+            try {
+                return conversionService.convert(value, toClass);
+            } catch (final IllegalArgumentException | ConversionException e) {
+                logger.debug(e.getMessage());
+            }
+        }
+        return null;
+    }
+
+    public String objectToString(final Object value) {
+        if (value != null && conversionService.canConvert(value.getClass(), String.class)) {
+            try {
+                return conversionService.convert(value, String.class);
+            } catch (final IllegalArgumentException | ConversionException e) {
+                logger.debug(e.getMessage());
+                return String.valueOf(value);
+            }
+        }
+        return null;
+    }
+
     private Map<String, Field> createNewFieldMap(final Object newClassObject) {
         final Map<String, Field> newFieldMap = new HashMap<>();
         Class<?> newClassHierarchy = newClassObject.getClass();
@@ -148,107 +168,12 @@ public class ObjectTransformer {
         return oldFieldList;
     }
 
-    public Integer stringToInteger(final String value) {
-        if (value != null) {
-            final String trimmedValue = value.trim();
-            try {
-                return Integer.valueOf(trimmedValue);
-            } catch (final NumberFormatException e) {
-            }
-        }
-        return null;
-    }
-
     public Long stringToLong(final String value) {
-        if (value != null) {
-            final String trimmedValue = value.trim();
-            try {
-                return Long.valueOf(trimmedValue);
-            } catch (final NumberFormatException e) {
-            }
-        }
-        return null;
+        return stringToObject(value, Long.class);
     }
 
     public Boolean stringToBoolean(final String value) {
-        if (value != null) {
-            final String trimmedValue = value.trim();
-            if (trimmedValue.equalsIgnoreCase("false")) {
-                return false;
-            } else if (trimmedValue.equalsIgnoreCase("true")) {
-                return true;
-            }
-        }
-        return null;
-    }
-
-    public Date stringToDate(final String value) {
-        if (value != null) {
-            final String trimmedValue = value.trim();
-            try {
-                return java.sql.Date.valueOf(trimmedValue);
-            } catch (final Exception e) {
-            }
-        }
-        return null;
-    }
-
-    public DigestTypeEnum stringToDigestTypeEnum(final String value) {
-        if (value != null) {
-            try {
-                return DigestTypeEnum.valueOf(value);
-            } catch (final IllegalArgumentException e) {
-            }
-        }
-        return null;
-    }
-
-    public String digestTypeEnumToString(final DigestTypeEnum digestTypeEnum) {
-        if (digestTypeEnum != null) {
-            return digestTypeEnum.name();
-        }
-        return null;
-    }
-
-    public NotificationCategoryEnum stringToNotificationCategoryEnum(final String value) {
-        if (value != null) {
-            try {
-                return NotificationCategoryEnum.valueOf(value);
-            } catch (final IllegalArgumentException e) {
-            }
-        }
-        return null;
-    }
-
-    public String notificationCategoryEnumToString(final NotificationCategoryEnum notificationCategoryEnum) {
-        if (notificationCategoryEnum != null) {
-            return notificationCategoryEnum.name();
-        }
-        return null;
-    }
-
-    public StatusEnum stringToStatusEnum(final String value) {
-        if (value != null) {
-            try {
-                return StatusEnum.valueOf(value);
-            } catch (final IllegalArgumentException e) {
-            }
-        }
-        return StatusEnum.FAILURE;
-    }
-
-    public String statusEnumToString(final StatusEnum statusEnum) {
-        if (statusEnum != null) {
-            return statusEnum.getDisplayName();
-        }
-        return null;
-    }
-
-    public String objectToString(final Object value) {
-        if (value != null) {
-            return String.valueOf(value);
-        }
-        return null;
+        return stringToObject(value, Boolean.class);
     }
 
 }
