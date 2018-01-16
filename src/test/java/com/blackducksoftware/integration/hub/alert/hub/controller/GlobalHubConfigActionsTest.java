@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -167,6 +168,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     }
 
     @Test
+    @Override
     public void testChannelTestConfig() throws Exception {
         final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
@@ -193,8 +195,39 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         Mockito.verify(mockedRestConnection, Mockito.times(1)).connect();
     }
 
+    @Override
+    public void testInvalidConfig() {
+        final MockGlobalHubRestModel mockUtil = new MockGlobalHubRestModel();
+        mockUtil.setHubTimeout("qqq");
+        final GlobalHubConfigRestModel restModel = mockUtil.createGlobalRestModel();
+
+        String result = null;
+        try {
+            result = configActions.validateConfig(restModel);
+            fail();
+        } catch (final AlertFieldException e) {
+            assertTrue(true);
+        }
+
+        assertNull(result);
+
+        mockUtil.setHubApiKey(StringUtils.repeat('a', 300));
+        final GlobalHubConfigRestModel restModelBigApi = mockUtil.createGlobalRestModel();
+
+        String resultBigApi = null;
+        try {
+            resultBigApi = configActions.validateConfig(restModelBigApi);
+            fail();
+        } catch (final AlertFieldException e) {
+            assertTrue(true);
+        }
+
+        assertNull(resultBigApi);
+    }
+
     @Test
-    public void testValidateHubConfiguration() throws Exception {
+    @Override
+    public void testValidConfig() throws Exception {
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null);
 
         final String url = "https://www.google.com/";
