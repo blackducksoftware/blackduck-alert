@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.enumeration.ConversionTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -322,20 +321,6 @@ public class ObjectTransformerTest {
     }
 
     @Test
-    public void performConversionWithInvalidConversionTypeTest() throws AlertException {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-
-        Exception caughtException = null;
-        try {
-            objectTransformer.performConversion(new TestConfigRestModel(), TestDatabaseEntity.class, null);
-        } catch (final Exception e) {
-            caughtException = e;
-        }
-        assertNotNull(caughtException);
-        assertTrue(caughtException instanceof UnsupportedOperationException);
-    }
-
-    @Test
     public void specificDatabaseEntityConversionTest() throws AlertException {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
 
@@ -344,7 +329,7 @@ public class ObjectTransformerTest {
         entity.digestType = DigestTypeEnum.DAILY;
         entity.status = StatusEnum.PENDING;
 
-        final TestSpecificConfigRestModel restModel = objectTransformer.performConversion(entity, TestSpecificConfigRestModel.class, ConversionTypeEnum.ENTITY_TO_REST_MODEL);
+        final TestSpecificConfigRestModel restModel = objectTransformer.convert(entity, TestSpecificConfigRestModel.class);
         assertNotNull(restModel);
         assertEquals(entity.date.toString(), restModel.date);
         assertEquals(entity.digestType.toString(), restModel.digestType);
@@ -360,7 +345,7 @@ public class ObjectTransformerTest {
         restModel.digestType = DigestTypeEnum.DAILY.name();
         restModel.status = StatusEnum.PENDING.toString();
 
-        final TestSpecificDatabaseEntity entity = objectTransformer.performConversion(restModel, TestSpecificDatabaseEntity.class, ConversionTypeEnum.REST_MODEL_TO_ENTITY);
+        final TestSpecificDatabaseEntity entity = objectTransformer.convert(restModel, TestSpecificDatabaseEntity.class);
         assertNotNull(restModel);
         assertEquals(restModel.date, entity.date.toString());
         assertEquals(restModel.digestType, entity.digestType.name());
