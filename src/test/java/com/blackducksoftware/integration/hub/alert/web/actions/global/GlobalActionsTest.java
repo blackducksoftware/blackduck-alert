@@ -97,6 +97,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         assertTrue(allConfigs.isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDeleteConfig() {
         configActions.deleteConfig(1L);
@@ -171,4 +172,23 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         assertTrue(configActions.isBoolean("  TruE"));
         assertTrue(configActions.isBoolean("FaLSE  "));
     }
+
+    @Test
+    public abstract void testInvalidConfig();
+
+    @Test
+    public void testValidConfig() throws Exception {
+        final GR restModel = getGlobalRestModelMockUtil().createGlobalRestModel();
+        final String result = configActions.validateConfig(restModel);
+
+        assertEquals("Valid", result);
+    }
+
+    @Test
+    public void testChannelTestConfig() throws Exception {
+        final String actual = configActions.channelTestConfig(null);
+
+        assertNotNull(actual);
+    }
+
 }

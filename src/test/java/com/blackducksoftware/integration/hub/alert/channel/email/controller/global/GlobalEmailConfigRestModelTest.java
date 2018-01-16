@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email.controller.glo
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
@@ -35,6 +36,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
         assertNull(restModel.getMailSmtpSendPartial());
         assertNull(restModel.getMailSmtpTimeout());
         assertNull(restModel.getMailSmtpUser());
+        assertTrue(!restModel.isMailSmtpPasswordIsSet());
     }
 
     @Override
@@ -53,6 +55,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
         assertEquals(getMockUtil().getMailSmtpSendPartial(), restModel.getMailSmtpSendPartial());
         assertEquals(getMockUtil().getMailSmtpTimeout(), restModel.getMailSmtpTimeout());
         assertEquals(getMockUtil().getMailSmtpUser(), restModel.getMailSmtpUser());
+        assertEquals(getMockUtil().isMailSmtpPasswordIsSet(), restModel.isMailSmtpPasswordIsSet());
     }
 
     @Override
