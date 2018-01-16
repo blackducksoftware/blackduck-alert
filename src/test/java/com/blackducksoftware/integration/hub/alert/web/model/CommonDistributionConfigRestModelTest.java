@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public class CommonDistributionConfigRestModelTest extends RestModelTest<CommonDistributionConfigRestModel> {
+public class CommonDistributionConfigRestModelTest extends CommonDistributionRestModelTest<CommonDistributionConfigRestModel> {
 
     @Override
     public MockCommonDistributionRestModel getMockUtil() {

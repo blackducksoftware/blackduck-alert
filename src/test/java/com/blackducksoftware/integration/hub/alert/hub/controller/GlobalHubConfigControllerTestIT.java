@@ -6,11 +6,16 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import com.blackducksoftware.integration.hub.alert.TestProperties;
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigActions;
+import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigController;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
 
 public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
@@ -18,8 +23,14 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     @Autowired
     GlobalHubRepository globalHubRepository;
 
-    // TODO uncomment when the test below is fixed
-    // private TestProperties testProperties;
+    @Autowired
+    GlobalHubConfigActions globalHubConfigActions;
+
+    private final TestProperties testProperties;
+
+    public GlobalHubConfigControllerTestIT() {
+        testProperties = new TestProperties();
+    }
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {
@@ -33,7 +44,9 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
 
     @Override
     public MockGlobalHubRestModel getGlobalRestModelMockUtil() {
-        return new MockGlobalHubRestModel();
+        final MockGlobalHubRestModel mockUtil = new MockGlobalHubRestModel();
+        mockUtil.setHubApiKey(testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
+        return mockUtil;
     }
 
     @Override
@@ -59,6 +72,11 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         // request.contentType(contentType);
         // mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         assertTrue(true);
+    }
+
+    @Override
+    public GlobalHubConfigController getController() {
+        return new GlobalHubConfigController(globalHubConfigActions, new ObjectTransformer());
     }
 
 }
