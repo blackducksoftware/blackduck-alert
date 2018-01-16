@@ -32,9 +32,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 @Entity
 @Table(schema = "alert", name = "global_scheduling_config")
 public class GlobalSchedulingConfigEntity extends DatabaseEntity {
-    @Column(name = "alert_accumulator_cron")
-    private String accumulatorCron;
-
     @Column(name = "alert_digest_daily_cron")
     private String dailyDigestCron;
 
@@ -45,14 +42,9 @@ public class GlobalSchedulingConfigEntity extends DatabaseEntity {
 
     }
 
-    public GlobalSchedulingConfigEntity(final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
-        this.accumulatorCron = accumulatorCron;
+    public GlobalSchedulingConfigEntity(final String dailyDigestCron, final String purgeDataCron) {
         this.dailyDigestCron = dailyDigestCron;
         this.purgeDataCron = purgeDataCron;
-    }
-
-    public String getAccumulatorCron() {
-        return accumulatorCron;
     }
 
     public String getDailyDigestCron() {

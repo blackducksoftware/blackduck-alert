@@ -26,31 +26,55 @@ package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
-    private String accumulatorCron;
+    private String accumulatorNextRun;
     private String dailyDigestCron;
+    private String dailyDigestNextRun;
     private String purgeDataCron;
+    private String purgeDataNextRun;
 
     public GlobalSchedulingConfigRestModel() {
 
     }
 
-    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorNextRun, final String dailyDigestCron, final String dailyDigestNextRun, final String purgeDataCron, final String purgeDataNextRun) {
         super(id);
-        this.accumulatorCron = accumulatorCron;
+        this.accumulatorNextRun = accumulatorNextRun;
         this.dailyDigestCron = dailyDigestCron;
+        this.dailyDigestNextRun = dailyDigestNextRun;
         this.purgeDataCron = purgeDataCron;
+        this.purgeDataNextRun = purgeDataNextRun;
     }
 
-    public String getAccumulatorCron() {
-        return accumulatorCron;
+    public String getAccumulatorNextRun() {
+        return accumulatorNextRun;
     }
 
     public String getDailyDigestCron() {
         return dailyDigestCron;
     }
 
+    public String getDailyDigestNextRun() {
+        return dailyDigestNextRun;
+    }
+
     public String getPurgeDataCron() {
         return purgeDataCron;
+    }
+
+    public String getPurgeDataNextRun() {
+        return purgeDataNextRun;
+    }
+
+    public void setAccumulatorNextRun(final String accumulatorNextRun) {
+        this.accumulatorNextRun = accumulatorNextRun;
+    }
+
+    public void setDailyDigestNextRun(final String dailyDigestNextRun) {
+        this.dailyDigestNextRun = dailyDigestNextRun;
+    }
+
+    public void setPurgeDataNextRun(final String purgeDataNextRun) {
+        this.purgeDataNextRun = purgeDataNextRun;
     }
 
 }
