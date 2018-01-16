@@ -46,8 +46,31 @@ public class DailyItemReaderTest {
 
         Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
 
-        final List<NotificationEntity> nullNotificationList = dailyItemReader.read();
+        final List<NotificationEntity> hasReadNotificationList = dailyItemReader.read();
 
+        assertNull(hasReadNotificationList);
+    }
+
+    @Test
+    public void testReadNull() throws Exception {
+        final NotificationRepositoryWrapper notificationRepositoryWrapper = Mockito.mock(NotificationRepositoryWrapper.class);
+        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
+
+        final DailyItemReader dailyItemReaderNull = new DailyItemReader(notificationRepositoryWrapper);
+
+        final List<NotificationEntity> nullNotificationList = dailyItemReaderNull.read();
+
+        assertNull(nullNotificationList);
+    }
+
+    @Test
+    public void testReadException() throws Exception {
+        final NotificationRepositoryWrapper notificationRepositoryWrapper = Mockito.mock(NotificationRepositoryWrapper.class);
+        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(null);
+
+        final DailyItemReader dailyItemReaderException = new DailyItemReader(notificationRepositoryWrapper);
+
+        final List<NotificationEntity> nullNotificationList = dailyItemReaderException.read();
         assertNull(nullNotificationList);
     }
 }

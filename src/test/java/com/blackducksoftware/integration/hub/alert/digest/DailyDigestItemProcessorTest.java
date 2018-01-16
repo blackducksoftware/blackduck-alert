@@ -39,4 +39,16 @@ public class DailyDigestItemProcessorTest {
         final List<AbstractChannelEvent> emptyList = dailyDigestItemProcessor.process(Arrays.asList());
         assertNull(emptyList);
     }
+
+    @Test
+    public void testProcessException() throws Exception {
+        final DigestNotificationProcessor digestNotificationProcessor = Mockito.mock(DigestNotificationProcessor.class);
+
+        Mockito.when(digestNotificationProcessor.processNotifications(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
+
+        final DailyDigestItemProcessor dailyDigestItemProcessor = new DailyDigestItemProcessor(digestNotificationProcessor);
+
+        final List<AbstractChannelEvent> nullList = dailyDigestItemProcessor.process(Arrays.asList());
+        assertNull(nullList);
+    }
 }
