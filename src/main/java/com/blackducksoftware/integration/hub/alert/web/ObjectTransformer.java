@@ -34,10 +34,11 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.enumeration.ConversionTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -48,6 +49,11 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 @Component
 public class ObjectTransformer {
     private final Logger logger = LoggerFactory.getLogger(ObjectTransformer.class);
+    private final ConversionService conversionService;
+
+    public ObjectTransformer() {
+        this.conversionService = new DefaultConversionService();
+    }
 
     public <T extends ConfigRestModel> List<T> databaseEntitiesToConfigRestModels(final List<? extends DatabaseEntity> databaseEntities, final Class<T> newClass) throws AlertException {
         final List<T> newList = new ArrayList<>();
@@ -61,7 +67,7 @@ public class ObjectTransformer {
     }
 
     public <T extends ConfigRestModel> T databaseEntityToConfigRestModel(final DatabaseEntity databaseEntity, final Class<T> newClass) throws AlertException {
-        return performConversion(databaseEntity, newClass, ConversionTypeEnum.ENTITY_TO_REST_MODEL);
+        return convert(databaseEntity, newClass);
     }
 
     public <T extends DatabaseEntity> List<T> configRestModelsToDatabaseEntities(final List<ConfigRestModel> configRestModels, final Class<T> newClass) throws AlertException {
@@ -76,10 +82,10 @@ public class ObjectTransformer {
     }
 
     public <T extends DatabaseEntity> T configRestModelToDatabaseEntity(final ConfigRestModel configRestModel, final Class<T> newClass) throws AlertException {
-        return performConversion(configRestModel, newClass, ConversionTypeEnum.REST_MODEL_TO_ENTITY);
+        return convert(configRestModel, newClass);
     }
 
-    public <FROM extends Model, TO extends Model> TO performConversion(final FROM fromObject, final Class<TO> toClass, final ConversionTypeEnum conversionType) throws AlertException {
+    public <FROM extends Model, TO extends Model> TO convert(final FROM fromObject, final Class<TO> toClass) throws AlertException {
         if (fromObject != null && toClass != null) {
             final String fromClassName = fromObject.getClass().getSimpleName();
             final String toClassName = toClass.getSimpleName();
@@ -100,12 +106,12 @@ public class ObjectTransformer {
                             throw new NoSuchFieldException("Could not find field '" + oldFieldName + "' in class " + toClassName);
                         }
                         newField.setAccessible(true);
-                        if (ConversionTypeEnum.ENTITY_TO_REST_MODEL.equals(conversionType)) {
-                            setFieldToString(oldField, newField, fromObject, toObject);
-                        } else if (ConversionTypeEnum.REST_MODEL_TO_ENTITY.equals(conversionType)) {
-                            setFieldFromString(oldField, newField, fromObject, toObject);
+
+                        if (conversionService.canConvert(oldField.getType(), newField.getType())) {
+                            newField.set(toObject, conversionService.convert(oldField.get(fromObject), newField.getType()));
                         } else {
-                            throw new UnsupportedOperationException(String.format("{} does not support the conversion type: {}", getClass().getSimpleName(), conversionType));
+                            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", fromObject.getClass().getSimpleName(),
+                                    toObject.getClass().getSimpleName(), oldField.getName(), oldField.getType().getSimpleName(), newField.getType().getSimpleName()));
                         }
                     } catch (final NoSuchFieldException e) {
                         logger.trace(String.format("Could not find field %s from %s in %s", oldField.getName(), fromClassName, toClassName));
@@ -140,65 +146,6 @@ public class ObjectTransformer {
             fromObjectClassHierarchy = fromObjectClassHierarchy.getSuperclass();
         }
         return oldFieldList;
-    }
-
-    private <FROM extends Model, TO extends Model> void setFieldToString(final Field oldField, final Field newField, final FROM oldClassObject, final TO newClassObject)
-            throws IllegalArgumentException, IllegalAccessException, AlertException {
-        final Class<?> oldFieldType = oldField.getType();
-        if (String.class == oldFieldType) {
-            final String stringField = (String) oldField.get(oldClassObject);
-            newField.set(newClassObject, stringField);
-        } else if (Integer.class == oldFieldType) {
-            final Integer integerField = (Integer) oldField.get(oldClassObject);
-            newField.set(newClassObject, objectToString(integerField));
-        } else if (Long.class == oldFieldType) {
-            final Long longField = (Long) oldField.get(oldClassObject);
-            newField.set(newClassObject, objectToString(longField));
-        } else if (Boolean.class == oldFieldType) {
-            final Boolean booleanField = (Boolean) oldField.get(oldClassObject);
-            newField.set(newClassObject, objectToString(booleanField));
-        } else if (Date.class == oldFieldType || java.sql.Date.class == oldFieldType) {
-            final Date dateField = (Date) oldField.get(oldClassObject);
-            newField.set(newClassObject, objectToString(dateField));
-        } else if (DigestTypeEnum.class == oldFieldType) {
-            final DigestTypeEnum digestTypeField = (DigestTypeEnum) oldField.get(oldClassObject);
-            newField.set(newClassObject, digestTypeEnumToString(digestTypeField));
-        } else if (NotificationCategoryEnum.class == oldFieldType) {
-            final NotificationCategoryEnum notificationCategoryField = (NotificationCategoryEnum) oldField.get(oldClassObject);
-            newField.set(newClassObject, notificationCategoryEnumToString(notificationCategoryField));
-        } else if (StatusEnum.class == oldFieldType) {
-            final StatusEnum statusField = (StatusEnum) oldField.get(oldClassObject);
-            newField.set(newClassObject, statusEnumToString(statusField));
-        } else {
-            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", oldClassObject.getClass().getSimpleName(),
-                    newClassObject.getClass().getSimpleName(), oldField.getName(), oldFieldType.getSimpleName(), newField.getType().getSimpleName()));
-        }
-    }
-
-    private <FROM extends Model, TO extends Model> void setFieldFromString(final Field oldField, final Field newField, final FROM oldClassObject, final TO newClassObject)
-            throws IllegalArgumentException, IllegalAccessException, AlertException {
-        final String oldFieldString = (String) oldField.get(oldClassObject);
-        final Class<?> newFieldType = newField.getType();
-        if (String.class == newFieldType) {
-            newField.set(newClassObject, oldFieldString);
-        } else if (Integer.class == newFieldType) {
-            newField.set(newClassObject, stringToInteger(oldFieldString));
-        } else if (Long.class == newFieldType) {
-            newField.set(newClassObject, stringToLong(oldFieldString));
-        } else if (Boolean.class == newFieldType) {
-            newField.set(newClassObject, stringToBoolean(oldFieldString));
-        } else if (Date.class == newFieldType || java.sql.Date.class == newFieldType) {
-            newField.set(newClassObject, stringToDate(oldFieldString));
-        } else if (DigestTypeEnum.class == newFieldType) {
-            newField.set(newClassObject, stringToDigestTypeEnum(oldFieldString));
-        } else if (NotificationCategoryEnum.class == newFieldType) {
-            newField.set(newClassObject, stringToNotificationCategoryEnum(oldFieldString));
-        } else if (StatusEnum.class == newFieldType) {
-            newField.set(newClassObject, stringToStatusEnum(oldFieldString));
-        } else {
-            throw new AlertException(String.format("Could not transform object %s to %s because of field %s : The transformer does not support turning %s into %s", oldClassObject.getClass().getSimpleName(),
-                    newClassObject.getClass().getSimpleName(), oldField.getName(), oldField.getType().getSimpleName(), newFieldType.getSimpleName()));
-        }
     }
 
     public Integer stringToInteger(final String value) {
