@@ -146,18 +146,6 @@ public class ObjectTransformerTest {
     }
 
     @Test
-    public void testStringToInteger() throws Exception {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.stringToInteger(null));
-        assertNull(objectTransformer.stringToInteger(""));
-        assertNull(objectTransformer.stringToInteger("false"));
-        assertNull(objectTransformer.stringToInteger("hello"));
-        assertEquals(Integer.valueOf(2), objectTransformer.stringToInteger("2"));
-        assertEquals(Integer.valueOf(212), objectTransformer.stringToInteger("  212"));
-        assertEquals(Integer.valueOf(567), objectTransformer.stringToInteger("567   "));
-    }
-
-    @Test
     public void testStringToLong() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         assertNull(objectTransformer.stringToLong(null));
@@ -184,79 +172,6 @@ public class ObjectTransformerTest {
         assertFalse(objectTransformer.stringToBoolean("False"));
         assertFalse(objectTransformer.stringToBoolean("FAlsE"));
         assertFalse(objectTransformer.stringToBoolean("FALSE   "));
-    }
-
-    @Test
-    public void stringToDateTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final String invalidDate = "123-15-35";
-        final String validDate = "2010-12-31";
-
-        assertNull(objectTransformer.stringToDate(null));
-        assertNull(objectTransformer.stringToDate(""));
-        assertNull(objectTransformer.stringToDate(invalidDate));
-        assertNotNull(objectTransformer.stringToDate(validDate));
-    }
-
-    @Test
-    public void stringToDigestTypeEnumTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.stringToDigestTypeEnum(null));
-        assertNull(objectTransformer.stringToDigestTypeEnum(""));
-        assertEquals(DigestTypeEnum.DAILY, objectTransformer.stringToDigestTypeEnum(DigestTypeEnum.DAILY.name()));
-        assertEquals(DigestTypeEnum.REAL_TIME, objectTransformer.stringToDigestTypeEnum(DigestTypeEnum.REAL_TIME.name()));
-    }
-
-    @Test
-    public void digestTypeEnumToStringTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.digestTypeEnumToString(null));
-        assertEquals(DigestTypeEnum.DAILY.name(), objectTransformer.digestTypeEnumToString(DigestTypeEnum.DAILY));
-        assertEquals(DigestTypeEnum.REAL_TIME.name(), objectTransformer.digestTypeEnumToString(DigestTypeEnum.REAL_TIME));
-    }
-
-    @Test
-    public void stringToNotificationCategoryEnumTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.stringToNotificationCategoryEnum(null));
-        assertNull(objectTransformer.stringToNotificationCategoryEnum(""));
-        assertEquals(NotificationCategoryEnum.HIGH_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.HIGH_VULNERABILITY.name()));
-        assertEquals(NotificationCategoryEnum.MEDIUM_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.MEDIUM_VULNERABILITY.name()));
-        assertEquals(NotificationCategoryEnum.LOW_VULNERABILITY, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.LOW_VULNERABILITY.name()));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION.name()));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name()));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE, objectTransformer.stringToNotificationCategoryEnum(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name()));
-    }
-
-    @Test
-    public void notificationCategoryEnumToStringTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.notificationCategoryEnumToString(null));
-        assertEquals(NotificationCategoryEnum.HIGH_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.HIGH_VULNERABILITY));
-        assertEquals(NotificationCategoryEnum.MEDIUM_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.MEDIUM_VULNERABILITY));
-        assertEquals(NotificationCategoryEnum.LOW_VULNERABILITY.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.LOW_VULNERABILITY));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED));
-        assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.name(), objectTransformer.notificationCategoryEnumToString(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE));
-    }
-
-    @Test
-    public void stringToStatusEnumTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(null));
-        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(""));
-        assertEquals(StatusEnum.FAILURE, objectTransformer.stringToStatusEnum(StatusEnum.FAILURE.name()));
-        assertEquals(StatusEnum.PENDING, objectTransformer.stringToStatusEnum(StatusEnum.PENDING.name()));
-        assertEquals(StatusEnum.SUCCESS, objectTransformer.stringToStatusEnum(StatusEnum.SUCCESS.name()));
-    }
-
-    @Test
-    public void statusEnumToStringTest() {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.statusEnumToString(null));
-        assertEquals(StatusEnum.FAILURE.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.FAILURE));
-        assertEquals(StatusEnum.PENDING.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.PENDING));
-        assertEquals(StatusEnum.SUCCESS.getDisplayName(), objectTransformer.statusEnumToString(StatusEnum.SUCCESS));
     }
 
     @Test
