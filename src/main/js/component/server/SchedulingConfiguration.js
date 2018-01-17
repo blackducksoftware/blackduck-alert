@@ -5,12 +5,16 @@ import TextInput from '../../field/input/TextInput';
 import LabeledField from '../../field/input/LabeledField';
 import ServerConfiguration from './ServerConfiguration';
 
-import { fieldLabel, textInput } from '../../../css/field.css';
-import { alignCenter } from '../../../css/main.css';
+import { fieldLabel, textInput, fieldError, labelField } from '../../../css/field.css';
+import { alignCenter, submitButtons } from '../../../css/main.css';
 
 class SchedulingConfiguration extends ServerConfiguration {
 	constructor(props) {
 		super(props);
+
+		this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
+		this.loadSchedulingTimes = this.loadSchedulingTimes.bind(this);
+		this.runAccumulator = this.runAccumulator.bind(this);
 	}
 
 	componentWillUnmount() {
@@ -50,6 +54,11 @@ class SchedulingConfiguration extends ServerConfiguration {
 				values
 			});
 		} else {
+			var values = this.state.values;
+			values['accumulatorNextRun'] = 60;
+			this.setState({
+				values
+			});
 			this.loadSchedulingTimes();
 		}
 	}
@@ -98,23 +107,52 @@ class SchedulingConfiguration extends ServerConfiguration {
  		});
     }
 
+    runAccumulator() {
+		this.handleSetState('inProgress', true);
+
+		var self = this;
+		fetch('/configuration/global/accumulator/run',{
+			credentials: "same-origin",
+			method: 'POST',
+		})
+		.then(function(response) {
+			self.handleSetState('inProgress', false);
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('accumulatorError', json.message);
+				});
+			} else {
+				self.handleSetState('accumulatorError', null);
+			}
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
+    }
+
 
 	render() {
+		let accumulatorErrorDiv = null;
+		if (this.state.accumulatorError) {
+			accumulatorErrorDiv = <p className={fieldError} name="accumulatorError">{this.state.accumulatorError}</p>;
+		}
 		let content =
 				<div>
 					<div>
 						<label className={fieldLabel}>Collecting Hub notifications in </label>
-						<label className={textInput}>{this.state.values.accumulatorNextRun} seconds</label>
+						<label className={labelField}>{this.state.values.accumulatorNextRun} seconds</label>
+						<input className={submitButtons} type="button" value="Run Now" onClick={this.runAccumulator}></input>
+						{accumulatorErrorDiv}
 					</div>
 					<TextInput label="Daily Digest Cron" name="dailyDigestCron" value={this.state.values.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.errors.dailyDigestCronError}></TextInput>
 					<div>
 						<label className={fieldLabel}>Daily Digest Next Run</label>
-						<label className={textInput}>{this.state.values.dailyDigestNextRun}</label>
+						<label className={labelField}>{this.state.values.dailyDigestNextRun}</label>
 					</div>
 					<TextInput label="Purge Digest Cron" name="purgeDataCron" value={this.state.values.purgeDataCron} onChange={this.handleChange} errorName="purgeDataCronError" errorValue={this.state.errors.purgeDataCronError}></TextInput>
 					<div>
 						<label className={fieldLabel}>Purge Digest Next Run</label>
-						<label className={textInput}>{this.state.values.purgeDataNextRun}</label>
+						<label className={labelField}>{this.state.values.purgeDataNextRun}</label>
 					</div>
 				</div>;
 
