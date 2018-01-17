@@ -1,21 +1,19 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.Calendar;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
+import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
@@ -25,28 +23,20 @@ public class AccumulatorProcessorTestIT {
     public void testProcess() throws Exception {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         // Do this to confirm the properties are set
-        globalProperties.createHubServicesFactory(new PrintStreamIntLogger(System.out, LogLevel.INFO));
+        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(new PrintStreamIntLogger(System.out, LogLevel.INFO));
+        final NotificationDataService notificationDataService = hubServicesFactory.createNotificationDataService();
+
+        final Calendar calendarStart = new Calendar.Builder().setWeekDate(2018, 1, Calendar.WEDNESDAY).build();
+        final Calendar calendarEnd = new Calendar.Builder().setWeekDate(2018, 1, Calendar.THURSDAY).build();
+        final NotificationResults notificationData = notificationDataService.getAllNotifications(calendarStart.getTime(), calendarEnd.getTime());
 
         final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
-
-        final Date createdAt = new Date();
-        final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
-        projectVersionModel.setProjectLink("New project link");
-        final String componentName = "notification test";
-        final ComponentVersionView componentVersionView = new ComponentVersionView();
-        final String componentVersionUrl = "sss";
-        final String componentIssueUrl = "ddd";
-
-        final NotificationContentItem notificationContentItem = new NotificationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentVersionUrl, componentIssueUrl);
-        final SortedSet<NotificationContentItem> notificationSet = new TreeSet<>();
-        notificationSet.add(notificationContentItem);
-
-        final NotificationResults notificationData = Mockito.mock(NotificationResults.class);
-        Mockito.when(notificationData.getNotificationContentItems()).thenReturn(notificationSet);
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
+        assertTrue(!storeEvent.getNotificationList().isEmpty());
+        assertEquals(storeEvent.getEventId().length(), 36);
 
         final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null);
 
