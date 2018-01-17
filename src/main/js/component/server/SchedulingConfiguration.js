@@ -2,7 +2,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextInput from '../../field/input/TextInput';
+import LabeledField from '../../field/input/LabeledField';
 import ServerConfiguration from './ServerConfiguration';
+
+import { fieldLabel, textInput } from '../../../css/field.css';
 import { alignCenter } from '../../../css/main.css';
 
 class SchedulingConfiguration extends ServerConfiguration {
@@ -10,12 +13,109 @@ class SchedulingConfiguration extends ServerConfiguration {
 		super(props);
 	}
 
+	componentWillUnmount() {
+		 this.cancelAutoTick();
+	}
+
+	componentDidMount() {
+		this.loadSchedulingTimes();
+		this.startAutoTick();
+	}
+
+	handleSetState(name, value) {
+		this.setState({
+			[name]: value
+		});
+	}
+
+	startAutoTick() {
+		// run every second
+		let tickInterval = setInterval(() => this.decreaseAccumulatorTime(), 1000);
+		this.handleSetState('tickInterval', tickInterval);
+	}
+
+	cancelAutoTick() {
+		clearInterval(this.state.tickInterval);
+	}
+
+
+	decreaseAccumulatorTime() {
+		var accumulatorNextRunString = this.state.values.accumulatorNextRun;
+		var accumulatorNextRun = parseInt(accumulatorNextRunString);
+		if(accumulatorNextRun > 0) {
+			accumulatorNextRun = accumulatorNextRun - 1;
+			var values = this.state.values;
+			values['accumulatorNextRun'] = accumulatorNextRun;
+			this.setState({
+				values
+			});
+		} else {
+			this.loadSchedulingTimes();
+		}
+	}
+
+
+	loadSchedulingTimes() {
+		this.handleSetState('configurationMessage', 'Loading...');
+		this.handleSetState('inProgress', true);
+
+		var self = this;
+		let getUrl = this.props.getUrl || this.props.baseUrl;
+		if (!getUrl) {
+			return;
+		}
+		fetch(getUrl,{
+			credentials: "same-origin"
+		})
+		.then(function(response) {
+			self.handleSetState('inProgress', false);
+			if (!response.ok) {
+				return response.json().then(json => {
+					self.handleSetState('configurationMessage', json.message);
+				});
+			} else {
+				return response.json().then(jsonArray => {
+					self.handleSetState('configurationMessage', '');
+					var json = jsonArray[0];
+					if (json != null) {
+						var values = {};
+						for (var index in json) {
+							if (json.hasOwnProperty(index)) {
+								let name = index;
+								let value = json[index];
+								values[name] = value;
+							}
+						}
+						self.setState({
+							values
+						});
+					}
+				});
+			}
+		})
+		.catch(function(error) {
+ 		 	console.log(error); 
+ 		});
+    }
+
+
 	render() {
 		let content =
 				<div>
-					<TextInput label="Accumulator Cron" name="accumulatorCron" value={this.state.values.accumulatorCron} onChange={this.handleChange} errorName="accumulatorCronError" errorValue={this.state.errors.accumulatorCronError}></TextInput>
+					<div>
+						<label className={fieldLabel}>Collecting Hub notifications in </label>
+						<label className={textInput}>{this.state.values.accumulatorNextRun} seconds</label>
+					</div>
 					<TextInput label="Daily Digest Cron" name="dailyDigestCron" value={this.state.values.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.errors.dailyDigestCronError}></TextInput>
+					<div>
+						<label className={fieldLabel}>Daily Digest Next Run</label>
+						<label className={textInput}>{this.state.values.dailyDigestNextRun}</label>
+					</div>
 					<TextInput label="Purge Digest Cron" name="purgeDataCron" value={this.state.values.purgeDataCron} onChange={this.handleChange} errorName="purgeDataCronError" errorValue={this.state.errors.purgeDataCronError}></TextInput>
+					<div>
+						<label className={fieldLabel}>Purge Digest Next Run</label>
+						<label className={textInput}>{this.state.values.purgeDataNextRun}</label>
+					</div>
 				</div>;
 
 		return super.render(content);
@@ -30,7 +130,7 @@ SchedulingConfiguration.propTypes = {
 };
 
 SchedulingConfiguration.defaultProps = {
-    headerText: 'Scheduling Configuration',
+    headerText: 'Scheduling',
     configButtonTest: false,
     baseUrl: '/configuration/global/scheduling'
 };
