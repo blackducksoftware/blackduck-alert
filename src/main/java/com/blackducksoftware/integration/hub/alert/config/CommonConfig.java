@@ -23,8 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
-import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -104,17 +106,16 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
         }
     }
 
-    public String getFormatedTimeToNextRun() {
+    public String getFormatedNextRunTime() {
         final Long msToNextRun = getMillisecondsToNextRun();
         if (msToNextRun == null) {
             return null;
         } else {
-            final Long hours = TimeUnit.MILLISECONDS.toHours(msToNextRun);
-            final Long minutes = TimeUnit.MILLISECONDS.toMinutes(msToNextRun - TimeUnit.HOURS.toMillis(hours));
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(msToNextRun - (TimeUnit.HOURS.toMillis(hours) + TimeUnit.MINUTES.toMillis(minutes)));
-
-            final String formattedString = LocalTime.of(hours.intValue(), minutes.intValue(), seconds.intValue()).format(DateTimeFormatter.ofPattern("H:mm:ss"));
-            return formattedString;
+            final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
+            ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun, ChronoUnit.MILLIS);
+            nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+            final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern("MM/dd/yyy hh:mm a"));
+            return formattedString + " UTC";
         }
     }
 

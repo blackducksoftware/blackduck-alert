@@ -24,11 +24,11 @@
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Override
     public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
-        GlobalSchedulingConfigEntity databaseEntity = getRepository().findOne(id);
+        GlobalSchedulingConfigEntity databaseEntity = null;
         if (id != null) {
             databaseEntity = getRepository().findOne(id);
         } else {
@@ -72,16 +72,22 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
                 databaseEntity = databaseEntities.get(0);
             }
         }
+        GlobalSchedulingConfigRestModel restModel = null;
         if (databaseEntity != null) {
-            final GlobalSchedulingConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
-            restModel.setAccumulatorNextRun(accumulatorConfig.getFormatedTimeToNextRun());
-            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedTimeToNextRun());
-            restModel.setPurgeDataNextRun(purgeConfig.getFormatedTimeToNextRun());
-            final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
-            restModels.add(restModel);
-            return restModels;
+            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
+            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
+        } else {
+            restModel = new GlobalSchedulingConfigRestModel();
         }
-        return Collections.emptyList();
+        final Long accumulatorNextRun = accumulatorConfig.getMillisecondsToNextRun();
+        if (accumulatorNextRun != null) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+            restModel.setAccumulatorNextRun(String.valueOf(seconds));
+        }
+        final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
+        restModels.add(restModel);
+        return restModels;
     }
 
     @Override

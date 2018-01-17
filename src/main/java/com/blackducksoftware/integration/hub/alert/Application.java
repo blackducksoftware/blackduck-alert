@@ -23,6 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -57,6 +60,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -74,6 +78,8 @@ public class Application {
     private final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
+    private GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
+    @Autowired
     private GlobalProperties globalProperties;
     @Autowired
     private AccumulatorConfig accumulatorConfig;
@@ -88,7 +94,6 @@ public class Application {
     void init() {
         logger.info("Hub Alert Starting...");
         final GlobalHubConfigEntity globalHubConfig = globalProperties.getHubConfig();
-        final GlobalSchedulingConfigEntity globalSchedulingConfig = globalProperties.getSchedulingConfig();
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level: {}", loggingLevel);
@@ -104,13 +109,21 @@ public class Application {
         }
         logger.info("----------------------------------------");
 
-        if (globalSchedulingConfig != null) {
-            logger.info("Accumulator Cron Expression:      {}", globalSchedulingConfig.getAccumulatorCron());
-            logger.info("Daily Digest Cron Expression:     {}", globalSchedulingConfig.getDailyDigestCron());
-            logger.info("Purge Old Data Cron Expression:   {}", globalSchedulingConfig.getPurgeDataCron());
-            accumulatorConfig.scheduleJobExecution(globalSchedulingConfig.getAccumulatorCron());
-            dailyDigestBatchConfig.scheduleJobExecution(globalSchedulingConfig.getDailyDigestCron());
-            purgeConfig.scheduleJobExecution(globalSchedulingConfig.getPurgeDataCron());
+        accumulatorConfig.scheduleJobExecution("0 0/1 * 1/1 * *");
+
+        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+        logger.info("Accumulator next run:      {} seconds", seconds);
+
+        final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
+        if (!globalSchedulingConfigs.isEmpty()) {
+            final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
+            if (globalSchedulingConfig != null) {
+                dailyDigestBatchConfig.scheduleJobExecution(globalSchedulingConfig.getDailyDigestCron());
+                purgeConfig.scheduleJobExecution(globalSchedulingConfig.getPurgeDataCron());
+
+                logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
+                logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
+            }
         }
     }
 
