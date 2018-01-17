@@ -182,6 +182,7 @@ public class ObjectTransformerTest {
         assertEquals("false", objectTransformer.objectToString(false));
         assertEquals("hello", objectTransformer.objectToString("hello"));
         assertEquals("123", objectTransformer.objectToString(123));
+        assertEquals("REAL_TIME", objectTransformer.objectToString(DigestTypeEnum.REAL_TIME));
     }
 
     @Test

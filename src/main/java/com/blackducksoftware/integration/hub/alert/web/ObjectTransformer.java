@@ -135,15 +135,18 @@ public class ObjectTransformer {
     }
 
     public String objectToString(final Object value) {
-        if (value != null && conversionService.canConvert(value.getClass(), String.class)) {
-            try {
-                return conversionService.convert(value, String.class);
-            } catch (final IllegalArgumentException | ConversionException e) {
-                logger.debug(e.getMessage());
-                return String.valueOf(value);
-            }
+        if (value != null) {
+            return String.valueOf(value);
         }
         return null;
+    }
+
+    public Long stringToLong(final String value) {
+        return stringToObject(value, Long.class);
+    }
+
+    public Boolean stringToBoolean(final String value) {
+        return stringToObject(value, Boolean.class);
     }
 
     private Map<String, Field> createNewFieldMap(final Object newClassObject) {
@@ -166,14 +169,6 @@ public class ObjectTransformer {
             fromObjectClassHierarchy = fromObjectClassHierarchy.getSuperclass();
         }
         return oldFieldList;
-    }
-
-    public Long stringToLong(final String value) {
-        return stringToObject(value, Long.class);
-    }
-
-    public Boolean stringToBoolean(final String value) {
-        return stringToObject(value, Boolean.class);
     }
 
 }
