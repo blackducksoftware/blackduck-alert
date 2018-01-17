@@ -127,4 +127,8 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         }
     }
 
+    public void runAccumulator() throws Exception {
+        accumulatorConfig.createJobExecution();
+    }
+
 }
