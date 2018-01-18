@@ -23,20 +23,14 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
@@ -54,13 +48,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -75,56 +62,12 @@ import com.google.gson.GsonBuilder;
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert.web.**", "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
 public class Application {
-    private final Logger logger = LoggerFactory.getLogger(Application.class);
-
     @Autowired
-    private GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
-    @Autowired
-    private GlobalProperties globalProperties;
-    @Autowired
-    private AccumulatorConfig accumulatorConfig;
-    @Autowired
-    private DailyDigestBatchConfig dailyDigestBatchConfig;
-    @Autowired
-    private PurgeConfig purgeConfig;
-    @Value("${logging.level.com.blackducksoftware.integration:}")
-    String loggingLevel;
+    private StartupManager startupManager;
 
     @PostConstruct
     void init() {
-        logger.info("Hub Alert Starting...");
-        final GlobalHubConfigEntity globalHubConfig = globalProperties.getHubConfig();
-        logger.info("----------------------------------------");
-        logger.info("Alert Configuration: ");
-        logger.info("Logging level: {}", loggingLevel);
-        logger.info("Hub URL:            {}", globalProperties.getHubUrl());
-        logger.info("Hub Proxy Host:     {}", globalProperties.getHubProxyHost());
-        logger.info("Hub Proxy Port:     {}", globalProperties.getHubProxyPort());
-        logger.info("Hub Proxy User:     {}", globalProperties.getHubProxyUsername());
-        logger.info("Hub Proxy Password: **********");
-
-        if (globalHubConfig != null) {
-            logger.info("Hub API Key:        **********");
-            logger.info("Hub Timeout:        {}", globalHubConfig.getHubTimeout());
-        }
-        logger.info("----------------------------------------");
-
-        accumulatorConfig.scheduleJobExecution("0 0/1 * 1/1 * *");
-
-        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
-        logger.info("Accumulator next run: {} seconds", seconds);
-
-        final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
-        if (!globalSchedulingConfigs.isEmpty()) {
-            final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
-            if (globalSchedulingConfig != null) {
-                dailyDigestBatchConfig.scheduleJobExecution(globalSchedulingConfig.getDailyDigestCron());
-                purgeConfig.scheduleJobExecution(globalSchedulingConfig.getPurgeDataCron());
-
-                logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
-                logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
-            }
-        }
+        startupManager.startup();
     }
 
     public static void main(final String[] args) {

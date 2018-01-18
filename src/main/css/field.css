@@ -44,7 +44,17 @@
 }
 
 .labelField {
-    width: fit-content;
+    width: 165px;
     padding-left: 5px;
     padding-right: 5px
+}
+
+.accumulatorFieldLabel {
+    composes: fieldLabel;
+    width: 45%;
+}
+
+.accumulatorTypeAheadField {
+    composes: typeAheadField;
+    width: 25%;
 }
