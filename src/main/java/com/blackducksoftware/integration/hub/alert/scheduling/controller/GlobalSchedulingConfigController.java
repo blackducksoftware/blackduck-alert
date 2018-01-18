@@ -92,7 +92,7 @@ public class GlobalSchedulingConfigController extends ConfigController<GlobalSch
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/global/accumulator/run")
+    @PostMapping(value = "/configuration/global/scheduling/accumulator/run")
     public ResponseEntity<String> runAccumulator(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
         return globalSchedulingHandler.runAccumulator();
     }

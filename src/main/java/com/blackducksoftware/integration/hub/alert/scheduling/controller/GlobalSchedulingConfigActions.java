@@ -27,12 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -83,7 +81,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
             databaseEntity = getRepository().findOne(id);
         } else {
             final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
-            if (!databaseEntities.isEmpty()) {
+            if (databaseEntities != null && !databaseEntities.isEmpty()) {
                 databaseEntity = databaseEntities.get(0);
             }
         }
@@ -108,21 +106,32 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     @Override
     public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
-            try {
-                new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("dailyDigestCron", e.getMessage());
+        if (StringUtils.isNotBlank(restModel.getDailyDigestHourOfDay())) {
+            if (!StringUtils.isNumeric(restModel.getDailyDigestHourOfDay())) {
+                fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
+            } else {
+                final Integer integer = Integer.valueOf(restModel.getDailyDigestHourOfDay());
+                if (integer > 23) {
+                    fieldErrors.put("dailyDigestHourOfDay", "Must be a number less than 24");
+                }
             }
+        } else {
+            fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
         }
 
-        if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
-            try {
-                new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("purgeDataCron", e.getMessage());
+        if (StringUtils.isNotBlank(restModel.getPurgeDataFrequencyDays())) {
+            if (!StringUtils.isNumeric(restModel.getPurgeDataFrequencyDays())) {
+                fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
+            } else {
+                final Integer integer = Integer.valueOf(restModel.getPurgeDataFrequencyDays());
+                if (integer > 8) {
+                    fieldErrors.put("purgeDataFrequencyDays", "Must be a number less than 8");
+                }
             }
+        } else {
+            fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
         }
+
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -137,8 +146,13 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     @Override
     public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
         if (restModel != null) {
-            dailyDigestBatchConfig.scheduleJobExecution(restModel.getDailyDigestCron());
-            purgeConfig.scheduleJobExecution(restModel.getPurgeDataCron());
+            final String dailyDigestHourOfDay = restModel.getDailyDigestHourOfDay();
+            final String purgeDataFrequencyDays = restModel.getPurgeDataFrequencyDays();
+
+            final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
+            final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
+            dailyDigestBatchConfig.scheduleJobExecution(dailyDigestCron);
+            purgeConfig.scheduleJobExecution(purgeDataCron);
         }
     }
 

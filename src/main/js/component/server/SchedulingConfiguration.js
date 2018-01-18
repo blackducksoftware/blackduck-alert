@@ -5,16 +5,60 @@ import TextInput from '../../field/input/TextInput';
 import LabeledField from '../../field/input/LabeledField';
 import ServerConfiguration from './ServerConfiguration';
 
-import { fieldLabel, textInput, fieldError, labelField } from '../../../css/field.css';
+import { accumulatorFieldLabel, textInput, fieldError, labelField, accumulatorTypeAheadField} from '../../../css/field.css';
 import { alignCenter, submitButtons } from '../../../css/main.css';
+
+import Select from 'react-select-2';
+import 'react-select-2/dist/css/react-select-2.css';
 
 class SchedulingConfiguration extends ServerConfiguration {
 	constructor(props) {
 		super(props);
+		this.state = {
+            dailyDigestOptions: [
+				{ label: '12 am', value: '0'},
+				{ label: '1 am', value: '1'},
+				{ label: '2 am', value: '2'},
+				{ label: '3 am', value: '3'},
+				{ label: '4 am', value: '4'},
+				{ label: '5 am', value: '5'},
+				{ label: '6 am', value: '6'},
+				{ label: '7 am', value: '7'},
+				{ label: '8 am', value: '8'},
+				{ label: '9 am', value: '9'},
+				{ label: '10 am', value: '10'},
+				{ label: '11 am', value: '11'},
+				{ label: '12 pm', value: '12'},
+				{ label: '1 pm', value: '13'},
+				{ label: '2 pm', value: '14'},
+				{ label: '3 pm', value: '15'},
+				{ label: '4 pm', value: '16'},
+				{ label: '5 pm', value: '17'},
+				{ label: '6 pm', value: '18'},
+				{ label: '7 pm', value: '19'},
+				{ label: '8 pm', value: '20'},
+				{ label: '9 pm', value: '21'},
+				{ label: '10 pm', value: '22'},
+				{ label: '11 pm', value: '23'}
+			],
+			purgeOptions: [
+				{ label: 'Every day', value: '1'},
+				{ label: 'Every 2 days', value: '2' },
+				{ label: 'Every 3 days', value: '3'},
+				{ label: 'Every 4 days', value: '4'},
+				{ label: 'Every 5 days', value: '5'},
+				{ label: 'Every 6 days', value: '6'},
+				{ label: 'Every 7 days', value: '7'}
+			]
+        }
 
 		this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
 		this.loadSchedulingTimes = this.loadSchedulingTimes.bind(this);
 		this.runAccumulator = this.runAccumulator.bind(this);
+
+		this.handleStateValues = this.handleStateValues.bind(this);
+		this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
+		this.handlePurgeChanged = this.handlePurgeChanged.bind(this);
 	}
 
 	componentWillUnmount() {
@@ -45,24 +89,23 @@ class SchedulingConfiguration extends ServerConfiguration {
 
 	decreaseAccumulatorTime() {
 		var accumulatorNextRunString = this.state.values.accumulatorNextRun;
-		if(accumulatorNextRunString) {
+		if(accumulatorNextRunString && parseInt(accumulatorNextRunString) > 0) {
 			var accumulatorNextRun = parseInt(accumulatorNextRunString);
-			if(accumulatorNextRun > 0) {
-				accumulatorNextRun = accumulatorNextRun - 1;
-				var values = this.state.values;
-				values['accumulatorNextRun'] = accumulatorNextRun;
-				this.setState({
-					values
-				});
-			} else {
-				var values = this.state.values;
-				values['accumulatorNextRun'] = 60;
-				this.setState({
-					values
-				});
-				this.loadSchedulingTimes();
-			}
-}
+			accumulatorNextRun = accumulatorNextRun - 1;
+			var values = this.state.values;
+			values['accumulatorNextRun'] = accumulatorNextRun;
+			this.setState({
+				values
+			});
+		} else {
+			var values = this.state.values;
+			values['accumulatorNextRun'] = 60;
+			this.setState({
+				values
+			});
+			this.loadSchedulingTimes();
+		}
+
 	}
 
 
@@ -113,7 +156,7 @@ class SchedulingConfiguration extends ServerConfiguration {
 		this.handleSetState('inProgress', true);
 
 		var self = this;
-		fetch('/configuration/global/accumulator/run',{
+		fetch('/configuration/global/scheduling/accumulator/run',{
 			credentials: "same-origin",
 			method: 'POST',
 		})
@@ -132,6 +175,30 @@ class SchedulingConfiguration extends ServerConfiguration {
  		});
     }
 
+    handleStateValues(name, value) {
+		var values = this.state.values;
+		values[name] = value;
+		this.setState({
+			values
+		});
+	}
+
+    handleDailyDigestChanged (option) {
+        if(option) {
+	        this.handleStateValues('dailyDigestHourOfDay', option.value);
+        } else {
+            this.handleStateValues('dailyDigestHourOfDay', option);
+        }
+	}
+
+	handlePurgeChanged (option) {
+        if(option) {
+	        this.handleStateValues('purgeDataFrequencyDays', option.value);
+        } else {
+            this.handleStateValues('purgeDataFrequencyDays', option);
+        }
+	}
+
 
 	render() {
 		let accumulatorErrorDiv = null;
@@ -141,19 +208,37 @@ class SchedulingConfiguration extends ServerConfiguration {
 		let content =
 				<div>
 					<div>
-						<label className={fieldLabel}>Collecting Hub notifications in </label>
+						<label className={accumulatorFieldLabel}>Collecting Hub notifications in </label>
 						<label className={labelField}>{this.state.values.accumulatorNextRun} seconds</label>
 						<input className={submitButtons} type="button" value="Run Now" onClick={this.runAccumulator}></input>
 						{accumulatorErrorDiv}
 					</div>
-					<TextInput label="Daily Digest Cron" name="dailyDigestCron" value={this.state.values.dailyDigestCron} onChange={this.handleChange} errorName="dailyDigestCronError" errorValue={this.state.errors.dailyDigestCronError}></TextInput>
 					<div>
-						<label className={fieldLabel}>Daily Digest Next Run</label>
+						<label className={accumulatorFieldLabel}>Daily Digest Frequency</label>
+						<Select className={accumulatorTypeAheadField}
+							onChange={this.handleDailyDigestChanged}
+                            searchable={true}
+						    options={this.state.dailyDigestOptions}
+						    placeholder='Choose the hour of day'
+						    value={this.state.values.dailyDigestHourOfDay}
+						  />
+					</div>
+					<div>
+						<label className={accumulatorFieldLabel}>Daily Digest Cron Next Run</label>
 						<label className={labelField}>{this.state.values.dailyDigestNextRun}</label>
 					</div>
-					<TextInput label="Purge Digest Cron" name="purgeDataCron" value={this.state.values.purgeDataCron} onChange={this.handleChange} errorName="purgeDataCronError" errorValue={this.state.errors.purgeDataCronError}></TextInput>
 					<div>
-						<label className={fieldLabel}>Purge Digest Next Run</label>
+						<label className={accumulatorFieldLabel}>Notification Purge Frequency</label>
+						<Select className={accumulatorTypeAheadField}
+							onChange={this.handlePurgeChanged}
+                            searchable={true}
+						    options={this.state.purgeOptions}
+						    placeholder='Choose the frequency'
+						    value={this.state.values.purgeDataFrequencyDays}
+						  />
+					</div>
+					<div>
+						<label className={accumulatorFieldLabel}>Purge Cron Next Run</label>
 						<label className={labelField}>{this.state.values.purgeDataNextRun}</label>
 					</div>
 				</div>;

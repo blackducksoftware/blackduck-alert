@@ -27,21 +27,21 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
     private String accumulatorNextRun;
-    private String dailyDigestCron;
+    private String dailyDigestHourOfDay;
     private String dailyDigestNextRun;
-    private String purgeDataCron;
+    private String purgeDataFrequencyDays;
     private String purgeDataNextRun;
 
     public GlobalSchedulingConfigRestModel() {
 
     }
 
-    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorNextRun, final String dailyDigestCron, final String dailyDigestNextRun, final String purgeDataCron, final String purgeDataNextRun) {
+    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
         super(id);
         this.accumulatorNextRun = accumulatorNextRun;
-        this.dailyDigestCron = dailyDigestCron;
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
         this.dailyDigestNextRun = dailyDigestNextRun;
-        this.purgeDataCron = purgeDataCron;
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
         this.purgeDataNextRun = purgeDataNextRun;
     }
 
@@ -49,16 +49,16 @@ public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
         return accumulatorNextRun;
     }
 
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
+    public String getDailyDigestHourOfDay() {
+        return dailyDigestHourOfDay;
     }
 
     public String getDailyDigestNextRun() {
         return dailyDigestNextRun;
     }
 
-    public String getPurgeDataCron() {
-        return purgeDataCron;
+    public String getPurgeDataFrequencyDays() {
+        return purgeDataFrequencyDays;
     }
 
     public String getPurgeDataNextRun() {

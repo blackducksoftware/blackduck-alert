@@ -20,16 +20,20 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalSchedulingConfigRestModel restModel) {
-        assertNull(restModel.getAccumulatorCron());
-        assertNull(restModel.getDailyDigestCron());
-        assertNull(restModel.getPurgeDataCron());
+        assertNull(restModel.getAccumulatorNextRun());
+        assertNull(restModel.getDailyDigestHourOfDay());
+        assertNull(restModel.getDailyDigestNextRun());
+        assertNull(restModel.getPurgeDataFrequencyDays());
+        assertNull(restModel.getPurgeDataNextRun());
     }
 
     @Override
     public void assertGlobalRestModelFieldsFull(final GlobalSchedulingConfigRestModel restModel) {
-        assertEquals(getMockUtil().getAccumulatorCron(), restModel.getAccumulatorCron());
-        assertEquals(getMockUtil().getDailyDigestCron(), restModel.getDailyDigestCron());
-        assertEquals(getMockUtil().getPurgeDataCron(), restModel.getPurgeDataCron());
+        assertEquals(getMockUtil().getAccumulatorNextRun(), restModel.getAccumulatorNextRun());
+        assertEquals(getMockUtil().getDailyDigestHourOfDay(), restModel.getDailyDigestHourOfDay());
+        assertEquals(getMockUtil().getDailyDigestNextRun(), restModel.getDailyDigestNextRun());
+        assertEquals(getMockUtil().getPurgeDataFrequencyDays(), restModel.getPurgeDataFrequencyDays());
+        assertEquals(getMockUtil().getPurgeDataNextRun(), restModel.getPurgeDataNextRun());
     }
 
     @Override
