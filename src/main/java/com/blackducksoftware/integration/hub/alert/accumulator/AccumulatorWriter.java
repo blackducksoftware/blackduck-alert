@@ -62,32 +62,36 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     @Override
     public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
         try {
-            itemList.forEach(item -> {
-                final List<NotificationEvent> notificationList = item.getNotificationList();
-                final List<NotificationEntity> entityList = new ArrayList<>();
-                notificationList.forEach(notification -> {
-                    final String eventKey = notification.getEventKey();
-                    final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
-                    final Date createdAt = content.getCreatedAt();
-                    final NotificationCategoryEnum notificationType = notification.getCategoryType();
-                    final String projectName = content.getProjectVersion().getProjectName();
-                    final String projectUrl = content.getProjectVersion().getProjectLink();
-                    final String projectVersion = content.getProjectVersion().getProjectVersionName();
-                    final String projectVersionUrl = content.getProjectVersion().getUrl();
-                    final String componentName = content.getComponentName();
-                    final String componentVersion = content.getComponentVersion().versionName;
-                    final String policyRuleName = getPolicyRule(notification);
-                    final String person = getPerson(notification);
-                    final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
+            if (itemList != null && !itemList.isEmpty()) {
+                itemList.forEach(item -> {
+                    if (!item.getNotificationList().isEmpty()) {
+                        final List<NotificationEvent> notificationList = item.getNotificationList();
+                        final List<NotificationEntity> entityList = new ArrayList<>();
+                        notificationList.forEach(notification -> {
+                            final String eventKey = notification.getEventKey();
+                            final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
+                            final Date createdAt = content.getCreatedAt();
+                            final NotificationCategoryEnum notificationType = notification.getCategoryType();
+                            final String projectName = content.getProjectVersion().getProjectName();
+                            final String projectUrl = content.getProjectVersion().getProjectLink();
+                            final String projectVersion = content.getProjectVersion().getProjectVersionName();
+                            final String projectVersionUrl = content.getProjectVersion().getUrl();
+                            final String componentName = content.getComponentName();
+                            final String componentVersion = content.getComponentVersion().versionName;
+                            final String policyRuleName = getPolicyRule(notification);
+                            final String person = getPerson(notification);
+                            final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                    final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
-                            vulnerabilityList);
-                    entityList.add(entity);
-                    notificationRepository.save(entity);
+                            final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
+                                    vulnerabilityList);
+                            entityList.add(entity);
+                            notificationRepository.save(entity);
+                        });
+                        final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
+                        channelTemplateManager.sendEvent(realTimeEvent);
+                    }
                 });
-                final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
-                channelTemplateManager.sendEvent(realTimeEvent);
-            });
+            }
         } catch (final Exception ex) {
             logger.error("Error occurred writing notification data", ex);
         }

@@ -112,7 +112,7 @@ public class Application {
         accumulatorConfig.scheduleJobExecution("0 0/1 * 1/1 * *");
 
         final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
-        logger.info("Accumulator next run:      {} seconds", seconds);
+        logger.info("Accumulator next run: {} seconds", seconds);
 
         final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
         if (!globalSchedulingConfigs.isEmpty()) {

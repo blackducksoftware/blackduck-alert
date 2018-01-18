@@ -36,15 +36,23 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {
@@ -52,13 +60,20 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
+    private final GlobalProperties globalProperties;
+    private final ChannelTemplateManager channelTemplateManager;
+    private final NotificationRepositoryWrapper notificationRepository;
+
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
-            final ObjectTransformer objectTransformer) {
+            final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationRepositoryWrapper notificationRepository) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
+        this.globalProperties = globalProperties;
+        this.channelTemplateManager = channelTemplateManager;
+        this.notificationRepository = notificationRepository;
     }
 
     @Override
@@ -128,7 +143,17 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     }
 
     public void runAccumulator() throws Exception {
-        accumulatorConfig.createJobExecution();
+        final AccumulatorReader reader = new AccumulatorReader(globalProperties);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties);
+        final AccumulatorWriter writer = new AccumulatorWriter(notificationRepository, channelTemplateManager);
+
+        final NotificationResults results = reader.read();
+        final DBStoreEvent event = processor.process(results);
+        final List<DBStoreEvent> events = new ArrayList<>();
+        if (event != null) {
+            events.add(event);
+        }
+        writer.write(events);
     }
 
 }
