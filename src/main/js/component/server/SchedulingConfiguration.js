@@ -45,22 +45,24 @@ class SchedulingConfiguration extends ServerConfiguration {
 
 	decreaseAccumulatorTime() {
 		var accumulatorNextRunString = this.state.values.accumulatorNextRun;
-		var accumulatorNextRun = parseInt(accumulatorNextRunString);
-		if(accumulatorNextRun > 0) {
-			accumulatorNextRun = accumulatorNextRun - 1;
-			var values = this.state.values;
-			values['accumulatorNextRun'] = accumulatorNextRun;
-			this.setState({
-				values
-			});
-		} else {
-			var values = this.state.values;
-			values['accumulatorNextRun'] = 60;
-			this.setState({
-				values
-			});
-			this.loadSchedulingTimes();
-		}
+		if(accumulatorNextRunString) {
+			var accumulatorNextRun = parseInt(accumulatorNextRunString);
+			if(accumulatorNextRun > 0) {
+				accumulatorNextRun = accumulatorNextRun - 1;
+				var values = this.state.values;
+				values['accumulatorNextRun'] = accumulatorNextRun;
+				this.setState({
+					values
+				});
+			} else {
+				var values = this.state.values;
+				values['accumulatorNextRun'] = 60;
+				this.setState({
+					values
+				});
+				this.loadSchedulingTimes();
+			}
+}
 	}
 
 
