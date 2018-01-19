@@ -32,35 +32,27 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 @Entity
 @Table(schema = "alert", name = "global_scheduling_config")
 public class GlobalSchedulingConfigEntity extends DatabaseEntity {
-    @Column(name = "alert_accumulator_cron")
-    private String accumulatorCron;
+    @Column(name = "alert_digest_daily_hour_of_day")
+    private String dailyDigestHourOfDay;
 
-    @Column(name = "alert_digest_daily_cron")
-    private String dailyDigestCron;
-
-    @Column(name = "alert_purge_data_cron")
-    private String purgeDataCron;
+    @Column(name = "alert_purge_data_frequency_days")
+    private String purgeDataFrequencyDays;
 
     public GlobalSchedulingConfigEntity() {
 
     }
 
-    public GlobalSchedulingConfigEntity(final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
+    public GlobalSchedulingConfigEntity(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
     }
 
-    public String getAccumulatorCron() {
-        return accumulatorCron;
+    public String getDailyDigestHourOfDay() {
+        return dailyDigestHourOfDay;
     }
 
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public String getPurgeDataCron() {
-        return purgeDataCron;
+    public String getPurgeDataFrequencyDays() {
+        return purgeDataFrequencyDays;
     }
 
 }

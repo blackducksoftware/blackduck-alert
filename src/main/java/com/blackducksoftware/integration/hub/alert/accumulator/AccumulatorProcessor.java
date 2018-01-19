@@ -43,16 +43,18 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
 
     @Override
     public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
-        try {
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-            if (hubServicesFactory != null) {
-                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectService(), hubServicesFactory.createProjectAssignmentService(), hubServicesFactory.createHubService(),
-                        hubServicesFactory.createVulnerabilityService(), hubServicesFactory.getRestConnection().logger);
-                final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
-                return storeEvent;
+        if (notificationData != null) {
+            try {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
+                if (hubServicesFactory != null) {
+                    final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectService(), hubServicesFactory.createProjectAssignmentService(),
+                            hubServicesFactory.createHubService(), hubServicesFactory.createVulnerabilityService(), hubServicesFactory.getRestConnection().logger);
+                    final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
+                    return storeEvent;
+                }
+            } catch (final Exception ex) {
+                logger.error("Error occurred durring processing of accumulated notifications", ex);
             }
-        } catch (final Exception ex) {
-            logger.error("Error occurred durring processing of accumulated notifications", ex);
         }
         return null;
     }
