@@ -80,7 +80,7 @@ public class AccumulatorProcessorTestIT {
         final ExternalId apacheExternalId = externalIdFactory.createMavenExternalId("commons-fileupload", "commons-fileupload", "1.2.1");
         componentDataService.addComponentToProjectVersion(apacheExternalId, testProjectName, testProjectVersionName);
 
-        TimeUnit.SECONDS.sleep(50);
+        TimeUnit.SECONDS.sleep(30);
 
         final NotificationResults notificationData = notificationDataService.getUserNotifications(new Date(System.currentTimeMillis() - 100000), new Date(), user);
 

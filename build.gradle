@@ -23,8 +23,6 @@ version = '0.0.1-SNAPSHOT'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
-apply plugin: 'application'
-apply plugin: 'java'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
@@ -99,9 +97,6 @@ distributions {
         }
     }
 }
-
-check.dependsOn integrationTest
-integrationTest.mustRunAfter test
 
 tasks.withType(Test) {
     reports.html.destination = file("${reporting.baseDir}/${name}")
