@@ -20,6 +20,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 
@@ -99,8 +100,20 @@ public class TestGlobalProperties extends GlobalProperties {
 
     @Override
     public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubUsername, final String hubPassword) throws AlertException {
+        return createHubServerConfigWithCredentials(logger);
+    }
+
+    public HubServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
         return super.createHubServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_USERNAME),
                 testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
+    }
+
+    public HubServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {
+        setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        setHubTrustCertificate(true);
+        final HubServerConfig hubServerConfig = createHubServerConfigWithCredentials(logger);
+        final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(logger);
+        return new HubServicesFactory(restConnection);
     }
 
 }

@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
+package com.blackducksoftware.integration.hub.alert.actions.distribution;
 
 import static org.junit.Assert.assertEquals;
 
@@ -42,6 +42,7 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.distribution.CommonDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

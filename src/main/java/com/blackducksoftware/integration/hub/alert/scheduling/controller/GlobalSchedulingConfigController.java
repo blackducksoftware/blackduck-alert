@@ -48,7 +48,7 @@ public class GlobalSchedulingConfigController extends ConfigController<GlobalSch
     private final CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> commonConfigHandler;
 
     @Autowired
-    GlobalSchedulingConfigController(final GlobalSchedulingConfigActions configActions, final ObjectTransformer objectTransformer) {
+    public GlobalSchedulingConfigController(final GlobalSchedulingConfigActions configActions, final ObjectTransformer objectTransformer) {
         commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, configActions, objectTransformer);
     }
 
