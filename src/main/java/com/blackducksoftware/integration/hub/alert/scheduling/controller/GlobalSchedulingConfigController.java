@@ -37,61 +37,64 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
-import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
-import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 
 @RestController
 public class GlobalSchedulingConfigController extends ConfigController<GlobalSchedulingConfigRestModel> {
-    private final CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> commonConfigHandler;
+    private final GlobalSchedulingHandler globalSchedulingHandler;
 
     @Autowired
     GlobalSchedulingConfigController(final GlobalSchedulingConfigActions configActions, final ObjectTransformer objectTransformer) {
-        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, configActions, objectTransformer);
+        globalSchedulingHandler = new GlobalSchedulingHandler(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, configActions, objectTransformer);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/configuration/global/scheduling")
     public List<GlobalSchedulingConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
-        return commonConfigHandler.getConfig(id);
+        return globalSchedulingHandler.getConfig(id);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.postConfig(restModel);
+        return globalSchedulingHandler.postConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.putConfig(restModel);
+        return globalSchedulingHandler.putConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/scheduling/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.validateConfig(restModel);
+        return globalSchedulingHandler.validateConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(value = "/configuration/global/scheduling")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.deleteConfig(restModel);
+        return globalSchedulingHandler.deleteConfig(restModel);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/scheduling/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
-        return commonConfigHandler.doNotAllowHttpMethod();
+        return globalSchedulingHandler.doNotAllowHttpMethod();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping(value = "/configuration/global/scheduling/accumulator/run")
+    public ResponseEntity<String> runAccumulator(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+        return globalSchedulingHandler.runAccumulator();
     }
 
 }

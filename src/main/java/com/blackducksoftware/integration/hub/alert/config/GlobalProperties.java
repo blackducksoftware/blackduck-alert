@@ -38,8 +38,6 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -51,7 +49,6 @@ import com.blackducksoftware.integration.log.Slf4jIntLogger;
 @Component
 public class GlobalProperties {
     private final GlobalHubRepositoryWrapper globalHubRepository;
-    private final GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -72,9 +69,8 @@ public class GlobalProperties {
     private String hubProxyPassword;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
+    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
-        this.globalSchedulingRepository = globalSchedulingRepository;
     }
 
     public String getHubUrl() {
@@ -177,14 +173,6 @@ public class GlobalProperties {
         return null;
     }
 
-    public GlobalSchedulingConfigEntity getSchedulingConfig() {
-        final List<GlobalSchedulingConfigEntity> configs = globalSchedulingRepository.findAll();
-        if (configs != null && !configs.isEmpty()) {
-            return configs.get(0);
-        }
-        return null;
-    }
-
     public HubServicesFactory createHubServicesFactory(final Logger logger) throws IntegrationException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         return createHubServicesFactory(intLogger);
@@ -270,30 +258,6 @@ public class GlobalProperties {
         final GlobalHubConfigEntity globalConfig = getHubConfig();
         if (globalConfig != null) {
             return getHubConfig().getHubApiKey();
-        }
-        return null;
-    }
-
-    public String getAccumulatorCron() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getSchedulingConfig().getAccumulatorCron();
-        }
-        return null;
-    }
-
-    public String getDailyDigestCron() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getSchedulingConfig().getDailyDigestCron();
-        }
-        return null;
-    }
-
-    public String getPurgeDataCron() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getSchedulingConfig().getPurgeDataCron();
         }
         return null;
     }
