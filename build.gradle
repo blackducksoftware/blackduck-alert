@@ -9,6 +9,8 @@ buildscript {
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE'
         classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
+        classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
+        classpath 'com.h2database:h2:1.4.196'
     }
 }
 
@@ -19,9 +21,11 @@ plugins {
 }
 
 version = '0.0.1-SNAPSHOT'
+def dbChangeLogVersion = '1.0.0'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'org.liquibase.gradle'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
@@ -88,6 +92,17 @@ distributions {
             from('src/main/resources/application.properties') {into '/blackduck-alert-config-defaults/'}
             from('src/main/resources/email/images/') {into 'images/'}
             from('src/main/resources/email/templates/') {into 'templates/'}
+        }
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile "$projectDir/src/main/resources/db/changelog/changelog-${dbChangeLogVersion}.xml"
+            url 'jdbc:h2:file:./data/alertdb'
+            username 'sa'
+            defaultSchemaName 'audit'
         }
     }
 }

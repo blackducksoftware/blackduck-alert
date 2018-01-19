@@ -49,6 +49,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
@@ -97,13 +98,13 @@ public class DigestNotificationProcessorIT {
         final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
-        final List<NotificationEntity> notificationList = new ArrayList<>();
+        final List<NotificationModel> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", "", "", "Test Component",
-                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+                "Test Component Version", "Test Policy Rule Name", "Test Person");
         final NotificationEntity nonApplicableNotification = new NotificationEntity("event_key_2", new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, "Project that we don't care about", "", "", "",
-                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        notificationList.add(applicableNotification);
-        notificationList.add(nonApplicableNotification);
+                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person");
+        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
+        notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
         final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
@@ -131,13 +132,13 @@ public class DigestNotificationProcessorIT {
         final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
-        final List<NotificationEntity> notificationList = new ArrayList<>();
+        final List<NotificationModel> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
-                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+                "Test Component Version", "Test Policy Rule Name", "Test Person");
         final NotificationEntity otherApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
-                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        notificationList.add(applicableNotification);
-        notificationList.add(otherApplicableNotification);
+                "Test Component Version", "Test Policy Rule Name", "Test Person");
+        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
+        notificationList.add(new NotificationModel(otherApplicableNotification, Collections.emptyList()));
 
         final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
@@ -165,13 +166,13 @@ public class DigestNotificationProcessorIT {
         final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"));
         notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
 
-        final List<NotificationEntity> notificationList = new LinkedList<>();
+        final List<NotificationModel> notificationList = new LinkedList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
-                "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
+                "Test Component Version", "Test Policy Rule Name", "Test Person");
         final NotificationEntity nonApplicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, projectName, "", projectVersionName, "",
-                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person", Collections.emptyList());
-        notificationList.add(applicableNotification);
-        notificationList.add(nonApplicableNotification);
+                "Test Component", "Test Component Version", "Test Policy Rule Name", "Test Person");
+        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
+        notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
         final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(0, eventsCreated.size());

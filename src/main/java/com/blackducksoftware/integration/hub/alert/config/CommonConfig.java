@@ -46,7 +46,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 
 public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(CommonConfig.class);
@@ -56,19 +56,19 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     protected final JobBuilderFactory jobBuilderFactory;
     protected final StepBuilderFactory stepBuilderFactory;
     protected final TaskExecutor taskExecutor;
-    protected final NotificationRepositoryWrapper notificationRepository;
+    protected final NotificationManager notificationManager;
     protected final PlatformTransactionManager transactionManager;
     private final TaskScheduler taskScheduler;
 
     private ScheduledFuture<?> future;
 
     public CommonConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepositoryWrapper notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
+            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.taskExecutor = taskExecutor;
-        this.notificationRepository = notificationRepository;
+        this.notificationManager = notificationManager;
         this.transactionManager = transactionManager;
         this.taskScheduler = taskScheduler;
     }

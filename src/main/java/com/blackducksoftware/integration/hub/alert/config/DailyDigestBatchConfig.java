@@ -35,15 +35,15 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.DailyDigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
@@ -55,22 +55,22 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepositoryWrapper notificationRepository, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
+            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
             final DigestNotificationProcessor notificationProcessor) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
+        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
     }
 
     @Override
     public Step createStep(final DailyItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationEntity>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationModel>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
                 .transactionManager(transactionManager).build();
     }
 
     @Override
     public DailyItemReader reader() {
-        return new DailyItemReader(notificationRepository);
+        return new DailyItemReader(notificationManager);
     }
 
     @Override

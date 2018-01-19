@@ -10,8 +10,8 @@ import java.util.Set;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
@@ -26,10 +26,10 @@ public class AccumulatorWriterTest {
 
     @Test
     public void testWrite() throws Exception {
-        final NotificationRepositoryWrapper notificationRepository = Mockito.mock(NotificationRepositoryWrapper.class);
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
 
-        final AccumulatorWriter accumulatorWriter = new AccumulatorWriter(notificationRepository, channelTemplateManager);
+        final AccumulatorWriter accumulatorWriter = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final String eventKey = "_event_key_";
         final NotificationCategoryEnum categoryType = NotificationCategoryEnum.HIGH_VULNERABILITY;
