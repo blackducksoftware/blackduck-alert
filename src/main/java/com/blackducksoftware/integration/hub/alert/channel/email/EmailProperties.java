@@ -73,7 +73,7 @@ public class EmailProperties {
 
     public EmailProperties(final GlobalEmailConfigEntity emailConfigEntity) {
         if (emailConfigEntity == null) {
-            throw new IllegalArgumentException("Email config cannot be null");
+            throw new IllegalArgumentException("Could not find the global Email configuration");
         }
         updateFromConfig(emailConfigEntity);
     }

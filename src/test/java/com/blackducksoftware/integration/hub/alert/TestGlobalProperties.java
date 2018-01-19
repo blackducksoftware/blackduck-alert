@@ -18,7 +18,6 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -27,25 +26,20 @@ import com.blackducksoftware.integration.log.IntLogger;
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
     private String hubApiKey;
-    private String accumulatorCron;
-    private String dailyDigestCron;
 
     private final TestProperties testProperties;
 
     public TestGlobalProperties() {
-        this(Mockito.mock(GlobalHubRepositoryWrapper.class), Mockito.mock(GlobalSchedulingRepositoryWrapper.class));
+        this(Mockito.mock(GlobalHubRepositoryWrapper.class));
     }
 
-    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository) {
-        this(globalHubRepositoryWrapper, globalSchedulingRepository, 400, "1 1 1 1 1 1", "2 2 2 2 2 2");
+    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper) {
+        this(globalHubRepositoryWrapper, 400);
     }
 
-    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final Integer hubTimeout, final String accumulatorCron,
-            final String dailyDigestCron) {
-        super(globalHubRepositoryWrapper, globalSchedulingRepository);
+    public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final Integer hubTimeout) {
+        super(globalHubRepositoryWrapper);
         this.hubTimeout = hubTimeout;
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
 
         testProperties = new TestProperties();
     }
@@ -66,24 +60,6 @@ public class TestGlobalProperties extends GlobalProperties {
 
     public void setHubApiKey(final String hubApiKey) {
         this.hubApiKey = hubApiKey;
-    }
-
-    @Override
-    public String getAccumulatorCron() {
-        return accumulatorCron;
-    }
-
-    public void setAccumulatorCron(final String accumulatorCron) {
-        this.accumulatorCron = accumulatorCron;
-    }
-
-    @Override
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public void setDailyDigestCron(final String dailyDigestCron) {
-        this.dailyDigestCron = dailyDigestCron;
     }
 
     @Override
