@@ -153,19 +153,27 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         }
     }
 
-    public void save(final Iterable<D> entities) {
+    public List<D> save(final Iterable<D> entities) {
         if (entities != null) {
+            final List<D> resultList = new ArrayList<>();
             for (final D entity : entities) {
-                save(entity);
+                resultList.add(save(entity));
             }
+            return resultList;
+        } else {
+            return Collections.emptyList();
         }
     }
 
-    public void save(final List<D> entities) {
+    public List<D> save(final List<D> entities) {
         if (entities != null) {
+            final List<D> resultList = new ArrayList<>(entities.size());
             for (final D entity : entities) {
-                save(entity);
+                resultList.add(save(entity));
             }
+            return resultList;
+        } else {
+            return Collections.emptyList();
         }
     }
 
