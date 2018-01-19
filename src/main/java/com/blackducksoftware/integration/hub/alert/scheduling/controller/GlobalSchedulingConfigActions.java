@@ -23,24 +23,34 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {
@@ -48,41 +58,80 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
+    private final GlobalProperties globalProperties;
+    private final ChannelTemplateManager channelTemplateManager;
+    private final NotificationRepositoryWrapper notificationRepository;
+
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
-            final ObjectTransformer objectTransformer) {
+            final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationRepositoryWrapper notificationRepository) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
+        this.globalProperties = globalProperties;
+        this.channelTemplateManager = channelTemplateManager;
+        this.notificationRepository = notificationRepository;
+    }
+
+    @Override
+    public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
+        GlobalSchedulingConfigEntity databaseEntity = null;
+        if (id != null) {
+            databaseEntity = getRepository().findOne(id);
+        } else {
+            final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
+            if (databaseEntities != null && !databaseEntities.isEmpty()) {
+                databaseEntity = databaseEntities.get(0);
+            }
+        }
+        GlobalSchedulingConfigRestModel restModel = null;
+        if (databaseEntity != null) {
+            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
+            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
+        } else {
+            restModel = new GlobalSchedulingConfigRestModel();
+        }
+        final Long accumulatorNextRun = accumulatorConfig.getMillisecondsToNextRun();
+        if (accumulatorNextRun != null) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+            restModel.setAccumulatorNextRun(String.valueOf(seconds));
+        }
+        final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
+        restModels.add(restModel);
+        return restModels;
     }
 
     @Override
     public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        if (StringUtils.isNotBlank(restModel.getAccumulatorCron())) {
-            try {
-                new CronTrigger(restModel.getAccumulatorCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("accumulatorCron", e.getMessage());
+        if (StringUtils.isNotBlank(restModel.getDailyDigestHourOfDay())) {
+            if (!StringUtils.isNumeric(restModel.getDailyDigestHourOfDay())) {
+                fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
+            } else {
+                final Integer integer = Integer.valueOf(restModel.getDailyDigestHourOfDay());
+                if (integer > 23) {
+                    fieldErrors.put("dailyDigestHourOfDay", "Must be a number less than 24");
+                }
             }
+        } else {
+            fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
         }
 
-        if (StringUtils.isNotBlank(restModel.getDailyDigestCron())) {
-            try {
-                new CronTrigger(restModel.getDailyDigestCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("dailyDigestCron", e.getMessage());
+        if (StringUtils.isNotBlank(restModel.getPurgeDataFrequencyDays())) {
+            if (!StringUtils.isNumeric(restModel.getPurgeDataFrequencyDays())) {
+                fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
+            } else {
+                final Integer integer = Integer.valueOf(restModel.getPurgeDataFrequencyDays());
+                if (integer > 8) {
+                    fieldErrors.put("purgeDataFrequencyDays", "Must be a number less than 8");
+                }
             }
+        } else {
+            fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
         }
 
-        if (StringUtils.isNotBlank(restModel.getPurgeDataCron())) {
-            try {
-                new CronTrigger(restModel.getPurgeDataCron(), TimeZone.getTimeZone("UTC"));
-            } catch (final IllegalArgumentException e) {
-                fieldErrors.put("purgeDataCron", e.getMessage());
-            }
-        }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -91,16 +140,34 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Override
     public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
-        return "Not Implemented.";
+        return null;
     }
 
     @Override
     public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
         if (restModel != null) {
-            accumulatorConfig.scheduleJobExecution(restModel.getAccumulatorCron());
-            dailyDigestBatchConfig.scheduleJobExecution(restModel.getDailyDigestCron());
-            purgeConfig.scheduleJobExecution(restModel.getPurgeDataCron());
+            final String dailyDigestHourOfDay = restModel.getDailyDigestHourOfDay();
+            final String purgeDataFrequencyDays = restModel.getPurgeDataFrequencyDays();
+
+            final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
+            final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
+            dailyDigestBatchConfig.scheduleJobExecution(dailyDigestCron);
+            purgeConfig.scheduleJobExecution(purgeDataCron);
         }
+    }
+
+    public void runAccumulator() throws Exception {
+        final AccumulatorReader reader = new AccumulatorReader(globalProperties);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties);
+        final AccumulatorWriter writer = new AccumulatorWriter(notificationRepository, channelTemplateManager);
+
+        final NotificationResults results = reader.read();
+        final DBStoreEvent event = processor.process(results);
+        final List<DBStoreEvent> events = new ArrayList<>();
+        if (event != null) {
+            events.add(event);
+        }
+        writer.write(events);
     }
 
 }
