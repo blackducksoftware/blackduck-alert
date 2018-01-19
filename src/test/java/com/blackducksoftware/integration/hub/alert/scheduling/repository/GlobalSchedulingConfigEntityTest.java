@@ -22,16 +22,14 @@ public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSch
 
     @Override
     public void assertGlobalEntityFieldsNull(final GlobalSchedulingConfigEntity entity) {
-        assertNull(entity.getAccumulatorCron());
-        assertNull(entity.getDailyDigestCron());
-        assertNull(entity.getPurgeDataCron());
+        assertNull(entity.getDailyDigestHourOfDay());
+        assertNull(entity.getPurgeDataFrequencyDays());
     }
 
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalSchedulingConfigEntity entity) {
-        assertEquals(getMockUtil().getAccumulatorCron(), entity.getAccumulatorCron());
-        assertEquals(getMockUtil().getDailyDigestCron(), entity.getDailyDigestCron());
-        assertEquals(getMockUtil().getPurgeDataCron(), entity.getPurgeDataCron());
+        assertEquals(getMockUtil().getDailyDigestHourOfDay(), entity.getDailyDigestHourOfDay());
+        assertEquals(getMockUtil().getPurgeDataFrequencyDays(), entity.getPurgeDataFrequencyDays());
     }
 
     @Override

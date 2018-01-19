@@ -26,31 +26,55 @@ package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
-    private String accumulatorCron;
-    private String dailyDigestCron;
-    private String purgeDataCron;
+    private String accumulatorNextRun;
+    private String dailyDigestHourOfDay;
+    private String dailyDigestNextRun;
+    private String purgeDataFrequencyDays;
+    private String purgeDataNextRun;
 
     public GlobalSchedulingConfigRestModel() {
 
     }
 
-    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron) {
+    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
         super(id);
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
+        this.accumulatorNextRun = accumulatorNextRun;
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
+        this.dailyDigestNextRun = dailyDigestNextRun;
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
+        this.purgeDataNextRun = purgeDataNextRun;
     }
 
-    public String getAccumulatorCron() {
-        return accumulatorCron;
+    public String getAccumulatorNextRun() {
+        return accumulatorNextRun;
     }
 
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
+    public String getDailyDigestHourOfDay() {
+        return dailyDigestHourOfDay;
     }
 
-    public String getPurgeDataCron() {
-        return purgeDataCron;
+    public String getDailyDigestNextRun() {
+        return dailyDigestNextRun;
+    }
+
+    public String getPurgeDataFrequencyDays() {
+        return purgeDataFrequencyDays;
+    }
+
+    public String getPurgeDataNextRun() {
+        return purgeDataNextRun;
+    }
+
+    public void setAccumulatorNextRun(final String accumulatorNextRun) {
+        this.accumulatorNextRun = accumulatorNextRun;
+    }
+
+    public void setDailyDigestNextRun(final String dailyDigestNextRun) {
+        this.dailyDigestNextRun = dailyDigestNextRun;
+    }
+
+    public void setPurgeDataNextRun(final String purgeDataNextRun) {
+        this.purgeDataNextRun = purgeDataNextRun;
     }
 
 }
