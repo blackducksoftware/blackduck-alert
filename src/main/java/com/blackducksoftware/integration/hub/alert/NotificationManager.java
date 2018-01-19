@@ -24,8 +24,11 @@
 package com.blackducksoftware.integration.hub.alert;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,7 +53,15 @@ public class NotificationManager {
 
     public NotificationModel saveNotification(final NotificationModel notification) {
         final NotificationEntity notificationEntity = notificationRepository.save(notification.getNotificationEntity());
-        final List<VulnerabilityEntity> vulnerabilities = vulnerabilityRepository.save(notification.getVulnerabilityList());
+        List<VulnerabilityEntity> vulnerabilities = Collections.emptyList();
+        if (notification.getVulnerabilityList() != null) {
+            final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
+            final Collection<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
+                    .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
+                    .collect(Collectors.toList());
+            vulnerabilities = vulnerabilityRepository.save(vulnerabilitiesToSave);
+        }
+
         return new NotificationModel(notificationEntity, vulnerabilities);
     }
 
