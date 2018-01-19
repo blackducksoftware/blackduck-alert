@@ -99,10 +99,10 @@ distributions {
 liquibase {
     activities {
         main {
-            changeLogFile "$projectDir/src/main/resources/db/changelog/changelog-${dbChangeLogVersion}.xml"
+            changeLogFile "$projectDir/src/main/resources/db/changelog/alert/changelog-${dbChangeLogVersion}.xml"
             url 'jdbc:h2:file:./data/alertdb'
             username 'sa'
-            defaultSchemaName 'audit'
+            defaultSchemaName 'alert'
         }
     }
 }
