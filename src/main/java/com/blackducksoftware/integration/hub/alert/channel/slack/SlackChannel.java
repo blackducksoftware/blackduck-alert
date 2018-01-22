@@ -36,6 +36,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelRestFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
@@ -54,10 +55,7 @@ import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestExcep
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
@@ -98,25 +96,20 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
         if (connection != null) {
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
-            final RequestBody body = connection.createJsonRequestBody(jsonString);
 
             final Map<String, String> requestProperties = new HashMap<>();
             requestProperties.put("Content-Type", "application/json");
 
-            final HttpUrl httpUrl = connection.createHttpUrl(slackUrl);
-            final Request request = connection.createPostRequest(httpUrl, requestProperties, body);
+            final ChannelRestFactory channelRestFactory = new ChannelRestFactory(connection, logger);
+            final Request request = channelRestFactory.createRequest(slackUrl, jsonString, requestProperties);
 
             try {
-                logger.info("Attempting to send message...");
-                final Response response = connection.createResponse(request);
-                logger.info("Successfully sent a slack message!");
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Response: " + response.toString());
-                }
-                return "Attempting to send message";
-            } catch (final IntegrationException e) {
-                throw new IntegrationRestException(400, "Failed to send Slack message", e.getMessage(), e);
+                channelRestFactory.createResponse(request);
+            } catch (final IntegrationRestException e) {
+                return e.getMessage();
             }
+
+            return "Succesfully sent Slack message!";
         } else {
             throw new IntegrationRestException(500, "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
         }
