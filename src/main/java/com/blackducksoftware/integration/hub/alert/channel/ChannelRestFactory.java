@@ -75,6 +75,8 @@ public class ChannelRestFactory {
         return request;
     }
 
+    // TODO manage with try-with
+    @SuppressWarnings("resource")
     public void sendRequest(final Request request) {
         Response response = null;
         try {
