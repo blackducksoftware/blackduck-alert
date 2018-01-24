@@ -32,7 +32,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
@@ -40,7 +39,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelRestFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
@@ -50,16 +49,12 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.gl
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import freemarker.template.TemplateException;
-import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 @Component
 public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
@@ -101,34 +96,19 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
-        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(apiUrl);
-        if (connection != null) {
-            final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
-            final RequestBody body = connection.createJsonRequestBody(jsonString);
+        final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
 
-            final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
-            final HttpUrl httpUrl = connection.createHttpUrl(urlSegments);
+        final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
 
-            final Map<String, String> map = new HashMap<>();
-            map.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
-            map.put("Content-Type", "application/json");
+        final Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
+        requestProperties.put("Content-Type", "application/json");
 
-            final Request request = connection.createPostRequest(httpUrl, map, body);
-            try {
-                logger.info("Attempting to send a HipChat message...");
-                final Response response = connection.createResponse(request);
-                logger.info("Successfully sent a HipChat message!");
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Response: " + response.toString());
-                }
-                return Integer.toString(response.code());
-            } catch (final IntegrationException e) {
-                throw new IntegrationRestException(HttpStatus.BAD_REQUEST.value(), "Failed to send a HipChat message", e.getMessage(), e);
-            }
-        } else {
-            throw new IntegrationRestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
-        }
+        final ChannelRestFactory channelRestFactory = new ChannelRestFactory(apiUrl, globalProperties, logger);
+        final Request request = channelRestFactory.createRequest(urlSegments, jsonString, requestProperties);
+
+        channelRestFactory.sendRequest(request);
+        return "Succesfully sent HipChat message!";
     }
 
     private String createHtmlMessage(final ProjectData projectData) {
