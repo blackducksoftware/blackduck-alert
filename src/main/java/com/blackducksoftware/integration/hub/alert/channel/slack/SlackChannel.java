@@ -103,11 +103,7 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
             final ChannelRestFactory channelRestFactory = new ChannelRestFactory(connection, logger);
             final Request request = channelRestFactory.createRequest(slackUrl, jsonString, requestProperties);
 
-            try {
-                channelRestFactory.createResponse(request);
-            } catch (final IntegrationRestException e) {
-                return e.getMessage();
-            }
+            channelRestFactory.createResponse(request);
 
             return "Succesfully sent Slack message!";
         } else {

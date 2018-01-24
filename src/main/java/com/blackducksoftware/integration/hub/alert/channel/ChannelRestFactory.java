@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
 import okhttp3.HttpUrl;
 import okhttp3.Request;
@@ -40,7 +39,7 @@ public class ChannelRestFactory {
         return request;
     }
 
-    public void createResponse(final Request request) throws IntegrationRestException {
+    public void createResponse(final Request request) {
         Response response = null;
         try {
             logger.info("Attempting to send message...");
@@ -50,7 +49,7 @@ public class ChannelRestFactory {
                 logger.trace("Response: " + response.toString());
             }
         } catch (final IntegrationException e) {
-            throw new IntegrationRestException(400, "Failed to send message", e.getMessage(), e);
+            logger.error("There was a problem generating a response", e);
         } finally {
             if (response != null) {
                 response.close();
