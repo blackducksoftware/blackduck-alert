@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class SuppoertedChannelsTest {
+public class SupportedChannelsTest {
 
     @Test
     public void testSupportedChannels() {
