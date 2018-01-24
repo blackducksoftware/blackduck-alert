@@ -27,9 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
 import okhttp3.HttpUrl;
 import okhttp3.Request;
@@ -40,9 +43,19 @@ public class ChannelRestFactory {
     private final RestConnection restConnection;
     private final Logger logger;
 
-    public ChannelRestFactory(final RestConnection restConnection, final Logger logger) {
-        this.restConnection = restConnection;
+    public ChannelRestFactory(final String url, final GlobalProperties globalProperties, final Logger logger) throws IntegrationRestException {
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(url);
         this.logger = logger;
+
+        verifyRestConnection();
+    }
+
+    private void verifyRestConnection() throws IntegrationRestException {
+        if (restConnection == null) {
+            final String connectionError = "Rest connection could not be created.";
+            throw new IntegrationRestException(HttpStatus.INTERNAL_SERVER_ERROR.value(), connectionError, connectionError);
+        }
     }
 
     public Request createRequest(final List<String> urlSegments, final String jsonBody, final Map<String, String> requestProperties) {
@@ -62,7 +75,7 @@ public class ChannelRestFactory {
         return request;
     }
 
-    public void createResponse(final Request request) {
+    public void sendRequest(final Request request) {
         Response response = null;
         try {
             logger.info("Attempting to send message...");
@@ -72,7 +85,7 @@ public class ChannelRestFactory {
                 logger.trace("Response: " + response.toString());
             }
         } catch (final IntegrationException e) {
-            logger.error("There was a problem generating a response", e);
+            logger.error("There was a problem sending request", e);
         } finally {
             if (response != null) {
                 response.close();

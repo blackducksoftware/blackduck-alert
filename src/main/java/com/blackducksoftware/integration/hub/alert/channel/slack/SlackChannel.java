@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelRestFactory;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
@@ -50,7 +49,6 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -92,23 +90,16 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
 
     private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
         final String slackUrl = config.getWebhook();
-        final ChannelRestConnectionFactory restConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final RestConnection connection = restConnectionFactory.createUnauthenticatedRestConnection(slackUrl);
-        if (connection != null) {
-            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
+        final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
-            final Map<String, String> requestProperties = new HashMap<>();
-            requestProperties.put("Content-Type", "application/json");
+        final Map<String, String> requestProperties = new HashMap<>();
+        requestProperties.put("Content-Type", "application/json");
 
-            final ChannelRestFactory channelRestFactory = new ChannelRestFactory(connection, logger);
-            final Request request = channelRestFactory.createRequest(slackUrl, jsonString, requestProperties);
+        final ChannelRestFactory channelRestFactory = new ChannelRestFactory(slackUrl, globalProperties, logger);
+        final Request request = channelRestFactory.createRequest(slackUrl, jsonString, requestProperties);
 
-            channelRestFactory.createResponse(request);
-
-            return "Succesfully sent Slack message!";
-        } else {
-            throw new IntegrationRestException(500, "No message will be sent because a connection was not established.", "No message will be sent because a connection was not established.");
-        }
+        channelRestFactory.sendRequest(request);
+        return "Succesfully sent Slack message!";
     }
 
     protected String createMessage(final ProjectData projectData) {
