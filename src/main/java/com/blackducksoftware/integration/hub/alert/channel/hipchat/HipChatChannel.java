@@ -112,11 +112,8 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
 
             final ChannelRestFactory channelRestFactory = new ChannelRestFactory(connection, logger);
             final Request request = channelRestFactory.createRequest(urlSegments, jsonString, requestProperties);
-            try {
-                channelRestFactory.createResponse(request);
-            } catch (final IntegrationException e) {
-                return e.getMessage();
-            }
+
+            channelRestFactory.createResponse(request);
 
             return "Succesfully sent HipChat message!";
         } else {
