@@ -14,6 +14,8 @@ package com.blackducksoftware.integration.hub.alert.hub.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.junit.Test;
+
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.GlobalRestModelTest;
@@ -51,5 +53,15 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     @Override
     public MockGlobalHubRestModel getMockUtil() {
         return new MockGlobalHubRestModel();
+    }
+
+    @Test
+    public void testSetHubProxyPassword() {
+        final GlobalHubConfigRestModel model = getMockUtil().createEmptyGlobalRestModel();
+
+        final String expectedPassword = "expected";
+        model.setHubProxyPassword(expectedPassword);
+
+        assertEquals(expectedPassword, model.getHubProxyPassword());
     }
 }

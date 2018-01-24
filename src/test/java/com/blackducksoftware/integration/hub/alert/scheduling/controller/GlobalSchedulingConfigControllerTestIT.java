@@ -11,12 +11,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
 
 public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
 
     @Autowired
     GlobalSchedulingRepository globalSchedulingRepository;
+
+    @Autowired
+    GlobalSchedulingConfigActions globalSchedulingConfigActions;
 
     @Override
     public GlobalSchedulingRepository getGlobalEntityRepository() {
@@ -39,6 +44,15 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testRunAccumulator() throws Exception {
+        globalEntityRepository.deleteAll();
+        final String accumulatorRunRestUrl = restUrl + "/accumulator/run";
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(accumulatorRunRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
     @Override
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
@@ -51,4 +65,10 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
+
+    @Override
+    public ConfigController<GlobalSchedulingConfigRestModel> getController() {
+        return new GlobalSchedulingConfigController(globalSchedulingConfigActions, new ObjectTransformer());
+    }
+
 }

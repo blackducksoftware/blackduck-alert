@@ -16,33 +16,27 @@ import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.
 import com.google.gson.JsonObject;
 
 public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSchedulingConfigEntity> {
-    private final String accumulatorCron;
-    private final String dailyDigestCron;
-    private final String purgeDataCron;
+    private final String dailyDigestHourOfDay;
+    private final String purgeDataFrequencyDays;
     private final Long id;
 
     public MockGlobalSchedulingEntity() {
-        this("1 1 1 1 1 1", "2 2 2 2 2 2", "3 3 3 3 3 3", 1L);
+        this("2", "5", 1L);
     }
 
-    private MockGlobalSchedulingEntity(final String accumulatorCron, final String dailyDigestCron, final String purgeDataCron, final Long id) {
+    private MockGlobalSchedulingEntity(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays, final Long id) {
         super();
-        this.accumulatorCron = accumulatorCron;
-        this.dailyDigestCron = dailyDigestCron;
-        this.purgeDataCron = purgeDataCron;
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
         this.id = id;
     }
 
-    public String getAccumulatorCron() {
-        return accumulatorCron;
+    public String getDailyDigestHourOfDay() {
+        return dailyDigestHourOfDay;
     }
 
-    public String getDailyDigestCron() {
-        return dailyDigestCron;
-    }
-
-    public String getPurgeDataCron() {
-        return purgeDataCron;
+    public String getPurgeDataFrequencyDays() {
+        return purgeDataFrequencyDays;
     }
 
     @Override
@@ -52,7 +46,7 @@ public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSched
 
     @Override
     public GlobalSchedulingConfigEntity createGlobalEntity() {
-        final GlobalSchedulingConfigEntity entity = new GlobalSchedulingConfigEntity(accumulatorCron, dailyDigestCron, purgeDataCron);
+        final GlobalSchedulingConfigEntity entity = new GlobalSchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
         entity.setId(id);
         return entity;
     }
@@ -65,9 +59,8 @@ public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSched
     @Override
     public String getGlobalEntityJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("accumulatorCron", accumulatorCron);
-        json.addProperty("dailyDigestCron", dailyDigestCron);
-        json.addProperty("purgeDataCron", purgeDataCron);
+        json.addProperty("dailyDigestHourOfDay", dailyDigestHourOfDay);
+        json.addProperty("purgeDataFrequencyDays", purgeDataFrequencyDays);
         json.addProperty("id", id);
         return json.toString();
     }

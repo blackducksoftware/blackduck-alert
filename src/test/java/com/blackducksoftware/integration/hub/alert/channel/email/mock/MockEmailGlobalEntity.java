@@ -16,22 +16,22 @@ import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobal
 import com.google.gson.JsonObject;
 
 public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfigEntity> {
-    private final String mailSmtpHost;
-    private final String mailSmtpUser;
-    private final String mailSmtpPassword;
-    private final boolean mailSmtpPasswordIsSet;
-    private final Integer mailSmtpPort;
-    private final Integer mailSmtpConnectionTimeout;
-    private final Integer mailSmtpTimeout;
-    private final String mailSmtpFrom;
-    private final String mailSmtpLocalhost;
-    private final Boolean mailSmtpEhlo;
-    private final Boolean mailSmtpAuth;
-    private final String mailSmtpDnsNotify;
-    private final String mailSmtpDnsRet;
-    private final Boolean mailSmtpAllow8bitmime;
-    private final Boolean mailSmtpSendPartial;
-    private final Long id;
+    private String mailSmtpHost;
+    private String mailSmtpUser;
+    private String mailSmtpPassword;
+    private boolean mailSmtpPasswordIsSet;
+    private Integer mailSmtpPort;
+    private Integer mailSmtpConnectionTimeout;
+    private Integer mailSmtpTimeout;
+    private String mailSmtpFrom;
+    private String mailSmtpLocalhost;
+    private Boolean mailSmtpEhlo;
+    private Boolean mailSmtpAuth;
+    private String mailSmtpDnsNotify;
+    private String mailSmtpDnsRet;
+    private Boolean mailSmtpAllow8bitmime;
+    private Boolean mailSmtpSendPartial;
+    private Long id;
 
     public MockEmailGlobalEntity() {
         this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, 99, 400, 500, "MailSmtpFrom", "MailSmtpLocalhost", true, false, "MailSmtpDnsNotify", "MailSmtpDnsRet", true, false, 1L);
@@ -117,6 +117,70 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
 
     public Boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
+    }
+
+    public void setMailSmtpHost(final String mailSmtpHost) {
+        this.mailSmtpHost = mailSmtpHost;
+    }
+
+    public void setMailSmtpUser(final String mailSmtpUser) {
+        this.mailSmtpUser = mailSmtpUser;
+    }
+
+    public void setMailSmtpPassword(final String mailSmtpPassword) {
+        this.mailSmtpPassword = mailSmtpPassword;
+    }
+
+    public void setMailSmtpPasswordIsSet(final boolean mailSmtpPasswordIsSet) {
+        this.mailSmtpPasswordIsSet = mailSmtpPasswordIsSet;
+    }
+
+    public void setMailSmtpPort(final Integer mailSmtpPort) {
+        this.mailSmtpPort = mailSmtpPort;
+    }
+
+    public void setMailSmtpConnectionTimeout(final Integer mailSmtpConnectionTimeout) {
+        this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
+    }
+
+    public void setMailSmtpTimeout(final Integer mailSmtpTimeout) {
+        this.mailSmtpTimeout = mailSmtpTimeout;
+    }
+
+    public void setMailSmtpFrom(final String mailSmtpFrom) {
+        this.mailSmtpFrom = mailSmtpFrom;
+    }
+
+    public void setMailSmtpLocalhost(final String mailSmtpLocalhost) {
+        this.mailSmtpLocalhost = mailSmtpLocalhost;
+    }
+
+    public void setMailSmtpEhlo(final Boolean mailSmtpEhlo) {
+        this.mailSmtpEhlo = mailSmtpEhlo;
+    }
+
+    public void setMailSmtpAuth(final Boolean mailSmtpAuth) {
+        this.mailSmtpAuth = mailSmtpAuth;
+    }
+
+    public void setMailSmtpDnsNotify(final String mailSmtpDnsNotify) {
+        this.mailSmtpDnsNotify = mailSmtpDnsNotify;
+    }
+
+    public void setMailSmtpDnsRet(final String mailSmtpDnsRet) {
+        this.mailSmtpDnsRet = mailSmtpDnsRet;
+    }
+
+    public void setMailSmtpAllow8bitmime(final Boolean mailSmtpAllow8bitmime) {
+        this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
+    }
+
+    public void setMailSmtpSendPartial(final Boolean mailSmtpSendPartial) {
+        this.mailSmtpSendPartial = mailSmtpSendPartial;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

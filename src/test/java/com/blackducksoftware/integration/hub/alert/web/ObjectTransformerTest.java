@@ -18,6 +18,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +36,14 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
 public class ObjectTransformerTest {
 
@@ -141,18 +146,6 @@ public class ObjectTransformerTest {
     }
 
     @Test
-    public void testStringToInteger() throws Exception {
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        assertNull(objectTransformer.stringToInteger(null));
-        assertNull(objectTransformer.stringToInteger(""));
-        assertNull(objectTransformer.stringToInteger("false"));
-        assertNull(objectTransformer.stringToInteger("hello"));
-        assertEquals(Integer.valueOf(2), objectTransformer.stringToInteger("2"));
-        assertEquals(Integer.valueOf(212), objectTransformer.stringToInteger("  212"));
-        assertEquals(Integer.valueOf(567), objectTransformer.stringToInteger("567   "));
-    }
-
-    @Test
     public void testStringToLong() throws Exception {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         assertNull(objectTransformer.stringToLong(null));
@@ -189,6 +182,7 @@ public class ObjectTransformerTest {
         assertEquals("false", objectTransformer.objectToString(false));
         assertEquals("hello", objectTransformer.objectToString("hello"));
         assertEquals("123", objectTransformer.objectToString(123));
+        assertEquals("REAL_TIME", objectTransformer.objectToString(DigestTypeEnum.REAL_TIME));
     }
 
     @Test
@@ -239,6 +233,58 @@ public class ObjectTransformerTest {
         } catch (final Exception e) {
             final String expectedMessage = String.format("Could not transform object %s to %s:", TestDatabaseEntity.class.getSimpleName(), TestConfigRestModelInstantiationException.class.getSimpleName());
             assertTrue(e.getMessage().contains(expectedMessage));
+        }
+    }
+
+    @Test
+    public void specificDatabaseEntityConversionTest() throws AlertException {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+
+        final TestSpecificDatabaseEntity entity = new TestSpecificDatabaseEntity();
+        entity.date = new Date(12345l);
+        entity.digestType = DigestTypeEnum.DAILY;
+        entity.status = StatusEnum.PENDING;
+
+        final TestSpecificConfigRestModel restModel = objectTransformer.convert(entity, TestSpecificConfigRestModel.class);
+        assertNotNull(restModel);
+        assertEquals(entity.date.toString(), restModel.date);
+        assertEquals(entity.digestType.toString(), restModel.digestType);
+        assertTrue(entity.status.toString().equalsIgnoreCase(restModel.status));
+    }
+
+    @Test
+    public void specificRestModelConversionTest() throws AlertException {
+        final ObjectTransformer objectTransformer = new ObjectTransformer();
+
+        final TestSpecificConfigRestModel restModel = new TestSpecificConfigRestModel();
+        restModel.date = new Date(12345l).toString();
+        restModel.digestType = DigestTypeEnum.DAILY.name();
+        restModel.status = StatusEnum.PENDING.toString();
+
+        final TestSpecificDatabaseEntity entity = objectTransformer.convert(restModel, TestSpecificDatabaseEntity.class);
+        assertNotNull(restModel);
+        assertEquals(restModel.date, entity.date.toString());
+        assertEquals(restModel.digestType, entity.digestType.name());
+        assertTrue(restModel.status.equalsIgnoreCase(entity.status.toString()));
+    }
+
+    public static class TestSpecificDatabaseEntity extends DatabaseEntity {
+        public Date date;
+        public DigestTypeEnum digestType;
+        public NotificationCategoryEnum notificationCategory;
+        public StatusEnum status;
+
+        public TestSpecificDatabaseEntity() {
+        }
+    }
+
+    public static class TestSpecificConfigRestModel extends ConfigRestModel {
+        public String date;
+        public String digestType;
+        public String notificationCategory;
+        public String status;
+
+        public TestSpecificConfigRestModel() {
         }
     }
 

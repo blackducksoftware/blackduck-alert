@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -53,6 +54,27 @@ public class DistributionChannelManagerTestIT<E extends AbstractChannelEvent, G 
         // DO NOT DELETE THIS TEST
         // This test exists to ensure that when a new channel is created, its necessary pieces are created as well.
         assertEquals(channelList.size(), channelManagerList.size());
+    }
+
+    @Test
+    public void getGlobalRepositoryTest() {
+        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
+            assertNotNull(manager.getGlobalRepository());
+        }
+    }
+
+    @Test
+    public void getLocalRepositoryTest() {
+        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
+            assertNotNull(manager.getLocalRepository());
+        }
+    }
+
+    @Test
+    public void getDatabaseEntityClassTest() {
+        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
+            assertNotNull(manager.getDatabaseEntityClass());
+        }
     }
 
 }
