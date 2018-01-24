@@ -50,7 +50,7 @@ public class HipChatChannelTestIT extends ChannelTest {
 
         hipChatChannel.sendMessage(event, config);
 
-        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a HipChat message!");
+        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a message!");
 
         assertTrue(responseLine);
     }
