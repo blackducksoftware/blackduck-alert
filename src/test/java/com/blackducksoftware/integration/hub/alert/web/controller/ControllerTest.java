@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 
 import javax.transaction.Transactional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -95,6 +96,11 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         entityRepository.save(entity);
 
         restUrl = getRestControllerUrl();
+    }
+
+    @After
+    public void cleanup() {
+        entityRepository.deleteAllInBatch();
     }
 
     @Test

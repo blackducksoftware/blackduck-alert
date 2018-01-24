@@ -11,14 +11,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email.controller.global;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigActions;
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalActionsTest;
 
@@ -54,6 +57,29 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
     @Override
     public MockEmailGlobalRestModel getGlobalRestModelMockUtil() {
         return new MockEmailGlobalRestModel();
+    }
+
+    @Override
+    public void testInvalidConfig() {
+        final MockEmailGlobalRestModel mockUtil = new MockEmailGlobalRestModel();
+        mockUtil.setMailSmtpPort("qq");
+        mockUtil.setMailSmtpConnectionTimeout("qq");
+        mockUtil.setMailSmtpTimeout("qq");
+        mockUtil.setMailSmtpEhlo("n");
+        mockUtil.setMailSmtpAuth("n");
+        mockUtil.setMailSmtpAllow8bitmime("n");
+        mockUtil.setMailSmtpSendPartial("n");
+        final GlobalEmailConfigRestModel restModel = mockUtil.createGlobalRestModel();
+
+        String result = null;
+        try {
+            result = configActions.validateConfig(restModel);
+            fail();
+        } catch (final AlertFieldException e) {
+            assertTrue(true);
+        }
+
+        assertNull(result);
     }
 
 }

@@ -23,8 +23,13 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -90,6 +95,27 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
                 logger.info("Un-Scheduling " + this.getClass().getSimpleName());
                 future.cancel(false);
             }
+        }
+    }
+
+    public Long getMillisecondsToNextRun() {
+        if (future == null || future.isCancelled() || future.isDone()) {
+            return null;
+        } else {
+            return future.getDelay(TimeUnit.MILLISECONDS);
+        }
+    }
+
+    public String getFormatedNextRunTime() {
+        final Long msToNextRun = getMillisecondsToNextRun();
+        if (msToNextRun == null) {
+            return null;
+        } else {
+            final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
+            ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun, ChronoUnit.MILLIS);
+            nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
+            final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern("MM/dd/yyy hh:mm a"));
+            return formattedString + " UTC";
         }
     }
 

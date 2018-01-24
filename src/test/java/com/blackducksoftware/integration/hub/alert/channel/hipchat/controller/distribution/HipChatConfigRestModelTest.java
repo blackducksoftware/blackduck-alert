@@ -15,9 +15,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.RestModelTest;
+import com.blackducksoftware.integration.hub.alert.web.model.CommonDistributionRestModelTest;
 
-public class HipChatConfigRestModelTest extends RestModelTest<HipChatDistributionRestModel> {
+public class HipChatConfigRestModelTest extends CommonDistributionRestModelTest<HipChatDistributionRestModel> {
 
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
