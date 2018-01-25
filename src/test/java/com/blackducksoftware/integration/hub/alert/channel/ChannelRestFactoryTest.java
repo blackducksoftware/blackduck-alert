@@ -42,14 +42,4 @@ public class ChannelRestFactoryTest {
 
         assertTrue(outputLogger.isLineContainingText("There was a problem sending request"));
     }
-
-    @Test
-    public void testResponseException2() throws IntegrationRestException, IOException {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final ChannelRestFactory channelRestFactory = new ChannelRestFactory("https:url", globalProperties, logger);
-        final Request request = channelRestFactory.createRequest("https:url", "", new HashMap<>());
-        channelRestFactory.sendRequest(request);
-
-        assertTrue(outputLogger.isLineContainingText("There was a problem sending request"));
-    }
 }
