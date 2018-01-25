@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.digest;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -78,14 +79,14 @@ public class DigestRemovalProcessorTest {
         final NotificationModel model1 = new NotificationModel(notification1, createVulnerabilityList());
         final NotificationModel model2 = new NotificationModel(notification2, createVulnerabilityList());
         final NotificationModel model3 = new NotificationModel(notification3, createVulnerabilityList());
-        final NotificationModel model4 = new NotificationModel(notification4, createVulnerabilityList());
+        final NotificationModel model4 = new NotificationModel(notification4, Collections.emptyList());
 
         return Arrays.asList(model1, model2, model1, model3, model2, model4);
     }
 
     private List<VulnerabilityEntity> createVulnerabilityList() {
         final VulnerabilityEntity vuln1 = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, 1L);
-        final VulnerabilityEntity vuln2 = new VulnerabilityEntity("id2", VulnerabilityOperationEnum.DELETE, 1L);
+        final VulnerabilityEntity vuln2 = new VulnerabilityEntity("id2", VulnerabilityOperationEnum.DELETE, 2L);
         final VulnerabilityEntity vuln3 = new VulnerabilityEntity("id3", VulnerabilityOperationEnum.UPDATE, 1L);
 
         return Arrays.asList(vuln1, vuln2, vuln1, vuln3, vuln2);
