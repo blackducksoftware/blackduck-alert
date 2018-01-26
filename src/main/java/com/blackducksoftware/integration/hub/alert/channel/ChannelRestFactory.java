@@ -75,23 +75,13 @@ public class ChannelRestFactory {
         return request;
     }
 
-    // TODO manage with try-with
-    @SuppressWarnings("resource")
     public void sendRequest(final Request request) {
-        Response response = null;
-        try {
-            logger.info("Attempting to send message...");
-            response = restConnection.createResponse(request);
+        logger.info("Attempting to send message...");
+        try (Response response = restConnection.createResponse(request)) {
             logger.info("Successfully sent a message!");
-            if (logger.isTraceEnabled()) {
-                logger.trace("Response: " + response.toString());
-            }
+            logger.trace("Response: " + response.toString());
         } catch (final IntegrationException e) {
             logger.error("There was a problem sending request", e);
-        } finally {
-            if (response != null) {
-                response.close();
-            }
         }
 
     }
