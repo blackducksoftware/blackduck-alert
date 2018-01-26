@@ -48,7 +48,7 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
         // TODO decide how to test the API key
-        return "Not implemented.";
+        return null;
     }
 
 }
