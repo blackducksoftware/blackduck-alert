@@ -16,8 +16,8 @@ import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;
 
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
-    private final String groupName;
-    private final Long id;
+    private String groupName;
+    private Long id;
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
 
@@ -35,6 +35,22 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
 
     public String getGroupName() {
         return groupName;
+    }
+
+    public String getEmailTemplateLogoImage() {
+        return emailTemplateLogoImage;
+    }
+
+    public String getEmailSubjectLine() {
+        return emailSubjectLine;
+    }
+
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

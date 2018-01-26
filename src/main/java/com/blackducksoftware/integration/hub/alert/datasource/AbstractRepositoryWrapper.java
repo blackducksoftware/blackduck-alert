@@ -73,16 +73,8 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().deleteAll();
     }
 
-    public void delete(final Iterable<D> entities) {
-        getRepository().delete(entities);
-    }
-
     public void delete(final List<D> entities) {
         getRepository().delete(entities);
-    }
-
-    public void deleteInBatch(final Iterable<D> entities) {
-        getRepository().deleteInBatch(entities);
     }
 
     public void deleteInBatch(final List<D> entities) {
@@ -96,24 +88,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         } catch (final EncryptionException ex) {
             getLogger().error("Error getting entity ", ex);
             return null;
-        }
-    }
-
-    public List<D> findAll(final Iterable<ID> idList) {
-        final List<D> entityList = getRepository().findAll(idList);
-        if (entityList == null) {
-            return Collections.emptyList();
-        } else {
-            try {
-                final List<D> returnList = new ArrayList<>(entityList.size());
-                for (final D entity : entityList) {
-                    returnList.add(decryptSensitiveData(entity));
-                }
-                return returnList;
-            } catch (final EncryptionException ex) {
-                getLogger().error("Error finding all entities", ex);
-                return Collections.emptyList();
-            }
         }
     }
 
@@ -149,14 +123,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
             } catch (final EncryptionException ex) {
                 getLogger().error("Error finding all entities", ex);
                 return Collections.emptyList();
-            }
-        }
-    }
-
-    public void save(final Iterable<D> entities) {
-        if (entities != null) {
-            for (final D entity : entities) {
-                save(entity);
             }
         }
     }

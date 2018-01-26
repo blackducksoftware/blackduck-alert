@@ -188,7 +188,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     public void testChannelTestConfig() throws Exception {
         final String actual = configActions.channelTestConfig(null);
 
-        assertNotNull(actual);
+        assertNull(actual);
     }
 
 }
