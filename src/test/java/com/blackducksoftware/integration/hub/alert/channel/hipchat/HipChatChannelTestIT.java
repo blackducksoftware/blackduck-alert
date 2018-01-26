@@ -26,6 +26,7 @@ import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRe
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
@@ -36,7 +37,8 @@ public class HipChatChannelTestIT extends ChannelTest {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
-        HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, globalProperties, null, null, null);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
 
         final ProjectData data = createProjectData("Integration test project");
         final HipChatEvent event = new HipChatEvent(data, null);
@@ -50,7 +52,7 @@ public class HipChatChannelTestIT extends ChannelTest {
 
         hipChatChannel.sendMessage(event, config);
 
-        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a message!");
+        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a hipchat_channel message!");
 
         assertTrue(responseLine);
     }
