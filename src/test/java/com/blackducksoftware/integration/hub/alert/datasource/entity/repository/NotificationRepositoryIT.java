@@ -80,22 +80,6 @@ public class NotificationRepositoryIT {
     }
 
     @Test
-    public void testSaveEntityWithVulnerabilities() throws Exception {
-        final NotificationEntity savedEntity = createEntity("2017-10-30T14:00:00.000Z");
-        final long count = repository.count();
-        assertEquals(1, count);
-        final NotificationEntity foundEntity = repository.findOne(savedEntity.getId());
-        assertEquals(savedEntity.getEventKey(), foundEntity.getEventKey());
-        assertEquals(savedEntity.getNotificationType(), foundEntity.getNotificationType());
-        assertEquals(savedEntity.getProjectName(), foundEntity.getProjectName());
-        assertEquals(savedEntity.getProjectVersion(), foundEntity.getProjectVersion());
-        assertEquals(savedEntity.getComponentName(), foundEntity.getComponentName());
-        assertEquals(savedEntity.getComponentVersion(), foundEntity.getComponentVersion());
-        assertEquals(savedEntity.getPolicyRuleName(), foundEntity.getPolicyRuleName());
-        assertEquals(savedEntity.getPolicyRuleUser(), foundEntity.getPolicyRuleUser());
-    }
-
-    @Test
     public void testFindByDate() throws Exception {
         final Set<String> validResultDates = new HashSet<>();
         NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
