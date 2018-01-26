@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
@@ -47,7 +46,6 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -58,13 +56,10 @@ import okhttp3.Request;
 public class HipChatChannel extends RestDistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
-
     @Autowired
     public HipChatChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final HipChatDistributionRepositoryWrapper hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class);
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
+        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class, channelRestConnectionFactory);
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -74,7 +69,25 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public String createHtmlMessage(final ProjectData projectData) {
+    public String getApiUrl() {
+        return HIP_CHAT_API;
+    }
+
+    @Override
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final ProjectData projectData) {
+        final String htmlMessage = createHtmlMessage(projectData);
+        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+
+        final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
+
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
+        requestHeaders.put("Content-Type", "application/json");
+
+        return channelRequestHelper.createMessageRequest(urlSegments, requestHeaders, jsonString);
+    }
+
+    private String createHtmlMessage(final ProjectData projectData) {
         try {
             // TODO determine the actual template location for deployment
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates");
@@ -88,24 +101,6 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
         } catch (final IOException | TemplateException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public RestConnection createChannelApiConnection() throws IntegrationException {
-        return channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
-    }
-
-    @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final String htmlMessage) {
-        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
-
-        final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
-
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
-        requestHeaders.put("Content-Type", "application/json");
-
-        return channelRequestHelper.createMessageRequest(urlSegments, requestHeaders, jsonString);
     }
 
     private String getJsonString(final String htmlMessage, final String from, final boolean notify, final String color) {
