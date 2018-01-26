@@ -48,10 +48,6 @@ public class ChannelRequestHelper {
         return restConnection.createPostRequest(httpUrl, headers, body);
     }
 
-    public void sendMessageRequest(final Request request) throws IntegrationException {
-        sendMessageRequest(request, "channel");
-    }
-
     public void sendMessageRequest(final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
         final Response response = sendGenericRequest(request);
@@ -61,11 +57,15 @@ public class ChannelRequestHelper {
     }
 
     public Response sendGenericRequest(final Request request) throws IntegrationException {
-        final Response response = restConnection.createResponse(request);
-        if (logger.isTraceEnabled()) {
+        Response response = null;
+        try {
+            response = restConnection.createResponse(request);
             logger.trace("Response: " + response.toString());
+            return response;
+        } finally {
+            if (response != null && response.body() != null) {
+                response.body().close();
+            }
         }
-        response.body().close();
-        return response;
     }
 }
