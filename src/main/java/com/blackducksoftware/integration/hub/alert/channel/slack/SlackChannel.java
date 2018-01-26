@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
@@ -47,7 +46,6 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -57,13 +55,10 @@ import okhttp3.Request;
 public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
     public static final String SLACK_API = "https://hooks.slack.com";
 
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
-
     @Autowired
     public SlackChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
+        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class, channelRestConnectionFactory);
     }
 
     @JmsListener(destination = SupportedChannels.SLACK)
@@ -73,13 +68,14 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     }
 
     @Override
-    public RestConnection createChannelApiConnection() throws IntegrationException {
-        return channelRestConnectionFactory.createUnauthenticatedRestConnection(SLACK_API);
+    public String getApiUrl() {
+        return SLACK_API;
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final String htmlMessage) {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final ProjectData projectData) {
         final String slackUrl = config.getWebhook();
+        final String htmlMessage = createHtmlMessage(projectData);
         final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
         final Map<String, String> requestHeaders = new HashMap<>();
@@ -88,8 +84,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
         return channelRequestHelper.createMessageRequest(slackUrl, requestHeaders, jsonString);
     }
 
-    @Override
-    public String createHtmlMessage(final ProjectData projectData) {
+    private String createHtmlMessage(final ProjectData projectData) {
         final StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(projectData.getProjectName());
         messageBuilder.append(" > ");

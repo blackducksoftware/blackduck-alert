@@ -32,19 +32,21 @@ import okhttp3.Request;
 public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<E, G, C> {
     private static final Logger logger = LoggerFactory.getLogger(RestDistributionChannel.class);
 
+    final ChannelRestConnectionFactory channelRestConnectionFactory;
+
     public RestDistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz) {
+            final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, clazz);
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
     public void sendMessage(final E event, final C config) {
-        final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
-            final RestConnection restConnection = createChannelApiConnection();
+            final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl());
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
 
-            final Request request = createRequest(channelRequestHelper, config, htmlMessage);
+            final Request request = createRequest(channelRequestHelper, config, event.getProjectData());
             channelRequestHelper.sendMessageRequest(request, event.getTopic());
             setAuditEntrySuccess(event.getAuditEntryId());
         } catch (final IntegrationException e) {
@@ -60,10 +62,8 @@ public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G 
         }
     }
 
-    public abstract RestConnection createChannelApiConnection() throws IntegrationException;
+    public abstract String getApiUrl();
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final String htmlMessage);
-
-    public abstract String createHtmlMessage(final ProjectData projectData);
+    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final ProjectData projectData);
 
 }
