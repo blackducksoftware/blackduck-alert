@@ -58,7 +58,7 @@ public class TestProperties {
 
     private void populatePropertiesFromEnv() {
         for (final TestPropertyKey key : TestPropertyKey.values()) {
-            final String prop = System.getenv(key.getPropertyKey());
+            final String prop = System.getenv(key.name());
             if (prop != null && !prop.isEmpty()) {
                 properties.put(key.getPropertyKey(), prop);
             }

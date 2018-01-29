@@ -12,6 +12,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -43,6 +44,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
 @WebAppConfiguration
+@TestPropertySource(locations = "classpath:spring-test.properties")
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class AuditEntryControllerTestIT {
 
