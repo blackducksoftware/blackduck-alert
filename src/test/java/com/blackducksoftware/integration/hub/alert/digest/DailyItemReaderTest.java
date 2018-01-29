@@ -13,8 +13,8 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class DailyItemReaderTest {
 
@@ -35,42 +35,42 @@ public class DailyItemReaderTest {
 
     @Test
     public void testRead() throws UnexpectedInputException, ParseException, NonTransientResourceException, Exception {
-        final NotificationRepositoryWrapper notificationRepositoryWrapper = Mockito.mock(NotificationRepositoryWrapper.class);
-        final DailyItemReader dailyItemReader = new DailyItemReader(notificationRepositoryWrapper);
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DailyItemReader dailyItemReader = new DailyItemReader(notificationManager);
 
-        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(new NotificationEntity()));
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(new NotificationModel(null, null)));
 
-        final List<NotificationEntity> notificationList = dailyItemReader.read();
+        final List<NotificationModel> notificationList = dailyItemReader.read();
 
         assertTrue(!notificationList.isEmpty());
 
-        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
 
-        final List<NotificationEntity> hasReadNotificationList = dailyItemReader.read();
+        final List<NotificationModel> hasReadNotificationList = dailyItemReader.read();
 
         assertNull(hasReadNotificationList);
     }
 
     @Test
     public void testReadNull() throws Exception {
-        final NotificationRepositoryWrapper notificationRepositoryWrapper = Mockito.mock(NotificationRepositoryWrapper.class);
-        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
 
-        final DailyItemReader dailyItemReaderNull = new DailyItemReader(notificationRepositoryWrapper);
+        final DailyItemReader dailyItemReaderNull = new DailyItemReader(notificationManager);
 
-        final List<NotificationEntity> nullNotificationList = dailyItemReaderNull.read();
+        final List<NotificationModel> nullNotificationList = dailyItemReaderNull.read();
 
         assertNull(nullNotificationList);
     }
 
     @Test
     public void testReadException() throws Exception {
-        final NotificationRepositoryWrapper notificationRepositoryWrapper = Mockito.mock(NotificationRepositoryWrapper.class);
-        Mockito.when(notificationRepositoryWrapper.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(null);
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(null);
 
-        final DailyItemReader dailyItemReaderException = new DailyItemReader(notificationRepositoryWrapper);
+        final DailyItemReader dailyItemReaderException = new DailyItemReader(notificationManager);
 
-        final List<NotificationEntity> nullNotificationList = dailyItemReaderException.read();
+        final List<NotificationModel> nullNotificationList = dailyItemReaderException.read();
         assertNull(nullNotificationList);
     }
 }

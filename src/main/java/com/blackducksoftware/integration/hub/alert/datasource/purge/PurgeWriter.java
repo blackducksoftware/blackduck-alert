@@ -31,26 +31,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
-public class PurgeWriter implements ItemWriter<List<NotificationEntity>> {
+public class PurgeWriter implements ItemWriter<List<NotificationModel>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeWriter.class);
-    private final NotificationRepositoryWrapper notificationRepository;
+    private final NotificationManager notificationManager;
 
-    public PurgeWriter(final NotificationRepositoryWrapper notificationRepository) {
-        this.notificationRepository = notificationRepository;
+    public PurgeWriter(final NotificationManager notificationManager) {
+        this.notificationManager = notificationManager;
     }
 
     @Override
-    public void write(final List<? extends List<NotificationEntity>> items) throws Exception {
+    public void write(final List<? extends List<NotificationModel>> items) throws Exception {
         try {
             logger.info("Starting purge of notifications");
             items.forEach(entityList -> {
                 if (entityList != null && !entityList.isEmpty()) {
                     logger.info("Purging {} notifications.", entityList.size());
-                    notificationRepository.deleteInBatch(entityList);
+                    notificationManager.deleteNotificationList(entityList);
                 }
             });
         } catch (final Exception ex) {

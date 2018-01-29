@@ -33,11 +33,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
 
@@ -51,9 +51,9 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationRepositoryWrapper notificationRepository, final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
+            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
             final ChannelTemplateManager channelTemplateManager) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
+        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;
     }
@@ -70,7 +70,7 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Override
     public AccumulatorWriter writer() {
-        return new AccumulatorWriter(notificationRepository, channelTemplateManager);
+        return new AccumulatorWriter(notificationManager, channelTemplateManager);
     }
 
     @Override
