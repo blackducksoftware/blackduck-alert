@@ -56,7 +56,7 @@ public class NotificationManager {
         List<VulnerabilityEntity> vulnerabilities = Collections.emptyList();
         if (notification.getVulnerabilityList() != null) {
             final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
-            final Collection<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
+            final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
                     .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
                     .collect(Collectors.toList());
             vulnerabilities = vulnerabilityRepository.save(vulnerabilitiesToSave);

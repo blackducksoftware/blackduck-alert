@@ -218,14 +218,6 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     }
 
     @Override
-    @Test
-    public void testChannelTestConfig() throws Exception {
-        final String actual = configActions.channelTestConfig(null);
-
-        assertNull(actual);
-    }
-
-    @Override
     public MockGlobalSchedulingEntity getGlobalEntityMockUtil() {
         return new MockGlobalSchedulingEntity();
     }

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.datasource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,16 +74,8 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().deleteAll();
     }
 
-    public void delete(final Iterable<D> entities) {
+    public void delete(final Collection<D> entities) {
         getRepository().delete(entities);
-    }
-
-    public void delete(final List<D> entities) {
-        getRepository().delete(entities);
-    }
-
-    public void deleteInBatch(final Iterable<D> entities) {
-        getRepository().deleteInBatch(entities);
     }
 
     public void deleteInBatch(final List<D> entities) {
@@ -96,24 +89,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         } catch (final EncryptionException ex) {
             getLogger().error("Error getting entity ", ex);
             return null;
-        }
-    }
-
-    public List<D> findAll(final Iterable<ID> idList) {
-        final List<D> entityList = getRepository().findAll(idList);
-        if (entityList == null) {
-            return Collections.emptyList();
-        } else {
-            try {
-                final List<D> returnList = new ArrayList<>(entityList.size());
-                for (final D entity : entityList) {
-                    returnList.add(decryptSensitiveData(entity));
-                }
-                return returnList;
-            } catch (final EncryptionException ex) {
-                getLogger().error("Error finding all entities", ex);
-                return Collections.emptyList();
-            }
         }
     }
 
@@ -150,18 +125,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
                 getLogger().error("Error finding all entities", ex);
                 return Collections.emptyList();
             }
-        }
-    }
-
-    public List<D> save(final Iterable<D> entities) {
-        if (entities != null) {
-            final List<D> resultList = new ArrayList<>();
-            for (final D entity : entities) {
-                resultList.add(save(entity));
-            }
-            return resultList;
-        } else {
-            return Collections.emptyList();
         }
     }
 
