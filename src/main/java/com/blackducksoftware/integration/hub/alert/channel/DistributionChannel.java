@@ -32,7 +32,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -110,15 +109,11 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         try {
             sendMessage(event, config);
             setAuditEntrySuccess(event.getAuditEntryId());
-        } catch (final IntegrationException e) {
+        } catch (final Exception e) {
             setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-
             if (e instanceof IntegrationRestException) {
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
-            logger.error(e.getMessage(), e);
-        } catch (final Exception e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
             logger.error(e.getMessage(), e);
         }
     }
