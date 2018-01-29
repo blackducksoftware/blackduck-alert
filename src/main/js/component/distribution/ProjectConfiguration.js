@@ -62,7 +62,6 @@ export default class ProjectConfiguration extends Component {
     }
 
     assignDataFormat(cell, row) {
-        debugger;
         let cellContent;
         if(row.missing) {
             let fontAwesomeClass = `fa fa-exclamation-triangle ${fontAwesomeLabel}`;
