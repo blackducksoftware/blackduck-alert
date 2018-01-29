@@ -76,7 +76,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     public String sendTestMessage(final R restModel) throws AlertException {
         final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
         final E event = createChannelEvent(getTestMessageProjectData(), null);
-        getDistributionChannel().sendMessage(event, entity);
+        getDistributionChannel().sendAuditedMessage(event, entity);
         return "Attempting to send a test message...";
     }
 

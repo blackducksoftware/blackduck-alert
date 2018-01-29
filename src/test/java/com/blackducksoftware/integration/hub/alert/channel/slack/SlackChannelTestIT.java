@@ -45,10 +45,19 @@ public class SlackChannelTestIT extends ChannelTest {
         final ProjectData projectData = createProjectData("Slack test project");
         final SlackEvent event = new SlackEvent(projectData, new Long(0));
 
-        slackChannel.sendMessage(event, config);
+        slackChannel.sendAuditedMessage(event, config);
 
         final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack_channel message!");
         assertTrue(actual);
     }
 
+    @Test
+    public void receiveMessageTest() {
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
+        try {
+            slackChannel.receiveMessage("message");
+        } finally {
+            System.out.println("Complete missing line coverage.");
+        }
+    }
 }
