@@ -14,12 +14,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
@@ -52,6 +54,7 @@ public class AuditEntryActionsTest {
     public void testGetException() throws AlertException, IOException {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final NotificationRepositoryWrapper notificationRepository = Mockito.mock(NotificationRepositoryWrapper.class);
+        final VulnerabilityRepositoryWrapper vulnerabilityRepository = Mockito.mock(VulnerabilityRepositoryWrapper.class);
         final AuditNotificationRepositoryWrapper auditNotificationRepository = Mockito.mock(AuditNotificationRepositoryWrapper.class);
         final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
@@ -63,7 +66,8 @@ public class AuditEntryActionsTest {
         Mockito.when(commonDistributionRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(mockCommonDistributionEntity.createEntity());
         Mockito.doThrow(new AlertException()).when(spyObjectTransformer).databaseEntityToConfigRestModel(Mockito.any(), Mockito.any());
         Mockito.when(notificationRepository.findAll(Mockito.any())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationRepository, auditNotificationRepository, commonDistributionRepositoryWrapper, spyObjectTransformer, null, null, null);
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository), auditNotificationRepository, commonDistributionRepositoryWrapper,
+                spyObjectTransformer, null, null, null);
 
         auditEntryActions.get(1L);
 
@@ -74,6 +78,7 @@ public class AuditEntryActionsTest {
     public void testResendNotificationException() {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final NotificationRepositoryWrapper notificationRepository = Mockito.mock(NotificationRepositoryWrapper.class);
+        final VulnerabilityRepositoryWrapper vulnerabilityRepository = Mockito.mock(VulnerabilityRepositoryWrapper.class);
         final AuditNotificationRepositoryWrapper auditNotificationRepository = Mockito.mock(AuditNotificationRepositoryWrapper.class);
         final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
@@ -81,7 +86,8 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findOne(Mockito.anyLong())).thenReturn(mockAuditEntryEntity.createEmptyEntity());
         Mockito.when(commonDistributionRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(null);
         Mockito.when(notificationRepository.findAll(Mockito.any())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationRepository, auditNotificationRepository, commonDistributionRepositoryWrapper, null, null, null, null);
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository), auditNotificationRepository, commonDistributionRepositoryWrapper,
+                null, null, null, null);
 
         List<AuditEntryRestModel> restModel = null;
         try {

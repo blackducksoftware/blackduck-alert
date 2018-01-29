@@ -35,24 +35,24 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
-public abstract class DigestItemReader implements ItemReader<List<NotificationEntity>> {
+public abstract class DigestItemReader implements ItemReader<List<NotificationModel>> {
     private final Logger logger = LoggerFactory.getLogger(DigestItemReader.class);
-    private final NotificationRepositoryWrapper notificationRepository;
+    private final NotificationManager notificationManager;
     private boolean hasRead;
     private final String readerName;
 
-    public DigestItemReader(final String readerName, final NotificationRepositoryWrapper notificationRepository) {
-        this.notificationRepository = notificationRepository;
+    public DigestItemReader(final String readerName, final NotificationManager notificationManager) {
+        this.notificationManager = notificationManager;
         hasRead = false;
         this.readerName = readerName;
     }
 
     @Override
-    public List<NotificationEntity> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
             if (hasRead) {
                 return null;
@@ -61,7 +61,7 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationEn
                 final DateRange dateRange = getDateRange();
                 final Date startDate = dateRange.getStart();
                 final Date endDate = dateRange.getEnd();
-                final List<NotificationEntity> entityList = notificationRepository.findByCreatedAtBetween(startDate, endDate);
+                final List<NotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
                 hasRead = true;
                 if (entityList.isEmpty()) {
                     return null;

@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -32,12 +33,14 @@ import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(DatabaseSetupRequiredTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class PurgeJobIT {
@@ -85,14 +88,14 @@ public class PurgeJobIT {
     @Test
     public void testReaderNoData() throws Exception {
         final PurgeReader reader = purgeConfig.reader();
-        final List<NotificationEntity> entityList = reader.read();
+        final List<NotificationModel> entityList = reader.read();
         assertNull(entityList);
     }
 
     @Test
     public void testReaderWithNullRepository() throws Exception {
         final PurgeReader reader = new PurgeReader(null);
-        final List<NotificationEntity> entityList = reader.read();
+        final List<NotificationModel> entityList = reader.read();
         assertNull(entityList);
     }
 
@@ -114,49 +117,49 @@ public class PurgeJobIT {
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(1);
         Date createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(3);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
         notificationRepository.save(entityList);
 
         final PurgeReader reader = purgeConfig.reader();
-        final List<NotificationEntity> resultList = reader.read();
+        final List<NotificationModel> resultList = reader.read();
 
         assertEquals(2, resultList.size());
     }
 
     @Test
     public void testProcessorNoData() throws Exception {
-        final List<NotificationEntity> entityList = null;
+        final List<NotificationModel> entityList = null;
         final PurgeProcessor processor = purgeConfig.processor();
-        final List<NotificationEntity> resultList = processor.process(entityList);
+        final List<NotificationModel> resultList = processor.process(entityList);
         assertEquals(entityList, resultList);
     }
 
     @Test
     public void testProcessorWithData() throws Exception {
-        final List<NotificationEntity> entityList = new ArrayList<>();
-        entityList.add(new NotificationEntity());
-        entityList.add(new NotificationEntity());
-        entityList.add(new NotificationEntity());
-        entityList.add(new NotificationEntity());
-        entityList.add(new NotificationEntity());
+        final List<NotificationModel> entityList = new ArrayList<>();
+        entityList.add(new NotificationModel(null, null));
+        entityList.add(new NotificationModel(null, null));
+        entityList.add(new NotificationModel(null, null));
+        entityList.add(new NotificationModel(null, null));
+        entityList.add(new NotificationModel(null, null));
         final PurgeProcessor processor = purgeConfig.processor();
-        final List<NotificationEntity> resultList = processor.process(entityList);
+        final List<NotificationModel> resultList = processor.process(entityList);
         assertEquals(entityList, resultList);
     }
 
     @Test
     public void testWriterNoData() throws Exception {
-        final List<List<NotificationEntity>> itemList = Collections.emptyList();
+        final List<List<NotificationModel>> itemList = Collections.emptyList();
         final PurgeWriter writer = purgeConfig.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
@@ -164,7 +167,7 @@ public class PurgeJobIT {
 
     @Test
     public void testWriterNullData() throws Exception {
-        final List<List<NotificationEntity>> itemList = null;
+        final List<List<NotificationModel>> itemList = null;
         final PurgeWriter writer = purgeConfig.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
@@ -172,7 +175,7 @@ public class PurgeJobIT {
 
     @Test
     public void testWriterWithData() throws Exception {
-        final List<NotificationEntity> entityList = new ArrayList<>();
+        final List<NotificationModel> entityList = new ArrayList<>();
         final String eventKey = "eventKey";
         final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
         final String projectName = "ProjectName";
@@ -188,21 +191,26 @@ public class PurgeJobIT {
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(1);
         Date createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
+        notificationRepository.save(notification);
+        entityList.add(new NotificationModel(notification, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(3);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
+        notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
+        notificationRepository.save(notification);
+        entityList.add(new NotificationModel(notification, vulnerabilityList));
 
         zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
-        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person, vulnerabilityList));
-        notificationRepository.save(entityList);
+        notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
+        notificationRepository.save(notification);
+        entityList.add(new NotificationModel(notification, vulnerabilityList));
 
         assertEquals(3, notificationRepository.count());
-        final List<List<NotificationEntity>> itemList = new ArrayList<>();
+        final List<List<NotificationModel>> itemList = new ArrayList<>();
         itemList.add(entityList);
         final PurgeWriter writer = purgeConfig.writer();
         writer.write(itemList);

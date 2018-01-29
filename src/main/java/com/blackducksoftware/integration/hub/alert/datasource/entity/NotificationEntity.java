@@ -23,14 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity;
 
-import java.util.Collection;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -74,15 +70,11 @@ public class NotificationEntity extends DatabaseEntity {
     @Column(name = "project_version_url")
     private String projectVersionUrl;
 
-    @ElementCollection(targetClass = VulnerabilityEntity.class)
-    @OneToMany(cascade = CascadeType.ALL)
-    private Collection<VulnerabilityEntity> vulnerabilityList;
-
     public NotificationEntity() {
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,
-            final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser, final Collection<VulnerabilityEntity> vulnerabilityList) {
+            final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
         this.eventKey = eventKey;
         this.createdAt = createdAt;
         this.notificationType = notificationType;
@@ -94,7 +86,6 @@ public class NotificationEntity extends DatabaseEntity {
         this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
-        this.vulnerabilityList = vulnerabilityList;
     }
 
     public String getEventKey() {
@@ -139,9 +130,5 @@ public class NotificationEntity extends DatabaseEntity {
 
     public String getProjectVersionUrl() {
         return projectVersionUrl;
-    }
-
-    public Collection<VulnerabilityEntity> getVulnerabilityList() {
-        return vulnerabilityList;
     }
 }
