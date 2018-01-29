@@ -39,6 +39,7 @@ class BaseJobConfiguration extends Component {
         this.handleProjectChanged = this.handleProjectChanged.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
+        this.clearConfigurationMessage = this.clearConfigurationMessage.bind(this);
 	}
 
     componentDidMount() {
@@ -71,7 +72,7 @@ class BaseJobConfiguration extends Component {
                 }
             })
             .catch(function(error) {
- 		 		console.log(error); 
+ 		 		console.log(error);
  			});
         } else {
             this.initializeValues(this.props)
@@ -120,7 +121,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-			configuration.notificationTypes = configuration.notificationTypes; 
+			configuration.notificationTypes = configuration.notificationTypes;
 		} else {
 			configuration.notificationTypes = null;
 		}
@@ -176,7 +177,7 @@ class BaseJobConfiguration extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 
@@ -195,7 +196,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-			configuration.notificationTypes = configuration.notificationTypes; 
+			configuration.notificationTypes = configuration.notificationTypes;
 		} else {
 			configuration.notificationTypes = null;
 		}
@@ -227,16 +228,25 @@ class BaseJobConfiguration extends Component {
 					self.setState({
 						errors
 					});
-				}
+				} else {
+                    setTimeout(self.clearConfigurationMessage, 5000);
+                }
 				self.setState({
 					configurationMessage: json.message
 				});
 			});
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
+
+    clearConfigurationMessage() {
+        this.setState({
+            configurationMessage: '',
+            inProgress: false
+        });
+    }
 
 	handleChange(event) {
 		const target = event.target;
