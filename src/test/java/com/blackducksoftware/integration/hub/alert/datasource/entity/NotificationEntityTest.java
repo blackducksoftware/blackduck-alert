@@ -41,7 +41,6 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
         assertNull(entity.getProjectUrl());
         assertNull(entity.getProjectVersion());
         assertNull(entity.getProjectVersionUrl());
-        assertNull(entity.getVulnerabilityList());
     }
 
     @Override
@@ -57,7 +56,6 @@ public class NotificationEntityTest extends EntityTest<NotificationEntity> {
         assertEquals(getMockUtil().getProjectUrl(), entity.getProjectUrl());
         assertEquals(getMockUtil().getProjectVersion(), entity.getProjectVersion());
         assertEquals(getMockUtil().getProjectVersionUrl(), entity.getProjectVersionUrl());
-        assertEquals(getMockUtil().getVulnerabilityList(), entity.getVulnerabilityList());
     }
 
 }

@@ -29,11 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
-public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationEntity>, List<AbstractChannelEvent>> {
+public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationModel>, List<AbstractChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
 
     private final DigestNotificationProcessor notificationProcessor;
@@ -43,7 +43,7 @@ public abstract class DigestItemProcessor implements ItemProcessor<List<Notifica
     }
 
     @Override
-    public List<AbstractChannelEvent> process(final List<NotificationEntity> notificationData) throws Exception {
+    public List<AbstractChannelEvent> process(final List<NotificationModel> notificationData) throws Exception {
         try {
             logger.info("Notification Entity Count: {}", notificationData.size());
             final List<AbstractChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationData);

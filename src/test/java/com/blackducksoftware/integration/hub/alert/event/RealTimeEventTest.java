@@ -18,13 +18,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class RealTimeEventTest {
 
     @Test
     public void getNotificationListTest() {
-        final List<NotificationEntity> list = Collections.emptyList();
+        final List<NotificationModel> list = Collections.emptyList();
         final RealTimeEvent event = new RealTimeEvent(list);
         assertEquals(list, event.getNotificationList());
     }

@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
@@ -44,15 +45,14 @@ import com.blackducksoftware.integration.hub.alert.audit.repository.relation.Aud
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
@@ -64,8 +64,8 @@ public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
     private final AuditEntryRepositoryWrapper auditEntryRepository;
-    private final NotificationRepositoryWrapper notificationRepository;
     private final AuditNotificationRepositoryWrapper auditNotificationRepository;
+    private final NotificationManager notificationManager;
     private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
     private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
@@ -73,12 +73,12 @@ public class AuditEntryActions {
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
-    public AuditEntryActions(final AuditEntryRepositoryWrapper auditEntryRepository, final NotificationRepositoryWrapper notificationRepository, final AuditNotificationRepositoryWrapper auditNotificationRepository,
+    public AuditEntryActions(final AuditEntryRepositoryWrapper auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepositoryWrapper auditNotificationRepository,
             final CommonDistributionRepositoryWrapper commonDistributionRepository, final ObjectTransformer objectTransformer,
             final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
             final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
-        this.notificationRepository = notificationRepository;
+        this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
         this.objectTransformer = objectTransformer;
@@ -109,7 +109,7 @@ public class AuditEntryActions {
         }
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
-        final List<NotificationEntity> notifications = notificationRepository.findAll(notificationIds);
+        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
         final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
@@ -140,7 +140,7 @@ public class AuditEntryActions {
 
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
-        final List<NotificationEntity> notifications = notificationRepository.findAll(notificationIds);
+        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
 
         final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
 
@@ -159,7 +159,7 @@ public class AuditEntryActions {
         NotificationRestModel notificationRestModel = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
             try {
-                notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0), NotificationRestModel.class);
+                notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0).getNotificationEntity(), NotificationRestModel.class);
                 final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
                 notificationRestModel.setNotificationTypes(notificationTypes);
                 final Set<ComponentRestModel> components = notifications.stream()
