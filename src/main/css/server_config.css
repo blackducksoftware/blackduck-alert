@@ -9,3 +9,8 @@
     overflow-y: scroll;
 
 }
+
+.advancedLink {
+    width: 80%;
+    text-align: right;
+}
