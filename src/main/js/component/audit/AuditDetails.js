@@ -5,7 +5,7 @@ import { inline } from '../../../css/audit.css';
 import tableStyles from '../../../css/table.css';
 
 import TextInput from '../../field/input/TextInput';
-import LabeledField from '../../field/input/LabeledField';
+import LabeledField from '../../field/LabeledField';
 import TextArea from '../../field/input/TextArea';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
