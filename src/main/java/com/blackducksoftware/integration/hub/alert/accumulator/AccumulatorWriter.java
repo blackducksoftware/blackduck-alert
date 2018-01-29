@@ -35,13 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
@@ -51,11 +52,11 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 @Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
-    private final NotificationRepositoryWrapper notificationRepository;
+    private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
 
-    public AccumulatorWriter(final NotificationRepositoryWrapper notificationRepository, final ChannelTemplateManager channelTemplateManager) {
-        this.notificationRepository = notificationRepository;
+    public AccumulatorWriter(final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager) {
+        this.notificationManager = notificationManager;
         this.channelTemplateManager = channelTemplateManager;
     }
 
@@ -63,33 +64,32 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
         try {
             if (itemList != null && !itemList.isEmpty()) {
-                itemList.forEach(item -> {
-                    if (!item.getNotificationList().isEmpty()) {
-                        final List<NotificationEvent> notificationList = item.getNotificationList();
-                        final List<NotificationEntity> entityList = new ArrayList<>();
-                        notificationList.forEach(notification -> {
-                            final String eventKey = notification.getEventKey();
-                            final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
-                            final Date createdAt = content.getCreatedAt();
-                            final NotificationCategoryEnum notificationType = notification.getCategoryType();
-                            final String projectName = content.getProjectVersion().getProjectName();
-                            final String projectUrl = content.getProjectVersion().getProjectLink();
-                            final String projectVersion = content.getProjectVersion().getProjectVersionName();
-                            final String projectVersionUrl = content.getProjectVersion().getUrl();
-                            final String componentName = content.getComponentName();
-                            final String componentVersion = content.getComponentVersion().versionName;
-                            final String policyRuleName = getPolicyRule(notification);
-                            final String person = getPerson(notification);
-                            final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification);
 
-                            final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person,
-                                    vulnerabilityList);
-                            entityList.add(entity);
-                            notificationRepository.save(entity);
-                        });
-                        final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
-                        channelTemplateManager.sendEvent(realTimeEvent);
-                    }
+                itemList.forEach(item -> {
+                    final List<NotificationEvent> notificationList = item.getNotificationList();
+                    final List<NotificationModel> entityList = new ArrayList<>();
+                    notificationList.forEach(notification -> {
+                        final String eventKey = notification.getEventKey();
+                        final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
+                        final Date createdAt = content.getCreatedAt();
+                        final NotificationCategoryEnum notificationType = notification.getCategoryType();
+                        final String projectName = content.getProjectVersion().getProjectName();
+                        final String projectUrl = content.getProjectVersion().getProjectLink();
+                        final String projectVersion = content.getProjectVersion().getProjectVersionName();
+                        final String projectVersionUrl = content.getProjectVersion().getUrl();
+                        final String componentName = content.getComponentName();
+                        final String componentVersion = content.getComponentVersion().versionName;
+                        final String policyRuleName = getPolicyRule(notification);
+                        final String person = getPerson(notification);
+
+                        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
+                        final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification, entity);
+                        NotificationModel model = new NotificationModel(entity, vulnerabilityList);
+                        model = notificationManager.saveNotification(model);
+                        entityList.add(model);
+                    });
+                    final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
+                    channelTemplateManager.sendEvent(realTimeEvent);
                 });
             }
         } catch (final Exception ex) {
@@ -119,7 +119,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
     // The dataset contains string keys and object values. Therefore we need to type cast because the contents are various types.
     @SuppressWarnings("unchecked")
-    private Collection<VulnerabilityEntity> getVulnerabilities(final NotificationEvent notification) {
+    private Collection<VulnerabilityEntity> getVulnerabilities(final NotificationEvent notification, final NotificationEntity entity) {
         final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
         final String key = VulnerabilityCache.VULNERABILITY_OPERATION;
         if (notification.getDataSet().containsKey(key)) {
@@ -128,7 +128,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
 
             if (!vulnerabilitySet.isEmpty()) {
                 vulnerabilitySet.forEach(vulnerability -> {
-                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, VulnerabilityOperationEnum.valueOf(operationName));
+                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, VulnerabilityOperationEnum.valueOf(operationName), entity.getId());
                     vulnerabilityList.add(vulnerabilityEntity);
                 });
             }

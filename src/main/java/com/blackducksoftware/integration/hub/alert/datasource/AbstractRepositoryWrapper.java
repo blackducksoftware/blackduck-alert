@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.datasource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,7 +74,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().deleteAll();
     }
 
-    public void delete(final List<D> entities) {
+    public void delete(final Collection<D> entities) {
         getRepository().delete(entities);
     }
 
@@ -127,11 +128,15 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         }
     }
 
-    public void save(final List<D> entities) {
+    public List<D> save(final List<D> entities) {
         if (entities != null) {
+            final List<D> resultList = new ArrayList<>(entities.size());
             for (final D entity : entities) {
-                save(entity);
+                resultList.add(save(entity));
             }
+            return resultList;
+        } else {
+            return Collections.emptyList();
         }
     }
 
