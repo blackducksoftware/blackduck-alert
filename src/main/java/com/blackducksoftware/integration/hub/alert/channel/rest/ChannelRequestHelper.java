@@ -74,6 +74,10 @@ public class ChannelRequestHelper {
             response = restConnection.createResponse(request);
             logger.trace("Response: " + response.toString());
             return response;
+        } catch (final IntegrationException integrationException) {
+            throw integrationException;
+        } catch (final Exception generalException) {
+            throw new IntegrationException(generalException);
         } finally {
             if (response != null && response.body() != null) {
                 response.body().close();
