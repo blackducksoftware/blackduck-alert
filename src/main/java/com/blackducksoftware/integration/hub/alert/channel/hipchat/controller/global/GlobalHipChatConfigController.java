@@ -89,7 +89,7 @@ public class GlobalHipChatConfigController extends ConfigController<GlobalHipCha
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/configuration/global/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
-        return commonConfigHandler.doNotAllowHttpMethod();
+        return commonConfigHandler.testConfig(hipChatConfig);
     }
 
 }
