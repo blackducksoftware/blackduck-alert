@@ -11,6 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.processor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -24,6 +25,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentService;
 import com.blackducksoftware.integration.hub.api.project.ProjectService;
 import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
@@ -70,6 +72,39 @@ public class UserNotificationCacheTest {
         notEmptyEventList = userNotificationCache.addUserInformation(notificationEvents);
 
         assertTrue(notEmptyEventList.size() == 1);
+    }
+
+    @Test
+    public void testAddUserInformationException() throws Exception {
+        try (OutputLogger outputLogger = new OutputLogger()) {
+            final ProjectService mockedProjectService = Mockito.mock(ProjectService.class);
+            final ProjectAssignmentService mockedProjectAssignmentService = Mockito.mock(ProjectAssignmentService.class);
+            final UserNotificationCache userNotificationCache = new UserNotificationCache(mockedProjectService, mockedProjectAssignmentService);
+
+            Mockito.doThrow(new IntegrationException()).when(mockedProjectService).getView(Mockito.anyString(), Mockito.any());
+
+            final Date createdAt = new Date();
+            final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
+            projectVersionModel.setProjectLink("New project link");
+            final String componentName = "notification test";
+            final ComponentVersionView componentVersionView = new ComponentVersionView();
+            final String componentVersionUrl = "sss";
+            final String componentIssueUrl = "ddd";
+
+            final Map<String, Object> dataSet = new HashMap<>();
+            dataSet.put(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT, new NotificationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentVersionUrl, componentIssueUrl));
+            final NotificationEvent notificationEvent = new NotificationEvent("key", NotificationCategoryEnum.HIGH_VULNERABILITY, dataSet);
+
+            final List<NotificationEvent> notificationEvents = Arrays.asList(notificationEvent);
+            Collection<NotificationEvent> emptyEventList = Arrays.asList();
+
+            assertEquals(0, emptyEventList.size());
+
+            emptyEventList = userNotificationCache.addUserInformation(notificationEvents);
+
+            assertEquals(0, emptyEventList.size());
+            assertTrue(outputLogger.isLineContainingText("Error getting the users for project"));
+        }
     }
 
 }
