@@ -31,8 +31,10 @@ import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 
 import okhttp3.HttpUrl;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -74,8 +76,9 @@ public class ChannelRequestHelper {
             response = restConnection.createResponse(request);
             logger.trace("Response: " + response.toString());
             return response;
-        } catch (final IntegrationException integrationException) {
-            throw integrationException;
+        } catch (final IntegrationRestException integrationRestException) {
+            response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(integrationRestException.getHttpStatusCode()).message(integrationRestException.getHttpStatusMessage()).build();
+            return response;
         } catch (final Exception generalException) {
             throw new IntegrationException(generalException);
         } finally {
