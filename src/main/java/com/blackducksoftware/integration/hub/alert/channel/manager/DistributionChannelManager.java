@@ -78,7 +78,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         try {
             final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
             final E event = createChannelEvent(getTestMessageProjectData(), null);
-            getDistributionChannel().sendMessage(event, entity);
+            getDistributionChannel().sendAuditedMessage(event, entity);
             return "Successfully sent test message";
         } catch (final IntegrationException ex) {
             return ex.getMessage();
