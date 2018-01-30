@@ -37,20 +37,20 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
-public class PurgeReader implements ItemReader<List<NotificationEntity>> {
+public class PurgeReader implements ItemReader<List<NotificationModel>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeReader.class);
-    private final NotificationRepositoryWrapper notificationRepository;
+    private final NotificationManager notificationManager;
 
-    public PurgeReader(final NotificationRepositoryWrapper notificationRepository) {
-        this.notificationRepository = notificationRepository;
+    public PurgeReader(final NotificationManager notificationManager) {
+        this.notificationManager = notificationManager;
     }
 
     @Override
-    public List<NotificationEntity> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
             logger.debug("Purge Reader Starting ");
             ZonedDateTime zonedDate = ZonedDateTime.now();
@@ -58,7 +58,7 @@ public class PurgeReader implements ItemReader<List<NotificationEntity>> {
             zonedDate = zonedDate.withSecond(0).withNano(0);
             final Date date = Date.from(zonedDate.toInstant());
             logger.info("Searching for notifications to purge earlier than {}", date);
-            final List<NotificationEntity> notificationList = notificationRepository.findByCreatedAtBefore(date);
+            final List<NotificationModel> notificationList = notificationManager.findByCreatedAtBefore(date);
 
             if (notificationList == null || notificationList.isEmpty()) {
                 logger.debug("No notifications found to purge");

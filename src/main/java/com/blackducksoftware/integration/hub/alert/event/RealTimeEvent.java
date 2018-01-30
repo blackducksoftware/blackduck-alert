@@ -25,17 +25,17 @@ package com.blackducksoftware.integration.hub.alert.event;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class RealTimeEvent extends AbstractEvent {
     public final static String TOPIC_NAME = "REAL_TIME_EVENT";
-    private final List<NotificationEntity> notificationList;
+    private final List<NotificationModel> notificationList;
 
-    public RealTimeEvent(final List<NotificationEntity> notificationList) {
+    public RealTimeEvent(final List<NotificationModel> notificationList) {
         this.notificationList = notificationList;
     }
 
-    public List<NotificationEntity> getNotificationList() {
+    public List<NotificationModel> getNotificationList() {
         return notificationList;
     }
 

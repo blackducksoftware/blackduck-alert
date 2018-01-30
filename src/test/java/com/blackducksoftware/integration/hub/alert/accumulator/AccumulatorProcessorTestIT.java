@@ -1,9 +1,9 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 import java.util.List;
@@ -91,7 +91,7 @@ public class AccumulatorProcessorTestIT {
         final List<NotificationEvent> notificationEvents = storeEvent.getNotificationList();
 
         assertNotNull(storeEvent);
-        assertTrue(!notificationEvents.isEmpty());
+        assertFalse(notificationEvents.isEmpty());
         assertEquals(storeEvent.getEventId().length(), 36);
 
         NotificationEvent apacheEvent = null;

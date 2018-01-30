@@ -57,7 +57,7 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
         if (getMockGlobalEntityUtil() != null) {
             Mockito.when(channel.getGlobalConfigEntity()).thenReturn(getMockGlobalEntityUtil().createGlobalEntity());
         }
-        Mockito.doNothing().when(manager.getDistributionChannel()).sendMessage(Mockito.any(), Mockito.any());
+        Mockito.doNothing().when(manager.getDistributionChannel()).sendAuditedMessage(Mockito.any(), Mockito.any());
 
         final String actual = manager.sendTestMessage(getMockRestModelUtil().createRestModel());
         final String expected = "Attempting to send a test message...";
