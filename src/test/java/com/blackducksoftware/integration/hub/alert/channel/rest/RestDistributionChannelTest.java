@@ -25,6 +25,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 
 import okhttp3.Request;
 
@@ -41,7 +42,7 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final ProjectData projectData) {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final ProjectData projectData) throws AlertException {
                 return new Request.Builder().url("http://google.com").delete().build();
             }
         };
