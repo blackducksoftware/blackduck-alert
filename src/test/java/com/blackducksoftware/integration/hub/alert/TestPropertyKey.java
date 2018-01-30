@@ -8,6 +8,8 @@ public enum TestPropertyKey {
     TEST_HUB_API_KEY("blackduck.hub.api.key"),
     TEST_TRUST_HTTPS_CERT("blackduck.hub.trust.cert"),
     TEST_HUB_TIMEOUT("blackduck.hub.timeout"),
+    TEST_ACTIVE_USER("blackduck.hub.active.user"),
+    TEST_INACTIVE_USER("blackduck.hub.inactive.user"),
     TEST_CRON("alert.accumulator.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),

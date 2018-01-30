@@ -27,21 +27,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelRestFactory;
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -49,60 +46,45 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import okhttp3.Request;
 
 @Component
-public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
-    private final static Logger logger = LoggerFactory.getLogger(SlackChannel.class);
-
-    private final GlobalProperties globalProperties;
+public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
+    public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired
     public SlackChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
-            final GlobalProperties globalProperties) {
-        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class);
-        this.globalProperties = globalProperties;
+            final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class, channelRestConnectionFactory);
+    }
+
+    @JmsListener(destination = SupportedChannels.SLACK)
+    @Override
+    public void receiveMessage(final String message) {
+        super.receiveMessage(message);
     }
 
     @Override
-    public void sendMessage(final SlackEvent event, final SlackDistributionConfigEntity config) {
-        final ProjectData projectData = event.getProjectData();
-        final String htmlMessage = createMessage(projectData);
-        try {
-            sendMessage(htmlMessage, config);
-            setAuditEntrySuccess(event.getAuditEntryId());
-        } catch (final IntegrationException e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-
-            if (e instanceof IntegrationRestException) {
-                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
-            }
-            logger.error(e.getMessage(), e);
-        } catch (final Exception e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-            logger.error(e.getMessage(), e);
-        }
+    public String getApiUrl() {
+        return SLACK_API;
     }
 
-    private String sendMessage(final String htmlMessage, final SlackDistributionConfigEntity config) throws IntegrationException {
+    @Override
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final ProjectData projectData) {
         final String slackUrl = config.getWebhook();
+        final String htmlMessage = createHtmlMessage(projectData);
         final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
-        final Map<String, String> requestProperties = new HashMap<>();
-        requestProperties.put("Content-Type", "application/json");
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Content-Type", "application/json");
 
-        final ChannelRestFactory channelRestFactory = new ChannelRestFactory(slackUrl, globalProperties, logger);
-        final Request request = channelRestFactory.createRequest(slackUrl, jsonString, requestProperties);
-
-        channelRestFactory.sendRequest(request);
-        return "Succesfully sent Slack message!";
+        return channelRequestHelper.createMessageRequest(slackUrl, requestHeaders, jsonString);
     }
 
-    protected String createMessage(final ProjectData projectData) {
+    private String createHtmlMessage(final ProjectData projectData) {
         final StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(projectData.getProjectName());
         messageBuilder.append(" > ");
@@ -168,12 +150,6 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
         json.addProperty("mrkdwn", true);
 
         return json.toString();
-    }
-
-    @JmsListener(destination = SupportedChannels.SLACK)
-    @Override
-    public void receiveMessage(final String message) {
-        super.receiveMessage(message);
     }
 
 }

@@ -20,7 +20,7 @@ import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.google.gson.Gson;
 
 public class ChannelTemplateManagerTest {
-    private static int testCount = 0;
+    protected static int testCount = 0;
 
     @Test
     public void testSendEvents() {

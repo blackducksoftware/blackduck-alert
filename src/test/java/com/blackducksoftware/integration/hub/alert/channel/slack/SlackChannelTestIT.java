@@ -22,6 +22,7 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -33,8 +34,9 @@ public class SlackChannelTestIT extends ChannelTest {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
 
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, globalProperties);
+        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
@@ -43,10 +45,19 @@ public class SlackChannelTestIT extends ChannelTest {
         final ProjectData projectData = createProjectData("Slack test project");
         final SlackEvent event = new SlackEvent(projectData, new Long(0));
 
-        slackChannel.sendMessage(event, config);
+        slackChannel.sendAuditedMessage(event, config);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a message!");
+        final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack_channel message!");
         assertTrue(actual);
     }
 
+    @Test
+    public void receiveMessageTest() {
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
+        try {
+            slackChannel.receiveMessage("message");
+        } finally {
+            System.out.println("Complete missing line coverage.");
+        }
+    }
 }
