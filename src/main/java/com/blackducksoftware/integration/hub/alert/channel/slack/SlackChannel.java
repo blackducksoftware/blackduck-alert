@@ -69,22 +69,20 @@ public class SlackChannel extends DistributionChannel<SlackEvent, GlobalSlackCon
     }
 
     @Override
-    public void sendMessage(final SlackEvent event, final SlackDistributionConfigEntity config) {
+    public void sendMessage(final SlackEvent event, final SlackDistributionConfigEntity config) throws IntegrationException {
         final ProjectData projectData = event.getProjectData();
         final String htmlMessage = createMessage(projectData);
         try {
             sendMessage(htmlMessage, config);
             setAuditEntrySuccess(event.getAuditEntryId());
-        } catch (final IntegrationException e) {
+        } catch (final Exception e) {
             setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
 
             if (e instanceof IntegrationRestException) {
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
             logger.error(e.getMessage(), e);
-        } catch (final Exception e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-            logger.error(e.getMessage(), e);
+            throw new IntegrationException(e.getMessage());
         }
     }
 

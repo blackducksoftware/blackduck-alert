@@ -82,7 +82,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     }
 
     @Override
-    public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) {
+    public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws IntegrationException {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
@@ -91,12 +91,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
                 final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory.createGroupService(), hubGroupName);
                 sendMessage(emailAddresses, event, subjectLine);
                 setAuditEntrySuccess(event.getAuditEntryId());
-            } catch (final IntegrationException e) {
-                setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-                logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);
             } catch (final Exception e) {
                 setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-                logger.error(e.getMessage(), e);
+                logger.error("Could not send email to {}: Could not retrieve group info from the Hub Server.", hubGroupName, e);
+                throw new IntegrationException(e.getMessage());
             }
         } else {
             logger.warn("No configuration found with id {}.", event.getCommonDistributionConfigId());
