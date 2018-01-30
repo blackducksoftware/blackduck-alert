@@ -9,13 +9,13 @@ import java.util.HashMap;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
@@ -51,7 +51,7 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
     public abstract String channelTopic();
 
     @Test
-    public void testSendTestMessage() throws AlertException {
+    public void testSendTestMessage() throws IntegrationException {
         final CM manager = getChannelManager();
         final DistributionChannel<CE, GE, E> channel = manager.getDistributionChannel();
         if (getMockGlobalEntityUtil() != null) {
@@ -60,7 +60,7 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
         Mockito.doNothing().when(manager.getDistributionChannel()).sendMessage(Mockito.any(), Mockito.any());
 
         final String actual = manager.sendTestMessage(getMockRestModelUtil().createRestModel());
-        final String expected = "Attempting to send a test message...";
+        final String expected = "Successfully sent test message";
 
         assertEquals(expected, actual);
     }

@@ -70,7 +70,7 @@ export default class ProjectConfiguration extends Component {
             cellContent = row.name;
         }
 
-        return <div> {cellContent} </div>;
+        return <div title={row.name}> {cellContent} </div>;
     }
 
     onRowSelected(row, isSelected) {

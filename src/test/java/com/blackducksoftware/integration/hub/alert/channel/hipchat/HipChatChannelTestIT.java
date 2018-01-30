@@ -20,6 +20,7 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -32,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 @Category(DatabaseSetupRequiredTest.class)
 public class HipChatChannelTestIT extends ChannelTest {
     @Test
-    public void sendMessageTestIT() throws IOException {
+    public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);

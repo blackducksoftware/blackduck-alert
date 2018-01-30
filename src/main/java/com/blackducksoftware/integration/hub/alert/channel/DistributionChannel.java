@@ -32,6 +32,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -141,14 +142,18 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
         if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
-            final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-            final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
-            sendMessage(event, channelDistributionEntity);
+            try {
+                final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
+                final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+                sendMessage(event, channelDistributionEntity);
+            } catch (final IntegrationException ex) {
+                logger.error("There was an error sending the message.", ex);
+            }
         } else {
             logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
         }
     }
 
-    public abstract void sendMessage(final E event, final C config);
+    public abstract void sendMessage(final E event, final C config) throws IntegrationException;
 
 }

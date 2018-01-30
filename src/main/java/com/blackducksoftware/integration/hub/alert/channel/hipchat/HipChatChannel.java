@@ -77,38 +77,40 @@ public class HipChatChannel extends DistributionChannel<HipChatEvent, GlobalHipC
     }
 
     @Override
-    public void sendMessage(final HipChatEvent event, final HipChatDistributionConfigEntity config) {
+    public void sendMessage(final HipChatEvent event, final HipChatDistributionConfigEntity config) throws IntegrationException {
         final String htmlMessage = createHtmlMessage(event.getProjectData());
         try {
             sendMessage(config, HIP_CHAT_API, htmlMessage, AlertConstants.ALERT_APPLICATION_NAME);
             setAuditEntrySuccess(event.getAuditEntryId());
-        } catch (final IntegrationException e) {
+        } catch (final Exception e) {
             setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
 
             if (e instanceof IntegrationRestException) {
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
             logger.error(e.getMessage(), e);
-        } catch (final Exception e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-            logger.error(e.getMessage(), e);
+            throw new IntegrationException(e.getMessage());
         }
     }
 
     private String sendMessage(final HipChatDistributionConfigEntity config, final String apiUrl, final String message, final String senderName) throws IntegrationException {
         final String jsonString = getJsonString(message, senderName, config.getNotify(), config.getColor());
 
-        final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
+        if (config.getRoomId() == null) {
+            throw new IntegrationException("Room ID missing");
+        } else {
+            final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
 
-        final Map<String, String> requestProperties = new HashMap<>();
-        requestProperties.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
-        requestProperties.put("Content-Type", "application/json");
+            final Map<String, String> requestProperties = new HashMap<>();
+            requestProperties.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
+            requestProperties.put("Content-Type", "application/json");
 
-        final ChannelRestFactory channelRestFactory = new ChannelRestFactory(apiUrl, globalProperties, logger);
-        final Request request = channelRestFactory.createRequest(urlSegments, jsonString, requestProperties);
+            final ChannelRestFactory channelRestFactory = new ChannelRestFactory(apiUrl, globalProperties, logger);
+            final Request request = channelRestFactory.createRequest(urlSegments, jsonString, requestProperties);
 
-        channelRestFactory.sendRequest(request);
-        return "Succesfully sent HipChat message!";
+            channelRestFactory.sendRequest(request);
+            return "Succesfully sent HipChat message!";
+        }
     }
 
     private String createHtmlMessage(final ProjectData projectData) {

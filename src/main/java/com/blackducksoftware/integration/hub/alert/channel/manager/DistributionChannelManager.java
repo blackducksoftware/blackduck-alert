@@ -27,6 +27,7 @@ import java.util.Collections;
 
 import javax.transaction.Transactional;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
@@ -74,10 +75,14 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     }
 
     public String sendTestMessage(final R restModel) throws AlertException {
-        final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
-        final E event = createChannelEvent(getTestMessageProjectData(), null);
-        getDistributionChannel().sendMessage(event, entity);
-        return "Attempting to send a test message...";
+        try {
+            final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
+            final E event = createChannelEvent(getTestMessageProjectData(), null);
+            getDistributionChannel().sendMessage(event, entity);
+            return "Successfully sent test message";
+        } catch (final IntegrationException ex) {
+            return ex.getMessage();
+        }
     }
 
     public abstract Class<D> getDatabaseEntityClass();

@@ -39,7 +39,6 @@ class BaseJobConfiguration extends Component {
         this.handleProjectChanged = this.handleProjectChanged.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.clearConfigurationMessage = this.clearConfigurationMessage.bind(this);
 	}
 
     componentDidMount() {
@@ -228,9 +227,7 @@ class BaseJobConfiguration extends Component {
 					self.setState({
 						errors
 					});
-				} else {
-                    setTimeout(self.clearConfigurationMessage, 5000);
-                }
+				}
 				self.setState({
 					configurationMessage: json.message
 				});
@@ -240,13 +237,6 @@ class BaseJobConfiguration extends Component {
  		 	console.log(error);
  		});
 	}
-
-    clearConfigurationMessage() {
-        this.setState({
-            configurationMessage: '',
-            inProgress: false
-        });
-    }
 
 	handleChange(event) {
 		const target = event.target;
