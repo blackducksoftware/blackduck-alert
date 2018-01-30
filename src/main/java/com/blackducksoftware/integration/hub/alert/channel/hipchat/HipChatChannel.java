@@ -102,8 +102,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             final Request request = restConnection.createPostRequest(httpUrl, requestHeaders, body);
 
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-            try (Response response = channelRequestHelper.sendGenericRequest(request)) {
-                if (response.isSuccessful()) {
+            Response response = null;
+            try {
+                response = channelRequestHelper.sendGenericRequest(request);
+                if (response != null && response.isSuccessful()) {
                     return "API key is valid.";
                 }
                 return "Invalid API key: " + response.message();
