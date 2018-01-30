@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 @Transactional
@@ -70,6 +71,60 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public CommonDistributionRepositoryWrapper getCommonDistributionRepository() {
         return commonDistributionRepository;
     }
+
+    public G getGlobalConfigEntity() {
+        final List<G> globalConfigs = globalRepository.findAll();
+        if (globalConfigs.size() == 1) {
+            return globalConfigs.get(0);
+        }
+        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
+        return null;
+    }
+
+    @Override
+    public void receiveMessage(final String message) {
+        try {
+            logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+            final E event = getEvent(message);
+            logger.info(String.format("%s event %s", getClass().getName(), event));
+
+            handleEvent(event);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    public void handleEvent(final E event) {
+        final Long eventDistributionId = event.getCommonDistributionConfigId();
+        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
+        if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
+            try {
+                final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
+                final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+                sendAuditedMessage(event, channelDistributionEntity);
+            } catch (final IntegrationException ex) {
+                logger.error("There was an error sending the message.", ex);
+            }
+        } else {
+            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
+        }
+    }
+
+    public void sendAuditedMessage(final E event, final C config) throws IntegrationException {
+        try {
+            sendMessage(event, config);
+            setAuditEntrySuccess(event.getAuditEntryId());
+        } catch (final Exception e) {
+            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+            if (e instanceof IntegrationRestException) {
+                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
+            }
+            logger.error(e.getMessage(), e);
+            throw new IntegrationException(e.getMessage());
+        }
+    }
+
+    public abstract void sendMessage(final E event, final C config) throws Exception;
 
     public void setAuditEntrySuccess(final Long auditEntryId) {
         if (auditEntryId != null) {
@@ -115,45 +170,4 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
             }
         }
     }
-
-    public G getGlobalConfigEntity() {
-        final List<G> globalConfigs = globalRepository.findAll();
-        if (globalConfigs.size() == 1) {
-            return globalConfigs.get(0);
-        }
-        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
-        return null;
-    }
-
-    @Override
-    public void receiveMessage(final String message) {
-        try {
-            logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
-            final E event = getEvent(message);
-            logger.info(String.format("%s event %s", getClass().getName(), event));
-
-            handleEvent(event);
-        } catch (final Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    public void handleEvent(final E event) {
-        final Long eventDistributionId = event.getCommonDistributionConfigId();
-        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
-        if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
-            try {
-                final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-                final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
-                sendMessage(event, channelDistributionEntity);
-            } catch (final IntegrationException ex) {
-                logger.error("There was an error sending the message.", ex);
-            }
-        } else {
-            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
-        }
-    }
-
-    public abstract void sendMessage(final E event, final C config) throws IntegrationException;
-
 }

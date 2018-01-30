@@ -55,12 +55,14 @@ public class ChannelFreemarkerTemplatingService {
 
     public Configuration createFreemarkerConfig() throws IOException {
         final Configuration cfg = new Configuration(Configuration.VERSION_2_3_25);
-        final File templateDirectory = findTemplateDirectory();
-        cfg.setDirectoryForTemplateLoading(templateDirectory);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
+        final File templateDirectory = findTemplateDirectory();
+        if (templateDirectory != null) {
+            cfg.setDirectoryForTemplateLoading(templateDirectory);
+        }
         return cfg;
     }
 
