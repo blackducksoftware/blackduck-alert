@@ -13,15 +13,18 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackducksoftware.integration.HubConnectionTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
+@Category(HubConnectionTest.class)
 public class LoginActionsTestIT {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
 

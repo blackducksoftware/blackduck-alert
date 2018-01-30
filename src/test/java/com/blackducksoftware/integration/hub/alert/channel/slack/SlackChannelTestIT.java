@@ -16,8 +16,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.ExternalConnectionTest;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -27,6 +29,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
+@Category(ExternalConnectionTest.class)
 public class SlackChannelTestIT extends ChannelTest {
 
     @Test

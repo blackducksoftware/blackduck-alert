@@ -23,7 +23,7 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
+import com.blackducksoftware.integration.DatabaseConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.hub.notification.processor.Notification
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
-@Category(DatabaseSetupRequiredTest.class)
+@Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
