@@ -26,10 +26,12 @@ package com.blackducksoftware.integration.hub.alert.channel.rest;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 import okhttp3.HttpUrl;
@@ -45,17 +47,33 @@ public class ChannelRequestHelper {
         this.restConnection = restConnection;
     }
 
-    public Request createMessageRequest(final List<String> urlSegments, final Map<String, String> headers, final String jsonString) {
+    public HttpUrl createHttpUrl(final List<String> urlSegments) throws IntegrationException {
+        try {
+            return restConnection.createHttpUrl(urlSegments);
+        } catch (final NullPointerException ex) {
+            throw new IntegrationException("URL invalid: " + StringUtils.join(urlSegments, '/'));
+        }
+    }
+
+    public HttpUrl createHttpUrl(final String url) throws IntegrationException {
+        try {
+            return restConnection.createHttpUrl(url);
+        } catch (final NullPointerException ex) {
+            throw new IntegrationException("URL invalid: " + url);
+        }
+    }
+
+    public Request createMessageRequest(final List<String> urlSegments, final Map<String, String> headers, final String jsonString) throws IntegrationException {
         final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments);
         return createMessageRequest(httpUrl, headers, jsonString);
     }
 
-    public Request createMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
-        final HttpUrl httpUrl = restConnection.createHttpUrl(url);
+    public Request createMessageRequest(final String url, final Map<String, String> headers, final String jsonString) throws IntegrationException {
+        final HttpUrl httpUrl = createHttpUrl(url);
         return createMessageRequest(httpUrl, headers, jsonString);
     }
 
-    public Request createMessageRequest(final HttpUrl httpUrl, final Map<String, String> headers, final String jsonString) {
+    public Request createMessageRequest(final HttpUrl httpUrl, final Map<String, String> headers, final String jsonString) throws IntegrationException {
         final RequestBody body = restConnection.createJsonRequestBody(jsonString);
         return restConnection.createPostRequest(httpUrl, headers, body);
     }
@@ -77,7 +95,7 @@ public class ChannelRequestHelper {
         } catch (final IntegrationException integrationException) {
             throw integrationException;
         } catch (final Exception generalException) {
-            throw new IntegrationException(generalException);
+            throw new AlertException(generalException);
         } finally {
             if (response != null && response.body() != null) {
                 response.body().close();

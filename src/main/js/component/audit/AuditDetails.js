@@ -74,7 +74,7 @@ class AuditDetails extends Component {
 			<div className={tableStyles.expandableContainer}>
 				{notificationProjectVersion}
 				{eventType}
-				<BootstrapTable data={this.state.values.components} containerClass={tableStyles.auditDetailsTable} striped hover condensed trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.auditDetailsTableBody} >
+				<BootstrapTable data={this.state.values.components} containerClass={tableStyles.auditDetailsTable} striped condensed trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.auditDetailsTableBody} >
                     <TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName={tableStyles.tableCell}>Component</TableHeaderColumn>
                     <TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName={tableStyles.tableCell}>Version</TableHeaderColumn>
                     <TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName={tableStyles.tableCell}>Policy Rule</TableHeaderColumn>

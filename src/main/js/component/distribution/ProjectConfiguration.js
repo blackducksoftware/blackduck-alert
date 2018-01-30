@@ -123,7 +123,7 @@ export default class ProjectConfiguration extends Component {
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
+                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
                                     <TableHeaderColumn dataField='name' isKey dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
                                     <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
                                 </BootstrapTable>
