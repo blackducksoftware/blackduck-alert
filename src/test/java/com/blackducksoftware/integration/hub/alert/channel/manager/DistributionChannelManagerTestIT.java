@@ -28,7 +28,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
-import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
+import com.blackducksoftware.integration.DatabaseConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
-@Category(DatabaseSetupRequiredTest.class)
+@Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })

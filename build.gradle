@@ -37,7 +37,7 @@ applicationDefaultJvmArgs = [
 ]
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:25.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:26.1.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch'
@@ -162,12 +162,30 @@ task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
-test { useJUnit { excludeCategories 'com.blackducksoftware.integration.DatabaseSetupRequiredTest' } }
-
-task testDatabaseSetupRequired(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.DatabaseSetupRequiredTest' } }
-
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage    
 }
+
+test { 
+    useJUnit { 
+        excludeCategories = [
+            'com.blackducksoftware.integration.IntegrationTest',
+            'com.blackducksoftware.integration.DatabaseConnectionTest',
+            'com.blackducksoftware.integration.ExternalConnectionTest',
+            'com.blackducksoftware.integration.HubConnectionTest',
+            'com.blackducksoftware.integration.PerformanceTest',
+            'com.blackducksoftware.integration.TurtleTest',
+            'com.blackducksoftware.integration.UniqueTest'
+         ]
+    } 
+}
+
+task testIntegration(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.IntegrationTest' } }
+task testDatabaseConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.DatabaseConnectionTest' } }
+task testExternalConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.ExternalConnectionTest' } }
+task testHubConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.HubConnectionTest' } }
+task testPerformance(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.PerformanceTest' } }
+task testTurtle(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.TurtleTest' } }
+task testUnique(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.UniqueTest' } }
