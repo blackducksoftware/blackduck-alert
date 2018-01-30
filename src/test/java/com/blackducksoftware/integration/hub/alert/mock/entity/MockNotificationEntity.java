@@ -11,15 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
@@ -34,16 +29,14 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     private final String policyRuleUser;
     private final String projectUrl;
     private final String projectVersionUrl;
-    private final Collection<VulnerabilityEntity> vulnerabilityList;
     private final Long id;
 
     public MockNotificationEntity() {
-        this("_event_key_", new Date(400), NotificationCategoryEnum.POLICY_VIOLATION, "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "policyRuleUser", "projectUrl", "projectVersionUrl",
-                Arrays.asList(new MockVulnerabilityEntity().createEntity()), 1L);
+        this("_event_key_", new Date(400), NotificationCategoryEnum.POLICY_VIOLATION, "projectName", "projectVersion", "componentName", "componentVersion", "policyRuleName", "policyRuleUser", "projectUrl", "projectVersionUrl", 1L);
     }
 
     private MockNotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Collection<VulnerabilityEntity> vulnerabilityList, final Long id) {
+            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Long id) {
         super();
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -56,7 +49,6 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         this.policyRuleUser = policyRuleUser;
         this.projectUrl = projectUrl;
         this.projectVersionUrl = projectVersionUrl;
-        this.vulnerabilityList = vulnerabilityList;
         this.id = id;
     }
 
@@ -104,10 +96,6 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         return projectVersionUrl;
     }
 
-    public Collection<VulnerabilityEntity> getVulnerabilityList() {
-        return vulnerabilityList;
-    }
-
     @Override
     public Long getId() {
         return id;
@@ -115,8 +103,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
 
     @Override
     public NotificationEntity createEntity() {
-        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser,
-                vulnerabilityList);
+        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser);
         entity.setId(id);
         return entity;
     }
@@ -129,7 +116,6 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     @SuppressWarnings("deprecation")
     @Override
     public String getEntityJson() {
-        final Gson gson = new Gson();
         final JsonObject json = new JsonObject();
         json.addProperty("eventKey", eventKey);
         // Gson uses locale by default thus I need to use it here
@@ -143,8 +129,6 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
         json.addProperty("policyRuleUser", policyRuleUser);
         json.addProperty("projectUrl", projectUrl);
         json.addProperty("projectVersionUrl", projectVersionUrl);
-        final JsonElement array = gson.toJsonTree(vulnerabilityList);
-        json.add("vulnerabilityList", array.getAsJsonArray());
         json.addProperty("id", id);
         return json.toString();
     }

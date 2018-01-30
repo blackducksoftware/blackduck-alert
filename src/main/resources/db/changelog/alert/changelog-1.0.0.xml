@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="psantos (generated)" id="1516889156406-1">
+        <createTable tableName="AUDIT_ENTRIES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_5"/>
+            </column>
+            <column name="COMMON_CONFIG_ID" type="BIGINT(19)"/>
+            <column name="ERROR_MESSAGE" type="VARCHAR(255)"/>
+            <column name="ERROR_STACK_TRACE" type="VARCHAR(2147483647)"/>
+            <column name="STATUS" type="INT(10)"/>
+            <column name="TIME_CREATED" type="TIMESTAMP"/>
+            <column name="TIME_LAST_SENT" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-2">
+        <createTable tableName="AUDIT_NOTIFICATION_RELATION" schemaName="ALERT">
+            <column name="AUDIT_ENTRY_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-3">
+        <createTable tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_C"/>
+            </column>
+            <column name="DISTRIBUTION_CONFIG_ID" type="BIGINT(19)"/>
+            <column name="DISTRIBUTION_TYPE" type="VARCHAR(255)"/>
+            <column name="FILTER_BY_PROJECT" type="BOOLEAN(1)"/>
+            <column name="FREQUENCY" type="INT(10)"/>
+            <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-4">
+        <createTable tableName="CONFIGURED_PROJECTS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A"/>
+            </column>
+            <column name="PROJECT_NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-5">
+        <createTable tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_TYPE_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-6">
+        <createTable tableName="DISTRIBUTION_PROJECT_RELATION" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-7">
+        <createTable tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A3"/>
+            </column>
+            <column name="EMAIL_SUBJECT_LINE" type="VARCHAR(255)"/>
+            <column name="EMAIL_TEMPLATE_LOGO_IMAGE" type="VARCHAR(255)"/>
+            <column name="GROUP_NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-8">
+        <createTable tableName="GLOBAL_EMAIL_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E"/>
+            </column>
+            <column name="MAIL_SMTP_ALLOW_8_BITMIME" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_CONNECTION_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_DSN_NOTIFY" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_DNS_RET" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_EHLO" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_FROM" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALHOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PASSWORD" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_SEND_PARTIAL" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_USER" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-9">
+        <createTable tableName="GLOBAL_HIPCHAT_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_A3C"/>
+            </column>
+            <column name="API_KEY" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-10">
+        <createTable tableName="GLOBAL_HUB_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_3"/>
+            </column>
+            <column name="HUB_API_KEY" type="VARCHAR(255)"/>
+            <column name="HUB_TIMEOUT" type="INT(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-11">
+        <createTable tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_AF"/>
+            </column>
+            <column name="ALERT_ACCUMULATOR_CRON" type="VARCHAR(255)"/>
+            <column name="ALERT_DIGEST_DAILY_CRON" type="VARCHAR(255)"/>
+            <column name="ALERT_PURGE_DATA_CRON" type="VARCHAR(255)"/>
+            <column name="ALERT_DIGEST_DAILY_HOUR_OF_DAY" type="VARCHAR(255)"/>
+            <column name="ALERT_PURGE_DATA_FREQUENCY_DAYS" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-12">
+        <createTable tableName="GLOBAL_SLACK_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E1"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-13">
+        <createTable tableName="HIP_CHAT_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E0"/>
+            </column>
+            <column name="COLOR" type="VARCHAR(255)"/>
+            <column name="NOTIFY" type="BOOLEAN(1)"/>
+            <column name="ROOM_ID" type="INT(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-14">
+        <createTable tableName="NOTIFICATION_EVENTS" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_7F"/>
+            </column>
+            <column name="COMPONENT_NAME" type="VARCHAR(255)"/>
+            <column name="COMPONENT_VERSION" type="VARCHAR(255)"/>
+            <column name="CREATED_AT" type="TIMESTAMP"/>
+            <column name="EVENT_KEY" type="VARCHAR(255)"/>
+            <column name="NOTIFICATION_TYPE" type="INT(10)"/>
+            <column name="POLICY_RULE_NAME" type="VARCHAR(255)"/>
+            <column name="POLICY_RULE_USER" type="VARCHAR(255)"/>
+            <column name="PROJECT_NAME" type="VARCHAR(255)"/>
+            <column name="PROJECT_URL" type="VARCHAR(255)"/>
+            <column name="PROJECT_VERSION" type="VARCHAR(255)"/>
+            <column name="PROJECT_VERSION_URL" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-15">
+        <createTable tableName="NOTIFICATION_TYPES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_4"/>
+            </column>
+            <column name="TYPE" type="INT(10)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-16">
+        <createTable tableName="SLACK_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_77"/>
+            </column>
+            <column name="CHANNEL_NAME" type="VARCHAR(255)"/>
+            <column name="CHANNEL_USERNAME" type="VARCHAR(255)"/>
+            <column name="WEBHOOK" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-17">
+        <createTable tableName="VULNERABILITIES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="CONSTRAINT_B"/>
+            </column>
+            <column name="NOTIFICATION_ID" type="BIGINT(19)"/>
+            <column name="OPERATION" type="INT(10)"/>
+            <column name="VULNERABILITY_ID" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-18">
+        <addPrimaryKey columnNames="AUDIT_ENTRY_ID, NOTIFICATION_ID" constraintName="CONSTRAINT_6" tableName="AUDIT_NOTIFICATION_RELATION" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-19">
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, PROJECT_ID" constraintName="CONSTRAINT_7" tableName="DISTRIBUTION_PROJECT_RELATION" schemaName="ALERT"/>
+    </changeSet>
+    <changeSet author="psantos (generated)" id="1516889156406-20">
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE_ID" constraintName="CONSTRAINT_C0" tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION" schemaName="ALERT"/>
+    </changeSet>
+</databaseChangeLog>

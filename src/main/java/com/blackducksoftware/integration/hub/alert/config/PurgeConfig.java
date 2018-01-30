@@ -35,11 +35,11 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, PurgeWriter> {
@@ -48,25 +48,25 @@ public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, Purge
     public static final String PURGE_JOB_NAME = "PurgeJob";
 
     @Autowired
-    public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationRepositoryWrapper notificationRepository,
+    public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
             final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationRepository, transactionManager, taskScheduler);
+        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
     }
 
     @Override
     public Step createStep(final PurgeReader reader, final PurgeProcessor processor, final PurgeWriter writer) {
-        return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationEntity>, List<NotificationEntity>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
+        return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationModel>, List<NotificationModel>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
                 .build();
     }
 
     @Override
     public PurgeReader reader() {
-        return new PurgeReader(notificationRepository);
+        return new PurgeReader(notificationManager);
     }
 
     @Override
     public PurgeWriter writer() {
-        return new PurgeWriter(notificationRepository);
+        return new PurgeWriter(notificationManager);
     }
 
     @Override

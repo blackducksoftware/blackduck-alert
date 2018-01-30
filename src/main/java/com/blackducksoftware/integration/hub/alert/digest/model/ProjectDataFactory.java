@@ -34,10 +34,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 
@@ -50,13 +50,13 @@ public class ProjectDataFactory {
     public final static String VULNERABILITY_UPDATED_ID_SET = "vulnerabilityUpdatedIdSet";
     public final static String VULNERABILITY_DELETED_ID_SET = "vulnerabilityDeletedIdSet";
 
-    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationEntity> notifications) {
+    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications) {
         return createProjectDataCollection(notifications, DigestTypeEnum.REAL_TIME);
     }
 
-    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationEntity> notifications, final DigestTypeEnum digestType) {
+    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications, final DigestTypeEnum digestType) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
-        for (final NotificationEntity entity : notifications) {
+        for (final NotificationModel entity : notifications) {
             final String projectKey = entity.getProjectName() + entity.getProjectVersion();
 
             ProjectDataBuilder projectDataBuilder;
@@ -66,20 +66,20 @@ public class ProjectDataFactory {
                 projectDataBuilder = getProjectDataBuilder(entity, digestType);
                 projectDataMap.put(projectKey, projectDataBuilder);
             }
-            projectDataBuilder.addNotificationId(entity.getId());
+            projectDataBuilder.addNotificationId(entity.getNotificationEntity().getId());
             final CategoryDataBuilder categoryDataBuilder = getCategoryDataBuilder(entity, projectDataBuilder.getCategoryBuilderMap());
             addCategoryData(entity, categoryDataBuilder);
         }
         return collectProjectDataFromMap(projectDataMap);
     }
 
-    public ProjectData createProjectData(final NotificationEntity notification) {
+    public ProjectData createProjectData(final NotificationModel notification) {
         return createProjectData(notification, DigestTypeEnum.REAL_TIME);
     }
 
-    public ProjectData createProjectData(final NotificationEntity notification, final DigestTypeEnum digestType) {
+    public ProjectData createProjectData(final NotificationModel notification, final DigestTypeEnum digestType) {
         final ProjectDataBuilder projectDataBuilder = getProjectDataBuilder(notification, digestType);
-        projectDataBuilder.addNotificationId(notification.getId());
+        projectDataBuilder.addNotificationId(notification.getNotificationEntity().getId());
         final CategoryDataBuilder categoryData = getCategoryDataBuilder(notification, projectDataBuilder.getCategoryBuilderMap());
         categoryData.setCategoryKey(notification.getNotificationType().name());
         addCategoryData(notification, categoryData);
@@ -87,7 +87,7 @@ public class ProjectDataFactory {
     }
 
     // get category map from the project or create the project data if it doesn't exist
-    private ProjectDataBuilder getProjectDataBuilder(final NotificationEntity notification, final DigestTypeEnum digestType) {
+    private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final DigestTypeEnum digestType) {
         ProjectDataBuilder projectBuilder;
         projectBuilder = new ProjectDataBuilder();
         projectBuilder.setDigestType(digestType);
@@ -96,7 +96,7 @@ public class ProjectDataFactory {
         return projectBuilder;
     }
 
-    private CategoryDataBuilder getCategoryDataBuilder(final NotificationEntity notification, final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap) {
+    private CategoryDataBuilder getCategoryDataBuilder(final NotificationModel notification, final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap) {
         CategoryDataBuilder categoryData;
         final NotificationCategoryEnum categoryKey = notification.getNotificationType();
         if (!categoryBuilderMap.containsKey(categoryKey)) {
@@ -109,7 +109,7 @@ public class ProjectDataFactory {
     }
 
     // get the category data object to be able to add items.
-    private void addCategoryData(final NotificationEntity notification, final CategoryDataBuilder categoryData) {
+    private void addCategoryData(final NotificationModel notification, final CategoryDataBuilder categoryData) {
         final Map<String, Object> dataSet = new HashMap<>();
         final NotificationCategoryEnum categoryKey = notification.getNotificationType();
 
@@ -142,7 +142,7 @@ public class ProjectDataFactory {
         categoryData.addItem(new ItemData(dataSet));
     }
 
-    private void addVulnerabilitySets(final Map<String, Object> dataSet, final NotificationEntity notification) {
+    private void addVulnerabilitySets(final Map<String, Object> dataSet, final NotificationModel notification) {
         final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
         final Set<String> addedIdSet = new HashSet<>();
         final Set<String> updatedIdSet = new HashSet<>();

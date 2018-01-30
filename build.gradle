@@ -9,6 +9,8 @@ buildscript {
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.8.RELEASE'
         classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
+        classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
+        classpath 'com.h2database:h2:1.4.196'
     }
 }
 
@@ -20,9 +22,11 @@ plugins {
 }
 
 version = '0.0.1-SNAPSHOT'
+def dbChangeLogVersion = '1.0.0'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'org.liquibase.gradle'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
@@ -49,6 +53,7 @@ dependencies {
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
     compile 'org.springframework.security:spring-security-config:4.2.3.RELEASE'
+    compile 'org.liquibase:liquibase-core'
     runtime 'com.h2database:h2'
 
     compile 'org.jsoup:jsoup:1.9.2'
@@ -100,6 +105,17 @@ distributions {
 
 tasks.withType(Test) {
     reports.html.destination = file("${reporting.baseDir}/${name}")
+}
+
+liquibase {
+    activities {
+        main {
+            changeLogFile "$projectDir/src/main/resources/db/changelog/alert/changelog-${dbChangeLogVersion}.xml"
+            url 'jdbc:h2:file:./data/alertdb'
+            username 'sa'
+            defaultSchemaName 'alert'
+        }
+    }
 }
 
 task cleanBundles(type: Delete) {
