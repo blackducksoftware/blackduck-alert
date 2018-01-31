@@ -76,12 +76,12 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
 
     @Override
     public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final ProjectData projectData) throws IntegrationException {
-        final String htmlMessage = createHtmlMessage(projectData);
-        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
-
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
+            final String htmlMessage = createHtmlMessage(projectData);
+            final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+
             final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
 
             final Map<String, String> requestHeaders = new HashMap<>();
