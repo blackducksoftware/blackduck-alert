@@ -54,7 +54,6 @@ import com.google.gson.JsonObject;
 import freemarker.template.TemplateException;
 import okhttp3.HttpUrl;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 @Component
@@ -96,12 +95,11 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
             requestHeaders.put("Content-Type", "application/json");
 
-            final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
-            // The body = {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
-            final RequestBody body = restConnection.createJsonRequestBody("{\"message\":\"test\"}");
-            final Request request = restConnection.createPostRequest(httpUrl, requestHeaders, body);
-
+            // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
+            final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
+            final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
+
             Response response = null;
             try {
                 response = channelRequestHelper.sendGenericRequest(request);
