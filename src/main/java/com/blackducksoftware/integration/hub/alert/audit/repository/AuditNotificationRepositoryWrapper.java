@@ -43,10 +43,6 @@ public class AuditNotificationRepositoryWrapper extends AbstractRepositoryWrappe
         return decryptSensitiveData(getRepository().findByAuditEntryId(auditEntryId));
     }
 
-    public List<AuditNotificationRelation> findByNotificationId(final Long notificationId) {
-        return decryptSensitiveData(getRepository().findByNotificationId(notificationId));
-    }
-
     @Override
     public AuditNotificationRelation encryptSensitiveData(final AuditNotificationRelation entity) throws EncryptionException {
         return entity;
