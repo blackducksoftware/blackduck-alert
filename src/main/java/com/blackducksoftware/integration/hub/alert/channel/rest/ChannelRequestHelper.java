@@ -64,7 +64,7 @@ public class ChannelRequestHelper {
     }
 
     public Request createMessageRequest(final List<String> urlSegments, final Map<String, String> headers, final String jsonString) throws IntegrationException {
-        final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments);
+        final HttpUrl httpUrl = createHttpUrl(urlSegments);
         return createMessageRequest(httpUrl, headers, jsonString);
     }
 

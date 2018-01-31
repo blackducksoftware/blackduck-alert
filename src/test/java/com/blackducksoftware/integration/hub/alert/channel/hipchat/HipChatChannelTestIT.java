@@ -11,6 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -66,6 +67,30 @@ public class HipChatChannelTestIT extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, null);
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
+        final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(12345, Boolean.FALSE, null);
+        final ProjectData projectData = createProjectData("HipChat IT test");
+
+        final String userDir = System.getProperties().getProperty("user.dir");
+        try {
+            System.getProperties().setProperty("user.dir", "garbage");
+            Exception thrownException = null;
+            try {
+                hipChatChannel.createRequest(channelRequestHelper, config, projectData);
+            } catch (final Exception e) {
+                thrownException = e;
+            }
+            assertNotNull(thrownException);
+        } finally {
+            System.getProperties().setProperty("user.dir", userDir);
+        }
+    }
+
+    @Test
+    public void createRequestThrowsMissingRoomID() {
+        final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, null);
+
+        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity();
         final ProjectData projectData = createProjectData("HipChat IT test");
 
@@ -79,6 +104,7 @@ public class HipChatChannelTestIT extends ChannelTest {
                 thrownException = e;
             }
             assertNotNull(thrownException);
+            assertEquals("Room ID missing", thrownException.getMessage());
         } finally {
             System.getProperties().setProperty("user.dir", userDir);
         }
