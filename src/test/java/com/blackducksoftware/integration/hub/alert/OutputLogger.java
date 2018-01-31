@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class OutputLogger {
+public class OutputLogger implements AutoCloseable {
     private OutputStream systemOut;
     private OutputStream systemErr;
     private OutputStream loggerOutput;
@@ -47,5 +47,10 @@ public class OutputLogger {
             }
         }
         return false;
+    }
+
+    @Override
+    public void close() throws Exception {
+        cleanup();
     }
 }

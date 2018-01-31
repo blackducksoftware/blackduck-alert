@@ -83,8 +83,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(3L)).thenReturn(projectMockUtils.getProjectThreeEntity());
         Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(4L)).thenReturn(projectMockUtils.getProjectFourEntity());
         Mockito.when(configActions.getConfiguredProjectsActions().getDistributionProjectRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(projectMockUtils.getProjectRelations());
-        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findOne(1L)).thenReturn(notificationMockUtil.getType1Entity());
-        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findOne(2L)).thenReturn(notificationMockUtil.getType2Entity());
+        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findOne(1L)).thenReturn(notificationMockUtil.createEntity());
         Mockito.when(configActions.getNotificationTypesActions().getDistributionNotificationTypeRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(notificationMockUtil.getNotificationTypeRelations());
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
@@ -150,8 +149,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectTwo())).thenReturn(projectMockUtils.getProjectTwoEntity());
         Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectThree())).thenReturn(projectMockUtils.getProjectThreeEntity());
         Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findByProjectName(projectMockUtils.getProjectFour())).thenReturn(projectMockUtils.getProjectFourEntity());
-        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findByType(notificationMockUtil.getType1())).thenReturn(notificationMockUtil.getType1Entity());
-        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findByType(notificationMockUtil.getType2())).thenReturn(notificationMockUtil.getType2Entity());
+        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findByType(notificationMockUtil.getType())).thenReturn(notificationMockUtil.createEntity());
 
         E actualConfigEntity = configActions.saveConfig(getRestMockUtil().createRestModel());
         assertNotNull(actualConfigEntity);
