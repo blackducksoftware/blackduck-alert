@@ -177,17 +177,15 @@ def tasksPackages = [
     'testTurtle' : 'com.blackducksoftware.integration.TurtleTest',
     'testUnique' : 'com.blackducksoftware.integration.UniqueTest'
 ]
-
-def packages = tasksPackages.values()
     
 test { 
     useJUnit { 
-        excludeCategories = packages
+        excludeCategories = tasksPackages.values()
     } 
 }
 
-tasksPackages.each { key, value ->
-    task "$key"(type: Test) {
-        useJUnit { includeCategories value }
+tasksPackages.each { taskName, packageName ->
+    task "$taskName"(type: Test) {
+        useJUnit { includeCategories packageName }
     }
 }
