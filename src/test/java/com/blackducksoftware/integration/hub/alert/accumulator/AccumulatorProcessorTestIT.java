@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.blackducksoftware.integration.HubConnectionTest;
-import com.blackducksoftware.integration.TurtleTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
@@ -39,7 +38,7 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
-@Category({ HubConnectionTest.class, TurtleTest.class })
+@Category(HubConnectionTest.class)
 public class AccumulatorProcessorTestIT {
     private TestGlobalProperties globalProperties;
     private ProjectService projectRequestService;

@@ -173,9 +173,7 @@ def tasksPackages = [
     'testDatabaseConnection' : 'com.blackducksoftware.integration.DatabaseConnectionTest',
     'testExternalConncetion' : 'com.blackducksoftware.integration.ExternalConnectionTest',
     'testHubConnection' : 'com.blackducksoftware.integration.HubConnectionTest',
-    'testPerformance' : 'com.blackducksoftware.integration.PerformanceTest',
-    'testTurtle' : 'com.blackducksoftware.integration.TurtleTest',
-    'testUnique' : 'com.blackducksoftware.integration.UniqueTest'
+    'testPerformance' : 'com.blackducksoftware.integration.PerformanceTest'
 ]
     
 test { 
