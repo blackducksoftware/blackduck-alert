@@ -70,8 +70,8 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         return objectTransformer;
     }
 
-    public ProjectData getTestMessageProjectData() {
-        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
+    public String testGlobalConfig(final G globalConfigEntity) {
+        return getDistributionChannel().testGlobalConfig(globalConfigEntity);
     }
 
     public String sendTestMessage(final R restModel) throws AlertException {
@@ -83,6 +83,10 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         } catch (final IntegrationException ex) {
             return ex.getMessage();
         }
+    }
+
+    public ProjectData getTestMessageProjectData() {
+        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
     }
 
     public abstract Class<D> getDatabaseEntityClass();

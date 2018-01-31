@@ -1,7 +1,14 @@
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
@@ -41,6 +48,18 @@ public class GlobalHipChatConfigControllerTestIT extends GlobalControllerTest<Gl
     @Override
     public ConfigController<GlobalHipChatConfigRestModel> getController() {
         return new GlobalHipChatConfigController(globalHipChatConfigActions, new ObjectTransformer());
+    }
+
+    @Test
+    @Override
+    @WithMockUser(roles = "ADMIN")
+    public void testTestConfig() throws Exception {
+        final String testRestUrl = restUrl + "/test";
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final GlobalHipChatConfigRestModel globalHipChatConfigRestModel = new GlobalHipChatConfigRestModel(null, testProperties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), true);
+        request.content(globalHipChatConfigRestModel.toString());
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 }

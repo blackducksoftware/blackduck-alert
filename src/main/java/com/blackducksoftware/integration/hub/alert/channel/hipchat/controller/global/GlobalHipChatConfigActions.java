@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -35,9 +36,12 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 
 @Component
 public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> {
+    final HipChatManager hipChatManager;
+
     @Autowired
-    public GlobalHipChatConfigActions(final GlobalHipChatRepositoryWrapper hipChatRepository, final ObjectTransformer objectTransformer) {
+    public GlobalHipChatConfigActions(final GlobalHipChatRepositoryWrapper hipChatRepository, final ObjectTransformer objectTransformer, final HipChatManager hipChatManager) {
         super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
+        this.hipChatManager = hipChatManager;
     }
 
     @Override
@@ -47,8 +51,8 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
 
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-        // TODO decide how to test the API key
-        return null;
+        final GlobalHipChatConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
+        return hipChatManager.testGlobalConfig(entity);
     }
 
 }
