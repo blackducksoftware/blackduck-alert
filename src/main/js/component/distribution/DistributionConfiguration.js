@@ -214,7 +214,7 @@ class DistributionConfiguration extends Component {
             cellText = "Slack";
 		}
 
-		let data = <div>
+		let data = <div title={cellText}>
 						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
 						{cellText}
 					</div>;
@@ -395,7 +395,7 @@ class DistributionConfiguration extends Component {
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField='' width='65' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>

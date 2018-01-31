@@ -370,10 +370,10 @@ class Audit extends Component {
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Project Name</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' width='75' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' width='75' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
 	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}
