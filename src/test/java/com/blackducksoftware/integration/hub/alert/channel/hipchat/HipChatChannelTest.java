@@ -119,7 +119,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
         final String connectionErrorMessage = hipChatChannel.testGlobalConfig(entity);
-        assertEquals("Connection error: see logs for more information.", connectionErrorMessage);
+        assertEquals("Mock exception", connectionErrorMessage);
     }
 
 }

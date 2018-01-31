@@ -98,7 +98,7 @@ public class ChannelRequestHelper {
             response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(integrationRestException.getHttpStatusCode()).message(integrationRestException.getHttpStatusMessage()).build();
             return response;
         } catch (final Exception generalException) {
-            throw new AlertException(generalException);
+            throw new AlertException(generalException.getMessage());
         } finally {
             if (response != null && response.body() != null) {
                 response.body().close();

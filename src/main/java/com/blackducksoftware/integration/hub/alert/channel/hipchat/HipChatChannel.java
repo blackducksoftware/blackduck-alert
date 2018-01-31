@@ -101,15 +101,14 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
                 final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
                 final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
 
-                Response response = null;
-
-                response = channelRequestHelper.sendGenericRequest(request);
-                if (response != null && response.isSuccessful()) {
+                final Response response = channelRequestHelper.sendGenericRequest(request);
+                if (response.isSuccessful()) {
                     return "API key is valid.";
                 }
                 return "Invalid API key: " + response.message();
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
+                return e.getMessage();
             }
         }
         return "Connection error: see logs for more information.";
