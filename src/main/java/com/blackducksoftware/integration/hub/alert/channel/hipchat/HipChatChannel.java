@@ -47,20 +47,26 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import freemarker.template.TemplateException;
+import okhttp3.HttpUrl;
 import okhttp3.Request;
+import okhttp3.Response;
 
 @Component
 public class HipChatChannel extends RestDistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
+
     @Autowired
     public HipChatChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final HipChatDistributionRepositoryWrapper hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class, channelRestConnectionFactory);
+        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @JmsListener(destination = SupportedChannels.HIPCHAT)
@@ -72,6 +78,41 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     @Override
     public String getApiUrl() {
         return HIP_CHAT_API;
+    }
+
+    @Override
+    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) {
+        if (entity == null) {
+            return "The provided entity was null.";
+        }
+        final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
+        if (restConnection != null) {
+            try {
+                final List<String> urlSegments = Arrays.asList("v2", "room", "*", "notification");
+                final Map<String, String> queryParameters = new HashMap<>();
+                queryParameters.put("auth_test", "true");
+
+                final Map<String, String> requestHeaders = new HashMap<>();
+                requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
+                requestHeaders.put("Content-Type", "application/json");
+
+                // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
+                final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
+                final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
+                final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
+
+                Response response = null;
+
+                response = channelRequestHelper.sendGenericRequest(request);
+                if (response != null && response.isSuccessful()) {
+                    return "API key is valid.";
+                }
+                return "Invalid API key: " + response.message();
+            } catch (final IntegrationException e) {
+                restConnection.logger.error("Unable to create a response", e);
+            }
+        }
+        return "Connection error: see logs for more information.";
     }
 
     @Override

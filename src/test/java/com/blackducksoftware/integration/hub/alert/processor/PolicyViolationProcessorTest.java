@@ -33,9 +33,6 @@ public class PolicyViolationProcessorTest {
 
     @Test
     public void testProcess() throws HubIntegrationException, URISyntaxException {
-        final MapProcessorCache cache = new MapProcessorCache();
-        final PolicyViolationProcessor policyViolationProcessor = new PolicyViolationProcessor(cache, new TestLogger());
-
         final Date createdAt = new Date();
         final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
         final String componentName = "Content item test";
@@ -50,9 +47,34 @@ public class PolicyViolationProcessorTest {
         final String componentIssueUrl = "issueUrl";
         final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
 
+        processTestRun(notification);
+    }
+
+    @Test
+    public void testProcessWithoutVersion() throws URISyntaxException, HubIntegrationException {
+        final Date createdAt = new Date();
+        final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
+        final String componentName = "Content item test";
+        final String componentUrl = "url";
+        final String componentVersionUrl = "newest";
+        final PolicyRuleView policyRuleView = new PolicyRuleView();
+        final MetaView metaView = new MetaView();
+        metaView.href = "Meta href";
+        policyRuleView.meta = metaView;
+        final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
+        final String componentIssueUrl = "issueUrl";
+        final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, null, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
+
+        processTestRun(notification);
+    }
+
+    private void processTestRun(final PolicyViolationContentItem contentItem) throws HubIntegrationException {
+        final MapProcessorCache cache = new MapProcessorCache();
+        final PolicyViolationProcessor policyViolationProcessor = new PolicyViolationProcessor(cache, new TestLogger());
+
         assertTrue(cache.getEvents().size() == 0);
 
-        policyViolationProcessor.process(notification);
+        policyViolationProcessor.process(contentItem);
 
         assertTrue(cache.getEvents().size() == 1);
     }
