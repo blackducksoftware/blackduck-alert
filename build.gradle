@@ -168,24 +168,26 @@ task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
     pushImage.mustRunAfter buildDockerImage    
 }
 
+def tasksPackages = [
+    'testIntegration' : 'com.blackducksoftware.integration.IntegrationTest',
+    'testDatabaseConnection' : 'com.blackducksoftware.integration.DatabaseConnectionTest',
+    'testExternalConncetion' : 'com.blackducksoftware.integration.ExternalConnectionTest',
+    'testHubConnection' : 'com.blackducksoftware.integration.HubConnectionTest',
+    'testPerformance' : 'com.blackducksoftware.integration.PerformanceTest',
+    'testTurtle' : 'com.blackducksoftware.integration.TurtleTest',
+    'testUnique' : 'com.blackducksoftware.integration.UniqueTest'
+]
+
+def packages = tasksPackages.values()
+    
 test { 
     useJUnit { 
-        excludeCategories = [
-            'com.blackducksoftware.integration.IntegrationTest',
-            'com.blackducksoftware.integration.DatabaseConnectionTest',
-            'com.blackducksoftware.integration.ExternalConnectionTest',
-            'com.blackducksoftware.integration.HubConnectionTest',
-            'com.blackducksoftware.integration.PerformanceTest',
-            'com.blackducksoftware.integration.TurtleTest',
-            'com.blackducksoftware.integration.UniqueTest'
-         ]
+        excludeCategories = packages
     } 
 }
 
-task testIntegration(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.IntegrationTest' } }
-task testDatabaseConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.DatabaseConnectionTest' } }
-task testExternalConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.ExternalConnectionTest' } }
-task testHubConnection(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.HubConnectionTest' } }
-task testPerformance(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.PerformanceTest' } }
-task testTurtle(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.TurtleTest' } }
-task testUnique(type: Test) { useJUnit { includeCategories 'com.blackducksoftware.integration.UniqueTest' } }
+tasksPackages.each { key, value ->
+    task "$key"(type: Test) {
+        useJUnit { includeCategories value }
+    }
+}
