@@ -92,6 +92,9 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     public AuditEntryEntity createEntity() {
         final AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, timeCreated, timeLastSent, status, errorMessage, errorStackTrace);
         entity.setId(id);
+        entity.setErrorMessage(errorMessage);
+        entity.setErrorStackTrace(errorStackTrace);
+        entity.setTimeLastSent(timeLastSent);
         return entity;
     }
 

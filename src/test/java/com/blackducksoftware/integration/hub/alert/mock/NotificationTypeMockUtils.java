@@ -16,56 +16,77 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
-public class NotificationTypeMockUtils {
-    private final NotificationCategoryEnum type1;
-    private final NotificationCategoryEnum type2;
+public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEntity> {
+    private NotificationCategoryEnum type;
+    private Long id;
 
     public NotificationTypeMockUtils() {
-        this(NotificationCategoryEnum.POLICY_VIOLATION, NotificationCategoryEnum.VULNERABILITY);
+        this(1L, NotificationCategoryEnum.POLICY_VIOLATION);
     }
 
-    public NotificationTypeMockUtils(final NotificationCategoryEnum type1, final NotificationCategoryEnum type2) {
-        this.type1 = type1;
-        this.type2 = type2;
-    }
-
-    public NotificationTypeEntity getType1Entity() {
-        return new NotificationTypeEntity(type1);
-    }
-
-    public NotificationTypeEntity getType2Entity() {
-        return new NotificationTypeEntity(type2);
-    }
-
-    public NotificationCategoryEnum getType1() {
-        return type1;
-    }
-
-    public NotificationCategoryEnum getType2() {
-        return type2;
+    private NotificationTypeMockUtils(final Long id, final NotificationCategoryEnum type) {
+        this.type = type;
+        this.id = id;
     }
 
     public List<DistributionNotificationTypeRelation> getNotificationTypeRelations() {
-        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(1L, 1L);
-        final DistributionNotificationTypeRelation relation2 = new DistributionNotificationTypeRelation(1L, 2L);
-        return Arrays.asList(relation1, relation2);
+        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(1L, id);
+        return Arrays.asList(relation1);
     }
 
     public List<NotificationCategoryEnum> createNotificiationTypeListing() {
-        return Arrays.asList(type1, type2);
+        return Arrays.asList(type);
     }
 
     public List<String> createNotificiationTypeListingAsStrings() {
-        return Arrays.asList(type1.name(), type2.name());
+        return Arrays.asList(type.name());
     }
 
     public JsonArray getNotificationListingJson() {
         final JsonArray json = new JsonArray();
-        json.add(type1.name());
-        json.add(type2.name());
+        json.add(type.name());
         return json;
+    }
+
+    public NotificationCategoryEnum getType() {
+        return type;
+    }
+
+    public void setType(final NotificationCategoryEnum type) {
+        this.type = type;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public NotificationTypeEntity createEntity() {
+        final NotificationTypeEntity entity = new NotificationTypeEntity(type);
+        entity.setId(id);
+        return entity;
+    }
+
+    @Override
+    public NotificationTypeEntity createEmptyEntity() {
+        return new NotificationTypeEntity();
+    }
+
+    @Override
+    public String getEntityJson() {
+        final JsonObject json = new JsonObject();
+        json.addProperty("id", id);
+        json.addProperty("type", type.name());
+        return json.toString();
     }
 }
