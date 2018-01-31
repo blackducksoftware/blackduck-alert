@@ -37,6 +37,7 @@ public class TestProperties {
 
     public Properties getProperties() {
         if (properties == null) {
+            properties = new Properties();
             try {
                 // TODO add additional locations to check for properties
                 properties = resourceLoader.loadProperties(propertiesLocation);
@@ -50,9 +51,6 @@ public class TestProperties {
             }
         }
 
-        if (properties == null) {
-            properties = new Properties();
-        }
         return properties;
     }
 
