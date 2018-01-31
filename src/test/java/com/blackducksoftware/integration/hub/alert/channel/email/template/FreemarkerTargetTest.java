@@ -12,7 +12,7 @@ import org.junit.Test;
 public class FreemarkerTargetTest {
 
     @Test
-    public void testTreemarker() {
+    public void testFreemarker() {
         final FreemarkerTarget freemarkerTarget = new FreemarkerTarget();
 
         final Map<String, String> target1 = new HashMap<>();
