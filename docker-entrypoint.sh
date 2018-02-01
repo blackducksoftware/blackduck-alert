@@ -1,17 +1,6 @@
 #!/bin/sh
 set -e
 
-bootstrap() {
-	CONFIG_VOLUME=/opt/blackduck/alert-config-volume/
-	# We copy the config defaults into a volume which is mounted at runtime.
-	if [[ -f ${CONFIG_VOLUME}/BOOTSTRAPPED ]]; then
-		echo "Configuration already was written to this volume.  Not bootstrapping from defaults."
-	else
-		cp -r /opt/blackduck/alert-config-defaults/* ${CONFIG_VOLUME}
-		echo "bootstrapped! `date`" > ${CONFIG_VOLUME}/BOOTSTRAPPED
-	fi
-}
-
 verifyEnvironment() {
   # Verify JRE is present.
   if [ -n "$JAVA_HOME" ]; then
@@ -52,7 +41,6 @@ importCertificate(){
 # Bootstrap will optionally configure the config volume if it hasnt been configured yet.
 # After that we verify, import certs, and then launch the webserver.
 
-bootstrap
 verifyEnvironment
 
 if [ "$ALERT_IMPORT_CERT" == "false" ]
