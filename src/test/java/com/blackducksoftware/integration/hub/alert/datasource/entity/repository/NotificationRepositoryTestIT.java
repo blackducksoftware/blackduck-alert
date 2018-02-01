@@ -37,7 +37,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class NotificationRepositoryIT {
+public class NotificationRepositoryTestIT {
     @Autowired
     private NotificationRepositoryWrapper repository;
 
