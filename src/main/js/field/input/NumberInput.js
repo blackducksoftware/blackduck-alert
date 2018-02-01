@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { numberInput } from '../../../css/field.css';
-import LabeledField from './LabeledField';
+import LabeledField from '../LabeledField';
 
 export default class NumberInput extends LabeledField {
 	constructor(props) {

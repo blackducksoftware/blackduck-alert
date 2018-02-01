@@ -112,7 +112,6 @@ public class PurgeJobIT {
         final String componentVersion = "ComponentVersion";
         final String policyRuleName = "PolicyRuleName";
         final String person = "PolicyPerson";
-        final Collection<VulnerabilityEntity> vulnerabilityList = null;
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(1);

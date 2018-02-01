@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { textInput, fieldLabelTextArea } from '../../../css/field.css';
-import LabeledField from './LabeledField';
+import LabeledField from '../LabeledField';
 
 export default class TextArea extends LabeledField {
 	constructor(props) {

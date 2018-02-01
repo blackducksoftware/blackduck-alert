@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextInput from '../../field/input/TextInput';
-import LabeledField from '../../field/input/LabeledField';
+import LabeledField from '../../field/LabeledField';
 import ServerConfiguration from './ServerConfiguration';
 
 import { accumulatorFieldLabel, textInput, fieldError, labelField, accumulatorTypeAheadField} from '../../../css/field.css';
@@ -148,7 +148,7 @@ class SchedulingConfiguration extends ServerConfiguration {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
     }
 
@@ -171,7 +171,7 @@ class SchedulingConfiguration extends ServerConfiguration {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
     }
 

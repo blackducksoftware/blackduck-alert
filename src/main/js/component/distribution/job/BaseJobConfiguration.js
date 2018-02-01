@@ -71,7 +71,7 @@ class BaseJobConfiguration extends Component {
                 }
             })
             .catch(function(error) {
- 		 		console.log(error); 
+ 		 		console.log(error);
  			});
         } else {
             this.initializeValues(this.props)
@@ -120,7 +120,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-			configuration.notificationTypes = configuration.notificationTypes; 
+			configuration.notificationTypes = configuration.notificationTypes;
 		} else {
 			configuration.notificationTypes = null;
 		}
@@ -176,7 +176,7 @@ class BaseJobConfiguration extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 
@@ -195,7 +195,7 @@ class BaseJobConfiguration extends Component {
 		configuration.filterByProject = !configuration.includeAllProjects;
 		configuration.includeAllProjects = null;
 		if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-			configuration.notificationTypes = configuration.notificationTypes; 
+			configuration.notificationTypes = configuration.notificationTypes;
 		} else {
 			configuration.notificationTypes = null;
 		}
@@ -234,7 +234,7 @@ class BaseJobConfiguration extends Component {
 			});
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 

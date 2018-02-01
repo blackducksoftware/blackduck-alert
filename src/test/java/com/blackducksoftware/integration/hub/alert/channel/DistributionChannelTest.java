@@ -29,6 +29,8 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
@@ -137,6 +139,18 @@ public class DistributionChannelTest extends ChannelTest {
         Mockito.when(commonRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(commonEntity);
 
         channel.handleEvent(event);
+    }
+
+    @Test
+    public void testGlobalConfigTest() {
+        // Slack has no global config, so we use it to test the default method.
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
+
+        final String nullMessage = slackChannel.testGlobalConfig(null);
+        assertEquals("The provided entity was null.", nullMessage);
+
+        final String validEntityMessage = slackChannel.testGlobalConfig(new GlobalSlackConfigEntity());
+        assertEquals("Not implemented.", validEntityMessage);
     }
 
 }

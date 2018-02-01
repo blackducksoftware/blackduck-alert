@@ -11,8 +11,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.rest;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
@@ -22,6 +25,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 
 import okhttp3.Request;
 
@@ -38,13 +42,20 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final ProjectData projectData) {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final ProjectData projectData) throws AlertException {
                 return new Request.Builder().url("http://google.com").delete().build();
             }
         };
 
         final SlackEvent event = new SlackEvent(createProjectData("Rest channel test"), 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
-        restChannel.sendAuditedMessage(event, config);
+        Exception thrownException = null;
+        try {
+            restChannel.sendAuditedMessage(event, config);
+        } catch (final IntegrationException ex) {
+            thrownException = ex;
+        }
+
+        assertNotNull(thrownException);
     }
 }
