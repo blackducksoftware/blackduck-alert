@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
@@ -73,15 +74,22 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final ProjectData projectData) {
-        final String slackUrl = config.getWebhook();
-        final String htmlMessage = createHtmlMessage(projectData);
-        final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final ProjectData projectData) throws IntegrationException {
+        if (StringUtils.isBlank(config.getWebhook())) {
+            throw new IntegrationException("Missing Webhook URL");
+        } else if (StringUtils.isBlank(config.getChannelName())) {
+            throw new IntegrationException("Missing channel name");
+        } else {
 
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Content-Type", "application/json");
+            final String slackUrl = config.getWebhook();
+            final String htmlMessage = createHtmlMessage(projectData);
+            final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
-        return channelRequestHelper.createMessageRequest(slackUrl, requestHeaders, jsonString);
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/json");
+
+            return channelRequestHelper.createMessageRequest(slackUrl, requestHeaders, jsonString);
+        }
     }
 
     private String createHtmlMessage(final ProjectData projectData) {

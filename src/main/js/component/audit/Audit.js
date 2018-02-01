@@ -87,7 +87,7 @@ class Audit extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 
@@ -153,7 +153,7 @@ class Audit extends Component {
 			inProgress: true
 		});
 
-		var self = this;		
+		var self = this;
 		var resendUrl = '/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
 			method: 'POST',
@@ -176,7 +176,7 @@ class Audit extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 
@@ -252,7 +252,7 @@ class Audit extends Component {
 				} else if (cell[i] === "VULNERABILITY") {
 					vulnerability = vulnerabilityIcon;
 				}
-			}	
+			}
 			let data = <div>
 						{policyViolation}
 						{policyViolationCleared}
@@ -278,8 +278,8 @@ class Audit extends Component {
 	trClassFormat(row, rowIndex) {
 		// color the row correctly, since Striped does not work with expandable rows
 		var isEven = rowIndex % 2 === 0;
-		var className = isEven ? tableStyles.tableEvenRow : tableStyles.tableRow; 
-		return className; 
+		var className = isEven ? tableStyles.tableEvenRow : tableStyles.tableRow;
+		return className;
 	}
 
 
@@ -366,14 +366,14 @@ class Audit extends Component {
 							</div>
 						</div>
 						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
-						<BootstrapTable trClassName={this.trClassFormat} hover condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Project Name</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' width='75' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' width='75' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
 	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}

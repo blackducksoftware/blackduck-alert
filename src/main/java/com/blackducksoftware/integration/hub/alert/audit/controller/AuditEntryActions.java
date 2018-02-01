@@ -105,7 +105,7 @@ public class AuditEntryActions {
         AuditEntryEntity auditEntryEntity = null;
         auditEntryEntity = auditEntryRepository.findOne(id);
         if (auditEntryEntity == null) {
-            throw new IntegrationException("No audit entry with the provided id exists.");
+            throw new AlertException("No audit entry with the provided id exists.");
         }
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
