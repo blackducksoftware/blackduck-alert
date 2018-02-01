@@ -29,10 +29,10 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
-@Category(ExternalConnectionTest.class)
 public class SlackChannelTestIT extends ChannelTest {
 
     @Test
+    @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
