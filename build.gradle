@@ -89,7 +89,7 @@ distributions {
     main {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
-            from('src/main/resources/application.properties') {into '/blackduck-alert-config-defaults/'}
+            from('src/main/resources/application.properties') {into '/alert-config-defaults/'}
             from('src/main/resources/email/images/') {into 'images/'}
             from('src/main/resources/email/templates/') {into 'templates/'}
         }
@@ -169,5 +169,5 @@ task testDatabaseSetupRequired(type: Test) { useJUnit { includeCategories 'com.b
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
-    pushImage.mustRunAfter buildDockerImage    
+    pushImage.mustRunAfter buildDockerImage
 }

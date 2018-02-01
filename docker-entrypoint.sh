@@ -2,12 +2,12 @@
 set -e
 
 bootstrap() {
-	CONFIG_VOLUME=/blackduck-alert-config-volume/
+	CONFIG_VOLUME=/opt/blackduck/alert-config-volume/
 	# We copy the config defaults into a volume which is mounted at runtime.
 	if [[ -f ${CONFIG_VOLUME}/BOOTSTRAPPED ]]; then
 		echo "Configuration already was written to this volume.  Not bootstrapping from defaults."
 	else
-		cp -r /blackduck-alert-config-defaults/* ${CONFIG_VOLUME}
+		cp -r /opt/blackduck/alert-config-defaults/* ${CONFIG_VOLUME}
 		echo "bootstrapped! `date`" > ${CONFIG_VOLUME}/BOOTSTRAPPED
 	fi
 }
