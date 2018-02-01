@@ -27,6 +27,7 @@ import java.util.Collections;
 
 import javax.transaction.Transactional;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
@@ -69,15 +70,23 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         return objectTransformer;
     }
 
-    public ProjectData getTestMessageProjectData() {
-        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
+    public String testGlobalConfig(final G globalConfigEntity) {
+        return getDistributionChannel().testGlobalConfig(globalConfigEntity);
     }
 
     public String sendTestMessage(final R restModel) throws AlertException {
-        final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
-        final E event = createChannelEvent(getTestMessageProjectData(), null);
-        getDistributionChannel().sendAuditedMessage(event, entity);
-        return "Attempting to send a test message...";
+        try {
+            final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
+            final E event = createChannelEvent(getTestMessageProjectData(), null);
+            getDistributionChannel().sendAuditedMessage(event, entity);
+            return "Successfully sent test message";
+        } catch (final IntegrationException ex) {
+            return ex.getMessage();
+        }
+    }
+
+    public ProjectData getTestMessageProjectData() {
+        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
     }
 
     public abstract Class<D> getDatabaseEntityClass();

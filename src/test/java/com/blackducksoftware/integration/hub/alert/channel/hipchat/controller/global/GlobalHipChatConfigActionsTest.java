@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
@@ -28,13 +29,15 @@ public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipC
     public GlobalHipChatConfigActions getMockedConfigActions() {
         final GlobalHipChatRepositoryWrapper hipChatRepo = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer);
+        final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
+        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer, hipChatManager);
     }
 
     @Override
     public GlobalHipChatConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
         final GlobalHipChatRepositoryWrapper hipChatRepo = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
-        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer);
+        final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
+        return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer, hipChatManager);
     }
 
     @Override

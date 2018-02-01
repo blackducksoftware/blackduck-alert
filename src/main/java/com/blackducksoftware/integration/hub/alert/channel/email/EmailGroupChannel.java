@@ -49,7 +49,6 @@ import com.blackducksoftware.integration.hub.alert.channel.email.template.EmailT
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.group.GroupService;
 import com.blackducksoftware.integration.hub.model.view.UserGroupView;
 import com.blackducksoftware.integration.hub.model.view.UserView;
@@ -83,6 +82,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
 
     @Override
     public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
+
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
@@ -117,36 +117,26 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         }
     }
 
-    private List<String> getEmailAddressesForGroup(final GroupService groupService, final String hubGroup) throws AlertException {
-        try {
-            final List<UserGroupView> groups = groupService.getAllGroups();
+    private List<String> getEmailAddressesForGroup(final GroupService groupService, final String hubGroup) throws IntegrationException {
+        final List<UserGroupView> groups = groupService.getAllGroups();
 
-            UserGroupView userGroupView = null;
-            for (final UserGroupView group : groups) {
-                if (group.name.equals(hubGroup)) {
-                    userGroupView = group;
-                }
+        UserGroupView userGroupView = null;
+        for (final UserGroupView group : groups) {
+            if (group.name.equals(hubGroup)) {
+                userGroupView = group;
             }
-            if (userGroupView == null) {
-                throw new AlertException("Could not find the Hub group: " + hubGroup);
-            }
-            return getEmailAddressesForGroup(groupService, userGroupView);
-        } catch (final AlertException e) {
-            throw e;
-        } catch (final IntegrationException e) {
-            throw new AlertException(e);
         }
+        if (userGroupView == null) {
+            throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+        }
+        return getEmailAddressesForGroup(groupService, userGroupView);
     }
 
-    private List<String> getEmailAddressesForGroup(final GroupService groupService, final UserGroupView group) throws AlertException {
-        try {
-            logger.info(group.toString());
-            logger.info(group.json);
-            final List<UserView> users = groupService.getAllUsersForGroup(group);
-            return users.stream().map(user -> user.email).collect(Collectors.toList());
-        } catch (final IntegrationException e) {
-            throw new AlertException(e);
-        }
+    private List<String> getEmailAddressesForGroup(final GroupService groupService, final UserGroupView group) throws IntegrationException {
+        logger.info(group.toString());
+        logger.info(group.json);
+        final List<UserView> users = groupService.getAllUsersForGroup(group);
+        return users.stream().map(user -> user.email).collect(Collectors.toList());
     }
 
 }

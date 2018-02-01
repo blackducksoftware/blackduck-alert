@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { textInput } from '../../../css/field.css';
-import LabeledField from './LabeledField';
+import LabeledField from '../LabeledField';
 
 export default class PasswordInput extends LabeledField {
 	constructor(props) {
@@ -12,7 +12,7 @@ export default class PasswordInput extends LabeledField {
 		let placeholderText = null;
 		if (this.props.isSet) {
 			placeholderText = '***********';
-		} 
+		}
 		let inputClass = this.props.inputClass;
 		if (!inputClass) {
 			inputClass = textInput;

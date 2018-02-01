@@ -101,7 +101,7 @@ class DistributionConfiguration extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
 	}
 
@@ -137,7 +137,7 @@ class DistributionConfiguration extends Component {
 			}
 		})
 		.catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
     }
 
@@ -183,7 +183,7 @@ class DistributionConfiguration extends Component {
             }
         })
         .catch(function(error) {
- 		 	console.log(error); 
+ 		 	console.log(error);
  		});
     }
 
@@ -214,7 +214,7 @@ class DistributionConfiguration extends Component {
             cellText = "Slack";
 		}
 
-		let data = <div>
+		let data = <div title={cellText}>
 						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
 						{cellText}
 					</div>;
@@ -288,7 +288,7 @@ class DistributionConfiguration extends Component {
 				}
 			})
 			.catch(function(error) {
- 		 		console.log(error); 
+ 		 		console.log(error);
  			});
 		});
 	  	next();
@@ -336,7 +336,7 @@ class DistributionConfiguration extends Component {
 	editButtonClicked(currentRowSelected) {
 		this.handleSetState('currentRowSelected', currentRowSelected);
 	}
-	
+
     editButtonClick(cell, row) {
         return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected= {row} />;
     }
@@ -391,11 +391,11 @@ class DistributionConfiguration extends Component {
         }
 		var content = <div>
 						<CheckboxInput labelClass={styles.fieldLabel} label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
-						<BootstrapTable striped hover condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable striped condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort columnTitle columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
                             <TableHeaderColumn dataField='' width='65' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>

@@ -14,11 +14,11 @@
 
 .advancedWrapper {
     text-align: right;
+    padding-right: 10px;
 }
 
 .advanced {
 	cursor: pointer;
-	padding-right: 10px;
 	color: #285f8f;
 	text-align: right;
 }
@@ -134,7 +134,7 @@
 }
 
 .missingHubData {
-    color: #9b9b9b;
+    color: #d80015;
     font-style: italic;
     font-weight: bold;
 }

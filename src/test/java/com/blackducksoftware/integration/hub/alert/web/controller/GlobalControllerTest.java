@@ -36,6 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackducksoftware.integration.DatabaseConnectionTest;
 import com.blackducksoftware.integration.ExternalConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
@@ -54,6 +55,8 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
+
+    protected final TestProperties testProperties = new TestProperties();
 
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 

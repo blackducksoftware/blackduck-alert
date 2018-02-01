@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
-import { progressIcon, missingHubData } from '../../../css/main.css';
+import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../css/main.css';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
 
@@ -16,6 +16,7 @@ export default class ProjectConfiguration extends Component {
             selectedProjects: []
         };
         this.onRowSelected = this.onRowSelected.bind(this);
+        this.assignDataFormat = this.assignDataFormat.bind(this);
 	}
 
     createProjectList() {
@@ -57,11 +58,19 @@ export default class ProjectConfiguration extends Component {
     }
 
     assignClassName(row, rowIdx) {
+        return `${tableStyles.tableRow}`;
+    }
+
+    assignDataFormat(cell, row) {
+        let cellContent;
         if(row.missing) {
-            return `${tableStyles.tableRow} ${missingHubData}`;
+            let fontAwesomeClass = `fa fa-exclamation-triangle ${fontAwesomeLabel}`;
+            cellContent = <span className={missingHubData}><i className={fontAwesomeClass} aria-hidden='true'></i>{ row.name }</span>;
         } else {
-            return `${tableStyles.tableRow}`;
+            cellContent = row.name;
         }
+
+        return <div title={row.name}> {cellContent} </div>;
     }
 
     onRowSelected(row, isSelected) {
@@ -114,9 +123,9 @@ export default class ProjectConfiguration extends Component {
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
-                                    <TableHeaderColumn dataField='name' isKey dataSort columnTitle columnClassName={tableStyles.tableCell}>Project</TableHeaderColumn>
-                                    <TableHeaderColumn dataField='missing' hidden>Missing Project</TableHeaderColumn>
+                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
+                                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName={tableStyles.tableCell} dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
+                                    <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                                 </BootstrapTable>
                                 {progressIndicator}
                                 <p name="projectTableMessage">{this.props.projectTableMessage}</p>
