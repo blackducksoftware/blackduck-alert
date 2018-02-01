@@ -32,6 +32,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -42,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
@@ -97,15 +99,19 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
         if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
-            final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-            final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
-            sendAuditedMessage(event, channelDistributionEntity);
+            try {
+                final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
+                final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+                sendAuditedMessage(event, channelDistributionEntity);
+            } catch (final IntegrationException ex) {
+                logger.error("There was an error sending the message.", ex);
+            }
         } else {
             logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
         }
     }
 
-    public void sendAuditedMessage(final E event, final C config) {
+    public void sendAuditedMessage(final E event, final C config) throws IntegrationException {
         try {
             sendMessage(event, config);
             setAuditEntrySuccess(event.getAuditEntryId());
@@ -115,6 +121,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
             }
             logger.error(e.getMessage(), e);
+            throw new AlertException(e.getMessage());
         }
     }
 
@@ -171,5 +178,4 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
             }
         }
     }
-
 }

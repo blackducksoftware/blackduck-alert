@@ -87,45 +87,49 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
         }
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (restConnection != null) {
-            final List<String> urlSegments = Arrays.asList("v2", "room", "*", "notification");
-            final Map<String, String> queryParameters = new HashMap<>();
-            queryParameters.put("auth_test", "true");
-
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
-            requestHeaders.put("Content-Type", "application/json");
-
-            // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
-            final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-            final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
-            final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
-
-            Response response = null;
             try {
-                response = channelRequestHelper.sendGenericRequest(request);
-                if (response != null && response.isSuccessful()) {
+                final List<String> urlSegments = Arrays.asList("v2", "room", "*", "notification");
+                final Map<String, String> queryParameters = new HashMap<>();
+                queryParameters.put("auth_test", "true");
+
+                final Map<String, String> requestHeaders = new HashMap<>();
+                requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
+                requestHeaders.put("Content-Type", "application/json");
+
+                // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
+                final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
+                final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
+                final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
+
+                final Response response = channelRequestHelper.sendGenericRequest(request);
+                if (response.isSuccessful()) {
                     return "API key is valid.";
                 }
                 return "Invalid API key: " + response.message();
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
+                return e.getMessage();
             }
         }
         return "Connection error: see logs for more information.";
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final ProjectData projectData) {
-        final String htmlMessage = createHtmlMessage(projectData);
-        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final ProjectData projectData) throws IntegrationException {
+        if (config.getRoomId() == null) {
+            throw new IntegrationException("Room ID missing");
+        } else {
+            final String htmlMessage = createHtmlMessage(projectData);
+            final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
-        final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
+            final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
 
-        final Map<String, String> requestHeaders = new HashMap<>();
-        requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
-        requestHeaders.put("Content-Type", "application/json");
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
+            requestHeaders.put("Content-Type", "application/json");
 
-        return channelRequestHelper.createMessageRequest(urlSegments, requestHeaders, jsonString);
+            return channelRequestHelper.createMessageRequest(urlSegments, requestHeaders, jsonString);
+        }
     }
 
     private String createHtmlMessage(final ProjectData projectData) {

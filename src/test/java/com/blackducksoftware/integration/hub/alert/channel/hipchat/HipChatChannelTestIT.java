@@ -9,56 +9,52 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.blackducksoftware.integration.hub.alert.channel.slack;
+package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.DatabaseSetupRequiredTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
-public class SlackChannelTestIT extends ChannelTest {
-
+@Category(DatabaseSetupRequiredTest.class)
+public class HipChatChannelTestIT extends ChannelTest {
     @Test
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
 
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory);
-        final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
-        final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
-        final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
-        final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
+        final ProjectData data = createProjectData("Integration test project");
+        final HipChatEvent event = new HipChatEvent(data, null);
+        final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
+        final boolean notify = false;
+        final String color = "random";
+        final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(roomId, notify, color);
 
-        final ProjectData projectData = createProjectData("Slack test project");
-        final SlackEvent event = new SlackEvent(projectData, new Long(0));
+        hipChatChannel = Mockito.spy(hipChatChannel);
+        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY))).when(hipChatChannel).getGlobalConfigEntity();
 
-        slackChannel.sendAuditedMessage(event, config);
+        hipChatChannel.sendAuditedMessage(event, config);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack_channel message!");
-        assertTrue(actual);
-    }
+        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a hipchat_channel message!");
 
-    @Test
-    public void receiveMessageTest() {
-        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
-        try {
-            slackChannel.receiveMessage("message");
-        } finally {
-            System.out.println("Complete missing line coverage.");
-        }
+        assertTrue(responseLine);
     }
 }
