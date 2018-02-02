@@ -63,7 +63,7 @@ public class LoginHandler extends ControllerHandler {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/");
 
-        return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
     }
 
     public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
