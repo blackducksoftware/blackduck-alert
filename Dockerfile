@@ -5,9 +5,13 @@ ARG VERSION
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
 
-ENV ALERT_HOME /opt/blackduck/alert/alert-tar/hub-alert-$VERSION
-ENV PATH $ALERT_HOME/bin:$PATH
-ENV ALERT_DB_DIR /opt/blackduck/alert/data
+ENV ALERT_HOME /opt/blackduck/alert
+ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
+ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/hub-alert-$VERSION
+ENV PATH $ALERT_TAR_HOME/bin:$PATH
+ENV ALERT_DB_DIR $ALERT_HOME/data/alertdb
+ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
+ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
 RUN set -e \
     # The old version of the Gradle Application plugin generates Bash scripts
@@ -19,13 +23,13 @@ ADD "build/distributions/hub-alert-$VERSION.tar" /opt/blackduck/alert/alert-tar/
 
 # Override the default logger settings to match other Hub containers
 
-RUN mkdir -p /opt/blackduck/alert/alert-config
-RUN mkdir -p /opt/blackduck/alert/data
-RUN chown -R hubalert:hubalert /opt/blackduck/alert
+RUN mkdir -p $ALERT_CONFIG_HOME
+RUN mkdir -p $ALERT_DB_DIR
+RUN chown -R hubalert:hubalert $ALERT_HOME
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
 # easily accessible location that the entrypoint can always find and copy data from.
-RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* /opt/blackduck/alert/alert-config/
+RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_HOME
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
