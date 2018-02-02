@@ -43,12 +43,12 @@ public class LoginController {
         this.loginHandler = loginDataHandler;
     }
 
-    @PostMapping(value = "/logout")
+    @PostMapping(value = "/handle_logout")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
         return loginHandler.userLogout(request);
     }
 
-    @PostMapping(value = "/login")
+    @PostMapping(value = "/handle_login")
     public ResponseEntity<String> login(final HttpServletRequest request, @RequestBody(required = false) final LoginRestModel loginRestModel) {
         return loginHandler.userLogin(request, loginRestModel);
     }

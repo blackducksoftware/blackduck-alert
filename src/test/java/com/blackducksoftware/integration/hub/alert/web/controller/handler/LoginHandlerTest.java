@@ -41,7 +41,7 @@ public class LoginHandlerTest {
         session.setMaxInactiveInterval(30);
 
         final ResponseEntity<String> response = loginHandler.userLogout(request);
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class LoginHandlerTest {
         }
 
         final ResponseEntity<String> response = loginHandler.userLogout(request);
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class LoginHandlerTest {
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenReturn(true);
 
         final ResponseEntity<String> response = loginHandler.userLogin(request, null);
-        assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
