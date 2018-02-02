@@ -142,7 +142,7 @@ LoginPage.propTypes = {
 
 LoginPage.defaultProps = {
     getUrl: '/configuration/global',
-    baseUrl: '/login'
+    baseUrl: '/handle_login'
 }
 
 export default LoginPage;

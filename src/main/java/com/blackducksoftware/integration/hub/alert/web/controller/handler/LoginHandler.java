@@ -24,16 +24,13 @@
 package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -47,7 +44,7 @@ import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
 @Component
-public class LoginHandler extends ControllerHandler implements LogoutHandler {
+public class LoginHandler extends ControllerHandler {
     private final LoginActions loginActions;
 
     @Autowired
@@ -98,11 +95,6 @@ public class LoginHandler extends ControllerHandler implements LogoutHandler {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-    }
-
-    @Override
-    public void logout(final HttpServletRequest request, final HttpServletResponse response, final Authentication authentication) {
-        userLogout(request);
     }
 
 }
