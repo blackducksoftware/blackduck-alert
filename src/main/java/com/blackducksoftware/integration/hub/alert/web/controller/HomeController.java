@@ -39,7 +39,7 @@ public class HomeController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/verify")
+    @GetMapping(value = "/api/verify")
     public ResponseEntity<String> checkAuthentication() {
         return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
     }

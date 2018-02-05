@@ -29,8 +29,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+
 @RestController
-public class HubDataController {
+public class HubDataController extends BaseController {
     private final HubDataHandler hubDataHandler;
 
     @Autowired

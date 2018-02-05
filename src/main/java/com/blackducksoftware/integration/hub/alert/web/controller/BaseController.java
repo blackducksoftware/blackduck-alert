@@ -23,25 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import org.springframework.http.ResponseEntity;
-
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-
-// This must be an abstract class for the security to work
-public abstract class ConfigController<R extends ConfigRestModel> extends BaseController {
-
-    public abstract List<R> getConfig(final Long id);
-
-    public abstract ResponseEntity<String> postConfig(final R restModel);
-
-    public abstract ResponseEntity<String> putConfig(final R restModel);
-
-    public abstract ResponseEntity<String> validateConfig(final R restModel);
-
-    public abstract ResponseEntity<String> deleteConfig(final R restModel);
-
-    public abstract ResponseEntity<String> testConfig(final R restModel);
+@RequestMapping("/api")
+public abstract class BaseController {
 
 }
