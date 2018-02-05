@@ -33,8 +33,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+
 @RestController
-public class AuditEntryController {
+public class AuditEntryController extends BaseController {
     private final AuditEntryHandler auditEntryHandler;
 
     @Autowired

@@ -67,7 +67,7 @@ public class AuditEntryControllerTestIT {
     private MockAuditEntryEntity mockAuditEntity;
     private MockCommonDistributionEntity mockCommonDistributionEntity;
 
-    private final String auditUrl = "/audit";
+    private final String auditUrl = "/api/audit";
 
     @Before
     public void setup() {
