@@ -22,3 +22,4 @@ node_modules
 data/
 sonar-project.properties
 .scannerwork/
+hub-alert.iml

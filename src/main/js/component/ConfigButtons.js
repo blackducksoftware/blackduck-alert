@@ -33,13 +33,13 @@ export default class ConfigButtons extends Component {
         return (
             <div className={containerClass}>
                 { includeCancel === true &&
-                    <input className={buttonClass} type={cancelButtonType} value={cancelButtonText} onClick={this.props.onCancelClick}></input>
+                    <button className={buttonClass} type={cancelButtonType} onClick={this.props.onCancelClick}>{cancelButtonText}</button>
                 }
                 { includeTest === true &&
-                    <input className={buttonClass} type={testButtonType} value={testButtonText} onClick={this.props.onTestClick}></input>
+                    <button className={buttonClass} type={testButtonType} onClick={this.props.onTestClick}>{testButtonText}</button>
                 }
                 { includeSave === true &&
-                    <input className={buttonClass} type={saveButtonType} value={saveButtonText} onClick={this.props.onClick}></input>
+                    <button className={buttonClass} type={saveButtonType} onClick={this.props.onClick}>{saveButtonText}</button>
                 }
             </div>
         )
