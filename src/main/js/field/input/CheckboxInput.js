@@ -1,36 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-import { checkboxInput } from '../../../css/field.css';
-import LabeledField from '../LabeledField';
+import {checkboxInput, fieldError} from '../../../css/field.css';
 
-export default class CheckboxInput extends LabeledField {
+export default class CheckboxInput extends Component {
 	constructor(props) {
 		super(props);
 	}
 
-	render() {
-		let inputClass = this.props.inputClass;
-		if (!inputClass) {
-			inputClass = checkboxInput;
-		}
+    render() {
+        let errorDiv = null;
+        if (this.props.errorName && this.props.errorValue) {
+            errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
+        }
 
-		let isChecked = false;
-		if (this.props.value) {
-			if (this.props.value == "true") {
-				isChecked = true;
-			} else if (this.props.value === true) {
-				isChecked = true;
-			}
-		}
+        let inputClass = this.props.inputClass;
+        if (!inputClass) {
+            inputClass = checkboxInput;
+        }
 
-		let inputDiv = null;
-		if (this.props.readOnly) {
-			inputDiv = <input type="checkbox" readOnly disabled="disabled" className={inputClass} name={this.props.name} checked={isChecked}/>;
-		} else {
-			inputDiv = <input type="checkbox" className={inputClass} name={this.props.name} checked={isChecked} onChange={this.props.onChange} />;
-		}
-		return (
-				super.render(inputDiv)
-		)
-	}
+        let isChecked = false;
+        if (this.props.value) {
+            if (this.props.value == "true") {
+                isChecked = true;
+            } else if (this.props.value === true) {
+                isChecked = true;
+            }
+        }
+
+        let inputDiv = null;
+        if (this.props.readOnly) {
+            inputDiv = <div className="col-sm-8"><input type="checkbox" readOnly disabled="disabled" className={inputClass} name={this.props.name} checked={isChecked}/></div>;
+        } else {
+            inputDiv = <div className="col-sm-8"><input type="checkbox" className={inputClass} name={this.props.name} checked={isChecked} onChange={this.props.onChange} /></div>;
+        }
+
+        return (
+            <div className="form-group">
+				<div className="checkbox">
+					<label className="col-sm-4 control-label">{this.props.label}</label>
+					{inputDiv}
+					{errorDiv}
+				</div>
+            </div>
+        )
+    }
 }

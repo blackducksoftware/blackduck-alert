@@ -8,10 +8,6 @@ class LabeledField extends Component {
 		super(props);
 	}
 	render(inputDiv) {
-		let labelClass = this.props.labelClass;
-		if (!labelClass) {
-			labelClass = fieldLabel;
-		}
 		let errorDiv = null;
 		if (this.props.errorName && this.props.errorValue) {
 			errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
@@ -22,8 +18,8 @@ class LabeledField extends Component {
 		}
 
 		return (
-				<div>
-					<label className={labelClass}>{this.props.label}</label>
+				<div className="form-group">
+					<label className="col-sm-4 control-label">{this.props.label}</label>
 					{field}
 					{errorDiv}
 				</div>

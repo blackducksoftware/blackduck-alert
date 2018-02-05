@@ -134,7 +134,7 @@ export default class ProjectConfiguration extends Component {
 
 		return (
 			<div>
-                <CheckboxInput labelClass={styles.fieldLabel} label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError}></CheckboxInput>
+                <CheckboxInput label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError}></CheckboxInput>
 				{projectTable}
 			</div>
 		)
