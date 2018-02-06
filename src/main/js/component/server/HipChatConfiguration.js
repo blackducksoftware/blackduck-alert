@@ -33,8 +33,8 @@ HipChatConfiguration.propTypes = {
 HipChatConfiguration.defaultProps = {
     headerText: 'HipChat Configuration',
     configButtonTest: true,
-    baseUrl: '/configuration/global/hipchat',
-    testUrl: '/configuration/global/hipchat/test'
+    baseUrl: '/api/configuration/global/hipchat',
+    testUrl: '/api/configuration/global/hipchat/test'
 };
 
 export default HipChatConfiguration;
