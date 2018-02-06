@@ -43,8 +43,8 @@ HubConfiguration.propTypes = {
 HubConfiguration.defaultProps = {
     headerText: 'Hub Configuration',
     configButtonTest: true,
-    baseUrl: '/configuration/global',
-    testUrl: '/configuration/global/test'
+    baseUrl: '/api/configuration/global',
+    testUrl: '/api/configuration/global/test'
 };
 
 export default HubConfiguration;
