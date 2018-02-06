@@ -70,6 +70,18 @@ public class HipChatChannelTest extends ChannelTest {
         assertTrue(responseLine);
     }
 
+    public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, null);
+
+        IntegrationException intException = null;
+        try {
+            hipChatChannel.createRequest(null, new HipChatDistributionConfigEntity(null, null, null), null);
+        } catch (final IntegrationException e) {
+            intException = e;
+        }
+        assertNotNull(intException);
+    }
+
     @Test
     public void createRequestThrowsExceptionTest() throws Exception {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
