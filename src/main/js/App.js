@@ -1,13 +1,21 @@
-'use strict';
-
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { combineReducers, createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import createHistory from 'history/createBrowserHistory'
+import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 
-import styles from '../css/main.css';
-
+const history = createHistory();
+const middleware = routerMiddleware(history);
+const store = createStore(
+    combineReducers({
+        router: routerReducer
+    }),
+    applyMiddleware(middleware)
+);
 
 class App extends Component {
 	constructor(props) {
@@ -62,8 +70,10 @@ class App extends Component {
 }
 
 ReactDOM.render(
-		<div>
-		<App></App>
-		</div>,
-		document.getElementById('react')
+    <Provider store={store}>
+        <ConnectedRouter history={history}>
+			<App></App>
+		</ConnectedRouter>
+	</Provider>,
+	document.getElementById('react')
 );

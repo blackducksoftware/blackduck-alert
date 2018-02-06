@@ -21,7 +21,9 @@ class LabeledField extends Component {
 				<div className="form-group">
 					<label className="col-sm-4 control-label">{this.props.label}</label>
 					{field}
-					{errorDiv}
+                    <div className="col-sm-offset-4 col-sm-8">
+						{errorDiv}
+					</div>
 				</div>
 		)
 	}
