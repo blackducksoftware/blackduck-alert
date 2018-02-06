@@ -25,8 +25,10 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping(BaseController.BASE_PATH)
-public abstract class BaseController {
-    public static final String BASE_PATH = "/api";
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+
+@RequestMapping(GlobalConfigController.GLOBAL_PATH)
+public abstract class GlobalConfigController<R extends ConfigRestModel> extends ConfigController<R> {
+    public static final String GLOBAL_PATH = ConfigController.CONFIGURATION_PATH + "/global";
 
 }
