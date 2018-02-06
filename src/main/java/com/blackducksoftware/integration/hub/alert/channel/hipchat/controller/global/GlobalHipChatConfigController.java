@@ -27,24 +27,21 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.GlobalConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 
 @RestController
-public class GlobalHipChatConfigController extends ConfigController<GlobalHipChatConfigRestModel> {
+@RequestMapping(GlobalConfigController.GLOBAL_PATH + "/hipchat")
+public class GlobalHipChatConfigController extends GlobalConfigController<GlobalHipChatConfigRestModel> {
     private final CommonConfigHandler<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> commonConfigHandler;
 
     @Autowired
@@ -53,22 +50,16 @@ public class GlobalHipChatConfigController extends ConfigController<GlobalHipCha
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/configuration/global/hipchat")
     public List<GlobalHipChatConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigHandler.getConfig(id);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigHandler.postConfig(hipChatConfig);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigHandler.putConfig(hipChatConfig);
     }
@@ -79,15 +70,11 @@ public class GlobalHipChatConfigController extends ConfigController<GlobalHipCha
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/configuration/global/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigHandler.deleteConfig(hipChatConfig);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/global/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHipChatConfigRestModel hipChatConfig) {
         return commonConfigHandler.testConfig(hipChatConfig);
     }
