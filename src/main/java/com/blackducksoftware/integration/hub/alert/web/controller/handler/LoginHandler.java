@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,7 +60,10 @@ public class LoginHandler extends ControllerHandler {
         }
         SecurityContextHolder.clearContext();
 
-        return new ResponseEntity<>("{\"message\":\"Success\"}", HttpStatus.ACCEPTED);
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/");
+
+        return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
     }
 
     public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
@@ -76,7 +80,7 @@ public class LoginHandler extends ControllerHandler {
 
         try {
             if (loginActions.authenticateUser(loginRestModel, logger)) {
-                return createResponse(HttpStatus.ACCEPTED, "{\"message\":\"Success\"}");
+                return createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
             }
             return createResponse(HttpStatus.UNAUTHORIZED, "User not administrator");
         } catch (final IntegrationRestException e) {

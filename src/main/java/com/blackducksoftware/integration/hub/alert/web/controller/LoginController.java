@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.LoginH
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 
 @RestController
-public class LoginController {
+public class LoginController extends BaseController {
     private final LoginHandler loginHandler;
 
     @Autowired

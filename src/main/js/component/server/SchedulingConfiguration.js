@@ -156,7 +156,7 @@ class SchedulingConfiguration extends ServerConfiguration {
 		this.handleSetState('inProgress', true);
 
 		var self = this;
-		fetch('/configuration/global/scheduling/accumulator/run',{
+		fetch('/api/configuration/global/scheduling/accumulator/run',{
 			credentials: "same-origin",
 			method: 'POST',
 		})
@@ -257,7 +257,7 @@ SchedulingConfiguration.propTypes = {
 SchedulingConfiguration.defaultProps = {
     headerText: 'Scheduling',
     configButtonTest: false,
-    baseUrl: '/configuration/global/scheduling'
+    baseUrl: '/api/configuration/global/scheduling'
 };
 
 export default SchedulingConfiguration;
