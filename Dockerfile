@@ -1,5 +1,7 @@
 FROM openjdk:8-jre-alpine
 
+# add a new FROM line 
+# COPY --from intstruction
 ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
@@ -26,6 +28,7 @@ ADD "build/distributions/hub-alert-$VERSION.tar" /opt/blackduck/alert/alert-tar/
 RUN mkdir -p $ALERT_CONFIG_HOME
 RUN mkdir -p $ALERT_DB_DIR
 RUN chown -R hubalert:hubalert $ALERT_HOME
+RUN chmod 774 $ALERT_DB_DIR
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
 # easily accessible location that the entrypoint can always find and copy data from.
