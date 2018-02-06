@@ -23,6 +23,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,14 +38,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class HomeController {
 
+    private final Logger logger = LoggerFactory.getLogger(HomeController.class);
+
     @RequestMapping(value = { "/" })
     public String index() {
-        return "index";
+        return "forward:index.html";
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/verify")
-    public ResponseEntity<String> checkAuthentication() {
+    public ResponseEntity<String> checkAuthentication(final HttpServletRequest request) {
+        final HttpSession session = request.getSession(false);
+        logger.info("Verify Method Session: {}", session);
+        if (session != null) {
+            logger.info("Session interval: {}", session.getMaxInactiveInterval());
+        }
+
         return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
     }
 }
