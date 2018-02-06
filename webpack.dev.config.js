@@ -54,6 +54,12 @@ module.exports = {
                         localIdentName: '[local]'
                     }
                 }]
+            }, {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+            }, {
+                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'file-loader'
             }
         ]
     },
@@ -63,27 +69,19 @@ module.exports = {
     devServer: {
         hot: true,
         publicPath: '/',
-        proxy: {
-            '/configuration/global': {
-                target: 'http://localhost:8081',
-                secure: false,
-                changeOrigin: true
-            },
-            '/verify': {
-                target: 'http://localhost:8081',
-                secure: false,
-                changeOrigin: true
-            },
-            '/login': {
-                target: 'http://localhost:8081',
-                secure: false,
-                changeOrigin: true
-            },
-            '/logout': {
-                target: 'http://localhost:8081',
-                secure: false,
-                changeOrigin: true
+        historyApiFallback: {
+            index: 'index.html'
+        },
+        proxy: [{
+            context: ['/configuration', '/verify', '/login', '/logout', '/audit', '/hub'],
+            target: "http://localhost:8081",
+            secure: false,
+            bypass: function(req, res, proxyOptions) {
+                if (req.headers.accept.indexOf("html") !== -1) {
+                    console.log("Skipping proxy for browser request.", req.url);
+                    return '/index.html';
+                }
             }
-        }
+        }]
     }
 };

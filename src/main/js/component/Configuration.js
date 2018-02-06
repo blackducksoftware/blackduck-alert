@@ -4,7 +4,7 @@ export default class Configuration extends Component {
     constructor(props) {
 		super(props);
         this.state = {
-			configurationMessage: '',
+			configurationMessage: 'Loading...',
 			errors: {},
 			values: {}
 		};
@@ -13,6 +13,7 @@ export default class Configuration extends Component {
 		this.handleTestSubmit = this.handleTestSubmit.bind(this);
 	}
 
+	/* can't call set state before component is mounted
 	componentWillMount() {
 		let getUrl = this.props.getUrl || this.props.baseUrl;
 		if (getUrl) {
@@ -26,7 +27,7 @@ export default class Configuration extends Component {
 			values: {}
 		});
 	}
-
+	*/
     //componentDidMount is part of the Component lifecycle, executes after construction
 	componentDidMount() {
 		var self = this;
@@ -35,6 +36,7 @@ export default class Configuration extends Component {
 		if (!getUrl) {
 			return;
 		}
+		console.log('[Configuration] about to fetch --> ', getUrl);
 		fetch(getUrl,{
 			credentials: "same-origin"
 		})

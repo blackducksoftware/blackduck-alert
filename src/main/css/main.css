@@ -2,6 +2,65 @@ html,
 body {
     background-color: #ddd;
 }
+.navigation {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: #2d343e;
+    color: white;
+    border: 0;
+    box-shadow: 1px 1px 10px #666;
+    z-index: 100;
+}
+.navigation > ul {
+    margin: 0;
+    padding: 0;
+}
+.navigation > ul > li {
+    padding: 0;
+    margin: 8px;
+}
+.navigation > ul > li a {
+    color: white;
+    text-decoration: none;
+    border-left: 4px solid transparent;
+    font-size: 1.1em;
+    display: block;
+    padding: 8px;
+}
+.navigation > ul > li a:hover {
+    background-color: #3d444e
+}
+.navigation > ul > li a.active {
+    border-left: 4px solid white;
+    background-color: #4d545e
+}
+.navigation > ul ul {
+    list-style: none;
+    padding-left: 10px;
+}
+.navigationLogo {
+    padding: 16px 20px;
+    border-bottom: 1px solid #444;
+    width: 100%;
+}
+.contentArea {
+    background-color: white;
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 250px;
+    z-index: 99;
+    padding: 15px;
+}
+
+.btn {
+    border-radius: 0 !important;
+}
 .hidden {
 	display: none;
 }

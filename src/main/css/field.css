@@ -28,8 +28,8 @@
 
 
 .fieldError {
-    color: red;
-    text-align: center;
+    color: #a94442;
+    padding: 4px 0;
 }
 
 .typeAheadField {

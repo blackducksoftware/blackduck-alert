@@ -15,9 +15,10 @@ import Header from './component/Header';
 import styles from '../css/main.css';
 
 class LoginPage extends Configuration {
-	//constructor is part of the Component lifecycle
+
 	constructor(props) {
 		super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
 		this.handleAdvancedClicked = this.handleAdvancedClicked.bind(this);
 	}
 
@@ -112,7 +113,7 @@ class LoginPage extends Configuration {
 					<div className={styles.loginContainer}>
 						<div className={styles.loginBox}>
                             <Header />
-							<form className={`form-horizontal ${styles.loginForm}`} onSubmit={this.handleSubmit}>
+							<form method='POST' className={`form-horizontal ${styles.loginForm}`} onSubmit={this.handleSubmit}>
 								{ this.state.configurationMessage && <div className="alert alert-danger">
 									<p name="configurationMessage">{this.state.configurationMessage}</p>
 								</div> }

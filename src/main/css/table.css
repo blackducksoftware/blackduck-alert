@@ -38,7 +38,7 @@
 }
 
 .table {
-    width: 98%;
+    width: 100%;
 }
 
 .tableRow {
@@ -76,8 +76,6 @@
     border-radius: 15px 15px 15px 15px;
     border: 1px solid #c3c3c3;
     background-color: white;
-    height: 98%;
-    width: 98%;
     overflow-y: scroll !important;
 }
 
