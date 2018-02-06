@@ -23,10 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +39,6 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -74,16 +70,6 @@ public class GlobalProperties {
     }
 
     public String getHubUrl() {
-        try {
-            final URL extensionUrl = new URL(hubUrl);
-            if (extensionUrl.getHost().equals("localhost")) {
-                final String hostName = Optional.ofNullable(System.getenv("PUBLIC_HUB_WEBSERVER_HOST")).orElseGet(() -> HostnameHelper.getMyHostname());
-                final URL url = new URL(extensionUrl.getProtocol(), hostName, extensionUrl.getPort(), extensionUrl.getFile());
-                return url.toString();
-            }
-        } catch (final MalformedURLException e) {
-            return hubUrl;
-        }
         return hubUrl;
     }
 
