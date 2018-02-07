@@ -72,7 +72,7 @@ class DistributionConfiguration extends Component {
 
 	retrieveProjects() {
 		var self = this;
-		fetch('/hub/projects',{
+		fetch('/api/hub/projects',{
 			credentials: "same-origin"
 		})
 		.then(function(response) {
@@ -107,7 +107,7 @@ class DistributionConfiguration extends Component {
 
 	retrieveGroups() {
 		var self = this;
-		fetch('/hub/groups',{
+		fetch('/api/hub/groups',{
 			credentials: "same-origin",
 		})
 		.then(function(response) {
@@ -143,7 +143,7 @@ class DistributionConfiguration extends Component {
 
     fetchDistributionJobs() {
         let self = this;
-        fetch('/configuration/distribution/common',{
+        fetch('/api/configuration/distribution/common',{
 			credentials: "same-origin",
             headers: {
 				'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ class DistributionConfiguration extends Component {
 		});
 	  	matchingJobs.forEach(function(job){
 	  		let jsonBody = JSON.stringify(job);
-		    fetch('/configuration/distribution/common',{
+		    fetch('/api/configuration/distribution/common',{
 		    	method: 'DELETE',
 				credentials: "same-origin",
 	            headers: {

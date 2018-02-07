@@ -28,7 +28,7 @@ class App extends Component {
 
 	componentDidMount() {
 		var self = this;
-		fetch('/verify', {
+		fetch('/api/verify', {
 			credentials: "same-origin"
 		})
 		.then(function(response) {
