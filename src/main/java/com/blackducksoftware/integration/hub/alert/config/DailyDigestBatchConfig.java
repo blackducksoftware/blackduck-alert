@@ -54,9 +54,8 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
     private final DigestNotificationProcessor notificationProcessor;
 
     @Autowired
-    public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
-            final DigestNotificationProcessor notificationProcessor) {
+    public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
+            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
@@ -64,8 +63,8 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public Step createStep(final DailyItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationModel>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor)
-                .transactionManager(transactionManager).build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationModel>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
+                .build();
     }
 
     @Override

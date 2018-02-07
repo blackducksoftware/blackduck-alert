@@ -27,10 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+
 @RestController
-public class HubDataController {
+@RequestMapping(BaseController.BASE_PATH + "/hub")
+public class HubDataController extends BaseController {
     private final HubDataHandler hubDataHandler;
 
     @Autowired
@@ -39,13 +43,13 @@ public class HubDataController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/hub/groups")
+    @GetMapping(value = "/groups")
     public ResponseEntity<String> getGroups() {
         return hubDataHandler.getHubGroups();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/hub/projects")
+    @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
         return hubDataHandler.getHubProjects();
     }
