@@ -14,10 +14,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 import okhttp3.HttpUrl;
-import okhttp3.Protocol;
 import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 public class ChannelRequestHelperTest {
 
@@ -112,10 +109,4 @@ public class ChannelRequestHelperTest {
         return builder.build();
     }
 
-    private Response createResponse(final Request request) {
-        Response.Builder builder = new Response.Builder();
-        final ResponseBody responseBody = Mockito.mock(ResponseBody.class);
-        builder = builder.protocol(Protocol.HTTP_1_0).request(request).message("").code(200).body(responseBody);
-        return builder.build();
-    }
 }

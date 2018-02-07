@@ -15,7 +15,7 @@ class Header extends Component {
 		event.preventDefault();
 		var self = this;
 		var method = 'POST';
-		fetch('/logout', {
+		fetch('/api/logout', {
 			method: method,
 			credentials: "same-origin",
 			headers: {

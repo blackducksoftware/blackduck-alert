@@ -23,24 +23,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller
-public class HomeController {
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-    @GetMapping(value = { "/" }, produces = MediaType.TEXT_HTML_VALUE)
-    public String index() {
-        return "index";
-    }
+@RequestMapping(GlobalConfigController.GLOBAL_PATH)
+public abstract class GlobalConfigController<R extends ConfigRestModel> extends ConfigController<R> {
+    public static final String GLOBAL_PATH = ConfigController.CONFIGURATION_PATH + "/global";
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/api/verify")
-    public ResponseEntity<String> checkAuthentication() {
-        return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
-    }
 }

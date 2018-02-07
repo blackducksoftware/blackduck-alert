@@ -26,22 +26,42 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 // This must be an abstract class for the security to work
-public abstract class ConfigController<R extends ConfigRestModel> {
+@RequestMapping(ConfigController.CONFIGURATION_PATH)
+public abstract class ConfigController<R extends ConfigRestModel> extends BaseController {
+    public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
 
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public abstract List<R> getConfig(final Long id);
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public abstract ResponseEntity<String> postConfig(final R restModel);
 
+    @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public abstract ResponseEntity<String> putConfig(final R restModel);
 
-    public abstract ResponseEntity<String> validateConfig(final R restModel);
-
+    @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public abstract ResponseEntity<String> deleteConfig(final R restModel);
 
+    @PostMapping(value = "/validate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public abstract ResponseEntity<String> validateConfig(final R restModel);
+
+    @PostMapping(value = "/test")
+    @PreAuthorize("hasRole('ADMIN')")
     public abstract ResponseEntity<String> testConfig(final R restModel);
 
 }

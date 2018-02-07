@@ -41,6 +41,19 @@ public class HipChatChannelTest extends ChannelTest {
     final MockHipChatGlobalEntity hipChatMockUtil = new MockHipChatGlobalEntity();
 
     @Test
+    public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, null);
+
+        IntegrationException intException = null;
+        try {
+            hipChatChannel.createRequest(null, new HipChatDistributionConfigEntity(null, null, null), null);
+        } catch (final IntegrationException e) {
+            intException = e;
+        }
+        assertNotNull(intException);
+    }
+
+    @Test
     public void createRequestThrowsExceptionTest() throws Exception {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, null);
