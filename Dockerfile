@@ -6,8 +6,12 @@ ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \
       com.blackducksoftware.integration.alert.version="$VERSION"
+      
+ENV APPLICATION_NAME hub-alert
+ENV BLACKDUCK_HOME /opt/blackduck
+ENV SECURITY_DIR $BLACKDUCK_HOME/security
 
-ENV ALERT_HOME /opt/blackduck/alert
+ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/hub-alert-$VERSION
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
@@ -17,7 +21,11 @@ ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
 RUN set -e \
     # The old version of the Gradle Application plugin generates Bash scripts
-    && apk add --no-cache --virtual bash \
+    && apk add --no-cache --virtual .hub-alert-run-deps \
+    		curl \
+    		jq \
+    		openssl \
+    		bash \
     && addgroup -S hubalert \
     && adduser -h "$ALERT_HOME" -g hubalert -s /sbin/nologin -G hubalert -S -D -H hubalert
 
@@ -25,10 +33,10 @@ ADD "build/distributions/hub-alert-$VERSION.tar" /opt/blackduck/alert/alert-tar/
 
 # Override the default logger settings to match other Hub containers
 
+RUN mkdir -p $SECURITY_DIR 
+RUN mkdir -p $SECURITY_DIR/bin
 RUN mkdir -p $ALERT_CONFIG_HOME
 RUN mkdir -p $ALERT_DB_DIR
-RUN chown -R hubalert:hubalert $ALERT_HOME
-RUN chmod 774 $ALERT_DB_DIR
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
 # easily accessible location that the entrypoint can always find and copy data from.
@@ -36,8 +44,13 @@ RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_H
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY certificate-manager.sh "$SECURITY_DIR/bin/certificate-manager.sh"
+
+RUN chown -R hubalert:hubalert $BLACKDUCK_HOME
+RUN chmod 774 $ALERT_DB_DIR
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x $SECURITY_DIR/bin/certificate-manager.sh
 
 EXPOSE 8080
 

@@ -1,52 +1,107 @@
 #!/bin/sh
 set -e
 
-verifyEnvironment() {
-  # Verify JRE is present.
-  if [ -n "$JAVA_HOME" ]; then
-    if [ -d "$JAVA_HOME" ]; then
-      if [ ! -f "$JAVA_HOME/lib/security/cacerts" ]; then
-        echo "ERROR: $JAVA_HOME/lib/security/cacerts is not a file or does not exist."
-      fi
+securityDir=/opt/blackduck/security
+
+serverCertName=$APPLICATION_NAME-server
+
+dockerSecretDir=${RUN_SECRETS_DIR:-/run/secrets}
+truststoreFile=$securityDir/$APPLICATION_NAME.truststore
+
+publicWebserverHost="${PUBLIC_HUB_WEBSERVER_HOST:-localhost}"
+targetCAHost="${HUB_CFSSL_HOST:-cfssl}"
+targetCAPort="${HUB_CFSSL_PORT:-8888}"
+targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
+
+[ -z "$PUBLIC_HUB_WEBSERVER_HOST" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in hub-webserver.env"
+
+echo "Certificate authority host: $targetCAHost"
+echo "Certificate authority port: $targetCAPort"
+
+manageSelfSignedServerCertificate() {
+    echo "Attempting to generate $HUB_APPLICATION_NAME self-signed server certificate and key."
+    $securityDir/bin/certificate-manager.sh server-cert \
+        --ca $targetCAHost:$targetCAPort \
+        --rootcert $securityDir/root.crt \
+        --key $securityDir/$serverCertName.key \
+        --cert $securityDir/$serverCertName.crt \
+        --outputDirectory $securityDir \
+        --commonName $serverCertName \
+        --san $targetWebAppHost \
+        --san $publicWebserverHost \
+        --san localhost \
+        --hostName $publicWebserverHost
+    exitCode=$?
+    if [ $exitCode -eq 0 ];
+    then
+      echo "Generated $APPLICATION_NAME self-signed server certificate and key."
+      chmod 644 $securityDir/root.crt
+      chmod 400 $securityDir/$serverCertName.key
+      chmod 644 $securityDir/$serverCertName.crt
     else
-      echo "ERROR: $JAVA_HOME is not a directory or does not exist."
-      exit 1
+      echo "ERROR: Unable to generate $APPLICATION_NAME self-signed server certificate and key (Code: $exitCode)."
+      exit $exitCode
     fi
-  else
-    echo "ERROR: JAVA_HOME is not defined."
-    exit 1
-  fi
 }
 
-importCertificate(){
-	echo "Attempting to import Hub Certificate"
-	echo $PUBLIC_HUB_WEBSERVER_HOST
-	echo $PUBLIC_HUB_WEBSERVER_PORT
+createTruststore() {
+    echo "Attempting to copy Java cacerts to create truststore."
+    $securityDir/bin/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
+    exitCode=$?
+    if [ ! $exitCode -eq 0 ]; then
+        echo "Unable to create truststore (Code: $exitCode)."
+        exit $exitCode
+    fi
+}
 
-	# In case of email-extension container restart
-	if keytool -list -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias publichubwebserver
-	then
-	    keytool -delete -alias publichubwebserver -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit
-		echo "Removing the existing certificate after container restart"
-	fi
+trustProxyCertificate() {
+    proxyCertificate="$dockerSecretDir/HUB_PROXY_CERT_FILE"
 
-	if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -alias publichubwebserver -noprompt
-	then
-		echo "Completed importing Hub Certificate"
-	else
-		echo "Unable to add the certificate. Please try to import the certificate manually."
-	fi
+    if [ ! -f "$dockerSecretDir/HUB_PROXY_CERT_FILE" ]; then
+        echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
+    else
+        $securityDir/bin/certificate-manager.sh trust-java-cert \
+                                --store $truststoreFile \
+                                --password changeit \
+                                --cert $proxyCertificate \
+                                --certAlias proxycert
+        exitCode=$?
+        if [ $exitCode -eq 0 ]; then
+            echo "Successfully imported proxy certificate into Java truststore."
+        else
+            echo "Unable to import proxy certificate into Java truststore (Code: $exitCode)."
+        fi
+    fi
+}
+
+trustRootCertificate() {
+    $securityDir/bin/certificate-manager.sh trust-java-cert \
+                        --store $truststoreFile \
+                        --password changeit \
+                        --cert $securityDir/root.crt \
+                        --certAlias hub-root
+
+    exitCode=$?
+    if [ $exitCode -eq 0 ]; then
+        echo "Successfully imported Hub root certificate into Java truststore."
+    else
+        echo "Unable to import Hub root certificate into Java truststore (Code: $exitCode)."
+        exit $exitCode
+    fi
 }
 
 # Bootstrap will optionally configure the config volume if it hasnt been configured yet.
 # After that we verify, import certs, and then launch the webserver.
 
-verifyEnvironment
-
-if [ "$ALERT_IMPORT_CERT" == "false" ]
+if [ ! -f "$securityDir/bin/certificate-manager.sh" ];
 then
-    echo "Skipping import of Hub Certificate"
+  echo "ERROR: certificate management script is not present."
+  exit 1;
 else
-    importCertificate
+  manageSelfSignedServerCertificate
+  createTruststore
+  trustRootCertificate
+  trustProxyCertificate
 fi
+
 exec "$@"
