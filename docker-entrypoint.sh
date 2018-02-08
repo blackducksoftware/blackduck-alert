@@ -1,7 +1,9 @@
 #!/bin/sh
 set -e
 
+certificateManagerDir=/opt/blackduck/security/bin
 securityDir=/opt/blackduck/security
+dataDir=/opt/blackduck/alert/alert-config/data
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -22,7 +24,7 @@ echo "Certificate authority port: $targetCAPort"
 
 manageSelfSignedServerCertificate() {
     echo "Attempting to generate $APPLICATION_NAME self-signed server certificate and key."
-    $securityDir/bin/certificate-manager.sh server-cert \
+    $certificateManagerDir/certificate-manager.sh server-cert \
         --ca $targetCAHost:$targetCAPort \
         --rootcert $securityDir/root.crt \
         --key $securityDir/$serverCertName.key \
@@ -47,7 +49,7 @@ manageSelfSignedServerCertificate() {
 
     # Create the keystore with given private key and certificate.
     echo "Attempting to create keystore."
-    $securityDir/bin/certificate-manager.sh keystore \
+    $certificateManagerDir/certificate-manager.sh keystore \
                                              --outputDirectory $securityDir \
                                              --outputFile $keyStoreFile \
                                              --password changeit \
@@ -66,7 +68,7 @@ manageSelfSignedServerCertificate() {
 
 createTruststore() {
     echo "Attempting to copy Java cacerts to create truststore."
-    $securityDir/bin/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
+    $certificateManagerDir/certificate-manager.sh truststore --outputDirectory $securityDir --outputFile $APPLICATION_NAME.truststore
     exitCode=$?
     if [ ! $exitCode -eq 0 ]; then
         echo "Unable to create truststore (Code: $exitCode)."
@@ -80,7 +82,7 @@ trustProxyCertificate() {
     if [ ! -f "$dockerSecretDir/HUB_PROXY_CERT_FILE" ]; then
         echo "WARNING: Proxy certificate file is not found in secret. Skipping Proxy Certificate Import."
     else
-        $securityDir/bin/certificate-manager.sh trust-java-cert \
+        $certificateManagerDir/certificate-manager.sh trust-java-cert \
                                 --store $truststoreFile \
                                 --password changeit \
                                 --cert $proxyCertificate \
@@ -95,7 +97,7 @@ trustProxyCertificate() {
 }
 
 trustRootCertificate() {
-    $securityDir/bin/certificate-manager.sh trust-java-cert \
+    $certificateManagerDir/certificate-manager.sh trust-java-cert \
                         --store $truststoreFile \
                         --password changeit \
                         --cert $securityDir/root.crt \
@@ -114,26 +116,31 @@ trustRootCertificate() {
 # After that we verify, import certs, and then launch the webserver.
 
 importWebServerCertificate(){
-	echo "Attempting to import Hub Certificate"
-	echo $PUBLIC_HUB_WEBSERVER_HOST
-	echo $PUBLIC_HUB_WEBSERVER_PORT
+    if [ "$ALERT_IMPORT_CERT" == "false" ]
+    then
+        echo "Skipping import of Hub Certificate"
+    else
+    	echo "Attempting to import Hub Certificate"
+    	echo $PUBLIC_HUB_WEBSERVER_HOST
+    	echo $PUBLIC_HUB_WEBSERVER_PORT
 
-	# In case of email-extension container restart
-	if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
-	then
-	    keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
-		echo "Removing the existing certificate after container restart"
-	fi
+    	# In case of email-extension container restart
+    	if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
+    	then
+    	    keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
+    		echo "Removing the existing certificate after container restart"
+    	fi
 
-	if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver -noprompt
-	then
-		echo "Completed importing Hub Certificate"
-	else
-		echo "Unable to add the certificate. Please try to import the certificate manually."
-	fi
+    	if keytool -printcert -rfc -sslserver "$PUBLIC_HUB_WEBSERVER_HOST:$PUBLIC_HUB_WEBSERVER_PORT" -v | keytool -importcert -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver -noprompt
+    	then
+    		echo "Completed importing Hub Certificate"
+    	else
+    		echo "Unable to add the certificate. Please try to import the certificate manually."
+    	fi
+    fi
 }
 
-if [ ! -f "$securityDir/bin/certificate-manager.sh" ];
+if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
   exit 1;
@@ -142,17 +149,12 @@ else
   createTruststore
   trustRootCertificate
   trustProxyCertificate
-  if [-f "$truststoreFile" ]; then
+  importWebServerCertificate
+
+  if [ -f "$truststoreFile" ]; then
       JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$truststoreFile"
       export JAVA_OPTS
   fi
-fi
-
-if [ "$ALERT_IMPORT_CERT" == "false" ]
-then
-    echo "Skipping import of Hub Certificate"
-else
-    importWebServerCertificate
 fi
 
 exec "$@"

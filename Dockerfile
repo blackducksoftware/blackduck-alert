@@ -9,13 +9,14 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
       
 ENV APPLICATION_NAME hub-alert
 ENV BLACKDUCK_HOME /opt/blackduck
-ENV SECURITY_DIR $BLACKDUCK_HOME/security
+ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/security/bin
 
 ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
+ENV SECURITY_DIR $BLACKDUCK_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/hub-alert-$VERSION
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
-ENV ALERT_DB_DIR $ALERT_HOME/data/alertdb
+ENV ALERT_DB_DIR $ALERT_CONFIG_HOME/data/alertdb
 ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
@@ -33,9 +34,9 @@ ADD "build/distributions/hub-alert-$VERSION.tar" /opt/blackduck/alert/alert-tar/
 
 # Override the default logger settings to match other Hub containers
 
-RUN mkdir -p $SECURITY_DIR 
-RUN mkdir -p $SECURITY_DIR/bin
+RUN mkdir -p $CERTIFICATE_MANAGER_DIR
 RUN mkdir -p $ALERT_CONFIG_HOME
+RUN mkdir -p $SECURITY_DIR
 RUN mkdir -p $ALERT_DB_DIR
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
@@ -44,13 +45,13 @@ RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_H
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY certificate-manager.sh "$SECURITY_DIR/bin/certificate-manager.sh"
+COPY certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 
 RUN chown -R hubalert:hubalert $BLACKDUCK_HOME
 RUN chmod 774 $ALERT_DB_DIR
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x $SECURITY_DIR/bin/certificate-manager.sh
+RUN chmod +x $CERTIFICATE_MANAGER_DIR/certificate-manager.sh
 
 EXPOSE 8080
 
