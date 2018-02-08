@@ -91,7 +91,7 @@ distributions {
     main {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
-            from('src/main/resources/application.properties') {into '/alert-config-defaults/'}
+            from('src/main/resources/ssl.application.properties') { into('/alert-config-defaults') rename('ssl.application.properties', 'application.properties') }
             from('src/main/resources/email/images/') {into 'images/'}
             from('src/main/resources/email/templates/') {into 'templates/email'}
             from('src/main/resources/hipchat/templates/') {into 'templates/hipchat'}
@@ -152,6 +152,7 @@ task stageDocker(type:Copy, dependsOn: [build]) {
     from("${project.projectDir}") {
         include 'Dockerfile'
         include 'docker-entrypoint.sh'
+        include 'certificate-manager.sh'
     }
     into('build/distributions') {
         from distTar
