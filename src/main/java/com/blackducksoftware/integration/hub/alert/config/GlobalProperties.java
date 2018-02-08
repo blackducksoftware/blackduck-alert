@@ -64,6 +64,35 @@ public class GlobalProperties {
     @Value("${blackduck.hub.proxy.password:}")
     private String hubProxyPassword;
 
+    @Value("${blackduck.alert.ssl.enable:false}")
+    private Boolean alertSSLEnabled;
+
+    // SSL properties
+
+    @Value("${server.port:")
+    private String serverPort;
+
+    @Value("${server.ssl.key-store:}")
+    private String keyStoreFile;
+
+    @Value("${server.ssl.key-store-password:}")
+    private String keyStorePass;
+
+    @Value("${server.ssl.keyStoreType:}")
+    private String keyStoreType;
+
+    @Value("${server.ssl.keyAlias:}")
+    private String keyAlias;
+
+    @Value("${server.ssl.trust-store:}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:}")
+    private String trustStorePass;
+
+    @Value("${server.ssl.trustStoreType:}")
+    private String trustStoreType;
+
     @Autowired
     public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
@@ -246,5 +275,77 @@ public class GlobalProperties {
             return getHubConfig().getHubApiKey();
         }
         return null;
+    }
+
+    public Boolean getAlertSSLEnabled() {
+        return alertSSLEnabled;
+    }
+
+    public void setAlertSSLEnabled(final Boolean alertSSLEnabled) {
+        this.alertSSLEnabled = alertSSLEnabled;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(final String serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public String getKeyStoreFile() {
+        return keyStoreFile;
+    }
+
+    public void setKeyStoreFile(final String keyStoreFile) {
+        this.keyStoreFile = keyStoreFile;
+    }
+
+    public String getKeyStorePass() {
+        return keyStorePass;
+    }
+
+    public void setKeyStorePass(final String keyStorePass) {
+        this.keyStorePass = keyStorePass;
+    }
+
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    public void setKeyStoreType(final String keyStoreType) {
+        this.keyStoreType = keyStoreType;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+
+    public void setKeyAlias(final String keyAlias) {
+        this.keyAlias = keyAlias;
+    }
+
+    public String getTrustStoreFile() {
+        return trustStoreFile;
+    }
+
+    public void setTrustStoreFile(final String trustStoreFile) {
+        this.trustStoreFile = trustStoreFile;
+    }
+
+    public String getTrustStorePass() {
+        return trustStorePass;
+    }
+
+    public void setTrustStorePass(final String trustStorePass) {
+        this.trustStorePass = trustStorePass;
+    }
+
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
+
+    public void setTrustStoreType(final String trustStoreType) {
+        this.trustStoreType = trustStoreType;
     }
 }

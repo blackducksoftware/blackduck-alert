@@ -31,14 +31,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false", relaxedNames = false)
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true", relaxedNames = false)
+public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
-        // TODO: Make sure the H2 console is disabled by removing the following line of code.
-        http.headers().frameOptions().disable();
+        http.requiresChannel().anyRequest().requiresSecure().and().csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
     }
-
 }
