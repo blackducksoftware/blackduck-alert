@@ -37,7 +37,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
-        // TODO: Make sure the H2 console is disabled by removing the following line of code.
+        // conditional above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }
 
