@@ -40,7 +40,7 @@ public class HomeControllerTestIT {
     protected WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
-    private final String homeVerifyUrl = "/verify";
+    private final String homeVerifyUrl = "/api/verify";
     private final String homeUrl = "/";
 
     @Before
