@@ -78,10 +78,6 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().delete(entities);
     }
 
-    public void deleteInBatch(final List<D> entities) {
-        getRepository().deleteInBatch(entities);
-    }
-
     public D findOne(final ID id) {
         try {
             final D entity = getRepository().findOne(id);

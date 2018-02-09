@@ -73,10 +73,6 @@ public class MimeMultipartBuilder {
         this.contentIdsToFilePaths.putAll(contentIdsToFilePaths);
     }
 
-    public void addAttachments(final List<String> attachmentFilePaths) {
-        this.attachmentFilePaths.addAll(attachmentFilePaths);
-    }
-
     private MimeBodyPart buildEmailBodyPart() throws MessagingException {
         final MimeMultipart emailContent = new MimeMultipart("alternative");
 
