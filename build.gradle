@@ -11,7 +11,6 @@ buildscript {
         classpath 'com.bmuschko:gradle-docker-plugin:3.0.11'
         classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
         classpath 'com.h2database:h2:1.4.196'
-        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1'
     }
 }
 
@@ -27,7 +26,6 @@ def dbChangeLogVersion = '1.0.0'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'org.liquibase.gradle'
-apply plugin: 'org.sonarqube'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
@@ -181,12 +179,4 @@ task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
     pushImage.mustRunAfter buildDockerImage
-}
-
-sonarqube {
-    properties {
-        property 'sonar.projectName', 'Integrations - Hub Alert'
-        property 'sonar.projectKey', 'com.blackducksoftware:int:hub-alert'
-        property 'sonar.verbose', false
-    }
 }
