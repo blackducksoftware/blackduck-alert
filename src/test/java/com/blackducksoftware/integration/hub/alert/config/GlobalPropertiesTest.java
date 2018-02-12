@@ -26,6 +26,11 @@ public class GlobalPropertiesTest {
         final String trustStoreType = "trustStoreType";
 
         properties.setHubUrl(hubUrl);
+        properties.setHubTrustCertificate(hubTrustCertificate);
+        properties.setHubProxyHost(proxyHost);
+        properties.setHubProxyPort(proxyPort);
+        properties.setHubProxyUsername(proxyUser);
+        properties.setHubProxyPassword(proxyPassword);
         properties.setAlertSSLEnabled(alertSSLEnabled);
         properties.setServerPort(serverPort);
         properties.setKeyStoreFile(keyStoreFile);
