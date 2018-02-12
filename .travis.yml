@@ -19,7 +19,7 @@ notifications:
     - gkillough@blackducksoftware.com
 
 script:
- - "./gradlew clean build sonarqube -x npmInstall -x npm_run"
+ - "./gradlew clean build sonarqube"
 
 after_success:
  - "./gradlew test jacocoTestReport coveralls"
