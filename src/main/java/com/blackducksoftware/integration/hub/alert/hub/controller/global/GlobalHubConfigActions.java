@@ -147,6 +147,14 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
+        String apiKey;
+        if (restModel.isHubApiKeyIsSet()) {
+            final GlobalHubConfigEntity foundEntity = getRepository().findOne(Long.parseLong(restModel.getId()));
+            apiKey = foundEntity.getHubApiKey();
+        } else {
+            apiKey = restModel.getHubApiKey();
+        }
+
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
         hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
@@ -154,7 +162,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        hubServerConfigBuilder.setApiKey(restModel.getHubApiKey());
+        hubServerConfigBuilder.setApiKey(apiKey);
         hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
         if (globalProperties.getHubTrustCertificate() != null) {
