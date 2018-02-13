@@ -40,7 +40,6 @@ public class MimeMultipartBuilderTest {
             final MimeMultipartBuilder builder = new MimeMultipartBuilder();
             builder.addHtmlContent(html);
             builder.addTextContent(text);
-            builder.addAttachments(attachmentFilePaths);
             builder.addEmbeddedImages(contentIdsToFilePaths);
 
             builder.build();
