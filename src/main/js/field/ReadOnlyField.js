@@ -9,7 +9,7 @@ class ReadOnlyField extends LabeledField {
 
 	render() {
         const { value } = this.props;
-        let textDiv = <div className="col-sm-8"><p className={`form-control-static ${textInput}`}>{value}</p></div>;
+        const textDiv = <div className="col-sm-8"><p className={`form-control-static ${textInput}`}>{value}</p></div>;
         return (
             super.render(textDiv)
         );

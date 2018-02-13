@@ -1,6 +1,26 @@
 html,
 body {
     background-color: #ddd;
+    font-size: 13px;
+}
+h1 {
+    border-bottom: 1px solid #ccc;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    margin-top: 4px;
+    padding-bottom: 18px;
+}
+h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 20px 0 4px;
+}
+form.form-horizontal {
+    padding: 20px;
+}
+.btn {
+    margin-right: 8px;
 }
 .navigation {
     position: fixed;
@@ -12,15 +32,16 @@ body {
     color: white;
     border: 0;
     box-shadow: 1px 1px 10px #666;
+    padding: 0 20px;
     z-index: 100;
 }
 .navigation > ul {
     margin: 0;
     padding: 0;
+    list-style: none;
 }
 .navigation > ul > li {
     padding: 0;
-    margin: 8px;
 }
 .navigation > ul > li a {
     color: white;
@@ -28,7 +49,7 @@ body {
     border-left: 4px solid transparent;
     font-size: 1.1em;
     display: block;
-    padding: 8px;
+    padding: 8px 0;
 }
 .navigation > ul > li a:hover {
     background-color: #3d444e
@@ -42,7 +63,7 @@ body {
     padding-left: 10px;
 }
 .navigationLogo {
-    padding: 16px 20px;
+    padding: 16px 0px;
     border-bottom: 1px solid #444;
     width: 100%;
 }

@@ -20,7 +20,7 @@ export default class CheckboxInput extends Component {
 
         let isChecked = false;
         if (this.props.value) {
-            if (this.props.value == "true") {
+            if (this.props.value === "true") {
                 isChecked = true;
             } else if (this.props.value === true) {
                 isChecked = true;

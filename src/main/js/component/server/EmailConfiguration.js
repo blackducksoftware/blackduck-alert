@@ -1,75 +1,215 @@
 'use strict';
 import React from 'react';
+import {connect} from "react-redux";
 import PropTypes from 'prop-types';
 import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
-import ServerConfiguration from './ServerConfiguration';
+import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../actions/emailConfig';
 
-import { alignCenter, hidden, advancedWrapper, advanced } from '../../../css/main.css';
-import { advancedLink } from '../../../css/server_config.css';
+class EmailConfiguration extends React.Component {
 
-class EmailConfiguration extends ServerConfiguration {
-	constructor(props) {
-		super(props);
-        this.handleAdvancedClicked = this.handleAdvancedClicked.bind(this);
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            errors: []
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+	componentDidMount() {
+		this.props.getEmailConfig();
 	}
 
-    handleAdvancedClicked(event){
-		event.preventDefault();
-		let advancedState = !this.state.advancedShown;
-		this.setState({
-			advancedShown : advancedState
-		});
-		return false;
-	}
+    handleChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        this.setState({
+            [target.name]: value
+        });
+    }
+
+    handleSubmit(evt) {
+        evt.preventDefault();
+        console.log('submit-->', this.state);
+        this.props.updateEmailConfig(this.state);
+    }
 
 	render() {
-        let advancedDisplay = "Show Advanced";
-		let advancedClass = hidden;
-		if (this.state.advancedShown) {
-			advancedClass = "";
-			advancedDisplay = "Hide Advanced";
-		}
-		let content =
-				<div>
-					<TextInput label="Mail Smtp Host" name="mailSmtpHost" value={this.state.values.mailSmtpHost} onChange={this.handleChange} errorName="mailSmtpHostError" errorValue={this.state.errors.mailSmtpHostError}></TextInput>
-					<TextInput label="Mail Smtp From" name="mailSmtpFrom" value={this.state.values.mailSmtpFrom} onChange={this.handleChange} errorName="mailSmtpFromError" errorValue={this.state.errors.mailSmtpFromError}></TextInput>
-					<CheckboxInput label="Mail Smtp Auth" name="mailSmtpAuth" value={this.state.values.mailSmtpAuth} onChange={this.handleChange} errorName="mailSmtpAuthError" errorValue={this.state.errors.mailSmtpAuthError}></CheckboxInput>
-					<TextInput label="Mail Smtp User" name="mailSmtpUser" value={this.state.values.mailSmtpUser} onChange={this.handleChange} errorName="mailSmtpUserError" errorValue={this.state.errors.mailSmtpUserError}></TextInput>
-					<PasswordInput label="Mail Smtp Password" name="mailSmtpPassword" value={this.state.values.mailSmtpPassword} isSet={this.state.values.mailSmtpPasswordIsSet} onChange={this.handleChange} errorName="mailSmtpPasswordError" errorValue={this.state.errors.mailSmtpPasswordError}></PasswordInput>
-                    <div className={advancedLink}>
-                        <a href="#" className={advanced} onClick={this.handleAdvancedClicked}>{advancedDisplay}</a>
-                    </div>
-                    <div className={advancedClass}>
-                        <NumberInput label="Mail Smtp Port" name="mailSmtpPort" value={this.state.values.mailSmtpPort} onChange={this.handleChange} errorName="mailSmtpPortError" errorValue={this.state.errors.mailSmtpPortError}></NumberInput>
-    					<NumberInput label="Mail Smtp Connection Timeout" name="mailSmtpConnectionTimeout" value={this.state.values.mailSmtpConnectionTimeout} onChange={this.handleChange} errorName="mailSmtpConnectionTimeoutError" errorValue={this.state.errors.mailSmtpConnectionTimeoutError}></NumberInput>
-    					<NumberInput label="Mail Smtp Timeout" name="mailSmtpTimeout" value={this.state.values.mailSmtpTimeout} onChange={this.handleChange} errorName="mailSmtpTimeoutError" errorValue={this.state.errors.mailSmtpTimeoutError}></NumberInput>
-    					<TextInput label="Mail Smtp Localhost" name="mailSmtpLocalhost" value={this.state.values.mailSmtpLocalhost} onChange={this.handleChange} errorName="mailSmtpLocalhostError" errorValue={this.state.errors.mailSmtpLocalhostError}></TextInput>
-    					<CheckboxInput label="Mail Smtp Ehlo" name="mailSmtpEhlo" value={this.state.values.mailSmtpEhlo} onChange={this.handleChange} errorName="mailSmtpEhloError" errorValue={this.state.errors.mailSmtpEhloError}></CheckboxInput>
-    					<TextInput label="Mail Smtp Dns Notify" name="mailSmtpDnsNotify" value={this.state.values.mailSmtpDnsNotify} onChange={this.handleChange} errorName="mailSmtpDnsNotifyError" errorValue={this.state.errors.mailSmtpDnsNotifyError}></TextInput>
-    					<TextInput label="Mail Smtp Dns Ret" name="mailSmtpDnsRet" value={this.state.values.mailSmtpDnsRet} onChange={this.handleChange} errorName="mailSmtpDnsRetError" errorValue={this.state.errors.mailSmtpDnsRetError}></TextInput>
-    					<CheckboxInput label="Mail Smtp Allow 8-bit Mime" name="mailSmtpAllow8bitmime" value={this.state.values.mailSmtpAllow8bitmime} onChange={this.handleChange} errorName="mailSmtpAllow8bitmimeError" errorValue={this.state.errors.mailSmtpAllow8bitmimeError}></CheckboxInput>
-    					<CheckboxInput label="Mail Smtp Send Partial" name="mailSmtpSendPartial" value={this.state.values.mailSmtpSendPartial} onChange={this.handleChange} errorName="mailSmtpSendPartialError" errorValue={this.state.errors.mailSmtpSendPartialError}></CheckboxInput>
-                    </div>
-				</div>;
-		return super.render(content);
+
+        const showAdvanced = this.props.showAdvanced;
+        const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
+
+        return (
+        	<div>
+                <h1>Server Configuration / Email</h1>
+				<form className="form-horizontal" onSubmit={this.handleSubmit}>
+					<TextInput
+						label="SMTP Host"
+						name="mailSmtpHost"
+						value={this.props.mailSmtpHost}
+						onChange={this.handleChange} />
+
+					<TextInput
+						label="SMTP From"
+						name="mailSmtpFrom"
+						value={this.props.mailSmtpFrom}
+						onChange={this.handleChange} />
+
+					<CheckboxInput
+						label="SMTP Auth"
+						name="mailSmtpAuth"
+						value={this.props.mailSmtpAuth}
+						onChange={this.handleChange} />
+
+					<TextInput
+						label="SMTP User"
+						name="mailSmtpUser"
+						value={this.props.mailSmtpUser}
+						onChange={this.handleChange} />
+
+					<PasswordInput
+						label="SMTP Password"
+						name="mailSmtpPassword"
+						value={this.props.mailSmtpPassword}
+						isSet={this.props.mailSmtpPasswordIsSet}
+						onChange={this.handleChange} />
+
+					<div className="form-group">
+						<div className="col-sm-8 col-sm-offset-4">
+							<button type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false;}}>
+								{showAdvancedLabel}
+							</button>
+						</div>
+					</div>
+
+					{showAdvanced &&
+					<div>
+						<NumberInput
+							label="SMTP Port"
+							name="mailSmtpPort"
+							value={this.props.mailSmtpPort}
+							onChange={this.handleChange} />
+
+						<NumberInput
+							label="SMTP Connection Timeout"
+							name="mailSmtpConnectionTimeout"
+							value={this.props.mailSmtpConnectionTimeout}
+							onChange={this.handleChange} />
+
+						<NumberInput
+							label="SMTP Timeout"
+							name="mailSmtpTimeout"
+							value={this.props.mailSmtpTimeout}
+							onChange={this.handleChange} />
+
+						<TextInput
+							label="SMTP Localhost"
+							name="mailSmtpLocalhost"
+							value={this.props.mailSmtpLocalhost}
+							onChange={this.handleChange} />
+
+						<CheckboxInput
+							label="SMTP Ehlo"
+							name="mailSmtpEhlo"
+							value={this.props.mailSmtpEhlo}
+							onChange={this.handleChange} />
+
+						<TextInput
+							label="SMTP Dns Notify"
+							name="mailSmtpDnsNotify"
+							value={this.props.mailSmtpDnsNotify}
+							onChange={this.handleChange} />
+
+						<TextInput
+							label="SMTP Dns Ret"
+							name="mailSmtpDnsRet"
+							value={this.props.mailSmtpDnsRet}
+							onChange={this.handleChange} />
+
+						<CheckboxInput
+							label="SMTP Allow 8-bit Mime"
+							name="mailSmtpAllow8bitmime"
+							value={this.props.mailSmtpAllow8bitmime}
+							onChange={this.handleChange} />
+
+						<CheckboxInput
+							label="SMTP Send Partial"
+							name="mailSmtpSendPartial"
+							value={this.props.mailSmtpSendPartial}
+							onChange={this.handleChange} />
+
+					</div>
+					}
+					<div className="form-group">
+						<div className="col-sm-offset-4 col-sm-8">
+	                    	<button type="submit" className="btn btn-sm btn-primary">Submit</button>
+							<button type="reset" className="btn-link">Reset</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		);
 	}
 };
 
 EmailConfiguration.propTypes = {
-    headerText: PropTypes.string,
-    configButtonTest: PropTypes.bool,
-    configButtonsSave: PropTypes.bool,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string
+    mailSmtpHost: PropTypes.string,
+    mailSmtpFrom: PropTypes.string,
+    mailSmtpAuth: PropTypes.bool.isRequired,
+    mailSmtpUser: PropTypes.string,
+    mailSmtpPassword: PropTypes.string,
+    mailSmtpPasswordIsSet: PropTypes.bool.isRequired,
+    mailSmtpPort: PropTypes.number,
+    mailSmtpConnectionTimeout: PropTypes.number,
+    mailSmtpTimeout: PropTypes.number,
+    mailSmtpLocalhost: PropTypes.string,
+    mailSmtpEhlo: PropTypes.bool.isRequired,
+    mailSmtpDnsNotify: PropTypes.string,
+    mailSmtpDnsRet: PropTypes.string,
+    mailSmtpAllow8bitmime: PropTypes.bool.isRequired,
+    mailSmtpSendPartial: PropTypes.bool.isRequired,
+	showAdvanced: PropTypes.bool.isRequired,
+    toggleAdvancedEmailOptions: PropTypes.func.isRequired,
+	getEmailConfig: PropTypes.func.isRequired
 };
 
 EmailConfiguration.defaultProps = {
-    headerText: 'Email Smtp Server Configuration',
-    configButtonTest: false,
-    baseUrl: '/api/configuration/global/email'
+    mailSmtpAuth: false,
+    mailSmtpPasswordIsSet: false,
+    mailSmtpEhlo: false,
+    mailSmtpAllow8bitmime: false,
+    mailSmtpSendPartial: false
 };
 
-export default EmailConfiguration;
+const mapStateToProps = state => ({
+    mailSmtpHost: state.emailConfig.mailSmtpHost,
+    mailSmtpFrom: state.emailConfig.mailSmtpFrom,
+    mailSmtpAuth: state.emailConfig.mailSmtpAuth,
+    mailSmtpUser: state.emailConfig.mailSmtpUser,
+    mailSmtpPassword: state.emailConfig.mailSmtpPassword,
+    mailSmtpPasswordIsSet: state.emailConfig.mailSmtpPasswordIsSet,
+    mailSmtpPort: state.emailConfig.mailSmtpPort,
+    mailSmtpConnectionTimeout: state.emailConfig.mailSmtpConnectionTimeout,
+    mailSmtpTimeout: state.emailConfig.mailSmtpTimeout,
+    mailSmtpLocalhost: state.emailConfig.mailSmtpLocalhost,
+    mailSmtpEhlo: state.emailConfig.mailSmtpEhlo,
+    mailSmtpDnsNotify: state.emailConfig.mailSmtpDnsNotify,
+    mailSmtpDnsRet: state.emailConfig.mailSmtpDnsRet,
+    mailSmtpAllow8bitmime: state.emailConfig.mailSmtpAllow8bitmime,
+    mailSmtpSendPartial: state.emailConfig.mailSmtpSendPartial,
+	showAdvanced: state.emailConfig.showAdvanced
+});
+
+const mapDispatchToProps = dispatch => ({
+    toggleAdvancedEmailOptions: (toggle) => dispatch(toggleAdvancedEmailOptions(toggle)),
+    getEmailConfig: () => dispatch(getEmailConfig()),
+	updateEmailConfig: (config) => dispatch(updateEmailConfig(config))
+
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(EmailConfiguration);

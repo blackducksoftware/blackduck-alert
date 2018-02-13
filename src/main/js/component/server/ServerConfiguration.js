@@ -10,25 +10,15 @@ class ServerConfiguration extends Configuration {
     constructor(props) {
         super(props);
     }
+
     render(content) {
         const { headerText, configButtonTest, configButtonsSave } = this.props;
-        var progressIndicator = null;
-        if (this.state.inProgress) {
-            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className={progressIcon}>
-                                    <i className={fontAwesomeIcon} aria-hidden='true'></i>
-                                </div>;
-        }
         return (
 			<div>
-                <form onSubmit={this.handleSubmit}>
-                    <h1 className={alignCenter}>{ headerText }</h1>
-                    <div className={content_block}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                    <h1>Server Configuration / { headerText }</h1>
     			    {content}
-                    </div>
-                    <ConfigButtons isFixed={true} includeSave={configButtonsSave} includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
-                    {progressIndicator}
-                    <p name="configurationMessage">{this.state.configurationMessage}</p>
+                    <ConfigButtons isFixed={false} includeSave={configButtonsSave} includeTest={configButtonTest} type="submit" onTestClick={this.handleTestSubmit} />
                 </form>
 			</div>
 		)

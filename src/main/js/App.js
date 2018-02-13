@@ -1,79 +1,39 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { combineReducers, createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import createHistory from 'history/createBrowserHistory'
-import { ConnectedRouter, routerReducer, routerMiddleware, push } from 'react-router-redux'
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
-
-const history = createHistory();
-const middleware = routerMiddleware(history);
-const store = createStore(
-    combineReducers({
-        router: routerReducer
-    }),
-    applyMiddleware(middleware)
-);
+import { getConfig } from './actions/config';
+import { verifyLogin } from "./actions/session";
 
 class App extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-				loggedIn: false
-		};
-		this.handleState = this.handleState.bind(this)
-	}
 
 	componentDidMount() {
-		var self = this;
-		fetch('/api/verify', {
-			credentials: "same-origin"
-		})
-		.then(function(response) {
-			if (!response.ok) {
-				self.setState({
-					loggedIn: false
-				});
-			} else {
-				self.setState({
-					loggedIn: true
-				});
-			}
-		})
- 		.catch(function(error) {
- 		 	console.log(error); 
- 		});
-		
-	}
-
-	handleState(name, value) {
-		this.setState({
-			[name]: value
-		});
+		this.props.getConfig();
+        this.props.verifyLogin();
 	}
 
 	render() {
-		let page = null;
-		if (this.state.loggedIn) {
-			page = <MainPage handleState={this.handleState}></MainPage>
-		} else {
-			page = <LoginPage handleState={this.handleState}></LoginPage>
-		}
-		return (
-			<div>
-				{page}
-			</div>
-		)
+		return this.props.loggedIn ? <MainPage /> : <LoginPage />;
 	}
 }
 
-ReactDOM.render(
-    <Provider store={store}>
-        <ConnectedRouter history={history}>
-			<App></App>
-		</ConnectedRouter>
-	</Provider>,
-	document.getElementById('react')
-);
+App.propTypes = {
+	loggedIn: PropTypes.bool.isRequired,
+	getConfig: PropTypes.func.isRequired,
+    verifyLogin: PropTypes.func.isRequired
+};
+
+// Redux mappings to be used later....
+const mapStateToProps = state => ({
+    loggedIn: state.session.loggedIn
+});
+
+const mapDispatchToProps = dispatch => ({
+    getConfig: () => dispatch(getConfig()),
+	verifyLogin: () => dispatch(verifyLogin())
+});
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

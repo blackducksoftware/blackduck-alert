@@ -11,7 +11,7 @@ const logout = (evt) => {
     evt.stopPropagation();
     evt.preventDefault();
 
-    fetch('/logout', {
+    fetch('/api/logout', {
         method: 'POST',
         credentials: "same-origin",
         headers: {
@@ -36,7 +36,7 @@ const Navigation = () => (
                 <Link to="/settings/hub">
                     Server Configuration
                 </Link>
-                <Route path="/settings" render={props => (
+                <Route path="/settings" exact={false} render={props => (
                     <ul>
                         <li>
                             <NavLink to="/settings/hub">
@@ -55,7 +55,7 @@ const Navigation = () => (
                         </li>
                         <li>
                             <NavLink to="/settings/hipchat">
-                                <FontAwesome name="comments" fixedWidth={true} /> Hipchat
+                                <FontAwesome name="comments" fixedWidth={true} /> HipSC
                             </NavLink>
                         </li>
                         <li>
@@ -72,7 +72,6 @@ const Navigation = () => (
         </ul>
     </div>
 )
-
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({});
