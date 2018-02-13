@@ -2,24 +2,23 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
-const buildDir = path.resolve(__dirname, 'build', 'js');
+
+const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
 
 module.exports = {
-    entry: path.resolve(jsDir, 'App'),
+    entry: path.resolve(jsDir, 'Index'),
     devtool: 'sourcemaps',
     output: {
         path: buildDir,
-        filename: 'bundle.js'
+        filename: 'js/bundle.js',
+        publicPath: '/'
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /(node_modules)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015', 'react']
-                }
+                loader: 'babel-loader'
             }, {
                 test: /\.(jpg|png|svg)$/,
                 use: [{
@@ -68,12 +67,12 @@ module.exports = {
     })],
     devServer: {
         hot: true,
-        publicPath: '/',
+        publicPath: 'http://localhost:8080/',
         historyApiFallback: {
             index: 'index.html'
         },
         proxy: [{
-            context: ['/configuration', '/verify', '/login', '/logout', '/audit', '/hub'],
+            context: ['/api'],
             target: "http://localhost:8081",
             secure: false,
             bypass: function(req, res, proxyOptions) {

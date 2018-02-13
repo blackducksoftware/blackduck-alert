@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { submitContainers, submitButtons, submitContainersFixed, submitButtonsFixed } from '../../css/main.css';
-
 export default class ConfigButtons extends Component {
     constructor(props) {
         super(props);
@@ -15,32 +13,19 @@ export default class ConfigButtons extends Component {
             includeSave = false;
         }
 
-        const saveButtonText = this.props.text || "Save";
-        const saveButtonType = this.props.type || "button";
-        const testButtonText = this.props.testText || "Test";
-        const testButtonType = this.props.testType || "button";
-        const cancelButtonText = this.props.cancelText || "Cancel";
-        const cancelButtonType = this.props.cancelType || "button";
-
-        const isFixed = this.props.isFixed || false;
-
-        var containerClass = submitContainersFixed;
-        var buttonClass = submitButtonsFixed;
-        if (isFixed === false) {
-            containerClass = submitContainers;
-            buttonClass = submitButtons;
-        }
         return (
-            <div className={containerClass}>
+            <div className="form-group">
+                <div className="col-sm-offset-4 col-sm-8">
                 { includeCancel === true &&
-                    <button className={buttonClass} type={cancelButtonType} onClick={this.props.onCancelClick}>{cancelButtonText}</button>
+                    <button className='btn-link' type="reset">Cancel</button>
                 }
                 { includeTest === true &&
-                    <button className={buttonClass} type={testButtonType} onClick={this.props.onTestClick}>{testButtonText}</button>
+                    <button className="btn btn-primary" type="button" onClick={this.props.onTestClick}>Test</button>
                 }
                 { includeSave === true &&
-                    <button className={buttonClass} type={saveButtonType} onClick={this.props.onClick}>{saveButtonText}</button>
+                    <button className="btn btn-primary" type="submit">Save</button>
                 }
+                </div>
             </div>
         )
     }

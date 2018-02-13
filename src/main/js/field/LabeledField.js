@@ -9,8 +9,8 @@ class LabeledField extends Component {
 	}
 	render(inputDiv) {
 		let errorDiv = null;
-		if (this.props.errorName && this.props.errorValue) {
-			errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
+		if (this.props.errorMessage) {
+			errorDiv = <p className={fieldError}>{this.props.errorMessage}</p>;
 		}
 		var field = inputDiv;
 		if (!inputDiv) {

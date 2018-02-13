@@ -1,15 +1,17 @@
 var path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
-const buildDir = path.resolve(__dirname, 'build');
+
+const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
 
 module.exports = {
-    entry: path.resolve(jsDir, 'App'),
+    entry: path.resolve(jsDir, 'Index'),
     devtool: 'sourcemaps',
     output: {
-        path: __dirname,
-        filename: './src/main/resources/static/built/bundle.js'
+        path: buildDir,
+        filename: 'js/bundle.js'
     },
     module: {
         rules: [
@@ -65,7 +67,16 @@ module.exports = {
                         }
                     }
                 ]
+            }, {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+            }, {
+                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                loader: 'file-loader'
             }
         ]
-    }
+    },
+    plugins: [new HtmlWebpackPlugin({
+        template: 'src/main/resources/templates/index.html'
+    })]
 };

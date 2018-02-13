@@ -28,57 +28,6 @@ export default class Configuration extends Component {
 		});
 	}
 	*/
-    //componentDidMount is part of the Component lifecycle, executes after construction
-	componentDidMount() {
-		var self = this;
-
-		let getUrl = this.props.getUrl || this.props.baseUrl;
-		if (!getUrl) {
-			return;
-		}
-		console.log('[Configuration] about to fetch --> ', getUrl);
-		fetch(getUrl,{
-			credentials: "same-origin"
-		})
-		.then(function(response) {
-			self.setState({
-				inProgress: false
-			});
-			if (!response.ok) {
-				return response.json().then(json => {
-					self.setState({
-						configurationMessage: json.message
-					});
-				});
-			} else {
-				return response.json().then(jsonArray => {
-					self.setState({
-						configurationMessage: ''
-					});
-					if (jsonArray != null && jsonArray.length > 0) {
-						var configuration = jsonArray[0];
-						var values = self.state.values;
-						values.id = configuration.id;
-						for (var key in configuration) {
-							if (configuration.hasOwnProperty(key)) {
-								let name = key;
-								let value = configuration[key];
-								if (value != null) {
-									values[name] = value;
-								}
-							}
-						}
-						self.setState({
-							values
-						});
-					}
-				});
-			}
-		})
-		.catch(function(error) {
- 		 	console.log(error); 
- 		});
-    }
 
     handleSubmit(event) {
 		this.setState({
