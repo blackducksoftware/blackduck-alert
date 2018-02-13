@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -27,7 +28,11 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 public class LoginActionsTestIT {
@@ -78,12 +83,43 @@ public class LoginActionsTestIT {
     }
 
     @Test
-    public void testIsUserValidFailIT() {
+    public void testIsUserValidFailIT() throws IntegrationException, IOException {
+        final LoginRestModel loginRestModel = mockLoginRestModel.createRestModel();
 
+        final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
+        serverConfigBuilder.setLogger(new Slf4jIntLogger(logger));
+        serverConfigBuilder.setHubUrl(loginRestModel.getHubUrl());
+        serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
+        serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
+        serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
+        serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(loginRestModel.getHubAlwaysTrustCertificate()));
+        serverConfigBuilder.setProxyHost(loginRestModel.getHubProxyHost());
+        serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
+        serverConfigBuilder.setProxyUsername(loginRestModel.getHubProxyUsername());
+        serverConfigBuilder.setProxyPassword(loginRestModel.getHubProxyPassword());
+
+        final LoginActions loginActions = new LoginActions();
+
+        final RestConnection restConnection = loginActions.createRestConnection(serverConfigBuilder);
+
+        final boolean roleValid = loginActions.isUserRoleValid("broken", restConnection);
+
+        assertFalse(roleValid);
     }
 
     @Test
     public void testValidateHubConfigurationException() {
+        mockLoginRestModel.setHubProxyHost("break it");
+        final LoginActions loginActions = new LoginActions();
 
+        try {
+            loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
+            fail();
+        } catch (final IntegrationException e) {
+            if (!(e instanceof AlertFieldException)) {
+                fail();
+            }
+        }
     }
+
 }
