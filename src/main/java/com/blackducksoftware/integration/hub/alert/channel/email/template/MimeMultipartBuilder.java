@@ -24,7 +24,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.email.template;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -105,17 +104,18 @@ public class MimeMultipartBuilder {
             File imageFile = new File(imageFilePath);
 
             if (!imageFile.exists()) {
-                final File imagesDir = findImagesDirectory();
-                if (imagesDir != null) {
-                    imageFile = new File(imagesDir, imageFilePath);
-                    if (imageFile.exists()) {
-                        try {
+                try {
+                    final File imagesDir = findImagesDirectory();
+                    if (imagesDir != null) {
+                        imageFile = new File(imagesDir, imageFilePath);
+                        if (imageFile.exists()) {
                             imageFilePath = imageFile.getCanonicalPath();
-                        } catch (final IOException e) {
-                            // ignore let freemarker fail and log the exception
-                            // up the chain when it cannot find the image file
+
                         }
                     }
+                } catch (final Exception e) {
+                    // ignore let freemarker fail and log the exception
+                    // up the chain when it cannot find the image file
                 }
             }
             final DataSource fds = new FileDataSource(imageFilePath);
@@ -146,16 +146,11 @@ public class MimeMultipartBuilder {
     }
 
     private File findImagesDirectory() {
-        try {
-            File imagesDir = null;
-            final String appHomeDir = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
-            if (StringUtils.isNotBlank(appHomeDir)) {
-                imagesDir = new File(appHomeDir, "images");
-            }
-
-            return imagesDir;
-        } catch (final Exception e) {
-            return null;
+        File imagesDir = null;
+        final String appHomeDir = System.getProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME);
+        if (StringUtils.isNotBlank(appHomeDir)) {
+            imagesDir = new File(appHomeDir, "images");
         }
+        return imagesDir;
     }
 }
