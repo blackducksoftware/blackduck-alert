@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +44,6 @@ import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class NotificationManager {
-    private final Logger logger = LoggerFactory.getLogger(NotificationManager.class);
-
     private final NotificationRepositoryWrapper notificationRepository;
     private final VulnerabilityRepositoryWrapper vulnerabilityRepository;
     private final AuditEntryRepositoryWrapper auditEntryRepository;
@@ -115,12 +111,8 @@ public class NotificationManager {
 
     private void deleteAuditEntries(final Long notificationId) {
         final List<AuditNotificationRelation> foundRelations = auditNotificationRepositoryWrapper.findByNotificationId(notificationId);
-        try {
-            foundRelations.forEach(relation -> auditEntryRepository.delete(relation.getAuditEntryId()));
-            auditNotificationRepositoryWrapper.delete(foundRelations);
-        } catch (final Exception e) {
-            logger.error("An error occured while trying to delete an audit entry", e);
-        }
+        foundRelations.forEach(relation -> auditEntryRepository.delete(relation.getAuditEntryId()));
+        auditNotificationRepositoryWrapper.delete(foundRelations);
     }
 
 }
