@@ -92,6 +92,21 @@ public abstract class RepositoryWrapperTest<E extends DatabaseEntity, R extends 
 
         assertNull(entity);
         assertTrue(outputLogger.isLineContainingText("Error saving entity"));
+
+        final List<E> nullList = null;
+        final List<E> entityNull = wrapper.save(nullList);
+
+        assertEquals(Collections.emptyList(), entityNull);
+    }
+
+    @Test
+    public void testDecrypt() throws EncryptionException {
+        final W wrapper = getExceptionThrowingRepositoryWrapper();
+
+        final List<E> nullList = null;
+        final List<E> entityNull = wrapper.decryptSensitiveData(nullList);
+
+        assertEquals(Collections.emptyList(), entityNull);
     }
 
     public abstract MockEntityUtil<E> getMockEntityUtil();
