@@ -2,9 +2,11 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,10 +15,20 @@ import org.mockito.Mockito;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.springframework.batch.core.step.builder.AbstractTaskletStepBuilder;
+import org.springframework.batch.core.step.builder.SimpleStepBuilder;
+import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 
@@ -34,8 +46,78 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger.cleanup();
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
-    public abstract void testCreateStep();
+    public void testCreateStep() {
+        final StepBuilderFactory stepBuilderFactory = Mockito.mock(StepBuilderFactory.class);
+        final TaskExecutor taskExecutor = Mockito.mock(TaskExecutor.class);
+        final PlatformTransactionManager transactionManager = Mockito.mock(PlatformTransactionManager.class);
+
+        final C config = getConfigWithParams(stepBuilderFactory, taskExecutor, transactionManager);
+
+        final R reader = getMockReader();
+        final P processor = getMockProcessor();
+        final W writer = getMockWriter();
+
+        final StepBuilder stepBuilder = Mockito.mock(StepBuilder.class);
+        final SimpleStepBuilder simpleStepBuilder = Mockito.mock(SimpleStepBuilder.class);
+        final AbstractTaskletStepBuilder abstractTaskletStepBuilder = Mockito.mock(AbstractTaskletStepBuilder.class);
+
+        Mockito.when(stepBuilderFactory.get(Mockito.anyString())).thenReturn(stepBuilder);
+        Mockito.when(stepBuilder.chunk(Mockito.anyInt())).thenReturn(simpleStepBuilder);
+        Mockito.when(simpleStepBuilder.reader(reader)).thenReturn(simpleStepBuilder);
+        Mockito.when(simpleStepBuilder.processor(processor)).thenReturn(simpleStepBuilder);
+        Mockito.when(simpleStepBuilder.writer(writer)).thenReturn(simpleStepBuilder);
+        Mockito.when(simpleStepBuilder.taskExecutor(taskExecutor)).thenReturn(abstractTaskletStepBuilder);
+        Mockito.when(abstractTaskletStepBuilder.transactionManager(transactionManager)).thenReturn(abstractTaskletStepBuilder);
+        Mockito.when(abstractTaskletStepBuilder.build()).thenReturn(new TaskletStep());
+
+        final Step step = config.createStep(reader, processor, writer);
+        assertNotNull(step);
+    }
+
+    public abstract C getConfigWithParams(StepBuilderFactory stepBuilderFactory, TaskExecutor taskExecutor, PlatformTransactionManager platformTransactionManager);
+
+    public abstract R getMockReader();
+
+    public abstract P getMockProcessor();
+
+    public abstract W getMockWriter();
+
+    @Test
+    public void testScheduleJobExecutionBlankCron() throws IOException {
+        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
+        final ScheduledFuture<?> future = Mockito.mock(ScheduledFuture.class);
+        Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(CommonConfig.class), Mockito.any(CronTrigger.class));
+        // Mockito.when(taskScheduler.schedule(Mockito.any(CommonConfig.class), Mockito.any(CronTrigger.class))).thenReturn(future);
+        final C config = getConfigWithTaskScheduler(taskScheduler);
+        config.scheduleJobExecution("1 1 1 1 1 1");
+        config.scheduleJobExecution("");
+
+        assertTrue(outputLogger.isLineContainingText("Un-Scheduling "));
+    }
+
+    public abstract C getConfigWithTaskScheduler(TaskScheduler taskScheduler);
+
+    @Test
+    public void testScheduleJobExecutionException() throws IOException {
+        final C config = getConfigWithNullParams();
+        config.scheduleJobExecution("fail");
+
+        assertTrue(outputLogger.isLineContainingText("IllegalArgumentException"));
+    }
+
+    @Test
+    public void testTimeNull() {
+        final C config = getConfigWithNullParams();
+        final Long nullResult = config.getMillisecondsToNextRun();
+
+        assertNull(nullResult);
+
+        final String nullStringResult = config.getFormatedNextRunTime();
+
+        assertNull(nullStringResult);
+    }
 
     @Test
     public void testReader() {
@@ -86,7 +168,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
     @Test
     public void testRun() throws Exception {
         final SimpleJobLauncher simpleJobLauncher = Mockito.mock(SimpleJobLauncher.class);
-        C config = getConfigWithPassedParams(simpleJobLauncher);
+        C config = getConfigWithSimpleJobLauncher(simpleJobLauncher);
 
         final JobExecution jobExecution = Mockito.mock(JobExecution.class);
         final ExitStatus exitStatus = Mockito.mock(ExitStatus.class);
@@ -105,6 +187,14 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         assertTrue(successfulRun);
     }
 
-    public abstract C getConfigWithPassedParams(SimpleJobLauncher simpleJobLauncher);
+    public abstract C getConfigWithSimpleJobLauncher(SimpleJobLauncher simpleJobLauncher);
+
+    @Test
+    public void runException() throws IOException {
+        final C config = getConfigWithNullParams();
+        config.run();
+
+        assertTrue(outputLogger.isLineContainingText("Exception"));
+    }
 
 }
