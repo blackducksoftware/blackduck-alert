@@ -35,7 +35,6 @@ public class StartupManagerTest {
     public void testLogConfiguration() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
-        // Mockito.doReturn(null).when(mockTestGlobalProperties).getHubConfig();
         final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null);
 
         startupManager.logConfiguration();

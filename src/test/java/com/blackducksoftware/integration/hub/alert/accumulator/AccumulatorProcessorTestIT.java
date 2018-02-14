@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -65,7 +64,8 @@ public class AccumulatorProcessorTestIT {
         }
     }
 
-    @Test
+    // @Test
+    // TODO This test will be skipped until we can specify it as an IT
     public void testProcess() throws Exception {
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;
