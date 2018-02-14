@@ -55,7 +55,6 @@ class HubConfiguration extends React.Component {
 
     render() {
 		const { errorMessage, testStatus } = this.props;
-		console.log('urlafalsdjf;als', this.state.hubUrl, this.props.hubUrl);
 		return (
 			<div>
 				{ testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
