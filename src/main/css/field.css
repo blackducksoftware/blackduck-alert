@@ -34,7 +34,6 @@
 
 .typeAheadField {
 	composes: textInput inline;
-    top: 10px;
 }
 
 .emptyLabel {
