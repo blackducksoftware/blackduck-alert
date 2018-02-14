@@ -70,15 +70,6 @@ public class LoginHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-
-        SecurityContextHolder.clearContext();
-        session = request.getSession(true);
-        logger.info("Session interval: {}", session.getMaxInactiveInterval());
-        session.setMaxInactiveInterval(600);
         return authenticateUser(loginRestModel);
     }
 
