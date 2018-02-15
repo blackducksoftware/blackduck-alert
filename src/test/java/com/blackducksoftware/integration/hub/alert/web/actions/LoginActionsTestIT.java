@@ -25,7 +25,6 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackducksoftware.integration.HubConnectionTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
@@ -36,6 +35,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
 public class LoginActionsTestIT {

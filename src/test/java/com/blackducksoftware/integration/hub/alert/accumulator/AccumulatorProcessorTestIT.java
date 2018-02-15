@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import com.blackducksoftware.integration.HubConnectionTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
@@ -37,6 +36,7 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
 public class AccumulatorProcessorTestIT {

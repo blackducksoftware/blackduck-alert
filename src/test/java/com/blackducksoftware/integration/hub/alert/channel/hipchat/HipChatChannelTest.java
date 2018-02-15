@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.ExternalConnectionTest;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
@@ -40,6 +39,7 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class HipChatChannelTest extends ChannelTest {
     final MockHipChatGlobalEntity hipChatMockUtil = new MockHipChatGlobalEntity();
