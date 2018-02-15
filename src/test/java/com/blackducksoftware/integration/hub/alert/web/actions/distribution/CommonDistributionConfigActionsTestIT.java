@@ -30,6 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.DatabaseConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
@@ -51,6 +52,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @Transactional
+@WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class CommonDistributionConfigActionsTestIT {
     @Autowired

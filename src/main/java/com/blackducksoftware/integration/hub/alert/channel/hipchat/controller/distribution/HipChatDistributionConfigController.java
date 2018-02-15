@@ -27,22 +27,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
+import com.blackducksoftware.integration.hub.alert.web.controller.DistributionConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 
 @RestController
-public class HipChatDistributionConfigController extends ConfigController<HipChatDistributionRestModel> {
+@RequestMapping(DistributionConfigController.DISTRIBUTION_PATH + "/hipchat")
+public class HipChatDistributionConfigController extends DistributionConfigController<HipChatDistributionRestModel> {
     private final CommonConfigHandler<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepositoryWrapper> commonConfigHandler;
 
     @Autowired
@@ -51,43 +48,31 @@ public class HipChatDistributionConfigController extends ConfigController<HipCha
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping(value = "/configuration/distribution/hipchat")
     public List<HipChatDistributionRestModel> getConfig(final Long id) {
         return commonConfigHandler.getConfig(id);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/distribution/hipchat")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigHandler.postConfig(restModel);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping(value = "/configuration/distribution/hipchat")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigHandler.putConfig(restModel);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping(value = "/configuration/distribution/hipchat")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigHandler.doNotAllowHttpMethod();
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/distribution/hipchat/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigHandler.testConfig(restModel);
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping(value = "/configuration/distribution/hipchat/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final HipChatDistributionRestModel restModel) {
         return commonConfigHandler.validateConfig(restModel);
     }

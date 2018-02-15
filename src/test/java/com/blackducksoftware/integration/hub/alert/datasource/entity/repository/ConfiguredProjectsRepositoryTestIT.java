@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.DatabaseConnectionTest;
@@ -38,6 +39,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
+@WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class ConfiguredProjectsRepositoryTestIT {
     @Autowired

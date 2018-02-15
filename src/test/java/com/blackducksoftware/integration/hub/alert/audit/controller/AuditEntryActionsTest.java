@@ -66,7 +66,9 @@ public class AuditEntryActionsTest {
         Mockito.when(commonDistributionRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(mockCommonDistributionEntity.createEntity());
         Mockito.doThrow(new AlertException()).when(spyObjectTransformer).databaseEntityToConfigRestModel(Mockito.any(), Mockito.any());
         Mockito.when(notificationRepository.findAll(Mockito.any())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository), auditNotificationRepository, commonDistributionRepositoryWrapper,
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
+                auditNotificationRepository,
+                commonDistributionRepositoryWrapper,
                 spyObjectTransformer, null, null, null);
 
         auditEntryActions.get(1L);
@@ -86,7 +88,8 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findOne(Mockito.anyLong())).thenReturn(mockAuditEntryEntity.createEmptyEntity());
         Mockito.when(commonDistributionRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(null);
         Mockito.when(notificationRepository.findAll(Mockito.any())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository), auditNotificationRepository, commonDistributionRepositoryWrapper,
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
+                auditNotificationRepository, commonDistributionRepositoryWrapper,
                 null, null, null, null);
 
         List<AuditEntryRestModel> restModel = null;
