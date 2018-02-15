@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack.controller.dis
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;

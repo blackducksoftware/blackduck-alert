@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.blackducksoftware.integration.DatabaseConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
@@ -40,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(DatabaseConnectionTest.class)
