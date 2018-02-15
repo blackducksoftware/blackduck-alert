@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.DatabaseConnectionTest;
-import com.blackducksoftware.integration.ExternalConnectionTest;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
@@ -42,6 +41,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category({ DatabaseConnectionTest.class, ExternalConnectionTest.class })
