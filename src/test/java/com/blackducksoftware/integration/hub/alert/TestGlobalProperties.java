@@ -44,18 +44,8 @@ public class TestGlobalProperties extends GlobalProperties {
         testProperties = new TestProperties();
     }
 
-    @Override
-    public Integer getHubTimeout() {
-        return hubTimeout;
-    }
-
     public void setHubTimeout(final Integer hubTimeout) {
         this.hubTimeout = hubTimeout;
-    }
-
-    @Override
-    public String getHubApiKey() {
-        return hubApiKey;
     }
 
     public void setHubApiKey(final String hubApiKey) {

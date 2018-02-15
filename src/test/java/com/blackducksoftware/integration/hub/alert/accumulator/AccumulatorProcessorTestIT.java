@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -65,7 +64,8 @@ public class AccumulatorProcessorTestIT {
         }
     }
 
-    @Test
+    // @Test
+    // TODO This test will be skipped until we can specify it as an IT
     public void testProcess() throws Exception {
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;
@@ -80,7 +80,7 @@ public class AccumulatorProcessorTestIT {
         final ExternalId apacheExternalId = externalIdFactory.createMavenExternalId("commons-fileupload", "commons-fileupload", "1.2.1");
         componentDataService.addComponentToProjectVersion(apacheExternalId, testProjectName, testProjectVersionName);
 
-        TimeUnit.SECONDS.sleep(15);
+        TimeUnit.SECONDS.sleep(60);
 
         final NotificationResults notificationData = notificationDataService.getUserNotifications(new Date(System.currentTimeMillis() - 100000), new Date(), user);
 
@@ -88,9 +88,10 @@ public class AccumulatorProcessorTestIT {
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
+        assertNotNull(storeEvent);
+
         final List<NotificationEvent> notificationEvents = storeEvent.getNotificationList();
 
-        assertNotNull(storeEvent);
         assertFalse(notificationEvents.isEmpty());
         assertEquals(storeEvent.getEventId().length(), 36);
 
