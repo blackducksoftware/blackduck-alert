@@ -23,6 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.DatabaseConnectionTest;
@@ -41,6 +42,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
+@WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class NotificationManagerTestIT {
 
@@ -205,33 +207,6 @@ public class NotificationManagerTestIT {
         searchDate = createDate(time.minusHours(6));
         foundList = notificationManager.findByCreatedAtBefore(searchDate);
         assertTrue(foundList.isEmpty());
-    }
-
-    @Test
-    public void deleteNotificationsCreatedBefore() {
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        final LocalDateTime time = LocalDateTime.now();
-        final Date searchDate = createDate(time.plusHours(1));
-        final Date createdAt = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
-        final Date createdAtOutofBounds = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAtOutofBounds);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
-        final Date lastCreatedAt = createDate(time.plusHours(3).plusMinutes(1));
-        assertEquals(2, notificationRepository.count());
-        assertEquals(2, vulnerabilityRepository.count());
-
-        notificationManager.deleteNotificationsCreatedBefore(searchDate);
-
-        assertEquals(1, notificationRepository.count());
-        assertEquals(1, vulnerabilityRepository.count());
-
-        notificationManager.deleteNotificationsCreatedBefore(lastCreatedAt);
-
-        assertEquals(0, notificationRepository.count());
-        assertEquals(0, vulnerabilityRepository.count());
     }
 
     @Test

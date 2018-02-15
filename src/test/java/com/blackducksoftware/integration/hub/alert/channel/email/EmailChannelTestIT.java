@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -7,6 +9,7 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.ExternalConnectionTest;
+import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -17,10 +20,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
-@Category(ExternalConnectionTest.class)
 public class EmailChannelTestIT extends ChannelTest {
 
     @Test
+    @Category(ExternalConnectionTest.class)
     public void sendEmailTest() throws Exception {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper globalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
@@ -49,6 +52,17 @@ public class EmailChannelTestIT extends ChannelTest {
         final MockEmailEntity mockEmailEntity = new MockEmailEntity();
         mockEmailEntity.setGroupName("IntegrationTest");
         emailChannel.sendAuditedMessage(event, mockEmailEntity.createEntity());
+    }
+
+    @Test
+    public void sendEmailNullGlobalTest() throws Exception {
+        final OutputLogger outputLogger = new OutputLogger();
+
+        final EmailGroupChannel emailChannel = new EmailGroupChannel(null, gson, null, null, null, null);
+        emailChannel.sendMessage(new EmailGroupEvent(null, 1L), null);
+        assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
+
+        outputLogger.close();
     }
 
 }

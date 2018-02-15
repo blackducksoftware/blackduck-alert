@@ -69,7 +69,7 @@ EmailConfiguration.propTypes = {
 EmailConfiguration.defaultProps = {
     headerText: 'Email Smtp Server Configuration',
     configButtonTest: false,
-    baseUrl: '/configuration/global/email'
+    baseUrl: '/api/configuration/global/email'
 };
 
 export default EmailConfiguration;

@@ -45,4 +45,5 @@ public class AuditEntryRepositoryWrapper extends SimpleKeyRepositoryWrapper<Audi
             return null;
         }
     }
+
 }

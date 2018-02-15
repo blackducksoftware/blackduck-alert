@@ -155,16 +155,6 @@ public class GlobalProperties {
         this.hubProxyPassword = hubProxyPassword;
     }
 
-    public GlobalHubConfigEntity getConfig(final Long id) {
-        GlobalHubConfigEntity globalConfig = null;
-        if (id != null && globalHubRepository.exists(id)) {
-            globalConfig = globalHubRepository.findOne(id);
-        } else {
-            globalConfig = getHubConfig();
-        }
-        return globalConfig;
-    }
-
     public GlobalHubConfigEntity getHubConfig() {
         final List<GlobalHubConfigEntity> configs = globalHubRepository.findAll();
         if (configs != null && !configs.isEmpty()) {
@@ -246,19 +236,4 @@ public class GlobalProperties {
         return hubServerConfigBuilder;
     }
 
-    public Integer getHubTimeout() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getHubConfig().getHubTimeout();
-        }
-        return null;
-    }
-
-    public String getHubApiKey() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getHubConfig().getHubApiKey();
-        }
-        return null;
-    }
 }

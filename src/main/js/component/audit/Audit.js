@@ -70,7 +70,7 @@ class Audit extends Component {
 			inProgress: true
 		});
 		var self = this;
-		fetch('/audit',{
+		fetch('/api/audit',{
 			credentials: "same-origin"
 		})
 		.then(function(response) {
@@ -154,7 +154,7 @@ class Audit extends Component {
 		});
 
 		var self = this;
-		var resendUrl = '/audit/' + currentEntry.id + '/resend';
+		var resendUrl = '/api/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
 			method: 'POST',
 			credentials: "same-origin",

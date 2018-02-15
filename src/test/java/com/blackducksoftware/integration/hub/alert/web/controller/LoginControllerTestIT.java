@@ -50,8 +50,8 @@ public class LoginControllerTestIT {
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
-    private final String loginUrl = "/login";
-    private final String logoutUrl = "/logout";
+    private final String loginUrl = "/api/login";
+    private final String logoutUrl = "/api/logout";
 
     @Before
     public void setup() {
@@ -61,7 +61,7 @@ public class LoginControllerTestIT {
     @Test
     public void testLogout() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(logoutUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class LoginControllerTestIT {
         jsonRestModel.addProperty("hubPassword", testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
         request.content(jsonRestModel.toString());
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 }
