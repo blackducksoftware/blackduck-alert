@@ -67,15 +67,6 @@ dependencies {
     testCompile 'org.springframework.security:spring-security-test:4.0.0.RELEASE'
 }
 
-jar {
-    sourceSets {
-        main {
-            resources {
-            }
-        }
-    }
-}
-
 startScripts {
     doLast {
         unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-volume ")
