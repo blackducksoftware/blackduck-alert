@@ -1,3 +1,4 @@
+FROM blackducksoftware/hub-docker-common:1.0.0 as docker-common
 FROM openjdk:8-jre-alpine
 
 # add a new FROM line 
@@ -45,7 +46,8 @@ RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_H
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
+COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
+COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 
 RUN chown -R hubalert:hubalert $BLACKDUCK_HOME
 RUN chmod 774 $ALERT_DB_DIR

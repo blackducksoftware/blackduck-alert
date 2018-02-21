@@ -68,12 +68,11 @@ createTruststore() {
 createKeystore() {
     certKey=$securityDir/$serverCertName.key
     certFile=$securityDir/$serverCertName.crt
-    ls -al $dockerSecretDir
     if [ -f $dockerSecretDir/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $dockerSecretDir/WEBSERVER_CUSTOM_KEY_FILE ];
     then
         certKey="${dockerSecretDir}/WEBSERVER_CUSTOM_KEY_FILE"
         certFile="${dockerSecretDir}/WEBSERVER_CUSTOM_CERT_FILE"
-        
+
         echo "Custom webserver cert and key found"
     	echo "Using $certFile and $certKey for webserver"
     fi
