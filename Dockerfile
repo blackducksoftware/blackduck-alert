@@ -1,8 +1,6 @@
 FROM blackducksoftware/hub-docker-common:1.0.0 as docker-common
 FROM openjdk:8-jre-alpine
 
-# add a new FROM line 
-# COPY --from intstruction
 ARG VERSION
 
 LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc." \

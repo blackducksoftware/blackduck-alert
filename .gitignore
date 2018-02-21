@@ -15,6 +15,7 @@ build/
 classes/
 log/
 testDB/
+src/main/resources/version.txt
 src/test/resources/application.properties
 src/test/resources/test.properties
 /activemq-data/
