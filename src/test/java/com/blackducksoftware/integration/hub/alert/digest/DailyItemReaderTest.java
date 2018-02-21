@@ -21,7 +21,7 @@ import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class DailyItemReaderTest {
 
-    private GlobalProperties globalProperties;
+    private TestGlobalProperties globalProperties;
 
     @Before
     public void initTest() {
@@ -82,5 +82,24 @@ public class DailyItemReaderTest {
 
         final List<NotificationModel> nullNotificationList = dailyItemReaderException.read();
         assertNull(nullNotificationList);
+    }
+
+    @Test
+    public void testUnknownVersionPhoneHome() throws Exception {
+        globalProperties.setProductVersionOverride(GlobalProperties.PRODUCT_VERSION_UNKNOWN);
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final DailyItemReader dailyItemReader = new DailyItemReader(notificationManager, globalProperties);
+
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(new NotificationModel(null, null)));
+
+        final List<NotificationModel> notificationList = dailyItemReader.read();
+
+        assertTrue(!notificationList.isEmpty());
+
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
+
+        final List<NotificationModel> hasReadNotificationList = dailyItemReader.read();
+
+        assertNull(hasReadNotificationList);
     }
 }
