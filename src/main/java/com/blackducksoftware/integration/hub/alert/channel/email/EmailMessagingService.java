@@ -63,7 +63,6 @@ public class EmailMessagingService {
 
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
-        // TODO determine the actual image location for deployment from the classpath in the jar
         final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
         String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
@@ -85,7 +84,6 @@ public class EmailMessagingService {
 
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        // TODO allow the ability to upload the image files or use a URL to an image
         final String imagesDirectory = System.getenv("ALERT_IMAGES_DIR");
         String imageDirectoryPath;
         if (StringUtils.isNotBlank(imagesDirectory)) {
