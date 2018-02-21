@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.batch.item.NonTransientResourceException;
@@ -14,13 +15,22 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class DailyItemReaderTest {
 
+    private GlobalProperties globalProperties;
+
+    @Before
+    public void initTest() {
+        globalProperties = new TestGlobalProperties();
+    }
+
     @Test
     public void testGetDateRange() {
-        final DailyItemReader dailyItemReader = new DailyItemReader(null);
+        final DailyItemReader dailyItemReader = new DailyItemReader(null, null);
 
         final DateRange actualDateRange = dailyItemReader.getDateRange();
 
@@ -36,7 +46,7 @@ public class DailyItemReaderTest {
     @Test
     public void testRead() throws UnexpectedInputException, ParseException, NonTransientResourceException, Exception {
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
-        final DailyItemReader dailyItemReader = new DailyItemReader(notificationManager);
+        final DailyItemReader dailyItemReader = new DailyItemReader(notificationManager, globalProperties);
 
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(new NotificationModel(null, null)));
 
@@ -56,7 +66,7 @@ public class DailyItemReaderTest {
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(Arrays.asList());
 
-        final DailyItemReader dailyItemReaderNull = new DailyItemReader(notificationManager);
+        final DailyItemReader dailyItemReaderNull = new DailyItemReader(notificationManager, globalProperties);
 
         final List<NotificationModel> nullNotificationList = dailyItemReaderNull.read();
 
@@ -68,7 +78,7 @@ public class DailyItemReaderTest {
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(), Mockito.any())).thenReturn(null);
 
-        final DailyItemReader dailyItemReaderException = new DailyItemReader(notificationManager);
+        final DailyItemReader dailyItemReaderException = new DailyItemReader(notificationManager, globalProperties);
 
         final List<NotificationModel> nullNotificationList = dailyItemReaderException.read();
         assertNull(nullNotificationList);

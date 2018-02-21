@@ -23,8 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +47,11 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.util.ResourceUtil;
 
 @Component
 public class GlobalProperties {
+    public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepositoryWrapper globalHubRepository;
 
     @Value("${blackduck.hub.url:}")
@@ -68,9 +72,25 @@ public class GlobalProperties {
     @Value("${blackduck.hub.proxy.password:}")
     private String hubProxyPassword;
 
+    private String productVersion;
+
     @Autowired
     public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
+        initVersion();
+    }
+
+    private void initVersion() {
+        try {
+            productVersion = ResourceUtil.getResourceAsString(getClass(), "/version.txt", StandardCharsets.UTF_8.toString());
+        } catch (final IOException e) {
+            productVersion = PRODUCT_VERSION_UNKNOWN;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getProductVersion() {
+        return productVersion;
     }
 
     public String getHubUrl() {

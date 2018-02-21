@@ -52,13 +52,16 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     private final ChannelTemplateManager channelTemplateManager;
     private final DigestNotificationProcessor notificationProcessor;
+    private final GlobalProperties globalProperties;
 
     @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
-            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor) {
+            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor,
+            final GlobalProperties globalProperties) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
+        this.globalProperties = globalProperties;
     }
 
     @Override
@@ -69,7 +72,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public DailyItemReader reader() {
-        return new DailyItemReader(notificationManager);
+        return new DailyItemReader(notificationManager, globalProperties);
     }
 
     @Override
