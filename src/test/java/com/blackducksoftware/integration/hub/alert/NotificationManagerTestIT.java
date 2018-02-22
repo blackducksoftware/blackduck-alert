@@ -210,33 +210,6 @@ public class NotificationManagerTestIT {
     }
 
     @Test
-    public void deleteNotificationsCreatedBefore() {
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        final LocalDateTime time = LocalDateTime.now();
-        final Date searchDate = createDate(time.plusHours(1));
-        final Date createdAt = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
-        final Date createdAtOutofBounds = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAtOutofBounds);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
-        final Date lastCreatedAt = createDate(time.plusHours(3).plusMinutes(1));
-        assertEquals(2, notificationRepository.count());
-        assertEquals(2, vulnerabilityRepository.count());
-
-        notificationManager.deleteNotificationsCreatedBefore(searchDate);
-
-        assertEquals(1, notificationRepository.count());
-        assertEquals(1, vulnerabilityRepository.count());
-
-        notificationManager.deleteNotificationsCreatedBefore(lastCreatedAt);
-
-        assertEquals(0, notificationRepository.count());
-        assertEquals(0, vulnerabilityRepository.count());
-    }
-
-    @Test
     public void testDeleteNotificationList() {
         final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
