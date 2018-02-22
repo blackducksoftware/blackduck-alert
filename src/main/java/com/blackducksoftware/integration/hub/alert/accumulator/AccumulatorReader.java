@@ -57,7 +57,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
     private String findLastRunFilePath() {
         String path = "";
         try {
-            final String configLocation = System.getProperty("/");
+            final String configLocation = System.getenv("ALERT_CONFIG_HOME");
             final File file = new File(configLocation, "accumulator-lastrun.txt");
             path = file.getCanonicalPath();
         } catch (final IOException ex) {
