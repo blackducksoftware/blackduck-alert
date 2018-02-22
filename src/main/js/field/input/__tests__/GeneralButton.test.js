@@ -2,7 +2,7 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from 'enzyme-adapter-react-15';
-import TestButton from '../TestButton';
+import GeneralButton from '../GeneralButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });
@@ -10,15 +10,15 @@ beforeAll(() => {
 
 test('Rendering default test button snapshot', () => {
     const button = renderer.create(
-        <TestButton onClick={()=> {}} />
+        <GeneralButton onClick={()=> {}} />
     );
     let tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });
 
-test('TestButton click handler', () => {
+test('GeneralButton click handler', () => {
     const mockCallBack = jest.fn();
-    const button = shallow((<TestButton onClick={mockCallBack} />));
+    const button = shallow((<GeneralButton onClick={mockCallBack} />));
 
     button.find('button').simulate('click');
     expect(mockCallBack.mock.calls.length).toEqual(1);
@@ -27,9 +27,9 @@ test('TestButton click handler', () => {
     expect(mockCallBack.mock.calls.length).toEqual(2);
 });
 
-test('TestButton alt label', () => {
+test('GeneralButton alt label', () => {
     const mockCallBack = jest.fn();
-    const button = shallow((<TestButton onClick={mockCallBack}>Test Config</TestButton>));
+    const button = shallow((<GeneralButton onClick={mockCallBack}>Test Config</GeneralButton>));
 
     expect(button.text()).toEqual('Test Config');
     console.log(button.text());

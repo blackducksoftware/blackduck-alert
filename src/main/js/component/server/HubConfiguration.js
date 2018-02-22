@@ -54,17 +54,20 @@ class HubConfiguration extends React.Component {
 	}
 
     render() {
-		const { errorMessage, testStatus } = this.props;
+		const { errorMessage, testStatus, updateStatus } = this.props;
 		return (
 			<div>
-				{ testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
-					<div>Test was successful!</div>
-				</div>}
-				{ errorMessage && <div className="alert alert-danger">
-					{ errorMessage }
-				</div> }
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
 					<h1>Server Configuration / Hub Configuration</h1>
+                    { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
+                        <div>Test was successful!</div>
+                    </div>}
+                    { errorMessage && <div className="alert alert-danger">
+                        { errorMessage }
+                    </div> }
+                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
+                        { 'Update successful' }
+					</div> }
 					<div>
 						<ReadOnlyField label="Url" name="hubUrl" readOnly="true" value={this.props.hubUrl} />
 						<TextInput label="API Key" name="hubApiKey" value={this.state.hubApiKey} isSet={this.state.hubApiKeyIsSet} onChange={this.handleChange} errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.hubApiKey} />
@@ -126,6 +129,7 @@ const mapStateToProps = state => ({
     hubTimeout: state.config.hubTimeout,
     hubUrl: state.config.hubUrl,
 	testStatus: state.config.testStatus,
+    updateStatus: state.config.updateStatus,
 	errorMessage: state.config.error.message,
 	fieldErrors: state.config.error.fieldErrors,
 	id: state.config.id

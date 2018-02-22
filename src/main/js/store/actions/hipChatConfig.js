@@ -1,29 +1,21 @@
 import {
-    CONFIG_FETCHING,
-    CONFIG_FETCHED,
-    CONFIG_UPDATE_ERROR,
-    CONFIG_UPDATING,
-    CONFIG_UPDATED,
-    CONFIG_TESTING,
-    CONFIG_TEST_SUCCESS,
-    CONFIG_TEST_FAILED
+    HIPCHAT_CONFIG_FETCHING,
+    HIPCHAT_CONFIG_FETCHED,
+    HIPCHAT_CONFIG_UPDATE_ERROR,
+    HIPCHAT_CONFIG_UPDATING,
+    HIPCHAT_CONFIG_UPDATED,
+    HIPCHAT_CONFIG_TESTING,
+    HIPCHAT_CONFIG_TEST_SUCCESS,
+    HIPCHAT_CONFIG_TEST_FAILED
 } from './types';
 
-const CONFIG_URL = '/api/configuration/global';
-const TEST_URL = '/api/configuration/global/test';
+const CONFIG_URL = '/api/configuration/global/hipchat';
+const TEST_URL = '/api/configuration/global/hipchat/test';
 
 function scrubConfig(config) {
     return {
-        hubAlwaysTrustCertificate: config.hubAlwaysTrustCertificate,
-        hubApiKey: config.hubApiKey,
-        hubApiKeyIsSet: config.hubApiKeyIsSet,
-        hubProxyHost: config.hubProxyHost,
-        hubProxyPassword: config.hubProxyPassword,
-        hubProxyPasswordIsSet: config.hubProxyPasswordIsSet,
-        hubProxyPort: config.hubProxyPort,
-        hubProxyUsername: config.hubProxyUsername,
-        hubTimeout: config.hubTimeout,
-        hubUrl: config.hubUrl,
+        apiKeyIsSet: config.apiKeyIsSet,
+        apiKey: config.apiKey,
         id: config.id
     };
 }
@@ -34,7 +26,7 @@ function scrubConfig(config) {
  */
 function fetchingConfig() {
     return {
-        type: CONFIG_FETCHING
+        type: HIPCHAT_CONFIG_FETCHING
     };
 }
 
@@ -44,14 +36,26 @@ function fetchingConfig() {
  */
 function configFetched(config) {
     return {
-        type: CONFIG_FETCHED,
+        type: HIPCHAT_CONFIG_FETCHED,
         ...scrubConfig(config)
+    };
+}
+
+/**
+ * Triggers Config Error
+ * @returns {{type}}
+ */
+function configError(message, errors) {
+    return {
+        type: HIPCHAT_CONFIG_UPDATE_ERROR,
+        message,
+        errors
     };
 }
 
 function updatingConfig() {
     return {
-        type: CONFIG_UPDATING
+        type: HIPCHAT_CONFIG_UPDATING
     };
 }
 
@@ -61,38 +65,26 @@ function updatingConfig() {
  */
 function configUpdated(config) {
     return {
-        type: CONFIG_UPDATED,
+        type: HIPCHAT_CONFIG_UPDATED,
         ...scrubConfig(config)
-    };
-}
-
-/**
- * Triggers Scheduling Config Error
- * @returns {{type}}
- */
-function configError(message, errors) {
-    return {
-        type: CONFIG_UPDATE_ERROR,
-        message,
-        errors
     };
 }
 
 function testingConfig() {
     return {
-        type: CONFIG_TESTING
+        type: HIPCHAT_CONFIG_TESTING
     };
 }
 
 function testSuccess() {
     return {
-        type: CONFIG_TEST_SUCCESS
+        type: HIPCHAT_CONFIG_TEST_SUCCESS
     };
 }
 
 function testFailed(message, errors) {
     return {
-        type: CONFIG_TEST_FAILED,
+        type: HIPCHAT_CONFIG_TEST_FAILED,
         message,
         errors
 
@@ -140,11 +132,11 @@ export function updateConfig(config) {
                             case 400:
                                 return dispatch(configError(data.message, data.errors));
                             case 401:
-                                return dispatch(configError(`API Key isn't valid, try a different one`));
+                                return dispatch(configError(`API Key isn't valid, try a different one`, null));
                             case 412:
                                 return dispatch(configError(data.message, data.errors));
                             default:
-                                dispatch(configError(data.message));
+                                dispatch(configError(data.message, null));
                         }
                     });
             }

@@ -2,9 +2,9 @@
 
 exports[`Rendering default cancel button snapshot 1`] = `
 <button
-  className="btn btn-link"
+  className="btn btn-sm btn-link"
   onClick={[Function]}
-  type="button"
+  type="reset"
 >
   Cancel
 </button>

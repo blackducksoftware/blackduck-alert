@@ -1,37 +1,111 @@
-'use strict';
 import React from 'react';
 import PropTypes from 'prop-types';
-import CheckboxInput from '../../field/input/CheckboxInput';
-import NumberInput from '../../field/input/NumberInput';
+import {connect} from "react-redux";
+
 import TextInput from '../../field/input/TextInput';
-import ServerConfiguration from './ServerConfiguration';
+import ConfigButtons from '../ConfigButtons';
+import {getConfig, testConfig, updateConfig} from "../../store/actions/hipChatConfig";
 
-import { alignCenter } from '../../../css/main.css';
-
-class HipChatConfiguration extends ServerConfiguration {
+class HipChatConfiguration extends React.Component {
 	constructor(props) {
 		super(props);
+
+		this.state = {
+            apiKey: '',
+            apiKeyIsSet: false
+        };
+
+		this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleTest = this.handleTest.bind(this);
 	}
 
-	render() {
-		const content = <TextInput label="Api Key" type="text" name="apiKey" value={this.state.values.apiKey} isSet={this.state.values.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.state.errors.apiKeyError}></TextInput>
-        return super.render(content);
+	componentDidMount() {
+	    this.props.getConfig();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setState({
+            apiKey: nextProps.apiKey || '',
+            apiKeyIsSet: nextProps.apiKeyIsSet
+        });
+    }
+
+    handleChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        this.setState({
+            [target.name]: value
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const { id } = this.props;
+        this.props.updateConfig({id, ...this.state});
+    }
+
+    handleTest() {
+        const { id } = this.props;
+        this.props.testConfig({ id, ...this.state});
+    }
+
+    render() {
+
+        const { errorMessage, testStatus, updateStatus } = this.props;
+        return (
+            <div>
+                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                    <h1>Server Configuration / HipChat</h1>
+
+                    { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
+                        <div>Test was successful!</div>
+                    </div>}
+
+                    { errorMessage && <div className="alert alert-danger">
+                        { errorMessage }
+                    </div> }
+
+                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
+                        { 'Update successful' }
+                    </div> }
+
+                    <TextInput label="Api Key" type="text" name="apiKey" value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey}></TextInput>
+                    <ConfigButtons includeSave={true} includeTest={true} onTestClick={ this.handleTest } />
+                </form>
+            </div>
+        );
 	}
 };
 
 HipChatConfiguration.propTypes = {
-    headerText: PropTypes.string,
-    configButtonTest: PropTypes.bool,
-    configButtonsSave: PropTypes.bool,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string
+    apiKey: PropTypes.string,
+    apiKeyIsSet: PropTypes.bool,
+    id: PropTypes.string,
+    testStatus: PropTypes.string,
+    errorMessage: PropTypes.string,
+    updateStatus: PropTypes.string,
+    fieldErrors: PropTypes.arrayOf(PropTypes.any)
 };
 
-HipChatConfiguration.defaultProps = {
-    headerText: 'HipChat',
-    configButtonTest: true,
-    baseUrl: '/api/configuration/global/hipchat',
-    testUrl: '/api/configuration/global/hipchat/test'
-};
+// Mapping redux state -> react props
+const mapStateToProps = state => ({
+    apiKey: state.hipChatConfig.apiKey,
+    apiKeyIsSet: state.hipChatConfig.apiKeyIsSet,
+    testStatus: state.hipChatConfig.testStatus,
+    updateStatus: state.hipChatConfig.updateStatus,
+    errorMessage: state.hipChatConfig.error.message,
+    fieldErrors: state.hipChatConfig.error.fieldErrors,
+    id: state.hipChatConfig.id
+});
 
-export default HipChatConfiguration;
+// Mapping redux actions -> react props
+const mapDispatchToProps = dispatch => ({
+    getConfig: () => dispatch(getConfig()),
+    updateConfig: (config) => dispatch(updateConfig(config)),
+    testConfig: (config) => dispatch(testConfig(config))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);

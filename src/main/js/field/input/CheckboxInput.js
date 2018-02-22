@@ -36,9 +36,9 @@ export default class CheckboxInput extends Component {
 
         return (
             <div className="form-group">
-            	<label className="col-sm-4 control-label">{this.props.label}</label>
+            	<label className="col-sm-3 control-label">{this.props.label}</label>
             	{inputDiv}
-                <div className="col-sm-offset-4 col-sm-8">
+                <div className="col-sm-offset-3 col-sm-8">
     				{errorDiv}
                 </div>
             </div>
