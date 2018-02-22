@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -38,7 +37,6 @@ public class HomeController {
         return "index";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/api/verify")
     public ResponseEntity<String> checkAuthentication() {
         return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);

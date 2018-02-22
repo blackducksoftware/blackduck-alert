@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,37 +50,31 @@ public class GlobalHubConfigController extends GlobalConfigController<GlobalHubC
     }
 
     @Override
-    @PreAuthorize("permitAll")
     public List<GlobalHubConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigHandler.getConfig(id);
     }
 
     @Override
-    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.postConfig(globalConfig);
     }
 
     @Override
-    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.putConfig(globalConfig);
     }
 
     @Override
-    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> validateConfig(final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.validateConfig(globalConfig);
     }
 
     @Override
-    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.deleteConfig(globalConfig);
     }
 
     @Override
-    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.testConfig(globalConfig);
     }

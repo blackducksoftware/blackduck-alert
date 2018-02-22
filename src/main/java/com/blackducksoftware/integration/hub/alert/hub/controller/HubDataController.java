@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.hub.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,13 +41,11 @@ public class HubDataController extends BaseController {
         this.hubDataHandler = hubDataHandler;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/groups")
     public ResponseEntity<String> getGroups() {
         return hubDataHandler.getHubGroups();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
         return hubDataHandler.getHubProjects();
