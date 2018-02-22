@@ -11,7 +11,7 @@ import SubmitButton from './field/input/SubmitButton';
 import ReadOnlyField from './field/ReadOnlyField';
 import Header from './component/Header';
 
-import { toggleAdvancedOptions, loggingIn, loggedIn, login } from './actions/session';
+import { toggleAdvancedOptions, loggingIn, loggedIn, login } from './store/actions/session';
 
 import styles from '../css/main.css';
 

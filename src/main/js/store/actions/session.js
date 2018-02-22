@@ -1,4 +1,5 @@
 import {
+    SESSION_INITIALIZING,
     SESSION_LOGGING_IN,
     SESSION_LOGGED_IN,
     SESSION_LOGGED_OUT,
@@ -14,6 +15,12 @@ import {
 function loggingIn() {
     return {
         type: SESSION_LOGGING_IN
+    };
+}
+
+function initializing() {
+    return {
+        type: SESSION_INITIALIZING
     };
 }
 
@@ -55,8 +62,9 @@ export function toggleAdvancedOptions(toggle) {
 
 export function verifyLogin() {
     return (dispatch) => {
+        dispatch(initializing());
         fetch('/api/verify', {
-            credentials: "same-origin"
+            credentials: 'include'
         }).then(function(response) {
             if (!response.ok) {
                 dispatch(loggedOut());
@@ -89,7 +97,7 @@ export function login(url, username, password) {
 
         fetch('/api/login', {
             method: 'POST',
-            credentials: "same-origin",
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },

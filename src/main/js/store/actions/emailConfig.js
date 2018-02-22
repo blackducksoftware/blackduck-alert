@@ -63,7 +63,7 @@ export function getEmailConfig() {
         dispatch(fetchingEmailConfig());
 
         fetch(CONFIG_URL, {
-            credentials: "same-origin"
+            credentials: 'include'
         })
         .then((response) => response.json())
         .then((body) => { dispatch(emailConfigFetched(body[0])); console.log('body', body) })
@@ -79,7 +79,7 @@ export function updateEmailConfig(config) {
 
         fetch(CONFIG_URL, {
             method: 'POST',
-            credentials: "same-origin"
+            credentials: 'include'
         })
             .then((response) => response.json())
             .then((body) => { dispatch(emailConfigUpdated(body[0])); console.log('body', body) })

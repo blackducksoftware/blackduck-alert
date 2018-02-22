@@ -8,7 +8,7 @@ import TextInput from '../../field/input/TextInput';
 import ReadOnlyField from '../../field/ReadOnlyField'
 import ConfigButtons from '../ConfigButtons';
 
-import {getConfig, testConfig, updateConfig} from "../../actions/config";
+import {getConfig, testConfig, updateConfig} from "../../store/actions/config";
 
 class HubConfiguration extends React.Component {
 	constructor(props) {

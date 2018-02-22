@@ -1,4 +1,5 @@
 import {
+    SESSION_INITIALIZING,
     SESSION_LOGGING_IN,
     SESSION_LOGGED_IN,
     SESSION_LOGGED_OUT,
@@ -11,6 +12,7 @@ import {
 const initialState = {
     fetching: false,
     loggedIn: false,
+    initializing: true,
     showAdvanced: false,
     name: '',
     errorMessage: null,
@@ -19,6 +21,11 @@ const initialState = {
 
 const session = (state = initialState, action) => {
     switch (action.type) {
+        case SESSION_INITIALIZING:
+            return Object.assign({}, state, {
+                initializing: true,
+            });
+
         case SESSION_LOGGING_IN:
             return Object.assign({}, state, {
                 fetching: true,
@@ -32,13 +39,16 @@ const session = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 loggedIn: true,
+                initializing: false,
                 name: action.name,
                 errorMessage: null,
                 errors: []
             });
 
         case SESSION_LOGGED_OUT:
-            return initialState;
+            return Object.assign({}, initialState, {
+                initializing: false
+            });
 
         case SESSION_SHOW_ADVANCED:
             return Object.assign({}, state, {

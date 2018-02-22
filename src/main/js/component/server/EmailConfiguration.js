@@ -6,7 +6,7 @@ import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
-import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../actions/emailConfig';
+import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../store/actions/emailConfig';
 
 class EmailConfiguration extends React.Component {
 

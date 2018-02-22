@@ -55,5 +55,4 @@
 
 .accumulatorTypeAheadField {
     composes: typeAheadField;
-    width: 25%;
 }

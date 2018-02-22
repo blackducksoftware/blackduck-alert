@@ -5,8 +5,8 @@ import { withRouter } from 'react-router-dom';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
-import { getConfig } from './actions/config';
-import { verifyLogin } from "./actions/session";
+import { getConfig } from './store/actions/config';
+import { verifyLogin } from "./store/actions/session";
 
 class App extends Component {
 
@@ -16,7 +16,13 @@ class App extends Component {
 	}
 
 	render() {
-		return this.props.loggedIn ? <MainPage /> : <LoginPage />;
+        if (this.props.initializing) {
+            return (<div></div>);
+        } else if (this.props.loggedIn) {
+            return <MainPage />;
+	    } else {
+        	return <LoginPage />;
+        }
 	}
 }
 
@@ -28,7 +34,8 @@ App.propTypes = {
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
-    loggedIn: state.session.loggedIn
+    loggedIn: state.session.loggedIn,
+    initializing: state.session.initializing
 });
 
 const mapDispatchToProps = dispatch => ({
