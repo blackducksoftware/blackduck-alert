@@ -21,6 +21,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,9 @@ import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 
+@Category(HubConnectionTest.class)
 public class LoginActionsTestIT {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();

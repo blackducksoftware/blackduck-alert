@@ -23,10 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -42,7 +39,6 @@ import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
@@ -68,22 +64,41 @@ public class GlobalProperties {
     @Value("${blackduck.hub.proxy.password:}")
     private String hubProxyPassword;
 
+    @Value("${blackduck.alert.ssl.enable:false}")
+    private Boolean alertSSLEnabled;
+
+    // SSL properties
+
+    @Value("${server.port:")
+    private String serverPort;
+
+    @Value("${server.ssl.key-store:}")
+    private String keyStoreFile;
+
+    @Value("${server.ssl.key-store-password:}")
+    private String keyStorePass;
+
+    @Value("${server.ssl.keyStoreType:}")
+    private String keyStoreType;
+
+    @Value("${server.ssl.keyAlias:}")
+    private String keyAlias;
+
+    @Value("${server.ssl.trust-store:}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:}")
+    private String trustStorePass;
+
+    @Value("${server.ssl.trustStoreType:}")
+    private String trustStoreType;
+
     @Autowired
     public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
     }
 
     public String getHubUrl() {
-        try {
-            final URL extensionUrl = new URL(hubUrl);
-            if (extensionUrl.getHost().equals("localhost")) {
-                final String hostName = Optional.ofNullable(System.getenv("PUBLIC_HUB_WEBSERVER_HOST")).orElseGet(() -> HostnameHelper.getMyHostname());
-                final URL url = new URL(extensionUrl.getProtocol(), hostName, extensionUrl.getPort(), extensionUrl.getFile());
-                return url.toString();
-            }
-        } catch (final MalformedURLException e) {
-            return hubUrl;
-        }
         return hubUrl;
     }
 
@@ -236,4 +251,91 @@ public class GlobalProperties {
         return hubServerConfigBuilder;
     }
 
+    public Integer getHubTimeout() {
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
+        if (globalConfig != null) {
+            return getHubConfig().getHubTimeout();
+        }
+        return null;
+    }
+
+    public String getHubApiKey() {
+        final GlobalHubConfigEntity globalConfig = getHubConfig();
+        if (globalConfig != null) {
+            return getHubConfig().getHubApiKey();
+        }
+        return null;
+    }
+
+    public Boolean getAlertSSLEnabled() {
+        return alertSSLEnabled;
+    }
+
+    public void setAlertSSLEnabled(final Boolean alertSSLEnabled) {
+        this.alertSSLEnabled = alertSSLEnabled;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(final String serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public String getKeyStoreFile() {
+        return keyStoreFile;
+    }
+
+    public void setKeyStoreFile(final String keyStoreFile) {
+        this.keyStoreFile = keyStoreFile;
+    }
+
+    public String getKeyStorePass() {
+        return keyStorePass;
+    }
+
+    public void setKeyStorePass(final String keyStorePass) {
+        this.keyStorePass = keyStorePass;
+    }
+
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    public void setKeyStoreType(final String keyStoreType) {
+        this.keyStoreType = keyStoreType;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+
+    public void setKeyAlias(final String keyAlias) {
+        this.keyAlias = keyAlias;
+    }
+
+    public String getTrustStoreFile() {
+        return trustStoreFile;
+    }
+
+    public void setTrustStoreFile(final String trustStoreFile) {
+        this.trustStoreFile = trustStoreFile;
+    }
+
+    public String getTrustStorePass() {
+        return trustStorePass;
+    }
+
+    public void setTrustStorePass(final String trustStorePass) {
+        this.trustStorePass = trustStorePass;
+    }
+
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
+
+    public void setTrustStoreType(final String trustStoreType) {
+        this.trustStoreType = trustStoreType;
+    }
 }

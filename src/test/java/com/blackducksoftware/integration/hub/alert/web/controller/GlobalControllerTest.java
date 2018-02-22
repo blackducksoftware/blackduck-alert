@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,8 +40,11 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
+import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
+@Category({ DatabaseConnectionTest.class, ExternalConnectionTest.class })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")

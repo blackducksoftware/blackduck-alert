@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionConfigActions;
 
 public class HipChatDistributionConfigActionsTest {
     @Test
