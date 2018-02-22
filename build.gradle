@@ -43,7 +43,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-batch'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    compile 'org.springframework.boot:spring-boot-starter-data-rest'
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
     compile 'org.springframework.security:spring-security-web:4.2.3.RELEASE'
@@ -67,19 +66,10 @@ dependencies {
     testCompile 'org.springframework.security:spring-security-test:4.0.0.RELEASE'
 }
 
-jar {
-    sourceSets {
-        main {
-            resources {
-            }
-        }
-    }
-}
-
 startScripts {
     doLast {
-        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/blackduck-alert-config-volume ")
-        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/blackduck-alert-config-volume ")
+        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/opt/blackduck/alert/alert-config/application.properties ")
+        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/opt/blackduck/alert/alert-config/application.properties ")
         unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
         windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
     }
@@ -89,9 +79,10 @@ distributions {
     main {
         contents {
             from('src/main/resources/alert.sh') {into 'bin/'}
-            from('src/main/resources/application.properties') {into '/blackduck-alert-config-defaults/'}
+            from('src/main/resources/ssl.application.properties') { into('/alert-config-defaults') rename('ssl.application.properties', 'application.properties') }
             from('src/main/resources/email/images/') {into 'images/'}
-            from('src/main/resources/email/templates/') {into 'templates/'}
+            from('src/main/resources/email/templates/') {into 'templates/email'}
+            from('src/main/resources/hipchat/templates/') {into 'templates/hipchat'}
         }
     }
 }
@@ -108,9 +99,16 @@ liquibase {
 }
 
 task cleanBundles(type: Delete) {
-    File staticFolder = new File('src/main/resources/static')
-    if (staticFolder.exists()) {
-        staticFolder.deleteDir()
+    File testDatabaseDirectory = new File('testDB')
+    if(testDatabaseDirectory.exists()) {
+        println "Deleting ${testDatabaseDirectory.canonicalPath}"
+        testDatabaseDirectory.deleteDir()    
+    }
+    
+    File staticResourcesDirectory = new File('src/main/resources/static')
+    if (staticResourcesDirectory.exists()) {
+        println "Deleting ${staticResourcesDirectory.canonicalPath}"
+        staticResourcesDirectory.deleteDir()
     }
 }
 
@@ -137,11 +135,43 @@ task runServer(type: Exec, dependsOn: [build]) {
     commandLine 'java', '-jar', jarFile.getAbsolutePath()
 }
 
+task runServerDebug(type: Exec, dependsOn: [build]) {
+    File jarFile = new File("build/libs/hub-alert-${version}.jar")
+    def debugVariables = ['-Xdebug', 
+                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
+    def commandArray = []
+    commandArray.add('java')
+    commandArray.addAll(debugVariables)
+    commandArray.add('-jar')
+    commandArray.add(jarFile.getAbsolutePath())
+    commandLine commandArray
+}
+
+task runServer4Profiling(type: Exec, dependsOn: [build]) {
+    
+    File jarFile = new File("build/libs/hub-alert-${version}.jar")
+    def jmxVariables = ['-Dcom.sun.management.jmxremote', 
+                        '-Dcom.sun.management.jmxremote.port=9045', 
+                        '-Dcom.sun.management.jmxremote.local.only=false', 
+                        '-Dcom.sun.management.jmxremote.authenticate=false', 
+                        '-Dcom.sun.management.jmxremote.ssl=false']
+    def commandLineArgs = ['--management.security.enabled=false', 
+                           '--endpoints.metrics.sensitive=false']
+    def commandArray = []
+    commandArray.add('java')
+    commandArray.addAll(jmxVariables)
+    commandArray.add('-jar')
+    commandArray.add(jarFile.getAbsolutePath())
+    commandArray.addAll(commandLineArgs)
+    commandLine commandArray
+}
+
 task stageDocker(type:Copy, dependsOn: [build]) {
     into "${project.buildDir}/docker"
     from("${project.projectDir}") {
         include 'Dockerfile'
         include 'docker-entrypoint.sh'
+        include 'certificate-manager.sh'
     }
     into('build/distributions') {
         from distTar
@@ -169,5 +199,5 @@ task testDatabaseSetupRequired(type: Test) { useJUnit { includeCategories 'com.b
 task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
-    pushImage.mustRunAfter buildDockerImage    
+    pushImage.mustRunAfter buildDockerImage
 }
