@@ -2,7 +2,7 @@
 
 exports[`Rendering default test button snapshot 1`] = `
 <button
-  className="btn btn-sm btn-primary"
+  className="btn btn-primary btn-sm"
   onClick={[Function]}
   type="button"
 >

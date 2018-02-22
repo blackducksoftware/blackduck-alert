@@ -9,7 +9,7 @@ import ProjectConfiguration from '../ProjectConfiguration';
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';
 
-import ConfigButtons from '../../ConfigButtons'
+import ConfigButtons from '../../common/ConfigButtons'
 
 class BaseJobConfiguration extends Component {
 	constructor(props) {

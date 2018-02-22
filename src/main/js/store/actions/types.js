@@ -1,4 +1,8 @@
-// Global Config
+// Audit Actions
+export const AUDIT_FETCHING = 'AUDIT_FETCHING';
+export const AUDIT_FETCHED = 'AUDIT_FETCHED';
+
+// Global Config Actions
 export const CONFIG_FETCHING = 'CONFIG_FETCHING';
 export const CONFIG_FETCHED = 'CONFIG_FETCHED';
 export const CONFIG_UPDATE_ERROR = 'CONFIG_UPDATE_ERROR';

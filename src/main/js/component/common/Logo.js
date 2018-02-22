@@ -1,5 +1,5 @@
 import React from 'react';
-import {blackduckLogo} from '../../css/header.css';
+import {blackduckLogo} from '../../../css/header.css';
 
 const Logo = () => (
     <div className={blackduckLogo}>

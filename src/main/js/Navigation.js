@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from "react-redux";
 import {Link, NavLink, Route, withRouter} from "react-router-dom";
 import FontAwesome from 'react-fontawesome';
-import Logo from './component/Logo';
+import Logo from './component/common/Logo';
 
 import { activeNav as activeNavItem, navigationLogo, navigation as navStyle } from '../css/main.css';
 

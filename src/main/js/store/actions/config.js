@@ -108,9 +108,7 @@ export function getConfig() {
         })
         .then((response) => response.json())
         .then((body) => { dispatch(configFetched(body[0])) })
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 };
 
@@ -149,9 +147,7 @@ export function updateConfig(config) {
                     });
             }
         })
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 }
 
@@ -187,8 +183,6 @@ export function testConfig(config) {
                     });
             }
         })
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 }

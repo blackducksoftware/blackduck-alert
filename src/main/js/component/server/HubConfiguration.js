@@ -6,7 +6,7 @@ import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
 import TextInput from '../../field/input/TextInput';
 import ReadOnlyField from '../../field/ReadOnlyField'
-import ConfigButtons from '../ConfigButtons';
+import ConfigButtons from '../common/ConfigButtons';
 
 import {getConfig, testConfig, updateConfig} from "../../store/actions/config";
 

@@ -12,7 +12,7 @@ import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 
-import ConfigButtons from '../ConfigButtons'
+import ConfigButtons from '../common/ConfigButtons'
 
 export default class JobAddModal extends Component {
 	constructor(props) {

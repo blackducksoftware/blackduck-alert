@@ -106,9 +106,7 @@ export function getSchedulingConfig() {
         })
         .then((response) => response.json())
         .then((body) => { dispatch(schedulingConfigFetched(body[0])); console.log('body', body) })
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 };
 
@@ -149,9 +147,7 @@ export function updateSchedulingConfig(config) {
                 }
             })
 
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 };
 
