@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -134,8 +135,15 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
 
     private String createHtmlMessage(final ProjectData projectData) {
         try {
-            // TODO determine the actual template location for deployment
-            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates");
+            final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
+            String templateDirectoryPath;
+            if (StringUtils.isNotBlank(templatesDirectory)) {
+                templateDirectoryPath = templatesDirectory + "/hipchat";
+            } else {
+                templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/hipchat/templates";
+            }
+
+            final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put("projectName", projectData.getProjectName());

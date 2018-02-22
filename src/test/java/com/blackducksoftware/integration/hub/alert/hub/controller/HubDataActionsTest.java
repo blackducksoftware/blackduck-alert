@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.hub.controller.HubDataActions;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubGroup;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubProject;
 import com.blackducksoftware.integration.hub.api.group.GroupService;

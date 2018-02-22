@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
@@ -17,10 +18,12 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class EmailChannelTestIT extends ChannelTest {
 
     @Test
+    @Category(ExternalConnectionTest.class)
     public void sendEmailTest() throws Exception {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper globalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
