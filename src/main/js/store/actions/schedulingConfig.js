@@ -1,6 +1,7 @@
 import {
     SCHEDULING_CONFIG_FETCHING,
     SCHEDULING_CONFIG_FETCHED,
+    SCHEDULING_CONFIG_UPDATE_ERROR,
     SCHEDULING_CONFIG_UPDATING,
     SCHEDULING_CONFIG_UPDATED,
     SCHEDULING_ACCUMULATOR_ERROR,
@@ -12,7 +13,7 @@ const CONFIG_URL = '/api/configuration/global/scheduling';
 const ACCUMULATOR_URL = '/api/configuration/global/scheduling/accumulator/run';
 
 /**
- * Triggers Email Config Fetching reducer
+ * Triggers Scheduling Config Fetching reducer
  * @returns {{type}}
  */
 function fetchingSchedulingConfig() {
@@ -22,17 +23,18 @@ function fetchingSchedulingConfig() {
 }
 
 /**
- * Triggers Email Config Fetched Reducer
+ * Triggers Scheduling Config Fetched Reducer
  * @returns {{type}}
  */
 function schedulingConfigFetched(config) {
     return {
-        type: SCHEDULING_CONFIG_FETCHED
+        type: SCHEDULING_CONFIG_FETCHED,
+        config
     };
 }
 
 /**
- * Triggers Email Config Fetching reducer
+ * Triggers Scheduling Config Updating reducer
  * @returns {{type}}
  */
 function updatingSchedulingConfig() {
@@ -42,13 +44,25 @@ function updatingSchedulingConfig() {
 }
 
 /**
- * Triggers Email Config Fetched Reducer
+ * Triggers Scheduling Config Updated Reducer
  * @returns {{type}}
  */
-function schedulinglConfigUpdated(config) {
+function schedulingConfigUpdated(config) {
     return {
         type: SCHEDULING_CONFIG_UPDATED,
         config
+    };
+}
+
+/**
+ * Triggers Scheduling Config Error
+ * @returns {{type}}
+ */
+function schedulingConfigError(message, errors) {
+    return {
+        type: SCHEDULING_CONFIG_UPDATE_ERROR,
+        message,
+        errors
     };
 }
 
@@ -76,22 +90,22 @@ function accumulatorSuccess() {
  * Triggers Scheduling Accumulator Ran
  * @returns {{type}}
  */
-function accumulatorError(message) {
+function accumulatorError(accumulatorError) {
     return {
         type: SCHEDULING_ACCUMULATOR_ERROR,
-        message
+        accumulatorError
     };
 }
 
 export function getSchedulingConfig() {
     return (dispatch) => {
-        dispatch(fetchingEmailConfig());
+        dispatch(fetchingSchedulingConfig());
 
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'same-origin'
         })
         .then((response) => response.json())
-        .then((body) => { dispatch(emailConfigFetched(body[0])); console.log('body', body) })
+        .then((body) => { dispatch(schedulingConfigFetched(body[0])); console.log('body', body) })
         .catch(function(error) {
             console.error(error);
         });
@@ -100,17 +114,44 @@ export function getSchedulingConfig() {
 
 export function updateSchedulingConfig(config) {
     return (dispatch) => {
-        dispatch(updatingEmailConfig());
+
+        dispatch(updatingSchedulingConfig());
+
+        const body = {
+            ...config,
+            id: 1
+        };
 
         fetch(CONFIG_URL, {
-            method: 'POST',
-            credentials: 'include'
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            credentials: 'same-origin',
+            body: JSON.stringify(body)
         })
-            .then((response) => response.json())
-            .then((body) => { dispatch(emailConfigUpdated(body[0])); console.log('body', body) })
-            .catch(function(error) {
-                console.error(error);
-            });
+            .then((response) => {
+                if(response.ok) {
+                    response.json().then((body) => dispatch(schedulingConfigUpdated({ ...config })));
+                } else {
+                    response.json()
+                        .then((data) => {
+                            console.log('data', data.message);
+                            switch(response.status) {
+                                case 400:
+                                    return dispatch(schedulingConfigError(data.message, data.errors));
+                                case 412:
+                                    return dispatch(schedulingConfigError(data.message, data.errors));
+                                default:
+                                    dispatch(schedulingConfigError(data.message, null));
+                            }
+                        });
+                }
+            })
+
+        .catch(function(error) {
+            console.error(error);
+        });
     }
 };
 
@@ -130,6 +171,9 @@ export function runSchedulingAccumulator() {
             } else {
                 dispatch(accumulatorSuccess());
             }
+        })
+        .then(() => {
+            getSchedulingConfig()(dispatch);
         })
         .catch(err => {
             dispatch(accumulatorError(err));

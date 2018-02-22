@@ -8,6 +8,8 @@ import LoginPage from './LoginPage';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from "./store/actions/session";
 
+import '../css/main.css';
+
 class App extends Component {
 
 	componentDidMount() {

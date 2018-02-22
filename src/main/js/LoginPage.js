@@ -42,7 +42,6 @@ class LoginPage extends Component {
     	const { hubUrl } = this.props;
     	const { hubUsername, hubPassword } = this.state;
 
-    	console.log('submit-->', this.state);
     	this.props.login(hubUrl, hubUsername, hubPassword);
 	}
 
@@ -73,7 +72,7 @@ class LoginPage extends Component {
 								<PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
 
 								<div className="form-group">
-									<div className="col-sm-8 col-sm-offset-4">
+									<div className="col-sm-8 col-sm-offset-3">
 										<button type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedOptions(!showAdvanced); }}>
 											{showAdvancedLabel }
 										</button>
@@ -92,7 +91,7 @@ class LoginPage extends Component {
 
 								<div className="row">
 									<div className="col-sm-12 text-right">
-										<SubmitButton label="Login" />
+										<SubmitButton>Login</SubmitButton>
 									</div>
 								</div>
                                 <div className="row">

@@ -25,7 +25,8 @@ function fetchingEmailConfig() {
  */
 function emailConfigFetched(config) {
     return {
-        type: EMAIL_CONFIG_FETCHED
+        type: EMAIL_CONFIG_FETCHED,
+        config
     };
 }
 

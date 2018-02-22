@@ -1,12 +1,12 @@
 import {
-    CONFIG_FETCHING,
-    CONFIG_FETCHED,
-    CONFIG_UPDATE_ERROR,
-    CONFIG_UPDATING,
-    CONFIG_UPDATED,
-    CONFIG_TESTING,
-    CONFIG_TEST_SUCCESS,
-    CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_FETCHING,
+    HIPCHAT_CONFIG_FETCHED,
+    HIPCHAT_CONFIG_UPDATE_ERROR,
+    HIPCHAT_CONFIG_UPDATING,
+    HIPCHAT_CONFIG_UPDATED,
+    HIPCHAT_CONFIG_TESTING,
+    HIPCHAT_CONFIG_TEST_SUCCESS,
+    HIPCHAT_CONFIG_TEST_FAILED,
     SERIALIZE
 } from '../actions/types';
 
@@ -19,22 +19,14 @@ const initialState = {
         message: '',
         fieldErrors: []
     },
-    hubAlwaysTrustCertificate: true,
-    hubApiKey: '',
-    hubApiKeyIsSet: false,
-    hubProxyHost: '',
-    hubProxyPassword: '',
-    hubProxyPasswordIsSet: false,
-    hubProxyPort: '',
-    hubProxyUsername: '',
-    hubTimeout: 60,
-    hubUrl: '',
+    apiKeyIsSet: false,
+    apiKey: null,
     id: null
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
-        case CONFIG_FETCHING:
+        case HIPCHAT_CONFIG_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
                 updateStatus: null,
@@ -42,34 +34,18 @@ const config = (state = initialState, action) => {
                 testStatus: '',
             });
 
-        case CONFIG_FETCHED:
+        case HIPCHAT_CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: null,
                 testing: false,
                 testStatus: '',
-                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
-                hubApiKey: action.hubApiKey || '',
-                hubApiKeyIsSet: action.hubApiKeyIsSet,
-                hubProxyHost: action.hubProxyHost,
-                hubProxyPassword: action.hubProxyPassword,
-                hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
-                hubProxyPort: action.hubProxyPort,
-                hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
-                hubUrl: action.hubUrl,
+                apiKeyIsSet: action.apiKeyIsSet,
+                apiKey: action.apiKey,
                 id: action.id
             });
 
-        case CONFIG_UPDATE_ERROR:
-            return Object.assign({}, state, {
-                updateStatus: 'ERROR',
-                error: {
-                    message: action.message,
-                    fieldErrors: action.errors
-                }
-            });
-        case CONFIG_UPDATING:
+        case HIPCHAT_CONFIG_UPDATING:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'UPDATING',
@@ -81,7 +57,7 @@ const config = (state = initialState, action) => {
                 }
             });
 
-        case CONFIG_UPDATED:
+        case HIPCHAT_CONFIG_UPDATED:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'UPDATED',
@@ -93,7 +69,17 @@ const config = (state = initialState, action) => {
                 }
             });
 
-        case CONFIG_TESTING:
+        case HIPCHAT_CONFIG_UPDATE_ERROR:
+            return Object.assign({}, state, {
+                updateStatus: 'ERROR',
+                error: {
+                    message: action.message,
+                    fieldErrors: action.errors || []
+                }
+            });
+
+
+        case HIPCHAT_CONFIG_TESTING:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: null,
@@ -101,7 +87,7 @@ const config = (state = initialState, action) => {
                 testStatus: ''
             });
 
-        case CONFIG_TEST_SUCCESS:
+        case HIPCHAT_CONFIG_TEST_SUCCESS:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: null,
@@ -113,7 +99,7 @@ const config = (state = initialState, action) => {
                 }
             });
 
-        case CONFIG_TEST_FAILED:
+        case HIPCHAT_CONFIG_TEST_FAILED:
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: null,

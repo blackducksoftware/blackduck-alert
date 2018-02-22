@@ -1,8 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {connect} from "react-redux";
+
+import { getSchedulingConfig, runSchedulingAccumulator, updateSchedulingConfig } from '../../store/actions/schedulingConfig';
+
 import ConfigButtons from '../ConfigButtons';
+import GeneralButton from '../../field/input/GeneralButton';
+
 import { dailyDigestOptions, purgeOptions } from "../../util/scheduling-data";
-import { fieldError, labelField, accumulatorTypeAheadField} from '../../../css/field.css';
+import { fieldError, accumulatorTypeAheadField} from '../../../css/field.css';
 
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';
@@ -15,122 +21,61 @@ class SchedulingConfiguration extends React.Component {
         };
 
 		this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
-		this.loadSchedulingTimes = this.loadSchedulingTimes.bind(this);
-		this.runAccumulator = this.runAccumulator.bind(this);
-
 		this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
 		this.handlePurgeChanged = this.handlePurgeChanged.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 	}
 
-	componentWillUnmount() {
+    componentWillUnmount() {
 		 this.cancelAutoTick();
 	}
 
-	componentDidMount() {
-		this.loadSchedulingTimes();
-		this.startAutoTick();
+    componentWillReceiveProps(nextProps) {
+		this.cancelAutoTick();
+		if(nextProps.accumulatorNextRun && nextProps.accumulatorNextRun !== '-1') {
+			this.setState({
+                accumulatorNextRun: parseInt(nextProps.accumulatorNextRun)
+			});
+            this.startAutoTick();
+		}
+
+		const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
+        this.setState({dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null });
+        this.setState({purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null });
 	}
 
-	handleSetState(name, value) {
-		this.setState({
-			[name]: value
-		});
+	componentDidMount() {
+        this.props.getConfig();
 	}
 
 	startAutoTick() {
 		// run every second
-		const tickInterval = setInterval(() => this.decreaseAccumulatorTime(), 1000);
-        this.setState({
-            tickInterval
-        });
+		this.tickInterval = setInterval(this.decreaseAccumulatorTime, 1000);
 	}
 
 	cancelAutoTick() {
-		clearInterval(this.state.tickInterval);
+		clearInterval(this.tickInterval);
+		this.tickInterval = null;
 	}
 
 
 	decreaseAccumulatorTime() {
-		var accumulatorNextRunString = this.state.accumulatorNextRun;
-		if(accumulatorNextRunString && parseInt(accumulatorNextRunString) > 0) {
-			var accumulatorNextRun = parseInt(accumulatorNextRunString);
-			accumulatorNextRun = accumulatorNextRun - 1;
+		if(this.state.accumulatorNextRun > 0) {
 			this.setState({
-                accumulatorNextRun
+                accumulatorNextRun:  this.state.accumulatorNextRun - 1
 			});
 		} else {
 			this.setState({
                 accumulatorNextRun: 60
 			});
-			this.loadSchedulingTimes();
 		}
-
 	}
 
-
-	loadSchedulingTimes() {
-		this.handleSetState('configurationMessage', 'Loading...');
-		this.handleSetState('inProgress', true);
-
-		let getUrl = this.props.getUrl || this.props.baseUrl;
-		if (!getUrl) {
-			return;
-		}
-		fetch(getUrl,{
-			credentials: "same-origin"
-		})
-		.then((response) => {
-			this.setState({'inProgress': false});
-			if (!response.ok) {
-				return response.json().then(json => {
-					this.handleSetState('configurationMessage', json.message);
-				});
-			} else {
-				return response.json().then(jsonArray => {
-					this.handleSetState('configurationMessage', '');
-					var json = jsonArray[0];
-					if (json != null) {
-						var values = {};
-						for (var index in json) {
-							if (json.hasOwnProperty(index)) {
-								let name = index;
-								let value = json[index];
-								values[name] = value;
-							}
-						}
-						this.setState({
-							values
-						});
-					}
-				});
-			}
-		})
-		.catch(function(error) {
- 		 	console.log(error);
- 		});
-    }
-
-    runAccumulator() {
-		this.setState({'inProgress': true});
-
-		var self = this;
-		fetch('/api/configuration/global/scheduling/accumulator/run',{
-			credentials: "same-origin",
-			method: 'POST',
-		})
-		.then(function(response) {
-			self.handleSetState('inProgress', false);
-			if (!response.ok) {
-				return response.json().then(json => {
-					self.handleSetState('accumulatorError', json.message);
-				});
-			} else {
-				self.handleSetState('accumulatorError', null);
-			}
-		})
-		.catch(function(error) {
- 		 	console.log(error);
- 		});
+    handleSubmit(event) {
+		event.preventDefault();
+		event.stopPropagation();
+		const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
+		this.props.updateConfig({dailyDigestHourOfDay, purgeDataFrequencyDays});
     }
 
     handleDailyDigestChanged (option) {
@@ -151,28 +96,33 @@ class SchedulingConfiguration extends React.Component {
 
 
 	render() {
-		const { errorMessage } = this.props;
-
+		const { errorFields, errorMessage, updateStatus, runSchedulingAccumulator } = this.props;
+		console.log('errorFields', this.props.errorFields);
 		return (
 			<div>
-				{ errorMessage && <div className="alert alert-danger">
-					{ errorMessage }
-				</div> }
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
 					<h1>Server Configuration / Scheduling</h1>
 
+                    { errorMessage && <div className="alert alert-danger">
+                        { errorMessage }
+                    </div> }
+
+                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
+						{ 'Update successful' }
+					</div> }
+
 					<div className="form-group">
-						<label className="col-sm-4 control-label">Collecting Hub notifications in</label>
-						<div className="col-sm-6">
-							<label className="control-label">{this.state.accumulatorNextRun} seconds</label>
-						</div>
-						<div className="col-sm-2">
-							<button className="btn btn-primary" type="button" onClick={this.runAccumulator}>Run now</button>
+						<label className="col-sm-3 control-label">Collecting Hub notifications in</label>
+						<div className="col-sm-9">
+							<p className="form-control-static accumulator-countdown">
+								{this.state.accumulatorNextRun} seconds
+                                <GeneralButton className="btn-sm" onClick={runSchedulingAccumulator}>Run now</GeneralButton>
+							</p>
 						</div>
 					</div>
 
                     <div className="form-group">
-                        <label className="col-sm-4 control-label">Daily Digest Frequency</label>
+                        <label className="col-sm-3 control-label">Daily Digest Frequency</label>
                         <div className="col-sm-8">
                             <Select
 								className={accumulatorTypeAheadField}
@@ -182,17 +132,21 @@ class SchedulingConfiguration extends React.Component {
 								placeholder='Choose the hour of day'
 								value={this.state.dailyDigestHourOfDay} />
                         </div>
+						{ errorFields && errorFields.dailyDigestHourOfDay &&
+                        	<div className="col-sm-offset-3 col-sm-8">
+								<p className={fieldError}>{errorFields.dailyDigestHourOfDay}</p>
+                        	</div> }
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-4 control-label">Daily Digest Cron Next Run</label>
+                        <label className="col-sm-3 control-label">Daily Digest Cron Next Run</label>
                         <div className="col-sm-8">
-                            <label className={labelField}>{this.state.dailyDigestNextRun}</label>
+                            <p className="form-control-static">{this.props.dailyDigestNextRun}</p>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-4 control-label">Notification Purge Frequency</label>
+                        <label className="col-sm-3 control-label">Notification Purge Frequency</label>
                         <div className="col-sm-8">
                             <Select
 								className={accumulatorTypeAheadField}
@@ -202,16 +156,20 @@ class SchedulingConfiguration extends React.Component {
 								placeholder='Choose the frequency'
 								value={this.state.purgeDataFrequencyDays} />
                         </div>
+                        { errorFields && errorFields.purgeDataFrequencyDays &&
+                        <div className="col-sm-offset-3 col-sm-8">
+                            <p className={fieldError}>{errorFields.purgeDataFrequencyDays}</p>
+                        </div> }
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-4 control-label">Purge Cron Next Run</label>
+                        <label className="col-sm-3 control-label">Purge Cron Next Run</label>
                         <div className="col-sm-8">
-                            <label className={labelField}>{this.state.purgeDataNextRun}</label>
+                            <p className="form-control-static">{this.props.purgeDataFrequencyDays}</p>
                         </div>
                     </div>
 
-					<ConfigButtons isFixed={false} includeSave={true} includeTest={false} />
+					<ConfigButtons includeSave={true} includeTest={false} />
 				</form>
 			</div>
 		);
@@ -219,16 +177,32 @@ class SchedulingConfiguration extends React.Component {
 };
 
 SchedulingConfiguration.propTypes = {
-    headerText: PropTypes.string,
-    configButtonTest: PropTypes.bool,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string
+    accumulatorNextRun: PropTypes.string,
+    getConfig: PropTypes.func.isRequired,
+    runSchedulingAccumulator: PropTypes.func.isRequired
 };
 
 SchedulingConfiguration.defaultProps = {
-    headerText: 'Scheduling',
-    configButtonTest: false,
-    baseUrl: '/api/configuration/global/scheduling'
+    accumulatorNextRun: '-1'
 };
 
-export default SchedulingConfiguration;
+const mapStateToProps = state => ({
+    accumulatorNextRun: state.schedulingConfig.accumulatorNextRun,
+    dailyDigestHourOfDay: state.schedulingConfig.dailyDigestHourOfDay,
+    dailyDigestNextRun: state.schedulingConfig.dailyDigestNextRun,
+    purgeDataFrequencyDays: state.schedulingConfig.purgeDataFrequencyDays,
+    purgeDataFrequencyDays: state.schedulingConfig.purgeDataFrequencyDays,
+    id: state.schedulingConfig.id,
+    updateStatus: state.schedulingConfig.updateStatus,
+    errorMessage: state.schedulingConfig.errorMessage,
+	errorFields: state.schedulingConfig.errorFields
+});
+
+// Mapping redux actions -> react props
+const mapDispatchToProps = dispatch => ({
+    getConfig: () => dispatch(getSchedulingConfig()),
+    runSchedulingAccumulator: () => dispatch(runSchedulingAccumulator()),
+	updateConfig: (config) => dispatch(updateSchedulingConfig(config))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SchedulingConfiguration);

@@ -1,4 +1,3 @@
-'use strict';
 import React from 'react';
 import {connect} from "react-redux";
 import PropTypes from 'prop-types';
@@ -6,6 +5,8 @@ import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
+import ConfigButtons from '../ConfigButtons';
+
 import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../store/actions/emailConfig';
 
 class EmailConfiguration extends React.Component {
@@ -35,7 +36,6 @@ class EmailConfiguration extends React.Component {
 
     handleSubmit(evt) {
         evt.preventDefault();
-        console.log('submit-->', this.state);
         this.props.updateEmailConfig(this.state);
     }
 
@@ -80,7 +80,7 @@ class EmailConfiguration extends React.Component {
 						onChange={this.handleChange} />
 
 					<div className="form-group">
-						<div className="col-sm-8 col-sm-offset-4">
+						<div className="col-sm-8 col-sm-offset-3">
 							<button type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false;}}>
 								{showAdvancedLabel}
 							</button>
@@ -145,12 +145,7 @@ class EmailConfiguration extends React.Component {
 
 					</div>
 					}
-					<div className="form-group">
-						<div className="col-sm-offset-4 col-sm-8">
-	                    	<button type="submit" className="btn btn-sm btn-primary">Submit</button>
-							<button type="reset" className="btn-link">Reset</button>
-						</div>
-					</div>
+                    <ConfigButtons includeSave={true} includeTest={false} />
 				</form>
 			</div>
 		);

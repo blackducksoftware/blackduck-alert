@@ -1,5 +1,4 @@
 import React from 'react';
-import { textInput } from '../../css/field.css';
 import LabeledField from './LabeledField';
 
 class ReadOnlyField extends LabeledField {
@@ -8,10 +7,8 @@ class ReadOnlyField extends LabeledField {
 	}
 
 	render() {
-        const { value } = this.props;
-        const textDiv = <div className="col-sm-8"><p className={`form-control-static ${textInput}`}>{value}</p></div>;
         return (
-            super.render(textDiv)
+            super.render(<div className="col-sm-8"><p className="form-control-static">{this.props.value}</p></div>)
         );
     }
 }

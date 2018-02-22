@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import TestButton from '../field/input/TestButton';
+import CancelButton from '../field/input/CancelButton';
+import SubmitButton from '../field/input/SubmitButton';
+import GeneralButton from '../field/input/GeneralButton';
 
 export default class ConfigButtons extends Component {
     constructor(props) {
@@ -16,15 +18,15 @@ export default class ConfigButtons extends Component {
 
         return (
             <div className="form-group">
-                <div className="col-sm-offset-4 col-sm-8">
+                <div className="col-sm-offset-3 col-sm-8">
                 { includeCancel === true &&
-                    <button className='btn-link' type="reset">Cancel</button>
+                    <CancelButton />
                 }
                 { includeTest === true &&
-                    <TestButton onTestClick={this.props.onTestClick} >Test Configuration</TestButton>
+                    <GeneralButton onClick={this.props.onTestClick}>Test Configuration</GeneralButton>
                 }
                 { includeSave === true &&
-                    <button className="btn btn-primary" type="submit">Save</button>
+                    <SubmitButton>Save</SubmitButton>
                 }
                 </div>
             </div>

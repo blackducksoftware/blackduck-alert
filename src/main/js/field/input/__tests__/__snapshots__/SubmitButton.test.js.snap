@@ -2,7 +2,7 @@
 
 exports[`Rendering default save button snapshot 1`] = `
 <button
-  className="btn btn-primary"
+  className="btn btn-sm btn-primary"
   onClick={[Function]}
   type="submit"
 >
