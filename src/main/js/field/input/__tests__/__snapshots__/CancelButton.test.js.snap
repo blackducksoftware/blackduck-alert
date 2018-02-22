@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rendering default cancel button snapshot 1`] = `
+<button
+  className="btn btn-link"
+  onClick={[Function]}
+  type="button"
+>
+  Cancel
+</button>
+`;

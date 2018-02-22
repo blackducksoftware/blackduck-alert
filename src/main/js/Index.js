@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import createHistory from 'history/createBrowserHistory'
 import { ConnectedRouter, routerMiddleware } from 'react-router-redux'
-import reducers from './reducers';
+import reducers from './store/reducers';
 import App from './App';
 
 const initialState = {};

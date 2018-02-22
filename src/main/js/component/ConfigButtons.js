@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import TestButton from '../field/input/TestButton';
 
 export default class ConfigButtons extends Component {
     constructor(props) {
@@ -20,7 +21,7 @@ export default class ConfigButtons extends Component {
                     <button className='btn-link' type="reset">Cancel</button>
                 }
                 { includeTest === true &&
-                    <button className="btn btn-primary" type="button" onClick={this.props.onTestClick}>Test</button>
+                    <TestButton onTestClick={this.props.onTestClick} >Test Configuration</TestButton>
                 }
                 { includeSave === true &&
                     <button className="btn btn-primary" type="submit">Save</button>

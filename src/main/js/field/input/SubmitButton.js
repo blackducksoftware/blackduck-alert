@@ -1,25 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SubmitButton = ({ label, onClick, disabled }) => (
-    <button
-        type="submit"
-        className="btn btn-form btn-primary"
-        onClick={onClick}
-        disabled={disabled}
-    >{ label }
-    </button>
-);
-
-SubmitButton.defaultProps = {
-    onClick: () => true,
-    disabled: false
+const SaveButton = ({ onClick, children }) => {
+    return (
+        <button className="btn btn-primary" type="submit" onClick={onClick}>{children}</button>
+    );
 };
 
-SubmitButton.propTypes = {
-    label: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-    onClick: PropTypes.func
+SaveButton.defaultProps = {
+    children: 'Submit'
 };
 
-export default SubmitButton;
+SaveButton.propTypes = {
+    children: PropTypes.string,
+    onClick: PropTypes.func.isRequired
+};
+
+export default SaveButton;
