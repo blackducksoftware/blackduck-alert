@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import CancelButton from '../field/input/CancelButton';
-import SubmitButton from '../field/input/SubmitButton';
-import GeneralButton from '../field/input/GeneralButton';
+import CancelButton from '../../field/input/CancelButton';
+import SubmitButton from '../../field/input/SubmitButton';
+import GeneralButton from '../../field/input/GeneralButton';
 
 export default class ConfigButtons extends Component {
     constructor(props) {

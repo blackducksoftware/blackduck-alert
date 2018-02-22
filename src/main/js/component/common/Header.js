@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import Logo from './Logo';
-import { submitContainers, header, title, loginSpacer } from '../../css/header.css';
+import { submitContainers, header, title, loginSpacer } from '../../../css/header.css';
 
 class Header extends Component {
 	render() {

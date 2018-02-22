@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { tableButton, editJobButton } from '../../css/table.css';
+import { tableButton, editJobButton } from '../../../css/table.css';
 
 class EditTableCellFormatter extends Component {
     constructor(props) {

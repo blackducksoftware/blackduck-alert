@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Route, Link, NavLink, withRouter } from 'react-router-dom';
 import Audit from './component/audit/Audit';
 import DistributionConfiguration from './component/distribution/DistributionConfiguration';
-import ServerContent from './component/server/ServerContent';
+import ServerContent from './component/server';
 import Navigation from './Navigation';
 
 import styles from '../css/main.css';

@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 
 import { getSchedulingConfig, runSchedulingAccumulator, updateSchedulingConfig } from '../../store/actions/schedulingConfig';
 
-import ConfigButtons from '../ConfigButtons';
+import ConfigButtons from '../common/ConfigButtons';
 import GeneralButton from '../../field/input/GeneralButton';
 
 import { dailyDigestOptions, purgeOptions } from "../../util/scheduling-data";

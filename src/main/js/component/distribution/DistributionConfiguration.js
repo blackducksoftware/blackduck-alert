@@ -9,7 +9,7 @@ import tableStyles from '../../../css/table.css';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
-import EditTableCellFormatter from '../EditTableCellFormatter';
+import EditTableCellFormatter from '../common/EditTableCellFormatter';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
 

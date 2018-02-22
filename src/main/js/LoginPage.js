@@ -9,7 +9,7 @@ import PasswordInput from './field/input/PasswordInput';
 import TextInput from './field/input/TextInput';
 import SubmitButton from './field/input/SubmitButton';
 import ReadOnlyField from './field/ReadOnlyField';
-import Header from './component/Header';
+import Header from './component/common/Header';
 
 import { toggleAdvancedOptions, loggingIn, loggedIn, login } from './store/actions/session';
 

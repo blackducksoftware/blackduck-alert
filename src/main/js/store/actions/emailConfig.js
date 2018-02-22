@@ -68,9 +68,7 @@ export function getEmailConfig() {
         })
         .then((response) => response.json())
         .then((body) => { dispatch(emailConfigFetched(body[0])); console.log('body', body) })
-        .catch(function(error) {
-            console.error(error);
-        });
+        .catch(console.error);
     }
 };
 
@@ -84,8 +82,6 @@ export function updateEmailConfig(config) {
         })
             .then((response) => response.json())
             .then((body) => { dispatch(emailConfigUpdated(body[0])); console.log('body', body) })
-            .catch(function(error) {
-                console.error(error);
-            });
+            .catch(console.error);
     }
 };

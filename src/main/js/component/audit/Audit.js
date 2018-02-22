@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 
-import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
-import styles from '../../../css/distributionConfig.css';
-import tableStyles from '../../../css/table.css';
-import auditStyles from '../../../css/audit.css';
+import { getAuditData } from '../../store/actions/audit';
 
 import CheckboxInput from '../../field/input/CheckboxInput';
-import EditTableCellFormatter from '../EditTableCellFormatter';
+import EditTableCellFormatter from '../common/EditTableCellFormatter';
 import AuditDetails from './AuditDetails';
-
-import Modal from 'react-modal';
-
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
+
+import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
+import '../../../css/distributionConfig.css';
+import tableStyles from '../../../css/table.css';
+import auditStyles from '../../../css/audit.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban ${auditStyles.policyViolation}`} aria-hidden='true'></i>;
@@ -46,8 +46,9 @@ class Audit extends Component {
 	}
 
 	componentDidMount() {
-		this.reloadAuditEntries();
-		this.startAutoReload();
+        this.props.getAuditData();
+		//this.reloadAuditEntries();
+		//this.startAutoReload();
 	}
 
 	startAutoReload() {
@@ -319,6 +320,7 @@ class Audit extends Component {
         }
 		return (
 				<div>
+					<h1>Distribution Configuration</h1>
 					<div>
 						<div className={auditStyles.legendContainer}>
 							<div className={`${auditStyles.inline}`}>
@@ -385,4 +387,12 @@ class Audit extends Component {
 
 };
 
-export default Audit;
+
+const mapStateToProps = state => ({
+});
+
+const mapDispatchToProps = dispatch => ({
+    getAuditData: () => dispatch(getAuditData())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Audit);

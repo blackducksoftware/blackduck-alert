@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 
 import TextInput from '../../field/input/TextInput';
-import ConfigButtons from '../ConfigButtons';
+import ConfigButtons from '../common/ConfigButtons';
 import {getConfig, testConfig, updateConfig} from "../../store/actions/hipChatConfig";
 
 class HipChatConfiguration extends React.Component {
