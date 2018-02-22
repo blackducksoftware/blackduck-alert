@@ -57,26 +57,31 @@ public class GlobalHubConfigController extends GlobalConfigController<GlobalHubC
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.postConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.putConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> validateConfig(final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.validateConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.deleteConfig(globalConfig);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
         return commonConfigHandler.testConfig(globalConfig);
     }
