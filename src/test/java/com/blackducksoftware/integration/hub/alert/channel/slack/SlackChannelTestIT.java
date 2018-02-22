@@ -11,9 +11,14 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -23,10 +28,19 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
+import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+
+import okhttp3.Request;
 
 public class SlackChannelTestIT extends ChannelTest {
 
@@ -61,4 +75,97 @@ public class SlackChannelTestIT extends ChannelTest {
             System.out.println("Complete missing line coverage.");
         }
     }
+
+    @Test
+    public void testCreateRequestExceptions() {
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final MockSlackEntity mockSlackEntity = new MockSlackEntity();
+        Request request = null;
+
+        try {
+            request = slackChannel.createRequest(null, mockSlackEntity.createEmptyEntity(), null);
+            fail();
+        } catch (final IntegrationException e) {
+            assertNull(request);
+        }
+
+        mockSlackEntity.setChannelName("");
+        try {
+            request = slackChannel.createRequest(null, mockSlackEntity.createEntity(), null);
+            fail();
+        } catch (final IntegrationException e) {
+            assertNull(request);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateHtmlMessage() throws IntegrationException {
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final MockSlackEntity mockSlackEntity = new MockSlackEntity();
+        final ProjectData projectData = createSlackProjectData();
+
+        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
+            @Override
+            public Request createMessageRequest(final String url, final Map<String, String> headers, final String body) {
+                assertTrue(body.contains("Vulnerability Count Added: "));
+                assertTrue(body.contains("Vulnerability Count Updated: "));
+                assertTrue(body.contains("Vulnerability Count Deleted: "));
+                return null;
+            }
+        };
+
+        final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
+
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), projectData);
+
+        assertNull(request);
+
+        Mockito.verify(spyChannelRequestHelper).createMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCreateHtmlMessageEmpty() throws IntegrationException {
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final MockSlackEntity mockSlackEntity = new MockSlackEntity();
+        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
+
+        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
+            @Override
+            public Request createMessageRequest(final String url, final Map<String, String> headers, final String body) {
+                assertTrue(body.contains("A notification was received, but it was empty."));
+                return null;
+            }
+        };
+
+        final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
+
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), projectData);
+
+        assertNull(request);
+
+        Mockito.verify(spyChannelRequestHelper).createMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+    }
+
+    private ProjectData createSlackProjectData() {
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
+        categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, createCategoryData());
+
+        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, categoryMap);
+
+        return projectData;
+    }
+
+    private CategoryData createCategoryData() {
+        final Map<String, Object> itemDataDataSet = new HashMap<>();
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED, 1);
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED, 1);
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED, 1);
+
+        final CategoryData categoryData = new CategoryData("key", Arrays.asList(new ItemData(itemDataDataSet)), 0);
+
+        return categoryData;
+    }
+
 }
