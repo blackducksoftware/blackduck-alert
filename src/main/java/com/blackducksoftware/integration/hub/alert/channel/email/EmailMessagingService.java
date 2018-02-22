@@ -63,8 +63,14 @@ public class EmailMessagingService {
 
     public EmailMessagingService(final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
-        // TODO determine the actual image location for deployment from the classpath in the jar
-        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates");
+        final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
+        String templateDirectoryPath;
+        if (StringUtils.isNotBlank(templatesDirectory)) {
+            templateDirectoryPath = templatesDirectory + "/email";
+        } else {
+            templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates";
+        }
+        this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
     }
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
@@ -78,8 +84,14 @@ public class EmailMessagingService {
 
         final Session session = createMailSession(emailProperties);
         final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        // TODO allow the ability to upload the image files or use a URL to an image
-        addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png");
+        final String imagesDirectory = System.getenv("ALERT_IMAGES_DIR");
+        String imageDirectoryPath;
+        if (StringUtils.isNotBlank(imagesDirectory)) {
+            imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
+        } else {
+            imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
+        }
+        addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, imageDirectoryPath);
         final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
         final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
