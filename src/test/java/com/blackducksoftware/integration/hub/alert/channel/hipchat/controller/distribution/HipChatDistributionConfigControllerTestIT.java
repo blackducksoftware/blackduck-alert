@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.d
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;

@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email.controller.dis
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;

@@ -14,8 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack.controller.dis
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
-import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;

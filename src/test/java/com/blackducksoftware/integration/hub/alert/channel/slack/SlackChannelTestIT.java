@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -39,12 +40,14 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 import okhttp3.Request;
 
 public class SlackChannelTestIT extends ChannelTest {
 
     @Test
+    @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
