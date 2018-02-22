@@ -135,7 +135,6 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
 
     private String createHtmlMessage(final ProjectData projectData) {
         try {
-            // TODO determine the actual template location for deployment
             final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
             String templateDirectoryPath;
             if (StringUtils.isNotBlank(templatesDirectory)) {
