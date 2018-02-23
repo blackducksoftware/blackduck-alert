@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { missingHubData, fontAwesomeLabel } from '../../../../css/main.css';
-import {fieldLabel, typeAheadField, fieldError, inline} from '../../../../css/field.css';
+import { typeAheadField, fieldError } from '../../../../css/field.css';
 import TextInput from '../../../field/input/TextInput';
 
 import Select from 'react-select-2';
@@ -119,17 +119,22 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
 		let content =
 					<div>
                         <TextInput label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError}></TextInput>
-						<label className={fieldLabel}>Group</label>
-						<Select className={typeAheadField}
-							onChange={this.handleGroupsChanged}
-						    clearble={true}
-						    options={options}
-                            optionRenderer={this.renderOption}
-						    placeholder='Choose the Hub user group'
-						    value={groupName}
-                            valueRenderer={this.renderOption}
-                            searchable={true}
-						  />
+
+                        <div className="form-group">
+                            <label className="col-sm-3 control-label">Group</label>
+                            <div className="col-sm-8">
+                                <Select className={typeAheadField}
+                                    onChange={this.handleGroupsChanged}
+                                    clearble={true}
+                                    options={options}
+                                    optionRenderer={this.renderOption}
+                                    placeholder='Choose the Hub user group'
+                                    value={groupName}
+                                    valueRenderer={this.renderOption}
+                                    searchable={true}
+                                  />
+                            </div>
+                        </div>
 						  {progressIndicator}
 						  {errorDiv}
 					</div>;

@@ -1,8 +1,7 @@
-'use strict';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {fieldLabel, typeAheadField} from '../../../../css/field.css';
+import {typeAheadField} from '../../../../css/field.css';
 
 import TextInput from '../../../field/input/TextInput';
 import CheckboxInput from '../../../field/input/CheckboxInput';
@@ -59,17 +58,19 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 
 	render() {
 		let content = <div>
-							<TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.roomIdError}></TextInput>
-							<CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
-						  <div>
-                <label className={fieldLabel}>Color</label>
-                <Select className={typeAheadField}
-                  onChange={this.handleColorChanged}
-                    searchable={true}
-                    options={this.state.colorOptions}
-                    placeholder='Choose the message color'
-                    value={this.state.values.color}
-                  />
+            <TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.roomIdError}></TextInput>
+            <CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}></CheckboxInput>
+            <div className="form-group">
+                <label className="col-sm-3 control-label">Color</label>
+                <div className="col-sm-8">
+                    <Select className={typeAheadField}
+                      onChange={this.handleColorChanged}
+                        searchable={true}
+                        options={this.state.colorOptions}
+                        placeholder='Choose the message color'
+                        value={this.state.values.color}
+                      />
+                </div>
               </div>
             </div>;
 

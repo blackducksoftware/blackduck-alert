@@ -1,7 +1,7 @@
 'use strict';
 import React, { Component } from 'react';
 
-import { fieldLabel, fieldError } from '../../css/field.css';
+import { fieldError } from '../../css/field.css';
 
 class LabeledField extends Component {
 	constructor(props) {
