@@ -36,7 +36,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().anyRequest().permitAll().and().logout().logoutSuccessUrl("/");
+        final String[] allowedPaths = { "/", "/built/bundle.js", "index.html", "/api/configuration/global", "/api/login", "/api/logout" };
+        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
+                .logout()
+                .logoutSuccessUrl("/");
         // conditional above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }
