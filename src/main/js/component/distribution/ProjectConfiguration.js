@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import styles from '../../../css/distributionConfig.css';
 import tableStyles from '../../../css/table.css';
 import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../css/main.css';
 

@@ -8,8 +8,7 @@ import EditTableCellFormatter from '../common/EditTableCellFormatter';
 import AuditDetails from './AuditDetails';
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 
-import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
-import '../../../css/distributionConfig.css';
+import { progressIcon, fontAwesomeLabel, refreshCheckbox } from '../../../css/main.css';
 import tableStyles from '../../../css/table.css';
 import auditStyles from '../../../css/audit.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -320,7 +319,12 @@ class Audit extends Component {
         }
 		return (
 				<div>
-					<h1>Distribution Configuration</h1>
+					<h1>
+						Audit
+						<small className="pull-right">
+							<label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
+						</small>
+					</h1>
 					<div>
 						<div className={auditStyles.legendContainer}>
 							<div className={`${auditStyles.inline}`}>
@@ -367,7 +371,6 @@ class Audit extends Component {
 								</div>
 							</div>
 						</div>
-						<CheckboxInput label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>

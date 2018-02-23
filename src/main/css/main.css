@@ -1,7 +1,7 @@
 html,
 body {
     background-color: #ddd;
-    font-size: 13px;
+    font-size: 14px;
 }
 h1 {
     border-bottom: 1px solid #ccc;
@@ -28,6 +28,10 @@ button {
 .btn {
     margin-right: 8px;
 }
+.refreshCheckbox {
+    font-size: 13px;
+    font-weight: normal;
+}
 .navigation {
     position: fixed;
     left: 0;
@@ -53,7 +57,7 @@ button {
     color: white;
     text-decoration: none;
     border-left: 4px solid transparent;
-    font-size: 1.1em;
+    letter-spacing: 0.07rem;
     display: block;
     padding: 8px 10px;
 }

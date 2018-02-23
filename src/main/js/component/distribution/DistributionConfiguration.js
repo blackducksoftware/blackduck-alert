@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 
-import { progressIcon, fontAwesomeLabel } from '../../../css/main.css';
-
-import styles from '../../../css/distributionConfig.css';
+import {progressIcon, fontAwesomeLabel, refreshCheckbox} from '../../../css/main.css';
 
 import tableStyles from '../../../css/table.css';
 
@@ -390,7 +388,6 @@ class DistributionConfiguration extends Component {
                                 </div>;
         }
 		var content = <div>
-						<CheckboxInput label="Enable auto refresh" name="autoRefresh" value={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} errorName="autoRefreshError" errorValue={this.state.autoRefreshError}></CheckboxInput>
 						<BootstrapTable striped condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
@@ -409,6 +406,12 @@ class DistributionConfiguration extends Component {
 		}
 		return (
 				<div>
+                    <h1>
+                        Distribution Configuration
+                        <small className="pull-right">
+                            <label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
+                        </small>
+                    </h1>
 					{content}
 				</div>
 		)

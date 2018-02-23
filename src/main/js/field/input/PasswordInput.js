@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { textInput } from '../../../css/field.css';
 import LabeledField from '../LabeledField';
 
 export default class PasswordInput extends LabeledField {

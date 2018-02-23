@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import styles from '../../../../css/distributionConfig.css';
-import {fieldLabel, typeAheadField} from '../../../../css/field.css';
+
+import { typeAheadField } from '../../../../css/field.css';
 
 import TextInput from '../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
@@ -322,39 +321,39 @@ class BaseJobConfiguration extends Component {
 	render(content) {
 		var buttonsFixed = this.props.buttonsFixed || false;
 		return(
-			<div>
-				<form onSubmit={this.onSubmit}>
-					<div className={styles.contentBlock}>
+				<form className="form-horizontal" onSubmit={this.onSubmit}>
 						<TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}></TextInput>
-						<div>
-							<label className={fieldLabel}>Frequency</label>
-							<Select className={typeAheadField}
-								onChange={this.handleFrequencyChanged}
-                                searchable={true}
-							    options={this.state.frequencyOptions}
-							    placeholder='Choose the frequency'
-							    value={this.state.values.frequency}
-							  />
+						<div className="form-group">
+							<label className="col-sm-3 control-label">Frequency</label>
+							<div className="col-sm-8">
+								<Select className={typeAheadField}
+									onChange={this.handleFrequencyChanged}
+									searchable={true}
+									options={this.state.frequencyOptions}
+									placeholder='Choose the frequency'
+									value={this.state.values.frequency}
+								  />
+							</div>
 						</div>
-						<div>
-							<label className={fieldLabel}>Notification Types</label>
-							<Select className={typeAheadField}
-								onChange={this.handleNotificationChanged}
-                                searchable={true}
-							    multi
-                                removeSelected={true}
-							    options={this.state.notificationOptions}
-							    placeholder='Choose the notification types'
-							    value={this.state.values.notificationTypes}
-							  />
+						<div className="form-group">
+                            <label className="col-sm-3 control-label">Notification Types</label>
+                            <div className="col-sm-8">
+								<Select className={typeAheadField}
+									onChange={this.handleNotificationChanged}
+									searchable={true}
+									multi
+									removeSelected={true}
+									options={this.state.notificationOptions}
+									placeholder='Choose the notification types'
+									value={this.state.values.notificationTypes}
+								  />
+							</div>
 						</div>
 						{content}
-					</div>
 					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
 					<ConfigButtons isFixed={buttonsFixed} includeTest={true} includeCancel={true} onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} type="submit" />
 					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
-			</div>
 		)
 	}
 }
