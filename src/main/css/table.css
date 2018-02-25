@@ -17,7 +17,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .addJobButton {
@@ -31,10 +31,11 @@
 }
 
 .editJobButton {
-    composes: tableButton;
-    background-color: #285f8f;
+    color: #285f8f;
     margin-left: auto;
     margin-right: auto;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .table {

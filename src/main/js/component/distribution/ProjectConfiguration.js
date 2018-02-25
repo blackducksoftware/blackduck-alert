@@ -5,18 +5,18 @@ import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../css/mai
 
 import CheckboxInput from '../../field/input/CheckboxInput';
 
-import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton} from 'react-bootstrap-table';
+import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 export default class ProjectConfiguration extends Component {
-	constructor(props) {
-		super(props);
+    constructor(props) {
+        super(props);
         this.state = {
             selectedProjects: []
         };
         this.onRowSelected = this.onRowSelected.bind(this);
         this.assignDataFormat = this.assignDataFormat.bind(this);
-	}
+    }
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
@@ -94,48 +94,48 @@ export default class ProjectConfiguration extends Component {
         handleProjectChanged(selected);
     }
 
-	render() {
+    render() {
         let projectData = this.createProjectList();
 
-		const projectTableOptions = {
-	  		noDataText: 'No projects found',
-	  		clearSearch: true,
+        const projectTableOptions = {
+            noDataText: 'No projects found',
+            clearSearch: true,
             defaultSortName: 'name',
             defaultSortOrder: 'asc'
-		};
+        };
 
-		const projectsSelectRowProp = {
-	  		mode: 'checkbox',
-	  		clickToSelect: true,
-	  		showOnlySelected: true,
+        const projectsSelectRowProp = {
+            mode: 'checkbox',
+            clickToSelect: true,
+            showOnlySelected: true,
             selected: this.props.configuredProjects,
             onSelect: this.onRowSelected
-		};
-		var progressIndicator = null;
-		if (this.props.waitingForProjects) {
-        	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-			progressIndicator = <div className={progressIcon}>
-									<i className={fontAwesomeIcon} aria-hidden='true'></i>
-								</div>;
-		}
+        };
+        var progressIndicator = null;
+        if (this.props.waitingForProjects) {
+            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
+            progressIndicator = <div className={progressIcon}>
+                <i className={fontAwesomeIcon} aria-hidden='true'></i>
+            </div>;
+        }
 
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
-                                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName={tableStyles.tableCell} dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
-                                    <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
-                                </BootstrapTable>
-                                {progressIndicator}
-                                <p name="projectTableMessage">{this.props.projectTableMessage}</p>
-                            </div>;
+                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
+                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName={tableStyles.tableCell} dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
+                </BootstrapTable>
+                {progressIndicator}
+                <p name="projectTableMessage">{this.props.projectTableMessage}</p>
+            </div>;
         }
 
-		return (
-			<div>
+        return (
+            <div>
                 <CheckboxInput label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError}></CheckboxInput>
-				{projectTable}
-			</div>
-		)
-	}
+                {projectTable}
+            </div>
+        )
+    }
 }

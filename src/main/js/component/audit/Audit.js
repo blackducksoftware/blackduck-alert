@@ -392,6 +392,7 @@ class Audit extends Component {
 
 
 const mapStateToProps = state => ({
+	items: state.audit.items
 });
 
 const mapDispatchToProps = dispatch => ({

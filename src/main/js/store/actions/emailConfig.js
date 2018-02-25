@@ -67,7 +67,7 @@ export function getEmailConfig() {
             credentials: 'include'
         })
         .then((response) => response.json())
-        .then((body) => { dispatch(emailConfigFetched(body[0])); console.log('body', body) })
+        .then((body) => { dispatch(emailConfigFetched(body[0])); })
         .catch(console.error);
     }
 };
@@ -81,7 +81,7 @@ export function updateEmailConfig(config) {
             credentials: 'include'
         })
             .then((response) => response.json())
-            .then((body) => { dispatch(emailConfigUpdated(body[0])); console.log('body', body) })
+            .then((body) => { dispatch(emailConfigUpdated(body[0])); })
             .catch(console.error);
     }
 };

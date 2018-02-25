@@ -353,11 +353,11 @@ class DistributionConfiguration extends Component {
 							</div>;
 		}
 	    return (
-	      <ButtonGroup>
+	      <div>
 	      	<InsertButton className={tableStyles.addJobButton} onClick={insertOnClick}/>
 	      	<DeleteButton className={tableStyles.deleteJobButton} onClick={deleteOnClick}/>
 	      	{refreshButton}
-	      </ButtonGroup>
+	      </div>
 	    );
   	}
 
@@ -395,7 +395,7 @@ class DistributionConfiguration extends Component {
 	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' width='65' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
+                            <TableHeaderColumn dataField='' width='48' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
