@@ -1,4 +1,3 @@
-'use strict'
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -22,11 +21,11 @@ class EditTableCellFormatter extends Component {
         if (buttonClass) {
             buttonClass = `${buttonClass} ${tableButton}`;
         } else {
-            buttonClass = `btn btn-info ${editJobButton}`;
+            buttonClass = `btn btn-link ${editJobButton}`;
         }
 
         return (
-            <input className={buttonClass} type='button' onClick={this.onClick} value={buttonText}></input>
+            <button className={buttonClass} type='button' title={buttonText} onClick={this.onClick}><span className="fa fa-pencil"></span></button>
         );
     }
 }

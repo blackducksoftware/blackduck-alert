@@ -97,7 +97,6 @@ class SchedulingConfiguration extends React.Component {
 
 	render() {
 		const { errorFields, errorMessage, updateStatus, runSchedulingAccumulator } = this.props;
-		console.log('errorFields', this.props.errorFields);
 		return (
 			<div>
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
@@ -115,8 +114,8 @@ class SchedulingConfiguration extends React.Component {
 						<label className="col-sm-3 control-label">Collecting Hub notifications in</label>
 						<div className="col-sm-9">
 							<p className="form-control-static accumulator-countdown">
-								{this.state.accumulatorNextRun} seconds
-                                <GeneralButton className="btn-sm" onClick={runSchedulingAccumulator}>Run now</GeneralButton>
+								{this.state.accumulatorNextRun} seconds &nbsp;&nbsp;
+                                <GeneralButton className="btn-xs btn-danger" onClick={runSchedulingAccumulator}>Run now</GeneralButton>
 							</p>
 						</div>
 					</div>

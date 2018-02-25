@@ -38,7 +38,7 @@ export function getAuditData() {
             credentials: 'include'
         })
         .then((response) => response.json())
-        .then((body) => { console.log('body', body); dispatch(auditDataFetched(body)) })
+        .then((body) => { dispatch(auditDataFetched(body)) })
         .catch(function(error) {
             console.error(error);
         });

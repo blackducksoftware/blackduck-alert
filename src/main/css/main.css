@@ -20,7 +20,10 @@ form.form-horizontal {
     padding: 20px;
 }
 button {
-    margin-right: 8px;
+    border-radius: 2px !important;
+}
+button + button {
+    margin-left: 5px;
 }
 .accumulator-countdown .btn {
     margin-left: 20px;
@@ -57,6 +60,7 @@ button {
     color: white;
     text-decoration: none;
     border-left: 4px solid transparent;
+    font-weight: 300;
     letter-spacing: 0.07rem;
     display: block;
     padding: 8px 10px;

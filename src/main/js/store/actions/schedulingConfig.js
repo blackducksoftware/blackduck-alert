@@ -105,7 +105,7 @@ export function getSchedulingConfig() {
             credentials: 'same-origin'
         })
         .then((response) => response.json())
-        .then((body) => { dispatch(schedulingConfigFetched(body[0])); console.log('body', body) })
+        .then((body) => { dispatch(schedulingConfigFetched(body[0])); })
         .catch(console.error);
     }
 };
