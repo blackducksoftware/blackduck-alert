@@ -104,7 +104,7 @@ task cleanBundles(type: Delete) {
         testDatabaseDirectory.deleteDir()    
     }
     
-    File staticResourcesDirectory = new File('src/main/resources/static')
+    File staticResourcesDirectory = new File('src/main/static')
     if (staticResourcesDirectory.exists()) {
         println "Deleting ${staticResourcesDirectory.canonicalPath}"
         staticResourcesDirectory.deleteDir()
@@ -125,7 +125,13 @@ task webpack(type: Exec) {
         commandLine "$projectDir/node_modules/.bin/webpack"
 }
 
-tasks.compileJava.finalizedBy(npm_run)
+task copyToTemplates(type:Copy, dependsOn: [npm_run]) {
+    from  'build/resources/main/static/index.html'
+    into 'build/resources/main/templates/'
+}
+
+tasks.compileJava.finalizedBy(copyToTemplates)
+
 
 task runServer(type: Exec, dependsOn: [build]) {
     File jarFile = new File("build/libs/hub-alert-${version}.jar")

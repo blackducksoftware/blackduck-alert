@@ -63,7 +63,7 @@ module.exports = {
         ]
     },
     plugins: [new HtmlWebpackPlugin({
-        template: 'src/main/resources/templates/index.html'
+        template: 'src/main/js/templates/index.html'
     })],
     devServer: {
         hot: true,

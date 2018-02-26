@@ -36,7 +36,8 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        final String[] allowedPaths = { "/", "/built/bundle.js", "index.html", "/api/configuration/global", "/api/login", "/api/logout" };
+        final String[] allowedPaths = { "/", "/#", "/favicon.ico", "/js/bundle.js", "/js/bundle.js.map", "index.html", "/settings/*", "/distribution", "/audit", "/api/configuration/global", "/api/login",
+                "/api/logout" };
         http.requiresChannel().anyRequest().requiresSecure().and().csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and()
                 .authorizeRequests().anyRequest().hasRole("ADMIN").and()
                 .logout()
