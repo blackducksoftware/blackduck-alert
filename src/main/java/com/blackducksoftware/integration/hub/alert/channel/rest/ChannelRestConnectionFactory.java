@@ -84,6 +84,8 @@ public class ChannelRestConnectionFactory {
 
         final RestConnection connection = restConnectionBuilder.build();
         try {
+            // the build operation will catch the issues based on the configuration settings and throw an exception
+            // the IntegrationException caught here is unlikely to occur with an UnauthenticatedRestConnection.
             connection.connect();
             return connection;
         } catch (final IntegrationException e) {

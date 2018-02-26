@@ -77,7 +77,6 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
 
     @Override
     public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-        // TODO create a EmailGroupDistributionConfigEntity with a test email address
         return null;
     }
 
