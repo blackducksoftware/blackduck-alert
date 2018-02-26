@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -34,7 +36,9 @@ import com.blackducksoftware.integration.hub.notification.processor.event.Notifi
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 
+@Category(HubConnectionTest.class)
 public class AccumulatorProcessorTestIT {
     private TestGlobalProperties globalProperties;
     private ProjectService projectRequestService;
@@ -64,8 +68,7 @@ public class AccumulatorProcessorTestIT {
         }
     }
 
-    // @Test
-    // TODO This test will be skipped until we can specify it as an IT
+    @Test
     public void testProcess() throws Exception {
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;

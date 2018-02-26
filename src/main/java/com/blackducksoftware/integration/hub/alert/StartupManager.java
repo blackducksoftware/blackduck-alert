@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,12 @@ public class StartupManager {
         logger.info("Hub Proxy Host:     {}", globalProperties.getHubProxyHost());
         logger.info("Hub Proxy Port:     {}", globalProperties.getHubProxyPort());
         logger.info("Hub Proxy User:     {}", globalProperties.getHubProxyUsername());
-        logger.info("Hub Proxy Password: **********");
+        final String proxyPasswordLabel = "Hub Proxy Password:";
+        if (StringUtils.isNotBlank(globalProperties.getHubProxyPassword())) {
+            logger.info("{} **********", proxyPasswordLabel);
+        } else {
+            logger.info("{}", proxyPasswordLabel);
+        }
 
         if (globalHubConfig != null) {
             logger.info("Hub API Key:        **********");

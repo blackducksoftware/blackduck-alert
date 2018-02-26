@@ -26,6 +26,8 @@ package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,6 +47,7 @@ import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 
 @Component
 public class LoginHandler extends ControllerHandler {
+    private final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
     private final LoginActions loginActions;
 
     @Autowired
@@ -67,11 +70,6 @@ public class LoginHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
-        final HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.setMaxInactiveInterval(600);
-        }
-
         return authenticateUser(loginRestModel);
     }
 

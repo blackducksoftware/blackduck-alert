@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,19 +45,16 @@ public class AuditEntryController extends BaseController {
         this.auditEntryHandler = auditEntryHandler;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<AuditEntryRestModel> get() {
         return auditEntryHandler.get();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping(value = "/{id}")
     public AuditEntryRestModel get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(value = "/{id}/resend")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.resendNotification(id);
