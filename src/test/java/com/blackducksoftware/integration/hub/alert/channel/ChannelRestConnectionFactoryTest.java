@@ -32,12 +32,6 @@ public class ChannelRestConnectionFactoryTest {
         outputLogger.cleanup();
     }
 
-    // TODO find a way to reach the Cannot connect exception
-    // @Test
-    public void testUnauthenticatedConnectionException() {
-
-    }
-
     @Test
     public void testConnectionFields() throws EncryptionException {
         final String host = "host";
