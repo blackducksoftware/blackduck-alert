@@ -31,7 +31,7 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     private String id;
 
     public MockGlobalHubRestModel() {
-        this("HubUrl", "444", "HubUsername", "HubPassword", "HubApiKey", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
+        this("HubUrl", "444", "HubUsername", "HubPassword", "HubApiKey############################################################", false, "HubProxyHost", "555", "HubProxyUsername", "HubProxyPassword", true, "true", "1");
     }
 
     private MockGlobalHubRestModel(final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort,
