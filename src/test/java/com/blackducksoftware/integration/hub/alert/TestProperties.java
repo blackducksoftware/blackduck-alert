@@ -39,7 +39,6 @@ public class TestProperties {
         if (properties == null) {
             properties = new Properties();
             try {
-                // TODO add additional locations to check for properties
                 properties = resourceLoader.loadProperties(propertiesLocation);
                 if (properties.isEmpty()) {
                     populatePropertiesFromEnv();

@@ -67,13 +67,14 @@ module.exports = {
     })],
     devServer: {
         hot: true,
-        publicPath: 'http://localhost:8080/',
+        port: 9000,
+        publicPath: 'http://localhost:9000/',
         historyApiFallback: {
             index: 'index.html'
         },
         proxy: [{
             context: ['/api'],
-            target: "http://localhost:8081",
+            target: "http://localhost:8080",
             secure: false,
             bypass: function(req, res, proxyOptions) {
                 if (req.headers.accept.indexOf("html") !== -1) {

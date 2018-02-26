@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 import java.util.Map;
 
 public class ItemData extends DigestData {
-    // TODO make the key an ItemTypeEnum
     private final Map<String, Object> dataSet;
 
     public ItemData(final Map<String, Object> dataMap) {

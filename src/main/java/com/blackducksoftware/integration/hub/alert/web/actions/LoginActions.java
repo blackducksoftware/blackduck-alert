@@ -62,7 +62,12 @@ public class LoginActions {
         serverConfigBuilder.setHubUrl(loginRestModel.getHubUrl());
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
-        serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
+        if (StringUtils.isBlank(loginRestModel.getHubTimeout())) {
+            serverConfigBuilder.setTimeout(String.valueOf(HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS));
+        } else {
+            serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
+        }
+
         serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(loginRestModel.getHubAlwaysTrustCertificate()));
         serverConfigBuilder.setProxyHost(loginRestModel.getHubProxyHost());
         serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
