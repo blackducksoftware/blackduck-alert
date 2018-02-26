@@ -58,7 +58,7 @@ class HubConfiguration extends React.Component {
 		return (
 			<div>
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
-					<h1>Server Configuration / Hub Configuration</h1>
+					<h1>Providers / Hub Configuration</h1>
                     { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                         <div>Test was successful!</div>
                     </div>}

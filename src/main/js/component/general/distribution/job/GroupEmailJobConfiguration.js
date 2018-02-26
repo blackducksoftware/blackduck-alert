@@ -2,9 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { missingHubData, fontAwesomeLabel } from '../../../../css/main.css';
-import { typeAheadField, fieldError } from '../../../../css/field.css';
-import TextInput from '../../../field/input/TextInput';
+import { missingHubData, fontAwesomeLabel } from '../../../../../css/main.css';
+import { typeAheadField, fieldError } from '../../../../../css/field.css';
+import TextInput from '../../../../field/input/TextInput';
 
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';

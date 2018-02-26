@@ -6,10 +6,10 @@ import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 
-import { jobTypes } from '../../util/distribution-data';
+import { jobTypes } from '../../../util/distribution-data';
 
-import { fontAwesomeLabel } from '../../../css/main.css';
-import { typeAheadField } from '../../../css/field.css';
+import { fontAwesomeLabel } from '../../../../css/main.css';
+import { typeAheadField } from '../../../../css/field.css';
 import 'react-select-2/dist/css/react-select-2.css';
 
 export default class JobAddModal extends Component {

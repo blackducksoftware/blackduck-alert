@@ -46,7 +46,7 @@ class EmailConfiguration extends React.Component {
 
         return (
         	<div>
-                <h1>Server Configuration / Email</h1>
+                <h1>Channels / Email</h1>
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
 					<TextInput
 						label="SMTP Host"

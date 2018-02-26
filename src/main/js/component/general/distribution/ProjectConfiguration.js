@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import tableStyles from '../../../css/table.css';
-import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../css/main.css';
+import tableStyles from '../../../../css/table.css';
+import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../../css/main.css';
 
-import CheckboxInput from '../../field/input/CheckboxInput';
+import CheckboxInput from '../../../field/input/CheckboxInput';
 
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
