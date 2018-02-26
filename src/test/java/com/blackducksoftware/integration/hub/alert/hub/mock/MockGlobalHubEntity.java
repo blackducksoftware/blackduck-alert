@@ -21,7 +21,7 @@ public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEnt
     private Long id;
 
     public MockGlobalHubEntity() {
-        this(444, "HubApiKey", 1L);
+        this(444, "HubApiKey############################################################", 1L);
     }
 
     private MockGlobalHubEntity(final Integer hubTimeout, final String hubApiKey, final Long id) {
