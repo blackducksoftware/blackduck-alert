@@ -44,10 +44,6 @@ public class MimeMultipartBuilderTest {
             builder.addEmbeddedImages(contentIdsToFilePaths);
 
             builder.build();
-
-            // TODO Test exception
-            // System.setProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME, "need a path that will throw an exception when .getCanonicalPath() is called...");
-            // builder.build();
         } finally {
             if (originalValue != null) {
                 System.setProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME, originalValue);
@@ -56,5 +52,4 @@ public class MimeMultipartBuilderTest {
             }
         }
     }
-
 }
