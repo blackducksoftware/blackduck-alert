@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 
-import { getAuditData } from '../../store/actions/audit';
+import { getAuditData } from '../../../store/actions/audit';
 
-import CheckboxInput from '../../field/input/CheckboxInput';
-import EditTableCellFormatter from '../common/EditTableCellFormatter';
-import AuditDetails from './AuditDetails';
+import EditTableCellFormatter from '../../common/EditTableCellFormatter';
+import AuditDetails from './Details';
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 
-import { progressIcon, fontAwesomeLabel, refreshCheckbox } from '../../../css/main.css';
-import tableStyles from '../../../css/table.css';
-import auditStyles from '../../../css/audit.css';
+import { progressIcon, fontAwesomeLabel, refreshCheckbox } from '../../../../css/main.css';
+import tableStyles from '../../../../css/table.css';
+import auditStyles from '../../../../css/audit.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban ${auditStyles.policyViolation}`} aria-hidden='true'></i>;
@@ -22,7 +21,7 @@ var lowVulnerabilityIcon = <i key="lowVulnerabilityIcon" alt="Low Vulnerability"
 var vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="Vulnerability" className={`fa fa-shield ${auditStyles.vulnerability}`} aria-hidden='true'></i>;
 
 
-class Audit extends Component {
+class Index extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
@@ -320,7 +319,7 @@ class Audit extends Component {
 		return (
 				<div>
 					<h1>
-						Audit
+                        General / Audit
 						<small className="pull-right">
 							<label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
 						</small>
@@ -399,4 +398,4 @@ const mapDispatchToProps = dispatch => ({
     getAuditData: () => dispatch(getAuditData())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Audit);
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

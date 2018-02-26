@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 
-import { fontAwesomeLabel } from '../../../css/main.css';
-import { inline } from '../../../css/audit.css';
-import tableStyles from '../../../css/table.css';
+import { fontAwesomeLabel } from '../../../../css/main.css';
+import { inline } from '../../../../css/audit.css';
+import tableStyles from '../../../../css/table.css';
 
-import TextInput from '../../field/input/TextInput';
-import LabeledField from '../../field/LabeledField';
-import TextArea from '../../field/input/TextArea';
+import TextInput from '../../../field/input/TextInput';
+import LabeledField from '../../../field/LabeledField';
+import TextArea from '../../../field/input/TextArea';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
-class AuditDetails extends Component {
+class Details extends Component {
 	constructor(props) {
 		super(props);
 		var currentEntry = props.currentEntry;
@@ -85,4 +85,4 @@ class AuditDetails extends Component {
 		)
 	}
 };
-export default AuditDetails;
+export default Details;

@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {typeAheadField} from '../../../../css/field.css';
+import {typeAheadField} from '../../../../../css/field.css';
 
-import TextInput from '../../../field/input/TextInput';
-import CheckboxInput from '../../../field/input/CheckboxInput';
+import TextInput from '../../../../field/input/TextInput';
+import CheckboxInput from '../../../../field/input/CheckboxInput';
 
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';

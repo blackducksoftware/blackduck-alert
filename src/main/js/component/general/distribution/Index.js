@@ -1,22 +1,20 @@
 import React, { Component } from 'react';
 
-import {progressIcon, fontAwesomeLabel, refreshCheckbox} from '../../../css/main.css';
+import {progressIcon, fontAwesomeLabel, refreshCheckbox} from '../../../../css/main.css';
 
-import tableStyles from '../../../css/table.css';
+import tableStyles from '../../../../css/table.css';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
-import EditTableCellFormatter from '../common/EditTableCellFormatter';
-
-import CheckboxInput from '../../field/input/CheckboxInput';
+import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton, ButtonGroup} from 'react-bootstrap-table';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
-class DistributionConfiguration extends Component {
+class Index extends Component {
 	constructor(props) {
 		super(props);
 		 this.state = {
@@ -384,7 +382,7 @@ class DistributionConfiguration extends Component {
         if (this.state.inProgress) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
             progressIndicator = <div className={progressIcon}>
-                                    <i className={fontAwesomeIcon} aria-hidden='true'></i>
+                                    <span className={fontAwesomeIcon} aria-hidden='true'></span>
                                 </div>;
         }
 		var content = <div>
@@ -407,7 +405,7 @@ class DistributionConfiguration extends Component {
 		return (
 				<div>
                     <h1>
-                        Distribution Configuration
+                        General / Distribution
                         <small className="pull-right">
                             <label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
                         </small>
@@ -418,4 +416,4 @@ class DistributionConfiguration extends Component {
 	}
 };
 
-export default DistributionConfiguration;
+export default Index;

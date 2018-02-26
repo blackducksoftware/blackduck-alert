@@ -1,10 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Route, Link, NavLink, withRouter } from 'react-router-dom';
-import Audit from './component/audit/Audit';
-import DistributionConfiguration from './component/distribution/DistributionConfiguration';
-import ServerContent from './component/server';
+
 import Navigation from './Navigation';
+import Audit from './component/general/audit/Index';
+import DistributionConfiguration from './component/general/distribution/Index';
+import SchedulingConfiguration from "./component/general/SchedulingConfiguration";
+import EmailConfiguration from "./component/channels/EmailConfiguration";
+import SlackConfiguration from "./component/channels/SlackConfiguration";
+import HubConfiguration from "./component/providers/HubConfiguration";
+import HipChatConfiguration from "./component/channels/HipChatConfiguration";
 
 import styles from '../css/main.css';
 
@@ -12,15 +17,14 @@ const MainPage = () => (
     <div>
         <Navigation />
         <div className={styles.contentArea}>
-            <Route path="/settings" render={props => (
-                <ServerContent />
-            )}/>
-            <Route path="/distribution" render={props => (
-                <DistributionConfiguration />
-            )}/>
-            <Route path="/audit" render={props => (
-                <Audit />
-            )}/>
+            <Route path="/providers/hub" component={HubConfiguration} />
+            <Route path="/channels/email" component={EmailConfiguration} />
+            <Route path="/channels/hipchat" component={HipChatConfiguration} />
+            <Route path="/channels/slack" component={SlackConfiguration} />
+
+            <Route path="/general/scheduling" component={SchedulingConfiguration} />
+            <Route path="/general/distribution" component={DistributionConfiguration} />
+            <Route path="/general/audit" component={Audit} />
         </div>
     </div>
 );
