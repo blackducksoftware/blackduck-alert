@@ -31,18 +31,16 @@ public class ChannelFreemarkerTemplatingServiceTest {
         outputLogger.cleanup();
     }
 
-    // TODO find a way to throw an exception to test
-    // @Test
+    @Test
     public void testDirectoryFileException() throws IOException {
         System.setProperty(AlertConstants.SYSTEM_PROPERTY_KEY_APP_HOME, "noooone");
         try {
             @SuppressWarnings("unused")
-            final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(null);
+            final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(".\\-abdc~2345-9;2");
             fail();
         } catch (final IOException e) {
+            assertTrue(true);
         }
-
-        assertTrue(outputLogger.isLineContainingText("Error finding the template directory"));
     }
 
     @Test

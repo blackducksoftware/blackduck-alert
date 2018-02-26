@@ -157,9 +157,10 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
             }
         }).when(mockedGlobalRepository).findOne(Mockito.anyLong());
 
-        configActions.testConfig(partialRestModel);
-        // TODO verify that the correct model gets passed into channelTestConfig()
+        final String result = configActions.testConfig(partialRestModel);
+        assertEquals("Successfully connected to the Hub.", result);
         Mockito.verify(mockedRestConnection, Mockito.times(1)).connect();
+
     }
 
     @Test
@@ -185,7 +186,8 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         Mockito.reset(mockedRestConnection);
 
         final GlobalHubConfigRestModel restModel = mockUtils.createGlobalRestModel();
-        configActions.channelTestConfig(restModel);
+        final String result = configActions.channelTestConfig(restModel);
+        assertEquals("Successfully connected to the Hub.", result);
         Mockito.verify(mockedRestConnection, Mockito.times(1)).connect();
     }
 

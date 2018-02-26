@@ -31,17 +31,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false", relaxedNames = false)
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true", relaxedNames = false)
+public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         final String[] allowedPaths = { "/", "/built/bundle.js", "index.html", "/api/configuration/global", "/api/login", "/api/logout" };
-        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
+        http.requiresChannel().anyRequest().requiresSecure().and().csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and()
+                .authorizeRequests().anyRequest().hasRole("ADMIN").and()
                 .logout()
                 .logoutSuccessUrl("/");
-        // conditional above ensures that this will not be used if SSL is enabled.
-        http.headers().frameOptions().disable();
     }
-
 }
