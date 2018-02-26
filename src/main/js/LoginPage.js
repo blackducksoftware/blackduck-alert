@@ -68,7 +68,7 @@ class LoginPage extends Component {
 								</div> }
 
 								<ReadOnlyField label="Hub Url" name="hubUrl" readOnly="true" value={this.props.hubUrl} errorName="hubUrlError" errorValue={this.state.errors.hubUrlError}/>
-								<TextInput label="Username" name="hubUsername" onChange={this.handleChange} errorName="usernameError" />
+								<TextInput label="Username" name="hubUsername" onChange={this.handleChange} errorName="usernameError" autoFocus={true} />
 								<PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
 
 								<div className="form-group">
