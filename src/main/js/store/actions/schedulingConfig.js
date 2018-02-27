@@ -102,7 +102,7 @@ export function getSchedulingConfig() {
         dispatch(fetchingSchedulingConfig());
 
         fetch(CONFIG_URL, {
-            credentials: 'same-origin'
+            credentials: 'include'
         })
         .then((response) => response.json())
         .then((body) => { dispatch(schedulingConfigFetched(body[0])); })
@@ -125,7 +125,7 @@ export function updateSchedulingConfig(config) {
             headers: {
                 'content-type': 'application/json'
             },
-            credentials: 'same-origin',
+            credentials: 'include',
             body: JSON.stringify(body)
         })
             .then((response) => {

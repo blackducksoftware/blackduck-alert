@@ -28,6 +28,16 @@ module.exports = {
                     }
                 }]
             }, {
+                test: /\.scss$/,
+                exclude: /(node_modules)/,
+                use: [{
+                    loader: "style-loader" // creates style nodes from JS strings
+                }, {
+                    loader: "css-loader" // translates CSS into CommonJS
+                }, {
+                    loader: "sass-loader" // compiles Sass to CSS
+                }]
+            }, {
                 test: /\.css$/,
                 exclude: /node_modules/,
                 use: [{
@@ -68,19 +78,15 @@ module.exports = {
     devServer: {
         hot: true,
         port: 9000,
-        publicPath: 'http://localhost:9000/',
-        historyApiFallback: {
-            index: 'index.html'
-        },
+        compress: true,
+        historyApiFallback: true,
+        disableHostCheck: true,
         proxy: [{
             context: ['/api'],
-            target: "http://localhost:8080",
+            target: "http://kkelley-mac.local:8080",
             secure: false,
-            bypass: function(req, res, proxyOptions) {
-                if (req.headers.accept.indexOf("html") !== -1) {
-                    console.log("Skipping proxy for browser request.", req.url);
-                    return '/index.html';
-                }
+            cookieDomainRewrite: {
+                "*": ""
             }
         }]
     }
