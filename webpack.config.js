@@ -11,7 +11,8 @@ module.exports = {
     devtool: 'sourcemaps',
     output: {
         path: buildDir,
-        filename: 'js/bundle.js'
+        filename: 'js/bundle.js',
+        publicPath: '/'
     },
     module: {
         rules: [
