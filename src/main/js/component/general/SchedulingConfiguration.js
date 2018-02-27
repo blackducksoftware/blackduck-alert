@@ -99,8 +99,8 @@ class SchedulingConfiguration extends React.Component {
 		const { errorFields, errorMessage, updateStatus, runSchedulingAccumulator } = this.props;
 		return (
 			<div>
+                <h1>General / Scheduling</h1>
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
-					<h1>General / Scheduling</h1>
 
                     { errorMessage && <div className="alert alert-danger">
                         { errorMessage }

@@ -8,7 +8,6 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 
 import { jobTypes } from '../../../util/distribution-data';
 
-import { fontAwesomeLabel } from '../../../../css/main.css';
 import { typeAheadField } from '../../../../css/field.css';
 import 'react-select-2/dist/css/react-select-2.css';
 
@@ -73,11 +72,11 @@ export default class JobAddModal extends Component {
     renderOption(option) {
         let fontAwesomeIcon;
         if (option.value === 'email_group_channel') {
-            fontAwesomeIcon = `fa fa-envelope ${fontAwesomeLabel}`;
+            fontAwesomeIcon = `fa fa-envelope fa-fw`;
         } else if (option.value === 'hipchat_channel') {
-            fontAwesomeIcon = `fa fa-comments ${fontAwesomeLabel}`;
+            fontAwesomeIcon = `fa fa-comments  fa-fw`;
         } else if (option.value === 'slack_channel') {
-            fontAwesomeIcon = `fa fa-slack ${fontAwesomeLabel}`;
+            fontAwesomeIcon = `fa fa-slack  fa-fw`;
         }
         return (<div>
                 <span key="icon" className={fontAwesomeIcon} aria-hidden='true'></span>

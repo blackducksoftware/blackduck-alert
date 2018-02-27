@@ -8,7 +8,7 @@ import LoginPage from './LoginPage';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from "./store/actions/session";
 
-import '../css/main.css';
+import '../css/main.scss';
 
 class App extends Component {
 

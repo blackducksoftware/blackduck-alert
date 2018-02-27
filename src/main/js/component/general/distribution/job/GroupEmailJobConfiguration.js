@@ -2,7 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { missingHubData, fontAwesomeLabel } from '../../../../../css/main.css';
 import { typeAheadField, fieldError } from '../../../../../css/field.css';
 import TextInput from '../../../../field/input/TextInput';
 
@@ -83,9 +82,8 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         let classAttribute;
 
         if(option.missing) {
-            let fontAwesomeClass = `fa fa-exclamation-triangle ${fontAwesomeLabel}`;
             return (
-                <span className={missingHubData}><i className={fontAwesomeClass} aria-hidden='true'></i>{option.label}</span>
+                <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden='true'></span>{option.label}</span>
             );
         } else {
             return (

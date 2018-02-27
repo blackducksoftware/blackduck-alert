@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { connect } from "react-redux";
 
 import { getAuditData } from '../../../store/actions/audit';
-
+import AutoRefresh from '../../common/AutoRefresh';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 import AuditDetails from './Details';
 import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 
-import { progressIcon, fontAwesomeLabel, refreshCheckbox } from '../../../../css/main.css';
 import tableStyles from '../../../../css/table.css';
 import auditStyles from '../../../../css/audit.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
@@ -70,7 +69,7 @@ class Index extends Component {
 		});
 		var self = this;
 		fetch('/api/audit',{
-			credentials: "same-origin"
+			credentials: 'include'
 		})
 		.then(function(response) {
 			self.handleSetState('inProgress', false);
@@ -156,7 +155,7 @@ class Index extends Component {
 		var resendUrl = '/api/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
 			method: 'POST',
-			credentials: "same-origin",
+			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json'
 			}
@@ -207,13 +206,13 @@ class Index extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (cell === 'email_group_channel') {
-			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-envelope fa-fw`;
             cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-comments fa-fw`;
             cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-slack fa-fw`;
             cellText = "Slack";
 		}
 
@@ -286,7 +285,7 @@ class Index extends Component {
 		let refreshButton= null;
 		if (!this.state.autoRefresh) {
 			let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
-			let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
+			let fontAwesomeIcon = `fa fa-refresh fa-fw`;
 			let reloadEntries = () => this.reloadAuditEntries();
 			refreshButton = <div className={classes} onClick={reloadEntries} >
 								<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
@@ -312,7 +311,7 @@ class Index extends Component {
 		var progressIndicator = null;
         if (this.state.inProgress) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className={progressIcon}>
+            progressIndicator = <div className="progressIcon">
                                     <i className={fontAwesomeIcon} aria-hidden='true'></i>
                                 </div>;
         }
@@ -321,7 +320,7 @@ class Index extends Component {
 					<h1>
                         General / Audit
 						<small className="pull-right">
-							<label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
+							<AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange} />
 						</small>
 					</h1>
 					<div>
