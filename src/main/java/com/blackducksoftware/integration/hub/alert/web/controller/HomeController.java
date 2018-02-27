@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    @GetMapping(value = { "/" }, produces = MediaType.TEXT_HTML_VALUE)
+    @GetMapping(value = { "/", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
         return "index";
     }
