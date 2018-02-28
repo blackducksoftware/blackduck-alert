@@ -47,7 +47,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/configuration/global",
+                "/api/configuration/provider/hub",
                 "/api/login",
                 "/api/logout" };
         http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
