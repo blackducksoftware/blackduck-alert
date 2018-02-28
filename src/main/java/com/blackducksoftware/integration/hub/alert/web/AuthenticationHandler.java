@@ -36,7 +36,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        final String[] allowedPaths = { "/", "/#", "/favicon.ico", "/h2/**", "/js/bundle.js", "/js/bundle.js.map", "index.html", "/api/configuration/provider/hub",
+        final String[] allowedPaths = { "/", "/#", "/favicon.ico", "/h2/**", "/js/bundle.js", "/js/bundle.js.map", "/js/style.css", "/js/style.css.map", "index.html", "/api/configuration/provider/hub",
                 "/api/login",
                 "/api/logout" };
         http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
