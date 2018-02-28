@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton, ButtonGroup } from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
@@ -7,9 +8,6 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
-
-import {ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton, ButtonGroup} from 'react-bootstrap-table';
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Index extends Component {
 	constructor(props) {

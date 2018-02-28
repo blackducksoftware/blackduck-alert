@@ -1,6 +1,7 @@
 const path = require('path');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 const srcDir = path.resolve(__dirname, 'src');
 const jsDir = path.resolve(srcDir, 'main', 'js');
@@ -9,57 +10,46 @@ const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static')
 
 module.exports = {
     entry: path.resolve(jsDir, 'Index'),
-    devtool: 'sourcemaps',
     output: {
         path: buildDir,
         filename: 'js/bundle.js',
         publicPath: '/'
     },
     module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ['es2015', 'react']
-                }
-            },
-            {
-                test: /\.(jpg|png|svg)$/,
-                use: [
-                    {
-                        loader: 'file-loader',
-                        options: {
-                            name: '[path][name].[ext]'
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.scss$/,
-                loader: ExtractTextPlugin.extract('css-loader!sass-loader')
-            },
-            {
-                test: /\.css$/,
-                include: /node_modules/,
-                loader: ExtractTextPlugin.extract('css-loader')
-            }, {
-                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-            }, {
-                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'file-loader'
+        rules: [{
+            test: /\.js$/,
+            exclude: /(node_modules)/,
+            loader: 'babel-loader'
+        }, {
+            test: /\.(jpg|png|svg)$/,
+            exclude: /(node_modules)/,
+            loader: 'file-loader',
+            options: {
+                name: '[path][name].[ext]'
             }
-        ]
+        }, {
+            test: /\.scss$/,
+            loader: ExtractTextPlugin.extract('css-loader!sass-loader')
+        }, {
+            test: /\.css$/,
+            include: /(node_modules)/,
+            loader: ExtractTextPlugin.extract('css-loader')
+        }, {
+            test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            loader: 'url-loader?limit=10000&mimetype=application/font-woff&name=fonts/[name].[ext]'
+        }, {
+            test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            loader: 'url-loader?limit=10000&name=fonts/[name].[ext]'
+        }]
     },
     plugins: [
         new HtmlWebpackPlugin({
             template: 'src/main/js/templates/index.html',
             xhtml: true
         }),
-        new ExtractTextPlugin('js/style.css', {
+        new ExtractTextPlugin('css/style.css', {
             allChunks: true
-        })
+        }),
+        new MinifyPlugin()
     ]
 };

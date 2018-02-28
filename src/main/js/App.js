@@ -9,6 +9,7 @@ import { getConfig } from './store/actions/config';
 import { verifyLogin } from "./store/actions/session";
 
 import '../css/main.scss';
+import 'font-awesome/scss/font-awesome.scss';
 
 class App extends Component {
 
