@@ -4,8 +4,6 @@ import {Link, NavLink, Route, withRouter} from "react-router-dom";
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 
-import { activeNav as activeNavItem, navigationLogo, navigation as navStyle, navHeader, logoutLink } from '../css/main.css';
-
 // TEMPORARY: This code belongs in Redux Action
 const logout = (evt) => {
     evt.stopPropagation();
@@ -13,7 +11,7 @@ const logout = (evt) => {
 
     fetch('/api/logout', {
         method: 'POST',
-        credentials: "same-origin",
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json'
         }
@@ -27,57 +25,57 @@ const logout = (evt) => {
 };
 
 const Navigation = () => (
-    <div className={navStyle}>
-        <div className={navigationLogo}>
+    <div className="navigation">
+        <div className="navigationLogo">
             <Logo />
         </div>
         <ul>
-            <li className={navHeader}>
+            <li className="navHeader">
                 Providers
             </li>
             <li>
-                <NavLink to="/providers/hub" activeClassName={activeNavItem}>
+                <NavLink to="/providers/hub" activeClassName="activeNav">
                     <FontAwesome name="laptop" fixedWidth={true} /> Hub
                 </NavLink>
             </li>
-            <li className={navHeader}>
+            <li className="navHeader">
                 Channels
             </li>
             <li>
-                <NavLink to="/channels/email" activeClassName={activeNavItem}>
+                <NavLink to="/channels/email" activeClassName="activeNav">
                     <FontAwesome name="envelope" fixedWidth={true} /> Email
                 </NavLink>
             </li>
             <li>
-                <NavLink to="/channels/hipchat" activeClassName={activeNavItem}>
+                <NavLink to="/channels/hipchat" activeClassName="activeNav">
                     <FontAwesome name="comments" fixedWidth={true} /> HipChat
                 </NavLink>
             </li>
             <li>
-                <NavLink to="/channels/slack" activeClassName={activeNavItem}>
+                <NavLink to="/channels/slack" activeClassName="activeNav">
                     <FontAwesome name="slack" fixedWidth={true} /> Slack
                 </NavLink>
             </li>
-            <li className={navHeader}>
+            <li className="navHeader">
                 General
             </li>
             <li>
-                <NavLink to="/general/scheduling" activeClassName={activeNavItem}>
+                <NavLink to="/general/scheduling" activeClassName="activeNav">
                     <FontAwesome name="clock-o" fixedWidth={true} /> Scheduling
                 </NavLink>
             </li>
             <li>
-                <NavLink to="/general/distribution" activeClassName={activeNavItem}>
+                <NavLink to="/general/distribution" activeClassName="activeNav">
                     <FontAwesome name="truck" fixedWidth={true} /> Distribution
                 </NavLink>
             </li>
             <li>
-                <NavLink to="/general/audit" activeClassName={activeNavItem}>
+                <NavLink to="/general/audit" activeClassName="activeNav">
                     <FontAwesome name="history" fixedWidth={true} /> Audit
                 </NavLink>
             </li>
 
-            <li className={logoutLink}>
+            <li className="logoutLink">
                 <a href="#" onClick={logout}>
                     <FontAwesome name="sign-out" fixedWidth={true} /> Logout
                 </a>
