@@ -1,21 +1,15 @@
 import React, { Component } from 'react';
 
-import {checkboxInput, fieldError} from '../../../css/field.css';
-
 export default class CheckboxInput extends Component {
-	constructor(props) {
-		super(props);
-	}
-
     render() {
         let errorDiv = null;
         if (this.props.errorName && this.props.errorValue) {
-            errorDiv = <p className={fieldError} name={this.props.errorName}>{this.props.errorValue}</p>;
+            errorDiv = <p className="fieldError" name={this.props.errorName}>{this.props.errorValue}</p>;
         }
 
         let inputClass = this.props.inputClass;
         if (!inputClass) {
-            inputClass = checkboxInput;
+            inputClass = "checkboxInput";
         }
 
         let isChecked = false;

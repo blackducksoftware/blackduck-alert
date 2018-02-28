@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { tableButton, editJobButton } from '../../../css/table.css';
-
 class EditTableCellFormatter extends Component {
     constructor(props) {
         super(props)
@@ -19,9 +17,9 @@ class EditTableCellFormatter extends Component {
         var buttonClass = this.props.buttonClass;
         
         if (buttonClass) {
-            buttonClass = `${buttonClass} ${tableButton}`;
+            buttonClass = `${buttonClass} tableButton`;
         } else {
-            buttonClass = `btn btn-link ${editJobButton}`;
+            buttonClass = `btn btn-link editJobButton`;
         }
 
         return (

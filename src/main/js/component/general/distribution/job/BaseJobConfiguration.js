@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import { typeAheadField } from '../../../../../css/field.css';
-
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 
@@ -326,7 +324,7 @@ class BaseJobConfiguration extends Component {
 						<div className="form-group">
 							<label className="col-sm-3 control-label">Frequency</label>
 							<div className="col-sm-8">
-								<Select className={typeAheadField}
+								<Select className="typeAheadField"
 									onChange={this.handleFrequencyChanged}
 									searchable={true}
 									options={this.state.frequencyOptions}
@@ -338,7 +336,7 @@ class BaseJobConfiguration extends Component {
 						<div className="form-group">
                             <label className="col-sm-3 control-label">Notification Types</label>
                             <div className="col-sm-8">
-								<Select className={typeAheadField}
+								<Select className="typeAheadField"
 									onChange={this.handleNotificationChanged}
 									searchable={true}
 									multi

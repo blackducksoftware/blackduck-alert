@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 
-import { inline } from '../../../../css/audit.css';
-import tableStyles from '../../../../css/table.css';
-
 import TextInput from '../../../field/input/TextInput';
 import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
@@ -13,8 +10,9 @@ import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 class Details extends Component {
 	constructor(props) {
 		super(props);
-		var currentEntry = props.currentEntry;
-		let values = {};
+
+		const { currentEntry } = props
+		const values = {};
 		values.notificationProjectName = currentEntry.notificationProjectName;
 		values.notificationProjectVersion = currentEntry.notificationProjectVersion;
 		values.components = currentEntry.components;
@@ -30,7 +28,6 @@ class Details extends Component {
 	}
 
 	getEventType() {
-		var eventType = null;
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (this.state.values.eventType === 'email_group_channel') {
@@ -44,39 +41,39 @@ class Details extends Component {
             cellText = "Slack";
 		}
 
-		eventType = <div className={inline} >
-						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
-						{cellText}
-					</div>;
+		const eventType = <div className="inline">
+			<span key="icon" className={fontAwesomeClass} aria-hidden='true'></span>
+				{cellText}
+			</div>;
 
 		return <LabeledField label="Event Type" field={eventType} />;
 	}
 
 
 	render(content) {
-		var notificationProjectVersion = null;
+		let notificationProjectVersion = null;
 		if (this.state.values.notificationProjectVersion) {
 			notificationProjectVersion = <TextInput label="Project Version" readOnly={true} name="notificationProjectVersion" value={this.state.values.notificationProjectVersion}></TextInput>;
 		}
-		var eventType = this.getEventType();
+		const eventType = this.getEventType();
 
-		var errorMessage = null;
+		let errorMessage = null;
 		if (this.state.values.errorMessage) {
 			errorMessage = <TextInput label="Error" readOnly={true} name="errorMessage" value={this.state.values.errorMessage}></TextInput>;
 		}
-		var errorStackTrace = null;
+		let errorStackTrace = null;
 		if (this.state.values.errorStackTrace) {
 			errorStackTrace = <TextArea label="Stack Trace" readOnly={true} name="errorStackTrace" value={this.state.values.errorStackTrace}></TextArea>;
 		}
 
 		return(
-			<div className={tableStyles.expandableContainer}>
+			<div className="expandableContainer">
 				{notificationProjectVersion}
 				{eventType}
-				<BootstrapTable data={this.state.values.components} containerClass={tableStyles.auditDetailsTable} striped condensed trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.auditDetailsTableBody} >
-                    <TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName={tableStyles.tableCell}>Component</TableHeaderColumn>
-                    <TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName={tableStyles.tableCell}>Version</TableHeaderColumn>
-                    <TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName={tableStyles.tableCell}>Policy Rule</TableHeaderColumn>
+				<BootstrapTable data={this.state.values.components} containerClass="auditDetailsTable" striped condensed trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="auditDetailsTableBody">
+                    <TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName="tableCell">Component</TableHeaderColumn>
+                    <TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName="tableCell">Version</TableHeaderColumn>
+                    <TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName="tableCell">Policy Rule</TableHeaderColumn>
                 </BootstrapTable>
 				{errorMessage}
 				{errorStackTrace}

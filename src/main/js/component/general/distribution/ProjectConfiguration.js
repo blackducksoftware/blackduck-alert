@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import CheckboxInput from '../../../field/input/CheckboxInput';
 
-import tableStyles from '../../../../css/table.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 export default class ProjectConfiguration extends Component {
@@ -55,14 +53,14 @@ export default class ProjectConfiguration extends Component {
     }
 
     assignClassName(row, rowIdx) {
-        return `${tableStyles.tableRow}`;
+        return `tableRow`;
     }
 
     assignDataFormat(cell, row) {
         let cellContent;
         if(row.missing) {
             let fontAwesomeClass = `fa fa-exclamation-triangle fa-fw`;
-            cellContent = <span className="missingHubData"><i className={fontAwesomeClass} aria-hidden='true'></i>{ row.name }</span>;
+            cellContent = <span className="missingHubData"><span className={fontAwesomeClass} aria-hidden='true'></span>{ row.name }</span>;
         } else {
             cellContent = row.name;
         }
@@ -120,8 +118,8 @@ export default class ProjectConfiguration extends Component {
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                <BootstrapTable data={projectData} containerClass={tableStyles.table} striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.projectTableScrollableBody} >
-                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName={tableStyles.tableCell} dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
+                <BootstrapTable data={projectData} containerClass="table" striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
+                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
                 {progressIndicator}
