@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 
 @RestController
-@RequestMapping(GlobalConfigController.GLOBAL_PATH + "/hipchat")
+@RequestMapping(GlobalConfigController.CHANNEL_PATH + "/hipchat")
 public class GlobalHipChatConfigController extends GlobalConfigController<GlobalHipChatConfigRestModel> {
     private final CommonConfigHandler<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> commonConfigHandler;
 

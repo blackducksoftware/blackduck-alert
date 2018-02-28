@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 
 @RestController
-@RequestMapping(GlobalConfigController.GLOBAL_PATH + "/email")
+@RequestMapping(GlobalConfigController.CHANNEL_PATH + "/email")
 public class GlobalEmailConfigController extends GlobalConfigController<GlobalEmailConfigRestModel> {
     private final CommonConfigHandler<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepositoryWrapper> commonConfigHandler;
 

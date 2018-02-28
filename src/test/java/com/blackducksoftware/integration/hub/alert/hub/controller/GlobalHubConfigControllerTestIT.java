@@ -58,7 +58,7 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
 
     @Override
     public String getRestControllerUrl() {
-        return "/configuration/global";
+        return "/configuration/provider/hub";
     }
 
     @Test

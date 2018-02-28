@@ -35,7 +35,7 @@ public class GlobalEmailConfigControllerTestIT extends GlobalControllerTest<Glob
 
     @Override
     public String getRestControllerUrl() {
-        return "/configuration/global/email";
+        return "/configuration/channel/email";
     }
 
     @Override

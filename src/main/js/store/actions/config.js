@@ -9,8 +9,8 @@ import {
     CONFIG_TEST_FAILED
 } from './types';
 
-const CONFIG_URL = '/api/configuration/global';
-const TEST_URL = '/api/configuration/global/test';
+const CONFIG_URL = '/api/configuration/provider/hub';
+const TEST_URL = '/api/configuration/provider/hub/test';
 
 function scrubConfig(config) {
     return {
