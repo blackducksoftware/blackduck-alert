@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {typeAheadField} from '../../../../../css/field.css';
-
 import TextInput from '../../../../field/input/TextInput';
 import CheckboxInput from '../../../../field/input/CheckboxInput';
 
@@ -63,7 +61,7 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
             <div className="form-group">
                 <label className="col-sm-3 control-label">Color</label>
                 <div className="col-sm-8">
-                    <Select className={typeAheadField}
+                    <Select className="typeAheadField"
                       onChange={this.handleColorChanged}
                         searchable={true}
                         options={this.state.colorOptions}

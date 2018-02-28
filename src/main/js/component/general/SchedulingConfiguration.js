@@ -8,7 +8,6 @@ import ConfigButtons from '../common/ConfigButtons';
 import GeneralButton from '../../field/input/GeneralButton';
 
 import { dailyDigestOptions, purgeOptions } from "../../util/scheduling-data";
-import { fieldError, accumulatorTypeAheadField} from '../../../css/field.css';
 
 import Select from 'react-select-2';
 import 'react-select-2/dist/css/react-select-2.css';
@@ -124,7 +123,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-3 control-label">Daily Digest Frequency</label>
                         <div className="col-sm-8">
                             <Select
-								className={accumulatorTypeAheadField}
+								className="accumulatorTypeAheadField"
 								onChange={this.handleDailyDigestChanged}
 								searchable={true}
 								options={dailyDigestOptions}
@@ -133,7 +132,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
 						{ errorFields && errorFields.dailyDigestHourOfDay &&
                         	<div className="col-sm-offset-3 col-sm-8">
-								<p className={fieldError}>{errorFields.dailyDigestHourOfDay}</p>
+								<p className="fieldError">{errorFields.dailyDigestHourOfDay}</p>
                         	</div> }
                     </div>
 
@@ -148,7 +147,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-3 control-label">Notification Purge Frequency</label>
                         <div className="col-sm-8">
                             <Select
-								className={accumulatorTypeAheadField}
+								className="accumulatorTypeAheadField"
 								onChange={this.handlePurgeChanged}
 								searchable={true}
 								options={purgeOptions}
@@ -157,7 +156,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
                         { errorFields && errorFields.purgeDataFrequencyDays &&
                         <div className="col-sm-offset-3 col-sm-8">
-                            <p className={fieldError}>{errorFields.purgeDataFrequencyDays}</p>
+                            <p className="fieldError">{errorFields.purgeDataFrequencyDays}</p>
                         </div> }
                     </div>
 

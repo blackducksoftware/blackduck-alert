@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { typeAheadField, fieldError } from '../../../../../css/field.css';
+import { typeAheadField, fieldError } from '../../../../../css/field.scss';
 import TextInput from '../../../../field/input/TextInput';
 
 import Select from 'react-select-2';
@@ -79,49 +79,29 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     }
 
     renderOption(option) {
-        let classAttribute;
-
         if(option.missing) {
             return (
                 <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden='true'></span>{option.label}</span>
             );
-        } else {
-            return (
-                <span>{option.label}</span>
-            );
         }
+
+        return (
+            <span>{option.label}</span>
+        );
     }
 
 	render() {
         const { groupOptions } = this.state;
-        const groupName = this.state.values['groupName'];
-        let options;
-        if(groupOptions) {
-            options = groupOptions;
-        } else {
-            options = new Array();
-        }
-
-		let errorDiv = null;
-		if (this.props.groupError) {
-			errorDiv = <p className={fieldError} name="groupError">{this.props.groupError}</p>;
-		}
-
-		var progressIndicator = null;
-		if (this.props.waitingForGroups) {
-        	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-			progressIndicator = <div className={inline}>
-									<i className={fontAwesomeIcon} aria-hidden='true'></i>
-								</div>;
-		}
-		let content =
+        const { groupName } = this.state.values;
+        const options = groupOptions || [];
+		const content =
 					<div>
                         <TextInput label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError}></TextInput>
 
                         <div className="form-group">
                             <label className="col-sm-3 control-label">Group</label>
                             <div className="col-sm-8">
-                                <Select className={typeAheadField}
+                                <Select className="typeAheadField"
                                     onChange={this.handleGroupsChanged}
                                     clearble={true}
                                     options={options}
@@ -133,11 +113,15 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
                                   />
                             </div>
                         </div>
-						  {progressIndicator}
-						  {errorDiv}
+						  { this.props.waitingForGroups && <div className="inline">
+                              <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden></span>
+                          </div> }
+
+						  { this.props.groupError && <p className="fieldError" name="groupError">
+                              { this.props.groupError }
+                          </p> }
 					</div>;
-		var renderResult =  super.render(content);
-		return renderResult;
+		return super.render(content);
 	}
 };
 

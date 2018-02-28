@@ -39,19 +39,6 @@ module.exports = {
                 }]
             }, {
                 test: /\.css$/,
-                exclude: /node_modules/,
-                use: [{
-                    loader: 'style-loader'
-                }, {
-                    loader: 'css-loader',
-                    options: {
-                        modules: true,
-                        importLoaders: 1,
-                        localIdentName: '[name]__[local]___[hash:base64:5]'
-                    }
-                }]
-            }, {
-                test: /\.css$/,
                 include: /node_modules/,
                 use: [{
                     loader: 'style-loader'

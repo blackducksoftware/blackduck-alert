@@ -1,8 +1,7 @@
 import React from 'react';
-import {blackduckLogo} from '../../../css/header.css';
 
 const Logo = () => (
-    <div className={blackduckLogo}>
+    <div className="blackduckLogo">
         <svg width="150px" height="17px" viewBox="0 0 150 17" version="1.1">
             <defs>
                 <polygon id="1path-2"

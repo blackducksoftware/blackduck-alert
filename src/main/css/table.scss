@@ -1,3 +1,6 @@
+.react-bs-table-bordered {
+    border-radius: 2px !important;
+}
 .statusSuccess {
 	color: #3c763d;
 }
@@ -21,12 +24,24 @@
 }
 
 .addJobButton {
-	composes: tableButton;
+    cursor: pointer;
+    color: #fff;
+    display: inline-block;
+    border: 1px solid transparent;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
     background-color: #285f8f;
 }
 
 .deleteJobButton {
-	composes: tableButton;
+    cursor: pointer;
+    color: #fff;
+    display: inline-block;
+    border: 1px solid transparent;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 13px;
     background-color: #ef4923;
 }
 
@@ -47,7 +62,7 @@
 }
 
 .tableEvenRow {
-    composes: tableRow;
+    cursor: pointer;
     background-color: #f9f9f9;
 }
 
@@ -62,13 +77,17 @@
 }
 
 .projectTableScrollableBody {
-    composes: scrollable;
+    position: relative;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     height: 200px !important;
     width: 100%;
 }
 
 .tableScrollableBody {
-    composes: scrollable;
+    position: relative;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     height: 55vh !important;
     width: 100%;
 }
@@ -81,12 +100,14 @@
 }
 
 .auditDetailsTable {
-    composes: table;
+    width: 100%;
     margin-left: 10px;
     margin-right: 5px;
 }
 
 .auditDetailsTableBody {
-    composes: scrollable;
+    position: relative;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
     height: 150px !important;
 }
