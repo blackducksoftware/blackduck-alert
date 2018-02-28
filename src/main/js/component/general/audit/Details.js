@@ -5,7 +5,6 @@ import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
 
 import {ReactBsTable, BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 class Details extends Component {
 	constructor(props) {

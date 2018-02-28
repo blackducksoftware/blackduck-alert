@@ -14,50 +14,30 @@ module.exports = {
         publicPath: '/'
     },
     module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /(node_modules)/,
-                loader: 'babel-loader'
-            }, {
-                test: /\.(jpg|png|svg)$/,
-                use: [{
-                    loader: 'file-loader',
-                    options: {
-                        name: '[path][name].[ext]'
-                    }
-                }]
-            }, {
-                test: /\.scss$/,
-                exclude: /(node_modules)/,
-                use: [{
-                    loader: "style-loader" // creates style nodes from JS strings
-                }, {
-                    loader: "css-loader" // translates CSS into CommonJS
-                }, {
-                    loader: "sass-loader" // compiles Sass to CSS
-                }]
-            }, {
-                test: /\.css$/,
-                include: /node_modules/,
-                use: [{
-                    loader: 'style-loader'
-                }, {
-                    loader: 'css-loader',
-                    options: {
-                        modules: true,
-                        importLoaders: 1,
-                        localIdentName: '[local]'
-                    }
-                }]
-            }, {
-                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'url-loader?limit=10000&mimetype=application/font-woff'
-            }, {
-                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-                loader: 'file-loader'
+        rules: [{
+            test: /\.js$/,
+            exclude: /(node_modules)/,
+            loader: 'babel-loader'
+        }, {
+            test: /\.(jpg|png|svg)$/,
+            loader: 'file-loader',
+            options: {
+                name: '[path][name].[ext]'
             }
-        ]
+        }, {
+            test: /\.scss$/,
+            use: [ "style-loader", "css-loader", "sass-loader" ]
+        }, {
+            test: /\.css$/,
+            include: /(node_modules)/,
+            use: [ 'style-loader', 'css-loader' ]
+        }, {
+            test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+        }, {
+            test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            loader: 'file-loader'
+        }]
     },
     plugins: [new HtmlWebpackPlugin({
         template: 'src/main/js/templates/index.html'
