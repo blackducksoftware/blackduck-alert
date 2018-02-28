@@ -42,7 +42,7 @@ public class GlobalHipChatConfigControllerTestIT extends GlobalControllerTest<Gl
 
     @Override
     public String getRestControllerUrl() {
-        return "/configuration/global/hipchat";
+        return "/configuration/channel/hipchat";
     }
 
     @Override

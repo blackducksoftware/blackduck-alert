@@ -7,7 +7,7 @@ import {
     EMAIL_CONFIG_HIDE_ADVANCED
 } from './types';
 
-const CONFIG_URL = '/api/configuration/global/email';
+const CONFIG_URL = '/api/configuration/channel/email';
 
 function scrubConfig(config) {
     return {

@@ -9,8 +9,8 @@ import {
     HIPCHAT_CONFIG_TEST_FAILED
 } from './types';
 
-const CONFIG_URL = '/api/configuration/global/hipchat';
-const TEST_URL = '/api/configuration/global/hipchat/test';
+const CONFIG_URL = '/api/configuration/channel/hipchat';
+const TEST_URL = '/api/configuration/channel/hipchat/test';
 
 function scrubConfig(config) {
     return {

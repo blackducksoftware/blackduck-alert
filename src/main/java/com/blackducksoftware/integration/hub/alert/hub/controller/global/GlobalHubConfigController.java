@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonGlobalConfigHandler;
 
 @RestController
-@RequestMapping(GlobalConfigController.GLOBAL_PATH)
+@RequestMapping(GlobalConfigController.PROVIDER_PATH + "/hub")
 public class GlobalHubConfigController extends GlobalConfigController<GlobalHubConfigRestModel> {
     private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> commonConfigHandler;
 
