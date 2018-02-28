@@ -26,43 +26,18 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 
 public class LoginRestModel extends ConfigRestModel {
-    private String hubUrl;
-    private String hubTimeout;
     private String hubUsername;
-    private String hubProxyHost;
-    private String hubProxyPort;
-    private String hubProxyUsername;
-    private String hubAlwaysTrustCertificate;
 
     @SensitiveField
     private String hubPassword;
 
-    @SensitiveField
-    private String hubProxyPassword;
-
     public LoginRestModel() {
     }
 
-    public LoginRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubUsername, final String hubPassword, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
-            final String hubProxyPassword, final String hubAlwaysTrustCertificate) {
-        super(id);
-        this.hubUrl = hubUrl;
-        this.hubTimeout = hubTimeout;
+    public LoginRestModel(final String hubUsername, final String hubPassword) {
+        super("1L");
         this.hubUsername = hubUsername;
         this.hubPassword = hubPassword;
-        this.hubProxyHost = hubProxyHost;
-        this.hubProxyPort = hubProxyPort;
-        this.hubProxyUsername = hubProxyUsername;
-        this.hubProxyPassword = hubProxyPassword;
-        this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
-    }
-
-    public String getHubUrl() {
-        return hubUrl;
-    }
-
-    public String getHubTimeout() {
-        return hubTimeout;
     }
 
     public String getHubUsername() {
@@ -71,26 +46,6 @@ public class LoginRestModel extends ConfigRestModel {
 
     public String getHubPassword() {
         return hubPassword;
-    }
-
-    public String getHubProxyHost() {
-        return hubProxyHost;
-    }
-
-    public String getHubProxyPort() {
-        return hubProxyPort;
-    }
-
-    public String getHubProxyUsername() {
-        return hubProxyUsername;
-    }
-
-    public String getHubProxyPassword() {
-        return hubProxyPassword;
-    }
-
-    public String getHubAlwaysTrustCertificate() {
-        return hubAlwaysTrustCertificate;
     }
 
 }

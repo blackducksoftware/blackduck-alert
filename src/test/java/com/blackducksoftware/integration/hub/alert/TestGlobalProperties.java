@@ -42,6 +42,9 @@ public class TestGlobalProperties extends GlobalProperties {
         this.hubTimeout = hubTimeout;
 
         testProperties = new TestProperties();
+        setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)));
+        setHubTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+        setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
     }
 
     public void setHubTimeout(final Integer hubTimeout) {

@@ -30,6 +30,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -47,6 +48,8 @@ public class LoginControllerTestIT {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
+    @Autowired
+    protected GlobalProperties globalProperties;
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
@@ -66,16 +69,13 @@ public class LoginControllerTestIT {
 
     @Test
     public void testLogin() throws Exception {
+
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
         final TestProperties testProperties = new TestProperties();
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
-        mockLoginRestModel.setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         mockLoginRestModel.setHubUsername(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
-        mockLoginRestModel.setHubTimeout(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT));
-        mockLoginRestModel.setHubProxyHost("");
-        mockLoginRestModel.setHubProxyPassword("");
-        mockLoginRestModel.setHubProxyPort("");
-        mockLoginRestModel.setHubProxyUsername("");
+        globalProperties.setHubTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+        globalProperties.setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         final String restModel = mockLoginRestModel.getRestModelJson();
         final JsonParser parser = new JsonParser();
         final JsonObject jsonRestModel = parser.parse(restModel).getAsJsonObject();
