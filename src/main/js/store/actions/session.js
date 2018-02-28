@@ -52,14 +52,6 @@ function loginError(errorMessage, errors) {
     };
 }
 
-export function toggleAdvancedOptions(toggle) {
-    if(toggle) {
-        return { type: SESSION_SHOW_ADVANCED };
-    } else {
-        return { type: SESSION_HIDE_ADVANCED };
-    }
-}
-
 export function verifyLogin() {
     return (dispatch) => {
         dispatch(initializing());
@@ -78,21 +70,13 @@ export function verifyLogin() {
     };
 }
 
-export function login(url, username, password) {
+export function login(username, password) {
     return (dispatch) => {
         dispatch(loggingIn());
 
         const body = {
             hubUsername: username,
-            hubPassword: password,
-            hubUrl: url,
-            hubTimeout: 60,
-            hubAlwaysTrustCertificate: true,
-            hubApiKeyIsSet: false,
-            hubProxyHost: '',
-            hubProxyPasswordIsSet: false,
-            hubProxyPort: '',
-            hubProxyUsername: ''
+            hubPassword: password
         };
 
         fetch('/api/login', {

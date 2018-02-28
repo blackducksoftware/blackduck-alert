@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,6 +40,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
@@ -56,23 +58,28 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class LoginActions {
 
+    final GlobalProperties globalProperties;
+
+    @Autowired
+    public LoginActions(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
+    }
+
     public boolean authenticateUser(final LoginRestModel loginRestModel, final IntLogger logger) throws IntegrationException {
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(logger);
-        serverConfigBuilder.setHubUrl(loginRestModel.getHubUrl());
+        serverConfigBuilder.setHubUrl(globalProperties.getHubUrl());
+        serverConfigBuilder.setTimeout(HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
+        if (globalProperties.getHubTrustCertificate() != null) {
+            serverConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
+        }
+        serverConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
+        serverConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
+        serverConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
+        serverConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
+
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
-        if (StringUtils.isBlank(loginRestModel.getHubTimeout())) {
-            serverConfigBuilder.setTimeout(String.valueOf(HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS));
-        } else {
-            serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
-        }
-
-        serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(loginRestModel.getHubAlwaysTrustCertificate()));
-        serverConfigBuilder.setProxyHost(loginRestModel.getHubProxyHost());
-        serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
-        serverConfigBuilder.setProxyUsername(loginRestModel.getHubProxyUsername());
-        serverConfigBuilder.setProxyPassword(loginRestModel.getHubProxyPassword());
 
         validateHubConfiguration(serverConfigBuilder);
         final RestConnection restConnection = createRestConnection(serverConfigBuilder);

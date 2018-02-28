@@ -78,7 +78,8 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
         final GlobalHubConfigEntity databaseEntity = getGlobalEntityMockUtil().createGlobalEntity();
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
-
+        globalProperties.setHubTrustCertificate(null);
+        globalProperties.setHubUrl(null);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
         final GlobalHubConfigRestModel defaultRestModel = objectTransformer.databaseEntityToConfigRestModel(databaseEntity, GlobalHubConfigRestModel.class);

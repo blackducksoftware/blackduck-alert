@@ -27,8 +27,10 @@ import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
@@ -49,16 +51,8 @@ public class LoginActionsTestIT {
     public void init() throws IOException {
         outputLogger = new OutputLogger();
 
-        mockLoginRestModel.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
-        mockLoginRestModel.setHubTimeout(properties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT));
         mockLoginRestModel.setHubUsername(properties.getProperty(TestPropertyKey.TEST_USERNAME));
         mockLoginRestModel.setHubPassword(properties.getProperty(TestPropertyKey.TEST_PASSWORD));
-        mockLoginRestModel.setHubAlwaysTrustCertificate(properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT));
-
-        mockLoginRestModel.setHubProxyHost("");
-        mockLoginRestModel.setHubProxyPassword("");
-        mockLoginRestModel.setHubProxyPort("");
-        mockLoginRestModel.setHubProxyUsername("");
     }
 
     @After
@@ -68,7 +62,7 @@ public class LoginActionsTestIT {
 
     @Test
     public void authenticateUserTestIT() throws IntegrationException {
-        final LoginActions loginActions = new LoginActions();
+        final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
 
         Assert.assertTrue(userAuthenticated);
@@ -77,7 +71,7 @@ public class LoginActionsTestIT {
     @Test
     public void testAuthenticateUserFailIT() throws IntegrationException, IOException {
         mockLoginRestModel.setHubUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions();
+        final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
 
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
 
@@ -88,20 +82,16 @@ public class LoginActionsTestIT {
     @Test
     public void testIsUserValidFailIT() throws IntegrationException, IOException {
         final LoginRestModel loginRestModel = mockLoginRestModel.createRestModel();
-
+        final GlobalProperties globalProperties = new TestGlobalProperties();
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(new Slf4jIntLogger(logger));
-        serverConfigBuilder.setHubUrl(loginRestModel.getHubUrl());
+        serverConfigBuilder.setHubUrl(globalProperties.getHubUrl());
+        serverConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
+        serverConfigBuilder.setTimeout(globalProperties.getHubTimeout());
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
-        serverConfigBuilder.setTimeout(loginRestModel.getHubTimeout());
-        serverConfigBuilder.setAlwaysTrustServerCertificate(Boolean.valueOf(loginRestModel.getHubAlwaysTrustCertificate()));
-        serverConfigBuilder.setProxyHost(loginRestModel.getHubProxyHost());
-        serverConfigBuilder.setProxyPort(loginRestModel.getHubProxyPort());
-        serverConfigBuilder.setProxyUsername(loginRestModel.getHubProxyUsername());
-        serverConfigBuilder.setProxyPassword(loginRestModel.getHubProxyPassword());
 
-        final LoginActions loginActions = new LoginActions();
+        final LoginActions loginActions = new LoginActions(globalProperties);
 
         final RestConnection restConnection = loginActions.createRestConnection(serverConfigBuilder);
 
@@ -112,8 +102,8 @@ public class LoginActionsTestIT {
 
     @Test
     public void testValidateHubConfigurationException() {
-        mockLoginRestModel.setHubProxyHost("break it");
-        final LoginActions loginActions = new LoginActions();
+        mockLoginRestModel.setHubUsername(null);
+        final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
 
         try {
             loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
