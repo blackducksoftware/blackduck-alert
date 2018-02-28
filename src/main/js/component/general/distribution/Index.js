@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import tableStyles from '../../../../css/table.css';
-
 import AutoRefresh from '../../common/AutoRefresh';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
@@ -185,13 +183,13 @@ class Index extends Component {
     statusColumnClassNameFormat(fieldValue, row, rowIdx, colIdx) {
 		var className = null;
 		if (fieldValue === 'Pending') {
-			className = tableStyles.statusPending;
+			className = "statusPending";
 		} else if (fieldValue === 'Success') {
-			className = tableStyles.statusSuccess;
+			className = "statusSuccess";
 		} else if (fieldValue === 'Failure') {
-			className = tableStyles.statusFailure;
+			className = "statusFailure";
 		}
-		className = `${className} ${tableStyles.tableCell}`
+		className = `${className} tableCell`
 		return className;
 	}
 
@@ -338,12 +336,12 @@ class Index extends Component {
 
 
 	createCustomButtonGroup(buttons) {
-		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
-		let fontAwesomeIcon = `fa fa-refresh fa-fw`;
-		let insertOnClick = buttons.insertBtn.props.onClick;
-		let deleteOnClick = buttons.deleteBtn.props.onClick;
-		let reloadEntries = () => this.reloadPage();
-		let refreshButton= null;
+		const classes = `btn btn-info react-bs-table-add-btn tableButton`;
+        const fontAwesomeIcon = `fa fa-refresh fa-fw`;
+        const insertOnClick = buttons.insertBtn.props.onClick;
+        const deleteOnClick = buttons.deleteBtn.props.onClick;
+        const reloadEntries = () => this.reloadPage();
+		let refreshButton = null;
 		if (!this.state.autoRefresh) {
 			refreshButton =  <div className={classes} onClick={reloadEntries} >
 					 			<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
@@ -351,8 +349,8 @@ class Index extends Component {
 		}
 	    return (
 	      <div>
-	      	<InsertButton className={tableStyles.addJobButton} onClick={insertOnClick}/>
-	      	<DeleteButton className={tableStyles.deleteJobButton} onClick={deleteOnClick}/>
+	      	<InsertButton className="addJobButton" onClick={insertOnClick}/>
+	      	<DeleteButton className="deleteJobButton" onClick={deleteOnClick}/>
 	      	{refreshButton}
 	      </div>
 	    );
@@ -385,14 +383,14 @@ class Index extends Component {
                                 </div>;
         }
 		var content = <div>
-						<BootstrapTable striped condensed data={this.state.jobs} containerClass={tableStyles.table} insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName={tableStyles.tableRow} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable striped condensed data={this.state.jobs} containerClass="table" insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName="tableRow" headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
 	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName={tableStyles.tableCell} >Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName={tableStyles.tableCell}>Last Run</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName="tableCell" dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' width='48' columnClassName={tableStyles.tableCell} dataFormat={ this.editButtonClick }></TableHeaderColumn>
+                            <TableHeaderColumn dataField='' width='48' columnClassName="tableCell" dataFormat={ this.editButtonClick }></TableHeaderColumn>
 	  					</BootstrapTable>
 	  					{progressIndicator}
 	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>

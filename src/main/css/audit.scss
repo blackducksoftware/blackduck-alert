@@ -4,37 +4,44 @@
 }
 
 .highVulnerability {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #9c251f;
 }
 
 .mediumVulnerability {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #e78c87;
 }
 
 .lowVulnerability {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #999;
 }
 
 .vulnerability {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: rgb(221, 221, 221);
 }
 
 .policyViolationCleared {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #3c763d;
 }
 
 .policyViolationOverride {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #444;
 }
 
 .policyViolation {
-	composes: notification;
+	padding-left: 3px;
+	padding-right: 3px;
 	color: #a94442;
 }
 
@@ -42,13 +49,12 @@
 	display: inline-block;
 }
 
-
 .legendContainer {
-	border: #e6e6e6 1px solid;
+	border: 1px solid #e6e6e6;
 	width: fit-content;
 }
 
 .legendDescription {
-	composes: inline;
+	display: inline-block;
 	width: 150px;
 }

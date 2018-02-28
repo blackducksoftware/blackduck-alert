@@ -42,37 +42,8 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                exclude: /node_modules/,
-                use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true,
-                            importLoaders: 1,
-                            localIdentName: '[name]__[local]___[hash:base64:5]'
-                        }
-                    }
-                ]
-            },
-            {
-                test: /\.css$/,
                 include: /node_modules/,
-                use: [
-                    {
-                        loader: 'style-loader'
-                    },
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            modules: true,
-                            importLoaders: 1,
-                            localIdentName: '[local]'
-                        }
-                    }
-                ]
+                loader: ExtractTextPlugin.extract('css-loader')
             }, {
                 test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
                 loader: 'url-loader?limit=10000&mimetype=application/font-woff'
@@ -84,7 +55,8 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: 'src/main/js/templates/index.html'
+            template: 'src/main/js/templates/index.html',
+            xhtml: true
         }),
         new ExtractTextPlugin('js/style.css', {
             allChunks: true
