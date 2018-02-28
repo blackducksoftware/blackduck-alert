@@ -57,8 +57,8 @@ class HipChatConfiguration extends React.Component {
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
+                <h1>Channels / HipChat</h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-                    <h1>Channels / HipChat</h1>
 
                     { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                         <div>Test was successful!</div>

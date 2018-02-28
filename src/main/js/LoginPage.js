@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from "react-redux";
 import CheckboxInput from './field/input/CheckboxInput';
@@ -11,9 +11,7 @@ import SubmitButton from './field/input/SubmitButton';
 import ReadOnlyField from './field/ReadOnlyField';
 import Header from './component/common/Header';
 
-import { toggleAdvancedOptions, loggingIn, loggedIn, login } from './store/actions/session';
-
-import styles from '../css/main.css';
+import {loggedIn, loggingIn, login, toggleAdvancedOptions} from './store/actions/session';
 
 class LoginPage extends Component {
 
@@ -49,7 +47,7 @@ class LoginPage extends Component {
 		var progressIndicator = null;
 		if (this.props.loggingIn) {
         	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-			progressIndicator = <div className={styles.progressIcon}>
+			progressIndicator = <div className="progressIcon">
 									<i className={fontAwesomeIcon} aria-hidden='true'></i>
 								</div>;
 		}
@@ -58,11 +56,11 @@ class LoginPage extends Component {
 		const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
 
 		return (
-				<div className={styles.wrapper}>
-					<div className={styles.loginContainer}>
-						<div className={styles.loginBox}>
+				<div className="wrapper">
+					<div className="loginContainer">
+						<div className="loginBox">
                             <Header />
-							<form method='POST' className={`form-horizontal ${styles.loginForm}`} onSubmit={this.handleSubmit}>
+							<form method='POST' className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
 								{ this.props.errorMessage && <div className="alert alert-danger">
 									<p name="configurationMessage">{this.props.errorMessage}</p>
 								</div> }

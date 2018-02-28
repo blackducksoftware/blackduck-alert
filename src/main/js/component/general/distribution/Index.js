@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 
-import {progressIcon, fontAwesomeLabel, refreshCheckbox} from '../../../../css/main.css';
-
 import tableStyles from '../../../../css/table.css';
 
+import AutoRefresh from '../../common/AutoRefresh';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
@@ -200,13 +199,13 @@ class Index extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (cell === 'email_group_channel') {
-			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-envelope fa-fw`;
             cellText = "Group Email";
 		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-comments fa-fw`;
             cellText = "HipChat";
 		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-slack fa-fw`;
             cellText = "Slack";
 		}
 
@@ -319,11 +318,11 @@ class Index extends Component {
 		if (currentRowSelected != null) {
             const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentRowSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration buttonsFixed={true} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
@@ -340,7 +339,7 @@ class Index extends Component {
 
 	createCustomButtonGroup(buttons) {
 		let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
-		let fontAwesomeIcon = `fa fa-refresh ${fontAwesomeLabel}`;
+		let fontAwesomeIcon = `fa fa-refresh fa-fw`;
 		let insertOnClick = buttons.insertBtn.props.onClick;
 		let deleteOnClick = buttons.deleteBtn.props.onClick;
 		let reloadEntries = () => this.reloadPage();
@@ -381,7 +380,7 @@ class Index extends Component {
 		var progressIndicator = null;
         if (this.state.inProgress) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className={progressIcon}>
+            progressIndicator = <div className="progressIcon">
                                     <span className={fontAwesomeIcon} aria-hidden='true'></span>
                                 </div>;
         }
@@ -407,7 +406,10 @@ class Index extends Component {
                     <h1>
                         General / Distribution
                         <small className="pull-right">
-                            <label className={refreshCheckbox}><input name="autoRefresh" type="checkbox" checked={this.state.autoRefresh} onChange={this.handleAutoRefreshChange} /> Enable Auto-Refresh</label>
+                            <AutoRefresh
+								autoRefresh={this.state.autoRefresh}
+								handleAutoRefreshChange={this.handleAutoRefreshChange}
+							/>
                         </small>
                     </h1>
 					{content}

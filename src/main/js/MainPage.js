@@ -11,17 +11,14 @@ import SlackConfiguration from "./component/channels/SlackConfiguration";
 import HubConfiguration from "./component/providers/HubConfiguration";
 import HipChatConfiguration from "./component/channels/HipChatConfiguration";
 
-import styles from '../css/main.css';
-
 const MainPage = () => (
     <div>
         <Navigation />
-        <div className={styles.contentArea}>
+        <div className="contentArea">
             <Route path="/providers/hub" component={HubConfiguration} />
             <Route path="/channels/email" component={EmailConfiguration} />
             <Route path="/channels/hipchat" component={HipChatConfiguration} />
             <Route path="/channels/slack" component={SlackConfiguration} />
-
             <Route path="/general/scheduling" component={SchedulingConfiguration} />
             <Route path="/general/distribution" component={DistributionConfiguration} />
             <Route path="/general/audit" component={Audit} />

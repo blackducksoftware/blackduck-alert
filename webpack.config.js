@@ -1,4 +1,5 @@
-var path = require('path');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const srcDir = path.resolve(__dirname, 'src');
@@ -34,6 +35,10 @@ module.exports = {
                         }
                     }
                 ]
+            },
+            {
+                test: /\.scss$/,
+                loader: ExtractTextPlugin.extract('css-loader!sass-loader')
             },
             {
                 test: /\.css$/,
@@ -77,7 +82,12 @@ module.exports = {
             }
         ]
     },
-    plugins: [new HtmlWebpackPlugin({
-        template: 'src/main/js/templates/index.html'
-    })]
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: 'src/main/js/templates/index.html'
+        }),
+        new ExtractTextPlugin('js/style.css', {
+            allChunks: true
+        })
+    ]
 };

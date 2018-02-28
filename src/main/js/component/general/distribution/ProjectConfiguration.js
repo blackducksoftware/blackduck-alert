@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 
-import tableStyles from '../../../../css/table.css';
-import { progressIcon, missingHubData, fontAwesomeLabel } from '../../../../css/main.css';
-
+import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import CheckboxInput from '../../../field/input/CheckboxInput';
 
-import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import tableStyles from '../../../../css/table.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
 export default class ProjectConfiguration extends Component {
@@ -63,8 +61,8 @@ export default class ProjectConfiguration extends Component {
     assignDataFormat(cell, row) {
         let cellContent;
         if(row.missing) {
-            let fontAwesomeClass = `fa fa-exclamation-triangle ${fontAwesomeLabel}`;
-            cellContent = <span className={missingHubData}><i className={fontAwesomeClass} aria-hidden='true'></i>{ row.name }</span>;
+            let fontAwesomeClass = `fa fa-exclamation-triangle fa-fw`;
+            cellContent = <span className="missingHubData"><i className={fontAwesomeClass} aria-hidden='true'></i>{ row.name }</span>;
         } else {
             cellContent = row.name;
         }
@@ -114,7 +112,7 @@ export default class ProjectConfiguration extends Component {
         var progressIndicator = null;
         if (this.props.waitingForProjects) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className={progressIcon}>
+            progressIndicator = <div className="progressIcon">
                 <i className={fontAwesomeIcon} aria-hidden='true'></i>
             </div>;
         }

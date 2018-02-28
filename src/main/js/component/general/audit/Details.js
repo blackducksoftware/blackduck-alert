@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import { fontAwesomeLabel } from '../../../../css/main.css';
 import { inline } from '../../../../css/audit.css';
 import tableStyles from '../../../../css/table.css';
 
@@ -35,13 +34,13 @@ class Details extends Component {
 		let fontAwesomeClass = "";
         let cellText = '';
 		if (this.state.values.eventType === 'email_group_channel') {
-			fontAwesomeClass = `fa fa-envelope ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-envelope fa-fw`;
             cellText = "Group Email";
 		} else if (this.state.values.eventType === 'hipchat_channel') {
-			fontAwesomeClass = `fa fa-comments ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-comments fa-fw`;
             cellText = "HipChat";
 		} else if (this.state.values.eventType === 'slack_channel') {
-			fontAwesomeClass = `fa fa-slack ${fontAwesomeLabel}`;
+			fontAwesomeClass = `fa fa-slack  fa-fw`;
             cellText = "Slack";
 		}
 
