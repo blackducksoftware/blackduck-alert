@@ -1,3 +1,8 @@
+// Third-party
+@import '~bootstrap/dist/css/bootstrap.css';
+@import '~react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
+
+// Hub alert specific
 @import 'app';
 @import 'field';
 @import 'table';

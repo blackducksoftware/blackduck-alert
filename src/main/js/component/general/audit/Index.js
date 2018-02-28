@@ -6,8 +6,6 @@ import AutoRefresh from '../../common/AutoRefresh';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 import AuditDetails from './Details';
 
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
-
 import '../../../../css/audit.scss';
 
 var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban policyViolation`} aria-hidden='true'></i>;

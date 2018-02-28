@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import CheckboxInput from '../../../field/input/CheckboxInput';
 
-import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
-
 export default class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
