@@ -1,23 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
-
+import { ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup } from 'react-bootstrap-table';
 import { getAuditData } from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 import AuditDetails from './Details';
-import {ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup} from 'react-bootstrap-table';
 
-import tableStyles from '../../../../css/table.css';
-import auditStyles from '../../../../css/audit.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 
-var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban ${auditStyles.policyViolation}`} aria-hidden='true'></i>;
-var policyViolationClearedIcon = <i key="policyViolationClearedIcon" alt="Policy Violation Cleared" title="Policy Violation Cleared" className={`fa fa-eraser ${auditStyles.policyViolationCleared}`} aria-hidden='true'></i>;
-var policyViolationOverrideIcon = <i key="policyViolationOverrideIcon" alt="Policy Override" title="Policy Override" className={`fa fa-exclamation-circle ${auditStyles.policyViolationOverride}`} aria-hidden='true'></i>;
-var highVulnerabilityIcon = <i key="highVulnerabilityIcon" alt="High Vulnerability" title="High Vulnerability" className={`fa fa-shield ${auditStyles.highVulnerability}`} aria-hidden='true'></i>;
-var mediumVulnerabilityIcon = <i key="mediumVulnerabilityIcon" alt="Medium Vulnerability" title="Medium Vulnerability" className={`fa fa-shield ${auditStyles.mediumVulnerability}`} aria-hidden='true'></i>;
-var lowVulnerabilityIcon = <i key="lowVulnerabilityIcon" alt="Low Vulnerability" title="Low Vulnerability" className={`fa fa-shield ${auditStyles.lowVulnerability}`} aria-hidden='true'></i>;
-var vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="Vulnerability" className={`fa fa-shield ${auditStyles.vulnerability}`} aria-hidden='true'></i>;
+import '../../../../css/audit.scss';
+
+var policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className={`fa fa-ban policyViolation`} aria-hidden='true'></i>;
+var policyViolationClearedIcon = <i key="policyViolationClearedIcon" alt="Policy Violation Cleared" title="Policy Violation Cleared" className={`fa fa-eraser policyViolationCleared`} aria-hidden='true'></i>;
+var policyViolationOverrideIcon = <i key="policyViolationOverrideIcon" alt="Policy Override" title="Policy Override" className={`fa fa-exclamation-circle policyViolationOverride`} aria-hidden='true'></i>;
+var highVulnerabilityIcon = <i key="highVulnerabilityIcon" alt="High Vulnerability" title="High Vulnerability" className={`fa fa-shield highVulnerability`} aria-hidden='true'></i>;
+var mediumVulnerabilityIcon = <i key="mediumVulnerabilityIcon" alt="Medium Vulnerability" title="Medium Vulnerability" className={`fa fa-shield mediumVulnerability`} aria-hidden='true'></i>;
+var lowVulnerabilityIcon = <i key="lowVulnerabilityIcon" alt="Low Vulnerability" title="Low Vulnerability" className={`fa fa-shield lowVulnerability`} aria-hidden='true'></i>;
+var vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="Vulnerability" className={`fa fa-shield vulnerability`} aria-hidden='true'></i>;
 
 
 class Index extends Component {
@@ -189,11 +188,11 @@ class Index extends Component {
     statusColumnDataFormat(cell, row) {
 		var statusClass = null;
 		if (cell === 'Pending') {
-			statusClass = tableStyles.statusPending;
+			statusClass = "statusPending";
 		} else if (cell === 'Success') {
-			statusClass = tableStyles.statusSuccess;
+			statusClass = "statusSuccess";
 		} else if (cell === 'Failure') {
-			statusClass = tableStyles.statusFailure;
+			statusClass = "statusFailure";
 		}
 		let data = <div className={statusClass} aria-hidden='true'>
 						{cell}
@@ -275,25 +274,16 @@ class Index extends Component {
 
 	trClassFormat(row, rowIndex) {
 		// color the row correctly, since Striped does not work with expandable rows
-		var isEven = rowIndex % 2 === 0;
-		var className = isEven ? tableStyles.tableEvenRow : tableStyles.tableRow;
-		return className;
+		return rowIndex % 2 === 0 ? "tableEvenRow" : "tableRow";
 	}
 
 
 	createCustomButtonGroup(buttons) {
-		let refreshButton= null;
-		if (!this.state.autoRefresh) {
-			let classes = `btn btn-info react-bs-table-add-btn ${tableStyles.tableButton}`;
-			let fontAwesomeIcon = `fa fa-refresh fa-fw`;
-			let reloadEntries = () => this.reloadAuditEntries();
-			refreshButton = <div className={classes} onClick={reloadEntries} >
-								<i className={fontAwesomeIcon} aria-hidden='true'></i>Refresh
-						</div>;
-		}
 	    return (
 	    	<ButtonGroup>
-	      		{refreshButton}
+	      		{!this.state.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
+                    <span className="fa fa-refresh fa-fw" aria-hidden='true'></span> Refresh
+                </div>}
 	      	</ButtonGroup>
 	    );
   	}
@@ -308,13 +298,7 @@ class Index extends Component {
 	  		expandBy : 'column',
 	  		expandRowBgColor: '#e8e8e8'
 		};
-		var progressIndicator = null;
-        if (this.state.inProgress) {
-            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className="progressIcon">
-                                    <i className={fontAwesomeIcon} aria-hidden='true'></i>
-                                </div>;
-        }
+
 		return (
 				<div>
 					<h1>
@@ -324,62 +308,66 @@ class Index extends Component {
 						</small>
 					</h1>
 					<div>
-						<div className={auditStyles.legendContainer}>
-							<div className={`${auditStyles.inline}`}>
+						<div className="legendContainer">
+							<div className={`inline`}>
 								{highVulnerabilityIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									High Vulnerability
 								</div>
 							</div>
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{lowVulnerabilityIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Low Vulnerability
 								</div>
 							</div>
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{policyViolationIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Policy Violation
 								</div>
 							</div>
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{policyViolationClearedIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Policy Violation Cleared
 								</div>
 							</div>
 							<br />
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{mediumVulnerabilityIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Medium Vulnerability
 								</div>
 							</div>
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{vulnerabilityIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Vulnerability
 								</div>
 							</div>
-							<div className={`${auditStyles.inline}`}>
+							<div className={`inline`}>
 								{policyViolationOverrideIcon}
-								<div className={auditStyles.legendDescription}>
+								<div className="legendDescription">
 									Policy Override
 								</div>
 							</div>
 						</div>
-						<BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass={tableStyles.table} search={true} options={auditTableOptions} headerContainerClass={tableStyles.scrollable} bodyContainerClass={tableStyles.tableScrollableBody} >
+						<BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass="table" search={true} options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
 	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName={tableStyles.tableCell}>Project Name</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Created</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName={tableStyles.tableCell}>Time Last Sent</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' width='75' dataSort columnClassName={tableStyles.tableCell} dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
-	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName={tableStyles.tableCell} dataFormat={ this.resendButton }></TableHeaderColumn>
+	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnClassName="tableCell" dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
+	      					<TableHeaderColumn dataField='status' width='75' dataSort columnClassName="tableCell" dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
+	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName="tableCell" dataFormat={ this.resendButton }></TableHeaderColumn>
 	  					</BootstrapTable>
-	  					{progressIndicator}
+
+						{ this.state.inProgress && <div className="progressIcon">
+                            <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden='true'></span>
+                        </div>}
+
 	  					<p name="message">{this.state.message}</p>
   					</div>
 				</div>
