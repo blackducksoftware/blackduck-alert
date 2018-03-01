@@ -1,12 +1,7 @@
-'use strict';
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import { typeAheadField, fieldError } from '../../../../../css/field.scss';
-import TextInput from '../../../../field/input/TextInput';
-
 import Select from 'react-select-2';
-import 'react-select-2/dist/css/react-select-2.css';
+import TextInput from '../../../../field/input/TextInput';
 
 import BaseJobConfiguration from './BaseJobConfiguration';
 

@@ -58,6 +58,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'UPDATED',
+                ...action.config,
                 error: {
                     message: '',
                     fieldErrors: []

@@ -12,7 +12,8 @@ class HipChatConfiguration extends React.Component {
 
 		this.state = {
             apiKey: '',
-            apiKeyIsSet: false
+            apiKeyIsSet: false,
+            dataLoaded: false
         };
 
 		this.handleChange = this.handleChange.bind(this);
@@ -26,6 +27,7 @@ class HipChatConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
+            dataLoaded: true,
             apiKey: nextProps.apiKey || '',
             apiKeyIsSet: nextProps.apiKeyIsSet
         });
@@ -53,26 +55,25 @@ class HipChatConfiguration extends React.Component {
     }
 
     render() {
-
+	    const disabled = this.props.fetching || !this.state.dataLoaded;
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
                 <h1>Alert / Channels / HipChat</h1>
-                <form className="form-horizontal" onSubmit={this.handleSubmit}>
+                { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
+                    <div>Test was successful!</div>
+                </div>}
 
-                    { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
-                        <div>Test was successful!</div>
-                    </div>}
+                { errorMessage && <div className="alert alert-danger">
+                    { errorMessage }
+                </div> }
 
-                    { errorMessage && <div className="alert alert-danger">
-                        { errorMessage }
-                    </div> }
+                { updateStatus === 'UPDATED' && <div className="alert alert-success">
+                    { 'Update successful' }
+                </div> }
 
-                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
-                        { 'Update successful' }
-                    </div> }
-
-                    <TextInput label="Api Key" type="text" name="apiKey" value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey}></TextInput>
+                <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
+                    <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey}></TextInput>
                     <ConfigButtons includeSave={true} includeTest={true} onTestClick={ this.handleTest } />
                 </form>
             </div>
@@ -98,7 +99,8 @@ const mapStateToProps = state => ({
     updateStatus: state.hipChatConfig.updateStatus,
     errorMessage: state.hipChatConfig.error.message,
     fieldErrors: state.hipChatConfig.error.fieldErrors,
-    id: state.hipChatConfig.id
+    id: state.hipChatConfig.id,
+    fetching: state.hipChatConfig.fetching
 });
 
 // Mapping redux actions -> react props

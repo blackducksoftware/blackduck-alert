@@ -48,7 +48,7 @@ function fetchingEmailConfig() {
 function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
-        config: {...scrubConfig(config) }
+        config: { ...scrubConfig(config) }
     };
 }
 
@@ -81,7 +81,7 @@ function updatingEmailConfig() {
 function emailConfigUpdated(config) {
     return {
         type: EMAIL_CONFIG_UPDATED,
-        ...scrubConfig(config)
+        config: { ...scrubConfig(config) }
     };
 }
 
