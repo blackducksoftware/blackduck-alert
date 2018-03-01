@@ -45,12 +45,11 @@ class Index extends Component {
 
 	startAutoReload() {
 		// run the reload now and then every 10 seconds
-		let reloadInterval = setInterval(() => this.reloadPage(), 10000);
-		this.handleSetState('reloadInterval', reloadInterval);
+		this.reloadInterval = setInterval(() => this.reloadPage(), 10000);
 	}
 
 	cancelAutoReload() {
-		clearInterval(this.state.reloadInterval);
+		clearInterval(this.reloadInterval);
 	}
 
     reloadPage() {
