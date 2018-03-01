@@ -16,9 +16,9 @@ const MainPage = () => (
     <div>
         <Navigation />
         <div className="contentArea">
-            <Route path="/" exact={true}>
-                <Redirect to="/providers/hub" />
-            </Route>
+            <Route exact path="/" render={() => (
+                <Redirect to="/providers/hub"/>
+            )}/>
             <Route path="/providers/hub" component={HubConfiguration} />
             <Route path="/channels/email" component={EmailConfiguration} />
             <Route path="/channels/hipchat" component={HipChatConfiguration} />
