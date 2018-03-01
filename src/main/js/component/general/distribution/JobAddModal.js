@@ -8,8 +8,6 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 
 import { jobTypes } from '../../../util/distribution-data';
 
-import 'react-select-2/dist/css/react-select-2.css';
-
 export default class JobAddModal extends Component {
     constructor(props) {
         super(props);

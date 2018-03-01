@@ -10,7 +10,6 @@ import GeneralButton from '../../field/input/GeneralButton';
 import { dailyDigestOptions, purgeOptions } from "../../util/scheduling-data";
 
 import Select from 'react-select-2';
-import 'react-select-2/dist/css/react-select-2.css';
 
 class SchedulingConfiguration extends React.Component {
 	constructor(props) {

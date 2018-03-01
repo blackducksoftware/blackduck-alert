@@ -1,16 +1,10 @@
-'use strict';
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import TextInput from '../../../../field/input/TextInput';
 
 import BaseJobConfiguration from './BaseJobConfiguration';
 
 export default class SlackJobConfiguration extends BaseJobConfiguration {
-	constructor(props) {
-		super(props);
-	}
-
     initializeValues(data) {
        super.initializeValues(data);
        
