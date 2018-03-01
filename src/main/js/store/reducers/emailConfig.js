@@ -24,13 +24,13 @@ const config = (state = initialState, action) => {
         case EMAIL_CONFIG_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
-                updateStatus: null
+                updateStatus: 'FETCHING'
             });
 
         case EMAIL_CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
-                updateStatus: null,
+                updateStatus: 'FETCHED',
                 ...action.config
             });
 

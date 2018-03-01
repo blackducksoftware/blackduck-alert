@@ -26,25 +26,27 @@ class EmailConfiguration extends React.Component {
 		this.props.getEmailConfig();
 	}
 
-    // componentWillReceiveProps(nextProps) {
-    //     this.setState({
-    //         mailSmtpHost: nextProps.mailSmtpHost || '',
-    //         mailSmtpFrom: nextProps.mailSmtpFrom || '',
-    //         mailSmtpAuth: nextProps.mailSmtpAuth || false,
-    //         mailSmtpUser: nextProps.mailSmtpUser || '',
-    //         mailSmtpPassword: nextProps.mailSmtpPassword || '',
-    //         mailSmtpPasswordIsSet: nextProps.mailSmtpPasswordIsSet || false,
-    //         mailSmtpPort: nextProps.mailSmtpPort || undefined,
-    //         mailSmtpConnectionTimeout: nextProps.mailSmtpConnectionTimeout || undefined,
-    //         mailSmtpTimeout: nextProps.mailSmtpTimeout || undefined,
-    //         mailSmtpLocalhost: nextProps.mailSmtpLocalhost || '',
-    //         mailSmtpEhlo: nextProps.mailSmtpEhlo || false,
-    //         mailSmtpDnsNotify: nextProps.mailSmtpDnsNotify || '',
-    //         mailSmtpDnsRet: nextProps.mailSmtpDnsRet || '',
-    //         mailSmtpAllow8bitmime: nextProps.mailSmtpAllow8bitmime || false,
-    //         mailSmtpSendPartial: nextProps.mailSmtpSendPartial || false
-    //     });
-    // }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            this.setState({
+                mailSmtpHost: nextProps.mailSmtpHost || '',
+                mailSmtpFrom: nextProps.mailSmtpFrom || '',
+                mailSmtpAuth: nextProps.mailSmtpAuth || false,
+                mailSmtpUser: nextProps.mailSmtpUser || '',
+                mailSmtpPassword: nextProps.mailSmtpPassword || '',
+                mailSmtpPasswordIsSet: nextProps.mailSmtpPasswordIsSet || false,
+                mailSmtpPort: nextProps.mailSmtpPort || undefined,
+                mailSmtpConnectionTimeout: nextProps.mailSmtpConnectionTimeout || undefined,
+                mailSmtpTimeout: nextProps.mailSmtpTimeout || undefined,
+                mailSmtpLocalhost: nextProps.mailSmtpLocalhost || '',
+                mailSmtpEhlo: nextProps.mailSmtpEhlo || false,
+                mailSmtpDnsNotify: nextProps.mailSmtpDnsNotify || '',
+                mailSmtpDnsRet: nextProps.mailSmtpDnsRet || '',
+                mailSmtpAllow8bitmime: nextProps.mailSmtpAllow8bitmime || false,
+                mailSmtpSendPartial: nextProps.mailSmtpSendPartial || false
+            });
+        }
+    }
 
     handleChange(event) {
         const target = event.target;
@@ -261,7 +263,7 @@ const mapStateToProps = state => ({
 	showAdvanced: state.emailConfig.showAdvanced,
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
-    fieldErrors: state.hipChatConfig.error.fieldErrors,
+    fieldErrors: state.emailConfig.error.fieldErrors,
     updateStatus: state.emailConfig.updateStatus,
 });
 
