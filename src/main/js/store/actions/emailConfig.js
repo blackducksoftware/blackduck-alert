@@ -48,7 +48,7 @@ function fetchingEmailConfig() {
 function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
-        ...scrubConfig(config)
+        config: {...scrubConfig(config) }
     };
 }
 
@@ -101,7 +101,8 @@ export function getEmailConfig() {
             credentials: 'include'
         })
         .then((response) => response.json())
-        .then((body) => { dispatch(emailConfigFetched(body[0])); })
+        .then((body) => {
+            dispatch(emailConfigFetched(body[0])); })
         .catch(console.error);
     }
 };
@@ -121,7 +122,7 @@ export function updateEmailConfig(config) {
         })
         .then((response) => {
             if(response.ok) {
-                response.json().then((body) => dispatch(emailConfigUpdated({id: body.id, ...config})));
+                response.json().then((body) => {dispatch(emailConfigUpdated({...config}))});
             } else {
                 response.json()
                     .then((data) => {
