@@ -41,19 +41,19 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private String mailSmtpTimeout;
     private String mailSmtpFrom;
     private String mailSmtpLocalhost;
-    private String mailSmtpEhlo;
-    private String mailSmtpAuth;
+    private boolean mailSmtpEhlo;
+    private boolean mailSmtpAuth;
     private String mailSmtpDnsNotify;
     private String mailSmtpDnsRet;
-    private String mailSmtpAllow8bitmime;
-    private String mailSmtpSendPartial;
+    private boolean mailSmtpAllow8bitmime;
+    private boolean mailSmtpSendPartial;
 
     public GlobalEmailConfigRestModel() {
     }
 
     public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
-            final String mailSmtpConnectionTimeout, final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify,
-            final String mailSmtpDnsRet, final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial) {
+            final String mailSmtpConnectionTimeout, final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final boolean mailSmtpEhlo, final boolean mailSmtpAuth, final String mailSmtpDnsNotify,
+            final String mailSmtpDnsRet, final boolean mailSmtpAllow8bitmime, final boolean mailSmtpSendPartial) {
         super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
@@ -108,11 +108,11 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         return mailSmtpLocalhost;
     }
 
-    public String getMailSmtpEhlo() {
+    public boolean getMailSmtpEhlo() {
         return mailSmtpEhlo;
     }
 
-    public String getMailSmtpAuth() {
+    public boolean getMailSmtpAuth() {
         return mailSmtpAuth;
     }
 
@@ -124,11 +124,11 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
         return mailSmtpDnsRet;
     }
 
-    public String getMailSmtpAllow8bitmime() {
+    public boolean getMailSmtpAllow8bitmime() {
         return mailSmtpAllow8bitmime;
     }
 
-    public String getMailSmtpSendPartial() {
+    public boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
     }
 

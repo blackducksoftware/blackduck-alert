@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.email.controller.global;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -22,18 +23,18 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
 
     @Override
     public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
-        assertNull(restModel.getMailSmtpAllow8bitmime());
-        assertNull(restModel.getMailSmtpAuth());
+        assertFalse(restModel.getMailSmtpAllow8bitmime());
+        assertFalse(restModel.getMailSmtpAuth());
         assertNull(restModel.getMailSmtpConnectionTimeout());
         assertNull(restModel.getMailSmtpDnsNotify());
         assertNull(restModel.getMailSmtpDnsRet());
-        assertNull(restModel.getMailSmtpEhlo());
+        assertFalse(restModel.getMailSmtpEhlo());
         assertNull(restModel.getMailSmtpFrom());
         assertNull(restModel.getMailSmtpHost());
         assertNull(restModel.getMailSmtpLocalhost());
         assertNull(restModel.getMailSmtpPassword());
         assertNull(restModel.getMailSmtpPort());
-        assertNull(restModel.getMailSmtpSendPartial());
+        assertFalse(restModel.getMailSmtpSendPartial());
         assertNull(restModel.getMailSmtpTimeout());
         assertNull(restModel.getMailSmtpUser());
         assertTrue(!restModel.isMailSmtpPasswordIsSet());
