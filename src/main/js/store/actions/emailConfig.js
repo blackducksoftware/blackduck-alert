@@ -1,6 +1,7 @@
 import {
     EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_FETCHED,
+    EMAIL_CONFIG_UPDATE_ERROR,
     EMAIL_CONFIG_UPDATING,
     EMAIL_CONFIG_UPDATED,
     EMAIL_CONFIG_SHOW_ADVANCED,
@@ -47,7 +48,19 @@ function fetchingEmailConfig() {
 function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
-        config
+        ...scrubConfig(config)
+    };
+}
+
+/**
+ * Triggers Config Error
+ * @returns {{type}}
+ */
+function configError(message, errors) {
+    return {
+        type: EMAIL_CONFIG_UPDATE_ERROR,
+        message,
+        errors
     };
 }
 
@@ -68,7 +81,7 @@ function updatingEmailConfig() {
 function emailConfigUpdated(config) {
     return {
         type: EMAIL_CONFIG_UPDATED,
-        config
+        ...scrubConfig(config)
     };
 }
 
