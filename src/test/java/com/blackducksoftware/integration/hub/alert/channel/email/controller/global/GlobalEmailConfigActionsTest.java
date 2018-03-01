@@ -65,10 +65,10 @@ public class GlobalEmailConfigActionsTest extends GlobalActionsTest<GlobalEmailC
         mockUtil.setMailSmtpPort("qq");
         mockUtil.setMailSmtpConnectionTimeout("qq");
         mockUtil.setMailSmtpTimeout("qq");
-        mockUtil.setMailSmtpEhlo("n");
-        mockUtil.setMailSmtpAuth("n");
-        mockUtil.setMailSmtpAllow8bitmime("n");
-        mockUtil.setMailSmtpSendPartial("n");
+        mockUtil.setMailSmtpEhlo(false);
+        mockUtil.setMailSmtpAuth(true);
+        mockUtil.setMailSmtpAllow8bitmime(false);
+        mockUtil.setMailSmtpSendPartial(false);
         final GlobalEmailConfigRestModel restModel = mockUtil.createGlobalRestModel();
 
         String result = null;

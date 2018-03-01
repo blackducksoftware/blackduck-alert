@@ -25,21 +25,21 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     private String mailSmtpTimeout;
     private String mailSmtpFrom;
     private String mailSmtpLocalhost;
-    private String mailSmtpEhlo;
-    private String mailSmtpAuth;
+    private boolean mailSmtpEhlo;
+    private boolean mailSmtpAuth;
     private String mailSmtpDnsNotify;
     private String mailSmtpDnsRet;
-    private String mailSmtpAllow8bitmime;
-    private String mailSmtpSendPartial;
+    private boolean mailSmtpAllow8bitmime;
+    private boolean mailSmtpSendPartial;
     private String id;
 
     public MockEmailGlobalRestModel() {
-        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", "true", "false", "MailSmtpDnsNotify", "MailSmtpDnsRet", "true", "false", "1");
+        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, "99", "400", "500", "MailSmtpFrom", "MailSmtpLocalhost", true, false, "MailSmtpDnsNotify", "MailSmtpDnsRet", true, false, "1");
     }
 
     private MockEmailGlobalRestModel(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort, final String mailSmtpConnectionTimeout,
-            final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpEhlo, final String mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final String mailSmtpAllow8bitmime, final String mailSmtpSendPartial, final String id) {
+            final String mailSmtpTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final boolean mailSmtpEhlo, final boolean mailSmtpAuth, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
+            final boolean mailSmtpAllow8bitmime, final boolean mailSmtpSendPartial, final String id) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
@@ -94,11 +94,11 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         return mailSmtpLocalhost;
     }
 
-    public String getMailSmtpEhlo() {
+    public boolean getMailSmtpEhlo() {
         return mailSmtpEhlo;
     }
 
-    public String getMailSmtpAuth() {
+    public boolean getMailSmtpAuth() {
         return mailSmtpAuth;
     }
 
@@ -110,11 +110,11 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         return mailSmtpDnsRet;
     }
 
-    public String getMailSmtpAllow8bitmime() {
+    public boolean getMailSmtpAllow8bitmime() {
         return mailSmtpAllow8bitmime;
     }
 
-    public String getMailSmtpSendPartial() {
+    public boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
     }
 
@@ -154,11 +154,11 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         this.mailSmtpLocalhost = mailSmtpLocalhost;
     }
 
-    public void setMailSmtpEhlo(final String mailSmtpEhlo) {
+    public void setMailSmtpEhlo(final boolean mailSmtpEhlo) {
         this.mailSmtpEhlo = mailSmtpEhlo;
     }
 
-    public void setMailSmtpAuth(final String mailSmtpAuth) {
+    public void setMailSmtpAuth(final boolean mailSmtpAuth) {
         this.mailSmtpAuth = mailSmtpAuth;
     }
 
@@ -170,11 +170,11 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         this.mailSmtpDnsRet = mailSmtpDnsRet;
     }
 
-    public void setMailSmtpAllow8bitmime(final String mailSmtpAllow8bitmime) {
+    public void setMailSmtpAllow8bitmime(final boolean mailSmtpAllow8bitmime) {
         this.mailSmtpAllow8bitmime = mailSmtpAllow8bitmime;
     }
 
-    public void setMailSmtpSendPartial(final String mailSmtpSendPartial) {
+    public void setMailSmtpSendPartial(final boolean mailSmtpSendPartial) {
         this.mailSmtpSendPartial = mailSmtpSendPartial;
     }
 
@@ -224,6 +224,10 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     public String getEmptyGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("mailSmtpPasswordIsSet", false);
+        json.addProperty("mailSmtpEhlo", false);
+        json.addProperty("mailSmtpAuth", false);
+        json.addProperty("mailSmtpAllow8bitmime", false);
+        json.addProperty("mailSmtpSendPartial", false);
         return json.toString();
     }
 
