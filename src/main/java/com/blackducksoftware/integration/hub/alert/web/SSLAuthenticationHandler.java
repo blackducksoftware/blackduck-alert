@@ -40,6 +40,7 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/",
                 "/#",
                 "/favicon.ico",
+                "/fonts/**",
                 "/js/bundle.js",
                 "/js/bundle.js.map",
                 "/css/style.css",
