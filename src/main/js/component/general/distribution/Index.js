@@ -373,34 +373,33 @@ class Index extends Component {
 				return null;
 			}
 		};
-		var progressIndicator = null;
-        if (this.state.inProgress) {
-            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className="progressIcon">
-                                    <span className={fontAwesomeIcon} aria-hidden='true'></span>
-                                </div>;
-        }
-		var content = <div>
-						<BootstrapTable striped condensed data={this.state.jobs} containerClass="table" insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName="tableRow" headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
-	      					<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='distributionType' dataSort columnClassName="tableCell" dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
-	      					<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
-                            <TableHeaderColumn dataField='' width='48' columnClassName="tableCell" dataFormat={ this.editButtonClick }></TableHeaderColumn>
-	  					</BootstrapTable>
-	  					{progressIndicator}
-	  					<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
-  					</div>;
-		var currentJobContent = this.getCurrentJobConfig (this.state.currentRowSelected);
-		if (currentJobContent != null) {
+
+		let content = <div>
+			<BootstrapTable hover condensed data={this.state.jobs} containerClass="table" insertRow={true} deleteRow={true} selectRow={jobsSelectRowProp} search={true} options={jobTableOptions} trClassName="tableRow" headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
+	      		<TableHeaderColumn dataField='id' isKey hidden>Job Id</TableHeaderColumn>
+				<TableHeaderColumn dataField='distributionConfigId' hidden>Distribution Id</TableHeaderColumn>
+				<TableHeaderColumn dataField='name' dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+				<TableHeaderColumn dataField='distributionType' dataSort columnClassName="tableCell" dataFormat={ this.typeColumnDataFormat }>Type</TableHeaderColumn>
+				<TableHeaderColumn dataField='lastRan' dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
+				<TableHeaderColumn dataField='status' dataSort columnTitle columnClassName={ this.statusColumnClassNameFormat }>Status</TableHeaderColumn>
+				<TableHeaderColumn dataField='' width='48' columnClassName="tableCell" dataFormat={ this.editButtonClick }></TableHeaderColumn>
+			</BootstrapTable>
+
+			{ this.state.inProgress && <div className="progressIcon">
+                <span className="fa fa-spinner fa-pulse" aria-hidden='true'></span>
+            </div>}
+
+			<p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
+		</div>;
+
+		const currentJobContent = this.getCurrentJobConfig (this.state.currentRowSelected);
+		if (currentJobContent !== null) {
 			content = currentJobContent;
 		}
 		return (
 				<div>
                     <h1>
-                        General / Distribution
+                        Alert / General / Distribution
                         <small className="pull-right">
                             <AutoRefresh
 								autoRefresh={this.state.autoRefresh}

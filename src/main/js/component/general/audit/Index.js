@@ -300,7 +300,7 @@ class Index extends Component {
 		return (
 				<div>
 					<h1>
-                        General / Audit
+                        Alert / General / Audit
 						<small className="pull-right">
 							<AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange} />
 						</small>

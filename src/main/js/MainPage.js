@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Route, Link, NavLink, withRouter } from 'react-router-dom';
+import { Redirect, Route, Link, NavLink, withRouter } from 'react-router-dom';
 
 import Navigation from './Navigation';
 import Audit from './component/general/audit/Index';
@@ -10,11 +10,15 @@ import EmailConfiguration from "./component/channels/EmailConfiguration";
 import SlackConfiguration from "./component/channels/SlackConfiguration";
 import HubConfiguration from "./component/providers/HubConfiguration";
 import HipChatConfiguration from "./component/channels/HipChatConfiguration";
+import LogoutConfirmation from './component/common/LogoutConfirmation';
 
 const MainPage = () => (
     <div>
         <Navigation />
         <div className="contentArea">
+            <Route path="/" exact={true}>
+                <Redirect to="/providers/hub" />
+            </Route>
             <Route path="/providers/hub" component={HubConfiguration} />
             <Route path="/channels/email" component={EmailConfiguration} />
             <Route path="/channels/hipchat" component={HipChatConfiguration} />
@@ -22,6 +26,9 @@ const MainPage = () => (
             <Route path="/general/scheduling" component={SchedulingConfiguration} />
             <Route path="/general/distribution" component={DistributionConfiguration} />
             <Route path="/general/audit" component={Audit} />
+        </div>
+        <div className="modalsArea">
+            <LogoutConfirmation />
         </div>
     </div>
 );

@@ -4,8 +4,8 @@ import {
     SESSION_LOGGED_IN,
     SESSION_LOGGED_OUT,
     SESSION_LOGIN_ERROR,
-    SESSION_SHOW_ADVANCED,
-    SESSION_HIDE_ADVANCED,
+    SESSION_CANCEL_LOGOUT,
+    SESSION_CONFIRM_LOGOUT,
     SERIALIZE
 } from '../actions/types';
 
@@ -13,7 +13,7 @@ const initialState = {
     fetching: false,
     loggedIn: false,
     initializing: true,
-    showAdvanced: false,
+    showLogoutConfirm: false,
     name: '',
     errorMessage: null,
     errors: []
@@ -50,23 +50,23 @@ const session = (state = initialState, action) => {
                 initializing: false
             });
 
-        case SESSION_SHOW_ADVANCED:
-            return Object.assign({}, state, {
-                showAdvanced: true
-            });
-
-        case SESSION_HIDE_ADVANCED:
-            return Object.assign({}, state, {
-                showAdvanced: false
-            });
-
         case SESSION_LOGIN_ERROR:
             return Object.assign({}, state, {
                 fetching: false,
                 loggedIn: false,
                 errorMessage: action.errorMessage,
                 errors: action.errors
-            })
+            });
+
+        case SESSION_CANCEL_LOGOUT:
+            return Object.assign({}, state, {
+                showLogoutConfirm: false
+            });
+
+        case SESSION_CONFIRM_LOGOUT:
+            return Object.assign({}, state, {
+                showLogoutConfirm: true
+            });
 
         case SERIALIZE:
             return initialState;

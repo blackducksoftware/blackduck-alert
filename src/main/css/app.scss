@@ -4,20 +4,20 @@ body {
   font-size: 14px;
 }
 h1 {
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
   font-size: 1.6rem;
-  font-weight: 700;
-  margin-bottom: 18px;
-  margin-top: 4px;
-  padding-bottom: 18px;
+  font-weight: 500;
+  margin-bottom: 17px;
+  margin-top: 2px;
+  padding-bottom: 17px;
 }
 h2 {
   font-size: 1.4rem;
-  font-weight: 700;
+  font-weight: 500;
   margin: 20px 0 4px;
 }
 form.form-horizontal {
-  padding: 20px;
+  padding: 0 20px;
 }
 button {
   border-radius: 2px !important;
@@ -27,9 +27,6 @@ button + button {
 }
 .accumulator-countdown .btn {
   margin-left: 20px;
-}
-.btn {
-  margin-right: 8px;
 }
 .refreshCheckbox {
   font-size: 13px;
@@ -76,7 +73,8 @@ button + button {
   padding: 8px 10px;
 }
 .navigation > ul > li a:hover {
-  background-color: #3d444e
+  background-color: #3d444e;
+  cursor: pointer;
 }
 .activeNav {
   border-left: 4px solid white;
@@ -107,7 +105,7 @@ button + button {
 }
 
 .btn {
-  border-radius: 0 !important;
+  border-radius: 2px;
 }
 .hidden {
   display: none;
@@ -209,7 +207,7 @@ button + button {
 }
 
 .border {
-  border: #e6e6e6 1px solid;
+  border: #eee 1px solid;
 }
 
 .alertHeader {
@@ -231,7 +229,7 @@ button + button {
 }
 
 .tableBorder {
-  border: #e6e6e6 1px solid;
+  border: #eee 1px solid;
   margin: 0 auto;
   margin-top: 10px;
   width: 75%;
@@ -248,7 +246,8 @@ button + button {
 }
 
 .progressIcon {
-  float: left;
+  display: inline;
+  margin: 0 10px;
 }
 
 .missingHubData {

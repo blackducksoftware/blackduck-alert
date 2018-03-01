@@ -68,7 +68,7 @@ class EmailConfiguration extends React.Component {
         const {errorMessage, updateStatus } = this.props;
         return (
         	<div>
-                <h1>Channels / Email</h1>
+                <h1>Alert / Channels / Email</h1>
 				<form className="form-horizontal" onSubmit={this.handleSubmit}>
                     { errorMessage && <div className="alert alert-danger">
                         { errorMessage }

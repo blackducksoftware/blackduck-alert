@@ -109,14 +109,14 @@ export default class ProjectConfiguration extends Component {
         if (this.props.waitingForProjects) {
             const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
             progressIndicator = <div className="progressIcon">
-                <i className={fontAwesomeIcon} aria-hidden='true'></i>
+                <span className={fontAwesomeIcon} aria-hidden='true'></span>
             </div>;
         }
 
         var projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = <div>
-                <BootstrapTable data={projectData} containerClass="table" striped condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
+                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
                     <TableHeaderColumn dataField='name' isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>

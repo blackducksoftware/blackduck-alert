@@ -18,16 +18,19 @@ export default class ConfigButtons extends Component {
 
         return (
             <div className="form-group">
-                <div className="col-sm-offset-3 col-sm-8">
-                { includeCancel === true &&
-                    <CancelButton />
-                }
-                { includeTest === true &&
+                <div className="col-sm-3"></div>
+                <div className="col-sm-4">
+                    { includeTest === true &&
                     <GeneralButton onClick={this.props.onTestClick}>Test Configuration</GeneralButton>
-                }
-                { includeSave === true &&
+                    }
+                </div>
+                <div className="col-sm-4 text-right">
+                    { includeCancel === true &&
+                    <CancelButton />
+                    }
+                    { includeSave === true &&
                     <SubmitButton>Save</SubmitButton>
-                }
+                    }
                 </div>
             </div>
         )
