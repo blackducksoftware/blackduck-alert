@@ -1,44 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class CheckboxInput extends Component {
-    render() {
-        let errorDiv = null;
-        if (this.props.errorName && this.props.errorValue) {
-            errorDiv = <p className="fieldError" name={this.props.errorName}>{this.props.errorValue}</p>;
-        }
-
-        let inputClass = this.props.inputClass;
-        if (!inputClass) {
-            inputClass = "checkboxInput";
-        }
-
-        let isChecked = false;
-        if (this.props.value) {
-            if (this.props.value === "true") {
-                isChecked = true;
-            } else if (this.props.value === true) {
-                isChecked = true;
-            }
-        }
-
-        let inputDiv = null;
-        if (this.props.readOnly) {
-            inputDiv = <input type="checkbox" readOnly disabled="disabled" className={inputClass} name={this.props.name} checked={isChecked}/>;
-        } else {
-            inputDiv = <input type="checkbox" className={inputClass} name={this.props.name} checked={isChecked} onChange={this.props.onChange} />;
-        }
-
-        return (
-            <div className="form-group">
-                <div className="col-sm-offset-3 col-sm-8">
-                    <div className="checkbox">
-                        <label>{inputDiv} {this.props.label}</label>
-                    </div>
-                </div>
-                <div className="col-sm-offset-3 col-sm-8">
-                    {errorDiv}
+const CheckboxInput = (props) => {
+    const { errorName, errorValue } = props;
+    const { name, value, label, onChange, readOnly } = props;
+    // Sometimes we get checked value as a string
+    const isChecked = value === 'true' || value;
+    return (
+        <div className="form-group">
+            <div className="col-sm-offset-3 col-sm-8">
+                <div className="checkbox">
+                    <label>
+                        <input type="checkbox" className="checkboxInput" readOnly={readOnly} disabled={readOnly} name={name} checked={isChecked} value={label} onChange={onChange} />
+                        { label }
+                    </label>
                 </div>
             </div>
-        )
-    }
-}
+            { errorName && errorValue && <div className="col-sm-offset-3 col-sm-8">
+                <p className="fieldError" name={errorName}>{errorValue}</p>;
+            </div> }
+        </div>
+    );
+};
+
+CheckboxInput.propTypes = {
+    errorName: PropTypes.string,
+    errorValue: PropTypes.string,
+    name: PropTypes.string.isRequired,
+    value: PropTypes.bool.isRequired, // should be renamed to isChecked
+    label: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
+};
+
+CheckboxInput.defaultProps = {
+    errorName: '',
+    errorValue: '',
+    readOnly: false
+};
+
+export default CheckboxInput;

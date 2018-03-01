@@ -1,8 +1,10 @@
 import React from 'react';
-import {connect} from "react-redux";
-import {Link, NavLink, Route, withRouter} from "react-router-dom";
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { Link, NavLink, Route, withRouter } from "react-router-dom";
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
+import { confirmLogout } from './store/actions/session';
 
 // TEMPORARY: This code belongs in Redux Action
 const logout = (evt) => {
@@ -24,7 +26,7 @@ const logout = (evt) => {
     });
 };
 
-const Navigation = () => (
+const Navigation = (props) => (
     <div className="navigation">
         <div className="navigationLogo">
             <Logo />
@@ -76,16 +78,26 @@ const Navigation = () => (
             </li>
 
             <li className="logoutLink">
-                <a href="#" onClick={logout}>
+                <a role="button" onClick={(evt) => {
+                    evt.preventDefault();
+                    props.confirmLogout();
+                }}>
                     <FontAwesome name="sign-out" fixedWidth={true} /> Logout
                 </a>
             </li>
         </ul>
     </div>
-)
+);
+
+Navigation.propTypes = {
+    confirmLogout: PropTypes.func.isRequired
+};
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({});
-const mapDispatchToProps = dispatch => ({});
+
+const mapDispatchToProps = dispatch => ({
+    confirmLogout: () => dispatch(confirmLogout())
+});
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navigation));

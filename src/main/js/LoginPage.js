@@ -1,14 +1,11 @@
 'use strict';
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from "react-redux";
-import CheckboxInput from './field/input/CheckboxInput';
-import NumberInput from './field/input/NumberInput';
+import { connect } from 'react-redux';
 import PasswordInput from './field/input/PasswordInput';
 import TextInput from './field/input/TextInput';
 import SubmitButton from './field/input/SubmitButton';
-import ReadOnlyField from './field/ReadOnlyField';
 import Header from './component/common/Header';
 
 import {loggedIn, loggingIn, login, toggleAdvancedOptions} from './store/actions/session';
@@ -37,22 +34,10 @@ class LoginPage extends Component {
     handleSubmit(evt) {
     	evt.preventDefault();
     	const { hubUsername, hubPassword } = this.state;
-
     	this.props.login(hubUsername, hubPassword);
 	}
 
 	render() {
-		var progressIndicator = null;
-		if (this.props.loggingIn) {
-        	const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-			progressIndicator = <div className="progressIcon">
-									<i className={fontAwesomeIcon} aria-hidden='true'></i>
-								</div>;
-		}
-
-		const showAdvanced = this.props.showAdvanced;
-		const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-
 		return (
 				<div className="wrapper">
 					<div className="loginContainer">
@@ -67,13 +52,11 @@ class LoginPage extends Component {
 								<PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
 
 								<div className="row">
-									<div className="col-sm-12 text-right">
+									<div className="col-sm-11 text-right">
+                                        { this.props.loggingIn && <div className="progressIcon">
+                                            <span className="fa fa-spinner fa-pulse" aria-hidden='true'></span>
+                                        </div> }
 										<SubmitButton>Login</SubmitButton>
-									</div>
-								</div>
-                                <div className="row">
-									<div className="col-sm-12">
-										{progressIndicator}
 									</div>
 								</div>
 							</form>
