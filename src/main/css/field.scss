@@ -1,5 +1,5 @@
 input {
-    border-radius: 2px !important;
+    border-radius: $border-radius !important;
 }
 .textInput {
     width: 100%;
@@ -17,7 +17,9 @@ input {
     color: #a94442;
     padding: 4px 0;
 }
-
+.Select-control {
+    border-radius: $border-radius;
+}
 .typeAheadField, .accumulatorTypeAheadField {
     display: inline-block;
     width: 100%;

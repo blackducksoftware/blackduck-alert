@@ -1,5 +1,5 @@
 .react-bs-table-bordered {
-    border-radius: 2px !important;
+    border-radius: $border-radius !important;
 }
 .statusSuccess {
 	color: #3c763d;
@@ -20,7 +20,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: 13px;
+    font-size: $base-font-size;
 }
 
 .addJobButton {
@@ -30,7 +30,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: 13px;
+    font-size: $base-font-size;
     background-color: #285f8f;
 }
 
@@ -41,7 +41,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: 13px;
+    font-size: $base-font-size;
     background-color: #ef4923;
 }
 
@@ -93,8 +93,8 @@
 }
 
 .expandableContainer {
-    border-radius: 2px;
-    border: 1px solid #ddd;
+    border-radius: $border-radius;
+    border: 1px solid $border-color;
     background-color: white;
     overflow-y: scroll !important;
     padding-top: 15px;

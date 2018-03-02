@@ -76,7 +76,7 @@ const Navigation = (props) => (
                     <FontAwesome name="history" fixedWidth={true} /> Audit
                 </NavLink>
             </li>
-
+            <li className="divider"></li>
             <li className="logoutLink">
                 <a role="button" onClick={(evt) => {
                     evt.preventDefault();

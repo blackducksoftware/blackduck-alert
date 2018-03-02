@@ -1,10 +1,11 @@
 html,
 body {
-  background-color: #ddd;
-  font-size: 14px;
+  background-color: $base-background-color;
+  font-size: $base-font-size;
+  font-weight: $base-font-weight;
 }
 h1 {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid $border-color;
   font-size: 1.6rem;
   font-weight: 500;
   margin-bottom: 17px;
@@ -20,7 +21,7 @@ form.form-horizontal {
   padding: 0 20px;
 }
 button {
-  border-radius: 2px !important;
+  border-radius: $border-radius !important;
 }
 button + button {
   margin-left: 5px;
@@ -29,8 +30,8 @@ button + button {
   margin-left: 20px;
 }
 .refreshCheckbox {
-  font-size: 13px;
-  font-weight: normal;
+  font-size: 0.9rem;
+  font-weight: $base-font-weight;
   margin-top: 3px;
 }
 .navigation {
@@ -39,58 +40,60 @@ button + button {
   top: 0;
   bottom: 0;
   width: 250px;
-  background-color: #2d343e;
+  background-color: $navigation-background-color;
   color: white;
   border: 0;
   box-shadow: 1px 1px 10px #666;
   padding: 0 20px;
   z-index: 100;
-}
-.navigation > ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.navigation > ul > li {
-  padding: 0;
-}
-.navHeader {
-  text-transform: uppercase;
-  font-size: 0.8em;
-  opacity: 0.6;
-  margin-top: 15px;
-}
-.logoutLink {
-  border-top: 1px solid #444;
-}
-.navigation > ul > li a {
-  color: white;
-  text-decoration: none;
-  border-left: 4px solid transparent;
-  font-weight: 300;
-  letter-spacing: 0.07rem;
-  display: block;
-  padding: 8px 10px;
-}
-.navigation > ul > li a:hover {
-  background-color: #3d444e;
-  cursor: pointer;
-}
-.activeNav {
-  border-left: 4px solid white;
-  background-color: #4d545e
-}
-.navigation > ul ul {
-  list-style: none;
-  padding-left: 0;
-}
-.navigation > ul ul > li > a {
-  padding-left: 10px;
-}
-.navigationLogo {
-  padding: 16px 0px;
-  border-bottom: 1px solid #444;
-  width: 100%;
+
+  > .navigationLogo {
+    padding: 16px 0px;
+    border-bottom: $navigation-border;
+    width: 100%;
+  }
+
+  > ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      padding: 0;
+
+      a {
+        color: white;
+        text-decoration: none;
+        border-left: 4px solid transparent;
+        font-weight: 300;
+        letter-spacing: 0.07rem;
+        display: block;
+        padding: 8px 10px;
+
+        &.activeNav {
+          border-left: 4px solid white;
+          background-color: #3d444e;
+        }
+
+        &:hover {
+          background-color: #4d545e;
+          cursor: pointer;
+        }
+      }
+
+      &.divider {
+        margin: 15px 0;
+        border-bottom: $navigation-border;
+      }
+
+      &.navHeader {
+        text-transform: uppercase;
+        font-size: 0.8em;
+        opacity: 0.6;
+        margin: 15px 0 5px;
+      }
+    }
+  }
 }
 .contentArea {
   background-color: white;
@@ -105,7 +108,7 @@ button + button {
 }
 
 .btn {
-  border-radius: 2px;
+  border-radius: $border-radius;
 }
 .hidden {
   display: none;
@@ -113,7 +116,7 @@ button + button {
 
 .wrapper {
   padding: 0px;
-  font-size: 13px;
+  font-size: $base-font-size;
   height: 800px;
   width: 100%;
   font-family: 'Open Sans', sans-serif;
@@ -195,7 +198,7 @@ form.form-horizontal.loginForm {
 .loginBox {
   background-color: #fff;
   border: 0;
-  border-radius: 2px;
+  border-radius: $border-radius;
   box-shadow: 1px 1px 10px #999;
   margin-bottom: 20px;
   max-width: 500px;
@@ -205,9 +208,11 @@ form.form-horizontal.loginForm {
   position: fixed;
   width: 100%;
 }
-
+.modal-content {
+  border-radius: $border-radius;
+}
 .border {
-  border: #eee 1px solid;
+  border: 1px solid $border-color;
 }
 
 .alertHeader {
@@ -229,7 +234,7 @@ form.form-horizontal.loginForm {
 }
 
 .tableBorder {
-  border: #eee 1px solid;
+  border: 1px solid $border-color;
   margin: 0 auto;
   margin-top: 10px;
   width: 75%;
