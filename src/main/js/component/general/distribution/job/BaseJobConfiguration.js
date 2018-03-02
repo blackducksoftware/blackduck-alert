@@ -87,7 +87,7 @@ class BaseJobConfiguration extends Component {
             values.frequency = frequencyFound.value;
         }
         if (includeAllProjects) {
-        	values.includeAllProjects = includeAllProjects;
+        	values.includeAllProjects = includeAllProjects === true || includeAllProjects === 'true';
         } else if (filterByProject) {
         	values.includeAllProjects = (filterByProject == 'false');
 	    }
@@ -346,7 +346,7 @@ class BaseJobConfiguration extends Component {
 						</div>
 						{content}
 					<ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
-					<ConfigButtons includeTest={true} includeCancel={true} onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} type="submit" />
+					<ConfigButtons includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
 					<p name="configurationMessage">{this.state.configurationMessage}</p>
 				</form>
 		)

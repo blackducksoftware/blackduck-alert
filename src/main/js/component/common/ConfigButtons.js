@@ -30,7 +30,7 @@ export default class ConfigButtons extends Component {
                     <SubmitButton>Save</SubmitButton>
                     }
                     { includeCancel &&
-                    <CancelButton />
+                    <CancelButton onClick={this.props.onCancelClick} />
                     }
                 </div>
             </div>
