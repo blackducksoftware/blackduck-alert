@@ -29,6 +29,21 @@ class HubConfiguration extends React.Component {
         this.handleTest = this.handleTest.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+		this.setState({
+            hubAlwaysTrustCertificate: nextProps.hubAlwaysTrustCertificate,
+            hubApiKey: nextProps.hubApiKey,
+            hubApiKeyIsSet: nextProps.hubApiKeyIsSet,
+            hubProxyHost: nextProps.hubProxyHost,
+            hubProxyPassword: nextProps.hubProxyPassword,
+            hubProxyPasswordIsSet: nextProps.hubProxyPasswordIsSet,
+            hubProxyPort: nextProps.hubProxyPort,
+            hubProxyUsername: nextProps.hubProxyUsername,
+            hubTimeout: nextProps.hubTimeout,
+            hubUrl: nextProps.hubUrl
+        });
+	}
+
 	componentDidMount() {
 		this.props.getConfig();
 	}

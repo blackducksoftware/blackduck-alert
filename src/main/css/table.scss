@@ -93,16 +93,11 @@
 }
 
 .expandableContainer {
-    border-radius: 15px 15px 15px 15px;
-    border: 1px solid #c3c3c3;
+    border-radius: 2px;
+    border: 1px solid #ddd;
     background-color: white;
     overflow-y: scroll !important;
-}
-
-.auditDetailsTable {
-    width: 100%;
-    margin-left: 10px;
-    margin-right: 5px;
+    padding-top: 15px;
 }
 
 .auditDetailsTableBody {
@@ -114,4 +109,13 @@
 
 .react-bs-table-tool-bar {
     margin-bottom: 8px;
+}
+
+.react-bs-table .table-bordered>thead>tr>td,
+.react-bs-table .table-bordered>thead>tr>th {
+    border-bottom-width: 1px;
+}
+
+.tableContainer {
+    padding: 15px;
 }
