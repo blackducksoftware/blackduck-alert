@@ -22,6 +22,8 @@ class Index extends Component {
 			waitingForProjects: true,
 			waitingForGroups: true
 		};
+		 this.startAutoReload = this.startAutoReload.bind(this);
+		 this.cancelAutoReload = this.cancelAutoReload.bind(this);
 		this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
 		this.createCustomModal = this.createCustomModal.bind(this);
 		this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
@@ -53,6 +55,7 @@ class Index extends Component {
 	}
 
     reloadPage() {
+		this.cancelAutoReload();
     	this.setState({
 			jobConfigTableMessage: 'Loading...',
 			inProgress: true

@@ -40,22 +40,14 @@ class Details extends Component {
             cellText = "Slack";
 		}
 
-		const eventType = <div className="inline">
+		return <div className="inline">
 			<span key="icon" className={fontAwesomeClass} aria-hidden='true'></span>
-				{cellText}
-			</div>;
-
-		return <LabeledField label="Event Type" field={eventType} />;
+			{cellText}
+		</div>;
 	}
 
 
 	render(content) {
-		let notificationProjectVersion = null;
-		if (this.state.values.notificationProjectVersion) {
-			notificationProjectVersion = <TextInput label="Project Version" readOnly={true} name="notificationProjectVersion" value={this.state.values.notificationProjectVersion}></TextInput>;
-		}
-		const eventType = this.getEventType();
-
 		let errorMessage = null;
 		if (this.state.values.errorMessage) {
 			errorMessage = <TextInput label="Error" readOnly={true} name="errorMessage" value={this.state.values.errorMessage}></TextInput>;
@@ -67,13 +59,24 @@ class Details extends Component {
 
 		return(
 			<div className="expandableContainer">
-				{notificationProjectVersion}
-				{eventType}
-				<BootstrapTable data={this.state.values.components} containerClass="auditDetailsTable" hover condensed trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="auditDetailsTableBody">
-                    <TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName="tableCell">Component</TableHeaderColumn>
-                    <TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName="tableCell">Version</TableHeaderColumn>
-                    <TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName="tableCell">Policy Rule</TableHeaderColumn>
-                </BootstrapTable>
+				<div className="container-fluid">
+                    <div className="row">
+						{ this.state.values.notificationProjectVersion && <div className="col-sm-8">
+							<label>Project Version:</label> { this.state.values.notificationProjectVersion }
+						</div> }
+
+						{ this.state.values.notificationProjectVersion && <div className="col-sm-4 text-right">
+							<label>Event Type:</label> { this.getEventType() }
+						</div> }
+					</div>
+				</div>
+				<div className="tableContainer">
+					<BootstrapTable data={this.state.values.components} containerClass="auditDetailsTable" hover condensed trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="auditDetailsTableBody">
+						<TableHeaderColumn dataField='componentName' isKey dataSort columnTitle columnClassName="tableCell">Component</TableHeaderColumn>
+						<TableHeaderColumn dataField='componentVersion' dataSort columnTitle columnClassName="tableCell">Version</TableHeaderColumn>
+						<TableHeaderColumn dataField='policyRuleName'  dataSort columnTitle columnClassName="tableCell">Policy Rule</TableHeaderColumn>
+					</BootstrapTable>
+				</div>
 				{errorMessage}
 				{errorStackTrace}
 			</div>

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup } from 'react-bootstrap-table';
 import { getAuditData } from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
-import EditTableCellFormatter from '../../common/EditTableCellFormatter';
+import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
 import AuditDetails from './Details';
 
 import '../../../../css/audit.scss';
@@ -27,9 +27,9 @@ class Index extends Component {
 			modal: undefined
 		};
 		// this.addDefaultEntries = this.addDefaultEntries.bind(this);
+		this.cancelAutoReload = this.cancelAutoReload.bind(this);
+		this.startAutoReload = this.startAutoReload.bind(this);
 		this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
-        this.handleSetState = this.handleSetState.bind(this);
-        this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
@@ -41,49 +41,27 @@ class Index extends Component {
 
 	componentDidMount() {
         this.props.getAuditData();
-		//this.reloadAuditEntries();
-		//this.startAutoReload();
+		this.startAutoReload();
 	}
+
+    componentWillReceiveProps(nextProps) {
+		if(nextProps.items !== this.props.items) {
+			this.setState({'message': ''});
+            this.setEntriesFromArray(nextProps.items);
+		}
+    }
 
 	startAutoReload() {
 		// run the reload now and then every 10 seconds
-		let reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
-		this.handleSetState('reloadInterval', reloadInterval);
+		this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
 	}
 
 	cancelAutoReload() {
-		clearInterval(this.state.reloadInterval);
+		clearInterval(this.reloadInterval);
 	}
 
-	componentWillUnmount() {
+    componentWillUnmount() {
 		this.cancelAutoReload();
-	}
-
-	reloadAuditEntries(){
-		this.setState({
-			message: 'Loading...',
-			inProgress: true
-		});
-		var self = this;
-		fetch('/api/audit',{
-			credentials: 'include'
-		})
-		.then(function(response) {
-			self.handleSetState('inProgress', false);
-			if (!response.ok) {
-				return response.json().then(json => {
-					self.handleSetState('message', json.message);
-				});
-			} else {
-				return response.json().then(jsonArray => {
-					self.handleSetState('message', '');
-					self.setEntriesFromArray(jsonArray);
-				});
-			}
-		})
-		.catch(function(error) {
- 		 	console.log(error);
- 		});
 	}
 
 	setEntriesFromArray(jsonArray) {
@@ -121,14 +99,9 @@ class Index extends Component {
 			this.cancelAutoReload();
 		}
 		const name = target.name;
-		this.handleSetState(name, target.checked);
-	}
-
-
-	handleSetState(name, value) {
-		this.setState({
-			[name]: value
-		});
+        this.setState({
+            [name]: target.checked
+        });
 	}
 
 	cancelRowSelect() {
@@ -148,25 +121,23 @@ class Index extends Component {
 			inProgress: true
 		});
 
-		var self = this;
-		var resendUrl = '/api/audit/' + currentEntry.id + '/resend';
+		const resendUrl = '/api/audit/' + currentEntry.id + '/resend';
 		fetch(resendUrl, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json'
 			}
-		}).then(function(response) {
-			self.handleSetState('inProgress', false);
+		}).then((response) => {
+			this.setState({ 'inProgress': false });
 			if (!response.ok) {
 				return response.json().then(json => {
-					self.handleSetState('message', json.message);
+                    this.setState({ 'message': json.message });
 				});
 			}  else {
 				return response.json().then(json => {
-					self.handleSetState('message', '');
-					var jsonArray = JSON.parse(json.message);
-					self.setEntriesFromArray(jsonArray);
+                    this.setState({ 'message': '' });
+					this.setEntriesFromArray(JSON.parse(json.message));
 				});
 			}
 		})
@@ -176,11 +147,13 @@ class Index extends Component {
 	}
 
 	resendButton(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText='Re-send' />;
+        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText='Re-send' />;
     }
 
     onStatusFailureClick(currentRowSelected){
-    	this.handleSetState('currentRowSelected', currentRowSelected);
+		this.setState({
+            currentRowSelected
+		});
     }
 
     statusColumnDataFormat(cell, row) {
@@ -200,25 +173,33 @@ class Index extends Component {
 	}
 
 	typeColumnDataFormat(cell, row) {
-		let fontAwesomeClass = "";
-        let cellText = '';
-		if (cell === 'email_group_channel') {
-			fontAwesomeClass = `fa fa-envelope fa-fw`;
-            cellText = "Group Email";
-		} else if (cell === 'hipchat_channel') {
-			fontAwesomeClass = `fa fa-comments fa-fw`;
-            cellText = "HipChat";
-		} else if (cell === 'slack_channel') {
-			fontAwesomeClass = `fa fa-slack fa-fw`;
-            cellText = "Slack";
+		switch(cell) {
+			case 'email_group_channel':
+				return (
+					<div>
+						<span key="icon" className="fa fa-envelope fa-fw" aria-hidden='true' />
+						Group Email
+					</div>
+				);
+			case 'hipchat_channel':
+                return (
+                    <div>
+                        <span key="icon" className="fa fa-comments fa-fw" aria-hidden='true' />
+                        HipChat
+                    </div>
+                );
+            case 'slack_channel':
+                return (
+                    <div>
+                        <span key="icon" className="fa fa-slack fa-fw" aria-hidden='true' />
+                        Slack
+                    </div>
+                );
+			default:
+				return (
+					<div>Unknown</div>
+				);
 		}
-
-		let data = <div>
-						<i key="icon" className={fontAwesomeClass} aria-hidden='true'></i>
-						{cellText}
-					</div>;
-
-		return data;
 	}
 
 	notificationTypeDataFormat(cell, row) {
@@ -307,44 +288,44 @@ class Index extends Component {
 					</h1>
 					<div>
 						<div className="legendContainer">
-							<div className={`inline`}>
+							<div className="inline">
 								{highVulnerabilityIcon}
 								<div className="legendDescription">
 									High Vulnerability
 								</div>
 							</div>
-							<div className={`inline`}>
+							<div className="inline">
 								{lowVulnerabilityIcon}
 								<div className="legendDescription">
 									Low Vulnerability
 								</div>
 							</div>
-							<div className={`inline`}>
+							<div className="inline">
 								{policyViolationIcon}
 								<div className="legendDescription">
 									Policy Violation
 								</div>
 							</div>
-							<div className={`inline`}>
+							<div className="inline">
 								{policyViolationClearedIcon}
 								<div className="legendDescription">
 									Policy Violation Cleared
 								</div>
 							</div>
 							<br />
-							<div className={`inline`}>
+							<div className="inline">
 								{mediumVulnerabilityIcon}
 								<div className="legendDescription">
 									Medium Vulnerability
 								</div>
 							</div>
-							<div className={`inline`}>
+							<div className="inline">
 								{vulnerabilityIcon}
 								<div className="legendDescription">
 									Vulnerability
 								</div>
 							</div>
-							<div className={`inline`}>
+							<div className="inline">
 								{policyViolationOverrideIcon}
 								<div className="legendDescription">
 									Policy Override
@@ -352,14 +333,14 @@ class Index extends Component {
 							</div>
 						</div>
 						<BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass="table" search={true} options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
-	      					<TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='jobName' dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='notificationProjectName' dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='notificationTypes' width='145' dataSort columnClassName="tableCell" dataFormat={ this.notificationTypeDataFormat }>Notification Types</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeCreated' width='160' dataSort columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='timeLastSent' width='160' dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
 	      					<TableHeaderColumn dataField='status' width='75' dataSort columnClassName="tableCell" dataFormat={ this.statusColumnDataFormat }>Status</TableHeaderColumn>
-	                        <TableHeaderColumn dataField='' width='85' expandable={ false } columnClassName="tableCell" dataFormat={ this.resendButton }></TableHeaderColumn>
+	                        <TableHeaderColumn dataField='' width='48' expandable={ false } columnClassName="tableCell" dataFormat={ this.resendButton }></TableHeaderColumn>
+                            <TableHeaderColumn dataField='id' isKey hidden>Audit Id</TableHeaderColumn>
 	  					</BootstrapTable>
 
 						{ this.state.inProgress && <div className="progressIcon">

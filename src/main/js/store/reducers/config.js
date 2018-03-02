@@ -90,7 +90,17 @@ const config = (state = initialState, action) => {
                 error: {
                     message: '',
                     fieldErrors: []
-                }
+                },
+                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
+                hubApiKey: action.hubApiKey || '',
+                hubApiKeyIsSet: action.hubApiKeyIsSet,
+                hubProxyHost: action.hubProxyHost,
+                hubProxyPassword: action.hubProxyPassword,
+                hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
+                hubProxyPort: action.hubProxyPort,
+                hubProxyUsername: action.hubProxyUsername,
+                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
+                hubUrl: action.hubUrl
             });
 
         case CONFIG_TESTING:
