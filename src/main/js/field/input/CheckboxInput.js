@@ -27,7 +27,7 @@ CheckboxInput.propTypes = {
     errorName: PropTypes.string,
     errorValue: PropTypes.string,
     name: PropTypes.string.isRequired,
-    value: PropTypes.bool.isRequired, // should be renamed to isChecked
+    value: PropTypes.bool, // should be renamed to isChecked
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     readOnly: PropTypes.bool
@@ -36,7 +36,8 @@ CheckboxInput.propTypes = {
 CheckboxInput.defaultProps = {
     errorName: '',
     errorValue: '',
-    readOnly: false
+    readOnly: false,
+    value: false
 };
 
 export default CheckboxInput;
