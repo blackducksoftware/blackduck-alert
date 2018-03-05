@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.repositor
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 @Transactional
 @Component

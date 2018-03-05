@@ -43,12 +43,12 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.dataservice.user.UserDataService;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
-import com.blackducksoftware.integration.hub.model.view.RoleView;
+import com.blackducksoftware.integration.hub.api.generated.view.RoleAssignmentView;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.FieldEnum;
@@ -99,11 +99,11 @@ public class LoginActions {
 
     public boolean isUserRoleValid(final String userName, final RestConnection restConnection) {
         final HubServicesFactory hubServicesFactory = new HubServicesFactory(restConnection);
-        final UserDataService userDataService = hubServicesFactory.createUserDataService();
+        final UserGroupService userGroupService = hubServicesFactory.createUserGroupService();
 
         try {
-            final List<RoleView> userRoles = userDataService.getRolesForUser(userName);
-            for (final RoleView roles : userRoles) {
+            final List<RoleAssignmentView> userRoles = userGroupService.getRolesForUser(userName);
+            for (final RoleAssignmentView roles : userRoles) {
                 if ("System Administrator".equalsIgnoreCase(roles.name)) {
                     return true;
                 }

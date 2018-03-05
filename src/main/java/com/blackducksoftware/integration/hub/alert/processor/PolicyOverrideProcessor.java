@@ -28,14 +28,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
+import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.view.PolicyRuleView;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.processor.SubProcessorCache;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
+import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
+import com.blackducksoftware.integration.hub.notification.SubProcessorCache;
 import com.blackducksoftware.integration.log.IntLogger;
 
 public class PolicyOverrideProcessor extends PolicyViolationProcessor {

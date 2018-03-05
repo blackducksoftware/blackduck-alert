@@ -34,7 +34,7 @@ import java.util.Set;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class DigestRemovalProcessor {
     private final Map<String, Map<NotificationCategoryEnum, NotificationModel>> entityCache;

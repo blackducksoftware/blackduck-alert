@@ -36,10 +36,9 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubGroup;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubProject;
-import com.blackducksoftware.integration.hub.api.group.GroupService;
-import com.blackducksoftware.integration.hub.api.project.ProjectService;
-import com.blackducksoftware.integration.hub.model.view.ProjectView;
-import com.blackducksoftware.integration.hub.model.view.UserGroupView;
+import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
+import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 @Component
@@ -55,8 +54,7 @@ public class HubDataActions {
     public List<HubGroup> getHubGroups() throws IntegrationException {
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
         if (hubServicesFactory != null) {
-            final GroupService groupService = hubServicesFactory.createGroupService();
-            final List<UserGroupView> rawGroups = groupService.getAllGroups();
+            final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
             final List<HubGroup> groups = new ArrayList<>();
             for (final UserGroupView userGroupView : rawGroups) {
@@ -75,8 +73,7 @@ public class HubDataActions {
     public List<HubProject> getHubProjects() throws IntegrationException {
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
         if (hubServicesFactory != null) {
-            final ProjectService projectRequestService = hubServicesFactory.createProjectService();
-            final List<ProjectView> rawProjects = projectRequestService.getAllProjects();
+            final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
 
             final List<HubProject> projects = new ArrayList<>();
             for (final ProjectView projectView : rawProjects) {

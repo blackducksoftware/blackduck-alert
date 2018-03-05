@@ -37,8 +37,8 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
@@ -206,7 +206,7 @@ public class GlobalProperties {
     public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
-            final RestConnection restConnection = hubServerConfig.createApiKeyRestConnection(intLogger);
+            final RestConnection restConnection = hubServerConfig.createRestConnection(intLogger);
             return new HubServicesFactory(restConnection);
         }
         return null;
@@ -230,9 +230,9 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiKey) throws AlertException {
+    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiToken) throws AlertException {
         final HubServerConfigBuilder hubServerConfigBuilder = createHubServerConfigBuilderWithoutAuthentication(logger, hubTimeout);
-        hubServerConfigBuilder.setApiKey(hubApiKey);
+        hubServerConfigBuilder.setApiToken(hubApiToken);
 
         try {
             return hubServerConfigBuilder.build();
