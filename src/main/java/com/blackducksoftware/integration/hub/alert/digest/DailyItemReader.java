@@ -37,9 +37,9 @@ import org.springframework.batch.item.UnexpectedInputException;
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.dataservice.phonehome.PhoneHomeDataService;
-import com.blackducksoftware.integration.hub.dataservice.phonehome.PhoneHomeResponse;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.PhoneHomeService;
+import com.blackducksoftware.integration.hub.service.model.PhoneHomeResponse;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBodyBuilder;
 import com.blackducksoftware.integration.phonehome.enums.ThirdPartyName;
@@ -84,10 +84,10 @@ public class DailyItemReader extends DigestItemReader {
         final String productVersion = globalProperties.getProductVersion();
         if (!GlobalProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-            final PhoneHomeDataService phoneHomeDataService = hubServicesFactory.createPhoneHomeDataService();
-            final PhoneHomeRequestBodyBuilder phoneHomeRequestBodyBuilder = phoneHomeDataService.createInitialPhoneHomeRequestBodyBuilder(ThirdPartyName.ALERT, productVersion, productVersion);
+            final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
+            final PhoneHomeRequestBodyBuilder phoneHomeRequestBodyBuilder = phoneHomeService.createInitialPhoneHomeRequestBodyBuilder(ThirdPartyName.ALERT, productVersion, productVersion);
             final PhoneHomeRequestBody phoneHomeRequestBody = phoneHomeRequestBodyBuilder.build();
-            return phoneHomeDataService.startPhoneHome(phoneHomeRequestBody);
+            return phoneHomeService.startPhoneHome(phoneHomeRequestBody);
         } else {
             return null;
         }

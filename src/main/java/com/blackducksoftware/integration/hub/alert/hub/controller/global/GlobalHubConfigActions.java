@@ -46,8 +46,8 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.validator.AbstractValidator;
@@ -147,12 +147,12 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        String apiKey;
+        String apiToken;
         if (restModel.isHubApiKeyIsSet()) {
             final GlobalHubConfigEntity foundEntity = getRepository().findOne(Long.parseLong(restModel.getId()));
-            apiKey = foundEntity.getHubApiKey();
+            apiToken = foundEntity.getHubApiKey();
         } else {
-            apiKey = restModel.getHubApiKey();
+            apiToken = restModel.getHubApiKey();
         }
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
@@ -162,7 +162,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
         hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
         hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        hubServerConfigBuilder.setApiKey(apiKey);
+        hubServerConfigBuilder.setApiToken(apiToken);
         hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
         if (globalProperties.getHubTrustCertificate() != null) {
@@ -195,6 +195,6 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
     public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
-        return hubServerConfig.createApiKeyRestConnection(hubServerConfigBuilder.getLogger());
+        return hubServerConfig.createRestConnection(hubServerConfigBuilder.getLogger());
     }
 }

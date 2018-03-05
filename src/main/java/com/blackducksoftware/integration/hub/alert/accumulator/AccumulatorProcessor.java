@@ -30,7 +30,7 @@ import org.springframework.batch.item.ItemProcessor;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
@@ -47,8 +47,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
                 if (hubServicesFactory != null) {
-                    final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(hubServicesFactory.createProjectService(), hubServicesFactory.createProjectAssignmentService(),
-                            hubServicesFactory.createHubService(), hubServicesFactory.createVulnerabilityService(), hubServicesFactory.getRestConnection().logger);
+                    final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(globalProperties, hubServicesFactory.getRestConnection().logger);
                     final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
                     return storeEvent;
                 }
