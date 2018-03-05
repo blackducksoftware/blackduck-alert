@@ -28,6 +28,10 @@ apply plugin: 'org.liquibase.gradle'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
+final def versionFile = new File("${projectDir}/src/main/resources/version.txt")
+versionFile.delete()
+versionFile << version
+
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 springBoot { mainClass = mainClassName }
 

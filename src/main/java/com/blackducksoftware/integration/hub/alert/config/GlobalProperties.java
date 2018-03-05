@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,9 +43,11 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.util.ResourceUtil;
 
 @Component
 public class GlobalProperties {
+    public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepositoryWrapper globalHubRepository;
 
     @Value("${blackduck.hub.url:}")
@@ -93,9 +97,25 @@ public class GlobalProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
+    private String productVersion;
+
     @Autowired
     public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
+        initVersion();
+    }
+
+    private void initVersion() {
+        try {
+            productVersion = ResourceUtil.getResourceAsString(getClass(), "/version.txt", StandardCharsets.UTF_8.toString());
+        } catch (final IOException e) {
+            productVersion = PRODUCT_VERSION_UNKNOWN;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getProductVersion() {
+        return productVersion;
     }
 
     public String getHubUrl() {
