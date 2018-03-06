@@ -156,12 +156,12 @@ public class HipChatChannelTest extends ChannelTest {
 
         RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);
         restConnection = Mockito.spy(restConnection);
-        Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).createResponse(Mockito.any());
+        Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).connect();
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
 
         final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
         final String connectionErrorMessage = hipChatChannel.testGlobalConfig(entity);
-        assertEquals("Mock exception", connectionErrorMessage);
+        assertEquals("Invalid API key: Mock exception", connectionErrorMessage);
     }
 
 }

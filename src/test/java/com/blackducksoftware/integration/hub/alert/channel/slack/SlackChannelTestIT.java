@@ -39,10 +39,9 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
-
-import okhttp3.Request;
 
 public class SlackChannelTestIT extends ChannelTest {
 
@@ -110,7 +109,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
-            public Request createMessageRequest(final String url, final Map<String, String> headers, final String body) {
+            public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
                 assertTrue(body.contains("Vulnerability Count Added: "));
                 assertTrue(body.contains("Vulnerability Count Updated: "));
                 assertTrue(body.contains("Vulnerability Count Deleted: "));
@@ -124,7 +123,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         assertNull(request);
 
-        Mockito.verify(spyChannelRequestHelper).createMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+        Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
     @Test
@@ -136,7 +135,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
-            public Request createMessageRequest(final String url, final Map<String, String> headers, final String body) {
+            public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
                 assertTrue(body.contains("A notification was received, but it was empty."));
                 return null;
             }
@@ -148,7 +147,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         assertNull(request);
 
-        Mockito.verify(spyChannelRequestHelper).createMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
+        Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
     private ProjectData createSlackProjectData() {

@@ -26,31 +26,25 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
-import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentService;
-import com.blackducksoftware.integration.hub.api.project.ProjectService;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.model.view.AssignedUserView;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.model.view.ProjectView;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.hub.api.generated.view.AssignedUserView;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
+import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
+import com.blackducksoftware.integration.hub.service.ProjectService;
 
 public class UserNotificationCacheTest {
 
     @Test
     public void testAddUserInformation() throws IntegrationException {
         final ProjectService mockedProjectService = Mockito.mock(ProjectService.class);
-        final ProjectAssignmentService mockedProjectAssignmentService = Mockito.mock(ProjectAssignmentService.class);
-        final UserNotificationCache userNotificationCache = new UserNotificationCache(mockedProjectService, mockedProjectAssignmentService);
-
-        final ProjectView projectView = new ProjectView();
-        Mockito.when(mockedProjectService.getView(Mockito.anyString(), Mockito.any())).thenReturn(projectView);
+        final UserNotificationCache userNotificationCache = new UserNotificationCache(mockedProjectService);
 
         final AssignedUserView assignedUser = new AssignedUserView();
         assignedUser.name = "test name";
         final List<AssignedUserView> assignedUsersList = Arrays.asList(assignedUser);
-        Mockito.when(mockedProjectAssignmentService.getProjectUsers(projectView)).thenReturn(assignedUsersList);
+        Mockito.when(mockedProjectService.getAssignedUsersToProject(Mockito.anyString())).thenReturn(assignedUsersList);
 
         final Date createdAt = new Date();
         final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
@@ -78,10 +72,9 @@ public class UserNotificationCacheTest {
     public void testAddUserInformationException() throws Exception {
         try (OutputLogger outputLogger = new OutputLogger()) {
             final ProjectService mockedProjectService = Mockito.mock(ProjectService.class);
-            final ProjectAssignmentService mockedProjectAssignmentService = Mockito.mock(ProjectAssignmentService.class);
-            final UserNotificationCache userNotificationCache = new UserNotificationCache(mockedProjectService, mockedProjectAssignmentService);
+            final UserNotificationCache userNotificationCache = new UserNotificationCache(mockedProjectService);
 
-            Mockito.doThrow(new IntegrationException()).when(mockedProjectService).getView(Mockito.anyString(), Mockito.any());
+            Mockito.doThrow(new IntegrationException()).when(mockedProjectService).getAssignedUsersToProject(Mockito.anyString());
 
             final Date createdAt = new Date();
             final ProjectVersionModel projectVersionModel = new ProjectVersionModel();

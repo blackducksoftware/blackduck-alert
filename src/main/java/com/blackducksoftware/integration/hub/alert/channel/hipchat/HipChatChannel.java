@@ -86,7 +86,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (restConnection != null) {
             try {
-                final String url = "/v2/room/*/notification";
+                final String url = HIP_CHAT_API + "/v2/room/*/notification";
                 final Map<String, String> queryParameters = new HashMap<>();
                 queryParameters.put("auth_test", "true");
 
@@ -105,7 +105,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
                 return "Invalid API key: " + response.getStatusMessage();
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
-                return e.getMessage();
+                return "Invalid API key: " + e.getMessage();
             }
         }
         return "Connection error: see logs for more information.";
@@ -119,7 +119,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             final String htmlMessage = createHtmlMessage(projectData);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
-            final String url = "/v2/room/" + config.getRoomId().toString() + "/notification";
+            final String url = HIP_CHAT_API + "/v2/room/" + config.getRoomId().toString() + "/notification";
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
