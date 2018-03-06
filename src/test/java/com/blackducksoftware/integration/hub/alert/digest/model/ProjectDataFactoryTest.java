@@ -24,8 +24,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Vulnerabili
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class ProjectDataFactoryTest {
 

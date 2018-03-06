@@ -13,12 +13,12 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.NotificationService;
 
 public class AccumulatorReaderTest {
 
@@ -26,7 +26,7 @@ public class AccumulatorReaderTest {
     public void testRead() throws UnexpectedInputException, ParseException, NonTransientResourceException, Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final NotificationDataService notificationDataService = Mockito.mock(NotificationDataService.class);
+        final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
         final SortedSet<NotificationContentItem> notificationContentItems = new TreeSet<>();
         final Date createdAt = new Date();
@@ -42,8 +42,8 @@ public class AccumulatorReaderTest {
         final NotificationResults notificationResults = new NotificationResults(notificationContentItems, null);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
-        Mockito.doReturn(notificationDataService).when(hubServicesFactory).createNotificationDataService();
-        Mockito.doReturn(notificationResults).when(notificationDataService).getAllNotifications(Mockito.any(), Mockito.any());
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
+        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationResults(Mockito.any(), Mockito.any());
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
 

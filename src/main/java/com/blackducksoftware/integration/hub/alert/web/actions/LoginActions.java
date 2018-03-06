@@ -83,7 +83,13 @@ public class LoginActions {
 
         validateHubConfiguration(serverConfigBuilder);
         final RestConnection restConnection = createRestConnection(serverConfigBuilder);
-        restConnection.connect();
+        try {
+            restConnection.connect();
+        } catch (final IntegrationException ex) {
+            logger.error("Error establishing connection", ex);
+            logger.info("User not authenticated");
+            return false;
+        }
         logger.info("Connected");
 
         final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);

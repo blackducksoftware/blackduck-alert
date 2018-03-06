@@ -1,0 +1,59 @@
+[
+  {
+    "specVersion": "1.1.0",
+    "spdx:name": "hub-Alert-NotificationAccumulatorTest/hub-Alert-NotificationAccumulatorTest/1.0.0 gradle/bom",
+    "@id": "uuid:b00f764c-9f4d-4121-b053-d973f4ac5b08",
+    "@type": "BillOfMaterials",
+    "customData": {
+      "detectVersion": "3.0.1"
+    },
+    "relationship": []
+  },
+  {
+    "name": "hub-Alert-NotificationAccumulatorTest",
+    "revision": "1.0.0",
+    "@id": "http:maven/com_blackducksoftware_integration/hub_alert_profiling_test/1_0_0",
+    "@type": "Project",
+    "externalIdentifier": {
+      "externalSystemTypeId": "maven",
+      "externalId": "com.blackducksoftware.integration:hub-alert-profiling-test:1.0.0",
+      "externalIdMetaData": {
+        "forge": {
+          "name": "maven",
+          "separator": ":",
+          "kbSeparator": ":"
+        },
+        "group": "com.blackducksoftware.integration",
+        "name": "hub-Alert-NotificationAccumulatorTest",
+        "version": "1.0.0"
+      }
+    },
+    "relationship": [
+      {
+        "related": "http:maven/commons_fileupload/commons_fileupload/1_2_1",
+        "relationshipType": "DYNAMIC_LINK"
+      }
+    ]
+  },
+  {
+    "name": "commons-fileupload",
+    "revision": "1.2.1",
+    "@id": "http:maven/commons_fileupload/commons_fileupload/1_2_1",
+    "@type": "Component",
+    "externalIdentifier": {
+      "externalSystemTypeId": "maven",
+      "externalId": "commons-fileupload:commons-fileupload:1.2.1",
+      "externalIdMetaData": {
+        "forge": {
+          "name": "maven",
+          "separator": ":",
+          "kbSeparator": ":"
+        },
+        "group": "commons-fileupload",
+        "name": "commons-fileupload",
+        "version": "1.2.1"
+      }
+    },
+    "relationship": []
+  }
+]

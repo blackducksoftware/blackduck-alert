@@ -48,7 +48,7 @@ public class ChannelRestConnectionFactoryTest {
 
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection("https:url");
 
-        final ProxyInfo expectedProxyInfo = new ProxyInfo(host, port, credentials, null);
+        final ProxyInfo expectedProxyInfo = new ProxyInfo(host, port, credentials, null, null, null);
 
         assertNotNull(restConnection);
         assertEquals(expectedProxyInfo, restConnection.getProxyInfo());

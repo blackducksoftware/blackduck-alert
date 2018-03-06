@@ -20,13 +20,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.api.generated.component.ResourceMetadata;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.model.view.PolicyRuleView;
-import com.blackducksoftware.integration.hub.model.view.components.MetaView;
-import com.blackducksoftware.integration.hub.notification.processor.MapProcessorCache;
+import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
+import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
 import com.blackducksoftware.integration.test.TestLogger;
 
 public class PolicyViolationProcessorTest {
@@ -40,7 +40,7 @@ public class PolicyViolationProcessorTest {
         final String componentUrl = "url";
         final String componentVersionUrl = "newest";
         final PolicyRuleView policyRuleView = new PolicyRuleView();
-        final MetaView metaView = new MetaView();
+        final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = "Meta href";
         policyRuleView.meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
@@ -58,7 +58,7 @@ public class PolicyViolationProcessorTest {
         final String componentUrl = "url";
         final String componentVersionUrl = "newest";
         final PolicyRuleView policyRuleView = new PolicyRuleView();
-        final MetaView metaView = new MetaView();
+        final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = "Meta href";
         policyRuleView.meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);

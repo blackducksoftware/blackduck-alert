@@ -41,9 +41,11 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);
     private final RestConnection restConnection;
+    private final HubServicesFactory hubServicesFactory;
 
     public ChannelRequestHelper(final RestConnection restConnection) {
         this.restConnection = restConnection;
+        hubServicesFactory = new HubServicesFactory(restConnection);
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
@@ -57,7 +59,7 @@ public class ChannelRequestHelper {
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, String> queryParameters, final String jsonString) {
         Request.Builder requestBuilder = new Request.Builder();
         final BodyContent bodyContent = new BodyContent(jsonString);
-        requestBuilder = requestBuilder.method(HttpMethod.GET).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
+        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
         final Request request = requestBuilder.build();
         return request;
     }
@@ -73,12 +75,12 @@ public class ChannelRequestHelper {
     public Response sendGenericRequest(final Request request) throws IntegrationException {
         Response response = null;
         try {
-            final HubServicesFactory factory = new HubServicesFactory(restConnection);
-            final HubService service = factory.createHubService();
+            final HubService service = hubServicesFactory.createHubService();
             response = service.executeRequest(request);
             logger.trace("Response: " + response.toString());
             return response;
         } catch (final Exception generalException) {
+            logger.error("Error sending request", generalException);
             throw new AlertException(generalException.getMessage());
         }
     }
