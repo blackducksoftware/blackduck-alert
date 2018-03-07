@@ -57,6 +57,7 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
     @Override
     public String getGlobalRestModelJson() {
         final JsonObject json = new JsonObject();
+        json.addProperty("apiKey", apiKey);
         json.addProperty("apiKeyIsSet", apiKeyIsSet);
         json.addProperty("id", id);
         return json.toString();

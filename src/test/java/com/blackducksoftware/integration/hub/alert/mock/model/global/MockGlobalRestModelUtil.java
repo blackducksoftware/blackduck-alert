@@ -17,8 +17,10 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.MockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.gson.Gson;
 
 public abstract class MockGlobalRestModelUtil<GR extends ConfigRestModel> implements MockUtils {
+    private final Gson gson = new Gson();
 
     public abstract GR createGlobalRestModel();
 
@@ -37,7 +39,7 @@ public abstract class MockGlobalRestModelUtil<GR extends ConfigRestModel> implem
     }
 
     public void verifyGlobalRestModel() throws JSONException {
-        final String globalRestModel = createGlobalRestModel().toString();
+        final String globalRestModel = gson.toJson(createGlobalRestModel());
         final String json = getGlobalRestModelJson();
         JSONAssert.assertEquals(globalRestModel, json, false);
     }

@@ -26,6 +26,8 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+			  console.log("new api key:        ",nextProps.apiKey);
+				console.log("new api key is set: ",nextProps.apiKeyIsSet);
         this.setState({
             dataLoaded: true,
             apiKey: nextProps.apiKey || '',

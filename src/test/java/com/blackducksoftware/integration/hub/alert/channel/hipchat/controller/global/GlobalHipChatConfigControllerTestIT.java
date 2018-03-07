@@ -57,7 +57,7 @@ public class GlobalHipChatConfigControllerTestIT extends GlobalControllerTest<Gl
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final GlobalHipChatConfigRestModel globalHipChatConfigRestModel = new GlobalHipChatConfigRestModel(null, testProperties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), true);
-        request.content(globalHipChatConfigRestModel.toString());
+        request.content(gson.toJson(globalHipChatConfigRestModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
