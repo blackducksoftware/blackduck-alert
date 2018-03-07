@@ -61,7 +61,7 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }

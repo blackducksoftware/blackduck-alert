@@ -79,9 +79,12 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) {
+    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) throws IntegrationException {
         if (entity == null) {
             return "The provided entity was null.";
+        }
+        if (StringUtils.isBlank(entity.getApiKey())) {
+            throw new IntegrationException("Invalid API key: API key not provided");
         }
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (restConnection != null) {
@@ -105,7 +108,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
                 return "Invalid API key: " + response.getStatusMessage();
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
-                return "Invalid API key: " + e.getMessage();
+                throw new IntegrationException("Invalid API key: " + e.getMessage());
             }
         }
         return "Connection error: see logs for more information.";

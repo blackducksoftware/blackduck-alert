@@ -34,8 +34,6 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 @Category(ExternalConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -74,13 +72,11 @@ public class LoginControllerTestIT {
         final TestProperties testProperties = new TestProperties();
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
         mockLoginRestModel.setHubUsername(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
+        mockLoginRestModel.setHubPassword(testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
         globalProperties.setHubTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
         globalProperties.setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         final String restModel = mockLoginRestModel.getRestModelJson();
-        final JsonParser parser = new JsonParser();
-        final JsonObject jsonRestModel = parser.parse(restModel).getAsJsonObject();
-        jsonRestModel.addProperty("hubPassword", testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
-        request.content(jsonRestModel.toString());
+        request.content(restModel);
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }

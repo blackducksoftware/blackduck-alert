@@ -59,6 +59,7 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginRestModel> {
         final JsonObject json = new JsonObject();
         json.addProperty("id", id);
         json.addProperty("hubUsername", hubUsername);
+        json.addProperty("hubPassword", hubPassword);
         return json.toString();
     }
 
