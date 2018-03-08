@@ -100,11 +100,14 @@ function testFailed(message, errors) {
 }
 
 export function getConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
         .then((response) => response.json())
         .then((body) => { dispatch(configFetched(body[0])) })
@@ -113,9 +116,9 @@ export function getConfig() {
 };
 
 export function updateConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(updatingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
@@ -124,7 +127,8 @@ export function updateConfig(config) {
             method,
             body: JSON.stringify(body),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         .then((response) => {
@@ -153,15 +157,16 @@ export function updateConfig(config) {
 
 
 export function testConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(testingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(TEST_URL, {
             credentials: 'include',
             method: 'POST',
             body: JSON.stringify(scrubConfig(config)),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         // Refactor this response handler out

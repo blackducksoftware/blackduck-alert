@@ -94,11 +94,14 @@ export function toggleAdvancedEmailOptions(toggle) {
 }
 
 export function getEmailConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
         .then((response) => response.json())
         .then((body) => {
@@ -108,16 +111,18 @@ export function getEmailConfig() {
 };
 
 export function updateEmailConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(updatingEmailConfig());
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
             credentials: 'include',
             method,
             body: JSON.stringify(body),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         .then((response) => {

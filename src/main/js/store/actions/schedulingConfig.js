@@ -98,11 +98,14 @@ function accumulatorError(accumulatorError) {
 }
 
 export function getSchedulingConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
         .then((response) => response.json())
         .then((body) => { dispatch(schedulingConfigFetched(body[0])); })
@@ -111,7 +114,7 @@ export function getSchedulingConfig() {
 };
 
 export function updateSchedulingConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
 
         dispatch(updatingSchedulingConfig());
 
@@ -119,11 +122,12 @@ export function updateSchedulingConfig(config) {
             ...config,
             id: 1
         };
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
             method: 'PUT',
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
             credentials: 'include',
             body: JSON.stringify(body)
@@ -152,12 +156,15 @@ export function updateSchedulingConfig(config) {
 };
 
 export function runSchedulingAccumulator() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(runningAccumulator());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(ACCUMULATOR_URL,{
             credentials: 'include',
             method: 'POST',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
         .then((response) => {
             if (!response.ok) {
@@ -176,4 +183,3 @@ export function runSchedulingAccumulator() {
         });
     }
 }
-

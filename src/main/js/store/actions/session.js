@@ -29,9 +29,10 @@ function initializing() {
  * Triggers Logged In Reducer
  * @returns {{type}}
  */
-function loggedIn() {
+function loggedIn(data) {
     return {
-        type: SESSION_LOGGED_IN
+        type: SESSION_LOGGED_IN,
+        csrfToken: data.csrfToken
     };
 }
 
@@ -54,10 +55,14 @@ function loginError(errorMessage, errors) {
 }
 
 export function verifyLogin() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(initializing());
+        const csrfToken = getState().session.csrfToken;
         fetch('/api/verify', {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         }).then(function(response) {
             if (!response.ok) {
                 dispatch(loggedOut());
@@ -89,7 +94,8 @@ export function login(username, password) {
             body: JSON.stringify(body)
         }).then(function(response) {
             if (response.ok) {
-                dispatch(loggedIn());
+                const token = response.headers.get('X-CSRF-TOKEN');
+                dispatch(loggedIn({csrfToken: token}));
             } else {
                 // Need to parse out field errors
                 dispatch(loginError(response.statusText, []));
@@ -116,14 +122,15 @@ export function cancelLogout() {
 }
 
 export function logout() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         //dispatch(loggingOut());
-
+        const csrfToken = getState().session.csrfToken;
         fetch('/api/logout', {
             method: 'POST',
             credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         }).then(function(response) {
             if (response.ok) {

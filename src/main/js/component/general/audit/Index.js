@@ -122,11 +122,13 @@ class Index extends Component {
 		});
 
 		const resendUrl = '/api/audit/' + currentEntry.id + '/resend';
+		const csrfToken = this.props.csrfToken;
 		fetch(resendUrl, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': csrfToken
 			}
 		}).then((response) => {
 			this.setState({ 'inProgress': false });
@@ -357,7 +359,8 @@ class Index extends Component {
 
 
 const mapStateToProps = state => ({
-	items: state.audit.items
+	items: state.audit.items,
+	csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = dispatch => ({

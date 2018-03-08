@@ -45,6 +45,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -112,5 +113,11 @@ public class Application {
     @Bean
     public Gson gson() {
         return new GsonBuilder().setDateFormat(RestConnection.JSON_DATE_FORMAT).create();
+    }
+
+    @Bean
+    public HttpSessionCsrfTokenRepository csrfTokenRepository() {
+        final HttpSessionCsrfTokenRepository tokenRepository = new HttpSessionCsrfTokenRepository();
+        return tokenRepository;
     }
 }
