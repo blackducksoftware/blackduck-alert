@@ -7,7 +7,7 @@ import BaseJobConfiguration from './BaseJobConfiguration';
 export default class SlackJobConfiguration extends BaseJobConfiguration {
     initializeValues(data) {
        super.initializeValues(data);
-       
+
        let webhook = data.webhook || this.props.webhook;
        let channelUsername = data.channelUsername || this.props.channelUsername;
        let channelName = data.channelName || this.props.channelName;
@@ -31,7 +31,8 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 SlackJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string
+    distributionType: PropTypes.string,
+    csrfToken: PropTypes.string
 };
 
 SlackJobConfiguration.defaultProps = {

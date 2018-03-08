@@ -229,6 +229,7 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
 	    	<JobAddModal
+				  csrfToken={this.props.csrfToken}
 	    		waitingForProjects={this.state.waitingForProjects}
 	    		waitingForGroups={this.state.waitingForGroups}
 	    		projects={this.state.projects}
@@ -326,14 +327,15 @@ class Index extends Component {
 
 	getCurrentJobConfig(currentRowSelected) {
 		let currentJobConfig = null;
+		const csrfToken = this.props.csrfToken;
 		if (currentRowSelected != null) {
             const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentRowSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
