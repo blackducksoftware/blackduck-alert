@@ -42,6 +42,7 @@
     "babel-loader": "^7.0.0",
     "babel-minify-webpack-plugin": "^0.3.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.23.0",
     "css-loader": "^0.28.10",
