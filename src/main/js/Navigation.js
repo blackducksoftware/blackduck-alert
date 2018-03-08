@@ -10,12 +10,13 @@ import { confirmLogout } from './store/actions/session';
 const logout = (evt) => {
     evt.stopPropagation();
     evt.preventDefault();
-
+    const csrfToken = this.props.csrfToken;
     fetch('/api/logout', {
         method: 'POST',
         credentials: 'include',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
         }
     }).then(function(response) {
         if (response.ok) {
@@ -94,7 +95,9 @@ Navigation.propTypes = {
 };
 
 // Redux mappings to be used later....
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+  csrfToken: state.session.csrfToken
+});
 
 const mapDispatchToProps = dispatch => ({
     confirmLogout: () => dispatch(confirmLogout())

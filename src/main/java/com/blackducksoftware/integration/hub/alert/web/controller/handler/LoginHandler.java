@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -33,6 +34,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -49,11 +52,13 @@ import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 public class LoginHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
     private final LoginActions loginActions;
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public LoginHandler(final ObjectTransformer objectTransformer, final LoginActions loginActions) {
+    public LoginHandler(final ObjectTransformer objectTransformer, final LoginActions loginActions, final HttpSessionCsrfTokenRepository csrfTokenRepository) {
         super(objectTransformer);
         this.loginActions = loginActions;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     public ResponseEntity<String> userLogout(final HttpServletRequest request) {
@@ -69,15 +74,18 @@ public class LoginHandler extends ControllerHandler {
         return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<String> userLogin(final HttpServletRequest request, final LoginRestModel loginRestModel) {
-        return authenticateUser(loginRestModel);
+    public ResponseEntity<String> userLogin(final HttpServletRequest request, final HttpServletResponse response, final LoginRestModel loginRestModel) {
+        return authenticateUser(request, response, loginRestModel);
     }
 
-    public ResponseEntity<String> authenticateUser(final LoginRestModel loginRestModel) {
+    public ResponseEntity<String> authenticateUser(final HttpServletRequest request, final HttpServletResponse response, final LoginRestModel loginRestModel) {
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
 
         try {
             if (loginActions.authenticateUser(loginRestModel, logger)) {
+                final CsrfToken token = csrfTokenRepository.generateToken(request);
+                csrfTokenRepository.saveToken(token, request, response);
+                response.setHeader(token.getHeaderName(), token.getToken());
                 return createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
             }
             return createResponse(HttpStatus.UNAUTHORIZED, "User not administrator");
