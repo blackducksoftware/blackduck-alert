@@ -357,12 +357,6 @@ class BaseJobConfiguration extends Component {
 				</form>
 		)
 	}
-}
+};
 
-const mapStateToProps = state => ({
-	csrfToken: state.session.csrfToken
-});
-
-const mapDispatchToProps = dispatch => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(BaseJobConfiguration);
+export default BaseJobConfiguration
