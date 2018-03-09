@@ -23,67 +23,51 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.rest;
 
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.request.BodyContent;
+import com.blackducksoftware.integration.hub.request.Request;
+import com.blackducksoftware.integration.hub.request.Response;
+import com.blackducksoftware.integration.hub.rest.HttpMethod;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
-
-import okhttp3.HttpUrl;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import com.blackducksoftware.integration.hub.service.HubService;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);
     private final RestConnection restConnection;
+    private final HubServicesFactory hubServicesFactory;
 
     public ChannelRequestHelper(final RestConnection restConnection) {
         this.restConnection = restConnection;
+        hubServicesFactory = new HubServicesFactory(restConnection);
     }
 
-    public HttpUrl createHttpUrl(final List<String> urlSegments) throws IntegrationException {
-        try {
-            return restConnection.createHttpUrl(urlSegments);
-        } catch (final NullPointerException ex) {
-            throw new IntegrationException("URL invalid: " + StringUtils.join(urlSegments, '/'));
-        }
+    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
+        Request.Builder requestBuilder = new Request.Builder();
+        final BodyContent bodyContent = new BodyContent(jsonString);
+        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).bodyContent(bodyContent);
+        final Request request = requestBuilder.build();
+        return request;
     }
 
-    public HttpUrl createHttpUrl(final String url) throws IntegrationException {
-        try {
-            return restConnection.createHttpUrl(url);
-        } catch (final NullPointerException ex) {
-            throw new IntegrationException("URL invalid: " + url);
-        }
-    }
-
-    public Request createMessageRequest(final List<String> urlSegments, final Map<String, String> headers, final String jsonString) throws IntegrationException {
-        final HttpUrl httpUrl = createHttpUrl(urlSegments);
-        return createMessageRequest(httpUrl, headers, jsonString);
-    }
-
-    public Request createMessageRequest(final String url, final Map<String, String> headers, final String jsonString) throws IntegrationException {
-        final HttpUrl httpUrl = createHttpUrl(url);
-        return createMessageRequest(httpUrl, headers, jsonString);
-    }
-
-    public Request createMessageRequest(final HttpUrl httpUrl, final Map<String, String> headers, final String jsonString) throws IntegrationException {
-        final RequestBody body = restConnection.createJsonRequestBody(jsonString);
-        return restConnection.createPostRequest(httpUrl, headers, body);
+    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, String> queryParameters, final String jsonString) {
+        Request.Builder requestBuilder = new Request.Builder();
+        final BodyContent bodyContent = new BodyContent(jsonString);
+        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
+        final Request request = requestBuilder.build();
+        return request;
     }
 
     public void sendMessageRequest(final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
         final Response response = sendGenericRequest(request);
-        if (response.isSuccessful()) {
+        if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
             logger.info("Successfully sent a {} message!", messageType);
         }
     }
@@ -91,18 +75,13 @@ public class ChannelRequestHelper {
     public Response sendGenericRequest(final Request request) throws IntegrationException {
         Response response = null;
         try {
-            response = restConnection.createResponse(request);
+            final HubService service = hubServicesFactory.createHubService();
+            response = service.executeRequest(request);
             logger.trace("Response: " + response.toString());
             return response;
-        } catch (final IntegrationRestException integrationRestException) {
-            response = new Response.Builder().request(request).protocol(Protocol.HTTP_1_1).code(integrationRestException.getHttpStatusCode()).message(integrationRestException.getHttpStatusMessage()).build();
-            return response;
         } catch (final Exception generalException) {
+            logger.error("Error sending request", generalException);
             throw new AlertException(generalException.getMessage());
-        } finally {
-            if (response != null && response.body() != null) {
-                response.body().close();
-            }
         }
     }
 }

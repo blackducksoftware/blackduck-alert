@@ -17,8 +17,10 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
+import com.google.gson.Gson;
 
 public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
+    private final Gson gson = new Gson();
 
     public abstract MockGlobalRestModelUtil<GR> getMockUtil();
 
@@ -30,7 +32,7 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
         assertNull(configRestModel.getId());
 
         final String expectedString = getMockUtil().getEmptyGlobalRestModelJson();
-        assertEquals(expectedString, configRestModel.toString());
+        assertEquals(expectedString, gson.toJson(configRestModel));
 
         final GR configRestModelNew = getMockUtil().createEmptyGlobalRestModel();
         assertEquals(configRestModel, configRestModelNew);
@@ -48,7 +50,7 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
         assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getId());
 
         final String expectedString = getMockUtil().getGlobalRestModelJson();
-        assertEquals(expectedString, configRestModel.toString());
+        assertEquals(expectedString, gson.toJson(configRestModel));
 
         final GR configRestModelNew = getMockUtil().createGlobalRestModel();
         assertEquals(configRestModel, configRestModelNew);

@@ -8,8 +8,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
+import com.google.gson.Gson;
 
 public abstract class RestModelTest<R extends ConfigRestModel> {
+    private final Gson gson = new Gson();
 
     public abstract MockRestModelUtil<R> getMockUtil();
 
@@ -21,10 +23,10 @@ public abstract class RestModelTest<R extends ConfigRestModel> {
         assertNull(configRestModel.getId());
 
         final String expectedString = getMockUtil().getEmptyRestModelJson();
-        JSONAssert.assertEquals(expectedString, configRestModel.toString(), false);
+        JSONAssert.assertEquals(expectedString, gson.toJson(configRestModel), false);
 
         final R configRestModelNew = getMockUtil().createEmptyRestModel();
-        JSONAssert.assertEquals(configRestModel.toString(), configRestModelNew.toString(), false);
+        JSONAssert.assertEquals(gson.toJson(configRestModel), configRestModelNew.toString(), false);
     }
 
     public abstract Class<R> getRestModelClass();
@@ -39,10 +41,10 @@ public abstract class RestModelTest<R extends ConfigRestModel> {
         testId(restModel);
 
         final String expectedString = getMockUtil().getRestModelJson();
-        JSONAssert.assertEquals(expectedString, restModel.toString(), false);
+        JSONAssert.assertEquals(expectedString, gson.toJson(restModel), false);
 
         final R configRestModelNew = getMockUtil().createRestModel();
-        JSONAssert.assertEquals(restModel.toString(), configRestModelNew.toString(), false);
+        JSONAssert.assertEquals(gson.toJson(restModel), gson.toJson(configRestModelNew), false);
     }
 
     public void testId(final R restModel) {

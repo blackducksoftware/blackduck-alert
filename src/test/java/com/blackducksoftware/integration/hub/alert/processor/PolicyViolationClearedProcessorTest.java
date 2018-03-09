@@ -21,12 +21,12 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.model.view.PolicyRuleView;
-import com.blackducksoftware.integration.hub.notification.processor.MapProcessorCache;
+import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
+import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
+import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
 import com.blackducksoftware.integration.test.TestLogger;
 
 public class PolicyViolationClearedProcessorTest {

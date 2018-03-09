@@ -15,12 +15,13 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubGroup;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubProject;
-import com.blackducksoftware.integration.hub.api.group.GroupService;
-import com.blackducksoftware.integration.hub.api.project.ProjectService;
-import com.blackducksoftware.integration.hub.model.view.ProjectView;
-import com.blackducksoftware.integration.hub.model.view.UserGroupView;
-import com.blackducksoftware.integration.hub.model.view.components.MetaView;
+import com.blackducksoftware.integration.hub.api.generated.component.ResourceMetadata;
+import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
+import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
+import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.ProjectService;
 
 public class HubDataActionsTest {
 
@@ -41,9 +42,9 @@ public class HubDataActionsTest {
     public void testGetHubGroupsNoGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final GroupService groupService = Mockito.mock(GroupService.class);
-        Mockito.when(groupService.getAllGroups()).thenReturn(Collections.emptyList());
-        Mockito.when(hubServicesFactory.createGroupService()).thenReturn(groupService);
+        final HubService hubService = Mockito.mock(HubService.class);
+        Mockito.when(hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE)).thenReturn(Collections.emptyList());
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(Logger.class))).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubGroup> hubGroups = hubDataActions.getHubGroups();
@@ -54,22 +55,23 @@ public class HubDataActionsTest {
     public void testGetHubGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final GroupService groupService = Mockito.mock(GroupService.class);
+        final HubService hubService = Mockito.mock(HubService.class);
 
         final List<UserGroupView> userGroups = new ArrayList<>();
         final Boolean active = true;
         final String username = "User";
         final String href = "href";
         final UserGroupView userGroup = new UserGroupView();
-        userGroup.active = active;
-        userGroup.name = username;
-        final MetaView metaView = new MetaView();
+        final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = href;
         userGroup.meta = metaView;
+        userGroup.active = active;
+        userGroup.name = username;
         userGroups.add(userGroup);
 
-        Mockito.when(groupService.getAllGroups()).thenReturn(userGroups);
-        Mockito.when(hubServicesFactory.createGroupService()).thenReturn(groupService);
+        Mockito.when(hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE)).thenReturn(userGroups);
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(Logger.class))).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubGroup> hubGroups = hubDataActions.getHubGroups();
@@ -98,8 +100,10 @@ public class HubDataActionsTest {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
-        Mockito.when(projectRequestService.getAllProjects()).thenReturn(Collections.emptyList());
+        final HubService hubService = Mockito.mock(HubService.class);
+        Mockito.when(hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE)).thenReturn(Collections.emptyList());
         Mockito.when(hubServicesFactory.createProjectService()).thenReturn(projectRequestService);
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(Logger.class))).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubProject> hubProjects = hubDataActions.getHubProjects();
@@ -111,6 +115,7 @@ public class HubDataActionsTest {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
+        final HubService hubService = Mockito.mock(HubService.class);
 
         final List<ProjectView> projectViews = new ArrayList<>();
         final String projectName = "projectName";
@@ -119,9 +124,9 @@ public class HubDataActionsTest {
         projectView.name = projectName;
         projectViews.add(projectView);
 
-        Mockito.when(projectRequestService.getAllProjects()).thenReturn(projectViews);
+        Mockito.when(hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE)).thenReturn(projectViews);
         Mockito.when(hubServicesFactory.createProjectService()).thenReturn(projectRequestService);
-
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(Logger.class))).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubProject> hubProjects = hubDataActions.getHubProjects();

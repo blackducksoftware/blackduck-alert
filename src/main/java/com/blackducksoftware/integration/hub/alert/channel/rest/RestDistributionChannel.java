@@ -32,10 +32,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.request.Request;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
-
-import okhttp3.Request;
 
 public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<E, G, C> {
     final ChannelRestConnectionFactory channelRestConnectionFactory;

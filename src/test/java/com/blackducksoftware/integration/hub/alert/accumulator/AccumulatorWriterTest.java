@@ -15,12 +15,12 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManage
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersionModel;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
-import com.blackducksoftware.integration.hub.model.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.notification.processor.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
+import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
+import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
 
 public class AccumulatorWriterTest {
 

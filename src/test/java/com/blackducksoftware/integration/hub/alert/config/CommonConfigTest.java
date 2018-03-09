@@ -31,19 +31,26 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends CommonConfig<R, P, W>> {
 
     private OutputLogger outputLogger;
+    private GlobalProperties globalProperties;
 
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
+        globalProperties = new TestGlobalProperties();
     }
 
     @After
     public void cleanup() throws IOException {
         outputLogger.cleanup();
+    }
+
+    public GlobalProperties getGlobalProperties() {
+        return globalProperties;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

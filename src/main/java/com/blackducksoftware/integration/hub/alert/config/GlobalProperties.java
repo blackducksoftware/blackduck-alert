@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,15 +37,17 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.util.ResourceUtil;
 
 @Component
 public class GlobalProperties {
+    public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepositoryWrapper globalHubRepository;
 
     @Value("${blackduck.hub.url:}")
@@ -93,9 +97,25 @@ public class GlobalProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
+    private String productVersion;
+
     @Autowired
     public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
         this.globalHubRepository = globalRepository;
+        initVersion();
+    }
+
+    private void initVersion() {
+        try {
+            productVersion = ResourceUtil.getResourceAsString(getClass(), "/version.txt", StandardCharsets.UTF_8.toString());
+        } catch (final IOException e) {
+            productVersion = PRODUCT_VERSION_UNKNOWN;
+            throw new RuntimeException(e);
+        }
+    }
+
+    public String getProductVersion() {
+        return productVersion;
     }
 
     public String getHubUrl() {
@@ -186,7 +206,7 @@ public class GlobalProperties {
     public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
         if (hubServerConfig != null) {
-            final RestConnection restConnection = hubServerConfig.createApiKeyRestConnection(intLogger);
+            final RestConnection restConnection = hubServerConfig.createRestConnection(intLogger);
             return new HubServicesFactory(restConnection);
         }
         return null;
@@ -210,9 +230,9 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiKey) throws AlertException {
+    public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiToken) throws AlertException {
         final HubServerConfigBuilder hubServerConfigBuilder = createHubServerConfigBuilderWithoutAuthentication(logger, hubTimeout);
-        hubServerConfigBuilder.setApiKey(hubApiKey);
+        hubServerConfigBuilder.setApiToken(hubApiToken);
 
         try {
             return hubServerConfigBuilder.build();
