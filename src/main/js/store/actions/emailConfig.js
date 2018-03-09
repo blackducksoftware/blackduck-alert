@@ -11,6 +11,7 @@ import {
 const CONFIG_URL = '/api/configuration/channel/email';
 
 function scrubConfig(config) {
+    console.log("Email Config Scrubbed: ",config);
     return {
         mailSmtpHost: config.mailSmtpHost,
         mailSmtpFrom: config.mailSmtpFrom,
@@ -46,6 +47,7 @@ function fetchingEmailConfig() {
  * @returns {{type}}
  */
 function emailConfigFetched(config) {
+    console.log("Email Config Fetched", config)
     return {
         type: EMAIL_CONFIG_FETCHED,
         config: { ...scrubConfig(config) }
@@ -79,6 +81,7 @@ function updatingEmailConfig() {
  * @returns {{type}}
  */
 function emailConfigUpdated(config) {
+    console.log("Email Config Updated", config);
     return {
         type: EMAIL_CONFIG_UPDATED,
         config: { ...scrubConfig(config) }
@@ -105,9 +108,9 @@ export function getEmailConfig() {
         })
         .then((response) => response.json().then(body => {
           if(body.length > 0) {
-            dispatch(configFetched(body[0]));
+            dispatch(emailConfigFetched(body[0]));
           } else {
-            dispatch(configFetched({}));
+            dispatch(emailConfigFetched({}));
           }
         }))
         .catch(console.error);
@@ -131,7 +134,7 @@ export function updateEmailConfig(config) {
         })
         .then((response) => {
             if(response.ok) {
-                response.json().then((body) => {dispatch(emailConfigUpdated({...config}))});
+                response.json().then((body) => dispatch(emailConfigUpdated({...config, id: body.id})));
             } else {
                 response.json()
                     .then((data) => {
