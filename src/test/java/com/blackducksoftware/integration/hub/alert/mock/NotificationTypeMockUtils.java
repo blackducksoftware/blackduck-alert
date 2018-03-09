@@ -17,7 +17,7 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 

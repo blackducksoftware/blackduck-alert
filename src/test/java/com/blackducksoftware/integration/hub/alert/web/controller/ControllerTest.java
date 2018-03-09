@@ -42,6 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.google.gson.Gson;
 
 @Category({ DatabaseConnectionTest.class, ExternalConnectionTest.class })
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -61,6 +62,8 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
     protected MockMvc mockMvc;
+
+    protected Gson gson;
 
     protected CR entityRepository;
 
@@ -86,6 +89,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
     @Before
     public void setup() {
+        gson = new Gson();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
 
         entityRepository = getEntityRepository();
@@ -119,7 +123,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     public void testPostConfig() throws Exception {
         entityRepository.deleteAll();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
@@ -133,7 +137,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(commonEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
@@ -155,7 +159,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(commonEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
@@ -166,7 +170,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         entityRepository.deleteAll();
         final String testRestUrl = restUrl + "/validate";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }

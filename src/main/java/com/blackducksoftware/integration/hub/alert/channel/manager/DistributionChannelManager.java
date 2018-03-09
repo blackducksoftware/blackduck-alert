@@ -70,7 +70,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         return objectTransformer;
     }
 
-    public String testGlobalConfig(final G globalConfigEntity) {
+    public String testGlobalConfig(final G globalConfigEntity) throws IntegrationException {
         return getDistributionChannel().testGlobalConfig(globalConfigEntity);
     }
 

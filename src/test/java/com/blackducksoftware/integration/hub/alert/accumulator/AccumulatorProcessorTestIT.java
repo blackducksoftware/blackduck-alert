@@ -5,35 +5,35 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.TestProperties;
-import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.api.project.ProjectService;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionService;
-import com.blackducksoftware.integration.hub.bdio.model.externalid.ExternalId;
-import com.blackducksoftware.integration.hub.bdio.model.externalid.ExternalIdFactory;
-import com.blackducksoftware.integration.hub.dataservice.component.ComponentDataService;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.model.enumeration.ProjectVersionDistributionEnum;
-import com.blackducksoftware.integration.hub.model.enumeration.ProjectVersionPhaseEnum;
-import com.blackducksoftware.integration.hub.model.request.ProjectRequest;
-import com.blackducksoftware.integration.hub.model.request.ProjectVersionRequest;
-import com.blackducksoftware.integration.hub.model.view.ProjectView;
-import com.blackducksoftware.integration.hub.model.view.UserView;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
+import com.blackducksoftware.integration.hub.api.generated.component.ProjectRequest;
+import com.blackducksoftware.integration.hub.api.generated.component.ProjectVersionRequest;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionDistributionType;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionPhaseType;
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
+import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.service.CodeLocationService;
+import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
@@ -41,30 +41,27 @@ import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 @Category(HubConnectionTest.class)
 public class AccumulatorProcessorTestIT {
     private TestGlobalProperties globalProperties;
-    private ProjectService projectRequestService;
-    private ProjectVersionService projectVersionService;
-    private ComponentDataService componentDataService;
-    private NotificationDataService notificationDataService;
+    private ProjectService projectService;
+    private NotificationService notificationDataService;
+    private HubService hubService;
+    private CodeLocationService codeLocationService;
 
     private ProjectView project;
-    private UserView user;
 
     @Before
     public void init() throws Exception {
-        final TestProperties testProperties = new TestProperties();
         globalProperties = new TestGlobalProperties();
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryWithCredential(new PrintStreamIntLogger(System.out, LogLevel.TRACE));
-        projectRequestService = hubServicesFactory.createProjectService();
-        projectVersionService = hubServicesFactory.createProjectVersionService();
-        componentDataService = hubServicesFactory.createComponentDataService();
-        notificationDataService = hubServicesFactory.createNotificationDataService();
-        user = hubServicesFactory.createUserService().getUserByUserName(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
+        projectService = hubServicesFactory.createProjectService();
+        notificationDataService = hubServicesFactory.createNotificationService();
+        codeLocationService = hubServicesFactory.createCodeLocationService();
+        hubService = hubServicesFactory.createHubService();
     }
 
     @After
     public void cleanup() throws IntegrationException {
         if (project != null) {
-            projectRequestService.deleteHubProject(project);
+            projectService.deleteHubProject(project);
         }
     }
 
@@ -72,20 +69,26 @@ public class AccumulatorProcessorTestIT {
     public void testProcess() throws Exception {
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;
-        final String testProjectVersionName = "Version_1";
+        final String testProjectVersionName = "1.0.0";
 
-        final String projectUrl = projectRequestService.createHubProject(new ProjectRequest(testProjectName));
+        final ProjectRequest projectRequest = new ProjectRequest();
+        projectRequest.name = testProjectName;
+        final String projectUrl = projectService.createHubProject(projectRequest);
+        final ProjectView projectItem = hubService.getResponse(projectUrl, ProjectView.class);
+
         System.out.println("projectUrl: " + projectUrl);
 
-        project = projectRequestService.getView(projectUrl, ProjectView.class);
-        projectVersionService.createHubVersion(project, new ProjectVersionRequest(ProjectVersionDistributionEnum.INTERNAL, ProjectVersionPhaseEnum.DEVELOPMENT, testProjectVersionName));
-        final ExternalIdFactory externalIdFactory = new ExternalIdFactory();
-        final ExternalId apacheExternalId = externalIdFactory.createMavenExternalId("commons-fileupload", "commons-fileupload", "1.2.1");
-        componentDataService.addComponentToProjectVersion(apacheExternalId, testProjectName, testProjectVersionName);
+        final ProjectVersionRequest projectVersionRequest = new ProjectVersionRequest();
+        projectVersionRequest.distribution = ProjectVersionDistributionType.INTERNAL;
+        projectVersionRequest.phase = ProjectVersionPhaseType.DEVELOPMENT;
+        projectVersionRequest.versionName = testProjectVersionName;
+        projectService.createHubVersion(projectItem, projectVersionRequest);
+
+        uploadBdio("bdio/component-bdio.jsonld");
 
         TimeUnit.SECONDS.sleep(60);
 
-        final NotificationResults notificationData = notificationDataService.getUserNotifications(new Date(System.currentTimeMillis() - 100000), new Date(), user);
+        final NotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
 
         final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
 
@@ -113,5 +116,15 @@ public class AccumulatorProcessorTestIT {
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);
+    }
+
+    private void uploadBdio(final String bdioFile) throws IntegrationException, URISyntaxException, IOException {
+        final ResourceLoader resourceLoader = new ResourceLoader();
+        final String bdioContent = resourceLoader.loadJsonResource(bdioFile);
+        final File tempFile = File.createTempFile("tempBdio", ".jsonld");
+        FileUtils.write(tempFile, bdioContent, "UTF-8");
+
+        codeLocationService.importBomFile(tempFile);
+        tempFile.delete();
     }
 }

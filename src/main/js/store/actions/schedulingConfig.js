@@ -104,8 +104,13 @@ export function getSchedulingConfig() {
         fetch(CONFIG_URL, {
             credentials: 'include'
         })
-        .then((response) => response.json())
-        .then((body) => { dispatch(schedulingConfigFetched(body[0])); })
+        .then((response) => response.json().then(body => {
+          if(body.length > 0) {
+            dispatch(schedulingConfigFetched(body[0]));
+          } else {
+            dispatch(schedulingConfigFetched({}));
+          }
+        }))
         .catch(console.error);
     }
 };
@@ -176,4 +181,3 @@ export function runSchedulingAccumulator() {
         });
     }
 }
-

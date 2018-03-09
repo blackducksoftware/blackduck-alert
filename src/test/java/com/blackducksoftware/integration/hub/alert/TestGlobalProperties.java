@@ -11,6 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -18,7 +19,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
@@ -26,6 +27,7 @@ import com.blackducksoftware.integration.log.IntLogger;
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
     private String hubApiKey;
+    private String productVersionOverride;
 
     private final TestProperties testProperties;
 
@@ -53,6 +55,19 @@ public class TestGlobalProperties extends GlobalProperties {
 
     public void setHubApiKey(final String hubApiKey) {
         this.hubApiKey = hubApiKey;
+    }
+
+    public void setProductVersionOverride(final String productVersionOverride) {
+        this.productVersionOverride = productVersionOverride;
+    }
+
+    @Override
+    public String getProductVersion() {
+        if (StringUtils.isNotBlank(productVersionOverride)) {
+            return productVersionOverride;
+        } else {
+            return super.getProductVersion();
+        }
     }
 
     @Override

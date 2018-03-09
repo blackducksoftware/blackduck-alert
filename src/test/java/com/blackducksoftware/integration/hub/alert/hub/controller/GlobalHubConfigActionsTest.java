@@ -38,11 +38,11 @@ import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalActionsTest;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.global.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigValidator;
 import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.validator.HubServerConfigValidator;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubRepositoryWrapper, GlobalHubConfigActions> {
@@ -260,17 +260,17 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final GlobalHubConfigActions configActions = new GlobalHubConfigActions(null, null, null);
 
         final String url = "https://www.google.com/";
-        final String apiKey = "User";
+        final String apiToken = "User";
         HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setHubUrl(url);
-        serverConfigBuilder.setApiKey(apiKey);
+        serverConfigBuilder.setApiToken(apiToken);
 
         // we create this spy to skip the server validation that happens in the build method
         serverConfigBuilder = Mockito.spy(serverConfigBuilder);
         Mockito.doAnswer(new Answer<HubServerConfig>() {
             @Override
             public HubServerConfig answer(final InvocationOnMock invocation) throws Throwable {
-                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiKey, new ProxyInfo(null, 0, null, null), false);
+                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiToken, new ProxyInfo(null, 0, null, null, null, null), false);
                 return hubServerConfig;
             }
         }).when(serverConfigBuilder).build();

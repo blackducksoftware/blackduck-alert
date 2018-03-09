@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class ProjectDataBuilderTest {
 

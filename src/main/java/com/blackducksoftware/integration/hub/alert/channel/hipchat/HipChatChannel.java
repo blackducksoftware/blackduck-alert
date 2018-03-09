@@ -24,9 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -48,14 +46,13 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.request.Request;
+import com.blackducksoftware.integration.hub.request.Response;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import freemarker.template.TemplateException;
-import okhttp3.HttpUrl;
-import okhttp3.Request;
-import okhttp3.Response;
 
 @Component
 public class HipChatChannel extends RestDistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
@@ -82,14 +79,17 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) {
+    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) throws IntegrationException {
         if (entity == null) {
             return "The provided entity was null.";
+        }
+        if (StringUtils.isBlank(entity.getApiKey())) {
+            throw new IntegrationException("Invalid API key: API key not provided");
         }
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
         if (restConnection != null) {
             try {
-                final List<String> urlSegments = Arrays.asList("v2", "room", "*", "notification");
+                final String url = HIP_CHAT_API + "/v2/room/*/notification";
                 final Map<String, String> queryParameters = new HashMap<>();
                 queryParameters.put("auth_test", "true");
 
@@ -99,17 +99,16 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
 
                 // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
                 final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-                final HttpUrl httpUrl = restConnection.createHttpUrl(urlSegments, queryParameters);
-                final Request request = channelRequestHelper.createMessageRequest(httpUrl, requestHeaders, "{\"message\":\"test\"}");
+                final Request request = channelRequestHelper.createPostMessageRequest(url, requestHeaders, queryParameters, "{\"message\":\"test\"}");
 
                 final Response response = channelRequestHelper.sendGenericRequest(request);
-                if (response.isSuccessful()) {
+                if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
                     return "API key is valid.";
                 }
-                return "Invalid API key: " + response.message();
+                return "Invalid API key: " + response.getStatusMessage();
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
-                return e.getMessage();
+                throw new IntegrationException("Invalid API key: " + e.getMessage());
             }
         }
         return "Connection error: see logs for more information.";
@@ -123,13 +122,13 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             final String htmlMessage = createHtmlMessage(projectData);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
-            final List<String> urlSegments = Arrays.asList("v2", "room", config.getRoomId().toString(), "notification");
+            final String url = HIP_CHAT_API + "/v2/room/" + config.getRoomId().toString() + "/notification";
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
             requestHeaders.put("Content-Type", "application/json");
 
-            return channelRequestHelper.createMessageRequest(urlSegments, requestHeaders, jsonString);
+            return channelRequestHelper.createPostMessageRequest(url, requestHeaders, jsonString);
         }
     }
 
