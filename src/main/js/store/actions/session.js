@@ -56,8 +56,8 @@ function loginError(errorMessage, errors) {
 
 export function verifyLogin() {
     return (dispatch, getState) => {
-        dispatch(initializing());
         const csrfToken = getState().session.csrfToken;
+        dispatch(initializing());
         fetch('/api/verify', {
             credentials: 'include',
             headers: {
@@ -67,7 +67,8 @@ export function verifyLogin() {
             if (!response.ok) {
                 dispatch(loggedOut());
             } else {
-                dispatch(loggedIn());
+                const token = getState().session.csrfToken;
+                dispatch(loggedIn({csrfToken: token}));
             }
         }).catch(function(error) {
             // TODO: Dispatch Error
@@ -136,8 +137,14 @@ export function logout() {
             if (response.ok) {
                 dispatch(loggedOut());
                 dispatch(push('/'));
+            } else {
+              dispatch(loggedOut());
+              dispatch(push('/'));
             }
         }).catch(function(error) {
+
+            dispatch(loggedOut());
+            dispatch(push('/'));
             console.log(error);
         });
     };

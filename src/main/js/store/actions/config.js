@@ -24,7 +24,7 @@ function scrubConfig(config) {
         hubProxyUsername: config.hubProxyUsername,
         hubTimeout: config.hubTimeout,
         hubUrl: config.hubUrl,
-        id: config.id
+        id: (config.id?''+config.id: '')
     };
 }
 
