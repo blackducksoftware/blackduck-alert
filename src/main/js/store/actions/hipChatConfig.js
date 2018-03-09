@@ -16,7 +16,7 @@ function scrubConfig(config) {
     return {
         apiKeyIsSet: config.apiKeyIsSet,
         apiKey: config.apiKey,
-        id: config.id
+        id: (config.id?''+config.id: '')
     };
 }
 

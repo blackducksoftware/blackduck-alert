@@ -212,7 +212,7 @@ class EmailConfiguration extends React.Component {
 };
 
 EmailConfiguration.propTypes = {
-    id: PropTypes.number,
+    id: PropTypes.string,
     mailSmtpHost: PropTypes.string,
     mailSmtpFrom: PropTypes.string,
     mailSmtpAuth: PropTypes.bool,

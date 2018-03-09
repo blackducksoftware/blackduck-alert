@@ -84,7 +84,7 @@ class HipChatConfiguration extends React.Component {
 HipChatConfiguration.propTypes = {
     apiKey: PropTypes.string,
     apiKeyIsSet: PropTypes.bool,
-    id: PropTypes.number,
+    id: PropTypes.string,
     testStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,

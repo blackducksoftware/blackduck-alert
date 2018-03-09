@@ -11,7 +11,6 @@ import {
 const CONFIG_URL = '/api/configuration/channel/email';
 
 function scrubConfig(config) {
-    console.log("Email Config Scrubbed: ",config);
     return {
         mailSmtpHost: config.mailSmtpHost,
         mailSmtpFrom: config.mailSmtpFrom,
@@ -28,7 +27,7 @@ function scrubConfig(config) {
         mailSmtpDnsRet: config.mailSmtpDnsRet,
         mailSmtpAllow8bitmime: config.mailSmtpAllow8bitmime,
         mailSmtpSendPartial: config.mailSmtpSendPartial,
-        id: config.id
+        id: (config.id?''+config.id: '')
     };
 }
 
@@ -47,7 +46,6 @@ function fetchingEmailConfig() {
  * @returns {{type}}
  */
 function emailConfigFetched(config) {
-    console.log("Email Config Fetched", config)
     return {
         type: EMAIL_CONFIG_FETCHED,
         config: { ...scrubConfig(config) }

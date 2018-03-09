@@ -50,7 +50,8 @@ const session = (state = initialState, action) => {
         case SESSION_LOGGED_OUT:
             return Object.assign({}, initialState, {
                 initializing: false,
-                csrfToken: null
+                loggedIn: false,
+                showLogoutConfirm: false
             });
 
         case SESSION_LOGIN_ERROR:

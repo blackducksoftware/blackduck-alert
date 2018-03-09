@@ -116,7 +116,7 @@ HubConfiguration.propTypes = {
     hubProxyUsername: PropTypes.string,
     hubTimeout: PropTypes.number.isRequired,
 	  hubUrl: PropTypes.string.isRequired,
-	  id: PropTypes.number,
+	  id: PropTypes.string,
 		errorMessage: PropTypes.string,
 		testStatus: PropTypes.string,
 		getConfig: PropTypes.func.isRequired,
