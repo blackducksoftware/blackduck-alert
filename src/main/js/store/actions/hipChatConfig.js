@@ -131,7 +131,7 @@ export function updateConfig(config) {
         })
         .then((response) => {
             if(response.ok) {
-                response.json().then((body) => dispatch(configUpdated({id: body.id, ...config})));
+                response.json().then((body) => dispatch(configUpdated({...config, id: body.id})));
             } else {
                 response.json()
                     .then((data) => {

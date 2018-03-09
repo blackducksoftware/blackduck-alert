@@ -22,7 +22,7 @@ class HubConfiguration extends React.Component {
             hubProxyPort: this.props.hubProxyPort,
             hubProxyUsername: this.props.hubProxyUsername,
             hubTimeout: this.props.hubTimeout,
-			hubUrl: this.props.hubUrl
+			      hubUrl: this.props.hubUrl
 		};
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -110,18 +110,18 @@ HubConfiguration.propTypes = {
     hubApiKey: PropTypes.string,
     hubApiKeyIsSet: PropTypes.bool.isRequired,
     hubProxyHost: PropTypes.string,
-	hubProxyPassword: PropTypes.string,
+	  hubProxyPassword: PropTypes.string,
     hubProxyPasswordIsSet: PropTypes.bool.isRequired,
     hubProxyPort: PropTypes.string,
     hubProxyUsername: PropTypes.string,
     hubTimeout: PropTypes.number.isRequired,
-	hubUrl: PropTypes.string.isRequired,
-	id: PropTypes.string,
-	errorMessage: PropTypes.string,
-	testStatus: PropTypes.string,
-	getConfig: PropTypes.func.isRequired,
-	updateConfig: PropTypes.func.isRequired,
-	testConfig: PropTypes.func.isRequired
+	  hubUrl: PropTypes.string.isRequired,
+	  id: PropTypes.number,
+		errorMessage: PropTypes.string,
+		testStatus: PropTypes.string,
+		getConfig: PropTypes.func.isRequired,
+		updateConfig: PropTypes.func.isRequired,
+		testConfig: PropTypes.func.isRequired
 };
 
 // Default values
@@ -142,18 +142,18 @@ const mapStateToProps = state => ({
     hubProxyUsername: state.config.hubProxyUsername,
     hubTimeout: state.config.hubTimeout,
     hubUrl: state.config.hubUrl,
-	testStatus: state.config.testStatus,
+		testStatus: state.config.testStatus,
     updateStatus: state.config.updateStatus,
-	errorMessage: state.config.error.message,
-	fieldErrors: state.config.error.fieldErrors,
-	id: state.config.id
+		errorMessage: state.config.error.message,
+		fieldErrors: state.config.error.fieldErrors,
+		id: state.config.id
 });
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
     updateConfig: (config) => dispatch(updateConfig(config)),
-	testConfig: (config) => dispatch(testConfig(config))
+		testConfig: (config) => dispatch(testConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HubConfiguration);
