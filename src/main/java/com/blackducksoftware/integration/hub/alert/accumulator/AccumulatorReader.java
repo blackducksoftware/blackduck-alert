@@ -38,10 +38,10 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationDataService;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.NotificationService;
 
 public class AccumulatorReader implements ItemReader<NotificationResults> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
@@ -94,8 +94,8 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                     logger.error("Error creating date range", e);
                 }
 
-                final NotificationDataService notificationDataService = hubServicesFactory.createNotificationDataService();
-                final NotificationResults notificationResults = notificationDataService.getAllNotifications(startDate, endDate);
+                final NotificationService notificationService = hubServicesFactory.createNotificationService();
+                final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
                 if (notificationResults.getNotificationContentItems().isEmpty()) {
                     logger.debug("Read Notification Count: 0");

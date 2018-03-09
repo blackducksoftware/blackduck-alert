@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
-import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
@@ -70,6 +70,18 @@ public class LoginActionsTestIT {
 
     @Test
     public void testAuthenticateUserFailIT() throws IntegrationException, IOException {
+        mockLoginRestModel.setHubUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
+        final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
+        final MockLoginRestModel badRestModel = new MockLoginRestModel();
+        badRestModel.setHubPassword("badpassword");
+        final boolean userAuthenticated = loginActions.authenticateUser(badRestModel.createRestModel(), new Slf4jIntLogger(logger));
+
+        assertFalse(userAuthenticated);
+        assertTrue(outputLogger.isLineContainingText("User not authenticated"));
+    }
+
+    @Test
+    public void testAuthenticateUserRoleFailIT() throws IntegrationException, IOException {
         mockLoginRestModel.setHubUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
         final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
 

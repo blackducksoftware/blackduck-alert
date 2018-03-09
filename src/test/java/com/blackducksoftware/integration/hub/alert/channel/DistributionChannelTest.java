@@ -19,6 +19,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -142,7 +143,7 @@ public class DistributionChannelTest extends ChannelTest {
     }
 
     @Test
-    public void testGlobalConfigTest() {
+    public void testGlobalConfigTest() throws IntegrationException {
         // Slack has no global config, so we use it to test the default method.
         final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
 

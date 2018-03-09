@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -107,22 +108,40 @@ public class HipChatChannelTest extends ChannelTest {
     }
 
     @Test
-    public void testGlobalConfigNullTest() {
+    public void testGlobalConfigNullTest() throws Exception {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, restFactory);
 
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
 
-        final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
-        final String restConnectionNullMessage = hipChatChannel.testGlobalConfig(entity);
-        assertEquals("Connection error: see logs for more information.", restConnectionNullMessage);
-
         final String nullEntityMessage = hipChatChannel.testGlobalConfig(null);
         assertEquals("The provided entity was null.", nullEntityMessage);
+
+        hipChatMockUtil.setApiKey("apiKey");
+        final GlobalHipChatConfigEntity entityWithKey = hipChatMockUtil.createGlobalEntity();
+
+        final String restConnectionNullMessage = hipChatChannel.testGlobalConfig(entityWithKey);
+        assertEquals("Connection error: see logs for more information.", restConnectionNullMessage);
     }
 
     @Test
-    public void testGlobalConfigValidApiKeyTest() {
+    public void testGlobalConfigAPIKeyNullTest() {
+        final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
+        final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, restFactory);
+
+        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
+
+        try {
+            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
+            hipChatChannel.testGlobalConfig(entity);
+            fail();
+        } catch (final IntegrationException ex) {
+            assertEquals("Invalid API key: API key not provided", ex.getMessage());
+        }
+    }
+
+    @Test
+    public void testGlobalConfigValidApiKeyTest() throws Exception {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         globalProperties.setHubTrustCertificate(Boolean.TRUE);
 
@@ -144,9 +163,12 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, restFactory);
 
         hipChatMockUtil.setApiKey("garbage");
-        final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
-        final String invalidMessage = hipChatChannel.testGlobalConfig(entity);
-        assertTrue(invalidMessage.contains("Invalid API key: "));
+        try {
+            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+            hipChatChannel.testGlobalConfig(entity);
+        } catch (final IntegrationException ex) {
+            assertTrue(ex.getMessage().contains("Invalid API key: "));
+        }
     }
 
     @Test
@@ -156,12 +178,16 @@ public class HipChatChannelTest extends ChannelTest {
 
         RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);
         restConnection = Mockito.spy(restConnection);
-        Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).createResponse(Mockito.any());
+        Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).connect();
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
 
-        final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
-        final String connectionErrorMessage = hipChatChannel.testGlobalConfig(entity);
-        assertEquals("Mock exception", connectionErrorMessage);
+        hipChatMockUtil.setApiKey("apiKey");
+        try {
+            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+            hipChatChannel.testGlobalConfig(entity);
+        } catch (final IntegrationException ex) {
+            assertEquals("Invalid API key: Mock exception", ex.getMessage());
+        }
     }
 
 }
