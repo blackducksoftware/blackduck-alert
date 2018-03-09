@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class ProjectDataBuilder {
     private DigestTypeEnum digestType;

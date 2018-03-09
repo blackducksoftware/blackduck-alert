@@ -33,11 +33,11 @@ public class HubDataHandlerTest {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final Gson gson = new Gson();
         final HubDataActions hubDataActions = Mockito.mock(HubDataActions.class);
-        Mockito.when(hubDataActions.getHubGroups()).thenThrow(new IntegrationRestException(202, "StatusMessage", "ErrorMessage"));
+        Mockito.when(hubDataActions.getHubGroups()).thenThrow(new IntegrationRestException(402, "StatusMessage", "ErrorMessage"));
         final HubDataHandler hubDataHandler = new HubDataHandler(objectTransformer, gson, hubDataActions);
         final ResponseEntity<String> responseEntity = hubDataHandler.getHubGroups();
-        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage\"}", responseEntity.getBody());
+        assertEquals(HttpStatus.PAYMENT_REQUIRED, responseEntity.getStatusCode());
+        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage:402:StatusMessage\"}", responseEntity.getBody());
     }
 
     @Test
@@ -81,11 +81,11 @@ public class HubDataHandlerTest {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final Gson gson = new Gson();
         final HubDataActions hubDataActions = Mockito.mock(HubDataActions.class);
-        Mockito.when(hubDataActions.getHubProjects()).thenThrow(new IntegrationRestException(202, "StatusMessage", "ErrorMessage"));
+        Mockito.when(hubDataActions.getHubProjects()).thenThrow(new IntegrationRestException(402, "StatusMessage", "ErrorMessage"));
         final HubDataHandler hubDataHandler = new HubDataHandler(objectTransformer, gson, hubDataActions);
         final ResponseEntity<String> responseEntity = hubDataHandler.getHubProjects();
-        assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage\"}", responseEntity.getBody());
+        assertEquals(HttpStatus.PAYMENT_REQUIRED, responseEntity.getStatusCode());
+        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage:402:StatusMessage\"}", responseEntity.getBody());
     }
 
     @Test

@@ -127,7 +127,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     public abstract void sendMessage(final E event, final C config) throws Exception;
 
-    public String testGlobalConfig(final G entity) {
+    public String testGlobalConfig(final G entity) throws IntegrationException {
         if (entity != null) {
             return "Not implemented.";
         }

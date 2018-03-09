@@ -50,7 +50,7 @@ import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.hub.dataservice.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {

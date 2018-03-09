@@ -115,7 +115,7 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     public void testPostConfig() throws Exception {
         globalEntityRepository.deleteAll();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
     }
@@ -127,7 +127,7 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
         final GE savedEntity = globalEntityRepository.save(entity);
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
@@ -139,7 +139,7 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
         final GE savedEntity = globalEntityRepository.save(entity);
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }

@@ -26,37 +26,44 @@ package com.blackducksoftware.integration.hub.alert.processor;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.api.project.ProjectAssignmentService;
-import com.blackducksoftware.integration.hub.api.project.ProjectService;
-import com.blackducksoftware.integration.hub.api.view.MetaHandler;
-import com.blackducksoftware.integration.hub.api.vulnerability.VulnerabilityService;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.dataservice.notification.model.VulnerabilityContentItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.processor.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationProcessor;
-import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
-import com.blackducksoftware.integration.hub.service.HubService;
+import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
+import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.notification.NotificationProcessor;
+import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
+import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
+import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.notification.VulnerabilityContentItem;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
 
-    public NotificationItemProcessor(final ProjectService projectService, final ProjectAssignmentService projectAssignmentService, final HubService hubService, final VulnerabilityService vulnerabilityService, final IntLogger intLogger) {
-        init(projectService, projectAssignmentService, hubService, vulnerabilityService, intLogger);
+    public NotificationItemProcessor(final GlobalProperties globalProperties, final IntLogger intLogger) {
+        init(globalProperties, intLogger);
     }
 
-    public void init(final ProjectService projectService, final ProjectAssignmentService projectAssignMentService, final HubService hubService, final VulnerabilityService vulnerabilityService, final IntLogger intLogger) {
-        final MapProcessorCache policyCache = new UserNotificationCache(projectService, projectAssignMentService);
-        final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, projectAssignMentService, hubService, vulnerabilityService, new MetaHandler(intLogger));
-        getCacheList().add(policyCache);
-        getCacheList().add(vulnerabilityCache);
-        getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
-        getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, intLogger));
-        getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, intLogger));
-        getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, intLogger));
+    public void init(final GlobalProperties globalProperties, final IntLogger intLogger) {
+        HubServicesFactory hubServicesFactory;
+        try {
+            hubServicesFactory = globalProperties.createHubServicesFactory(intLogger);
+
+            final ProjectService projectService = hubServicesFactory.createProjectService();
+            final MapProcessorCache policyCache = new UserNotificationCache(projectService);
+            final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, hubServicesFactory);
+            getCacheList().add(policyCache);
+            getCacheList().add(vulnerabilityCache);
+            getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
+            getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, intLogger));
+            getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, intLogger));
+            getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, intLogger));
+        } catch (final IntegrationException ex) {
+            intLogger.error("Error building the notification processor", ex);
+        }
     }
 
     @Override

@@ -42,7 +42,7 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
     @Override
     public void testPostConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
@@ -54,7 +54,7 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
         final CommonDistributionConfigEntity savedEntity = entityRepository.save(entity);
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
@@ -67,7 +67,7 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(restModel.toString());
+        request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }

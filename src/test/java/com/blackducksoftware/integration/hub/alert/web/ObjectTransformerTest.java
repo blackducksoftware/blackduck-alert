@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalH
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.notification.processor.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class ObjectTransformerTest {
 

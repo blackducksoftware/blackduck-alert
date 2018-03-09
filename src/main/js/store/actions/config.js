@@ -109,8 +109,13 @@ export function getConfig() {
               'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => response.json())
-        .then((body) => { dispatch(configFetched(body[0])) })
+        .then((response) => response.json().then(body => {
+          if(body.length > 0) {
+            dispatch(configFetched(body[0]));
+          } else {
+            dispatch(configFetched({}));
+          }
+        }))
         .catch(console.error);
     }
 };
