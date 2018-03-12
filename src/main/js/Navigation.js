@@ -80,6 +80,7 @@ const Navigation = props => (
             <li className="logoutLink">
                 <a
                     role="button"
+                    tabIndex={0}
                     onClick={(evt) => {
                         evt.preventDefault();
                         props.confirmLogout();

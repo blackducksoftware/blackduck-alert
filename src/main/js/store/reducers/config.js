@@ -56,7 +56,7 @@ const config = (state = initialState, action) => {
                 hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
                 hubProxyPort: action.hubProxyPort,
                 hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
+                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 60,
                 hubUrl: action.hubUrl,
                 id: action.id
             });
@@ -99,7 +99,7 @@ const config = (state = initialState, action) => {
                 hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
                 hubProxyPort: action.hubProxyPort,
                 hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
+                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 60,
                 hubUrl: action.hubUrl
             });
 

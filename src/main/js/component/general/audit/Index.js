@@ -20,8 +20,8 @@ const vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="
 class Index extends Component {
     constructor(props) {
         super(props);
-		 this.state = {
-		 	autoRefresh: true,
+        this.state = {
+            autoRefresh: true,
             message: '',
             entries: [],
             modal: undefined
@@ -70,16 +70,16 @@ class Index extends Component {
             for (const index in jsonArray) {
                 const newEntry = {};
                 newEntry.id = jsonArray[index].id;
-	            newEntry.jobName = jsonArray[index].name;
-	            newEntry.eventType = jsonArray[index].eventType;
-	            newEntry.timeCreated = jsonArray[index].timeCreated;
-	            newEntry.timeLastSent = jsonArray[index].timeLastSent;
-	            newEntry.status = jsonArray[index].status;
-	            newEntry.errorMessage = jsonArray[index].errorMessage;
-	            newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
+                newEntry.jobName = jsonArray[index].name;
+                newEntry.eventType = jsonArray[index].eventType;
+                newEntry.timeCreated = jsonArray[index].timeCreated;
+                newEntry.timeLastSent = jsonArray[index].timeLastSent;
+                newEntry.status = jsonArray[index].status;
+                newEntry.errorMessage = jsonArray[index].errorMessage;
+                newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
                 if (jsonArray[index].notification) {
                     newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
-		            newEntry.notificationProjectName = jsonArray[index].notification.projectName;
+                    newEntry.notificationProjectName = jsonArray[index].notification.projectName;
                     newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
                     newEntry.components = jsonArray[index].notification.components;
                 }
@@ -141,8 +141,8 @@ class Index extends Component {
             });
         })
             .catch((error) => {
- 		 	console.log(error);
- 		});
+                console.log(error);
+            });
     }
 
     resendButton(cell, row) {
@@ -177,7 +177,7 @@ class Index extends Component {
                 return (
                     <div>
                         <span key="icon" className="fa fa-envelope fa-fw" aria-hidden="true" />
-						Group Email
+                        Group Email
                     </div>
                 );
             case 'hipchat_channel':
@@ -243,8 +243,8 @@ class Index extends Component {
     }
 
     isExpandableRow(row) {
-    	return true;
-  	}
+        return true;
+    }
 
     expandComponent(row) {
         return <AuditDetails currentEntry={row} />;
@@ -257,30 +257,30 @@ class Index extends Component {
 
 
     createCustomButtonGroup(buttons) {
-	    return (
+        return (
             <ButtonGroup>
-        {!this.state.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
+                {!this.state.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
                     <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
                 </div>}
-    </ButtonGroup>
-	    );
-  	}
+            </ButtonGroup>
+        );
+    }
 
     render() {
         const auditTableOptions = {
             defaultSortName: 'timeLastSent',
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
-	  		noDataText: 'No events',
-	  		clearSearch: true,
-	  		expandBy: 'column',
-	  		expandRowBgColor: '#e8e8e8'
+            noDataText: 'No events',
+            clearSearch: true,
+            expandBy: 'column',
+            expandRowBgColor: '#e8e8e8'
         };
 
         return (
             <div>
                 <h1>
-                        Alert / General / Audit
+                    Alert / General / Audit
                     <small className="pull-right">
                         <AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange} />
                     </small>
@@ -290,44 +290,44 @@ class Index extends Component {
                         <div className="inline">
                             {highVulnerabilityIcon}
                             <div className="legendDescription">
-									High Vulnerability
+                                High Vulnerability
                             </div>
                         </div>
                         <div className="inline">
                             {lowVulnerabilityIcon}
                             <div className="legendDescription">
-									Low Vulnerability
+                                Low Vulnerability
                             </div>
                         </div>
                         <div className="inline">
                             {policyViolationIcon}
                             <div className="legendDescription">
-									Policy Violation
+                                Policy Violation
                             </div>
                         </div>
                         <div className="inline">
                             {policyViolationClearedIcon}
                             <div className="legendDescription">
-									Policy Violation Cleared
+                                Policy Violation Cleared
                             </div>
                         </div>
                         <br />
                         <div className="inline">
                             {mediumVulnerabilityIcon}
                             <div className="legendDescription">
-									Medium Vulnerability
+                                Medium Vulnerability
                             </div>
                         </div>
                         <div className="inline">
                             {vulnerabilityIcon}
                             <div className="legendDescription">
-									Vulnerability
+                                Vulnerability
                             </div>
                         </div>
                         <div className="inline">
                             {policyViolationOverrideIcon}
                             <div className="legendDescription">
-									Policy Override
+                                Policy Override
                             </div>
                         </div>
                     </div>
@@ -344,7 +344,7 @@ class Index extends Component {
 
                     { this.state.inProgress && <div className="progressIcon">
                         <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
-                                               </div>}
+                    </div>}
 
                     <p name="message">{this.state.message}</p>
                 </div>

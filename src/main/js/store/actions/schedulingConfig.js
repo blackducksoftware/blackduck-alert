@@ -90,10 +90,10 @@ function accumulatorSuccess() {
  * Triggers Scheduling Accumulator Ran
  * @returns {{type}}
  */
-function accumulatorError(accumulatorError) {
+function accumulatorError(error) {
     return {
         type: SCHEDULING_ACCUMULATOR_ERROR,
-        accumulatorError
+        accumulatorError: error
     };
 }
 
@@ -134,7 +134,7 @@ export function updateSchedulingConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(body => dispatch(schedulingConfigUpdated({ ...config })));
+                    response.json().then(() => dispatch(schedulingConfigUpdated({ ...config })));
                 } else {
                     response.json()
                         .then((data) => {
@@ -145,7 +145,7 @@ export function updateSchedulingConfig(config) {
                                 case 412:
                                     return dispatch(schedulingConfigError(data.message, data.errors));
                                 default:
-                                    dispatch(schedulingConfigError(data.message, null));
+                                    return dispatch(schedulingConfigError(data.message, null));
                             }
                         });
                 }

@@ -8,9 +8,9 @@ import ConfigButtons from '../../../common/ConfigButtons';
 class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
-		 this.state = {
-		 	values: {},
-		 	errors: {},
+        this.state = {
+            values: {},
+            errors: {},
             frequencyOptions: [
                 { label: 'Real Time', value: 'REAL_TIME' },
                 { label: 'Daily', value: 'DAILY' }
@@ -46,13 +46,13 @@ class BaseJobConfiguration extends Component {
             const getUrl = `${urlString}?id=${distributionId}`;
             const self = this;
             fetch(getUrl, {
-    			credentials: 'same-origin',
+                credentials: 'same-origin',
                 headers: {
-    				'Content-Type': 'application/json'
-    			}
-    		})
-    		.then((response) => {
-    			if (response.ok) {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then((response) => {
+                    if (response.ok) {
                         response.json().then((jsonArray) => {
                             if (jsonArray && jsonArray.length > 0) {
                                 self.initializeValues(jsonArray[0]);
@@ -65,8 +65,8 @@ class BaseJobConfiguration extends Component {
                     }
                 })
                 .catch((error) => {
- 		 		console.log(error);
- 			});
+                    console.log(error);
+                });
         } else {
             this.initializeValues(this.props);
         }
@@ -87,10 +87,10 @@ class BaseJobConfiguration extends Component {
             values.frequency = frequencyFound.value;
         }
         if (includeAllProjects) {
-        	values.includeAllProjects = includeAllProjects === true || includeAllProjects === 'true';
+            values.includeAllProjects = includeAllProjects === true || includeAllProjects === 'true';
         } else if (filterByProject) {
-        	values.includeAllProjects = (filterByProject == 'false');
-	    }
+            values.includeAllProjects = (filterByProject == 'false');
+        }
         if (notificationTypes) {
             values.notificationTypes = notificationTypes;
         }
@@ -169,8 +169,8 @@ class BaseJobConfiguration extends Component {
             });
         })
             .catch((error) => {
- 		 	console.log(error);
- 		});
+                console.log(error);
+            });
     }
 
     handleTestSubmit(event) {
@@ -227,8 +227,8 @@ class BaseJobConfiguration extends Component {
             });
         })
             .catch((error) => {
- 		 	console.log(error);
- 		});
+                console.log(error);
+            });
     }
 
     handleChange(event) {
@@ -262,7 +262,7 @@ class BaseJobConfiguration extends Component {
 
     handleFrequencyChanged(option) {
         if (option) {
-	        this.handleStateValues('frequency', option.value);
+            this.handleStateValues('frequency', option.value);
         } else {
             this.handleStateValues('frequency', option);
         }
@@ -277,7 +277,7 @@ class BaseJobConfiguration extends Component {
     }
 
     handleProjectChanged(selectedValues) {
-    	let selected = new Array();
+        let selected = new Array();
         if (selectedValues && selectedValues.length > 0) {
             selected = selectedValues.map(item => item.value);
         }
@@ -285,7 +285,7 @@ class BaseJobConfiguration extends Component {
     }
 
     async onSubmit(event) {
-    	event.preventDefault();
+        event.preventDefault();
         const { handleSaveBtnClick, handleCancel } = this.props;
 
         let jobName = null;

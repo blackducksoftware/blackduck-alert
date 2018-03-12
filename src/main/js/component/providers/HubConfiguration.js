@@ -48,8 +48,7 @@ class HubConfiguration extends React.Component {
         this.props.getConfig();
     }
 
-    handleChange(event) {
-        const target = event.target;
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -117,6 +116,8 @@ HubConfiguration.propTypes = {
     hubTimeout: PropTypes.number.isRequired,
     hubUrl: PropTypes.string.isRequired,
     id: PropTypes.string,
+    fieldErrors: PropTypes.anyOf(),
+    updateStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     testStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
@@ -127,7 +128,15 @@ HubConfiguration.propTypes = {
 // Default values
 HubConfiguration.defaultProps = {
     hubApiKey: '',
-    id: null
+    id: null,
+    hubProxyHost: null,
+    hubProxyPassword: null,
+    hubProxyPort: null,
+    hubProxyUsername: null,
+    errorMessage: null,
+    updateStatus: null,
+    fieldErrors: [],
+    testStatus: ''
 };
 
 // Mapping redux state -> react props
