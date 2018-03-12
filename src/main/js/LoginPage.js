@@ -11,16 +11,11 @@ class LoginPage extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            errors: []
-        };
-
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChange(event) {
-        const target = event.target;
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -28,9 +23,9 @@ class LoginPage extends Component {
     }
 
     handleSubmit(evt) {
-    	evt.preventDefault();
-    	const { hubUsername, hubPassword } = this.state;
-    	this.props.login(hubUsername, hubPassword);
+        evt.preventDefault();
+        const { hubUsername, hubPassword } = this.state;
+        this.props.login(hubUsername, hubPassword);
     }
 
     render() {
@@ -40,18 +35,34 @@ class LoginPage extends Component {
                     <div className="loginBox">
                         <Header />
                         <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
-                            { this.props.errorMessage && <div className="alert alert-danger">
-                                <p name="configurationMessage">{this.props.errorMessage}</p>
-                                                         </div> }
+                            { this.props.errorMessage &&
+                                <div className="alert alert-danger">
+                                    <p name="configurationMessage">{this.props.errorMessage}</p>
+                                </div>
+                            }
 
-                            <TextInput label="Username" name="hubUsername" onChange={this.handleChange} errorName="usernameError" autoFocus />
-                            <PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
+                            <TextInput
+                                label="Username"
+                                name="hubUsername"
+                                onChange={this.handleChange}
+                                errorName="usernameError"
+                                autoFocus
+                            />
+
+                            <PasswordInput
+                                label="Password"
+                                name="hubPassword"
+                                onChange={this.handleChange}
+                                errorName="passwordError"
+                            />
 
                             <div className="row">
                                 <div className="col-sm-11 text-right">
-                                    { this.props.loggingIn && <div className="progressIcon">
-                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
-                                                              </div> }
+                                    { this.props.loggingIn &&
+                                        <div className="progressIcon">
+                                            <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                                        </div>
+                                    }
                                     <SubmitButton>Login</SubmitButton>
                                 </div>
                             </div>
@@ -65,8 +76,8 @@ class LoginPage extends Component {
 
 LoginPage.propTypes = {
     loggingIn: PropTypes.bool.isRequired,
-    baseUrl: PropTypes.string,
-    errorMessage: PropTypes.string
+    errorMessage: PropTypes.string,
+    login: PropTypes.func.isRequired
 };
 
 LoginPage.defaultProps = {

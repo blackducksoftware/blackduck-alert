@@ -127,7 +127,7 @@ export function updateConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(body => dispatch(configUpdated({ id: body.id, ...config })));
+                    response.json().then(data => dispatch(configUpdated({ id: data.id, ...config })));
                 } else {
                     response.json()
                         .then((data) => {
@@ -140,7 +140,7 @@ export function updateConfig(config) {
                                 case 412:
                                     return dispatch(configError(data.message, data.errors));
                                 default:
-                                    dispatch(configError(data.message, null));
+                                    return dispatch(configError(data.message, null));
                             }
                         });
                 }
@@ -176,7 +176,7 @@ export function testConfig(config) {
                                 case 401:
                                     return dispatch(testFailed('API Key isn\'t valid, try a different one'));
                                 default:
-                                    dispatch(testFailed(data.message));
+                                    return dispatch(testFailed(data.message));
                             }
                         });
                 }

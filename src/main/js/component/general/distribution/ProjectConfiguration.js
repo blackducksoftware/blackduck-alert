@@ -18,7 +18,7 @@ export default class ProjectConfiguration extends Component {
         if (projects && projects.length > 0) {
             const rawProjects = projects;
             const missingProjects = new Array();
-            for (var index in rawProjects) {
+            for (const index in rawProjects) {
                 const name = rawProjects[index];
                 projectData.push({
                     name: rawProjects[index].name,
@@ -26,7 +26,7 @@ export default class ProjectConfiguration extends Component {
                 });
             }
 
-            for (var index in configuredProjects) {
+            for (const index in configuredProjects) {
                 const projectFound = projectData.find(project => project.name === configuredProjects[index]);
 
                 if (!projectFound) {
@@ -38,7 +38,7 @@ export default class ProjectConfiguration extends Component {
             }
         } else {
             const rawProjects = configuredProjects;
-            for (var index in rawProjects) {
+            for (const index in rawProjects) {
                 projectData.push({
                     name: rawProjects[index],
                     missing: true
@@ -104,7 +104,7 @@ export default class ProjectConfiguration extends Component {
             const fontAwesomeIcon = 'fa fa-spinner fa-pulse fa-fw';
             progressIndicator = (<div className="progressIcon">
                 <span className={fontAwesomeIcon} aria-hidden="true" />
-                                 </div>);
+            </div>);
         }
 
         let projectTable = null;
@@ -116,7 +116,7 @@ export default class ProjectConfiguration extends Component {
                 </BootstrapTable>
                 {progressIndicator}
                 <p name="projectTableMessage">{this.props.projectTableMessage}</p>
-                            </div>);
+            </div>);
         }
 
         return (

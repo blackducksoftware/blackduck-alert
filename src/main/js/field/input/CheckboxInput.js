@@ -13,14 +13,25 @@ const CheckboxInput = (props) => {
             <div className="col-sm-offset-3 col-sm-8">
                 <div className="checkbox">
                     <label>
-                        <input type="checkbox" className="checkboxInput" readOnly={readOnly} disabled={readOnly} name={name} checked={isChecked} value={label} onChange={onChange} />
+                        <input
+                            type="checkbox"
+                            className="checkboxInput"
+                            readOnly={readOnly}
+                            disabled={readOnly}
+                            name={name}
+                            checked={isChecked}
+                            value={label}
+                            onChange={onChange}
+                        />
                         { label }
                     </label>
                 </div>
             </div>
-            { errorName && errorValue && <div className="col-sm-offset-3 col-sm-8">
-                <p className="fieldError" name={errorName}>{errorValue}</p>;
-            </div> }
+            { errorName && errorValue &&
+                <div className="col-sm-offset-3 col-sm-8">
+                    <p className="fieldError" name={errorName}>{errorValue}</p>;
+                </div>
+            }
         </div>
     );
 };

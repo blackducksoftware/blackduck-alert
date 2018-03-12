@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
+import 'font-awesome/scss/font-awesome.scss';
+
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from './store/actions/session';
 
 import '../css/main.scss';
-import 'font-awesome/scss/font-awesome.scss';
 
 class App extends Component {
     componentDidMount() {
@@ -22,13 +23,14 @@ class App extends Component {
             return (<div />);
         } else if (this.props.loggedIn) {
             return <MainPage />;
-	    }
-        	return <LoginPage />;
+        }
+        return <LoginPage />;
     }
 }
 
 App.propTypes = {
     loggedIn: PropTypes.bool.isRequired,
+    initializing: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired
 };

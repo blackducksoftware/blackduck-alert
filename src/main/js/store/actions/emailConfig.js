@@ -101,9 +101,9 @@ export function getEmailConfig() {
         })
             .then(response => response.json().then((body) => {
                 if (body.length > 0) {
-                    dispatch(configFetched(body[0]));
+                    dispatch(emailConfigFetched(body[0]));
                 } else {
-                    dispatch(configFetched({}));
+                    dispatch(emailConfigFetched({}));
                 }
             }))
             .catch(console.error);
@@ -125,7 +125,7 @@ export function updateEmailConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then((body) => { dispatch(emailConfigUpdated({ ...config })); });
+                    response.json().then(() => { dispatch(emailConfigUpdated({ ...config })); });
                 } else {
                     response.json()
                         .then((data) => {
@@ -136,7 +136,7 @@ export function updateEmailConfig(config) {
                                 case 412:
                                     return dispatch(configError(data.message, data.errors));
                                 default:
-                                    dispatch(configError(data.message, null));
+                                    return dispatch(configError(data.message, null));
                             }
                         });
                 }
