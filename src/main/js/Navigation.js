@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link, NavLink, Route, withRouter } from "react-router-dom";
+import { Link, NavLink, Route, withRouter } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 import { confirmLogout } from './store/actions/session';
@@ -17,16 +17,16 @@ const logout = (evt) => {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(function(response) {
+    }).then((response) => {
         if (response.ok) {
             window.location.reload();
         }
-    }).catch(function(error) {
+    }).catch((error) => {
         console.log(error);
     });
 };
 
-const Navigation = (props) => (
+const Navigation = props => (
     <div className="navigation">
         <div className="navigationLogo">
             <Logo />
@@ -37,7 +37,7 @@ const Navigation = (props) => (
             </li>
             <li>
                 <NavLink to="/providers/hub" activeClassName="activeNav">
-                    <FontAwesome name="laptop" fixedWidth={true} /> Hub
+                    <FontAwesome name="laptop" fixedWidth /> Hub
                 </NavLink>
             </li>
             <li className="navHeader">
@@ -45,17 +45,17 @@ const Navigation = (props) => (
             </li>
             <li>
                 <NavLink to="/channels/email" activeClassName="activeNav">
-                    <FontAwesome name="envelope" fixedWidth={true} /> Email
+                    <FontAwesome name="envelope" fixedWidth /> Email
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/channels/hipchat" activeClassName="activeNav">
-                    <FontAwesome name="comments" fixedWidth={true} /> HipChat
+                    <FontAwesome name="comments" fixedWidth /> HipChat
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/channels/slack" activeClassName="activeNav">
-                    <FontAwesome name="slack" fixedWidth={true} /> Slack
+                    <FontAwesome name="slack" fixedWidth /> Slack
                 </NavLink>
             </li>
             <li className="navHeader">
@@ -63,26 +63,29 @@ const Navigation = (props) => (
             </li>
             <li>
                 <NavLink to="/general/scheduling" activeClassName="activeNav">
-                    <FontAwesome name="clock-o" fixedWidth={true} /> Scheduling
+                    <FontAwesome name="clock-o" fixedWidth /> Scheduling
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/general/distribution" activeClassName="activeNav">
-                    <FontAwesome name="truck" fixedWidth={true} /> Distribution
+                    <FontAwesome name="truck" fixedWidth /> Distribution
                 </NavLink>
             </li>
             <li>
                 <NavLink to="/general/audit" activeClassName="activeNav">
-                    <FontAwesome name="history" fixedWidth={true} /> Audit
+                    <FontAwesome name="history" fixedWidth /> Audit
                 </NavLink>
             </li>
-            <li className="divider"></li>
+            <li className="divider" />
             <li className="logoutLink">
-                <a role="button" onClick={(evt) => {
-                    evt.preventDefault();
-                    props.confirmLogout();
-                }}>
-                    <FontAwesome name="sign-out" fixedWidth={true} /> Logout
+                <a
+                    role="button"
+                    onClick={(evt) => {
+                        evt.preventDefault();
+                        props.confirmLogout();
+                    }}
+                >
+                    <FontAwesome name="sign-out" fixedWidth /> Logout
                 </a>
             </li>
         </ul>

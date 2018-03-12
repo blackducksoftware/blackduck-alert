@@ -14,24 +14,22 @@ export default class ProjectConfiguration extends Component {
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
-        let projectData = new Array();
-        if(projects && projects.length > 0) {
-            let rawProjects = projects;
-            let missingProjects = new Array();
+        const projectData = new Array();
+        if (projects && projects.length > 0) {
+            const rawProjects = projects;
+            const missingProjects = new Array();
             for (var index in rawProjects) {
-                let name = rawProjects[index]
+                const name = rawProjects[index];
                 projectData.push({
                     name: rawProjects[index].name,
                     missing: false
                 });
             }
 
-            for(var index in configuredProjects) {
-                let projectFound = projectData.find((project) => {
-                    return project.name === configuredProjects[index];
-                });
+            for (var index in configuredProjects) {
+                const projectFound = projectData.find(project => project.name === configuredProjects[index]);
 
-                if(!projectFound) {
+                if (!projectFound) {
                     projectData.push({
                         name: configuredProjects[index],
                         missing: true
@@ -39,7 +37,7 @@ export default class ProjectConfiguration extends Component {
                 }
             }
         } else {
-            let rawProjects = configuredProjects;
+            const rawProjects = configuredProjects;
             for (var index in rawProjects) {
                 projectData.push({
                     name: rawProjects[index],
@@ -56,9 +54,9 @@ export default class ProjectConfiguration extends Component {
 
     assignDataFormat(cell, row) {
         let cellContent;
-        if(row.missing) {
-            let fontAwesomeClass = `fa fa-exclamation-triangle fa-fw`;
-            cellContent = <span className="missingHubData"><span className={fontAwesomeClass} aria-hidden='true'></span>{ row.name }</span>;
+        if (row.missing) {
+            const fontAwesomeClass = 'fa fa-exclamation-triangle fa-fw';
+            cellContent = <span className="missingHubData"><span className={fontAwesomeClass} aria-hidden="true" />{ row.name }</span>;
         } else {
             cellContent = row.name;
         }
@@ -69,18 +67,14 @@ export default class ProjectConfiguration extends Component {
     onRowSelected(row, isSelected) {
         const { selectedProjects } = this.state;
         let selected = Object.assign([], selectedProjects);
-        if(isSelected) {
-            let projectFound = selected.find((project) => {
-                return project.value === row.name;
-            });
+        if (isSelected) {
+            const projectFound = selected.find(project => project.value === row.name);
             if (!projectFound) {
-                selected.push({value: row.name});
+                selected.push({ value: row.name });
             }
         } else {
-            let projectFound = selected.find((project) => {
-                return project.value === row.name;
-            });
-            let index = selected.indexOf(projectFound);
+            const projectFound = selected.find(project => project.value === row.name);
+            const index = selected.indexOf(projectFound);
             selected = selected.slice(index);
         }
 
@@ -89,7 +83,7 @@ export default class ProjectConfiguration extends Component {
     }
 
     render() {
-        let projectData = this.createProjectList();
+        const projectData = this.createProjectList();
 
         const projectTableOptions = {
             noDataText: 'No projects found',
@@ -105,31 +99,31 @@ export default class ProjectConfiguration extends Component {
             selected: this.props.configuredProjects,
             onSelect: this.onRowSelected
         };
-        var progressIndicator = null;
+        let progressIndicator = null;
         if (this.props.waitingForProjects) {
-            const fontAwesomeIcon = "fa fa-spinner fa-pulse fa-fw";
-            progressIndicator = <div className="progressIcon">
-                <span className={fontAwesomeIcon} aria-hidden='true'></span>
-            </div>;
+            const fontAwesomeIcon = 'fa fa-spinner fa-pulse fa-fw';
+            progressIndicator = (<div className="progressIcon">
+                <span className={fontAwesomeIcon} aria-hidden="true" />
+                                 </div>);
         }
 
-        var projectTable = null;
+        let projectTable = null;
         if (!this.props.includeAllProjects) {
-            projectTable = <div>
-                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search={true} options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
-                    <TableHeaderColumn dataField='name' isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField='missing' dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
+            projectTable = (<div>
+                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
+                    <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="missing" dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
                 {progressIndicator}
                 <p name="projectTableMessage">{this.props.projectTableMessage}</p>
-            </div>;
+                            </div>);
         }
 
         return (
             <div>
-                <CheckboxInput label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError}></CheckboxInput>
+                <CheckboxInput label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError} />
                 {projectTable}
             </div>
-        )
+        );
     }
 }

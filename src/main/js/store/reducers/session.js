@@ -23,7 +23,7 @@ const session = (state = initialState, action) => {
     switch (action.type) {
         case SESSION_INITIALIZING:
             return Object.assign({}, state, {
-                initializing: true,
+                initializing: true
             });
 
         case SESSION_LOGGING_IN:

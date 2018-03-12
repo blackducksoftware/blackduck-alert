@@ -39,7 +39,7 @@ const config = (state = initialState, action) => {
                 fetching: true,
                 updateStatus: null,
                 testing: false,
-                testStatus: '',
+                testStatus: ''
             });
 
         case CONFIG_FETCHED:

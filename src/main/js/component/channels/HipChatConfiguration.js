@@ -1,27 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from "react-redux";
+import { connect } from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
-import {getConfig, testConfig, updateConfig} from "../../store/actions/hipChatConfig";
+import { getConfig, testConfig, updateConfig } from '../../store/actions/hipChatConfig';
 
 class HipChatConfiguration extends React.Component {
-	constructor(props) {
-		super(props);
+    constructor(props) {
+        super(props);
 
-		this.state = {
+        this.state = {
             apiKey: '',
             apiKeyIsSet: false,
             dataLoaded: false
         };
 
-		this.handleChange = this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
-	}
+    }
 
-	componentDidMount() {
+    componentDidMount() {
 	    this.props.getConfig();
     }
 
@@ -46,12 +46,12 @@ class HipChatConfiguration extends React.Component {
         event.stopPropagation();
 
         const { id } = this.props;
-        this.props.updateConfig({id, ...this.state});
+        this.props.updateConfig({ id, ...this.state });
     }
 
     handleTest() {
         const { id } = this.props;
-        this.props.testConfig({ id, ...this.state});
+        this.props.testConfig({ id, ...this.state });
     }
 
     render() {
@@ -73,13 +73,13 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey}></TextInput>
-                    <ConfigButtons includeSave={true} includeTest={true} onTestClick={ this.handleTest } />
+                    <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
                 </form>
             </div>
         );
-	}
-};
+    }
+}
 
 HipChatConfiguration.propTypes = {
     apiKey: PropTypes.string,
@@ -106,8 +106,8 @@ const mapStateToProps = state => ({
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
-    updateConfig: (config) => dispatch(updateConfig(config)),
-    testConfig: (config) => dispatch(testConfig(config))
+    updateConfig: config => dispatch(updateConfig(config)),
+    testConfig: config => dispatch(testConfig(config))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);

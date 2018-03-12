@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from "react-redux";
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
@@ -10,7 +10,6 @@ import ConfigButtons from '../common/ConfigButtons';
 import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../store/actions/emailConfig';
 
 class EmailConfiguration extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -22,12 +21,12 @@ class EmailConfiguration extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-	componentDidMount() {
-		this.props.getEmailConfig();
-	}
+    componentDidMount() {
+        this.props.getEmailConfig();
+    }
 
     componentWillReceiveProps(nextProps) {
-        if(nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
             this.setState({
                 mailSmtpHost: nextProps.mailSmtpHost || '',
                 mailSmtpFrom: nextProps.mailSmtpFrom || '',
@@ -60,156 +59,169 @@ class EmailConfiguration extends React.Component {
         evt.preventDefault();
         evt.stopPropagation();
         const { id } = this.props;
-        this.props.updateEmailConfig({id,...this.state});
+        this.props.updateEmailConfig({ id, ...this.state });
     }
 
-	render() {
-
+    render() {
         const showAdvanced = this.props.showAdvanced;
         const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-        const {errorMessage, updateStatus } = this.props;
+        const { errorMessage, updateStatus } = this.props;
         return (
-        	<div>
+            <div>
                 <h1>Alert / Channels / Email</h1>
-				<form className="form-horizontal" onSubmit={this.handleSubmit}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     { errorMessage && <div className="alert alert-danger">
                         { errorMessage }
-                    </div> }
+                                      </div> }
 
                     { updateStatus === 'UPDATED' && <div className="alert alert-success">
                         { 'Update successful' }
-                    </div> }
-					<TextInput
-						label="SMTP Host"
-						name="mailSmtpHost"
-						value={this.state.mailSmtpHost}
-						onChange={this.handleChange}
+                                                    </div> }
+                    <TextInput
+                        label="SMTP Host"
+                        name="mailSmtpHost"
+                        value={this.state.mailSmtpHost}
+                        onChange={this.handleChange}
                         errorName="mailSmtpHostError"
-                        errorValue={this.props.fieldErrors.mailSmtpHost} />
+                        errorValue={this.props.fieldErrors.mailSmtpHost}
+                    />
 
-					<TextInput
-						label="SMTP From"
-						name="mailSmtpFrom"
-						value={this.state.mailSmtpFrom}
-						onChange={this.handleChange}
+                    <TextInput
+                        label="SMTP From"
+                        name="mailSmtpFrom"
+                        value={this.state.mailSmtpFrom}
+                        onChange={this.handleChange}
                         errorName="mailSmtpFromError"
-                        errorValue={this.props.fieldErrors.mailSmtpFrom} />
+                        errorValue={this.props.fieldErrors.mailSmtpFrom}
+                    />
 
-					<CheckboxInput
-						label="SMTP Auth"
-						name="mailSmtpAuth"
-						value={this.state.mailSmtpAuth}
-						onChange={this.handleChange}
+                    <CheckboxInput
+                        label="SMTP Auth"
+                        name="mailSmtpAuth"
+                        value={this.state.mailSmtpAuth}
+                        onChange={this.handleChange}
                         errorName="mailSmtpAuthError"
-                        errorValue={this.props.fieldErrors.mailSmtpAuth} />
+                        errorValue={this.props.fieldErrors.mailSmtpAuth}
+                    />
 
-					<TextInput
-						label="SMTP User"
-						name="mailSmtpUser"
-						value={this.state.mailSmtpUser}
-						onChange={this.handleChange}
+                    <TextInput
+                        label="SMTP User"
+                        name="mailSmtpUser"
+                        value={this.state.mailSmtpUser}
+                        onChange={this.handleChange}
                         errorName="mailSmtpUserError"
-                        errorValue={this.props.fieldErrors.mailSmtpUser} />
+                        errorValue={this.props.fieldErrors.mailSmtpUser}
+                    />
 
-					<PasswordInput
-						label="SMTP Password"
-						name="mailSmtpPassword"
-						value={this.state.mailSmtpPassword}
-						isSet={this.state.mailSmtpPasswordIsSet}
-						onChange={this.handleChange}
+                    <PasswordInput
+                        label="SMTP Password"
+                        name="mailSmtpPassword"
+                        value={this.state.mailSmtpPassword}
+                        isSet={this.state.mailSmtpPasswordIsSet}
+                        onChange={this.handleChange}
                         errorName="mailSmtpPasswordError"
-                        errorValue={this.props.fieldErrors.mailSmtpPassword} />
+                        errorValue={this.props.fieldErrors.mailSmtpPassword}
+                    />
 
-					<div className="form-group">
-						<div className="col-sm-8 col-sm-offset-3">
-							<button type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false;}}>
-								{showAdvancedLabel}
-							</button>
-						</div>
-					</div>
+                    <div className="form-group">
+                        <div className="col-sm-8 col-sm-offset-3">
+                            <button type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false; }}>
+                                {showAdvancedLabel}
+                            </button>
+                        </div>
+                    </div>
 
-					{showAdvanced &&
-					<div>
-						<NumberInput
-							label="SMTP Port"
-							name="mailSmtpPort"
-							value={this.state.mailSmtpPort}
-							onChange={this.handleChange}
+                    {showAdvanced &&
+                    <div>
+                        <NumberInput
+                            label="SMTP Port"
+                            name="mailSmtpPort"
+                            value={this.state.mailSmtpPort}
+                            onChange={this.handleChange}
                             errorName="mailSmtpPortError"
-                            errorValue={this.props.fieldErrors.mailSmtpPort} />
+                            errorValue={this.props.fieldErrors.mailSmtpPort}
+                        />
 
-						<NumberInput
-							label="SMTP Connection Timeout"
-							name="mailSmtpConnectionTimeout"
-							value={this.state.mailSmtpConnectionTimeout}
-							onChange={this.handleChange}
+                        <NumberInput
+                            label="SMTP Connection Timeout"
+                            name="mailSmtpConnectionTimeout"
+                            value={this.state.mailSmtpConnectionTimeout}
+                            onChange={this.handleChange}
                             errorName="mailSmtpConnectionTimeoutError"
-                            errorValue={this.props.fieldErrors.mailSmtpConnectionTimeout} />
+                            errorValue={this.props.fieldErrors.mailSmtpConnectionTimeout}
+                        />
 
-						<NumberInput
-							label="SMTP Timeout"
-							name="mailSmtpTimeout"
-							value={this.state.mailSmtpTimeout}
-							onChange={this.handleChange}
+                        <NumberInput
+                            label="SMTP Timeout"
+                            name="mailSmtpTimeout"
+                            value={this.state.mailSmtpTimeout}
+                            onChange={this.handleChange}
                             errorName="mailSmtpTimeoutError"
-                            errorValue={this.props.fieldErrors.mailSmtpTimeout} />
+                            errorValue={this.props.fieldErrors.mailSmtpTimeout}
+                        />
 
-						<TextInput
-							label="SMTP Localhost"
-							name="mailSmtpLocalhost"
-							value={this.state.mailSmtpLocalhost}
-							onChange={this.handleChange}
+                        <TextInput
+                            label="SMTP Localhost"
+                            name="mailSmtpLocalhost"
+                            value={this.state.mailSmtpLocalhost}
+                            onChange={this.handleChange}
                             errorName="mailSmtpLocalhostError"
-                            errorValue={this.props.fieldErrors.mailSmtpLocalhost} />
+                            errorValue={this.props.fieldErrors.mailSmtpLocalhost}
+                        />
 
-						<CheckboxInput
-							label="SMTP Ehlo"
-							name="mailSmtpEhlo"
-							value={this.state.mailSmtpEhlo}
-							onChange={this.handleChange}
+                        <CheckboxInput
+                            label="SMTP Ehlo"
+                            name="mailSmtpEhlo"
+                            value={this.state.mailSmtpEhlo}
+                            onChange={this.handleChange}
                             errorName="mailSmtpEhloError"
-                            errorValue={this.props.fieldErrors.mailSmtpEhlo} />
+                            errorValue={this.props.fieldErrors.mailSmtpEhlo}
+                        />
 
-						<TextInput
-							label="SMTP Dns Notify"
-							name="mailSmtpDnsNotify"
-							value={this.state.mailSmtpDnsNotify}
-							onChange={this.handleChange}
+                        <TextInput
+                            label="SMTP Dns Notify"
+                            name="mailSmtpDnsNotify"
+                            value={this.state.mailSmtpDnsNotify}
+                            onChange={this.handleChange}
                             errorName="mailSmtpDnsNotifyError"
-                            errorValue={this.props.fieldErrors.mailSmtpDnsNotify} />
+                            errorValue={this.props.fieldErrors.mailSmtpDnsNotify}
+                        />
 
-						<TextInput
-							label="SMTP Dns Ret"
-							name="mailSmtpDnsRet"
-							value={this.state.mailSmtpDnsRet}
-							onChange={this.handleChange}
+                        <TextInput
+                            label="SMTP Dns Ret"
+                            name="mailSmtpDnsRet"
+                            value={this.state.mailSmtpDnsRet}
+                            onChange={this.handleChange}
                             errorName="mailSmtpDnsRetError"
-                            errorValue={this.props.fieldErrors.mailSmtpDnsRet} />
+                            errorValue={this.props.fieldErrors.mailSmtpDnsRet}
+                        />
 
-						<CheckboxInput
-							label="SMTP Allow 8-bit Mime"
-							name="mailSmtpAllow8bitmime"
-							value={this.state.mailSmtpAllow8bitmime}
-							onChange={this.handleChange}
+                        <CheckboxInput
+                            label="SMTP Allow 8-bit Mime"
+                            name="mailSmtpAllow8bitmime"
+                            value={this.state.mailSmtpAllow8bitmime}
+                            onChange={this.handleChange}
                             errorName="mailSmtpAllow8bitmimeError"
-                            errorValue={this.props.fieldErrors.mailSmtpAllow8bitmime} />
+                            errorValue={this.props.fieldErrors.mailSmtpAllow8bitmime}
+                        />
 
-						<CheckboxInput
-							label="SMTP Send Partial"
-							name="mailSmtpSendPartial"
-							value={this.state.mailSmtpSendPartial}
-							onChange={this.handleChange}
+                        <CheckboxInput
+                            label="SMTP Send Partial"
+                            name="mailSmtpSendPartial"
+                            value={this.state.mailSmtpSendPartial}
+                            onChange={this.handleChange}
                             errorName="mailSmtpSendPartialError"
-                            errorValue={this.props.fieldErrors.mailSmtpSendPartial} />
+                            errorValue={this.props.fieldErrors.mailSmtpSendPartial}
+                        />
 
-					</div>
-					}
-                    <ConfigButtons includeSave={true} includeTest={false} />
-				</form>
-			</div>
-		);
-	}
-};
+                    </div>
+                    }
+                    <ConfigButtons includeSave includeTest={false} />
+                </form>
+            </div>
+        );
+    }
+}
 
 EmailConfiguration.propTypes = {
     id: PropTypes.string,
@@ -228,9 +240,9 @@ EmailConfiguration.propTypes = {
     mailSmtpDnsRet: PropTypes.string,
     mailSmtpAllow8bitmime: PropTypes.bool,
     mailSmtpSendPartial: PropTypes.bool,
-	showAdvanced: PropTypes.bool.isRequired,
+    showAdvanced: PropTypes.bool.isRequired,
     toggleAdvancedEmailOptions: PropTypes.func.isRequired,
-	getEmailConfig: PropTypes.func.isRequired,
+    getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     fieldErrors: PropTypes.arrayOf(PropTypes.any)
@@ -260,17 +272,17 @@ const mapStateToProps = state => ({
     mailSmtpDnsRet: state.emailConfig.mailSmtpDnsRet,
     mailSmtpAllow8bitmime: state.emailConfig.mailSmtpAllow8bitmime,
     mailSmtpSendPartial: state.emailConfig.mailSmtpSendPartial,
-	showAdvanced: state.emailConfig.showAdvanced,
+    showAdvanced: state.emailConfig.showAdvanced,
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
-    updateStatus: state.emailConfig.updateStatus,
+    updateStatus: state.emailConfig.updateStatus
 });
 
 const mapDispatchToProps = dispatch => ({
-    toggleAdvancedEmailOptions: (toggle) => dispatch(toggleAdvancedEmailOptions(toggle)),
+    toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
-	updateEmailConfig: (config) => dispatch(updateEmailConfig(config))
+    updateEmailConfig: config => dispatch(updateEmailConfig(config))
 
 });
 
