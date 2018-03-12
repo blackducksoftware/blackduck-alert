@@ -17,7 +17,7 @@ module.exports = {
         rules: [{
             test: /\.js$/,
             exclude: /(node_modules)/,
-            loader: 'babel-loader'
+            use: ['eslint-loader', 'babel-loader']
         }, {
             test: /\.(jpg|png|svg)$/,
             loader: 'file-loader',
