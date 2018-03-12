@@ -67,13 +67,10 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/css/style.css",
                 "index.html",
                 "/api/login" };
-        http.requiresChannel().anyRequest().requiresSecure().and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths).and().authorizeRequests().antMatchers(allowedPaths).permitAll().and()
-                .authorizeRequests().anyRequest().hasRole("ADMIN").and()
-                .logout()
-                .logoutSuccessUrl("/");
+        http.requiresChannel().anyRequest().requiresSecure()
+                .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
+                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
+                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+                .and().logout().logoutSuccessUrl("/");
     }
-
-    // private Filter createCSRFFilter() {
-    // return new ApiCsrfFilter(csrfTokenRepository);
-    // }
 }
