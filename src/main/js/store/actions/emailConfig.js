@@ -86,11 +86,10 @@ function emailConfigUpdated(config) {
 }
 
 export function toggleAdvancedEmailOptions(toggle) {
-    if(toggle) {
+    if (toggle) {
         return { type: EMAIL_CONFIG_SHOW_ADVANCED };
-    } else {
-        return { type: EMAIL_CONFIG_HIDE_ADVANCED };
     }
+    return { type: EMAIL_CONFIG_HIDE_ADVANCED };
 }
 
 export function getEmailConfig() {
@@ -100,16 +99,16 @@ export function getEmailConfig() {
         fetch(CONFIG_URL, {
             credentials: 'include'
         })
-        .then((response) => response.json().then(body => {
-          if(body.length > 0) {
-            dispatch(configFetched(body[0]));
-          } else {
-            dispatch(configFetched({}));
-          }
-        }))
-        .catch(console.error);
-    }
-};
+            .then(response => response.json().then((body) => {
+                if (body.length > 0) {
+                    dispatch(configFetched(body[0]));
+                } else {
+                    dispatch(configFetched({}));
+                }
+            }))
+            .catch(console.error);
+    };
+}
 
 export function updateEmailConfig(config) {
     return (dispatch) => {
@@ -124,24 +123,24 @@ export function updateEmailConfig(config) {
                 'content-type': 'application/json'
             }
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => {dispatch(emailConfigUpdated({...config}))});
-            } else {
-                response.json()
-                    .then((data) => {
-                        console.log('data', data.message);
-                        switch(response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default:
-                                dispatch(configError(data.message, null));
-                        }
-                    });
-            }
-        })
-        .catch(console.error);
-    }
-};
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((body) => { dispatch(emailConfigUpdated({ ...config })); });
+                } else {
+                    response.json()
+                        .then((data) => {
+                            console.log('data', data.message);
+                            switch (response.status) {
+                                case 400:
+                                    return dispatch(configError(data.message, data.errors));
+                                case 412:
+                                    return dispatch(configError(data.message, data.errors));
+                                default:
+                                    dispatch(configError(data.message, null));
+                            }
+                        });
+                }
+            })
+            .catch(console.error);
+    };
+}

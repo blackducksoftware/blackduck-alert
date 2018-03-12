@@ -15,7 +15,7 @@ export default class JobAddModal extends Component {
             show: true,
             values: [],
             errors: []
-        }
+        };
         this.handleChange = this.handleChange.bind(this);
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
@@ -36,17 +36,17 @@ export default class JobAddModal extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        var values = this.state.values;
+        const values = this.state.values;
         values[name] = value;
         this.setState({
             values
         });
     }
 
-    handleTypeChanged (option) {
-        var values = this.state.values;
-        if(option) {
-            values['typeValue'] = option.value;
+    handleTypeChanged(option) {
+        const values = this.state.values;
+        if (option) {
+            values.typeValue = option.value;
             this.setState({
                 values
             });
@@ -54,13 +54,13 @@ export default class JobAddModal extends Component {
     }
 
     getCurrentJobConfig() {
-        switch(this.state.values.typeValue) {
+        switch (this.state.values.typeValue) {
             case 'email_group_channel':
-                return <GroupEmailJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups}  waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />
+                return <GroupEmailJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             case 'hipchat_channel':
-                return <HipChatJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
+                return <HipChatJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             case 'slack_channel':
-                return <SlackJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable}/>;
+                return <SlackJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             default:
                 return null;
         }
@@ -69,21 +69,21 @@ export default class JobAddModal extends Component {
     renderOption(option) {
         let fontAwesomeIcon;
         if (option.value === 'email_group_channel') {
-            fontAwesomeIcon = `fa fa-envelope fa-fw`;
+            fontAwesomeIcon = 'fa fa-envelope fa-fw';
         } else if (option.value === 'hipchat_channel') {
-            fontAwesomeIcon = `fa fa-comments  fa-fw`;
+            fontAwesomeIcon = 'fa fa-comments  fa-fw';
         } else if (option.value === 'slack_channel') {
-            fontAwesomeIcon = `fa fa-slack  fa-fw`;
+            fontAwesomeIcon = 'fa fa-slack  fa-fw';
         }
         return (<div>
-                <span key="icon" className={fontAwesomeIcon} aria-hidden='true'></span>
-                <span key="name">{option.label}</span>
-            </div>
+            <span key="icon" className={fontAwesomeIcon} aria-hidden="true" />
+            <span key="name">{option.label}</span>
+                </div>
         );
     }
 
     handleClose() {
-        this.setState({ show: false })
+        this.setState({ show: false });
         this.props.onModalClose();
     }
 
@@ -106,7 +106,7 @@ export default class JobAddModal extends Component {
                                     clearable={false}
                                     options={jobTypes}
                                     optionRenderer={this.renderOption}
-                                    placeholder='Choose the Job Type'
+                                    placeholder="Choose the Job Type"
                                     value={this.state.values.typeValue}
                                     valueRenderer={this.renderOption}
                                 />

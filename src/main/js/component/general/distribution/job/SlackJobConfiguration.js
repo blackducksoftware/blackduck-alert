@@ -6,26 +6,26 @@ import BaseJobConfiguration from './BaseJobConfiguration';
 
 export default class SlackJobConfiguration extends BaseJobConfiguration {
     initializeValues(data) {
-       super.initializeValues(data);
-       
-       let webhook = data.webhook || this.props.webhook;
-       let channelUsername = data.channelUsername || this.props.channelUsername;
-       let channelName = data.channelName || this.props.channelName;
+        super.initializeValues(data);
 
-       super.handleStateValues('webhook', webhook);
-       super.handleStateValues('channelUsername', channelUsername);
-       super.handleStateValues('channelName', channelName);
+        const webhook = data.webhook || this.props.webhook;
+        const channelUsername = data.channelUsername || this.props.channelUsername;
+        const channelName = data.channelName || this.props.channelName;
+
+        super.handleStateValues('webhook', webhook);
+        super.handleStateValues('channelUsername', channelUsername);
+        super.handleStateValues('channelName', channelName);
     }
 
-	render() {
-		let content = <div>
-							<TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError}></TextInput>
-							<TextInput label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError}></TextInput>
-							<TextInput label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError}></TextInput>
-						</div>;
+    render() {
+        const content = (<div>
+            <TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError} />
+            <TextInput label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError} />
+            <TextInput label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError} />
+        </div>);
 
-		return super.render(content);
-	}
+        return super.render(content);
+    }
 }
 
 SlackJobConfiguration.propTypes = {

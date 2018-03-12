@@ -58,13 +58,13 @@ export function verifyLogin() {
         dispatch(initializing());
         fetch('/api/verify', {
             credentials: 'include'
-        }).then(function(response) {
+        }).then((response) => {
             if (!response.ok) {
                 dispatch(loggedOut());
             } else {
                 dispatch(loggedIn());
             }
-        }).catch(function(error) {
+        }).catch((error) => {
             // TODO: Dispatch Error
             console.log(error);
         });
@@ -87,7 +87,7 @@ export function login(username, password) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
-        }).then(function(response) {
+        }).then((response) => {
             if (response.ok) {
                 dispatch(loggedIn());
             } else {
@@ -95,11 +95,11 @@ export function login(username, password) {
                 dispatch(loginError(response.statusText, []));
             }
         })
-        .catch((error) => {
-            dispatch(loginError(error.message));
-            console.log(error);
-        });
-    }
+            .catch((error) => {
+                dispatch(loginError(error.message));
+                console.log(error);
+            });
+    };
 }
 
 export function confirmLogout() {
@@ -117,7 +117,7 @@ export function cancelLogout() {
 
 export function logout() {
     return (dispatch) => {
-        //dispatch(loggingOut());
+        // dispatch(loggingOut());
 
         fetch('/api/logout', {
             method: 'POST',
@@ -125,12 +125,12 @@ export function logout() {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function(response) {
+        }).then((response) => {
             if (response.ok) {
                 dispatch(loggedOut());
                 dispatch(push('/'));
             }
-        }).catch(function(error) {
+        }).catch((error) => {
             console.log(error);
         });
     };

@@ -104,20 +104,19 @@ export function getSchedulingConfig() {
         fetch(CONFIG_URL, {
             credentials: 'include'
         })
-        .then((response) => response.json().then(body => {
-          if(body.length > 0) {
-            dispatch(schedulingConfigFetched(body[0]));
-          } else {
-            dispatch(schedulingConfigFetched({}));
-          }
-        }))
-        .catch(console.error);
-    }
-};
+            .then(response => response.json().then((body) => {
+                if (body.length > 0) {
+                    dispatch(schedulingConfigFetched(body[0]));
+                } else {
+                    dispatch(schedulingConfigFetched({}));
+                }
+            }))
+            .catch(console.error);
+    };
+}
 
 export function updateSchedulingConfig(config) {
     return (dispatch) => {
-
         dispatch(updatingSchedulingConfig());
 
         const body = {
@@ -134,13 +133,13 @@ export function updateSchedulingConfig(config) {
             body: JSON.stringify(body)
         })
             .then((response) => {
-                if(response.ok) {
-                    response.json().then((body) => dispatch(schedulingConfigUpdated({ ...config })));
+                if (response.ok) {
+                    response.json().then(body => dispatch(schedulingConfigUpdated({ ...config })));
                 } else {
                     response.json()
                         .then((data) => {
                             console.log('data', data.message);
-                            switch(response.status) {
+                            switch (response.status) {
                                 case 400:
                                     return dispatch(schedulingConfigError(data.message, data.errors));
                                 case 412:
@@ -152,32 +151,32 @@ export function updateSchedulingConfig(config) {
                 }
             })
 
-        .catch(console.error);
-    }
-};
+            .catch(console.error);
+    };
+}
 
 export function runSchedulingAccumulator() {
     return (dispatch) => {
         dispatch(runningAccumulator());
 
-        fetch(ACCUMULATOR_URL,{
+        fetch(ACCUMULATOR_URL, {
             credentials: 'include',
-            method: 'POST',
+            method: 'POST'
         })
-        .then((response) => {
-            if (!response.ok) {
-                response.json().then(json => {
-                    dispatch(accumulatorError(json.message));
-                });
-            } else {
-                dispatch(accumulatorSuccess());
-            }
-        })
-        .then(() => {
-            getSchedulingConfig()(dispatch);
-        })
-        .catch(err => {
-            dispatch(accumulatorError(err));
-        });
-    }
+            .then((response) => {
+                if (!response.ok) {
+                    response.json().then((json) => {
+                        dispatch(accumulatorError(json.message));
+                    });
+                } else {
+                    dispatch(accumulatorSuccess());
+                }
+            })
+            .then(() => {
+                getSchedulingConfig()(dispatch);
+            })
+            .catch((err) => {
+                dispatch(accumulatorError(err));
+            });
+    };
 }

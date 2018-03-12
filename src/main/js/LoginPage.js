@@ -8,17 +8,16 @@ import Header from './component/common/Header';
 import { login } from './store/actions/session';
 
 class LoginPage extends Component {
+    constructor(props) {
+        super(props);
 
-	constructor(props) {
-		super(props);
+        this.state = {
+            errors: []
+        };
 
-		this.state = {
-			errors: []
-		};
-
-		this.handleChange = this.handleChange.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-	}
+    }
 
     handleChange(event) {
         const target = event.target;
@@ -32,42 +31,42 @@ class LoginPage extends Component {
     	evt.preventDefault();
     	const { hubUsername, hubPassword } = this.state;
     	this.props.login(hubUsername, hubPassword);
-	}
+    }
 
-	render() {
-		return (
-				<div className="wrapper">
-					<div className="loginContainer">
-						<div className="loginBox">
-                            <Header />
-							<form method='POST' className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
-								{ this.props.errorMessage && <div className="alert alert-danger">
-									<p name="configurationMessage">{this.props.errorMessage}</p>
-								</div> }
+    render() {
+        return (
+            <div className="wrapper">
+                <div className="loginContainer">
+                    <div className="loginBox">
+                        <Header />
+                        <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
+                            { this.props.errorMessage && <div className="alert alert-danger">
+                                <p name="configurationMessage">{this.props.errorMessage}</p>
+                                                         </div> }
 
-								<TextInput label="Username" name="hubUsername" onChange={this.handleChange} errorName="usernameError" autoFocus={true} />
-								<PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
+                            <TextInput label="Username" name="hubUsername" onChange={this.handleChange} errorName="usernameError" autoFocus />
+                            <PasswordInput label="Password" name="hubPassword" onChange={this.handleChange} errorName="passwordError" />
 
-								<div className="row">
-									<div className="col-sm-11 text-right">
-                                        { this.props.loggingIn && <div className="progressIcon">
-                                            <span className="fa fa-spinner fa-pulse" aria-hidden='true'></span>
-                                        </div> }
-										<SubmitButton>Login</SubmitButton>
-									</div>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-		)
-	}
+                            <div className="row">
+                                <div className="col-sm-11 text-right">
+                                    { this.props.loggingIn && <div className="progressIcon">
+                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                                                              </div> }
+                                    <SubmitButton>Login</SubmitButton>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }
 
 LoginPage.propTypes = {
-	loggingIn: PropTypes.bool.isRequired,
+    loggingIn: PropTypes.bool.isRequired,
     baseUrl: PropTypes.string,
-	errorMessage: PropTypes.string,
+    errorMessage: PropTypes.string
 };
 
 LoginPage.defaultProps = {
@@ -76,12 +75,12 @@ LoginPage.defaultProps = {
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
-	loggingIn: state.session.fetching,
-	errorMessage: state.session.errorMessage
+    loggingIn: state.session.fetching,
+    errorMessage: state.session.errorMessage
 });
 
 const mapDispatchToProps = dispatch => ({
-	login: (username, password) => dispatch(login(username, password))
+    login: (username, password) => dispatch(login(username, password))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

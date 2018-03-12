@@ -37,10 +37,10 @@ export function getAuditData() {
         fetch(FETCH_URL, {
             credentials: 'include'
         })
-        .then((response) => response.json())
-        .then((body) => { dispatch(auditDataFetched(body)) })
-        .catch(function(error) {
-            console.error(error);
-        });
-    }
-};
+            .then(response => response.json())
+            .then((body) => { dispatch(auditDataFetched(body)); })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+}

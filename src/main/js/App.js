@@ -6,32 +6,30 @@ import { withRouter } from 'react-router-dom';
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import { getConfig } from './store/actions/config';
-import { verifyLogin } from "./store/actions/session";
+import { verifyLogin } from './store/actions/session';
 
 import '../css/main.scss';
 import 'font-awesome/scss/font-awesome.scss';
 
 class App extends Component {
-
-	componentDidMount() {
-		this.props.getConfig();
+    componentDidMount() {
+        this.props.getConfig();
         this.props.verifyLogin();
-	}
+    }
 
-	render() {
+    render() {
         if (this.props.initializing) {
-            return (<div></div>);
+            return (<div />);
         } else if (this.props.loggedIn) {
             return <MainPage />;
-	    } else {
+	    }
         	return <LoginPage />;
-        }
-	}
+    }
 }
 
 App.propTypes = {
-	loggedIn: PropTypes.bool.isRequired,
-	getConfig: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired
 };
 
@@ -43,7 +41,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
-	verifyLogin: () => dispatch(verifyLogin())
+    verifyLogin: () => dispatch(verifyLogin())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
