@@ -142,7 +142,6 @@ export function logout() {
               dispatch(push('/'));
             }
         }).catch(function(error) {
-
             dispatch(loggedOut());
             dispatch(push('/'));
             console.log(error);

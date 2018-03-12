@@ -30,6 +30,7 @@ class App extends Component {
 }
 
 App.propTypes = {
+	initializing: PropTypes.bool.isRequired,
 	loggedIn: PropTypes.bool.isRequired,
 	getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired
