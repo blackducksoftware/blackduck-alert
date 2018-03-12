@@ -54,7 +54,6 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/configuration/provider/hub",
                 "/api/login",
                 "/api/logout" };
 
@@ -67,7 +66,6 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/configuration/provider/hub",
                 "/api/login" };
         http.requiresChannel().anyRequest().requiresSecure().and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths).and().authorizeRequests().antMatchers(allowedPaths).permitAll().and()
                 .authorizeRequests().anyRequest().hasRole("ADMIN").and()

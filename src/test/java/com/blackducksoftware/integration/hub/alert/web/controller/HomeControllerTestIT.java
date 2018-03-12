@@ -1,5 +1,7 @@
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import java.util.UUID;
+
 import javax.transaction.Transactional;
 
 import org.junit.Before;
@@ -7,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -54,8 +57,28 @@ public class HomeControllerTestIT {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testVerify() throws Exception {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testVerifyMissingCSRFToken() throws Exception {
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testVerifyNullStringCSRFToken() throws Exception {
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("X-CSRF-TOKEN", "null");
+        request.headers(headers);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isForbidden());
     }
 
     @Test
