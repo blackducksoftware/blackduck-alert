@@ -60,9 +60,9 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/api/login",
                 "/api/logout" };
 
-        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
-                .logout()
-                .logoutSuccessUrl("/");
+        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll()
+                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+                .and().logout().logoutSuccessUrl("/");
         // conditional above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }
