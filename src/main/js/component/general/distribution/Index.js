@@ -62,7 +62,6 @@ function typeColumnDataFormat(cell) {
 }
 
 
-
 class Index extends Component {
     constructor(props) {
         super(props);
@@ -239,7 +238,7 @@ class Index extends Component {
                                     }
                                 }
                                 this.setState({
-                                    errors: errors
+                                    errors
                                 });
                             }
                             this.setState({

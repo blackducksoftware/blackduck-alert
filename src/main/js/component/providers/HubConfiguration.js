@@ -116,7 +116,7 @@ HubConfiguration.propTypes = {
     hubTimeout: PropTypes.number.isRequired,
     hubUrl: PropTypes.string.isRequired,
     id: PropTypes.string,
-    fieldErrors: PropTypes.anyOf(),
+    fieldErrors: PropTypes.arrayOf(PropTypes.object),
     updateStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     testStatus: PropTypes.string,
