@@ -56,7 +56,7 @@ public class ChannelRestConnectionFactory {
     }
 
     public RestConnection createUnauthenticatedRestConnection(final URL url) {
-        return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), 5 * 60 * 1000);
+        return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), globalProperties.getHubTimeout() * 1000);
     }
 
     public RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
