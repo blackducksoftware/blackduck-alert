@@ -134,16 +134,9 @@ export function logout() {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then(function(response) {
-            if (response.ok) {
-                dispatch(loggedOut());
-                dispatch(push('/'));
-            } else {
-              dispatch(loggedOut());
-              dispatch(push('/'));
-            }
-        }).catch(function(error) {
             dispatch(loggedOut());
             dispatch(push('/'));
+        }).catch(function(error) {
             console.log(error);
         });
     };
