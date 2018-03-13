@@ -12,7 +12,6 @@ const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" titl
 
 const NotificationTypeLegend = (
     {
-        children,
         hasPolicyViolation,
         hasPolicyViolationCleared,
         hasPolicyViolationOverride,
@@ -55,8 +54,7 @@ NotificationTypeLegend.propTypes = {
     hasHighVulnerability: PropTypes.bool,
     hasMediumVulnerability: PropTypes.bool,
     hasLowVulnerability: PropTypes.bool,
-    hasVulnerability: PropTypes.bool,
-    children: PropTypes.node.isRequired
+    hasVulnerability: PropTypes.bool
 };
 
 NotificationTypeLegend.defaultProps = {
