@@ -17,7 +17,7 @@ module.exports = {
         rules: [{
             test: /\.js$/,
             exclude: /(node_modules)/,
-            use: ['eslint-loader', 'babel-loader']
+            use: ['babel-loader']
         }, {
             test: /\.(jpg|png|svg)$/,
             loader: 'file-loader',
@@ -26,11 +26,11 @@ module.exports = {
             }
         }, {
             test: /\.scss$/,
-            use: [ "style-loader", "css-loader", "sass-loader" ]
+            use: ['style-loader', 'css-loader', 'sass-loader']
         }, {
             test: /\.css$/,
             include: /(node_modules)/,
-            use: [ 'style-loader', 'css-loader' ]
+            use: ['style-loader', 'css-loader']
         }, {
             test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
             loader: 'url-loader?limit=10000&mimetype=application/font-woff'
@@ -50,10 +50,10 @@ module.exports = {
         disableHostCheck: true,
         proxy: [{
             context: ['/api'],
-            target: "http://kkelley-mac.local:8080",
+            target: 'http://localhost.local:8080',
             secure: false,
             cookieDomainRewrite: {
-                "*": ""
+                '*': ''
             }
         }]
     }

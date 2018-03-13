@@ -10,17 +10,13 @@ export default class PasswordInput extends LabeledField {
         const className = inputClass || 'form-control';
 
         if (this.props.readOnly) {
-            return super.render(
-                <div className="col-sm-8">
-                    <input type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
-                </div>
-            );
+            return super.render(<div className="col-sm-8">
+                <input type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
+            </div>);
         }
 
-        return super.render(
-            <div className="col-sm-8">
-                <input type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
-            </div>
-        );
+        return super.render(<div className="col-sm-8">
+            <input type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
+        </div>);
     }
 }

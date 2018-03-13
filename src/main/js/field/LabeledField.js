@@ -19,7 +19,7 @@ class LabeledField extends Component {
 }
 
 LabeledField.propTypes = {
-    field: PropTypes.anyOf(),
+    field: PropTypes.node,
     label: PropTypes.string.isRequired,
     errorMessage: PropTypes.string
 };
