@@ -199,7 +199,7 @@ class BaseJobConfiguration extends Component {
 		}
 
 		var self = this;
-		let jsonBody = JSON.stringify(configuration);
+		const jsonBody = JSON.stringify(configuration);
 		const csrfToken = this.props.csrfToken;
 		fetch(this.props.testUrl, {
 			method: 'POST',
