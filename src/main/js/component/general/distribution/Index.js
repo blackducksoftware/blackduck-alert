@@ -258,14 +258,14 @@ class Index extends Component {
             credentials: 'same-origin'
         })
             .then((response) => {
-                self.handleSetState('waitingForProjects', false);
+                this.setState({ waitingForProjects: false });
                 if (!response.ok) {
                     return response.json().then((json) => {
-                        self.handleSetState('projectTableMessage', json.message);
+                        this.setState({ projectTableMessage: json.message });
                     });
                 }
                 return response.json().then((json) => {
-                    self.handleSetState('projectTableMessage', '');
+                    this.setState({ projectTableMessage: ''});
                     const jsonArray = JSON.parse(json.message);
                     if (jsonArray != null && jsonArray.length > 0) {
                         const projects = [];
@@ -275,7 +275,7 @@ class Index extends Component {
                                 url: jsonArray[index].url
                             });
                         }
-                        self.setState({
+                        this.setState({
                             projects
                         });
                     }
@@ -292,18 +292,18 @@ class Index extends Component {
             credentials: 'same-origin'
         })
             .then((response) => {
-                self.handleSetState('waitingForGroups', false);
+                this.setState({ waitingForGroups: false });
                 if (!response.ok) {
                     return response.json().then((json) => {
-                        self.handleSetState('groupError', json.message);
+                        setState({ 'groupError': json.message });
                     });
                 }
                 return response.json().then((json) => {
-                    self.handleSetState('groupError', '');
+                    this.setState({ groupError: '' });
                     const jsonArray = JSON.parse(json.message);
                     if (jsonArray != null && jsonArray.length > 0) {
                         const groups = jsonArray.map(({ name, active, url }) => ({ name, active, url }));
-                        self.setState({
+                        this.setState({
                             groups
                         });
                     }
@@ -323,9 +323,9 @@ class Index extends Component {
             }
         })
             .then((response) => {
-                self.handleSetState('inProgress', false);
+                this.setState({ inProgress: false });
                 if (response.ok) {
-                    self.handleSetState('jobConfigTableMessage', '');
+                    this.setState({ jobConfigTableMessage: '' });
                     response.json().then((jsonArray) => {
                         const newJobs = new Array();
                         if (jsonArray != null && jsonArray.length > 0) {
@@ -345,13 +345,13 @@ class Index extends Component {
                                 newJobs.push(jobConfig);
                             });
                         }
-                        self.setState({
+                        this.setState({
                             jobs: newJobs
                         });
                     });
                 } else {
                     response.json().then((json) => {
-                        self.handleSetState('jobConfigTableMessage', json.message);
+                        this.setState({ jobConfigTableMessage: json.message });
                     });
                 }
             })
@@ -361,7 +361,7 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        this.handleSetState('currentRowSelected', currentRowSelected);
+        setState({ 'currentRowSelected': currentRowSelected });
     }
 
     editButtonClick(cell, row) {
