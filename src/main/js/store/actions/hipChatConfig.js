@@ -16,7 +16,7 @@ function scrubConfig(config) {
     return {
         apiKeyIsSet: config.apiKeyIsSet,
         apiKey: config.apiKey,
-        id: config.id
+        id: config.id || ''
     };
 }
 
@@ -92,11 +92,14 @@ function testFailed(message, errors) {
 }
 
 export function getConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
         .then((response) =>
           response.json().then(body => {
@@ -111,23 +114,24 @@ export function getConfig() {
 };
 
 export function updateConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(updatingConfig());
 
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
             credentials: 'include',
             method,
             body: JSON.stringify(body),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         .then((response) => {
             if(response.ok) {
-                response.json().then((body) => dispatch(configUpdated({id: body.id, ...config})));
+                response.json().then((body) => dispatch(configUpdated({...config, id: body.id})));
             } else {
                 response.json()
                     .then((data) => {
@@ -151,15 +155,16 @@ export function updateConfig(config) {
 
 
 export function testConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(testingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(TEST_URL, {
             credentials: 'include',
             method: 'POST',
             body: JSON.stringify(scrubConfig(config)),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         // Refactor this response handler out

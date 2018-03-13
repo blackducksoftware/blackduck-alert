@@ -6,7 +6,7 @@ const jsDir = path.resolve(srcDir, 'main', 'js');
 const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
 
 module.exports = {
-    entry: path.resolve(jsDir, 'Index'),
+    entry: ['babel-polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
     devtool: 'sourcemaps',
     output: {
         path: buildDir,

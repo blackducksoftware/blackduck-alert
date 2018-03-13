@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn, InsertButton, DeleteButton, ButtonGroup } from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
@@ -65,8 +66,12 @@ class Index extends Component {
 
 	retrieveProjects() {
 		var self = this;
+		const csrfToken = this.props.csrfToken;
 		fetch('/api/hub/projects',{
-			credentials: "same-origin"
+			credentials: "same-origin",
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
 		})
 		.then(function(response) {
 			self.handleSetState('waitingForProjects', false);
@@ -100,8 +105,12 @@ class Index extends Component {
 
 	retrieveGroups() {
 		var self = this;
+		const csrfToken = this.props.csrfToken;
 		fetch('/api/hub/groups',{
 			credentials: "same-origin",
+			headers: {
+				'X-CSRF-TOKEN': csrfToken
+			}
 		})
 		.then(function(response) {
 			self.handleSetState('waitingForGroups', false);
@@ -136,11 +145,13 @@ class Index extends Component {
 
     fetchDistributionJobs() {
         let self = this;
+				const csrfToken = this.props.csrfToken;
         fetch('/api/configuration/distribution/common',{
-			credentials: "same-origin",
+						credentials: "same-origin",
             headers: {
-				'Content-Type': 'application/json'
-			}
+							'Content-Type': 'application/json',
+							'X-CSRF-TOKEN': csrfToken
+				}
 		})
 		.then(function(response) {
 			self.handleSetState('inProgress', false);
@@ -218,6 +229,7 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
 	    	<JobAddModal
+				  csrfToken={this.props.csrfToken}
 	    		waitingForProjects={this.state.waitingForProjects}
 	    		waitingForGroups={this.state.waitingForGroups}
 	    		projects={this.state.projects}
@@ -250,11 +262,13 @@ class Index extends Component {
 		});
 	  	matchingJobs.forEach(function(job){
 	  		let jsonBody = JSON.stringify(job);
+				const csrfToken = this.props.csrfToken
 		    fetch('/api/configuration/distribution/common',{
 		    	method: 'DELETE',
-				credentials: "same-origin",
-	            headers: {
-					'Content-Type': 'application/json'
+					credentials: "same-origin",
+          headers: {
+						'Content-Type': 'application/json',
+						'X-CSRF-TOKEN': csrfToken
 				},
 				body: jsonBody
 			}).then(function(response) {
@@ -313,14 +327,15 @@ class Index extends Component {
 
 	getCurrentJobConfig(currentRowSelected) {
 		let currentJobConfig = null;
+		const csrfToken = this.props.csrfToken;
 		if (currentRowSelected != null) {
             const { id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects } = currentRowSelected;
 			if (distributionType === 'email_group_channel') {
-				currentJobConfig = <GroupEmailJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <GroupEmailJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForGroups={this.state.waitingForGroups} groups={this.state.groups} groupName={groupName} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'hipchat_channel') {
-				currentJobConfig = <HipChatJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <HipChatJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			} else if (distributionType === 'slack_channel') {
-				currentJobConfig = <SlackJobConfiguration id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
+				currentJobConfig = <SlackJobConfiguration csrfToken={csrfToken} id={id} distributionConfigId={distributionConfigId} name={name} includeAllProjects={includeAllProjects} frequency={frequency} notificationTypes={notificationTypes} waitingForProjects={this.state.waitingForProjects} projects={this.state.projects} configuredProjects={configuredProjects} handleCancel={this.cancelRowSelect} projectTableMessage={this.state.projectTableMessage} />;
 			}
 		}
 		return currentJobConfig;
@@ -415,4 +430,10 @@ class Index extends Component {
 	}
 };
 
-export default Index;
+const mapStateToProps = state => ({
+	csrfToken: state.session.csrfToken
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

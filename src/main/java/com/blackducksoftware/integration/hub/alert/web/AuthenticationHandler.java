@@ -23,16 +23,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
 @ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false", relaxedNames = false)
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    @Autowired
+    public AuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -50,9 +59,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/api/configuration/provider/hub",
                 "/api/login",
                 "/api/logout" };
-        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and().authorizeRequests().anyRequest().hasRole("ADMIN").and()
-                .logout()
-                .logoutSuccessUrl("/");
+
+        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll()
+                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+                .and().logout().logoutSuccessUrl("/");
         // conditional above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }
