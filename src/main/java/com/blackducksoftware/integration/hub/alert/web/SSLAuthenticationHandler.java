@@ -23,16 +23,25 @@
  */
 package com.blackducksoftware.integration.hub.alert.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
 @ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true", relaxedNames = false)
 public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    @Autowired
+    public SSLAuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -45,12 +54,23 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/configuration/provider/hub",
                 "/api/login",
                 "/api/logout" };
-        http.requiresChannel().anyRequest().requiresSecure().and().csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll().and()
-                .authorizeRequests().anyRequest().hasRole("ADMIN").and()
-                .logout()
-                .logoutSuccessUrl("/");
+
+        final String[] csrfIgnoredPaths = {
+                "/",
+                "/#",
+                "/favicon.ico",
+                "/fonts/**",
+                "/js/bundle.js",
+                "/js/bundle.js.map",
+                "/css/style.css",
+                "index.html",
+                "/api/login" };
+        http.requiresChannel().anyRequest().requiresSecure()
+                .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
+                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
+                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+                .and().logout().logoutSuccessUrl("/");
     }
 }

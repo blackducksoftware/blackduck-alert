@@ -10,6 +10,7 @@ import {
 } from '../actions/types';
 
 const initialState = {
+    csrfToken: null,
     fetching: false,
     loggedIn: false,
     initializing: true,
@@ -37,6 +38,7 @@ const session = (state = initialState, action) => {
 
         case SESSION_LOGGED_IN:
             return Object.assign({}, state, {
+                csrfToken: action.csrfToken,
                 fetching: false,
                 loggedIn: true,
                 initializing: false,
@@ -47,7 +49,9 @@ const session = (state = initialState, action) => {
 
         case SESSION_LOGGED_OUT:
             return Object.assign({}, initialState, {
-                initializing: false
+                initializing: false,
+                loggedIn: false,
+                showLogoutConfirm: false
             });
 
         case SESSION_LOGIN_ERROR:

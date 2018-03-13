@@ -9,7 +9,7 @@ const jsDir = path.resolve(srcDir, 'main', 'js');
 const buildDir = path.resolve(__dirname, 'build', 'resources', 'main', 'static');
 
 module.exports = {
-    entry: ["babel-polyfill", path.resolve(jsDir, 'Index')],
+    entry: ['babel-polyfill', 'whatwg-fetch', path.resolve(jsDir, 'Index')],
     output: {
         path: buildDir,
         filename: 'js/bundle.js',

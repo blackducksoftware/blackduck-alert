@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
@@ -45,10 +46,12 @@ class BaseJobConfiguration extends Component {
             let urlString = this.props.getUrl || this.props.baseUrl;
             let getUrl = `${urlString}?id=${distributionId}`
             let self = this;
+						const csrfToken = this.props.csrfToken;
             fetch(getUrl,{
-    			credentials: "same-origin",
+    						credentials: "same-origin",
                 headers: {
-    				'Content-Type': 'application/json'
+    							'Content-Type': 'application/json',
+									'X-CSRF-TOKEN': csrfToken
     			}
     		})
     		.then(function(response) {
@@ -125,12 +128,13 @@ class BaseJobConfiguration extends Component {
 		if (this.state.values.id) {
 			method = 'PUT';
 		}
-
+		const csrfToken = this.props.csrfToken;
 		return fetch(this.props.baseUrl, {
 			method: method,
 			credentials: "same-origin",
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': csrfToken
 			},
 			body: jsonBody
 		}).then(function(response) {
@@ -195,12 +199,14 @@ class BaseJobConfiguration extends Component {
 		}
 
 		var self = this;
-		let jsonBody = JSON.stringify(configuration);
+		const jsonBody = JSON.stringify(configuration);
+		const csrfToken = this.props.csrfToken;
 		fetch(this.props.testUrl, {
 			method: 'POST',
 			credentials: "same-origin",
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'X-CSRF-TOKEN': csrfToken
 			},
 			body: jsonBody
 		}).then(function(response) {
@@ -351,6 +357,6 @@ class BaseJobConfiguration extends Component {
 				</form>
 		)
 	}
-}
+};
 
-export default BaseJobConfiguration;
+export default BaseJobConfiguration

@@ -16,7 +16,8 @@ const initialState = {
     error: {
         message: '',
         fieldErrors: []
-    }
+    },
+    id: null
 };
 
 const config = (state = initialState, action) => {

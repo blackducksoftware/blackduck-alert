@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.junit.Test;
@@ -23,6 +24,8 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -32,10 +35,11 @@ import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestExcep
 
 public class LoginHandlerTest {
     private final ObjectTransformer objectTransformer = new ObjectTransformer();
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
 
     @Test
     public void userLogoutWithValidSessionTest() {
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null, csrfTokenRepository);
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
         session.setMaxInactiveInterval(30);
@@ -46,7 +50,7 @@ public class LoginHandlerTest {
 
     @Test
     public void userLogoutWithInvalidSessionTest() {
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null, csrfTokenRepository);
         final HttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -60,21 +64,22 @@ public class LoginHandlerTest {
     @Test
     public void userLoginWithValidSessionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
         session.setMaxInactiveInterval(30);
+        final HttpServletResponse httpResponse = new MockHttpServletResponse();
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenReturn(true);
 
-        final ResponseEntity<String> response = loginHandler.userLogin(request, null);
+        final ResponseEntity<String> response = loginHandler.userLogin(request, httpResponse, null);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void userLoginWithInvalidSessionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = request.getSession(false);
@@ -82,42 +87,43 @@ public class LoginHandlerTest {
             session = null;
         }
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenReturn(false);
+        final HttpServletResponse httpResponse = new MockHttpServletResponse();
 
-        final ResponseEntity<String> response = loginHandler.userLogin(request, null);
+        final ResponseEntity<String> response = loginHandler.userLogin(request, httpResponse, null);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
 
     @Test
     public void authenticateUserWithIntegrationRestExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
 
         final HttpStatus responseCode = HttpStatus.BAD_GATEWAY;
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode.value(), "", ""));
 
-        final ResponseEntity<String> response = loginHandler.authenticateUser(null);
+        final ResponseEntity<String> response = loginHandler.authenticateUser(null, null, null);
         assertEquals(responseCode, response.getStatusCode());
     }
 
     @Test
     public void authenticateUserWithAlertFieldExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
 
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
 
-        final ResponseEntity<String> response = loginHandler.authenticateUser(null);
+        final ResponseEntity<String> response = loginHandler.authenticateUser(null, null, null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void authenticateUserWithExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions);
+        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
 
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
 
-        final ResponseEntity<String> response = loginHandler.authenticateUser(null);
+        final ResponseEntity<String> response = loginHandler.authenticateUser(null, null, null);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
