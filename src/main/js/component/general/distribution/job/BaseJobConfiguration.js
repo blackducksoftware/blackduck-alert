@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
@@ -45,10 +46,12 @@ class BaseJobConfiguration extends Component {
             const urlString = this.props.getUrl || this.props.baseUrl;
             const getUrl = `${urlString}?id=${distributionId}`;
             const self = this;
+            const csrfToken = this.props.csrfToken;
             fetch(getUrl, {
                 credentials: 'same-origin',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 }
             })
                 .then((response) => {
@@ -125,12 +128,13 @@ class BaseJobConfiguration extends Component {
         if (this.state.values.id) {
             method = 'PUT';
         }
-
+        const csrfToken = this.props.csrfToken;
         return fetch(this.props.baseUrl, {
             method,
             credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
             body: jsonBody
         }).then((response) => {
@@ -195,11 +199,13 @@ class BaseJobConfiguration extends Component {
 
         const self = this;
         const jsonBody = JSON.stringify(configuration);
+        const csrfToken = this.props.csrfToken;
         fetch(this.props.testUrl, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             },
             body: jsonBody
         }).then((response) => {
@@ -350,4 +356,4 @@ class BaseJobConfiguration extends Component {
     }
 }
 
-export default BaseJobConfiguration;
+export default BaseJobConfiguration

@@ -118,7 +118,8 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
 GroupEmailJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string
+    distributionType: PropTypes.string,
+    csrfToken: PropTypes.string
 };
 
 GroupEmailJobConfiguration.defaultProps = {

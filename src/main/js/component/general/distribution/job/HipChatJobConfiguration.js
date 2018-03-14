@@ -77,7 +77,8 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 HipChatJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string
+    distributionType: PropTypes.string,
+    csrfToken: PropTypes.string
 };
 
 HipChatJobConfiguration.defaultProps = {

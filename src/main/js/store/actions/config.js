@@ -24,7 +24,7 @@ function scrubConfig(config) {
         hubProxyUsername: config.hubProxyUsername,
         hubTimeout: config.hubTimeout,
         hubUrl: config.hubUrl,
-        id: config.id
+        id: (config.id?''+config.id: '')
     };
 }
 
@@ -100,11 +100,14 @@ function testFailed(message, errors) {
 }
 
 export function getConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
             .then(response => response.json().then((body) => {
                 if (body.length > 0) {
@@ -118,9 +121,9 @@ export function getConfig() {
 }
 
 export function updateConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(updatingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
@@ -129,12 +132,13 @@ export function updateConfig(config) {
             method,
             body: JSON.stringify(body),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(data => dispatch(configUpdated({ id: data.id, ...config })));
+                    response.json().then(data => dispatch(configUpdated({ ...config, id: data.id })));
                 } else {
                     response.json()
                         .then((data) => {
@@ -158,15 +162,16 @@ export function updateConfig(config) {
 
 
 export function testConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(testingConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(TEST_URL, {
             credentials: 'include',
             method: 'POST',
             body: JSON.stringify(scrubConfig(config)),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
         // Refactor this response handler out

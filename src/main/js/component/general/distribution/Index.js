@@ -213,7 +213,7 @@ class Index extends Component {
             // TODO delete the Job configs from the backend
             // dropRowKeys are the Id's of the Job configs
             const { jobs } = this.state;
-
+            const csrfToken = this.props.csrfToken
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
             matchingJobs.forEach((job) => {
                 const jsonBody = JSON.stringify(job);
@@ -221,7 +221,8 @@ class Index extends Component {
                     method: 'DELETE',
                     credentials: 'same-origin',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
                     },
                     body: jsonBody
                 }).then((response) => {
@@ -254,8 +255,12 @@ class Index extends Component {
 
     retrieveProjects() {
         const self = this;
+        const csrfToken = this.props.csrfToken;
         fetch('/api/hub/projects', {
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
         })
             .then((response) => {
                 this.setState({ waitingForProjects: false });
@@ -288,8 +293,12 @@ class Index extends Component {
 
     retrieveGroups() {
         const self = this;
+        const csrfToken = this.props.csrfToken;
         fetch('/api/hub/groups', {
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
         })
             .then((response) => {
                 this.setState({ waitingForGroups: false });
@@ -316,10 +325,12 @@ class Index extends Component {
 
     fetchDistributionJobs() {
         const self = this;
+        const csrfToken = this.props.csrfToken;
         fetch('/api/configuration/distribution/common', {
             credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
             .then((response) => {
@@ -480,4 +491,10 @@ class Index extends Component {
     }
 }
 
-export default Index;
+const mapStateToProps = state => ({
+	csrfToken: state.session.csrfToken
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);
