@@ -69,9 +69,9 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
     @Override
     public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
+            logger.info("Accumulator Reader Starting Operation");
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
             if (hubServicesFactory != null) {
-                logger.debug("Accumulator Reader Starting Read Operation");
                 ZonedDateTime zonedEndDate = ZonedDateTime.now();
                 zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
                 zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
@@ -107,7 +107,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
         } catch (final Exception ex) {
             logger.error("Error in Accumulator Reader", ex);
         } finally {
-            logger.debug("Accumulator Reader Finished Operation");
+            logger.info("Accumulator Reader Finished Operation");
         }
         return null;
     }

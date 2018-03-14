@@ -47,6 +47,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
                 if (hubServicesFactory != null) {
+                    logger.info("Processing accumulated notifications");
                     final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(globalProperties, hubServicesFactory.getRestConnection().logger);
                     final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData.getNotificationContentItems());
                     return storeEvent;
@@ -54,6 +55,8 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
             } catch (final Exception ex) {
                 logger.error("Error occurred durring processing of accumulated notifications", ex);
             }
+        } else {
+            logger.info("No notifications to process");
         }
         return null;
     }
