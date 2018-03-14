@@ -373,7 +373,7 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        setState({ 'currentRowSelected': currentRowSelected });
+        this.setState({ 'currentRowSelected': currentRowSelected });
     }
 
     editButtonClick(cell, row) {
