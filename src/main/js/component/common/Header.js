@@ -8,7 +8,9 @@ class Header extends Component {
         return (
             <div className="header">
                 <Logo />
-                <div className="title">Alert</div>
+                <div className="nameCentered">
+                    <div className="title">Alert</div>
+                </div>
                 <div className="submitContainers">
                     <div className="loginSpacer" />
                 </div>

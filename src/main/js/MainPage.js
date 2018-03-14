@@ -29,7 +29,7 @@ const MainPage = () => (
             <Route path="/channels/slack" component={SlackConfiguration} />
             <Route path="/jobs/scheduling" component={SchedulingConfiguration} />
             <Route path="/jobs/distribution" component={DistributionConfiguration} />
-            <Route path="/audit" component={Audit} />
+            <Route path="/general/audit" component={Audit} />
         </div>
         <div className="modalsArea">
             <LogoutConfirmation />

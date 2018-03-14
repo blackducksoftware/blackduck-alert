@@ -31,6 +31,7 @@ const Navigation = props => (
     <div className="navigation">
         <div className="navigationLogo">
             <Logo />
+            <div className="title">Alert</div>
         </div>
         <ul>
             <li className="navHeader">
@@ -74,7 +75,7 @@ const Navigation = props => (
             </li>
             <li className="divider" />
             <li>
-                <NavLink to="/audit" activeClassName="activeNav">
+                <NavLink to="/general/audit" activeClassName="activeNav">
                     <FontAwesome name="history" fixedWidth /> Audit
                 </NavLink>
             </li>
