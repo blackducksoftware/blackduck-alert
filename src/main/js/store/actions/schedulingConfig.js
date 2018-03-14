@@ -154,7 +154,9 @@ export function updateSchedulingConfig(config) {
                         });
                 }
             })
-
+            .then(() => {
+                dispatch(getSchedulingConfig());
+            })
             .catch(console.error);
     };
 }
@@ -180,7 +182,7 @@ export function runSchedulingAccumulator() {
                 }
             })
             .then(() => {
-                getSchedulingConfig()(dispatch);
+                dispatch(getSchedulingConfig());
             })
             .catch((err) => {
                 dispatch(accumulatorError(err));
