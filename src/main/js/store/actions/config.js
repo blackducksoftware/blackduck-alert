@@ -155,6 +155,9 @@ export function updateConfig(config) {
                         });
                 }
             })
+            .then(() => {
+                dispatch(getConfig());
+            })
             .catch(console.error);
     };
 }
