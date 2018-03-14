@@ -31,7 +31,6 @@ const Navigation = props => (
     <div className="navigation">
         <div className="navigationLogo">
             <Logo />
-            <div className="title">Alert</div>
         </div>
         <ul>
             <li className="navHeader">

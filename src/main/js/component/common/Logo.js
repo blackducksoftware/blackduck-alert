@@ -2,7 +2,7 @@ import React from 'react';
 
 const Logo = () => (
     <div className="blackduckLogo">
-        <svg width="150px" height="17px" viewBox="0 0 150 17" version="1.1">
+        <svg width="217px" height="17px" viewBox="0 0 217 17" version="1.1">
             <defs>
                 <polygon
                     id="1path-2"
@@ -70,6 +70,9 @@ const Logo = () => (
                                 />
                             </g>
                         </g>
+                        <text id="ALERT" fontFamily="OpenSans-Bold, Open Sans" fontSize="20" fontWeight="bold" fill="#FFFFFE">
+                            <tspan x="165" y="29">ALERT</tspan>
+                        </text>
                     </g>
                 </g>
             </g>

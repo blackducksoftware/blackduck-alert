@@ -305,7 +305,7 @@ class Index extends Component {
                 this.setState({ waitingForGroups: false });
                 if (!response.ok) {
                     return response.json().then((json) => {
-                        setState({ 'groupError': json.message });
+                        this.setState({ 'groupError': json.message });
                     });
                 }
                 return response.json().then((json) => {
