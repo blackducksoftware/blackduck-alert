@@ -147,6 +147,9 @@ export function updateEmailConfig(config) {
                         });
                 }
             })
+            .then(() => {
+                dispatch(getEmailConfig());
+            })
             .catch(console.error);
     };
 }
