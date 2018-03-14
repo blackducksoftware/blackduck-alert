@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class LoginController extends BaseController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(final HttpServletRequest request, @RequestBody(required = false) final LoginRestModel loginRestModel) {
-        return loginHandler.userLogin(request, loginRestModel);
+    public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginRestModel loginRestModel) {
+        return loginHandler.userLogin(request, response, loginRestModel);
     }
 }

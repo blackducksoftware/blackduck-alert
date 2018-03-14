@@ -23,6 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +41,14 @@ public class HomeController {
     }
 
     @GetMapping(value = "/api/verify")
-    public ResponseEntity<String> checkAuthentication() {
-        return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
+    public ResponseEntity<String> checkAuthentication(final HttpServletRequest request) {
+        final HttpServletRequest httpRequest = request;
+        final String token = httpRequest.getHeader("X-CSRF-TOKEN");
+        if (StringUtils.isBlank(token) || StringUtils.equalsIgnoreCase("null", token)) {
+            httpRequest.getSession().invalidate();
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        } else {
+            return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
+        }
     }
 }

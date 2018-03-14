@@ -27,7 +27,7 @@ function scrubConfig(config) {
         mailSmtpDnsRet: config.mailSmtpDnsRet,
         mailSmtpAllow8bitmime: config.mailSmtpAllow8bitmime,
         mailSmtpSendPartial: config.mailSmtpSendPartial,
-        id: config.id
+        id: (config.id?''+config.id: '')
     };
 }
 
@@ -79,6 +79,7 @@ function updatingEmailConfig() {
  * @returns {{type}}
  */
 function emailConfigUpdated(config) {
+    console.log("Email Config Updated", config);
     return {
         type: EMAIL_CONFIG_UPDATED,
         config: { ...scrubConfig(config) }
@@ -93,11 +94,14 @@ export function toggleAdvancedEmailOptions(toggle) {
 }
 
 export function getEmailConfig() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            }
         })
             .then(response => response.json().then((body) => {
                 if (body.length > 0) {
@@ -111,21 +115,23 @@ export function getEmailConfig() {
 }
 
 export function updateEmailConfig(config) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(updatingEmailConfig());
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
+        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
             credentials: 'include',
             method,
             body: JSON.stringify(body),
             headers: {
-                'content-type': 'application/json'
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(() => { dispatch(emailConfigUpdated({ ...config })); });
+                    response.json().then((data) => { dispatch(emailConfigUpdated({ ...config, id: data.id })); });
                 } else {
                     response.json()
                         .then((data) => {
