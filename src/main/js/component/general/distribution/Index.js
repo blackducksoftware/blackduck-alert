@@ -101,9 +101,10 @@ class Index extends Component {
             const {
                 id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
             } = currentRowSelected;
-
+            const csrfToken = this.props.csrfToken;
             if (distributionType === 'email_group_channel') {
                 return (<GroupEmailJobConfiguration
+                    csrfToken={csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -121,6 +122,7 @@ class Index extends Component {
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
+                    csrfToken={csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -135,6 +137,7 @@ class Index extends Component {
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
+                    csrfToken={csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -188,6 +191,7 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
+                csrfToken={this.props.csrfToken}
                 waitingForProjects={this.state.waitingForProjects}
                 waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
