@@ -60,24 +60,24 @@ const Navigation = props => (
                 </NavLink>
             </li>
             <li className="navHeader">
-                General
+                Jobs
             </li>
             <li>
-                <NavLink to="/general/scheduling" activeClassName="activeNav">
-                    <FontAwesome name="clock-o" fixedWidth /> Scheduling
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to="/general/distribution" activeClassName="activeNav">
+                <NavLink to="/jobs/distribution" activeClassName="activeNav">
                     <FontAwesome name="truck" fixedWidth /> Distribution
                 </NavLink>
             </li>
             <li>
-                <NavLink to="/general/audit" activeClassName="activeNav">
-                    <FontAwesome name="history" fixedWidth /> Audit
+                <NavLink to="/jobs/scheduling" activeClassName="activeNav">
+                    <FontAwesome name="clock-o" fixedWidth /> Scheduling
                 </NavLink>
             </li>
             <li className="divider" />
+            <li>
+                <NavLink to="/audit" activeClassName="activeNav">
+                    <FontAwesome name="history" fixedWidth /> Audit
+                </NavLink>
+            </li>
             <li className="logoutLink">
                 <a
                     role="button"

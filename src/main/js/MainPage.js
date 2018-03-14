@@ -27,9 +27,9 @@ const MainPage = () => (
             <Route path="/channels/email" component={EmailConfiguration} />
             <Route path="/channels/hipchat" component={HipChatConfiguration} />
             <Route path="/channels/slack" component={SlackConfiguration} />
-            <Route path="/general/scheduling" component={SchedulingConfiguration} />
-            <Route path="/general/distribution" component={DistributionConfiguration} />
-            <Route path="/general/audit" component={Audit} />
+            <Route path="/jobs/scheduling" component={SchedulingConfiguration} />
+            <Route path="/jobs/distribution" component={DistributionConfiguration} />
+            <Route path="/audit" component={Audit} />
         </div>
         <div className="modalsArea">
             <LogoutConfirmation />

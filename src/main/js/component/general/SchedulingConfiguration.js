@@ -99,7 +99,7 @@ class SchedulingConfiguration extends React.Component {
         } = this.props;
         return (
             <div>
-                <h1>General / Scheduling</h1>
+                <h1>Scheduling</h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
 
                     { errorMessage && <div className="alert alert-danger">
