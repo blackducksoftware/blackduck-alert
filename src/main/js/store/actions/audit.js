@@ -31,11 +31,14 @@ function auditDataFetched(items) {
  * @returns {function(*)}
  */
 export function getAuditData() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(fetchingAuditData());
-
+        const csrfToken = getState().session.csrfToken;
         fetch(FETCH_URL, {
-            credentials: 'include'
+            credentials: 'include',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
         })
             .then(response => response.json())
             .then((body) => { dispatch(auditDataFetched(body)); })

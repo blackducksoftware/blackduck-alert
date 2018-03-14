@@ -1,21 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup } from 'react-bootstrap-table';
 import { getAuditData } from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
 import AuditDetails from './Details';
+import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 
 import '../../../../css/audit.scss';
-
-const policyViolationIcon = <i key="policyViolationIcon" alt="Policy Violation" title="Policy Violation" className="fa fa-ban policyViolation" aria-hidden="true" />;
-const policyViolationClearedIcon = <i key="policyViolationClearedIcon" alt="Policy Violation Cleared" title="Policy Violation Cleared" className="fa fa-eraser policyViolationCleared" aria-hidden="true" />;
-const policyViolationOverrideIcon = <i key="policyViolationOverrideIcon" alt="Policy Override" title="Policy Override" className="fa fa-exclamation-circle policyViolationOverride" aria-hidden="true" />;
-const highVulnerabilityIcon = <i key="highVulnerabilityIcon" alt="High Vulnerability" title="High Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
-const mediumVulnerabilityIcon = <i key="mediumVulnerabilityIcon" alt="Medium Vulnerability" title="Medium Vulnerability" className="fa fa-shield mediumVulnerability" aria-hidden="true" />;
-const lowVulnerabilityIcon = <i key="lowVulnerabilityIcon" alt="Low Vulnerability" title="Low Vulnerability" className="fa fa-shield lowVulnerability" aria-hidden="true" />;
-const vulnerabilityIcon = <i key="vulnerabilityIcon" alt="Vulnerability" title="Vulnerability" className="fa fa-shield vulnerability" aria-hidden="true" />;
-
 
 class Index extends Component {
     constructor(props) {
@@ -23,8 +16,7 @@ class Index extends Component {
         this.state = {
             autoRefresh: true,
             message: '',
-            entries: [],
-            modal: undefined
+            entries: []
         };
         // this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -37,84 +29,26 @@ class Index extends Component {
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
-    }
+	}
 
-    componentDidMount() {
+	componentDidMount() {
         this.props.getAuditData();
-        this.startAutoReload();
-    }
+		this.startAutoReload();
+	}
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.items !== this.props.items) {
-            this.setState({ message: '' });
+		if(nextProps.items !== this.props.items) {
+			this.setState({'message': ''});
             this.setEntriesFromArray(nextProps.items);
-        }
-    }
-
-    startAutoReload() {
-        // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
-    }
-
-    cancelAutoReload() {
-        clearInterval(this.reloadInterval);
+		}
     }
 
     componentWillUnmount() {
         this.cancelAutoReload();
     }
 
-    setEntriesFromArray(jsonArray) {
-        if (jsonArray != null && jsonArray.length > 0) {
-            const entries = [];
-            for (const index in jsonArray) {
-                const newEntry = {};
-                newEntry.id = jsonArray[index].id;
-                newEntry.jobName = jsonArray[index].name;
-                newEntry.eventType = jsonArray[index].eventType;
-                newEntry.timeCreated = jsonArray[index].timeCreated;
-                newEntry.timeLastSent = jsonArray[index].timeLastSent;
-                newEntry.status = jsonArray[index].status;
-                newEntry.errorMessage = jsonArray[index].errorMessage;
-                newEntry.errorStackTrace = jsonArray[index].errorStackTrace;
-                if (jsonArray[index].notification) {
-                    newEntry.notificationTypes = jsonArray[index].notification.notificationTypes;
-                    newEntry.notificationProjectName = jsonArray[index].notification.projectName;
-                    newEntry.notificationProjectVersion = jsonArray[index].notification.projectVersion;
-                    newEntry.components = jsonArray[index].notification.components;
-                }
-                entries.push(newEntry);
-            }
-            this.setState({
-                entries
-            });
-        }
-    }
-
-    handleAutoRefreshChange(event) {
-        const target = event.target;
-        if (target.checked) {
-            this.startAutoReload();
-        } else {
-            this.cancelAutoReload();
-        }
-        const name = target.name;
-        this.setState({
-            [name]: target.checked
-        });
-    }
-
-    cancelRowSelect() {
-        this.setState({
-            currentRowSelected: null
-        });
-    }
-
     onResendClick(currentRowSelected) {
-        let currentEntry = currentRowSelected;
-        if (!currentRowSelected) {
-            currentEntry = this.state.currentRowSelected;
-        }
+        const currentEntry = currentRowSelected || this.state.currentRowSelected;
 
         this.setState({
             message: 'Sending...',
@@ -141,58 +75,109 @@ class Index extends Component {
                 this.setState({ message: '' });
                 this.setEntriesFromArray(JSON.parse(json.message));
             });
-        })
-            .catch((error) => {
-                console.log(error);
-            });
+        }).catch(console.error);
+    }
+
+    onStatusFailureClick(currentRowSelected) {
+        this.setState({
+            currentRowSelected
+		});
+    }
+
+    setEntriesFromArray(jsonArray = []) {
+        const entries = jsonArray.map((entry) => {
+            const result = {
+                id: entry.id,
+                jobName: entry.name,
+                eventType: entry.eventType,
+                timeCreated: entry.timeCreated,
+                timeLastSent: entry.timeLastSent,
+                status: entry.status,
+                errorMessage: entry.errorMessage,
+                errorStackTrace: entry.errorStackTrace
+            };
+            const { notification } = entry;
+            if (notification) {
+                result.notificationTypes = notification.notificationTypes;
+                result.notificationProjectName = notification.projectName;
+                result.notificationProjectVersion = notification.projectVersion;
+                result.components = notification.components;
+            }
+            return result;
+        });
+
+        this.setState({
+            entries
+        });
+    }
+
+    cancelAutoReload() {
+        clearInterval(this.reloadInterval);
+    }
+
+    startAutoReload() {
+        // run the reload now and then every 10 seconds
+        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
+    }
+
+    handleAutoRefreshChange({ target }) {
+        const { name, checked } = target;
+        if (checked) {
+            this.startAutoReload();
+        } else {
+            this.cancelAutoReload();
+        }
+        this.setState({
+            [name]: checked
+        });
+    }
+
+    cancelRowSelect() {
+        this.setState({
+            currentRowSelected: null
+        });
     }
 
     resendButton(cell, row) {
         return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />;
     }
 
-    onStatusFailureClick(currentRowSelected) {
-        this.setState({
-            currentRowSelected
-        });
-    }
-
     statusColumnDataFormat(cell, row) {
-        let statusClass = null;
-        if (cell === 'Pending') {
-            statusClass = 'statusPending';
-        } else if (cell === 'Success') {
-            statusClass = 'statusSuccess';
-        } else if (cell === 'Failure') {
-            statusClass = 'statusFailure';
-        }
-        const data = (<div className={statusClass} aria-hidden="true">
-            {cell}
-        </div>);
+		var statusClass = null;
+		if (cell === 'Pending') {
+			statusClass = "statusPending";
+		} else if (cell === 'Success') {
+			statusClass = "statusSuccess";
+		} else if (cell === 'Failure') {
+			statusClass = "statusFailure";
+		}
+		let data = <div className={statusClass} aria-hidden='true'>
+						{cell}
+					</div>;
 
-        return data;
-    }
+		return data;
+	}
 
-    typeColumnDataFormat(cell, row) {
-        switch (cell) {
-            case 'email_group_channel':
+	typeColumnDataFormat(cell, row) {
+		switch(cell) {
+			case 'email_group_channel':
+				return (
+					<div>
+						<span key="icon" className="fa fa-envelope fa-fw" aria-hidden='true' />
+						Group Email
+					</div>
+				);
+			case 'hipchat_channel':
                 return (
                     <div>
-                        <span key="icon" className="fa fa-envelope fa-fw" aria-hidden="true" />
-                        Group Email
-                    </div>
-                );
-            case 'hipchat_channel':
-                return (
-                    <div>
-                        <span key="icon" className="fa fa-comments fa-fw" aria-hidden="true" />
+                        <span key="icon" className="fa fa-comments fa-fw" aria-hidden='true' />
                         HipChat
                     </div>
                 );
             case 'slack_channel':
                 return (
                     <div>
-                        <span key="icon" className="fa fa-slack fa-fw" aria-hidden="true" />
+                        <span key="icon" className="fa fa-slack fa-fw" aria-hidden='true' />
                         Slack
                     </div>
                 );
@@ -203,49 +188,45 @@ class Index extends Component {
         }
     }
 
-    notificationTypeDataFormat(cell, row) {
-        if (cell && cell.length > 0) {
-            let policyViolation = null;
-            let policyViolationCleared = null;
-            let policyViolationOverride = null;
-            let highVulnerability = null;
-            let mediumVulnerability = null;
-            let lowVulnerability = null;
-            let vulnerability = null;
+    notificationTypeDataFormat(cells, row) {
+        if (cells && cells.length > 0) {
+            let hasPolicyViolation = false;
+            let hasPolicyViolationCleared = false;
+            let hasPolicyViolationOverride = false;
+            let hasHighVulnerability = false;
+            let hasMediumVulnerability = false;
+            let hasLowVulnerability = false;
+            let hasVulnerability = false;
 
-            for (const i in cell) {
-                if (cell[i] === 'POLICY_VIOLATION') {
-                    policyViolation = policyViolationIcon;
-                } else if (cell[i] === 'POLICY_VIOLATION_CLEARED') {
-                    policyViolationCleared = policyViolationClearedIcon;
-                } else if (cell[i] === 'POLICY_VIOLATION_OVERRIDE') {
-                    policyViolationOverride = policyViolationOverrideIcon;
-                } else if (cell[i] === 'HIGH_VULNERABILITY') {
-                    highVulnerability = highVulnerabilityIcon;
-                } else if (cell[i] === 'MEDIUM_VULNERABILITY') {
-                    mediumVulnerability = mediumVulnerabilityIcon;
-                } else if (cell[i] === 'LOW_VULNERABILITY') {
-                    lowVulnerability = lowVulnerabilityIcon;
-                } else if (cell[i] === 'VULNERABILITY') {
-                    vulnerability = vulnerabilityIcon;
+            cells.forEach((cell) => {
+                if (cell === 'POLICY_VIOLATION') {
+                    hasPolicyViolation = true;
+                } else if (cell === 'POLICY_VIOLATION_CLEARED') {
+                    hasPolicyViolationCleared = true;
+                } else if (cell === 'POLICY_VIOLATION_OVERRIDE') {
+                    hasPolicyViolationOverride = true;
+                } else if (cell === 'HIGH_VULNERABILITY') {
+                    hasHighVulnerability = true;
+                } else if (cell === 'MEDIUM_VULNERABILITY') {
+                    hasMediumVulnerability = true;
+                } else if (cell === 'LOW_VULNERABILITY') {
+                    hasLowVulnerability = true;
+                } else if (cell === 'VULNERABILITY') {
+                    hasVulnerability = true;
                 }
-            }
-            const data = (<div>
-                {policyViolation}
-                {policyViolationCleared}
-                {policyViolationOverride}
-                {highVulnerability}
-                {mediumVulnerability}
-                {lowVulnerability}
-                {vulnerability}
-            </div>);
-            return data;
+            });
+
+            return (<NotificationTypeLegend
+                hasPolicyViolation={hasPolicyViolation}
+                hasPolicyViolationCleared={hasPolicyViolationCleared}
+                hasPolicyViolationOverride={hasPolicyViolationOverride}
+                hasHighVulnerability={hasHighVulnerability}
+                hasMediumVulnerability={hasMediumVulnerability}
+                hasLowVulnerability={hasLowVulnerability}
+                hasVulnerability={hasVulnerability}
+            />);
         }
         return null;
-    }
-
-    isExpandableRow(row) {
-        return true;
     }
 
     expandComponent(row) {
@@ -256,7 +237,6 @@ class Index extends Component {
         // color the row correctly, since Striped does not work with expandable rows
         return rowIndex % 2 === 0 ? 'tableEvenRow' : 'tableRow';
     }
-
 
     createCustomButtonGroup(buttons) {
         return (
@@ -288,52 +268,7 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <div className="legendContainer">
-                        <div className="inline">
-                            {highVulnerabilityIcon}
-                            <div className="legendDescription">
-                                High Vulnerability
-                            </div>
-                        </div>
-                        <div className="inline">
-                            {lowVulnerabilityIcon}
-                            <div className="legendDescription">
-                                Low Vulnerability
-                            </div>
-                        </div>
-                        <div className="inline">
-                            {policyViolationIcon}
-                            <div className="legendDescription">
-                                Policy Violation
-                            </div>
-                        </div>
-                        <div className="inline">
-                            {policyViolationClearedIcon}
-                            <div className="legendDescription">
-                                Policy Violation Cleared
-                            </div>
-                        </div>
-                        <br />
-                        <div className="inline">
-                            {mediumVulnerabilityIcon}
-                            <div className="legendDescription">
-                                Medium Vulnerability
-                            </div>
-                        </div>
-                        <div className="inline">
-                            {vulnerabilityIcon}
-                            <div className="legendDescription">
-                                Vulnerability
-                            </div>
-                        </div>
-                        <div className="inline">
-                            {policyViolationOverrideIcon}
-                            <div className="legendDescription">
-                                Policy Override
-                            </div>
-                        </div>
-                    </div>
-                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={this.isExpandableRow} expandComponent={this.expandComponent} containerClass="table" search options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
+                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" search options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
                         <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProjectName" dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationTypes" width="145" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
@@ -355,10 +290,18 @@ class Index extends Component {
     }
 }
 
+Index.defaultProps = {
+    items: []
+}
+
+Index.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object),
+    getAuditData: PropTypes.func.isRequired
+};
 
 const mapStateToProps = state => ({
-    items: state.audit.items,
-    csrfToken: state.session.csrfToken
+	items: state.audit.items,
+	csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = dispatch => ({
