@@ -19,7 +19,6 @@ const initialState = {
         message: '',
         fieldErrors: []
     },
-    hubAlwaysTrustCertificate: true,
     hubApiKey: '',
     hubApiKeyIsSet: false,
     hubProxyHost: '',
@@ -48,7 +47,6 @@ const config = (state = initialState, action) => {
                 updateStatus: null,
                 testing: false,
                 testStatus: '',
-                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
                 hubApiKey: action.hubApiKey || '',
                 hubApiKeyIsSet: action.hubApiKeyIsSet,
                 hubProxyHost: action.hubProxyHost,
@@ -91,7 +89,6 @@ const config = (state = initialState, action) => {
                     message: '',
                     fieldErrors: []
                 },
-                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
                 hubApiKey: action.hubApiKey || '',
                 hubApiKeyIsSet: action.hubApiKeyIsSet,
                 hubProxyHost: action.hubProxyHost,

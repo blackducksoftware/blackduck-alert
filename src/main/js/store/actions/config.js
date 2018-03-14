@@ -14,7 +14,6 @@ const TEST_URL = '/api/configuration/provider/hub/test';
 
 function scrubConfig(config) {
     return {
-        hubAlwaysTrustCertificate: config.hubAlwaysTrustCertificate,
         hubApiKey: config.hubApiKey,
         hubApiKeyIsSet: config.hubApiKeyIsSet,
         hubProxyHost: config.hubProxyHost,

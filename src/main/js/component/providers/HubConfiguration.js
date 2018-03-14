@@ -13,7 +13,6 @@ class HubConfiguration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            hubAlwaysTrustCertificate: this.props.hubAlwaysTrustCertificate,
             hubApiKey: this.props.hubApiKey,
             hubApiKeyIsSet: this.props.hubApiKeyIsSet,
             hubProxyHost: this.props.hubProxyHost,
@@ -31,7 +30,6 @@ class HubConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.setState({
-            hubAlwaysTrustCertificate: nextProps.hubAlwaysTrustCertificate,
             hubApiKey: nextProps.hubApiKey,
             hubApiKeyIsSet: nextProps.hubApiKeyIsSet,
             hubProxyHost: nextProps.hubProxyHost,
@@ -70,7 +68,7 @@ class HubConfiguration extends React.Component {
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
-                <h1>Alert / Providers / Hub Configuration</h1>
+                <h1>Hub</h1>
                 { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                     <div>Test was successful!</div>
                 </div>}
@@ -85,7 +83,6 @@ class HubConfiguration extends React.Component {
                         <ReadOnlyField label="Url" name="hubUrl" readOnly="true" value={this.props.hubUrl} />
                         <TextInput label="API Key" name="hubApiKey" value={this.state.hubApiKey} isSet={this.state.hubApiKeyIsSet} onChange={this.handleChange} errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.hubApiKey} />
                         <NumberInput label="Timeout" name="hubTimeout" value={this.state.hubTimeout} onChange={this.handleChange} />
-                        <CheckboxInput label="Trust Https Certificates" name="hubAlwaysTrustCertificate" readOnly value={this.props.hubAlwaysTrustCertificate} onChange={() => {}} />
                         <div className="form-group">
                             <div className="col-sm-12">
                                 <h2>Proxy Configuration <small>(Read-Only)</small></h2>
@@ -105,7 +102,6 @@ class HubConfiguration extends React.Component {
 
 // Used for compile/validation of properties
 HubConfiguration.propTypes = {
-    hubAlwaysTrustCertificate: PropTypes.bool.isRequired,
     hubApiKey: PropTypes.string,
     hubApiKeyIsSet: PropTypes.bool.isRequired,
     hubProxyHost: PropTypes.string,
@@ -141,7 +137,6 @@ HubConfiguration.defaultProps = {
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
-    hubAlwaysTrustCertificate: state.config.hubAlwaysTrustCertificate,
     hubApiKey: state.config.hubApiKey,
     hubApiKeyIsSet: state.config.hubApiKeyIsSet,
     hubProxyHost: state.config.hubProxyHost,
