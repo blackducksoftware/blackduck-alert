@@ -9,7 +9,7 @@ This application provides the ability to send notifications from the hub to vari
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.blackducksoftware.integration%3Ahub-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackducksoftware.integration%3Ahub-alert)
 
 ## Where can I get the latest release? ##
-Alert will be available soon.
+
 Beta 0.1.1 will be available on Friday, March 16th.
 
 ## Documentation ##
