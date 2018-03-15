@@ -14,7 +14,6 @@ const TEST_URL = '/api/configuration/provider/hub/test';
 
 function scrubConfig(config) {
     return {
-        hubAlwaysTrustCertificate: config.hubAlwaysTrustCertificate,
         hubApiKey: config.hubApiKey,
         hubApiKeyIsSet: config.hubApiKeyIsSet,
         hubProxyHost: config.hubProxyHost,
@@ -109,16 +108,16 @@ export function getConfig() {
               'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => response.json().then(body => {
-          if(body.length > 0) {
-            dispatch(configFetched(body[0]));
-          } else {
-            dispatch(configFetched({}));
-          }
-        }))
-        .catch(console.error);
-    }
-};
+            .then(response => response.json().then((body) => {
+                if (body.length > 0) {
+                    dispatch(configFetched(body[0]));
+                } else {
+                    dispatch(configFetched({}));
+                }
+            }))
+            .catch(console.error);
+    };
+}
 
 export function updateConfig(config) {
     return (dispatch, getState) => {
@@ -136,28 +135,31 @@ export function updateConfig(config) {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => dispatch(configUpdated({...config, id: body.id})));
-            } else {
-                response.json()
-                    .then((data) => {
-                        console.log('data', data.message);
-                        switch(response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 401:
-                                return dispatch(configError(`API Key isn't valid, try a different one`));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default:
-                                dispatch(configError(data.message));
-                        }
-                    });
-            }
-        })
-        .catch(console.error);
-    }
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then(data => dispatch(configUpdated({ ...config, id: data.id })));
+                } else {
+                    response.json()
+                        .then((data) => {
+                            console.log('data', data.message);
+                            switch (response.status) {
+                                case 400:
+                                    return dispatch(configError(data.message, data.errors));
+                                case 401:
+                                    return dispatch(configError('API Key isn\'t valid, try a different one'));
+                                case 412:
+                                    return dispatch(configError(data.message, data.errors));
+                                default:
+                                    return dispatch(configError(data.message));
+                            }
+                        });
+                }
+            })
+            .then(() => {
+                dispatch(getConfig());
+            })
+            .catch(console.error);
+    };
 }
 
 
@@ -175,24 +177,24 @@ export function testConfig(config) {
             }
         })
         // Refactor this response handler out
-        .then((response) => {
-            if(response.ok) {
-                dispatch(testSuccess());
-            } else {
-                response.json()
-                    .then((data) => {
-                        console.log('data', data.message);
-                        switch(response.status) {
-                            case 400:
-                                return dispatch(testFailed(data.message, data.errors));
-                            case 401:
-                                return dispatch(testFailed(`API Key isn't valid, try a different one`));
-                            default:
-                                dispatch(testFailed(data.message));
-                        }
-                    });
-            }
-        })
-        .catch(console.error);
-    }
+            .then((response) => {
+                if (response.ok) {
+                    dispatch(testSuccess());
+                } else {
+                    response.json()
+                        .then((data) => {
+                            console.log('data', data.message);
+                            switch (response.status) {
+                                case 400:
+                                    return dispatch(testFailed(data.message, data.errors));
+                                case 401:
+                                    return dispatch(testFailed('API Key isn\'t valid, try a different one'));
+                                default:
+                                    return dispatch(testFailed(data.message));
+                            }
+                        });
+                }
+            })
+            .catch(console.error);
+    };
 }

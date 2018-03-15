@@ -50,7 +50,7 @@ const config = (state = initialState, action) => {
 
         case SCHEDULING_CONFIG_UPDATED:
             return Object.assign({}, state, {
-                updateStatus: 'UPDATED',
+                updateStatus: 'UPDATED'
             });
 
         case SCHEDULING_ACCUMULATOR_RUNNING:

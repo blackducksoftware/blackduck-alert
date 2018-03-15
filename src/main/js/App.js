@@ -3,36 +3,35 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
+import 'font-awesome/scss/font-awesome.scss';
+
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import { getConfig } from './store/actions/config';
-import { verifyLogin } from "./store/actions/session";
+import { verifyLogin } from './store/actions/session';
 
 import '../css/main.scss';
-import 'font-awesome/scss/font-awesome.scss';
 
 class App extends Component {
-
-	componentDidMount() {
-		this.props.getConfig();
+    componentDidMount() {
+        this.props.getConfig();
         this.props.verifyLogin();
-	}
+    }
 
-	render() {
+    render() {
         if (this.props.initializing) {
-            return (<div></div>);
+            return (<div />);
         } else if (this.props.loggedIn) {
             return <MainPage />;
-	    } else {
-        	return <LoginPage />;
         }
-	}
+        return <LoginPage />;
+    }
 }
 
 App.propTypes = {
-	initializing: PropTypes.bool.isRequired,
-	loggedIn: PropTypes.bool.isRequired,
-	getConfig: PropTypes.func.isRequired,
+    loggedIn: PropTypes.bool.isRequired,
+    initializing: PropTypes.bool.isRequired,
+    getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired
 };
 
@@ -44,7 +43,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
-	verifyLogin: () => dispatch(verifyLogin())
+    verifyLogin: () => dispatch(verifyLogin())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
