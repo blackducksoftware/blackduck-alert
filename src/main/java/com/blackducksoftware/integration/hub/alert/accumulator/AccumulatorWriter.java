@@ -64,7 +64,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
     public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
         try {
             if (itemList != null && !itemList.isEmpty()) {
-
+                logger.info("Writing {} notifications", itemList.size());
                 itemList.forEach(item -> {
                     final List<NotificationEvent> notificationList = item.getNotificationList();
                     final List<NotificationModel> entityList = new ArrayList<>();
@@ -91,6 +91,8 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                     final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
                     channelTemplateManager.sendEvent(realTimeEvent);
                 });
+            } else {
+                logger.info("No notifications to write", itemList.size());
             }
         } catch (final Exception ex) {
             logger.error("Error occurred writing notification data", ex);

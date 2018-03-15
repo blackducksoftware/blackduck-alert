@@ -31,7 +31,7 @@ const config = (state = initialState, action) => {
                 fetching: true,
                 updateStatus: null,
                 testing: false,
-                testStatus: '',
+                testStatus: ''
             });
 
         case HIPCHAT_CONFIG_FETCHED:

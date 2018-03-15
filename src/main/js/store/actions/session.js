@@ -70,7 +70,7 @@ export function verifyLogin() {
                 const token = getState().session.csrfToken;
                 dispatch(loggedIn({csrfToken: token}));
             }
-        }).catch(function(error) {
+        }).catch((error) => {
             // TODO: Dispatch Error
             console.log(error);
         });
@@ -93,7 +93,7 @@ export function login(username, password) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(body)
-        }).then(function(response) {
+        }).then((response) => {
             if (response.ok) {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({csrfToken: token}));
@@ -102,11 +102,11 @@ export function login(username, password) {
                 dispatch(loginError(response.statusText, []));
             }
         })
-        .catch((error) => {
-            dispatch(loginError(error.message));
-            console.log(error);
-        });
-    }
+            .catch((error) => {
+                dispatch(loginError(error.message));
+                console.log(error);
+            });
+    };
 }
 
 export function confirmLogout() {
@@ -133,10 +133,10 @@ export function logout() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then(function(response) {
+        }).then((response) => {
             dispatch(loggedOut());
             dispatch(push('/'));
-        }).catch(function(error) {
+        }).catch((error) => {
             console.log(error);
         });
     };

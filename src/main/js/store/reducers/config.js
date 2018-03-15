@@ -19,7 +19,6 @@ const initialState = {
         message: '',
         fieldErrors: []
     },
-    hubAlwaysTrustCertificate: true,
     hubApiKey: '',
     hubApiKeyIsSet: false,
     hubProxyHost: '',
@@ -27,7 +26,7 @@ const initialState = {
     hubProxyPasswordIsSet: false,
     hubProxyPort: '',
     hubProxyUsername: '',
-    hubTimeout: 60,
+    hubTimeout: 300,
     hubUrl: '',
     id: null
 };
@@ -39,7 +38,7 @@ const config = (state = initialState, action) => {
                 fetching: true,
                 updateStatus: null,
                 testing: false,
-                testStatus: '',
+                testStatus: ''
             });
 
         case CONFIG_FETCHED:
@@ -48,7 +47,6 @@ const config = (state = initialState, action) => {
                 updateStatus: null,
                 testing: false,
                 testStatus: '',
-                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
                 hubApiKey: action.hubApiKey || '',
                 hubApiKeyIsSet: action.hubApiKeyIsSet,
                 hubProxyHost: action.hubProxyHost,
@@ -56,7 +54,7 @@ const config = (state = initialState, action) => {
                 hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
                 hubProxyPort: action.hubProxyPort,
                 hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
+                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 300,
                 hubUrl: action.hubUrl,
                 id: action.id
             });
@@ -91,7 +89,6 @@ const config = (state = initialState, action) => {
                     message: '',
                     fieldErrors: []
                 },
-                hubAlwaysTrustCertificate: (action.hubAlwaysTrustCertificate == 'true'),
                 hubApiKey: action.hubApiKey || '',
                 hubApiKeyIsSet: action.hubApiKeyIsSet,
                 hubProxyHost: action.hubProxyHost,
@@ -99,7 +96,7 @@ const config = (state = initialState, action) => {
                 hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
                 hubProxyPort: action.hubProxyPort,
                 hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout) || 60,
+                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 300,
                 hubUrl: action.hubUrl
             });
 

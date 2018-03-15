@@ -9,10 +9,8 @@ beforeAll(() => {
 });
 
 test('Rendering default test button snapshot', () => {
-    const button = renderer.create(
-        <GeneralButton onClick={()=> {}} />
-    );
-    let tree = button.toJSON();
+    const button = renderer.create(<GeneralButton onClick={() => {}} />);
+    const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });
 

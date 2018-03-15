@@ -51,6 +51,7 @@ button + button {
     padding: 16px 0px;
     border-bottom: $navigation-border;
     width: 100%;
+    display: inline-flex;
   }
 
   > ul {

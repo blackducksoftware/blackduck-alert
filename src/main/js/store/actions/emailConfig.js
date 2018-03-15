@@ -87,33 +87,33 @@ function emailConfigUpdated(config) {
 }
 
 export function toggleAdvancedEmailOptions(toggle) {
-    if(toggle) {
+    if (toggle) {
         return { type: EMAIL_CONFIG_SHOW_ADVANCED };
-    } else {
-        return { type: EMAIL_CONFIG_HIDE_ADVANCED };
     }
+    return { type: EMAIL_CONFIG_HIDE_ADVANCED };
 }
 
 export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
         const csrfToken = getState().session.csrfToken;
+        console.log('get email token', csrfToken);
         fetch(CONFIG_URL, {
             credentials: 'include',
             headers: {
               'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => response.json().then(body => {
-          if(body.length > 0) {
-            dispatch(emailConfigFetched(body[0]));
-          } else {
-            dispatch(emailConfigFetched({}));
-          }
-        }))
-        .catch(console.error);
-    }
-};
+            .then(response => response.json().then((body) => {
+                if (body.length > 0) {
+                    dispatch(emailConfigFetched(body[0]));
+                } else {
+                    dispatch(emailConfigFetched({}));
+                }
+            }))
+            .catch(console.error);
+    };
+}
 
 export function updateEmailConfig(config) {
     return (dispatch, getState) => {
@@ -121,6 +121,7 @@ export function updateEmailConfig(config) {
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
         const csrfToken = getState().session.csrfToken;
+        console.log('get email token', csrfToken);
         fetch(CONFIG_URL, {
             credentials: 'include',
             method,
@@ -130,24 +131,27 @@ export function updateEmailConfig(config) {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => dispatch(emailConfigUpdated({...config, id: body.id})));
-            } else {
-                response.json()
-                    .then((data) => {
-                        console.log('data', data.message);
-                        switch(response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default:
-                                dispatch(configError(data.message, null));
-                        }
-                    });
-            }
-        })
-        .catch(console.error);
-    }
-};
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => { dispatch(emailConfigUpdated({ ...config, id: data.id })); });
+                } else {
+                    response.json()
+                        .then((data) => {
+                            console.log('data', data.message);
+                            switch (response.status) {
+                                case 400:
+                                    return dispatch(configError(data.message, data.errors));
+                                case 412:
+                                    return dispatch(configError(data.message, data.errors));
+                                default:
+                                    return dispatch(configError(data.message, null));
+                            }
+                        });
+                }
+            })
+            .then(() => {
+                dispatch(getEmailConfig());
+            })
+            .catch(console.error);
+    };
+}
