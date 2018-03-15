@@ -121,7 +121,7 @@ class SchedulingConfiguration extends React.Component {
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Daily Digest Frequency</label>
+                        <label className="col-sm-3 control-label">Daily Digest Run Time</label>
                         <div className="col-sm-8">
                             <Select
                                 className="accumulatorTypeAheadField"
