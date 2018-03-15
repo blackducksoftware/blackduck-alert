@@ -9,9 +9,8 @@ This application provides the ability to send notifications from the hub to vari
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=com.blackducksoftware.integration%3Ahub-alert&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.blackducksoftware.integration%3Ahub-alert)
 
 ## Where can I get the latest release? ##
-You can download the latest source from GitHub: https://github.com/blackducksoftware/hub-alert. 
-
-You can download the latest release artifacts from GitHub: https://github.com/blackducksoftware/hub-alert/releases
+Alert will be available soon.
+Beta 0.1.1 will be available on Friday, March 16th.
 
 ## Documentation ##
 All documentation for hub-alert can be found on the public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/display/INTDOCS/)
