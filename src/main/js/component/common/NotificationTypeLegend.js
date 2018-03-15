@@ -27,7 +27,7 @@ const NotificationTypeLegend = (
             <Popover id="popover" title="Notification Type Legend">
                 { hasPolicyViolation && <div>{ policyViolationIcon } Policy Violation</div> }
                 { hasPolicyViolationCleared && <div>{ policyViolationClearedIcon } Policy Violation Cleared</div> }
-                { hasPolicyViolationOverride && <div>{ hasPolicyViolationOverride } Policy Override</div> }
+                { hasPolicyViolationOverride && <div>{ policyViolationOverrideIcon } Policy Override</div> }
                 { hasHighVulnerability && <div>{highVulnerabilityIcon} High Vulnerability</div> }
                 { hasMediumVulnerability && <div>{mediumVulnerabilityIcon} Medium Vulnerability</div> }
                 { hasLowVulnerability && <div>{lowVulnerabilityIcon} Low Vulnerability</div> }
