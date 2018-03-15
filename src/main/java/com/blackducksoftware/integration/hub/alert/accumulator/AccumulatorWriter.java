@@ -92,7 +92,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                     channelTemplateManager.sendEvent(realTimeEvent);
                 });
             } else {
-                logger.info("No notifications to write", itemList.size());
+                logger.info("No notifications to write");
             }
         } catch (final Exception ex) {
             logger.error("Error occurred writing notification data", ex);
