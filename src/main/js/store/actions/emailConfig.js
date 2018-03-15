@@ -97,7 +97,6 @@ export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
         const csrfToken = getState().session.csrfToken;
-        console.log('get email token', csrfToken);
         fetch(CONFIG_URL, {
             credentials: 'include',
             headers: {
@@ -121,7 +120,6 @@ export function updateEmailConfig(config) {
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
         const csrfToken = getState().session.csrfToken;
-        console.log('get email token', csrfToken);
         fetch(CONFIG_URL, {
             credentials: 'include',
             method,
