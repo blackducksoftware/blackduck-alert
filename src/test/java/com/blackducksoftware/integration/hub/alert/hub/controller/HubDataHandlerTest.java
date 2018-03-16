@@ -37,7 +37,7 @@ public class HubDataHandlerTest {
         final HubDataHandler hubDataHandler = new HubDataHandler(objectTransformer, gson, hubDataActions);
         final ResponseEntity<String> responseEntity = hubDataHandler.getHubGroups();
         assertEquals(HttpStatus.PAYMENT_REQUIRED, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage:402:StatusMessage\"}", responseEntity.getBody());
+        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage: 402: StatusMessage\"}", responseEntity.getBody());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class HubDataHandlerTest {
         final HubDataHandler hubDataHandler = new HubDataHandler(objectTransformer, gson, hubDataActions);
         final ResponseEntity<String> responseEntity = hubDataHandler.getHubProjects();
         assertEquals(HttpStatus.PAYMENT_REQUIRED, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage:402:StatusMessage\"}", responseEntity.getBody());
+        assertEquals("{\"id\":-1,\"message\":\"StatusMessage : ErrorMessage: 402: StatusMessage\"}", responseEntity.getBody());
     }
 
     @Test
