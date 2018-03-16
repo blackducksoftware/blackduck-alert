@@ -49,7 +49,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.RestConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -112,7 +112,7 @@ public class Application {
 
     @Bean
     public Gson gson() {
-        return new GsonBuilder().setDateFormat(RestConnection.JSON_DATE_FORMAT).create();
+        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
     }
 
     @Bean
