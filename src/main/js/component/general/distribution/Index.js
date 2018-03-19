@@ -488,6 +488,7 @@ class Index extends Component {
         return (
             <div>
                 <h1>
+                    <span className="fa fa-truck" />
                     Distribution
                     <small className="pull-right">
                         <AutoRefresh

@@ -68,16 +68,23 @@ class HubConfiguration extends React.Component {
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
-                <h1>Hub</h1>
+                <h1>
+                    <span className="fa fa-laptop" />
+                    Hub
+                </h1>
+
                 { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                     <div>Test was successful!</div>
                 </div>}
+
                 { errorMessage && <div className="alert alert-danger">
                     { errorMessage }
-                                  </div> }
+                </div> }
+
                 { updateStatus === 'UPDATED' && <div className="alert alert-success">
                     { 'Update successful' }
                 </div> }
+
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <ReadOnlyField label="Url" name="hubUrl" readOnly="true" value={this.props.hubUrl} />
