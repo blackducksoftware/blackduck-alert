@@ -27,11 +27,26 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class DistributionNotificationTypeRelationPK implements Serializable {
-    public Long commonDistributionConfigId;
-    public Long notificationTypeId;
+    private Long commonDistributionConfigId;
+    private Long notificationTypeId;
 
     public DistributionNotificationTypeRelationPK() {
 
     }
 
+    public Long getCommonDistributionConfigId() {
+        return commonDistributionConfigId;
+    }
+
+    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
+        this.commonDistributionConfigId = commonDistributionConfigId;
+    }
+
+    public Long getNotificationTypeId() {
+        return notificationTypeId;
+    }
+
+    public void setNotificationTypeId(final Long notificationTypeId) {
+        this.notificationTypeId = notificationTypeId;
+    }
 }

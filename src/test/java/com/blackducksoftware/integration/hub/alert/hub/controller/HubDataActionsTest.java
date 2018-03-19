@@ -77,9 +77,9 @@ public class HubDataActionsTest {
         final List<HubGroup> hubGroups = hubDataActions.getHubGroups();
         assertEquals(1, hubGroups.size());
         final HubGroup hubGroup = hubGroups.get(0);
-        assertEquals(active, hubGroup.active);
-        assertEquals(username, hubGroup.name);
-        assertEquals(href, hubGroup.url);
+        assertEquals(active, hubGroup.getActive());
+        assertEquals(username, hubGroup.getName());
+        assertEquals(href, hubGroup.getUrl());
     }
 
     @Test
@@ -132,6 +132,6 @@ public class HubDataActionsTest {
         final List<HubProject> hubProjects = hubDataActions.getHubProjects();
         assertEquals(1, hubProjects.size());
         final HubProject hubProject = hubProjects.get(0);
-        assertEquals(projectName, hubProject.name);
+        assertEquals(projectName, hubProject.getName());
     }
 }
