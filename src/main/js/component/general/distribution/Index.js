@@ -401,8 +401,14 @@ class Index extends Component {
         }
         return (
             <div>
-                <InsertButton className="addJobButton" onClick={insertOnClick} />
-                <DeleteButton className="deleteJobButton" onClick={deleteOnClick} />
+                <InsertButton className="addJobButton" onClick={insertOnClick}>
+                    <span className="fa fa-plus" />
+                    New
+                </InsertButton>
+                <DeleteButton className="deleteJobButton" onClick={deleteOnClick}>
+                    <span className="fa fa-trash" />
+                    Delete
+                </DeleteButton>
                 {refreshButton}
             </div>
         );
