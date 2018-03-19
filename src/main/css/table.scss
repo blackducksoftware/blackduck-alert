@@ -3,6 +3,7 @@
 }
 .react-bs-table-add-btn,
 .react-bs-table-del-btn {
+    line-height: 1.4em;
     .fa {
         margin-right: 7px;
     }
@@ -20,35 +21,25 @@
 }
 
 .tableButton {
-	cursor: pointer;
-	color: #fff;
-    display: inline-block;
     border: 1px solid transparent;
-    text-align: center;
-    vertical-align: middle;
-    font-size: $button-font-size;
 }
 
 .addJobButton {
-    cursor: pointer;
-    color: #fff;
-    display: inline-block;
-    border: 1px solid transparent;
-    text-align: center;
-    vertical-align: middle;
-    font-size: $button-font-size;
-    background-color: #285f8f;
+    border: 1px solid darken(#337ab7, 5%);
+    background-color: #337ab7;
+    &:hover {
+        background-color: darken(#337ab7, 10%);
+        border-color: darken(#337ab7, 17%);
+    }
 }
 
 .deleteJobButton {
-    cursor: pointer;
-    color: #fff;
-    display: inline-block;
-    border: 1px solid transparent;
-    text-align: center;
-    vertical-align: middle;
-    font-size: $button-font-size;
+    border: 1px solid darken(#ef4923, 5%);
     background-color: #ef4923;
+    &:hover {
+        background-color: darken(#ef4923, 10%);
+        border-color: darken(#ef4923, 17%);
+    }
 }
 
 .editJobButton {
