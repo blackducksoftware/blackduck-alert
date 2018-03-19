@@ -35,10 +35,11 @@ public class StartupManagerTest {
     public void testLogConfiguration() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
+        Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn("not_blank_data");
         final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null);
 
         startupManager.logConfiguration();
-        assertTrue(outputLogger.isLineContainingText("Hub API Key:        **********"));
+        assertTrue(outputLogger.isLineContainingText("Hub Proxy Authenticated: true"));
     }
 
     @Test

@@ -26,10 +26,25 @@ package com.blackducksoftware.integration.hub.alert.hub.model;
 import com.blackducksoftware.integration.hub.alert.model.Model;
 
 public class HubGroup extends Model {
-    public String name;
+    private final String name;
+    private final Boolean active;
+    private final String url;
 
-    public Boolean active;
+    public HubGroup(final String name, final Boolean active, final String url) {
+        this.name = name;
+        this.active = active;
+        this.url = url;
+    }
 
-    public String url;
+    public String getName() {
+        return name;
+    }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }
