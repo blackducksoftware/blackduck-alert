@@ -1,6 +1,12 @@
 .react-bs-table-bordered {
     border-radius: $border-radius !important;
 }
+.react-bs-table-add-btn,
+.react-bs-table-del-btn {
+    .fa {
+        margin-right: 7px;
+    }
+}
 .statusSuccess {
 	color: #3c763d;
 }
@@ -20,7 +26,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: $base-font-size;
+    font-size: $button-font-size;
 }
 
 .addJobButton {
@@ -30,7 +36,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: $base-font-size;
+    font-size: $button-font-size;
     background-color: #285f8f;
 }
 
@@ -41,7 +47,7 @@
     border: 1px solid transparent;
     text-align: center;
     vertical-align: middle;
-    font-size: $base-font-size;
+    font-size: $button-font-size;
     background-color: #ef4923;
 }
 
