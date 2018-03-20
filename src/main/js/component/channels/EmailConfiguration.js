@@ -68,15 +68,19 @@ class EmailConfiguration extends React.Component {
         const { errorMessage, updateStatus } = this.props;
         return (
             <div>
-                <h1>Email</h1>
+                <h1>
+                    <span className="fa fa-envelope" />
+                    Email
+                </h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     { errorMessage && <div className="alert alert-danger">
                         { errorMessage }
-                                      </div> }
+                    </div> }
 
                     { updateStatus === 'UPDATED' && <div className="alert alert-success">
                         { 'Update successful' }
-                                                    </div> }
+                    </div> }
+
                     <TextInput
                         label="SMTP Host"
                         name="mailSmtpHost"

@@ -11,6 +11,10 @@ h1 {
   margin-bottom: 17px;
   margin-top: 2px;
   padding-bottom: 17px;
+
+  & .fa {
+    margin-right: 0.33em;
+  }
 }
 h2 {
   font-size: 1.4rem;
@@ -21,7 +25,7 @@ form.form-horizontal {
   padding: 0 20px;
 }
 button {
-  border-radius: $border-radius !important;
+  border-radius: $border-radius;
 }
 button + button {
   margin-left: 5px;
@@ -48,7 +52,7 @@ button + button {
   z-index: 100;
 
   > .navigationLogo {
-    padding: 16px 0px;
+    padding: 15px 0px;
     border-bottom: $navigation-border;
     width: 100%;
     display: inline-flex;
