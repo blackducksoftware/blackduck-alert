@@ -27,9 +27,25 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class AuditNotificationRelationPK implements Serializable {
-    public Long auditEntryId;
-    public Long notificationId;
+    private Long auditEntryId;
+    private Long notificationId;
 
     public AuditNotificationRelationPK() {
+    }
+
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public void setAuditEntryId(final Long auditEntryId) {
+        this.auditEntryId = auditEntryId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(final Long notificationId) {
+        this.notificationId = notificationId;
     }
 }

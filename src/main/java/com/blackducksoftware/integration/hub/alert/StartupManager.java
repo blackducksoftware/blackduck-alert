@@ -76,23 +76,19 @@ public class StartupManager {
 
     public void logConfiguration() {
         final GlobalHubConfigEntity globalHubConfig = globalProperties.getHubConfig();
+        final boolean authenticatedProxy = StringUtils.isNotBlank(globalProperties.getHubProxyPassword());
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level: {}", loggingLevel);
-        logger.info("Hub URL:            {}", globalProperties.getHubUrl());
-        logger.info("Hub Proxy Host:     {}", globalProperties.getHubProxyHost());
-        logger.info("Hub Proxy Port:     {}", globalProperties.getHubProxyPort());
-        logger.info("Hub Proxy User:     {}", globalProperties.getHubProxyUsername());
-        final String proxyPasswordLabel = "Hub Proxy Password:";
-        if (StringUtils.isNotBlank(globalProperties.getHubProxyPassword())) {
-            logger.info("{} **********", proxyPasswordLabel);
-        } else {
-            logger.info("{}", proxyPasswordLabel);
-        }
+        logger.info("Logging level:           {}", loggingLevel);
+        logger.info("Hub URL:                 {}", globalProperties.getHubUrl());
+        logger.info("Hub Proxy Host:          {}", globalProperties.getHubProxyHost());
+        logger.info("Hub Proxy Port:          {}", globalProperties.getHubProxyPort());
+        logger.info("Hub Proxy Authenticated: {}", authenticatedProxy);
+        logger.info("Hub Proxy User:          {}", globalProperties.getHubProxyUsername());
 
         if (globalHubConfig != null) {
-            logger.info("Hub API Key:        **********");
-            logger.info("Hub Timeout:        {}", globalHubConfig.getHubTimeout());
+            logger.info("Hub API Token:           **********");
+            logger.info("Hub Timeout:             {}", globalHubConfig.getHubTimeout());
         }
         logger.info("----------------------------------------");
     }
