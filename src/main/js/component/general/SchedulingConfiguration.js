@@ -99,7 +99,10 @@ class SchedulingConfiguration extends React.Component {
         } = this.props;
         return (
             <div>
-                <h1>Scheduling</h1>
+                <h1>
+                    <span className="fa fa-clock-o" />
+                    Scheduling
+                </h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
 
                     { errorMessage && <div className="alert alert-danger">
@@ -108,7 +111,7 @@ class SchedulingConfiguration extends React.Component {
 
                     { updateStatus === 'UPDATED' && <div className="alert alert-success">
                         { 'Update successful' }
-                                                    </div> }
+                    </div> }
 
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Collecting Hub notifications in</label>

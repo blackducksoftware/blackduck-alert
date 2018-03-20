@@ -29,18 +29,18 @@ class Index extends Component {
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
-	}
+    }
 
-	componentDidMount() {
+    componentDidMount() {
         this.props.getAuditData();
-		this.startAutoReload();
-	}
+        this.startAutoReload();
+    }
 
     componentWillReceiveProps(nextProps) {
-		if(nextProps.items !== this.props.items) {
-			this.setState({'message': ''});
+        if (nextProps.items !== this.props.items) {
+            this.setState({ message: '' });
             this.setEntriesFromArray(nextProps.items);
-		}
+        }
     }
 
     componentWillUnmount() {
@@ -56,7 +56,8 @@ class Index extends Component {
         });
 
         const resendUrl = `/api/audit/${currentEntry.id}/resend`;
-        const csrfToken = this.props.csrfToken;
+        const { csrfToken } = this.props;
+
         fetch(resendUrl, {
             method: 'POST',
             credentials: 'include',
@@ -81,7 +82,7 @@ class Index extends Component {
     onStatusFailureClick(currentRowSelected) {
         this.setState({
             currentRowSelected
-		});
+        });
     }
 
     setEntriesFromArray(jsonArray = []) {
@@ -111,84 +112,19 @@ class Index extends Component {
         });
     }
 
-    cancelAutoReload() {
-        clearInterval(this.reloadInterval);
-    }
-
-    startAutoReload() {
-        // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
-    }
-
-    handleAutoRefreshChange({ target }) {
-        const { name, checked } = target;
-        if (checked) {
-            this.startAutoReload();
-        } else {
-            this.cancelAutoReload();
+    statusColumnDataFormat(cell) {
+        let statusClass = '';
+        if (cell === 'Pending') {
+            statusClass = 'statusPending';
+        } else if (cell === 'Success') {
+            statusClass = 'statusSuccess';
+        } else if (cell === 'Failure') {
+            statusClass = 'statusFailure';
         }
-        this.setState({
-            [name]: checked
-        });
+        return <div className={statusClass} aria-hidden>{cell}</div>;
     }
 
-    cancelRowSelect() {
-        this.setState({
-            currentRowSelected: null
-        });
-    }
-
-    resendButton(cell, row) {
-        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />;
-    }
-
-    statusColumnDataFormat(cell, row) {
-		var statusClass = null;
-		if (cell === 'Pending') {
-			statusClass = "statusPending";
-		} else if (cell === 'Success') {
-			statusClass = "statusSuccess";
-		} else if (cell === 'Failure') {
-			statusClass = "statusFailure";
-		}
-		let data = <div className={statusClass} aria-hidden='true'>
-						{cell}
-					</div>;
-
-		return data;
-	}
-
-	typeColumnDataFormat(cell, row) {
-		switch(cell) {
-			case 'email_group_channel':
-				return (
-					<div>
-						<span key="icon" className="fa fa-envelope fa-fw" aria-hidden='true' />
-						Group Email
-					</div>
-				);
-			case 'hipchat_channel':
-                return (
-                    <div>
-                        <span key="icon" className="fa fa-comments fa-fw" aria-hidden='true' />
-                        HipChat
-                    </div>
-                );
-            case 'slack_channel':
-                return (
-                    <div>
-                        <span key="icon" className="fa fa-slack fa-fw" aria-hidden='true' />
-                        Slack
-                    </div>
-                );
-            default:
-                return (
-                    <div>Unknown</div>
-                );
-        }
-    }
-
-    notificationTypeDataFormat(cells, row) {
+    notificationTypeDataFormat(cells) {
         if (cells && cells.length > 0) {
             let hasPolicyViolation = false;
             let hasPolicyViolationCleared = false;
@@ -238,6 +174,37 @@ class Index extends Component {
         return rowIndex % 2 === 0 ? 'tableEvenRow' : 'tableRow';
     }
 
+    cancelAutoReload() {
+        clearInterval(this.reloadInterval);
+    }
+
+    startAutoReload() {
+        // run the reload now and then every 10 seconds
+        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
+    }
+
+    handleAutoRefreshChange({ target }) {
+        const { name, checked } = target;
+        if (checked) {
+            this.startAutoReload();
+        } else {
+            this.cancelAutoReload();
+        }
+        this.setState({
+            [name]: checked
+        });
+    }
+
+    cancelRowSelect() {
+        this.setState({
+            currentRowSelected: null
+        });
+    }
+
+    resendButton(cell, row) {
+        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />;
+    }
+
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
@@ -262,6 +229,7 @@ class Index extends Component {
         return (
             <div>
                 <h1>
+                    <span className="fa fa-history" />
                     Audit
                     <small className="pull-right">
                         <AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange} />
@@ -291,17 +259,19 @@ class Index extends Component {
 }
 
 Index.defaultProps = {
+    csrfToken: null,
     items: []
-}
+};
 
 Index.propTypes = {
+    csrfToken: PropTypes.string,
     items: PropTypes.arrayOf(PropTypes.object),
     getAuditData: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-	items: state.audit.items,
-	csrfToken: state.session.csrfToken
+    items: state.audit.items,
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = dispatch => ({
