@@ -26,6 +26,13 @@ package com.blackducksoftware.integration.hub.alert.hub.model;
 import com.blackducksoftware.integration.hub.alert.model.Model;
 
 public class HubProject extends Model {
-    public String name;
+    private final String name;
 
+    public HubProject(final String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

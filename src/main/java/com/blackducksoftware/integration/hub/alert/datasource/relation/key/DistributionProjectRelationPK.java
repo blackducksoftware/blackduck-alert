@@ -27,10 +27,25 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 public class DistributionProjectRelationPK implements Serializable {
-    public Long commonDistributionConfigId;
-    public Long projectId;
+    private Long commonDistributionConfigId;
+    private Long projectId;
 
     public DistributionProjectRelationPK() {
     }
 
+    public Long getCommonDistributionConfigId() {
+        return commonDistributionConfigId;
+    }
+
+    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
+        this.commonDistributionConfigId = commonDistributionConfigId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(final Long projectId) {
+        this.projectId = projectId;
+    }
 }

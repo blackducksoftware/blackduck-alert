@@ -58,10 +58,7 @@ public class HubDataActions {
 
             final List<HubGroup> groups = new ArrayList<>();
             for (final UserGroupView userGroupView : rawGroups) {
-                final HubGroup hubGroup = new HubGroup();
-                hubGroup.active = userGroupView.active;
-                hubGroup.name = userGroupView.name;
-                hubGroup.url = userGroupView.meta.href;
+                final HubGroup hubGroup = new HubGroup(userGroupView.name, userGroupView.active, userGroupView.meta.href);
                 groups.add(hubGroup);
             }
             return groups;
@@ -77,8 +74,7 @@ public class HubDataActions {
 
             final List<HubProject> projects = new ArrayList<>();
             for (final ProjectView projectView : rawProjects) {
-                final HubProject project = new HubProject();
-                project.name = projectView.name;
+                final HubProject project = new HubProject(projectView.name);
                 projects.add(project);
             }
             return projects;

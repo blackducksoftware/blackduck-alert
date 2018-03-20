@@ -28,7 +28,7 @@ import java.util.List;
 import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 
 public class DBStoreEvent extends AbstractEvent {
-    public static String TOPIC_NAME = "DB_STORE_EVENT";
+    public final static String TOPIC_NAME = "DB_STORE_EVENT";
     private final List<NotificationEvent> notificationList;
 
     public DBStoreEvent(final List<NotificationEvent> notificationList) {
