@@ -6,24 +6,14 @@ import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
+import { frequencyOptions, notificationOptions } from '../../../../util/distribution-data';
+
 class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
             values: {},
-            errors: {},
-            frequencyOptions: [
-                { label: 'Real Time', value: 'REAL_TIME' },
-                { label: 'Daily', value: 'DAILY' }
-            ],
-            notificationOptions: [
-                { label: 'Policy Violation', value: 'POLICY_VIOLATION' },
-                { label: 'Policy Violation Cleared', value: 'POLICY_VIOLATION_CLEARED' },
-                { label: 'Policy Violation Override', value: 'POLICY_VIOLATION_OVERRIDE' },
-                { label: 'High Vulnerability', value: 'HIGH_VULNERABILITY' },
-                { label: 'Medium Vulnerability', value: 'MEDIUM_VULNERABILITY' },
-                { label: 'Low Vulnerability', value: 'LOW_VULNERABILITY' }
-            ]
+            errors: {}
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
@@ -84,7 +74,7 @@ class BaseJobConfiguration extends Component {
         values.distributionConfigId = distributionConfigId;
         values.name = name;
         values.distributionType = distributionType;
-        const frequencyFound = this.state.frequencyOptions.find(option => option.value === frequency);
+        const frequencyFound = frequencyOptions.find(option => option.value === frequency);
 
         if (frequencyFound) {
             values.frequency = frequencyFound.value;
@@ -326,7 +316,7 @@ class BaseJobConfiguration extends Component {
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
                             searchable
-                            options={this.state.frequencyOptions}
+                            options={frequencyOptions}
                             placeholder="Choose the frequency"
                             value={this.state.values.frequency}
                         />
@@ -341,7 +331,7 @@ class BaseJobConfiguration extends Component {
                             searchable
                             multi
                             removeSelected
-                            options={this.state.notificationOptions}
+                            options={notificationOptions}
                             placeholder="Choose the notification types"
                             value={this.state.values.notificationTypes}
                         />

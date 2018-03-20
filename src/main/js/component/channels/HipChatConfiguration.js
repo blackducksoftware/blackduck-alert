@@ -59,7 +59,10 @@ class HipChatConfiguration extends React.Component {
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
-                <h1>HipChat</h1>
+                <h1>
+                    <span className="fa fa-comments" />
+                    HipChat
+                </h1>
                 { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                     <div>Test was successful!</div>
                 </div>}

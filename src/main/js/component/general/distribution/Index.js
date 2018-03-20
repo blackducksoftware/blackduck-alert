@@ -401,8 +401,14 @@ class Index extends Component {
         }
         return (
             <div>
-                <InsertButton className="addJobButton" onClick={insertOnClick} />
-                <DeleteButton className="deleteJobButton" onClick={deleteOnClick} />
+                <InsertButton className="addJobButton btn-sm" onClick={insertOnClick}>
+                    <span className="fa fa-plus" />
+                    New
+                </InsertButton>
+                <DeleteButton className="deleteJobButton btn-sm" onClick={deleteOnClick}>
+                    <span className="fa fa-trash" />
+                    Delete
+                </DeleteButton>
                 {refreshButton}
             </div>
         );
@@ -482,6 +488,7 @@ class Index extends Component {
         return (
             <div>
                 <h1>
+                    <span className="fa fa-truck" />
                     Distribution
                     <small className="pull-right">
                         <AutoRefresh
