@@ -21,6 +21,12 @@ input {
     .Select-control {
         border-color: #ccc;
         border-radius: $border-radius;
+        .Select-value,
+        .Select-placeholder,
+        .Select-input {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
         .Select-value {
             .Select-value-label {
                 &:focus,
