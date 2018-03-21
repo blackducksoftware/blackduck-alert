@@ -103,11 +103,16 @@
     overflow-x: hidden;
     height: 150px !important;
 }
-
+.react-bs-table-container {
+    margin-bottom: 15px;
+}
 .react-bs-table-tool-bar {
     margin-bottom: 8px;
 }
-
+.react-bs-table-search-form {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
 .react-bs-table .table-bordered>thead>tr>td,
 .react-bs-table .table-bordered>thead>tr>th {
     border-bottom-width: 1px;
