@@ -55,8 +55,7 @@ function loginError(errorMessage, errors) {
 }
 
 export function verifyLogin() {
-    return (dispatch, getState) => {
-        const csrfToken = getState().session.csrfToken;
+    return (dispatch) => {
         dispatch(initializing());
         fetch('/api/verify', {
             credentials: 'include'
