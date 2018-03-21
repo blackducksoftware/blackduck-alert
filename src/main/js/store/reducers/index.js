@@ -5,6 +5,7 @@ import audit from './audit';
 import config from './config';
 import emailConfig from './emailConfig';
 import hipChatConfig from './hipChatConfig';
+import projects from './projects';
 import schedulingConfig from './schedulingConfig';
 import session from './session';
 
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
     config,
     emailConfig,
     hipChatConfig,
+    projects,
     schedulingConfig,
     session,
     routing
