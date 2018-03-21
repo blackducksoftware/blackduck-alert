@@ -81,22 +81,32 @@ public class LoginActions {
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
 
-        validateHubConfiguration(serverConfigBuilder);
-        final RestConnection restConnection = createRestConnection(serverConfigBuilder);
         try {
+            validateHubConfiguration(serverConfigBuilder);
+            final RestConnection restConnection = createRestConnection(serverConfigBuilder);
             restConnection.connect();
+            logger.info("Connected");
+            final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
+            if (isValidLoginUser) {
+                final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                return authentication.isAuthenticated();
+            }
+
+        } catch (final AlertFieldException afex) {
+            logger.error("Error establishing connection", afex);
+            final Map<String, String> fieldErrorMap = afex.getFieldErrors();
+            fieldErrorMap.keySet().forEach(key -> {
+                final String value = fieldErrorMap.get(key);
+                logger.error(String.format("Field Error %s - %s", key, value));
+            });
+
+            logger.info("User not authenticated");
+            return false;
         } catch (final IntegrationException ex) {
             logger.error("Error establishing connection", ex);
             logger.info("User not authenticated");
             return false;
-        }
-        logger.info("Connected");
-
-        final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
-        if (isValidLoginUser) {
-            final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            return authentication.isAuthenticated();
         }
 
         logger.info("User role not authenticated");
@@ -133,7 +143,9 @@ public class LoginActions {
                     errors.add(currentValidationResult.getMessage());
                 }
 
-                fieldErrors.put(result.getKey().getKey(), StringUtils.join(errors, " , "));
+                final String key = result.getKey().getKey();
+                final String errorMessage = StringUtils.join(errors, " , ");
+                fieldErrors.put(key, errorMessage);
             }
             throw new AlertFieldException("There were issues with the configuration.", fieldErrors);
         }

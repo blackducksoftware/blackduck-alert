@@ -2,6 +2,8 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.junit.Before;
@@ -10,9 +12,12 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -44,6 +49,8 @@ public class HomeControllerTestIT {
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
+    @Autowired
+    protected HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     private MockMvc mockMvc;
     private final String homeVerifyUrl = "/api/verify";
@@ -58,17 +65,33 @@ public class HomeControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     public void testVerify() throws Exception {
         final HttpHeaders headers = new HttpHeaders();
+        final MockHttpSession session = new MockHttpSession();
+        final ServletContext servletContext = webApplicationContext.getServletContext();
+
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        request.session(session);
+        final HttpServletRequest httpServletRequest = request.buildRequest(servletContext);
+        final CsrfToken csrfToken = csrfTokenRepository.generateToken(httpServletRequest);
+        csrfTokenRepository.saveToken(csrfToken, httpServletRequest, null);
+        headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testVerifyNoToken() throws Exception {
+        final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         request.headers(headers);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testVerifyMissingCSRFToken() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -78,7 +101,7 @@ public class HomeControllerTestIT {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
         request.headers(headers);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isForbidden());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
