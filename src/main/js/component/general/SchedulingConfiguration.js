@@ -13,6 +13,9 @@ import { dailyDigestOptions, purgeOptions } from '../../util/scheduling-data';
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            accumulatorNextRun: 0
+        };
         this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
         this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
         this.handlePurgeChanged = this.handlePurgeChanged.bind(this);
@@ -163,9 +166,7 @@ class SchedulingConfiguration extends React.Component {
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Purge Cron Next Run</label>
                         <div className="col-sm-8">
-                            <p className="form-control-static">
-                                {this.props.purgeDataNextRun}
-                            </p>
+                            <p className="form-control-static">{this.props.purgeDataNextRun}</p>
                         </div>
                     </div>
 
