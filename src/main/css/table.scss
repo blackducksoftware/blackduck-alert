@@ -34,11 +34,11 @@
 }
 
 .deleteJobButton {
-    border: 1px solid darken(#ef4923, 5%);
-    background-color: #ef4923;
+    border: 1px solid darken($color-danger, 5%);
+    background-color: $color-danger;
     &:hover {
-        background-color: darken(#ef4923, 10%);
-        border-color: darken(#ef4923, 17%);
+        background-color: darken($color-danger, 10%);
+        border-color: darken($color-danger, 17%);
     }
 }
 

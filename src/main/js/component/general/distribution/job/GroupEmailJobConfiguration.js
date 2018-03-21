@@ -23,45 +23,29 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         super.initializeValues(data);
         const groupName = data.groupName || this.props.groupName;
         const emailSubjectLine = data.emailSubjectLine || this.props.emailSubjectLine;
-        const { groups } = this.props;
-        const groupOptions = new Array();
-        if (groups && groups.length > 0) {
-            const rawGroups = groups;
-            for (const index in rawGroups) {
-                groupOptions.push({
-                    label: rawGroups[index].name,
-                    value: rawGroups[index].name,
-                    missing: false
-                });
+
+        const groupOptions = this.props.groups.map(group => ({
+            label: group.name,
+            value: group.name,
+            missing: false
+        })).sort((group1, group2) => {
+            if (group1.value < group2.value) {
+                return -1;
+            } else if (group1.value > group2.value) {
+                return 1;
             }
+            return 0;
+        });
 
-
-            const groupFound = groupOptions.find(group => group.name === groupName);
-
-            if (!groupFound) {
-                groupOptions.push({
-                    label: groupName,
-                    value: groupName,
-                    missing: true
-                });
-            }
-
-
-            groupOptions.sort((group1, group2) => {
-                if (group1.value < group2.value) {
-                    return -1;
-                } else if (group1.value > group2.value) {
-                    return 1;
-                }
-                return 0;
-            });
-        } else if (groupName) {
+        const groupFound = groupOptions.find(group => group.label === groupName);
+        if (groupName && (!groupFound || groupOptions.length === 0)) {
             groupOptions.push({
                 label: groupName,
                 value: groupName,
                 missing: true
             });
         }
+
         this.state.groupOptions = groupOptions;
         super.handleStateValues('groupName', groupName);
         super.handleStateValues('emailSubjectLine', emailSubjectLine);
@@ -70,7 +54,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     renderOption(option) {
         if (option.missing) {
             return (
-                <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{option.label}</span>
+                <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{option.label} (Group not found on Hub)</span>
             );
         }
 
@@ -115,11 +99,16 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     }
 }
 
+GroupEmailJobConfiguration.defaultProps = {
+    groups: []
+};
+
 GroupEmailJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
     distributionType: PropTypes.string,
-    csrfToken: PropTypes.string
+    csrfToken: PropTypes.string,
+    groups: PropTypes.arrayOf(PropTypes.object)
 };
 
 GroupEmailJobConfiguration.defaultProps = {
