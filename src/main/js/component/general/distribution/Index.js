@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import {
     ReactBsTable,
     BootstrapTable,
@@ -69,7 +70,6 @@ class Index extends Component {
         this.state = {
             autoRefresh: true,
             jobs: [],
-            projects: [],
             groups: [],
             waitingForProjects: true,
             waitingForGroups: true
@@ -86,7 +86,6 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        this.retrieveProjects();
         this.retrieveGroups();
         this.reloadPage();
         this.startAutoReload();
@@ -101,10 +100,9 @@ class Index extends Component {
             const {
                 id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
             } = currentRowSelected;
-            const csrfToken = this.props.csrfToken;
             if (distributionType === 'email_group_channel') {
                 return (<GroupEmailJobConfiguration
-                    csrfToken={csrfToken}
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -115,14 +113,13 @@ class Index extends Component {
                     groups={this.state.groups}
                     groupName={groupName}
                     waitingForProjects={this.state.waitingForProjects}
-                    projects={this.state.projects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
-                    csrfToken={csrfToken}
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -130,14 +127,13 @@ class Index extends Component {
                     frequency={frequency}
                     notificationTypes={notificationTypes}
                     waitingForProjects={this.state.waitingForProjects}
-                    projects={this.state.projects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
-                    csrfToken={csrfToken}
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -145,7 +141,6 @@ class Index extends Component {
                     frequency={frequency}
                     notificationTypes={notificationTypes}
                     waitingForProjects={this.state.waitingForProjects}
-                    projects={this.state.projects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
@@ -218,8 +213,8 @@ class Index extends Component {
             // TODO delete the Job configs from the backend
             // dropRowKeys are the Id's of the Job configs
             const { jobs } = this.state;
-            const csrfToken = this.props.csrfToken
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
+
             matchingJobs.forEach((job) => {
                 const jsonBody = JSON.stringify(job);
                 fetch('/api/configuration/distribution/common', {
@@ -227,7 +222,7 @@ class Index extends Component {
                     credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
+                        'X-CSRF-TOKEN': this.props.csrfToken
                     },
                     body: jsonBody
                 }).then((response) => {
@@ -256,44 +251,6 @@ class Index extends Component {
             });
             next();
         }
-    }
-
-    retrieveProjects() {
-        const self = this;
-        const csrfToken = this.props.csrfToken;
-        fetch('/api/hub/projects', {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
-        })
-            .then((response) => {
-                this.setState({ waitingForProjects: false });
-                if (!response.ok) {
-                    return response.json().then((json) => {
-                        this.setState({ projectTableMessage: json.message });
-                    });
-                }
-                return response.json().then((json) => {
-                    this.setState({ projectTableMessage: ''});
-                    const jsonArray = JSON.parse(json.message);
-                    if (jsonArray != null && jsonArray.length > 0) {
-                        const projects = [];
-                        for (const index in jsonArray) {
-                            projects.push({
-                                name: jsonArray[index].name,
-                                url: jsonArray[index].url
-                            });
-                        }
-                        this.setState({
-                            projects
-                        });
-                    }
-                });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
     }
 
     retrieveGroups() {
@@ -503,8 +460,16 @@ class Index extends Component {
     }
 }
 
+Index.propTypes = {
+    csrfToken: PropTypes.string
+};
+
+Index.defaultProps = {
+    csrfToken: null
+};
+
 const mapStateToProps = state => ({
-	csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = dispatch => ({});
