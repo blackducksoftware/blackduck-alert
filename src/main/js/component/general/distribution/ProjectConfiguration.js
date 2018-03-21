@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import CheckboxInput from '../../../field/input/CheckboxInput';
 
-export default class ProjectConfiguration extends Component {
+import CheckboxInput from '../../../field/input/CheckboxInput';
+import { getProjects } from '../../../store/actions/projects';
+
+class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -10,6 +14,27 @@ export default class ProjectConfiguration extends Component {
         };
         this.onRowSelected = this.onRowSelected.bind(this);
         this.assignDataFormat = this.assignDataFormat.bind(this);
+    }
+
+    componentWillMount() {
+        this.props.getProjects();
+    }
+
+    onRowSelected(row, isSelected) {
+        const { selectedProjects } = this.state;
+        let selected = Object.assign([], selectedProjects);
+        if (isSelected) {
+            const projectFound = selected.find(project => project.value === row.name);
+            if (!projectFound) {
+                selected.push({ value: row.name });
+            }
+        } else {
+            const projectFound = selected.find(project => project.value === row.name);
+            const index = selected.indexOf(projectFound);
+            selected = selected.slice(index);
+        }
+
+        this.props.handleProjectChanged(selected);
     }
 
     createProjectList() {
@@ -64,24 +89,6 @@ export default class ProjectConfiguration extends Component {
         return <div title={row.name}> {cellContent} </div>;
     }
 
-    onRowSelected(row, isSelected) {
-        const { selectedProjects } = this.state;
-        let selected = Object.assign([], selectedProjects);
-        if (isSelected) {
-            const projectFound = selected.find(project => project.value === row.name);
-            if (!projectFound) {
-                selected.push({ value: row.name });
-            }
-        } else {
-            const projectFound = selected.find(project => project.value === row.name);
-            const index = selected.indexOf(projectFound);
-            selected = selected.slice(index);
-        }
-
-        const { handleProjectChanged } = this.props;
-        handleProjectChanged(selected);
-    }
-
     render() {
         const projectData = this.createProjectList();
 
@@ -99,13 +106,6 @@ export default class ProjectConfiguration extends Component {
             selected: this.props.configuredProjects,
             onSelect: this.onRowSelected
         };
-        let progressIndicator = null;
-        if (this.props.waitingForProjects) {
-            const fontAwesomeIcon = 'fa fa-spinner fa-pulse fa-fw';
-            progressIndicator = (<div className="progressIcon">
-                <span className={fontAwesomeIcon} aria-hidden="true" />
-            </div>);
-        }
 
         let projectTable = null;
         if (!this.props.includeAllProjects) {
@@ -114,16 +114,52 @@ export default class ProjectConfiguration extends Component {
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
-                {progressIndicator}
-                <p name="projectTableMessage">{this.props.projectTableMessage}</p>
+
+                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" /></div>}
+
+                {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p> }
             </div>);
         }
 
         return (
             <div>
-                <CheckboxInput label="Include all projects" name="includeAllProjects" value={this.props.includeAllProjects} onChange={this.props.handleChange} errorName="includeAllProjectsError" errorValue={this.props.includeAllProjectsError} />
+                <CheckboxInput
+                    label="Include all projects"
+                    name="includeAllProjects"
+                    value={this.props.includeAllProjects}
+                    onChange={this.props.handleChange}
+                    errorName="includeAllProjectsError"
+                    errorValue={this.props.includeAllProjectsError}
+                />
                 {projectTable}
             </div>
         );
     }
 }
+
+ProjectConfiguration.defaultProps = {
+    projects: [],
+    errorMsg: null,
+    includeAllProjects: false
+}
+
+ProjectConfiguration.propTypes = {
+    includeAllProjects: PropTypes.bool,
+    projects: PropTypes.arrayOf(PropTypes.any),
+    fetching: PropTypes.bool.isRequired,
+    errorMsg: PropTypes.string,
+    getProjects: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+    fetching: state.projects.fetching,
+    projects: state.projects.items,
+    errorMsg: state.projects.error.message
+});
+
+const mapDispatchToProps = dispatch => ({
+    getProjects: () => dispatch(getProjects())
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectConfiguration);
