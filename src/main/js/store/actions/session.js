@@ -59,15 +59,12 @@ export function verifyLogin() {
         const csrfToken = getState().session.csrfToken;
         dispatch(initializing());
         fetch('/api/verify', {
-            credentials: 'include',
-            headers: {
-              'X-CSRF-TOKEN': csrfToken
-            }
+            credentials: 'include'
         }).then(function(response) {
             if (!response.ok) {
                 dispatch(loggedOut());
             } else {
-                const token = getState().session.csrfToken;
+                const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({csrfToken: token}));
             }
         }).catch((error) => {
