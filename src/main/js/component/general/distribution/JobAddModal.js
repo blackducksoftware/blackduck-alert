@@ -75,10 +75,11 @@ export default class JobAddModal extends Component {
         } else if (option.value === 'slack_channel') {
             fontAwesomeIcon = 'fa fa-slack  fa-fw';
         }
-        return (<div>
-            <span key="icon" className={fontAwesomeIcon} aria-hidden="true" />
-            <span key="name">{option.label}</span>
-                </div>
+        return (
+            <div>
+                <span key="icon" className={fontAwesomeIcon} aria-hidden="true" />
+                <span key="name">{option.label}</span>
+            </div>
         );
     }
 
