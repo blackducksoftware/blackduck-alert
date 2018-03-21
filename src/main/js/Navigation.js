@@ -32,65 +32,67 @@ const Navigation = props => (
         <div className="navigationLogo">
             <Logo />
         </div>
-        <ul>
-            <li className="navHeader">
-                Providers
-            </li>
-            <li>
-                <NavLink to="/providers/hub" activeClassName="activeNav">
-                    <FontAwesome name="laptop" fixedWidth /> Hub
-                </NavLink>
-            </li>
-            <li className="navHeader">
-                Channels
-            </li>
-            <li>
-                <NavLink to="/channels/email" activeClassName="activeNav">
-                    <FontAwesome name="envelope" fixedWidth /> Email
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to="/channels/hipchat" activeClassName="activeNav">
-                    <FontAwesome name="comments" fixedWidth /> HipChat
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to="/channels/slack" activeClassName="activeNav">
-                    <FontAwesome name="slack" fixedWidth /> Slack
-                </NavLink>
-            </li>
-            <li className="navHeader">
-                Jobs
-            </li>
-            <li>
-                <NavLink to="/jobs/distribution" activeClassName="activeNav">
-                    <FontAwesome name="truck" fixedWidth /> Distribution
-                </NavLink>
-            </li>
-            <li>
-                <NavLink to="/jobs/scheduling" activeClassName="activeNav">
-                    <FontAwesome name="clock-o" fixedWidth /> Scheduling
-                </NavLink>
-            </li>
-            <li className="divider" />
-            <li>
-                <NavLink to="/general/audit" activeClassName="activeNav">
-                    <FontAwesome name="history" fixedWidth /> Audit
-                </NavLink>
-            </li>
-            <li className="logoutLink">
-                <a
-                    role="button"
-                    tabIndex={0}
-                    onClick={(evt) => {
-                        evt.preventDefault();
-                        props.confirmLogout();
-                    }}
-                >
-                    <FontAwesome name="sign-out" fixedWidth /> Logout
-                </a>
-            </li>
-        </ul>
+        <div className="navigationContent">
+            <ul>
+                <li className="navHeader">
+                    Providers
+                </li>
+                <li>
+                    <NavLink to="/providers/hub" activeClassName="activeNav">
+                        <FontAwesome name="laptop" fixedWidth /> Hub
+                    </NavLink>
+                </li>
+                <li className="navHeader">
+                    Channels
+                </li>
+                <li>
+                    <NavLink to="/channels/email" activeClassName="activeNav">
+                        <FontAwesome name="envelope" fixedWidth /> Email
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/channels/hipchat" activeClassName="activeNav">
+                        <FontAwesome name="comments" fixedWidth /> HipChat
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/channels/slack" activeClassName="activeNav">
+                        <FontAwesome name="slack" fixedWidth /> Slack
+                    </NavLink>
+                </li>
+                <li className="navHeader">
+                    Jobs
+                </li>
+                <li>
+                    <NavLink to="/jobs/distribution" activeClassName="activeNav">
+                        <FontAwesome name="truck" fixedWidth /> Distribution
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to="/jobs/scheduling" activeClassName="activeNav">
+                        <FontAwesome name="clock-o" fixedWidth /> Scheduling
+                    </NavLink>
+                </li>
+                <li className="divider" />
+                <li>
+                    <NavLink to="/general/audit" activeClassName="activeNav">
+                        <FontAwesome name="history" fixedWidth /> Audit
+                    </NavLink>
+                </li>
+                <li className="logoutLink">
+                    <a
+                        role="button"
+                        tabIndex={0}
+                        onClick={(evt) => {
+                            evt.preventDefault();
+                            props.confirmLogout();
+                        }}
+                    >
+                        <FontAwesome name="sign-out" fixedWidth /> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 );
 
