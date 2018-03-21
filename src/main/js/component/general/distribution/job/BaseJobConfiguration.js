@@ -346,4 +346,4 @@ class BaseJobConfiguration extends Component {
     }
 }
 
-export default BaseJobConfiguration
+export default BaseJobConfiguration;

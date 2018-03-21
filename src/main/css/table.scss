@@ -34,11 +34,11 @@
 }
 
 .deleteJobButton {
-    border: 1px solid darken(#ef4923, 5%);
-    background-color: #ef4923;
+    border: 1px solid darken($color-danger, 5%);
+    background-color: $color-danger;
     &:hover {
-        background-color: darken(#ef4923, 10%);
-        border-color: darken(#ef4923, 17%);
+        background-color: darken($color-danger, 10%);
+        border-color: darken($color-danger, 17%);
     }
 }
 
@@ -103,11 +103,20 @@
     overflow-x: hidden;
     height: 150px !important;
 }
-
+.react-bs-table-container {
+    margin-bottom: 15px;
+}
+.react-bs-table-search-form {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
 .react-bs-table-tool-bar {
     margin-bottom: 8px;
 }
-
+.react-bs-table-search-form {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
 .react-bs-table .table-bordered>thead>tr>td,
 .react-bs-table .table-bordered>thead>tr>th {
     border-bottom-width: 1px;

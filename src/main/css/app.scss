@@ -33,6 +33,9 @@ button + button {
 .accumulator-countdown .btn {
   margin-left: 20px;
 }
+.form-control {
+  font-size: 13px;
+}
 .refreshCheckbox {
   font-size: 0.9rem;
   font-weight: $base-font-weight;
@@ -48,8 +51,8 @@ button + button {
   color: white;
   border: 0;
   box-shadow: 1px 1px 10px #666;
-  padding: 0 20px;
   z-index: 100;
+  padding: 0 20px;
 
   > .navigationLogo {
     padding: 15px 0px;
@@ -58,44 +61,54 @@ button + button {
     display: inline-flex;
   }
 
-  > ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .navigationContent {
+    overflow-y: auto;
+    position: absolute;
+    top: 57px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 20px 20px;
 
-    > li {
+    > ul {
+      margin: 0;
       padding: 0;
+      list-style: none;
 
-      a {
-        color: white;
-        text-decoration: none;
-        border-left: 4px solid transparent;
-        font-weight: 300;
-        letter-spacing: 0.07rem;
-        display: block;
-        padding: 8px 10px;
+      > li {
+        padding: 0;
 
-        &.activeNav {
-          border-left: 4px solid white;
-          background-color: #3d444e;
+        a {
+          color: white;
+          text-decoration: none;
+          border-left: 4px solid transparent;
+          font-weight: 300;
+          letter-spacing: 0.07rem;
+          display: block;
+          padding: 8px 10px;
+
+          &.activeNav {
+            border-left: 4px solid white;
+            background-color: #3d444e;
+          }
+
+          &:hover {
+            background-color: #4d545e;
+            cursor: pointer;
+          }
         }
 
-        &:hover {
-          background-color: #4d545e;
-          cursor: pointer;
+        &.divider {
+          margin: 15px 0;
+          border-bottom: $navigation-border;
         }
-      }
 
-      &.divider {
-        margin: 15px 0;
-        border-bottom: $navigation-border;
-      }
-
-      &.navHeader {
-        text-transform: uppercase;
-        font-size: 0.8em;
-        opacity: 0.6;
-        margin: 15px 0 5px;
+        &.navHeader {
+          text-transform: uppercase;
+          font-size: 0.8em;
+          opacity: 0.6;
+          margin: 15px 0 5px;
+        }
       }
     }
   }
@@ -261,7 +274,7 @@ form.form-horizontal.loginForm {
 }
 
 .missingHubData {
-  color: #d80015;
+  color: $color-danger;
   font-style: italic;
   font-weight: bold;
 }
