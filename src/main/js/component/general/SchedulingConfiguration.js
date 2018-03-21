@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Select from 'react-select-2';
 
 import { getSchedulingConfig, runSchedulingAccumulator, updateSchedulingConfig } from '../../store/actions/schedulingConfig';
 
@@ -9,23 +10,17 @@ import GeneralButton from '../../field/input/GeneralButton';
 
 import { dailyDigestOptions, purgeOptions } from '../../util/scheduling-data';
 
-import Select from 'react-select-2';
-
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            inProgress: false
-        };
-
         this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
         this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
         this.handlePurgeChanged = this.handlePurgeChanged.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentWillUnmount() {
-		 this.cancelAutoTick();
+    componentDidMount() {
+        this.props.getConfig();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -42,8 +37,8 @@ class SchedulingConfiguration extends React.Component {
         this.setState({ purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null });
     }
 
-    componentDidMount() {
-        this.props.getConfig();
+    componentWillUnmount() {
+        this.cancelAutoTick();
     }
 
     startAutoTick() {
@@ -78,7 +73,7 @@ class SchedulingConfiguration extends React.Component {
 
     handleDailyDigestChanged(option) {
         if (option) {
-        	this.setState({ dailyDigestHourOfDay: option.value });
+            this.setState({ dailyDigestHourOfDay: option.value });
         } else {
             this.setState({ dailyDigestHourOfDay: option });
         }
@@ -103,16 +98,15 @@ class SchedulingConfiguration extends React.Component {
                     <span className="fa fa-clock-o" />
                     Scheduling
                 </h1>
+                { errorMessage && <div className="alert alert-danger">
+                    { errorMessage }
+                </div> }
+
+                { updateStatus === 'UPDATED' && <div className="alert alert-success">
+                    { 'Update successful' }
+                </div> }
+
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-
-                    { errorMessage && <div className="alert alert-danger">
-                        { errorMessage }
-                    </div> }
-
-                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
-                        { 'Update successful' }
-                    </div> }
-
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Collecting Hub notifications in</label>
                         <div className="col-sm-9">
@@ -169,7 +163,9 @@ class SchedulingConfiguration extends React.Component {
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Purge Cron Next Run</label>
                         <div className="col-sm-8">
-                            <p className="form-control-static">{this.props.purgeDataFrequencyDays}</p>
+                            <p className="form-control-static">
+                                {this.props.purgeDataNextRun}
+                            </p>
                         </div>
                     </div>
 
@@ -183,11 +179,13 @@ class SchedulingConfiguration extends React.Component {
 SchedulingConfiguration.propTypes = {
     accumulatorNextRun: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
-    runSchedulingAccumulator: PropTypes.func.isRequired
+    runSchedulingAccumulator: PropTypes.func.isRequired,
+    purgeDataNextRun: PropTypes.string
 };
 
 SchedulingConfiguration.defaultProps = {
-    accumulatorNextRun: '-1'
+    accumulatorNextRun: '-1',
+    purgeDataNextRun: '-'
 };
 
 const mapStateToProps = state => ({
@@ -195,7 +193,7 @@ const mapStateToProps = state => ({
     dailyDigestHourOfDay: state.schedulingConfig.dailyDigestHourOfDay,
     dailyDigestNextRun: state.schedulingConfig.dailyDigestNextRun,
     purgeDataFrequencyDays: state.schedulingConfig.purgeDataFrequencyDays,
-    purgeDataFrequencyDays: state.schedulingConfig.purgeDataFrequencyDays,
+    purgeDataNextRun: state.schedulingConfig.purgeDataNextRun,
     id: state.schedulingConfig.id,
     updateStatus: state.schedulingConfig.updateStatus,
     errorMessage: state.schedulingConfig.errorMessage,
