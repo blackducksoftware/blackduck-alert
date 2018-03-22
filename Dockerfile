@@ -19,6 +19,8 @@ ENV ALERT_DB_DIR $ALERT_CONFIG_HOME/data/alertdb
 ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
+ENV ALERT_MAX_HEAP_SIZE 350m
+
 RUN set -e \
     # The old version of the Gradle Application plugin generates Bash scripts
     && apk add --no-cache --virtual .hub-alert-run-deps \
