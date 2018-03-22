@@ -94,6 +94,7 @@ public class EmailProperties {
         addJavaMailOption(JAVAMAIL_SEND_PARTIAL_KEY, emailConfigEntity.getMailSmtpSendPartial());
 
         this.mailSmtpPassword = emailConfigEntity.getMailSmtpPassword();
+        addJavaMailOption(JAVAMAIL_PASSWORD_KEY, this.mailSmtpPassword);
     }
 
     private void addJavaMailOption(final String key, final String value) {
