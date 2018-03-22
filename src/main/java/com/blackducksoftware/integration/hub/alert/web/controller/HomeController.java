@@ -25,15 +25,25 @@ package com.blackducksoftware.integration.hub.alert.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRespository;
+
+    @Autowired
+    public HomeController(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRespository = csrfTokenRepository;
+    }
 
     @GetMapping(value = { "/", "/error", "/channels/**", "/providers/**", "/general/**" }, produces = MediaType.TEXT_HTML_VALUE)
     public String index() {
@@ -43,12 +53,15 @@ public class HomeController {
     @GetMapping(value = "/api/verify")
     public ResponseEntity<String> checkAuthentication(final HttpServletRequest request) {
         final HttpServletRequest httpRequest = request;
-        final String token = httpRequest.getHeader("X-CSRF-TOKEN");
-        if (StringUtils.isBlank(token) || StringUtils.equalsIgnoreCase("null", token)) {
+        final CsrfToken csrfToken = csrfTokenRespository.loadToken(request);
+        if (csrfToken == null) {
             httpRequest.getSession().invalidate();
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         } else {
-            return new ResponseEntity<>("{\"message\":\"Authenticated\"}", HttpStatus.OK);
+            final String body = "{\"message\":\"Authenticated\"}";
+            final HttpHeaders headers = new HttpHeaders();
+            headers.add(csrfToken.getHeaderName(), csrfToken.getToken());
+            return new ResponseEntity<>(body, headers, HttpStatus.OK);
         }
     }
 }
