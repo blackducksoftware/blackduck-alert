@@ -31,7 +31,6 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
@@ -118,13 +117,10 @@ public class LoginActionsTestIT {
         final LoginActions loginActions = new LoginActions(new TestGlobalProperties());
 
         try {
-            loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
-            fail();
+            final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
+            assertFalse(authenticated);
         } catch (final IntegrationException e) {
-            if (!(e instanceof AlertFieldException)) {
-                fail();
-            }
+            fail();
         }
     }
-
 }
