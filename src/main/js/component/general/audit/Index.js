@@ -29,6 +29,7 @@ class Index extends Component {
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
+        this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
     }
 
     componentDidMount() {
@@ -180,13 +181,15 @@ class Index extends Component {
 
     startAutoReload() {
         // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => {
-            if(this.props.fetching) {
-                console.log("Wait for audit data fetch to complete");
-            } else {
-                this.props.getAuditData();
-            }
-        }, 10000);
+        this.reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+    }
+
+    reloadAuditEntries() {
+        if(this.props.fetching) {
+            console.log("Audit data fetch in progress");
+        } else {
+            this.props.getAuditData();
+        }
     }
 
     handleAutoRefreshChange({ target }) {
