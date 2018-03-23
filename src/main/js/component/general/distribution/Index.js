@@ -83,6 +83,7 @@ class Index extends Component {
         this.editButtonClicked = this.editButtonClicked.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
+        this.reloadPage = this.reloadPage.bind(this);
     }
 
     componentDidMount() {
@@ -166,12 +167,16 @@ class Index extends Component {
     }
 
     reloadPage() {
-        this.cancelAutoReload();
         this.setState({
             jobConfigTableMessage: 'Loading...',
             inProgress: true
         });
-        this.fetchDistributionJobs();
+
+        if(this.props.fetching) {
+            console.log("Job data fetch in progress");
+        } else {
+            this.fetchDistributionJobs();
+        }
     }
 
     cancelAutoReload() {
@@ -461,15 +466,18 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-    csrfToken: PropTypes.string
+    csrfToken: PropTypes.string,
+    fetching: PropTypes.bool
 };
 
 Index.defaultProps = {
-    csrfToken: null
+    csrfToken: null,
+    fetching: false
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    fetching: state.config.fetching
 });
 
 const mapDispatchToProps = dispatch => ({});
