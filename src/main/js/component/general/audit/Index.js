@@ -180,7 +180,13 @@ class Index extends Component {
 
     startAutoReload() {
         // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
+        this.reloadInterval = setInterval(() => {
+            if(this.props.fetching) {
+                console.log("Wait for audit data fetch to complete");
+            } else {
+                this.props.getAuditData();
+            }
+        }, 10000);
     }
 
     handleAutoRefreshChange({ target }) {
@@ -265,13 +271,15 @@ Index.defaultProps = {
 
 Index.propTypes = {
     csrfToken: PropTypes.string,
+    fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     getAuditData: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     items: state.audit.items,
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    fetching: state.audit.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
