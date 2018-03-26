@@ -46,7 +46,6 @@ public class PurgeWriter implements ItemWriter<List<NotificationModel>> {
     @Override
     public void write(final List<? extends List<NotificationModel>> items) throws Exception {
         try {
-            logger.info("Starting purge of notifications");
             items.forEach(entityList -> {
                 if (entityList != null && !entityList.isEmpty()) {
                     logger.info("Purging {} notifications.", entityList.size());
