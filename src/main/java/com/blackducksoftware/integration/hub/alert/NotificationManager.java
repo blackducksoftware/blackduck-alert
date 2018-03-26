@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -85,6 +87,15 @@ public class NotificationManager {
     public List<NotificationModel> findByCreatedAtBefore(final Date date) {
         final List<NotificationEntity> notificationList = notificationRepository.findByCreatedAtBefore(date);
         return createModelList(notificationList);
+    }
+
+    public List<NotificationModel> findByCreatedAtBeforeDayOffset(final int dayOffset) {
+        ZonedDateTime zonedDate = ZonedDateTime.now();
+        zonedDate = zonedDate.minusDays(dayOffset);
+        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        final Date date = Date.from(zonedDate.toInstant());
+        return findByCreatedAtBefore(date);
     }
 
     private List<NotificationModel> createModelList(final List<NotificationEntity> entityList) {
