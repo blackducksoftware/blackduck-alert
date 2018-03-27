@@ -58,7 +58,7 @@ public class HubDataActions {
 
             final List<HubGroup> groups = new ArrayList<>();
             for (final UserGroupView userGroupView : rawGroups) {
-                final HubGroup hubGroup = new HubGroup(userGroupView.name, userGroupView.active, userGroupView.meta.href);
+                final HubGroup hubGroup = new HubGroup(userGroupView.name, userGroupView.active, userGroupView._meta.href);
                 groups.add(hubGroup);
             }
             return groups;

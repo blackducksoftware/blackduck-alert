@@ -42,7 +42,7 @@ public class PolicyViolationProcessorTest {
         final PolicyRuleView policyRuleView = new PolicyRuleView();
         final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = "Meta href";
-        policyRuleView.meta = metaView;
+        policyRuleView._meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
         final String componentIssueUrl = "issueUrl";
         final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
@@ -60,7 +60,7 @@ public class PolicyViolationProcessorTest {
         final PolicyRuleView policyRuleView = new PolicyRuleView();
         final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = "Meta href";
-        policyRuleView.meta = metaView;
+        policyRuleView._meta = metaView;
         final List<PolicyRuleView> policyRuleList = Arrays.asList(policyRuleView);
         final String componentIssueUrl = "issueUrl";
         final PolicyViolationContentItem notification = new PolicyViolationContentItem(createdAt, projectVersionModel, componentName, null, componentUrl, componentVersionUrl, policyRuleList, componentIssueUrl);
