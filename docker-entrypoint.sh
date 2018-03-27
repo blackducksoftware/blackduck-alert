@@ -18,6 +18,7 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 
 [ -z "$PUBLIC_HUB_WEBSERVER_HOST" ] && echo "Public Webserver Host: [$publicWebserverHost]. Wrong host name? Restart the container with the right host name configured in hub-webserver.env"
 
+echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
 
@@ -182,7 +183,7 @@ else
 
   if [ -f "$truststoreFile" ];
   then
-      JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$truststoreFile"
+      JAVA_OPTS="$JAVA_OPTS -Xmx$ALERT_MAX_HEAP_SIZE -Djavax.net.ssl.trustStore=$truststoreFile"
       export JAVA_OPTS
   fi
 fi
