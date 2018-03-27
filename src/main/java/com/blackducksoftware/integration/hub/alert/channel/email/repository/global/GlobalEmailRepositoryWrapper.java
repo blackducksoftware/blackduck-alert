@@ -52,16 +52,56 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
             final Integer mailSmtpPort = entity.getMailSmtpPort();
             final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
             final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
+            final Integer mailSmtpWriteTimeout = entity.getMailSmtpWriteTimeout();
             final String mailSmtpFrom = entity.getMailSmtpFrom();
             final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
+            final String mailSmtpLocalAddress = entity.getMailSmtpLocalAddress();
+            final Integer mailSmtpLocalPort = entity.getMailSmtpLocalPort();
             final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
             final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
+            final String mailSmtpAuthMechanisms = entity.getMailSmtpAuthMechanisms();
+            final Boolean mailSmtpAuthLoginDisable = entity.getMailSmtpAuthLoginDisable();
+            final Boolean mailSmtpAuthPlainDisable = entity.getMailSmtpAuthPlainDisable();
+            final Boolean mailSmtpAuthDigestMd5Disable = entity.getMailSmtpAuthDigestMd5Disable();
+            final Boolean mailSmtpAuthNtlmDisable = entity.getMailSmtpAuthNtlmDisable();
+            final String mailSmtpAuthNtlmDomain = entity.getMailSmtpAuthNtlmDomain();
+            final Integer mailSmtpAuthNtlmFlags = entity.getMailSmtpAuthNtlmFlags();
+            final Boolean mailSmtpAuthXoauth2Disable = entity.getMailSmtpAuthXoauth2Disable();
+            final String mailSmtpSubmitter = entity.getMailSmtpSubmitter();
             final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
             final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
             final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
             final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
+            final Boolean mailSmtpSaslEnable = entity.getMailSmtpSaslEnable();
+            final String mailSmtpSaslMechanisms = entity.getMailSmtpSaslMechanisms();
+            final String mailSmtpSaslAuthorizationId = entity.getMailSmtpSaslAuthorizationId();
+            final String mailSmtpSaslRealm = entity.getMailSmtpSaslRealm();
+            final Boolean mailSmtpSaslUseCanonicalHostname = entity.getMailSmtpSaslUseCanonicalHostname();
+            final Boolean mailSmtpQuitwait = entity.getMailSmtpQuitwait();
+            final Boolean mailSmtpReportSuccess = entity.getMailSmtpReportSuccess();
+            final Boolean mailSmtpSslEnable = entity.getMailSmtpSslEnable();
+            final Boolean mailSmtpSslCheckServerIdentity = entity.getMailSmtpSslCheckServerIdentity();
+            final String mailSmtpSslTrust = entity.getMailSmtpSslTrust();
+            final String mailSmtpSslProtocols = entity.getMailSmtpSslProtocols();
+            final String mailSmtpSslCipherSuites = entity.getMailSmtpSslCipherSuites();
+            final Boolean mailSmtpStartTlsEnable = entity.getMailSmtpStartTlsEnable();
+            final Boolean mailSmtpStartTlsRequired = entity.getMailSmtpStartTlsRequired();
+            final String mailSmtpProxyHost = entity.getMailSmtpProxyHost();
+            final Integer mailSmtpProxyPort = entity.getMailSmtpProxyPort();
+            final String mailSmtpSocksHost = entity.getMailSmtpSocksHost();
+            final Integer mailSmtpSocksPort = entity.getMailSmtpSocksPort();
+            final String mailSmtpMailExtension = entity.getMailSmtpMailExtension();
+            final Boolean mailSmtpUserSet = entity.getMailSmtpUserSet();
+            final Boolean mailSmtpNoopStrict = entity.getMailSmtpNoopStrict();
+
+            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout,
+                    mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth,
+                    mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable,
+                    mailSmtpAuthNtlmDomain, mailSmtpAuthNtlmFlags, mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet,
+                    mailSmtpAllow8bitmime, mailSmtpSendPartial, mailSmtpSaslEnable, mailSmtpSaslMechanisms, mailSmtpSaslAuthorizationId, mailSmtpSaslRealm,
+                    mailSmtpSaslUseCanonicalHostname, mailSmtpQuitwait, mailSmtpReportSuccess, mailSmtpSslEnable, mailSmtpSslCheckServerIdentity, mailSmtpSslTrust,
+                    mailSmtpSslProtocols, mailSmtpSslCipherSuites, mailSmtpStartTlsEnable, mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort,
+                    mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict);
             newEntity.setId(entity.getId());
             return newEntity;
         }
@@ -79,17 +119,56 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
             final Integer mailSmtpPort = entity.getMailSmtpPort();
             final Integer mailSmtpConnectionTimeout = entity.getMailSmtpConnectionTimeout();
             final Integer mailSmtpTimeout = entity.getMailSmtpTimeout();
+            final Integer mailSmtpWriteTimeout = entity.getMailSmtpWriteTimeout();
             final String mailSmtpFrom = entity.getMailSmtpFrom();
             final String mailSmtpLocalhost = entity.getMailSmtpLocalhost();
+            final String mailSmtpLocalAddress = entity.getMailSmtpLocalAddress();
+            final Integer mailSmtpLocalPort = entity.getMailSmtpLocalPort();
             final Boolean mailSmtpEhlo = entity.getMailSmtpEhlo();
             final Boolean mailSmtpAuth = entity.getMailSmtpAuth();
+            final String mailSmtpAuthMechanisms = entity.getMailSmtpAuthMechanisms();
+            final Boolean mailSmtpAuthLoginDisable = entity.getMailSmtpAuthLoginDisable();
+            final Boolean mailSmtpAuthPlainDisable = entity.getMailSmtpAuthPlainDisable();
+            final Boolean mailSmtpAuthDigestMd5Disable = entity.getMailSmtpAuthDigestMd5Disable();
+            final Boolean mailSmtpAuthNtlmDisable = entity.getMailSmtpAuthNtlmDisable();
+            final String mailSmtpAuthNtlmDomain = entity.getMailSmtpAuthNtlmDomain();
+            final Integer mailSmtpAuthNtlmFlags = entity.getMailSmtpAuthNtlmFlags();
+            final Boolean mailSmtpAuthXoauth2Disable = entity.getMailSmtpAuthXoauth2Disable();
+            final String mailSmtpSubmitter = entity.getMailSmtpSubmitter();
             final String mailSmtpDnsNotify = entity.getMailSmtpDnsNotify();
             final String mailSmtpDnsRet = entity.getMailSmtpDnsRet();
             final Boolean mailSmtpAllow8bitmime = entity.getMailSmtpAllow8bitmime();
             final Boolean mailSmtpSendPartial = entity.getMailSmtpSendPartial();
-            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpEhlo,
-                    mailSmtpAuth, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial);
-            newEntity.setId(entity.getId());
+            final Boolean mailSmtpSaslEnable = entity.getMailSmtpSaslEnable();
+            final String mailSmtpSaslMechanisms = entity.getMailSmtpSaslMechanisms();
+            final String mailSmtpSaslAuthorizationId = entity.getMailSmtpSaslAuthorizationId();
+            final String mailSmtpSaslRealm = entity.getMailSmtpSaslRealm();
+            final Boolean mailSmtpSaslUseCanonicalHostname = entity.getMailSmtpSaslUseCanonicalHostname();
+            final Boolean mailSmtpQuitwait = entity.getMailSmtpQuitwait();
+            final Boolean mailSmtpReportSuccess = entity.getMailSmtpReportSuccess();
+            final Boolean mailSmtpSslEnable = entity.getMailSmtpSslEnable();
+            final Boolean mailSmtpSslCheckServerIdentity = entity.getMailSmtpSslCheckServerIdentity();
+            final String mailSmtpSslTrust = entity.getMailSmtpSslTrust();
+            final String mailSmtpSslProtocols = entity.getMailSmtpSslProtocols();
+            final String mailSmtpSslCipherSuites = entity.getMailSmtpSslCipherSuites();
+            final Boolean mailSmtpStartTlsEnable = entity.getMailSmtpStartTlsEnable();
+            final Boolean mailSmtpStartTlsRequired = entity.getMailSmtpStartTlsRequired();
+            final String mailSmtpProxyHost = entity.getMailSmtpProxyHost();
+            final Integer mailSmtpProxyPort = entity.getMailSmtpProxyPort();
+            final String mailSmtpSocksHost = entity.getMailSmtpSocksHost();
+            final Integer mailSmtpSocksPort = entity.getMailSmtpSocksPort();
+            final String mailSmtpMailExtension = entity.getMailSmtpMailExtension();
+            final Boolean mailSmtpUserSet = entity.getMailSmtpUserSet();
+            final Boolean mailSmtpNoopStrict = entity.getMailSmtpNoopStrict();
+
+            final GlobalEmailConfigEntity newEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout,
+                    mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth,
+                    mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable,
+                    mailSmtpAuthNtlmDomain, mailSmtpAuthNtlmFlags, mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet,
+                    mailSmtpAllow8bitmime, mailSmtpSendPartial, mailSmtpSaslEnable, mailSmtpSaslMechanisms, mailSmtpSaslAuthorizationId, mailSmtpSaslRealm,
+                    mailSmtpSaslUseCanonicalHostname, mailSmtpQuitwait, mailSmtpReportSuccess, mailSmtpSslEnable, mailSmtpSslCheckServerIdentity, mailSmtpSslTrust,
+                    mailSmtpSslProtocols, mailSmtpSslCipherSuites, mailSmtpStartTlsEnable, mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort,
+                    mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict);
             return newEntity;
         }
     }
