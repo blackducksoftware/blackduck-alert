@@ -13,4 +13,4 @@ This application provides the ability to send notifications from the hub to vari
 Beta 0.0.1 will be available on Friday, March 16th.
 
 ## Documentation ##
-All documentation for hub-alert can be found on the public [Black Duck Confluence](https://blackducksoftware.atlassian.net/wiki/display/INTDOCS/)
+Public documentation is currently in development.  Will be provided with the 1.0.0 release.

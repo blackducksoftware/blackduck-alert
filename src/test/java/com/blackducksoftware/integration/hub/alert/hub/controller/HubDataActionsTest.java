@@ -64,7 +64,7 @@ public class HubDataActionsTest {
         final UserGroupView userGroup = new UserGroupView();
         final ResourceMetadata metaView = new ResourceMetadata();
         metaView.href = href;
-        userGroup.meta = metaView;
+        userGroup._meta = metaView;
         userGroup.active = active;
         userGroup.name = username;
         userGroups.add(userGroup);

@@ -19,7 +19,7 @@ plugins {
     id 'com.moowork.node' version '1.2.0'
 }
 
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 def dbChangeLogVersion = '1.0.0'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
@@ -40,7 +40,7 @@ applicationDefaultJvmArgs = [
 ]
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:29.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:29.1.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.5'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
