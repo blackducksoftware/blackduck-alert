@@ -30,11 +30,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
@@ -122,8 +124,12 @@ public class NotificationManager {
 
     private void deleteAuditEntries(final Long notificationId) {
         final List<AuditNotificationRelation> foundRelations = auditNotificationRepositoryWrapper.findByNotificationId(notificationId);
-        foundRelations.forEach(relation -> auditEntryRepository.delete(relation.getAuditEntryId()));
+        final Function<AuditNotificationRelation, Long> transform = AuditNotificationRelation::getAuditEntryId;
+        final List<Long> auditIdList = foundRelations.stream().map(transform).collect(Collectors.toList());
         auditNotificationRepositoryWrapper.delete(foundRelations);
+        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAll(auditIdList);
+        auditEntryRepository.delete(auditEntryList);
+
     }
 
 }
