@@ -29,9 +29,8 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class GlobalEmailConfigRestModel extends ConfigRestModel {
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
 
-    private String mailSmtpUser;
     private String mailSmtpHost;
-
+    private String mailSmtpUser;
     // not a javamail property, but we are going to piggy-back to get the smtp password
     @SensitiveField
     private String mailSmtpPassword;

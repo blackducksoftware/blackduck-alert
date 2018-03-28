@@ -553,7 +553,6 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
         json.addProperty("mailSmtpUser", mailSmtpUser);
         json.addProperty("mailSmtpPassword", mailSmtpPassword);
         json.addProperty("mailSmtpPasswordIsSet", mailSmtpPasswordIsSet);
-
         json.addProperty("mailSmtpPort", mailSmtpPort);
         json.addProperty("mailSmtpConnectionTimeout", mailSmtpConnectionTimeout);
         json.addProperty("mailSmtpTimeout", mailSmtpTimeout);
