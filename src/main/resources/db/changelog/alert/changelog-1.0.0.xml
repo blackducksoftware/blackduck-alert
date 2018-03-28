@@ -94,7 +94,7 @@
             <column name="MAIL_SMTP_AUTH_MECHANISMS" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_AUTH_LOGIN_DISABLE" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_AUTH_PLAIN_DISABLE" type="BOOLEAN(1)"/>
-            <column name="MAIL_SMTP_AUTH_DIGEST-md5_disable" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_AUTH_NTLM_DISABLE" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_AUTH_NTLM_DOMAIN" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_AUTH_NTLM_FLAGS" type="INT(10)"/>
@@ -105,7 +105,7 @@
             <column name="MAIL_SMTP_ALLOW_8_BITMIME" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_SEND_PARTIAL" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_SASL_ENABLE" type="BOOLEAN(1)"/>
-            <column name="MAIL_SMTP_SASL_MECHANISMS" type="VARCHAR(255)")\/>
+            <column name="MAIL_SMTP_SASL_MECHANISMS" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_SASL_AUTHORIZATIONID" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_SASL_REALM" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_SASL_USECANONICALHOSTNAME" type="BOOLEAN(1)"/>

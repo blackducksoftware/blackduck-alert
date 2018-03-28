@@ -169,6 +169,7 @@ public class GlobalEmailRepositoryWrapper extends SimpleKeyRepositoryWrapper<Glo
                     mailSmtpSaslUseCanonicalHostname, mailSmtpQuitwait, mailSmtpReportSuccess, mailSmtpSslEnable, mailSmtpSslCheckServerIdentity, mailSmtpSslTrust,
                     mailSmtpSslProtocols, mailSmtpSslCipherSuites, mailSmtpStartTlsEnable, mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort,
                     mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict);
+            newEntity.setId(entity.getId());
             return newEntity;
         }
     }

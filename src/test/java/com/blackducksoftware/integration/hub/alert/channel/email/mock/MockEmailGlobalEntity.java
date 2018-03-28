@@ -419,8 +419,6 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
         final JsonObject json = new JsonObject();
         json.addProperty("mailSmtpHost", mailSmtpHost);
         json.addProperty("mailSmtpUser", mailSmtpUser);
-        json.addProperty("mailSmtpPassword", mailSmtpPassword);
-        json.addProperty("mailSmtpPasswordIsSet", mailSmtpPasswordIsSet);
         json.addProperty("mailSmtpPort", mailSmtpPort);
         json.addProperty("mailSmtpConnectionTimeout", mailSmtpConnectionTimeout);
         json.addProperty("mailSmtpTimeout", mailSmtpTimeout);

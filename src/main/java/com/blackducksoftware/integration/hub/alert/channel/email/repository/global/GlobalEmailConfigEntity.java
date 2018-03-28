@@ -36,6 +36,10 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     // JavaMail properties https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
     // Note: SocketFactory properties were omitted
     // If this class needs to be modified for new parameters the database structure needs to change to a new table that contains key value pairs as strings.
+
+    @Column(name = "mail_smtp_host")
+    private String mailSmtpHost;
+
     @Column(name = "mail_smtp_user")
     private String mailSmtpUser;
 
@@ -43,9 +47,6 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     @SensitiveField
     @Column(name = "mail_smtp_password")
     private String mailSmtpPassword;
-
-    @Column(name = "mail_smtp_host")
-    private String mailSmtpHost;
 
     @Column(name = "mail_smtp_port")
     private Integer mailSmtpPort;
@@ -86,7 +87,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     @Column(name = "mail_smtp_auth_plain_disable")
     private Boolean mailSmtpAuthPlainDisable;
 
-    @Column(name = "mail_smtp_auth_digest-md5_disable")
+    @Column(name = "mail_smtp_auth_digest_md5_disable")
     private Boolean mailSmtpAuthDigestMd5Disable;
 
     @Column(name = "mail_smtp_auth_ntlm_disable")
