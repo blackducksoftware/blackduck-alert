@@ -13,6 +13,8 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -36,21 +38,21 @@ public class EmailChannelTestIT extends ChannelTest {
             globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        final EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, auditEntryRepository, null, null, null);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, auditEntryRepository, null, null, null);
         final ProjectData projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, 1L);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
-        // TODO fix
-        // final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null);
-        //
-        // emailChannel = Mockito.spy(emailChannel);
-        // Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
-        //
-        // final MockEmailEntity mockEmailEntity = new MockEmailEntity();
-        // mockEmailEntity.setGroupName("IntegrationTest");
-        // emailChannel.sendAuditedMessage(event, mockEmailEntity.createEntity());
+        final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        emailChannel = Mockito.spy(emailChannel);
+        Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
+
+        final MockEmailEntity mockEmailEntity = new MockEmailEntity();
+        mockEmailEntity.setGroupName("IntegrationTest");
+        emailChannel.sendAuditedMessage(event, mockEmailEntity.createEntity());
     }
 
     @Test
