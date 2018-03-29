@@ -338,7 +338,7 @@ class BaseJobConfiguration extends Component {
                     </div>
                 </div>
                 {content}
-                <ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} waitingForProjects={this.props.waitingForProjects} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
+                <ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
                 <ConfigButtons includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
             </form>

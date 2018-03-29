@@ -71,7 +71,6 @@ class Index extends Component {
             autoRefresh: true,
             jobs: [],
             groups: [],
-            waitingForProjects: true,
             waitingForGroups: true
         };
         this.startAutoReload = this.startAutoReload.bind(this);
@@ -83,12 +82,12 @@ class Index extends Component {
         this.editButtonClicked = this.editButtonClicked.bind(this);
         this.editButtonClick = this.editButtonClick.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
+        this.reloadJobs = this.reloadJobs.bind(this);
     }
 
     componentDidMount() {
         this.retrieveGroups();
-        this.reloadPage();
-        this.startAutoReload();
+        this.reloadJobs();
     }
 
     componentWillUnmount() {
@@ -102,7 +101,6 @@ class Index extends Component {
             } = currentRowSelected;
             if (distributionType === 'email_group_channel') {
                 return (<GroupEmailJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -112,35 +110,30 @@ class Index extends Component {
                     waitingForGroups={this.state.waitingForGroups}
                     groups={this.state.groups}
                     groupName={groupName}
-                    waitingForProjects={this.state.waitingForProjects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
                     includeAllProjects={includeAllProjects}
                     frequency={frequency}
                     notificationTypes={notificationTypes}
-                    waitingForProjects={this.state.waitingForProjects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
                     includeAllProjects={includeAllProjects}
                     frequency={frequency}
                     notificationTypes={notificationTypes}
-                    waitingForProjects={this.state.waitingForProjects}
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
@@ -165,8 +158,7 @@ class Index extends Component {
         this.setState({ [target.name]: target.checked });
     }
 
-    reloadPage() {
-        this.cancelAutoReload();
+    reloadJobs() {
         this.setState({
             jobConfigTableMessage: 'Loading...',
             inProgress: true
@@ -175,19 +167,18 @@ class Index extends Component {
     }
 
     cancelAutoReload() {
-        clearInterval(this.reloadInterval);
+        clearTimeout(this.timeout);
     }
 
     startAutoReload() {
-        // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.reloadPage(), 10000);
+        // Run reload in 10seconds - kill an existing timer if it exists.
+        this.cancelAutoReload();
+        this.timeout = setTimeout(() => this.reloadJobs(), 10000);
     }
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
-                csrfToken={this.props.csrfToken}
-                waitingForProjects={this.state.waitingForProjects}
                 waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
                 includeAllProjects
@@ -254,83 +245,73 @@ class Index extends Component {
     }
 
     retrieveGroups() {
-        const self = this;
-        const csrfToken = this.props.csrfToken;
         fetch('/api/hub/groups', {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
+            credentials: 'same-origin'
+        }).then((response) => {
+            this.setState({ waitingForGroups: false });
+            if (!response.ok) {
+                return response.json().then((json) => {
+                    this.setState({ groupError: json.message });
+                });
             }
-        })
-            .then((response) => {
-                this.setState({ waitingForGroups: false });
-                if (!response.ok) {
-                    return response.json().then((json) => {
-                        this.setState({ 'groupError': json.message });
+            return response.json().then((json) => {
+                this.setState({ groupError: '' });
+                const jsonArray = JSON.parse(json.message);
+                if (jsonArray != null && jsonArray.length > 0) {
+                    const groups = jsonArray.map(({ name, active, url }) => ({ name, active, url }));
+                    this.setState({
+                        groups
                     });
                 }
-                return response.json().then((json) => {
-                    this.setState({ groupError: '' });
-                    const jsonArray = JSON.parse(json.message);
-                    if (jsonArray != null && jsonArray.length > 0) {
-                        const groups = jsonArray.map(({ name, active, url }) => ({ name, active, url }));
-                        this.setState({
-                            groups
-                        });
-                    }
-                });
-            })
-            .catch((error) => {
-                console.log(error);
             });
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     fetchDistributionJobs() {
-        const self = this;
-        const csrfToken = this.props.csrfToken;
+
         fetch('/api/configuration/distribution/common', {
             credentials: 'same-origin',
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                'Content-Type': 'application/json'
             }
-        })
-            .then((response) => {
-                this.setState({ inProgress: false });
-                if (response.ok) {
-                    this.setState({ jobConfigTableMessage: '' });
-                    response.json().then((jsonArray) => {
-                        const newJobs = new Array();
-                        if (jsonArray != null && jsonArray.length > 0) {
-                            jsonArray.forEach((item) => {
-                                const jobConfig = {
-                                    id: item.id,
-                                    distributionConfigId: item.distributionConfigId,
-                                    name: item.name,
-                                    distributionType: item.distributionType,
-                                    lastRan: item.lastRan,
-                                    status: item.status,
-                                    frequency: item.frequency,
-                                    notificationTypes: item.notificationTypes,
-                                    configuredProjects: item.configuredProjects
-                                };
+        }).then((response) => {
+            this.setState({ inProgress: false });
+            this.startAutoReload();
+            if (response.ok) {
+                this.setState({ jobConfigTableMessage: '' });
+                response.json().then((jsonArray) => {
+                    const newJobs = new Array();
+                    if (jsonArray != null && jsonArray.length > 0) {
+                        jsonArray.forEach((item) => {
+                            const jobConfig = {
+                                id: item.id,
+                                distributionConfigId: item.distributionConfigId,
+                                name: item.name,
+                                distributionType: item.distributionType,
+                                lastRan: item.lastRan,
+                                status: item.status,
+                                frequency: item.frequency,
+                                notificationTypes: item.notificationTypes,
+                                configuredProjects: item.configuredProjects
+                            };
 
-                                newJobs.push(jobConfig);
-                            });
-                        }
-                        this.setState({
-                            jobs: newJobs
+                            newJobs.push(jobConfig);
                         });
+                    }
+                    this.setState({
+                        jobs: newJobs
                     });
-                } else {
-                    response.json().then((json) => {
-                        this.setState({ jobConfigTableMessage: json.message });
-                    });
-                }
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+                });
+            } else {
+                response.json().then((json) => {
+                    this.setState({ jobConfigTableMessage: json.message });
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     }
 
     editButtonClicked(currentRowSelected) {
@@ -347,7 +328,7 @@ class Index extends Component {
         const fontAwesomeIcon = 'fa fa-refresh fa-fw';
         const insertOnClick = buttons.insertBtn.props.onClick;
         const deleteOnClick = buttons.deleteBtn.props.onClick;
-        const reloadEntries = () => this.reloadPage();
+        const reloadEntries = () => this.reloadJobs();
         let refreshButton = null;
         if (!this.state.autoRefresh) {
             refreshButton = (
