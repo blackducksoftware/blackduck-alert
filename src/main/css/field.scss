@@ -18,9 +18,22 @@ input {
     padding: 4px 0;
 }
 .Select {
+
+    &.Select--multi {
+        .Select-control {
+            .Select-multi-value-wrapper {
+                .Select-value {
+                    padding-left: 0;
+                    padding-right: 0;
+                }
+            }
+        }
+    }
+
     .Select-control {
         border-color: #ccc;
         border-radius: $border-radius;
+
         .Select-value,
         .Select-placeholder,
         .Select-input {
