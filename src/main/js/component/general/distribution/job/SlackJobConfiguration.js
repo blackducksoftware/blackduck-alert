@@ -31,8 +31,7 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 SlackJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string,
-    csrfToken: PropTypes.string
+    distributionType: PropTypes.string
 };
 
 SlackJobConfiguration.defaultProps = {
