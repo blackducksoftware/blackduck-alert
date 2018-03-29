@@ -9,9 +9,6 @@ import { getProjects } from '../../../store/actions/projects';
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            selectedProjects: []
-        };
         this.onRowSelected = this.onRowSelected.bind(this);
         this.assignDataFormat = this.assignDataFormat.bind(this);
     }
@@ -21,71 +18,47 @@ class ProjectConfiguration extends Component {
     }
 
     onRowSelected(row, isSelected) {
-        const { selectedProjects } = this.state;
-        let selected = Object.assign([], selectedProjects);
+        const selected = Object.assign([], this.props.configuredProjects);
         if (isSelected) {
-            const projectFound = selected.find(project => project.value === row.name);
+            const projectFound = selected.find(project => project === row.name);
             if (!projectFound) {
-                selected.push({ value: row.name });
+                selected.push(row.name);
             }
         } else {
-            const projectFound = selected.find(project => project.value === row.name);
-            const index = selected.indexOf(projectFound);
-            selected = selected.slice(index);
+            const index = selected.indexOf(row.name);
+            if (index >= 0) {
+                selected.splice(index, 1); // if found, remove that element from selected array
+            }
         }
-
         this.props.handleProjectChanged(selected);
     }
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
-        const projectData = new Array();
-        if (projects && projects.length > 0) {
-            const rawProjects = projects;
-            const missingProjects = new Array();
-            for (const index in rawProjects) {
-                const name = rawProjects[index];
-                projectData.push({
-                    name: rawProjects[index].name,
-                    missing: false
-                });
-            }
 
-            for (const index in configuredProjects) {
-                const projectFound = projectData.find(project => project.name === configuredProjects[index]);
+        const projectData = projects.map(({ name }) => ({ name, missing: false }));
 
-                if (!projectFound) {
-                    projectData.push({
-                        name: configuredProjects[index],
-                        missing: true
-                    });
-                }
-            }
-        } else {
-            const rawProjects = configuredProjects;
-            for (const index in rawProjects) {
-                projectData.push({
-                    name: rawProjects[index],
+        configuredProjects.forEach((project) => {
+            const projectFound = projectData.find(p => project === p.name);
+            if (!projectFound) {
+                projectData.unshift({
+                    name: project,
                     missing: true
                 });
             }
-        }
+        });
+
         return projectData;
     }
 
     assignClassName(row, rowIdx) {
-        return `tableRow`;
+        return 'tableRow';
     }
 
     assignDataFormat(cell, row) {
-        let cellContent;
-        if (row.missing) {
-            const fontAwesomeClass = 'fa fa-exclamation-triangle fa-fw';
-            cellContent = <span className="missingHubData"><span className={fontAwesomeClass} aria-hidden="true" />{ row.name }</span>;
-        } else {
-            cellContent = row.name;
-        }
-
+        const cellContent = (row.missing) ?
+            <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ row.name }</span> :
+            row.name;
         return <div title={row.name}> {cellContent} </div>;
     }
 
@@ -139,17 +112,20 @@ class ProjectConfiguration extends Component {
 
 ProjectConfiguration.defaultProps = {
     projects: [],
+    configuredProjects: [],
     errorMsg: null,
     includeAllProjects: false
 }
 
 ProjectConfiguration.propTypes = {
     includeAllProjects: PropTypes.bool,
+    configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
     getProjects: PropTypes.func.isRequired,
-    handleChange: PropTypes.func.isRequired
+    handleChange: PropTypes.func.isRequired,
+    handleProjectChanged: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
