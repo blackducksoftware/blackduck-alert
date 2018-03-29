@@ -237,7 +237,7 @@ class Index extends Component {
                 </h1>
                 <div>
                     <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" search options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
-                        <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+                        <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProjectName" dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationTypes" width="145" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" width="160" dataSort columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
