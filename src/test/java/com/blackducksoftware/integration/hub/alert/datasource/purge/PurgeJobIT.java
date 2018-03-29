@@ -96,7 +96,7 @@ public class PurgeJobIT {
 
     @Test
     public void testReaderWithNullRepository() throws Exception {
-        final PurgeReader reader = new PurgeReader(null);
+        final PurgeReader reader = new PurgeReader(null, 1);
         final List<NotificationModel> entityList = reader.read();
         assertNull(entityList);
     }
@@ -116,6 +116,57 @@ public class PurgeJobIT {
         final String person = "PolicyPerson";
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        zonedDateTime = zonedDateTime.minusDays(2);
+        Date createdAt = Date.from(zonedDateTime.toInstant());
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
+
+        zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        zonedDateTime = zonedDateTime.minusDays(3);
+        createdAt = Date.from(zonedDateTime.toInstant());
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
+
+        zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        zonedDateTime = zonedDateTime.plusDays(1);
+        createdAt = Date.from(zonedDateTime.toInstant());
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
+        notificationRepository.save(entityList);
+
+        PurgeReader reader = purgeConfig.reader();
+        List<NotificationModel> resultList = reader.read();
+
+        assertEquals(2, resultList.size());
+
+        notificationRepository.deleteAll();
+        entityList.clear();
+        zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        zonedDateTime = zonedDateTime.minusDays(1);
+        createdAt = Date.from(zonedDateTime.toInstant());
+        entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
+        notificationRepository.save(entityList);
+
+        reader = purgeConfig.reader();
+        resultList = reader.read();
+
+        assertNull(resultList);
+    }
+
+    @Test
+    public void testDayOffsetReaderWithData() throws Exception {
+
+        final List<NotificationEntity> entityList = new ArrayList<>();
+        final String eventKey = "eventKey";
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
+        final String projectName = "ProjectName";
+        final String projectUrl = "ProjectUrl";
+        final String projectVersion = "ProjectVersion";
+        final String projectVersionUrl = "ProjectVersionUrl";
+        final String componentName = "ComponentName";
+        final String componentVersion = "ComponentVersion";
+        final String policyRuleName = "PolicyRuleName";
+        final String person = "PolicyPerson";
+
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        zonedDateTime = zonedDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
         zonedDateTime = zonedDateTime.minusDays(1);
         Date createdAt = Date.from(zonedDateTime.toInstant());
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
@@ -131,10 +182,10 @@ public class PurgeJobIT {
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
         notificationRepository.save(entityList);
 
-        final PurgeReader reader = purgeConfig.reader();
+        final PurgeReader reader = purgeConfig.createReaderWithDayOffset(2);
         final List<NotificationModel> resultList = reader.read();
 
-        assertEquals(2, resultList.size());
+        assertEquals(1, resultList.size());
     }
 
     @Test

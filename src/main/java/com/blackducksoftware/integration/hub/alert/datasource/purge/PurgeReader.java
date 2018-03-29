@@ -44,31 +44,38 @@ import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 public class PurgeReader implements ItemReader<List<NotificationModel>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeReader.class);
     private final NotificationManager notificationManager;
+    private final int dayOffset;
 
-    public PurgeReader(final NotificationManager notificationManager) {
+    public PurgeReader(final NotificationManager notificationManager, final int dayOffset) {
         this.notificationManager = notificationManager;
+        this.dayOffset = dayOffset;
     }
 
     @Override
     public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
-            logger.debug("Purge Reader Starting ");
-            ZonedDateTime zonedDate = ZonedDateTime.now();
-            zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
-            zonedDate = zonedDate.withSecond(0).withNano(0);
-            final Date date = Date.from(zonedDate.toInstant());
+            final Date date = createDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
             final List<NotificationModel> notificationList = notificationManager.findByCreatedAtBefore(date);
 
             if (notificationList == null || notificationList.isEmpty()) {
-                logger.debug("No notifications found to purge");
+                logger.info("No notifications found to purge");
                 return null;
             }
-            logger.debug("Found {} notifications to purge", notificationList.size());
+            logger.info("Found {} notifications to purge", notificationList.size());
             return notificationList;
         } catch (final Exception ex) {
             logger.error("Error in Purge Reader", ex);
         }
         return null;
+    }
+
+    public Date createDate() {
+        ZonedDateTime zonedDate = ZonedDateTime.now();
+        zonedDate = zonedDate.minusDays(dayOffset);
+        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        final Date date = Date.from(zonedDate.toInstant());
+        return date;
     }
 }

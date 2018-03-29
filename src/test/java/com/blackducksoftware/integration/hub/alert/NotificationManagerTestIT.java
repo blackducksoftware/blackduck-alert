@@ -210,6 +210,24 @@ public class NotificationManagerTestIT {
     }
 
     @Test
+    public void findByCreatedAtBeforeDayOffset() {
+        final LocalDateTime time = LocalDateTime.now();
+        final Date createdAt = createDate(time.minusDays(5));
+        NotificationEntity entity = createNotificationEntity(createdAt);
+        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        final Date createdAtLaterThanSearch = createDate(time.plusDays(3));
+        entity = createNotificationEntity(createdAtLaterThanSearch);
+        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+
+        List<NotificationModel> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
+
+        assertEquals(1, foundList.size());
+
+        foundList = notificationManager.findByCreatedAtBeforeDayOffset(6);
+        assertTrue(foundList.isEmpty());
+    }
+
+    @Test
     public void testDeleteNotificationList() {
         final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
