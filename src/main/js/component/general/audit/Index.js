@@ -42,6 +42,7 @@ class Index extends Component {
             this.setState({ message: '' });
             this.setEntriesFromArray(nextProps.items);
         }
+        this.startAutoReload();
     }
 
     componentWillUnmount() {
@@ -176,20 +177,17 @@ class Index extends Component {
     }
 
     cancelAutoReload() {
-        clearInterval(this.reloadInterval);
+        clearTimeout(this.timeout);
     }
 
     startAutoReload() {
         // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.reloadAuditEntries(), 10000);
+        this.cancelAutoReload();
+        this.timeout = setTimeout(() => this.reloadAuditEntries(), 10000);
     }
 
     reloadAuditEntries() {
-        if(this.props.fetching) {
-            console.log("Audit data fetch in progress");
-        } else {
-            this.props.getAuditData();
-        }
+        this.props.getAuditData();
     }
 
     handleAutoRefreshChange({ target }) {
