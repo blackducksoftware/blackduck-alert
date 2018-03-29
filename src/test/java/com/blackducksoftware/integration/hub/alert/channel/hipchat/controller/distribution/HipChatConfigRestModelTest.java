@@ -12,6 +12,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
@@ -22,7 +23,7 @@ public class HipChatConfigRestModelTest extends CommonDistributionRestModelTest<
     @Override
     public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
         assertNull(restModel.getRoomId());
-        assertNull(restModel.getNotify());
+        assertFalse(restModel.getNotify());
         assertNull(restModel.getColor());
     }
 

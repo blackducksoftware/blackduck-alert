@@ -20,15 +20,15 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private final String roomId;
-    private final String notify;
+    private final boolean notify;
     private final String color;
     private final String id;
 
     public MockHipChatRestModel() {
-        this("11", "false", "black", "1");
+        this("11", false, "black", "1");
     }
 
-    private MockHipChatRestModel(final String roomId, final String notify, final String color, final String id) {
+    private MockHipChatRestModel(final String roomId, final boolean notify, final String color, final String id) {
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;
@@ -39,7 +39,7 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
         return roomId;
     }
 
-    public String getNotify() {
+    public boolean getNotify() {
         return notify;
     }
 
@@ -61,6 +61,13 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
     }
 
     @Override
+    public String getEmptyRestModelJson() {
+        final JsonObject json = new JsonObject();
+        json.addProperty("notify", false);
+        return json.toString();
+    }
+
+    @Override
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("roomId", roomId);
@@ -74,5 +81,4 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
     public HipChatDistributionRestModel createEmptyRestModel() {
         return new HipChatDistributionRestModel();
     }
-
 }
