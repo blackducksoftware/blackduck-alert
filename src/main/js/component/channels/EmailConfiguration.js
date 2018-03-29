@@ -31,51 +31,51 @@ class EmailConfiguration extends React.Component {
                 mailSmtpHost: nextProps.mailSmtpHost || '',
                 mailSmtpUser: nextProps.mailSmtpUser || '',
                 mailSmtpPassword: nextProps.mailSmtpPassword || '',
-                mailSmtpPasswordIsSet: nextProps.mailSmtpPasswordIsSet || false,
-                mailSmtpPort: nextProps.mailSmtpPort || undefined,
-                mailSmtpConnectionTimeout: nextProps.mailSmtpConnectionTimeout || undefined,
-                mailSmtpTimeout: nextProps.mailSmtpTimeout || undefined,
-                mailSmtpWriteTimeout: nextProps.mailSmtpWriteTimeout || undefined,
+                mailSmtpPasswordIsSet: nextProps.mailSmtpPasswordIsSet,
+                mailSmtpPort: nextProps.mailSmtpPort,
+                mailSmtpConnectionTimeout: nextProps.mailSmtpConnectionTimeout,
+                mailSmtpTimeout: nextProps.mailSmtpTimeout,
+                mailSmtpWriteTimeout: nextProps.mailSmtpWriteTimeout,
                 mailSmtpFrom: nextProps.mailSmtpFrom || '',
                 mailSmtpLocalhost: nextProps.mailSmtpLocalhost || '',
                 mailSmtpLocalAddress: nextProps.mailSmtpLocalAddress || '',
-                mailSmtpLocalPort: nextProps.mailSmtpLocalPort || undefined,
-                mailSmtpEhlo: nextProps.mailSmtpEhlo || false,
-                mailSmtpAuth: nextProps.mailSmtpAuth || false,
+                mailSmtpLocalPort: nextProps.mailSmtpLocalPort,
+                mailSmtpEhlo: nextProps.mailSmtpEhlo,
+                mailSmtpAuth: nextProps.mailSmtpAuth,
                 mailSmtpAuthMechanisms: nextProps.mailSmtpAuthMechanisms || '',
-                mailSmtpAuthLoginDisable: nextProps.mailSmtpAuthLoginDisable || false,
-                mailSmtpAuthPlainDisable: nextProps.mailSmtpAuthPlainDisable || false,
-                mailSmtpAuthDigestMd5Disable: nextProps.mailSmtpAuthDigestMd5Disable || false,
-                mailSmtpAuthNtlmDisable: nextProps.mailSmtpAuthNtlmDisable || false,
+                mailSmtpAuthLoginDisable: nextProps.mailSmtpAuthLoginDisable,
+                mailSmtpAuthPlainDisable: nextProps.mailSmtpAuthPlainDisable,
+                mailSmtpAuthDigestMd5Disable: nextProps.mailSmtpAuthDigestMd5Disable,
+                mailSmtpAuthNtlmDisable: nextProps.mailSmtpAuthNtlmDisable,
                 mailSmtpAuthNtlmDomain: nextProps.mailSmtpAuthNtlmDomain || '',
-                mailSmtpAuthNtlmFlags: nextProps.mailSmtpAuthNtlmFlags || undefined,
-                mailSmtpAuthXoauth2Disable: nextProps.mailSmtpAuthXoauth2Disable || false,
+                mailSmtpAuthNtlmFlags: nextProps.mailSmtpAuthNtlmFlags,
+                mailSmtpAuthXoauth2Disable: nextProps.mailSmtpAuthXoauth2Disable,
                 mailSmtpSubmitter: nextProps.mailSmtpSubmitter || '',
                 mailSmtpDnsNotify: nextProps.mailSmtpDnsNotify,
                 mailSmtpDnsRet: nextProps.mailSmtpDnsRet,
                 mailSmtpAllow8bitmime: nextProps.mailSmtpAllow8bitmime,
-                mailSmtpSendPartial: nextProps.mailSmtpSendPartial || false,
-                mailSmtpSaslEnable: nextProps.mailSmtpSaslEnable || false,
+                mailSmtpSendPartial: nextProps.mailSmtpSendPartial,
+                mailSmtpSaslEnable: nextProps.mailSmtpSaslEnable,
                 mailSmtpSaslMechanisms: nextProps.mailSmtpSaslMechanisms || '',
                 mailSmtpSaslAuthorizationId: nextProps.mailSmtpSaslAuthorizationId || '',
                 mailSmtpSaslRealm: nextProps.mailSmtpSaslRealm || '',
-                mailSmtpSaslUseCanonicalHostname: nextProps.mailSmtpSaslUseCanonicalHostname || '',
-                mailSmtpQuitwait: nextProps.mailSmtpQuitwait || false,
-                mailSmtpReportSuccess: nextProps.mailSmtpReportSuccess || false,
-                mailSmtpSslEnable: nextProps.mailSmtpSslEnable || false,
-                mailSmtpSslCheckServerIdentity: nextProps.mailSmtpSslCheckServerIdentity || false,
+                mailSmtpSaslUseCanonicalHostname: nextProps.mailSmtpSaslUseCanonicalHostname,
+                mailSmtpQuitwait: nextProps.mailSmtpQuitwait,
+                mailSmtpReportSuccess: nextProps.mailSmtpReportSuccess,
+                mailSmtpSslEnable: nextProps.mailSmtpSslEnable,
+                mailSmtpSslCheckServerIdentity: nextProps.mailSmtpSslCheckServerIdentity,
                 mailSmtpSslTrust: nextProps.mailSmtpSslTrust || '',
                 mailSmtpSslProtocols: nextProps.mailSmtpSslProtocols || '',
                 mailSmtpSslCipherSuites: nextProps.mailSmtpSslCipherSuites || '',
-                mailSmtpStartTlsEnable: nextProps.mailSmtpStartTlsEnable || false ,
-                mailSmtpStartTlsRequired: nextProps.mailSmtpStartTlsRequired || false,
+                mailSmtpStartTlsEnable: nextProps.mailSmtpStartTlsEnable,
+                mailSmtpStartTlsRequired: nextProps.mailSmtpStartTlsRequired,
                 mailSmtpProxyHost: nextProps.mailSmtpProxyHost || '',
-                mailSmtpProxyPort: nextProps.mailSmtpProxyPort || undefined,
+                mailSmtpProxyPort: nextProps.mailSmtpProxyPort,
                 mailSmtpSocksHost: nextProps.mailSmtpSocksHost || '',
-                mailSmtpSocksPort: nextProps.mailSmtpSocksPort || undefined,
+                mailSmtpSocksPort: nextProps.mailSmtpSocksPort,
                 mailSmtpMailExtension: nextProps.mailSmtpMailExtension || '',
-                mailSmtpUserSet: nextProps.mailSmtpUserSet || false,
-                mailSmtpNoopStrict: nextProps.mailSmtpNoopStrict || false
+                mailSmtpUserSet: nextProps.mailSmtpUserSet,
+                mailSmtpNoopStrict: nextProps.mailSmtpNoopStrict
             });
         }
     }
@@ -307,7 +307,7 @@ class EmailConfiguration extends React.Component {
 
                         <CheckboxInput
                             label="SMTP Auth XOAuth2 Disable"
-                            name="mailSmtpAuthNtlmDisable"
+                            name="mailSmtpAuthXoauth2Disable"
                             value={this.state.mailSmtpAuthXoauth2Disable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthXoauth2DisableError"
@@ -316,7 +316,7 @@ class EmailConfiguration extends React.Component {
 
                         <TextInput
                             label="SMTP Submitter"
-                            name="mailSmtpDnsNotify"
+                            name="mailSmtpSubmitter"
                             value={this.state.mailSmtpSubmitter}
                             onChange={this.handleChange}
                             errorName="mailSmtpSubmitterError"
@@ -395,7 +395,7 @@ class EmailConfiguration extends React.Component {
                             errorValue={this.props.fieldErrors.mailSmtpSaslRealm}
                         />
 
-                        <TextInput
+                        <CheckboxInput
                             label="SMTP SASL Use Canonical Hostname"
                             name="mailSmtpSaslUseCanonicalHostname"
                             value={this.state.mailSmtpSaslUseCanonicalHostname}
@@ -589,7 +589,7 @@ EmailConfiguration.propTypes = {
     mailSmtpSaslMechanisms: PropTypes.string,
     mailSmtpSaslAuthorizationId: PropTypes.string,
     mailSmtpSaslRealm: PropTypes.string,
-    mailSmtpSaslUseCanonicalHostname: PropTypes.string,
+    mailSmtpSaslUseCanonicalHostname: PropTypes.boolean,
     mailSmtpQuitwait: PropTypes.bool,
     mailSmtpReportSuccess: PropTypes.bool,
     mailSmtpSslEnable: PropTypes.bool,
