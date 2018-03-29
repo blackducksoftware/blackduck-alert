@@ -61,7 +61,7 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
         final HipChatDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
         restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
         restModel.setColor(distributionEntity.getColor());
-        restModel.setNotify(String.valueOf(distributionEntity.getNotify()));
+        restModel.setNotify(distributionEntity.getNotify());
         restModel.setRoomId(String.valueOf(distributionEntity.getRoomId()));
         return restModel;
     }

@@ -29,14 +29,14 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 
 public class HipChatDistributionRestModel extends CommonDistributionConfigRestModel {
     private String roomId;
-    private String notify;
+    private boolean notify;
     private String color;
 
     public HipChatDistributionRestModel() {
 
     }
 
-    public HipChatDistributionRestModel(final String id, final String roomId, final String notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String frequency,
+    public HipChatDistributionRestModel(final String id, final String roomId, final boolean notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String frequency,
             final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.roomId = roomId;
@@ -52,11 +52,11 @@ public class HipChatDistributionRestModel extends CommonDistributionConfigRestMo
         this.roomId = roomId;
     }
 
-    public String getNotify() {
+    public boolean getNotify() {
         return notify;
     }
 
-    public void setNotify(final String notify) {
+    public void setNotify(final boolean notify) {
         this.notify = notify;
     }
 

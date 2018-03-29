@@ -88,7 +88,7 @@ class HubConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <ReadOnlyField label="Url" name="hubUrl" readOnly="true" value={this.props.hubUrl} />
-                        <TextInput label="API Key" name="hubApiKey" value={this.state.hubApiKey} isSet={this.state.hubApiKeyIsSet} onChange={this.handleChange} errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.hubApiKey} />
+                        <TextInput label="API Token" name="hubApiKey" value={this.state.hubApiKey} isSet={this.state.hubApiKeyIsSet} onChange={this.handleChange} errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.hubApiKey} />
                         <NumberInput label="Timeout" name="hubTimeout" value={this.state.hubTimeout} onChange={this.handleChange} />
                         <div className="form-group">
                             <div className="col-sm-12">
