@@ -78,20 +78,53 @@
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="CONSTRAINT_E"/>
             </column>
-            <column name="MAIL_SMTP_ALLOW_8_BITMIME" type="BOOLEAN(1)"/>
-            <column name="MAIL_SMTP_AUTH" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_USER" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PASSWORD" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PORT" type="INT(10)"/>
             <column name="MAIL_SMTP_CONNECTION_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_TIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_WRITETIMEOUT" type="INT(10)"/>
+            <column name="MAIL_SMTP_FROM" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALHOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALADDRESS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_LOCALPORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_EHLO" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_MECHANISMS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_AUTH_LOGIN_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_PLAIN_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_DOMAIN" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_AUTH_NTLM_FLAGS" type="INT(10)"/>
+            <column name="MAIL_SMTP_AUTH_XOAUTH2_DISABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SUBMITTER" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_DSN_NOTIFY" type="VARCHAR(255)"/>
             <column name="MAIL_SMTP_DNS_RET" type="VARCHAR(255)"/>
-            <column name="MAIL_SMTP_EHLO" type="BOOLEAN(1)"/>
-            <column name="MAIL_SMTP_FROM" type="VARCHAR(255)"/>
-            <column name="MAIL_SMTP_HOST" type="VARCHAR(255)"/>
-            <column name="MAIL_SMTP_LOCALHOST" type="VARCHAR(255)"/>
-            <column name="MAIL_SMTP_PASSWORD" type="VARCHAR(255)"/>
-            <column name="MAIL_SMTP_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_ALLOW_8_BITMIME" type="BOOLEAN(1)"/>
             <column name="MAIL_SMTP_SEND_PARTIAL" type="BOOLEAN(1)"/>
-            <column name="MAIL_SMTP_TIMEOUT" type="INT(10)"/>
-            <column name="MAIL_SMTP_USER" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SASL_MECHANISMS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_AUTHORIZATIONID" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_REALM" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SASL_USECANONICALHOSTNAME" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_QUITWAIT" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_REPORTSUCCESS" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_CHECKSERVERIDENTITY" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_SSL_TRUST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SSL_PROTOCOLS" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SSL_CIPHERSUITES" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_STARTTLS_ENABLE" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_STARTTLS_REQUIRED" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_PROXY_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_PROXY_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_SOCKS_HOST" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_SOCKS_PORT" type="INT(10)"/>
+            <column name="MAIL_SMTP_MAILEXTENSION" type="VARCHAR(255)"/>
+            <column name="MAIL_SMTP_USERSET" type="BOOLEAN(1)"/>
+            <column name="MAIL_SMTP_NOOP_STRICT" type="BOOLEAN(1)"/>
         </createTable>
     </changeSet>
     <changeSet author="psantos (generated)" id="1516889156406-9">
