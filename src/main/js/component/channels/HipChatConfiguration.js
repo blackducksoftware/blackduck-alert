@@ -22,7 +22,7 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentDidMount() {
-	    this.props.getConfig();
+        this.props.getConfig();
     }
 
     componentWillReceiveProps(nextProps) {
@@ -33,8 +33,7 @@ class HipChatConfiguration extends React.Component {
         });
     }
 
-    handleChange(event) {
-        const target = event.target;
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -55,7 +54,7 @@ class HipChatConfiguration extends React.Component {
     }
 
     render() {
-	    const disabled = this.props.fetching || !this.state.dataLoaded;
+        const disabled = this.props.fetching || !this.state.dataLoaded;
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
@@ -91,7 +90,21 @@ HipChatConfiguration.propTypes = {
     testStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
-    fieldErrors: PropTypes.arrayOf(PropTypes.any)
+    fieldErrors: PropTypes.arrayOf(PropTypes.any),
+    fetching: PropTypes.bool.isRequired,
+    getConfig: PropTypes.func.isRequired,
+    testConfig: PropTypes.func.isRequired,
+    updateConfig: PropTypes.func.isRequired
+};
+
+HipChatConfiguration.defaultProps = {
+    apiKey: null,
+    apiKeyIsSet: false,
+    id: null,
+    testStatus: null,
+    errorMessage: null,
+    updateStatus: null,
+    fieldErrors: []
 };
 
 // Mapping redux state -> react props

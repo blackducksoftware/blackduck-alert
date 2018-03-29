@@ -31,31 +31,27 @@ class BaseJobConfiguration extends Component {
         this.readDistributionJobConfiguration(distributionConfigId);
     }
 
-    readDistributionJobConfiguration(distributionId) {
-        if (distributionId) {
-            const urlString = this.props.getUrl || this.props.baseUrl;
-            const getUrl = `${urlString}?id=${distributionId}`;
-            const self = this;
-            fetch(getUrl, {
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then((response) => {
-                if (response.ok) {
-                    response.json().then((jsonArray) => {
-                        if (jsonArray && jsonArray.length > 0) {
-                            self.initializeValues(jsonArray[0]);
-                        } else {
-                            self.initializeValues(self.props);
-                        }
-                    });
-                } else {
-                    self.initializeValues(self.props);
-                }
-            }).catch(console.error);
+    async onSubmit(event) {
+        event.preventDefault();
+        const { handleSaveBtnClick, handleCancel } = this.props;
+
+        let jobName = null;
+        if (this.state.values && this.state.values.name) {
+            const trimmedName = this.state.values.name.trim();
+            if (trimmedName.length > 0) {
+                jobName = trimmedName;
+            }
+        }
+        if (!jobName) {
+            this.handleErrorValues('nameError', 'You must provide a Job name');
         } else {
-            this.initializeValues(this.props);
+            this.handleErrorValues('nameError', '');
+            await this.handleSubmit();
+            if (handleSaveBtnClick) {
+                handleSaveBtnClick(this.state.values);
+            } else if (handleCancel) {
+                handleCancel();
+            }
         }
     }
 
@@ -109,17 +105,14 @@ class BaseJobConfiguration extends Component {
 
         const self = this;
         const jsonBody = JSON.stringify(configuration);
-        let method = 'POST';
-        if (this.state.values.id) {
-            method = 'PUT';
-        }
-        const csrfToken = this.props.csrfToken;
+        const method = this.state.values.id ? 'PUT' : 'POST';
+
         return fetch(this.props.baseUrl, {
             method,
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': this.props.csrfToken
             },
             body: jsonBody
         }).then((response) => {
@@ -145,9 +138,7 @@ class BaseJobConfiguration extends Component {
                         }
                     }
                     self.setState({
-                        errors
-                    });
-                    self.setState({
+                        errors,
                         configurationMessage: json.message
                     });
                 } else {
@@ -156,10 +147,7 @@ class BaseJobConfiguration extends Component {
                     });
                 }
             });
-        })
-            .catch((error) => {
-                console.log(error);
-            });
+        }).catch(console.error);
     }
 
     handleTestSubmit(event) {
@@ -260,7 +248,7 @@ class BaseJobConfiguration extends Component {
     handleNotificationChanged(selectedValues) {
         const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected.push(selectedValues.map(item => item.value));
+            selected.concat(selectedValues.map(item => item.value));
         }
         this.handleStateValues('notificationTypes', selected);
     }
@@ -268,32 +256,36 @@ class BaseJobConfiguration extends Component {
     handleProjectChanged(selectedValues) {
         const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected.push(selectedValues.map(item => item.value));
+            selected.concat(selectedValues);
         }
-        this.handleStateValues('configuredProjects', selected);
+        this.handleStateValues('configuredProjects', selectedValues);
     }
 
-    async onSubmit(event) {
-        event.preventDefault();
-        const { handleSaveBtnClick, handleCancel } = this.props;
-
-        let jobName = null;
-        if (this.state.values && this.state.values.name) {
-            const trimmedName = this.state.values.name.trim();
-            if (trimmedName.length > 0) {
-                jobName = trimmedName;
-            }
-        }
-        if (!jobName) {
-            this.handleErrorValues('nameError', 'You must provide a Job name');
+    readDistributionJobConfiguration(distributionId) {
+        if (distributionId) {
+            const urlString = this.props.getUrl || this.props.baseUrl;
+            const getUrl = `${urlString}?id=${distributionId}`;
+            const self = this;
+            fetch(getUrl, {
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((jsonArray) => {
+                        if (jsonArray && jsonArray.length > 0) {
+                            self.initializeValues(jsonArray[0]);
+                        } else {
+                            self.initializeValues(self.props);
+                        }
+                    });
+                } else {
+                    self.initializeValues(self.props);
+                }
+            }).catch(console.error);
         } else {
-            this.handleErrorValues('nameError', '');
-            await this.handleSubmit();
-            if (handleSaveBtnClick) {
-                handleSaveBtnClick(this.state.values);
-            } else if (handleCancel) {
-                handleCancel();
-            }
+            this.initializeValues(this.props);
         }
     }
 

@@ -24,19 +24,18 @@ export default class JobAddModal extends Component {
     }
 
     handleSaveBtnClick(values) {
-        const { columns, onSave, onModalClose } = this.props;
+        const { onModalClose } = this.props;
         // You should call onSave function and give the new row
         //  onSave(values);
         onModalClose();
     }
 
 
-    handleChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
+    handleChange({ target }) {
+        const { name, type, checked } = target;
+        const value = type === 'checkbox' ? checked : target.value;
 
-        const values = this.state.values;
+        const { values } = this.state;
         values[name] = value;
         this.setState({
             values
@@ -44,7 +43,7 @@ export default class JobAddModal extends Component {
     }
 
     handleTypeChanged(option) {
-        const values = this.state.values;
+        const { values } = this.state;
         if (option) {
             values.typeValue = option.value;
             this.setState({
