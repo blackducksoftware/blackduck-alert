@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import { frequencyOptions, notificationOptions } from '../../../../util/distribution-data';
+import {frequencyOptions, notificationOptions} from '../../../../util/distribution-data';
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -36,30 +36,24 @@ class BaseJobConfiguration extends Component {
             const urlString = this.props.getUrl || this.props.baseUrl;
             const getUrl = `${urlString}?id=${distributionId}`;
             const self = this;
-            const csrfToken = this.props.csrfToken;
             fetch(getUrl, {
                 credentials: 'same-origin',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
+                    'Content-Type': 'application/json'
                 }
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        response.json().then((jsonArray) => {
-                            if (jsonArray && jsonArray.length > 0) {
-                                self.initializeValues(jsonArray[0]);
-                            } else {
-                                self.initializeValues(self.props);
-                            }
-                        });
-                    } else {
-                        self.initializeValues(self.props);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((jsonArray) => {
+                        if (jsonArray && jsonArray.length > 0) {
+                            self.initializeValues(jsonArray[0]);
+                        } else {
+                            self.initializeValues(self.props);
+                        }
+                    });
+                } else {
+                    self.initializeValues(self.props);
+                }
+            }).catch(console.error);
         } else {
             this.initializeValues(this.props);
         }
@@ -69,7 +63,8 @@ class BaseJobConfiguration extends Component {
         const {
             id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, projects, configuredProjects
         } = data;
-        const values = this.state.values;
+
+        const { values } = this.state;
         values.id = id;
         values.distributionConfigId = distributionConfigId;
         values.name = name;
@@ -187,19 +182,18 @@ class BaseJobConfiguration extends Component {
             configuration.notificationTypes = null;
         }
 
-        const self = this;
         const jsonBody = JSON.stringify(configuration);
-        const csrfToken = this.props.csrfToken;
+
         fetch(this.props.testUrl, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': this.props.csrfToken
             },
             body: jsonBody
         }).then((response) => {
-            self.setState({
+            this.setState({
                 inProgress: false
             });
             return response.json().then((json) => {
@@ -213,11 +207,11 @@ class BaseJobConfiguration extends Component {
                             errors[name] = value;
                         }
                     }
-                    self.setState({
+                    this.setState({
                         errors
                     });
                 }
-                self.setState({
+                this.setState({
                     configurationMessage: json.message
                 });
             });
@@ -227,15 +221,14 @@ class BaseJobConfiguration extends Component {
             });
     }
 
-    handleChange(event) {
-        const target = event.target;
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
+        const { name } = target;
         this.handleStateValues(name, value);
     }
 
     handleStateValues(name, value) {
-        const values = this.state.values;
+        const { values } = this.state;
         values[name] = value;
         this.setState({
             values
@@ -243,7 +236,7 @@ class BaseJobConfiguration extends Component {
     }
 
     handleErrorValues(name, value) {
-        const errors = this.state.errors;
+        const { errors } = this.state;
         errors[name] = value;
         this.setState({
             errors
@@ -265,17 +258,17 @@ class BaseJobConfiguration extends Component {
     }
 
     handleNotificationChanged(selectedValues) {
-        let selected = new Array();
+        const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected = selectedValues.map(item => item.value);
+            selected.push(selectedValues.map(item => item.value));
         }
         this.handleStateValues('notificationTypes', selected);
     }
 
     handleProjectChanged(selectedValues) {
-        let selected = new Array();
+        const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected = selectedValues.map(item => item.value);
+            selected.push(selectedValues.map(item => item.value));
         }
         this.handleStateValues('configuredProjects', selected);
     }
@@ -305,7 +298,6 @@ class BaseJobConfiguration extends Component {
     }
 
     render(content) {
-        const buttonsFixed = this.props.buttonsFixed || false;
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />

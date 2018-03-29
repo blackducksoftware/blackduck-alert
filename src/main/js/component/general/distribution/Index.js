@@ -222,13 +222,10 @@ class Index extends Component {
                             const jsonErrors = json.errors;
                             if (jsonErrors) {
                                 const errors = {};
-                                for (const key in jsonErrors) {
-                                    if (jsonErrors.hasOwnProperty(key)) {
-                                        const name = key.concat('Error');
-                                        const value = jsonErrors[key];
-                                        errors[name] = value;
-                                    }
-                                }
+
+                                Object.keys(jsonErrors).forEach((key) => {
+                                    errors[`${key}Error`] = jsonErrors[key];
+                                });
                                 this.setState({
                                     errors
                                 });
@@ -270,7 +267,6 @@ class Index extends Component {
     }
 
     fetchDistributionJobs() {
-
         fetch('/api/configuration/distribution/common', {
             credentials: 'same-origin',
             headers: {
@@ -282,7 +278,7 @@ class Index extends Component {
             if (response.ok) {
                 this.setState({ jobConfigTableMessage: '' });
                 response.json().then((jsonArray) => {
-                    const newJobs = new Array();
+                    const newJobs = [];
                     if (jsonArray != null && jsonArray.length > 0) {
                         jsonArray.forEach((item) => {
                             const jobConfig = {
@@ -315,7 +311,7 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        this.setState({ 'currentRowSelected': currentRowSelected });
+        this.setState({ currentRowSelected });
     }
 
     editButtonClick(cell, row) {
@@ -324,7 +320,7 @@ class Index extends Component {
 
 
     createCustomButtonGroup(buttons) {
-        const classes = 'btn btn-info react-bs-table-add-btn tableButton';
+        const classes = 'btn btn-sm btn-info react-bs-table-add-btn tableButton';
         const fontAwesomeIcon = 'fa fa-refresh fa-fw';
         const insertOnClick = buttons.insertBtn.props.onClick;
         const deleteOnClick = buttons.deleteBtn.props.onClick;
@@ -332,9 +328,9 @@ class Index extends Component {
         let refreshButton = null;
         if (!this.state.autoRefresh) {
             refreshButton = (
-                <div role="button" tabIndex={0} className={classes} onClick={reloadEntries}>
+                <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
                     <span className={fontAwesomeIcon} aria-hidden="true" />Refresh
-                </div>
+                </button>
             );
         }
         return (
