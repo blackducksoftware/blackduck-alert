@@ -61,7 +61,7 @@ public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, Purge
 
     @Override
     public PurgeReader reader() {
-        return new PurgeReader(notificationManager);
+        return createReaderWithDayOffset(1);
     }
 
     @Override
@@ -82,6 +82,10 @@ public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, Purge
     @Override
     public String getStepName() {
         return PURGE_STEP_NAME;
+    }
+
+    public PurgeReader createReaderWithDayOffset(final int dayOffset) {
+        return new PurgeReader(notificationManager, dayOffset);
     }
 
 }

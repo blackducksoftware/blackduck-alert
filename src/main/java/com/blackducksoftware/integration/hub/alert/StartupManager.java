@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
@@ -40,6 +42,10 @@ import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
+import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
+import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 
@@ -53,6 +59,7 @@ public class StartupManager {
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
+
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
@@ -72,6 +79,7 @@ public class StartupManager {
         logConfiguration();
 
         initializeCronJobs();
+
     }
 
     public void logConfiguration() {
@@ -109,6 +117,7 @@ public class StartupManager {
             logger.info(savedGlobalSchedulingConfig.toString());
         }
         scheduleCronJobs(dailyDigestHourOfDay, purgeDataFrequencyDays);
+        CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
     public void scheduleCronJobs(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
@@ -123,5 +132,33 @@ public class StartupManager {
 
         logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
         logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
+    }
+
+    private Boolean purgeOldData() {
+        try {
+            logger.info("Begin startup purge of old data");
+            final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
+            if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
+                final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
+                final String purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
+                final PurgeReader reader = purgeConfig.createReaderWithDayOffset(Integer.valueOf(purgeDataFrequencyDays));
+                final PurgeProcessor processor = purgeConfig.processor();
+                final PurgeWriter writer = purgeConfig.writer();
+
+                final List<NotificationModel> purgeData = reader.read();
+                final List<NotificationModel> processedData = processor.process(purgeData);
+                final List<List<NotificationModel>> dataToDelete = new ArrayList<>();
+                dataToDelete.add(processedData);
+                writer.write(dataToDelete);
+                return Boolean.TRUE;
+            } else {
+                return Boolean.FALSE;
+            }
+        } catch (final Exception ex) {
+            logger.error("Error occurred puring data on startup", ex);
+            return Boolean.FALSE;
+        } finally {
+            logger.info("Finished startup purge of old data");
+        }
     }
 }
