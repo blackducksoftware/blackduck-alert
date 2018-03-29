@@ -42,7 +42,10 @@ class Index extends Component {
             this.setState({ message: '' });
             this.setEntriesFromArray(nextProps.items);
         }
-        this.startAutoReload();
+        
+        if (!nextProps.fetching) {
+            this.startAutoReload();
+        }
     }
 
     componentWillUnmount() {
