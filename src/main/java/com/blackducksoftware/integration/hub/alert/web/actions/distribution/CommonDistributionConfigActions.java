@@ -31,6 +31,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -42,13 +44,15 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Component
 public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepositoryWrapper> {
     private final AuditEntryRepositoryWrapper auditEntryRepository;
+    private final AuditNotificationRepositoryWrapper auditNotificationRepository;
 
     @Autowired
     public CommonDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final AuditEntryRepositoryWrapper auditEntryRepository,
             final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
-            final ObjectTransformer objectTransformer) {
+            final ObjectTransformer objectTransformer, final AuditNotificationRepositoryWrapper auditNotificationRepository) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
         this.auditEntryRepository = auditEntryRepository;
+        this.auditNotificationRepository = auditNotificationRepository;
     }
 
     @Override
@@ -98,6 +102,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     @Override
     public void deleteConfig(final Long id) {
         if (id != null) {
+            deleteAuditEntries(id);
             getCommonDistributionRepository().delete(id);
             getConfiguredProjectsActions().cleanUpConfiguredProjects();
             getNotificationTypesActions().removeOldNotificationTypes(id);
@@ -133,4 +138,12 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
         return null;
     }
 
+    private void deleteAuditEntries(final Long configID) {
+        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findByCommonConfigId(configID);
+        auditEntryList.forEach((auditEntry) -> {
+            final List<AuditNotificationRelation> relationList = auditNotificationRepository.findByAuditEntryId(auditEntry.getId());
+            auditNotificationRepository.delete(relationList);
+        });
+        auditEntryRepository.delete(auditEntryList);
+    }
 }

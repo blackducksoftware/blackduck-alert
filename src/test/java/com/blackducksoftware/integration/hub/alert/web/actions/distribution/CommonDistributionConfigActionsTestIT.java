@@ -35,6 +35,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
@@ -59,6 +60,8 @@ public class CommonDistributionConfigActionsTestIT {
     private CommonDistributionRepositoryWrapper commonDistributionRepository;
     @Autowired
     private AuditEntryRepositoryWrapper auditEntryRepository;
+    @Autowired
+    private AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper;
     @Autowired
     private ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
     @Autowired
@@ -89,7 +92,8 @@ public class CommonDistributionConfigActionsTestIT {
         auditEntryRepository.save(new AuditEntryEntity(new Long(-1), lastRan, lastRan, status, "", ""));
 
         final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
-        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions, objectTransformer,
+                auditNotificationRepositoryWrapper);
 
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
         assertEquals(distributionType, savedEntity.getDistributionType());
