@@ -246,19 +246,20 @@ class BaseJobConfiguration extends Component {
     }
 
     handleNotificationChanged(selectedValues) {
-        const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected.concat(selectedValues.map(item => item.value));
+            const selected = selectedValues.map(item => item.value);
+            this.handleStateValues('notificationTypes', selected);
+        } else {
+            this.handleStateValues('notificationTypes', []);
         }
-        this.handleStateValues('notificationTypes', selected);
     }
 
     handleProjectChanged(selectedValues) {
-        const selected = [];
         if (selectedValues && selectedValues.length > 0) {
-            selected.concat(selectedValues);
+            this.handleStateValues('configuredProjects', selectedValues);
+        } else {
+            this.handleStateValues('configuredProjects', []);
         }
-        this.handleStateValues('configuredProjects', selectedValues);
     }
 
     readDistributionJobConfiguration(distributionId) {
