@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.audit.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +46,11 @@ public class AuditEntryRepositoryWrapper extends SimpleKeyRepositoryWrapper<Audi
             getLogger().error("Error finding common distribution config", ex);
             return null;
         }
+    }
+
+    public List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId) {
+        final List<AuditEntryEntity> entityList = getRepository().findByCommonConfigId(commonConfigId);
+        return decryptSensitiveData(entityList);
     }
 
 }
