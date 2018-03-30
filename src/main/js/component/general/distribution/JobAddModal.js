@@ -55,11 +55,11 @@ export default class JobAddModal extends Component {
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
             case 'email_group_channel':
-                return <GroupEmailJobConfiguration includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
+                return <GroupEmailJobConfiguration csrfToken={this.props.csrfToken} includeAllProjects={this.props.includeAllProjects} waitingForGroups={this.props.waitingForGroups} groups={this.props.groups} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} groupError={this.props.groupError} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             case 'hipchat_channel':
-                return <HipChatJobConfiguration includeAllProjects={this.props.includeAllProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
+                return <HipChatJobConfiguration csrfToken={this.props.csrfToken} includeAllProjects={this.props.includeAllProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             case 'slack_channel':
-                return <SlackJobConfiguration includeAllProjects={this.props.includeAllProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
+                return <SlackJobConfiguration csrfToken={this.props.csrfToken} includeAllProjects={this.props.includeAllProjects} projects={this.props.projects} handleCancel={this.handleClose} handleSaveBtnClick={this.handleSaveBtnClick} projectTableMessage={this.props.projectTableMessage} updateJobsTable={this.props.updateJobsTable} />;
             default:
                 return null;
         }
