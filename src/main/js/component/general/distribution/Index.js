@@ -101,6 +101,7 @@ class Index extends Component {
             } = currentRowSelected;
             if (distributionType === 'email_group_channel') {
                 return (<GroupEmailJobConfiguration
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -116,6 +117,7 @@ class Index extends Component {
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}
@@ -128,6 +130,7 @@ class Index extends Component {
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
+                    csrfToken={this.props.csrfToken}
                     id={id}
                     distributionConfigId={distributionConfigId}
                     name={name}

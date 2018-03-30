@@ -107,6 +107,7 @@ GroupEmailJobConfiguration.propTypes = {
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
     distributionType: PropTypes.string,
+    csrfToken: PropTypes.string,
     groups: PropTypes.arrayOf(PropTypes.object)
 };
 
