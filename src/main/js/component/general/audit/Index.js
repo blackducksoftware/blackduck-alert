@@ -29,6 +29,7 @@ class Index extends Component {
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
+        this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
     }
 
     componentDidMount() {
@@ -40,6 +41,10 @@ class Index extends Component {
         if (nextProps.items !== this.props.items) {
             this.setState({ message: '' });
             this.setEntriesFromArray(nextProps.items);
+        }
+        
+        if (!nextProps.fetching) {
+            this.startAutoReload();
         }
     }
 
@@ -175,12 +180,17 @@ class Index extends Component {
     }
 
     cancelAutoReload() {
-        clearInterval(this.reloadInterval);
+        clearTimeout(this.timeout);
     }
 
     startAutoReload() {
         // run the reload now and then every 10 seconds
-        this.reloadInterval = setInterval(() => this.props.getAuditData(), 10000);
+        this.cancelAutoReload();
+        this.timeout = setTimeout(() => this.reloadAuditEntries(), 10000);
+    }
+
+    reloadAuditEntries() {
+        this.props.getAuditData();
     }
 
     handleAutoRefreshChange({ target }) {
@@ -265,13 +275,15 @@ Index.defaultProps = {
 
 Index.propTypes = {
     csrfToken: PropTypes.string,
+    fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     getAuditData: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     items: state.audit.items,
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    fetching: state.audit.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
