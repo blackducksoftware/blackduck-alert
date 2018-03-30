@@ -115,7 +115,6 @@ class SchedulingConfiguration extends React.Component {
                         <div className="col-sm-9">
                             <p className="form-control-static accumulator-countdown">
                                 {this.state.accumulatorNextRun} seconds &nbsp;&nbsp;
-                                <GeneralButton className="btn-xs btn-danger" onClick={runSchedulingAccumulator}>Run now</GeneralButton>
                             </p>
                         </div>
                     </div>
