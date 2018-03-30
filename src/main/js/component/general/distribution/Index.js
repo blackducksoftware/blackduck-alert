@@ -179,6 +179,7 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
+                csrfToken={this.props.csrfToken}
                 waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
                 includeAllProjects
