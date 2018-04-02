@@ -112,7 +112,6 @@ function updatingEmailConfig() {
  * @returns {{type}}
  */
 function emailConfigUpdated(config) {
-    console.log("Email Config Updated", config);
     return {
         type: EMAIL_CONFIG_UPDATED,
         config: { ...scrubConfig(config) }
