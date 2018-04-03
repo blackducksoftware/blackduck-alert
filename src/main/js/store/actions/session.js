@@ -94,14 +94,13 @@ export function login(username, password) {
                 const token = response.headers.get('X-CSRF-TOKEN');
                 dispatch(loggedIn({csrfToken: token}));
             } else {
-                // Need to parse out field errors
-                dispatch(loginError(response.statusText, []));
+                dispatch(loginError("Login Failed.", []));
             }
         })
-            .catch((error) => {
-                dispatch(loginError(error.message));
-                console.log(error);
-            });
+        .catch((error) => {
+            dispatch(loginError(error.message));
+            console.log(error);
+        });
     };
 }
 
