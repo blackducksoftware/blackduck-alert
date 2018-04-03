@@ -16,7 +16,9 @@ class Index extends Component {
         this.state = {
             autoRefresh: true,
             message: '',
-            entries: []
+            entries: [],
+            currentPage: 1,
+            currentPageSize: 10
         };
         // this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -30,11 +32,12 @@ class Index extends Component {
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
+        this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
+        this.onPageChange = this.onPageChange.bind(this);
     }
 
     componentDidMount() {
-        this.props.getAuditData();
-        this.startAutoReload();
+        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -42,8 +45,9 @@ class Index extends Component {
             this.setState({ message: '' });
             this.setEntriesFromArray(nextProps.items);
         }
-        
+
         if (!nextProps.fetching) {
+            console.log("Start auto reload");
             this.startAutoReload();
         }
     }
@@ -190,7 +194,7 @@ class Index extends Component {
     }
 
     reloadAuditEntries() {
-        this.props.getAuditData();
+        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
     }
 
     handleAutoRefreshChange({ target }) {
@@ -225,6 +229,16 @@ class Index extends Component {
         );
     }
 
+    onSizePerPageListChange(sizePerPage) {
+        this.setState({ currentPage: 1, currentPageSize: sizePerPage});
+        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
+    }
+
+    onPageChange(page, sizePerPage) {
+        this.setState({currentPage: page});
+        this.props.getAuditData(page,this.state.currentPageSize);
+    }
+
     render() {
         const auditTableOptions = {
             defaultSortName: 'timeLastSent',
@@ -233,8 +247,16 @@ class Index extends Component {
             noDataText: 'No events',
             clearSearch: true,
             expandBy: 'column',
-            expandRowBgColor: '#e8e8e8'
+            expandRowBgColor: '#e8e8e8',
+            sizePerPage: this.state.currentPageSize,
+            page: this.state.currentPage,
+            onPageChange: this.onPageChange,
+            onSizePerPageList: this.onSizePerPageListChange
         };
+
+        const auditFetchInfo = {
+            dataTotalSize: this.props.totalDataCount * this.state.currentPageSize
+        }
 
         return (
             <div>
@@ -246,7 +268,7 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" search options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody">
+                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" search fetchInfo={auditFetchInfo}  options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody" remote pagination>
                         <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProjectName" dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationTypes" width="145" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
@@ -277,17 +299,19 @@ Index.propTypes = {
     csrfToken: PropTypes.string,
     fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
+    totalDataCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
+    totalDataCount: state.audit.totalDataCount,
     items: state.audit.items,
     csrfToken: state.session.csrfToken,
     fetching: state.audit.fetching
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: () => dispatch(getAuditData())
+    getAuditData: (pageNumber, pageSize) => dispatch(getAuditData(pageNumber, pageSize))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

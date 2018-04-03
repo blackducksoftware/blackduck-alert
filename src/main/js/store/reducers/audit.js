@@ -19,6 +19,7 @@ const config = (state = initialState, action) => {
         case AUDIT_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
+                totalDataCount: action.totalDataCount,
                 items: action.items
             });
 
