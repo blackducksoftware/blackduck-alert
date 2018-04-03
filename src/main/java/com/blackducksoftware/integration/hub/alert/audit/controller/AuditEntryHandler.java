@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.audit.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
+import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 import com.google.gson.Gson;
 
 @Component
@@ -47,8 +46,8 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public List<AuditEntryRestModel> get() {
-        return auditEntryActions.get();
+    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
+        return auditEntryActions.get(pageNumber, pageSize);
     }
 
     public AuditEntryRestModel get(final Long id) {
@@ -56,7 +55,7 @@ public class AuditEntryHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> resendNotification(final Long id) {
-        List<AuditEntryRestModel> auditEntries = null;
+        AlertPagedRestModel<AuditEntryRestModel> auditEntries = null;
         try {
             auditEntries = auditEntryActions.resendNotification(id);
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));
