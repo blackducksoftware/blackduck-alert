@@ -27,7 +27,8 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.model.Model;
 
-public class AlertPagedRestModel<M extends Model> {
+public class AlertPagedRestModel<M extends Model> extends Model {
+
     private final int totalPages;
     private final int currentPage;
     private final int pageSize;
