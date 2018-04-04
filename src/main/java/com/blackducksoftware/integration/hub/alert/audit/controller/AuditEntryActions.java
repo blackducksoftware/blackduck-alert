@@ -95,15 +95,15 @@ public class AuditEntryActions {
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
+        AlertPage<AuditEntryEntity> auditEntries;
         if (pageNumber != null && pageSize != null) {
             final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
-            final AlertPage<AuditEntryEntity> auditEntries = auditEntryRepository.findAll(pageRequest);
-            return createRestModels(auditEntries);
+            auditEntries = auditEntryRepository.findAll(pageRequest);
         } else {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-            final AlertPage<AuditEntryEntity> auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
-            return createRestModels(auditEntries);
+            auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
         }
+        return createRestModels(auditEntries);
     }
 
     public AuditEntryRestModel get(final Long id) {
