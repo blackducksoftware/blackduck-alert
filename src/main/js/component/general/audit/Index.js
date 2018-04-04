@@ -47,7 +47,6 @@ class Index extends Component {
         }
 
         if (!nextProps.fetching) {
-            console.log("Start auto reload");
             this.startAutoReload();
         }
     }
