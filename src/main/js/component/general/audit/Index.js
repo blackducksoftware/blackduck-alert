@@ -42,7 +42,7 @@ class Index extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.items !== this.props.items) {
-            this.setState({ message: '' });
+            this.setState({ message: '', inProgress: false });
             this.setEntriesFromArray(nextProps.items);
         }
 
@@ -193,6 +193,10 @@ class Index extends Component {
     }
 
     reloadAuditEntries() {
+        this.setState({
+            message: 'Loading...',
+            inProgress: true
+        });
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
     }
 
