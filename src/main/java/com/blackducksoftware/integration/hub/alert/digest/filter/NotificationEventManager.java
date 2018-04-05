@@ -60,7 +60,7 @@ public class NotificationEventManager {
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public List<AbstractChannelEvent> createChannelEvents(final Collection<ProjectData> projectDataList) {
+    public List<AbstractChannelEvent> createChannelEvents(final Collection<ProjectData> projectDataCollection) {
         final List<AbstractChannelEvent> channelEvents = new ArrayList<>();
         final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
         final Map<CommonDistributionConfigEntity, List<ProjectData>> distributionConfigProjectMap = new HashMap<>(distributionConfigurations.size());
@@ -69,7 +69,7 @@ public class NotificationEventManager {
             distributionConfigProjectMap.put(distributionConfig, new ArrayList<>());
         });
 
-        projectDataList.forEach(projectData -> {
+        projectDataCollection.forEach(projectData -> {
             final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, projectData);
 
             applicableConfigurations.forEach(distributionConfig -> {

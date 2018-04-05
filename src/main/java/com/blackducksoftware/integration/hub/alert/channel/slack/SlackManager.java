@@ -49,8 +49,8 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     }
 
     @Override
-    public SlackEvent createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
-        return new SlackEvent(projectData, commonDistributionConfigId);
+    public SlackEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        return new SlackEvent(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override

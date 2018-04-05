@@ -58,6 +58,6 @@ public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G 
 
     public abstract String getApiUrl();
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final Collection<ProjectData> projectData) throws IntegrationException;
+    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final Collection<ProjectData> projectDataCollection) throws IntegrationException;
 
 }

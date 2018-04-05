@@ -33,9 +33,9 @@ public abstract class AbstractChannelEvent extends AbstractEvent {
 
     private Long auditEntryId;
 
-    public AbstractChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
+    public AbstractChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
         super();
-        this.projectData = projectData;
+        this.projectData = projectDataCollection;
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
 

@@ -74,7 +74,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final Collection<ProjectData> projectData) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final Collection<ProjectData> projectDataCollection) throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {
@@ -82,7 +82,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
         } else {
 
             final String slackUrl = config.getWebhook();
-            final String htmlMessage = createHtmlMessage(projectData);
+            final String htmlMessage = createHtmlMessage(projectDataCollection);
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
             final Map<String, String> requestHeaders = new HashMap<>();

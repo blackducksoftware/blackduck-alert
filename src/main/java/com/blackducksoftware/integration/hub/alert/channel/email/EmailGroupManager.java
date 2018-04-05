@@ -52,8 +52,8 @@ public class EmailGroupManager extends DistributionChannelManager<GlobalEmailCon
     }
 
     @Override
-    public EmailGroupEvent createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
-        return new EmailGroupEvent(projectData, commonDistributionConfigId);
+    public EmailGroupEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        return new EmailGroupEvent(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override
