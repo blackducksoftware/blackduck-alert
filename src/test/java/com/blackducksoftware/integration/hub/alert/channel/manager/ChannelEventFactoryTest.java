@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class ChannelEventFactoryTest {
         final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> factory = new ChannelEventFactory<>(managers);
 
         final Long id = 25L;
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap());
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final AbstractChannelEvent mockEvent = new AbstractChannelEvent(projectData, id) {
             @Override
             public String getTopic() {

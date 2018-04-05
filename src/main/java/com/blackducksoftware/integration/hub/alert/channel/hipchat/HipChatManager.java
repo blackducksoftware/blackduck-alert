@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +52,7 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
     }
 
     @Override
-    public HipChatEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public HipChatEvent createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
         return new HipChatEvent(projectData, commonDistributionConfigId);
     }
 

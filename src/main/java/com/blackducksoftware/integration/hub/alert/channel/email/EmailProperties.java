@@ -93,7 +93,7 @@ public class EmailProperties {
     // keys for alert descriptor data.
     public static final String TEMPLATE_KEY_HUB_SERVER_URL = "hub_server_url";
     public static final String TEMPLATE_KEY_SUBJECT_LINE = "subject_line";
-    public static final String TEMPLATE_KEY_TOPIC = "topic";
+    public static final String TEMPLATE_KEY_TOPIC = "topicList";
     public static final String TEMPLATE_KEY_START_DATE = "startDate";
     public static final String TEMPLATE_KEY_END_DATE = "endDate";
     public static final String TEMPLATE_KEY_TOTAL_NOTIFICATIONS = "totalNotifications";

@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -39,7 +40,7 @@ public class EmailChannelTestIT extends ChannelTest {
         }
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, auditEntryRepository, null, null, null);
-        final ProjectData projectData = createProjectData("Manual test project");
+        final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, 1L);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);

@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class ChannelEventFactory<E extends AbstractChannelEvent, D extends Distr
         this.channelManagers = channelManagers;
     }
 
-    public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final ProjectData projectData) {
+    public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final Collection<ProjectData> projectData) {
         for (final DistributionChannelManager<G, D, E, R> manager : channelManagers) {
             if (manager.isApplicable(distributionType)) {
                 return manager.createChannelEvent(projectData, commonDistributionConfigId);

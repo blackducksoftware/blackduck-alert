@@ -45,7 +45,7 @@ public class ChannelTemplateManagerTest {
 
         testCount = 0;
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
-        final HipChatEvent slackEvent = new HipChatEvent(projectData, 1L);
+        final HipChatEvent slackEvent = new HipChatEvent(Arrays.asList(projectData), 1L);
         channelTemplateManager.sendEvents(Arrays.asList(slackEvent));
 
         assertEquals(1, testCount);

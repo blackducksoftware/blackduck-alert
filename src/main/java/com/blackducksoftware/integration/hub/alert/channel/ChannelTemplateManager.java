@@ -104,10 +104,12 @@ public class ChannelTemplateManager {
                 auditEntryEntity.setStatus(StatusEnum.PENDING);
                 final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
                 channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-                for (final Long notificationId : channelEvent.getProjectData().getNotificationIds()) {
-                    final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                    auditNotificationRepository.save(auditNotificationRelation);
-                }
+                channelEvent.getProjectData().forEach(projectDataItem -> {
+                    projectDataItem.getNotificationIds().forEach(notificationId -> {
+                        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                        auditNotificationRepository.save(auditNotificationRelation);
+                    });
+                });
                 final String jsonMessage = gson.toJson(channelEvent);
                 final AbstractJmsTemplate template = getTemplate(destination);
                 template.convertAndSend(destination, jsonMessage);

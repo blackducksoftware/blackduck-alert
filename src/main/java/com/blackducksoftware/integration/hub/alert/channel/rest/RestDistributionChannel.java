@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.rest;
 
+import java.util.Collection;
+
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
@@ -56,6 +58,6 @@ public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G 
 
     public abstract String getApiUrl();
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final ProjectData projectData) throws IntegrationException;
+    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, final Collection<ProjectData> projectData) throws IntegrationException;
 
 }

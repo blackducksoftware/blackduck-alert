@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.util.Collection;
+
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
@@ -47,7 +49,7 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     }
 
     @Override
-    public SlackEvent createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public SlackEvent createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
         return new SlackEvent(projectData, commonDistributionConfigId);
     }
 
