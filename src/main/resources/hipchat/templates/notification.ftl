@@ -27,6 +27,7 @@
 
 <#if projectDataCollection??>
 	<#list projectDataCollection as projectItem>
+		<br />
 		<strong> ${projectItem.projectName} > ${projectItem.projectVersion} </strong>
 		<#if projectItem.categoryMap??>
 		    <#list projectItem.categoryMap?values as categoryItem>

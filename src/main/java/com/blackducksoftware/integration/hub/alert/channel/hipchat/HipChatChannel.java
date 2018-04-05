@@ -147,9 +147,6 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
 
             final HashMap<String, Object> model = new HashMap<>();
             model.put("projectDataCollection", projectDataCollection);
-            // model.put("projectName", projectData.getProjectName());
-            // model.put("projectVersion", projectData.getProjectVersion());
-            // model.put("categoryMap", projectData.getCategoryMap());
 
             return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
         } catch (final IOException | TemplateException e) {
