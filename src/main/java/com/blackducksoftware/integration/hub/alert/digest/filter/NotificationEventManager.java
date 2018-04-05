@@ -85,7 +85,9 @@ public class NotificationEventManager {
         distributionConfigProjectMap.entrySet().forEach(entry -> {
             final CommonDistributionConfigEntity distributionConfig = entry.getKey();
             final List<ProjectData> projectData = entry.getValue();
-            channelEvents.add(createChannelEvent(distributionConfig, projectData));
+            if (!projectData.isEmpty()) {
+                channelEvents.add(createChannelEvent(distributionConfig, projectData));
+            }
         });
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
