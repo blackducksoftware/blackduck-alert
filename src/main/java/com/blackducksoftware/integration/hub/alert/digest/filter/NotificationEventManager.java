@@ -32,6 +32,8 @@ import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +49,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Transactional
 @Component
 public class NotificationEventManager {
+    private final Logger logger = LoggerFactory.getLogger(NotificationEventManager.class);
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
@@ -84,7 +87,7 @@ public class NotificationEventManager {
             final List<ProjectData> projectData = entry.getValue();
             channelEvents.add(createChannelEvent(distributionConfig, projectData));
         });
-
+        logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 

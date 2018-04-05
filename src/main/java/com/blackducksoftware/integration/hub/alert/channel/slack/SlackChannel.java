@@ -95,6 +95,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
         final StringBuilder messageBuilder = new StringBuilder();
         projectDataCollection.forEach(projectData -> {
+            messageBuilder.append(System.lineSeparator());
             messageBuilder.append(projectData.getProjectName());
             messageBuilder.append(" > ");
             messageBuilder.append(projectData.getProjectVersion());
