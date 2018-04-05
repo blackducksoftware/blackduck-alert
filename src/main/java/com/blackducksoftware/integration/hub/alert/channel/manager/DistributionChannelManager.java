@@ -96,6 +96,6 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
 
     public abstract boolean isApplicable(final String supportedChannelName);
 
-    public abstract E createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId);
+    public abstract E createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId);
 
 }

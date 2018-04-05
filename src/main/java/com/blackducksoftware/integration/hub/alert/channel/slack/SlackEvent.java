@@ -31,8 +31,8 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class SlackEvent extends AbstractChannelEvent {
 
-    public SlackEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
-        super(projectData, commonDistributionConfigId);
+    public SlackEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        super(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override

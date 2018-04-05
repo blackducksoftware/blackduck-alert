@@ -52,8 +52,8 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
     }
 
     @Override
-    public HipChatEvent createChannelEvent(final Collection<ProjectData> projectData, final Long commonDistributionConfigId) {
-        return new HipChatEvent(projectData, commonDistributionConfigId);
+    public HipChatEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        return new HipChatEvent(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override

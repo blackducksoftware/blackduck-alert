@@ -133,9 +133,9 @@ public class AuditEntryActions {
         if (commonConfigEntity == null) {
             throw new IllegalArgumentException("The job for this entry was deleted, can not re-send this entry.");
         }
-        final Collection<ProjectData> projectDataList = projectDataFactory.createProjectDataCollection(notifications);
+        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
 
-        final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectDataList);
+        final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectDataCollection);
         event.setAuditEntryId(auditEntryEntity.getId());
         channelTemplateManager.sendEvent(event);
         return get();
