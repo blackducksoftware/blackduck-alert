@@ -76,9 +76,7 @@ public class NotificationEventManager {
             final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, projectData);
 
             applicableConfigurations.forEach(distributionConfig -> {
-                if (distributionConfigProjectMap.containsKey(distributionConfig)) {
-                    distributionConfigProjectMap.get(distributionConfig).add(projectData);
-                }
+                distributionConfigProjectMap.get(distributionConfig).add(projectData);
             });
         });
 
