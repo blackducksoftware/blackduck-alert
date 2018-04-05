@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final ProjectData projectData) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final Collection<ProjectData> projectData) throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {
@@ -91,61 +92,63 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
         }
     }
 
-    private String createHtmlMessage(final ProjectData projectData) {
+    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
         final StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append(projectData.getProjectName());
-        messageBuilder.append(" > ");
-        messageBuilder.append(projectData.getProjectVersion());
-        messageBuilder.append(System.lineSeparator());
+        projectDataCollection.forEach(projectData -> {
+            messageBuilder.append(projectData.getProjectName());
+            messageBuilder.append(" > ");
+            messageBuilder.append(projectData.getProjectVersion());
+            messageBuilder.append(System.lineSeparator());
 
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
-        if (categoryMap != null) {
-            for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-                final CategoryData data = categoryMap.get(category);
-                if (data != null) {
-                    messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
-                    messageBuilder.append(System.lineSeparator());
-                    messageBuilder.append("Type: ");
-                    messageBuilder.append(data.getCategoryKey());
-                    messageBuilder.append(System.lineSeparator());
-                    messageBuilder.append("Number of Changes: ");
-                    messageBuilder.append(data.getItemCount());
-                    for (final ItemData item : data.getItemList()) {
+            final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
+            if (categoryMap != null) {
+                for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
+                    final CategoryData data = categoryMap.get(category);
+                    if (data != null) {
+                        messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
                         messageBuilder.append(System.lineSeparator());
-                        final Map<String, Object> dataSet = item.getDataSet();
-                        final String ruleKey = ItemTypeEnum.RULE.toString();
-                        if (dataSet.containsKey(ruleKey) && StringUtils.isNotBlank(dataSet.get(ruleKey).toString())) {
-                            messageBuilder.append("Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                        messageBuilder.append("Type: ");
+                        messageBuilder.append(data.getCategoryKey());
+                        messageBuilder.append(System.lineSeparator());
+                        messageBuilder.append("Number of Changes: ");
+                        messageBuilder.append(data.getItemCount());
+                        for (final ItemData item : data.getItemList()) {
                             messageBuilder.append(System.lineSeparator());
-                        }
+                            final Map<String, Object> dataSet = item.getDataSet();
+                            final String ruleKey = ItemTypeEnum.RULE.toString();
+                            if (dataSet.containsKey(ruleKey) && StringUtils.isNotBlank(dataSet.get(ruleKey).toString())) {
+                                messageBuilder.append("Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                                messageBuilder.append(System.lineSeparator());
+                            }
 
-                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED)) {
-                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED);
-                            messageBuilder.append("Vulnerability Count Added: " + numericValue.intValue());
-                            messageBuilder.append(System.lineSeparator());
-                        }
+                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED)) {
+                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED);
+                                messageBuilder.append("Vulnerability Count Added: " + numericValue.intValue());
+                                messageBuilder.append(System.lineSeparator());
+                            }
 
-                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED)) {
-                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED);
-                            messageBuilder.append("Vulnerability Count Updated: " + numericValue.intValue());
-                            messageBuilder.append(System.lineSeparator());
-                        }
+                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED)) {
+                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED);
+                                messageBuilder.append("Vulnerability Count Updated: " + numericValue.intValue());
+                                messageBuilder.append(System.lineSeparator());
+                            }
 
-                        if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED)) {
-                            final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED);
-                            messageBuilder.append("Vulnerability Count Deleted: " + numericValue.intValue());
-                            messageBuilder.append(System.lineSeparator());
-                        }
+                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED)) {
+                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED);
+                                messageBuilder.append("Vulnerability Count Deleted: " + numericValue.intValue());
+                                messageBuilder.append(System.lineSeparator());
+                            }
 
-                        messageBuilder.append("Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                        messageBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
+                            messageBuilder.append("Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
+                            messageBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
+                        }
+                        messageBuilder.append(System.lineSeparator());
                     }
-                    messageBuilder.append(System.lineSeparator());
                 }
+            } else {
+                messageBuilder.append(" A notification was received, but it was empty.");
             }
-        } else {
-            messageBuilder.append(" A notification was received, but it was empty.");
-        }
+        });
         return messageBuilder.toString();
     }
 
