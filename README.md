@@ -10,7 +10,8 @@ This application provides the ability to send notifications from the hub to vari
 
 ## Where can I get the latest release? ##
 
-Beta 0.0.1 will be available on Friday, March 16th.
+This product is currently in beta.  
+Please see releases for the binary.
 
 ## Documentation ##
 Public documentation is currently in development.  Will be provided with the 1.0.0 release.
