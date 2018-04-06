@@ -96,7 +96,7 @@ public class AuditEntryActions {
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
         AlertPage<AuditEntryEntity> auditEntries;
-        logger.info("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
+        logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         if (pageNumber != null && pageSize != null) {
             final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
             auditEntries = auditEntryRepository.findAll(pageRequest);
