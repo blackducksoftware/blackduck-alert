@@ -44,7 +44,7 @@ const config = (state = initialState, action) => {
         case CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
-                updateStatus: null,
+                updateStatus: 'FETCHED',
                 testing: false,
                 testStatus: '',
                 hubApiKey: action.hubApiKey || '',

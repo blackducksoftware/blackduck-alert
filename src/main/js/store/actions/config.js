@@ -137,7 +137,9 @@ export function updateConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(data => dispatch(configUpdated({ ...config, id: data.id })));
+                    response.json().then(data => {
+                        dispatch(configUpdated({ ...config, id: data.id }))})
+                        .then(() => {dispatch(getConfig())});
                 } else {
                     response.json()
                         .then((data) => {
@@ -154,9 +156,6 @@ export function updateConfig(config) {
                             }
                         });
                 }
-            })
-            .then(() => {
-                dispatch(getConfig());
             })
             .catch(console.error);
     };
