@@ -163,11 +163,13 @@ export function updateEmailConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then((data) => { dispatch(emailConfigUpdated({ ...config, id: data.id })); });
+                    response.json().then((data) => { dispatch(emailConfigUpdated({ ...config, id: data.id })); })
+                    .then(() => {
+                        dispatch(getEmailConfig());
+                    });
                 } else {
                     response.json()
                         .then((data) => {
-                            console.log('data', data.message);
                             switch (response.status) {
                                 case 400:
                                     return dispatch(configError(data.message, data.errors));
@@ -178,9 +180,6 @@ export function updateEmailConfig(config) {
                             }
                         });
                 }
-            })
-            .then(() => {
-                dispatch(getEmailConfig());
             })
             .catch(console.error);
     };
