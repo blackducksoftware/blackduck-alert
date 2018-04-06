@@ -54,7 +54,9 @@ export function getAuditData(pageNumber,pageSize) {
 }
 
 function createPagedQueryURL(pageNumber, pageSize) {
-    return FETCH_URL +"?pageNumber="+pageNumber+"&pageSize="+pageSize;
+    // server side is 0 based but UI paging component starts with 1
+    const pageNumberParameter = pageNumber-1;
+    return FETCH_URL +"?pageNumber="+pageNumberParameter+"&pageSize="+pageSize;
 }
 
 function getPagedAuditData(dispatch, getState, currentPage, pageSize, totalPages, currentContentList) {
