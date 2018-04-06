@@ -96,6 +96,7 @@ public class AuditEntryActions {
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
         AlertPage<AuditEntryEntity> auditEntries;
+        logger.info("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         if (pageNumber != null && pageSize != null) {
             final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
             auditEntries = auditEntryRepository.findAll(pageRequest);
@@ -103,7 +104,9 @@ public class AuditEntryActions {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
             auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
         }
-        return createRestModels(auditEntries);
+        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = createRestModels(auditEntries);
+        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
+        return pagedRestModel;
     }
 
     public AuditEntryRestModel get(final Long id) {
