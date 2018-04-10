@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.audit.controller;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +33,8 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -44,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotific
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
+import com.blackducksoftware.integration.hub.alert.datasource.AlertPage;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
@@ -54,6 +56,7 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -87,8 +90,23 @@ public class AuditEntryActions {
         this.channelTemplateManager = channelTemplateManager;
     }
 
-    public List<AuditEntryRestModel> get() {
-        return createRestModels(auditEntryRepository.findAll());
+    public AlertPagedRestModel<AuditEntryRestModel> get() {
+        return get(null, null);
+    }
+
+    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
+        AlertPage<AuditEntryEntity> auditEntries;
+        logger.info("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
+        if (pageNumber != null && pageSize != null) {
+            final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
+            auditEntries = auditEntryRepository.findAll(pageRequest);
+        } else {
+            final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
+            auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
+        }
+        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = createRestModels(auditEntries);
+        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
+        return pagedRestModel;
     }
 
     public AuditEntryRestModel get(final Long id) {
@@ -101,7 +119,7 @@ public class AuditEntryActions {
         return null;
     }
 
-    public List<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
+    public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
         AuditEntryEntity auditEntryEntity = null;
         auditEntryEntity = auditEntryRepository.findOne(id);
         if (auditEntryEntity == null) {
@@ -127,11 +145,12 @@ public class AuditEntryActions {
         return get();
     }
 
+    private AlertPagedRestModel<AuditEntryRestModel> createRestModels(final AlertPage<AuditEntryEntity> page) {
+        return new AlertPagedRestModel<>(page.getTotalPages(), page.getCurrentPage(), page.getPageSize(), createRestModels(page.getContentList()));
+    }
+
     private List<AuditEntryRestModel> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
-        final List<AuditEntryRestModel> restModels = new ArrayList<>(auditEntryEntities.size());
-        for (final AuditEntryEntity entity : auditEntryEntities) {
-            restModels.add(createRestModel(entity));
-        }
+        final List<AuditEntryRestModel> restModels = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
         return restModels;
     }
 

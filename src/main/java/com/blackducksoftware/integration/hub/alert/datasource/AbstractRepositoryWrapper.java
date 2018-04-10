@@ -31,6 +31,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
@@ -122,6 +124,29 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
                 return Collections.emptyList();
             }
         }
+    }
+
+    public AlertPage<D> findAll(final PageRequest pageRequest) {
+        final Page<D> entityPage = getRepository().findAll(pageRequest);
+        final List<D> entityList = entityPage.getContent();
+
+        List<D> contentList;
+        if (entityList == null) {
+            contentList = Collections.emptyList();
+        } else {
+            try {
+                final List<D> returnList = new ArrayList<>(entityList.size());
+                for (final D entity : entityList) {
+                    returnList.add(decryptSensitiveData(entity));
+                }
+                contentList = returnList;
+            } catch (final EncryptionException ex) {
+                getLogger().error("Error finding all entities", ex);
+                contentList = Collections.emptyList();
+            }
+        }
+
+        return new AlertPage<>(entityPage.getTotalPages(), entityPage.getNumber(), entityPage.getSize(), contentList);
     }
 
     public List<D> save(final List<D> entities) {

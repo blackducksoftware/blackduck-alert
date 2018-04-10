@@ -23,17 +23,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.audit.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 
 @RestController
 @RequestMapping(BaseController.BASE_PATH + "/audit")
@@ -46,8 +46,8 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public List<AuditEntryRestModel> get() {
-        return auditEntryHandler.get();
+    public AlertPagedRestModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize) {
+        return auditEntryHandler.get(pageNumber, pageSize);
     }
 
     @GetMapping(value = "/{id}")
