@@ -102,7 +102,7 @@ public class AuditEntryActions {
             auditEntries = auditEntryRepository.findAll(pageRequest);
         } else {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-            auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
+            auditEntries = new AlertPage<>(1, 0, contentList.size(), contentList);
         }
         final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = createRestModels(auditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
