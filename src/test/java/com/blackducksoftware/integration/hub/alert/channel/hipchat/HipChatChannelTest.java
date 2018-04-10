@@ -19,6 +19,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -55,7 +56,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
 
-        final ProjectData data = createProjectData("Integration test project");
+        final Collection<ProjectData> data = createProjectData("Integration test project");
         final HipChatEvent event = new HipChatEvent(data, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
@@ -91,7 +92,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(12345, Boolean.FALSE, null);
-        final ProjectData projectData = createProjectData("HipChat IT test");
+        final Collection<ProjectData> projectData = createProjectData("HipChat IT test");
 
         final String userDir = System.getProperties().getProperty("user.dir");
         try {

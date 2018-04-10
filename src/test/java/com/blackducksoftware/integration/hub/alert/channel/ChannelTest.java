@@ -13,6 +13,7 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -63,12 +64,12 @@ public class ChannelTest {
         return new CategoryData("MEDIUM_VULNERABILITY", Arrays.asList(new ItemData(dataMap)), 1);
     }
 
-    public ProjectData createProjectData(final String testName) {
+    public Collection<ProjectData> createProjectData(final String testName) {
         final HashMap<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.POLICY_VIOLATION, createMockPolicyViolation());
         categoryMap.put(NotificationCategoryEnum.MEDIUM_VULNERABILITY, createMockVulnerability());
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
-        return projectData;
+        return Arrays.asList(projectData);
     }
 }

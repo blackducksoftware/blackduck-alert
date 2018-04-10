@@ -96,13 +96,13 @@ public class AuditEntryActions {
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
         AlertPage<AuditEntryEntity> auditEntries;
-        logger.info("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
+        logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         if (pageNumber != null && pageSize != null) {
             final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
             auditEntries = auditEntryRepository.findAll(pageRequest);
         } else {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-            auditEntries = new AlertPage<>(1, 1, contentList.size(), contentList);
+            auditEntries = new AlertPage<>(1, 0, contentList.size(), contentList);
         }
         final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = createRestModels(auditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
@@ -136,12 +136,11 @@ public class AuditEntryActions {
         if (commonConfigEntity == null) {
             throw new IllegalArgumentException("The job for this entry was deleted, can not re-send this entry.");
         }
-        final Collection<ProjectData> projectDataList = projectDataFactory.createProjectDataCollection(notifications);
-        for (final ProjectData projectData : projectDataList) {
-            final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectData);
-            event.setAuditEntryId(auditEntryEntity.getId());
-            channelTemplateManager.sendEvent(event);
-        }
+        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
+
+        final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectDataCollection);
+        event.setAuditEntryId(auditEntryEntity.getId());
+        channelTemplateManager.sendEvent(event);
         return get();
     }
 

@@ -23,14 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
+import java.util.Collection;
+
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class EmailGroupEvent extends AbstractChannelEvent {
 
-    public EmailGroupEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
-        super(projectData, commonDistributionConfigId);
+    public EmailGroupEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        super(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override

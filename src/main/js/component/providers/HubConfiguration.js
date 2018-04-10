@@ -29,17 +29,19 @@ class HubConfiguration extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            hubApiKey: nextProps.hubApiKey,
-            hubApiKeyIsSet: nextProps.hubApiKeyIsSet,
-            hubProxyHost: nextProps.hubProxyHost,
-            hubProxyPassword: nextProps.hubProxyPassword,
-            hubProxyPasswordIsSet: nextProps.hubProxyPasswordIsSet,
-            hubProxyPort: nextProps.hubProxyPort,
-            hubProxyUsername: nextProps.hubProxyUsername,
-            hubTimeout: nextProps.hubTimeout,
-            hubUrl: nextProps.hubUrl
-        });
+        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            this.setState({
+                hubApiKey: nextProps.hubApiKey,
+                hubApiKeyIsSet: nextProps.hubApiKeyIsSet,
+                hubProxyHost: nextProps.hubProxyHost,
+                hubProxyPassword: nextProps.hubProxyPassword,
+                hubProxyPasswordIsSet: nextProps.hubProxyPasswordIsSet,
+                hubProxyPort: nextProps.hubProxyPort,
+                hubProxyUsername: nextProps.hubProxyUsername,
+                hubTimeout: nextProps.hubTimeout,
+                hubUrl: nextProps.hubUrl
+            });
+        }
     }
 
     componentDidMount() {

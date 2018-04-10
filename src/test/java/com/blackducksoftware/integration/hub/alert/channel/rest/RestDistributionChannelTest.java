@@ -13,6 +13,8 @@ package com.blackducksoftware.integration.hub.alert.channel.rest;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Collection;
+
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -41,7 +43,7 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final ProjectData projectData) throws AlertException {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final Collection<ProjectData> projectData) throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
             }
         };

@@ -23,21 +23,23 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
+import java.util.Collection;
+
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 
 public abstract class AbstractChannelEvent extends AbstractEvent {
-    private final ProjectData projectData;
+    private final Collection<ProjectData> projectData;
     private final Long commonDistributionConfigId;
 
     private Long auditEntryId;
 
-    public AbstractChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
+    public AbstractChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
         super();
-        this.projectData = projectData;
+        this.projectData = projectDataCollection;
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
 
-    public ProjectData getProjectData() {
+    public Collection<ProjectData> getProjectData() {
         return projectData;
     }
 

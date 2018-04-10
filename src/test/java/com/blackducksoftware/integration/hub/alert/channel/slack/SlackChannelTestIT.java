@@ -17,6 +17,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
 
-        final ProjectData projectData = createProjectData("Slack test project");
+        final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final SlackEvent event = new SlackEvent(projectData, new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
@@ -105,7 +106,7 @@ public class SlackChannelTestIT extends ChannelTest {
     public void testCreateHtmlMessage() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
-        final ProjectData projectData = createSlackProjectData();
+        final Collection<ProjectData> projectData = createSlackProjectData();
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
@@ -143,20 +144,20 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), projectData);
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), Arrays.asList(projectData));
 
         assertNull(request);
 
         Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
-    private ProjectData createSlackProjectData() {
+    private Collection<ProjectData> createSlackProjectData() {
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, createCategoryData());
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, categoryMap);
 
-        return projectData;
+        return Arrays.asList(projectData);
     }
 
     private CategoryData createCategoryData() {

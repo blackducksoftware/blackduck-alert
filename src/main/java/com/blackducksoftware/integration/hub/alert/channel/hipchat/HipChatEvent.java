@@ -23,14 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.util.Collection;
+
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class HipChatEvent extends AbstractChannelEvent {
 
-    public HipChatEvent(final ProjectData projectData, final Long configurationId) {
-        super(projectData, configurationId);
+    public HipChatEvent(final Collection<ProjectData> projectDataCollection, final Long configurationId) {
+        super(projectDataCollection, configurationId);
     }
 
     @Override
