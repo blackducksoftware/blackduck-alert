@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Date;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -49,6 +48,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -91,12 +91,12 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final List<AuditEntryRestModel> auditEntries = auditEntryHandler.get();
-        assertEquals(1, auditEntries.size());
+        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null);
+        assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryRestModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
         assertNotNull(auditEntry);
-        assertEquals(auditEntry, auditEntries.get(0));
+        assertEquals(auditEntry, auditEntries.getContent().get(0));
 
         assertEquals(savedAuditEntryEntity.getId().toString(), auditEntry.getId());
         assertEquals(savedConfigEntity.getDistributionType(), auditEntry.getEventType());
