@@ -25,12 +25,15 @@ package com.blackducksoftware.integration.hub.alert.digest.filter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +49,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Transactional
 @Component
 public class NotificationEventManager {
+    private final Logger logger = LoggerFactory.getLogger(NotificationEventManager.class);
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
@@ -59,25 +63,35 @@ public class NotificationEventManager {
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public List<AbstractChannelEvent> createChannelEvents(final Collection<ProjectData> projectDataList) {
+    public List<AbstractChannelEvent> createChannelEvents(final Collection<ProjectData> projectDataCollection) {
         final List<AbstractChannelEvent> channelEvents = new ArrayList<>();
         final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
-        projectDataList.forEach(projectData -> {
-            final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, projectData);
-            channelEvents.addAll(createChannelEvents(applicableConfigurations, projectData));
+        final Map<CommonDistributionConfigEntity, List<ProjectData>> distributionConfigProjectMap = new HashMap<>(distributionConfigurations.size());
+
+        distributionConfigurations.forEach(distributionConfig -> {
+            distributionConfigProjectMap.put(distributionConfig, new ArrayList<>());
         });
+
+        projectDataCollection.forEach(projectData -> {
+            final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, projectData);
+
+            applicableConfigurations.forEach(distributionConfig -> {
+                distributionConfigProjectMap.get(distributionConfig).add(projectData);
+            });
+        });
+
+        distributionConfigProjectMap.entrySet().forEach(entry -> {
+            final CommonDistributionConfigEntity distributionConfig = entry.getKey();
+            final List<ProjectData> projectData = entry.getValue();
+            if (!projectData.isEmpty()) {
+                channelEvents.add(createChannelEvent(distributionConfig, projectData));
+            }
+        });
+        logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private Set<AbstractChannelEvent> createChannelEvents(final Collection<CommonDistributionConfigEntity> commonDistributionConfigEntity, final ProjectData projectData) {
-        final Set<AbstractChannelEvent> events = new HashSet<>();
-        commonDistributionConfigEntity.forEach(config -> {
-            events.add(createChannelEvent(config, projectData));
-        });
-        return events;
-    }
-
-    private AbstractChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final ProjectData projectData) {
+    private AbstractChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final List<ProjectData> projectData) {
         return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), projectData);
     }
 

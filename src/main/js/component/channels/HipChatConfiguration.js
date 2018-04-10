@@ -26,11 +26,13 @@ class HipChatConfiguration extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({
-            dataLoaded: true,
-            apiKey: nextProps.apiKey || '',
-            apiKeyIsSet: nextProps.apiKeyIsSet
-        });
+        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            this.setState({
+                dataLoaded: true,
+                apiKey: nextProps.apiKey || '',
+                apiKeyIsSet: nextProps.apiKeyIsSet
+            });
+        }
     }
 
     handleChange({ target }) {

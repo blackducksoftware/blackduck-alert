@@ -23,7 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -85,14 +88,14 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         }
     }
 
-    public ProjectData getTestMessageProjectData() {
-        return new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap());
+    public List<ProjectData> getTestMessageProjectData() {
+        return Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
     }
 
     public abstract Class<D> getDatabaseEntityClass();
 
     public abstract boolean isApplicable(final String supportedChannelName);
 
-    public abstract E createChannelEvent(final ProjectData projectData, final Long commonDistributionConfigId);
+    public abstract E createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId);
 
 }

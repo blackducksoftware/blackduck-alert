@@ -23,14 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.util.Collection;
+
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 
 public class SlackEvent extends AbstractChannelEvent {
 
-    public SlackEvent(final ProjectData projectData, final Long commonDistributionConfigId) {
-        super(projectData, commonDistributionConfigId);
+    public SlackEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        super(projectDataCollection, commonDistributionConfigId);
     }
 
     @Override

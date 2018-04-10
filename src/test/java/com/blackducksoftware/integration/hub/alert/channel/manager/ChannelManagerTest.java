@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.junit.Test;
@@ -40,7 +41,7 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
     @Test
     public void testCreateChannelEvent() {
         final CM channelManager = getChannelManager();
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>());
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final CE channelEvent = channelManager.createChannelEvent(projectData, 1L);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());

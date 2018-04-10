@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,11 +100,11 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
 
-        final ProjectData data = event.getProjectData();
+        final Collection<ProjectData> data = event.getProjectData();
 
         final HashMap<String, Object> model = new HashMap<>();
         model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
-        model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.getDigestType().getDisplayName());
+        model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
         model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
 
         model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);

@@ -25,11 +25,18 @@
     </#if>
 </#macro>
 
-<strong> ${projectName} > ${projectVersion} </strong>
-<#if categoryMap??>
-    <#list categoryMap?values as categoryItem>
-        <@printCategoryData categoryItem/>
-    </#list>
+<#if projectDataCollection??>
+	<#list projectDataCollection as projectItem>
+		<br />
+		<strong> ${projectItem.projectName} > ${projectItem.projectVersion} </strong>
+		<#if projectItem.categoryMap??>
+		    <#list projectItem.categoryMap?values as categoryItem>
+		        <@printCategoryData categoryItem/>
+		    </#list>
+		<#else>
+		    <br /><i>A notification was received, but it was empty.</i>
+		</#if>
+	</#list>
 <#else>
-    <br /><i>A notification was received, but it was empty.</i>
+	<br /><i>A notification was received, but no project data defined.</i>
 </#if>

@@ -34,9 +34,9 @@ public class ProjectDataFactoryTest {
         final Collection<NotificationModel> notifications = createNotificationCollection();
 
         final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
-        final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notifications);
+        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
 
-        assertFieldsForMultiple(notifications, projectData, DigestTypeEnum.REAL_TIME);
+        assertFieldsForMultiple(notifications, projectDataCollection, DigestTypeEnum.REAL_TIME);
     }
 
     @Test
@@ -45,9 +45,9 @@ public class ProjectDataFactoryTest {
 
         final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
         final DigestTypeEnum digestType = DigestTypeEnum.DAILY;
-        final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notifications, digestType);
+        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications, digestType);
 
-        assertFieldsForMultiple(notifications, projectData, digestType);
+        assertFieldsForMultiple(notifications, projectDataCollection, digestType);
     }
 
     @Test
@@ -86,10 +86,10 @@ public class ProjectDataFactoryTest {
         }
     }
 
-    private ProjectData find(final Collection<ProjectData> projectData, final String projectName, final String projectVersion) {
-        for (final ProjectData projData : projectData) {
-            if (projData.getProjectName().equals(projectName) && projData.getProjectVersion().equals(projectVersion)) {
-                return projData;
+    private ProjectData find(final Collection<ProjectData> projectDataCollection, final String projectName, final String projectVersion) {
+        for (final ProjectData projectData : projectDataCollection) {
+            if (projectData.getProjectName().equals(projectName) && projectData.getProjectVersion().equals(projectVersion)) {
+                return projectData;
             }
         }
         return null;

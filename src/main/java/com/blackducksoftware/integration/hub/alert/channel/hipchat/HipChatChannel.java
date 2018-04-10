@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -115,11 +116,11 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final ProjectData projectData) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final Collection<ProjectData> projectDataCollection) throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
-            final String htmlMessage = createHtmlMessage(projectData);
+            final String htmlMessage = createHtmlMessage(projectDataCollection);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
             final String url = HIP_CHAT_API + "/v2/room/" + config.getRoomId().toString() + "/notification";
@@ -132,7 +133,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
         }
     }
 
-    private String createHtmlMessage(final ProjectData projectData) {
+    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
         try {
             final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
             String templateDirectoryPath;
@@ -145,9 +146,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put("projectName", projectData.getProjectName());
-            model.put("projectVersion", projectData.getProjectVersion());
-            model.put("categoryMap", projectData.getCategoryMap());
+            model.put("projectDataCollection", projectDataCollection);
 
             return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
         } catch (final IOException | TemplateException e) {
