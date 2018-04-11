@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
 
+@Transactional
 public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends Serializable, R extends JpaRepository<D, ID>> {
 
     private final Logger logger;
