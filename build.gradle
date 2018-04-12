@@ -174,6 +174,13 @@ task runServer4Profiling(type: Exec, dependsOn: [build]) {
     commandLine commandArray
 }
 
+task createDeploymentZip(type: Zip) {
+    from 'deployment'
+    into "${project.name}-${project.version}-deployment"
+    baseName "${project.name}"
+    classifier 'deployment'
+}
+
 task stageDocker(type:Copy, dependsOn: [build]) {
     into "${project.buildDir}/docker"
     from("${project.projectDir}") {
@@ -200,7 +207,7 @@ task pushImage(type:Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
-task all(dependsOn: [build, dockerLogin, buildDockerImage, pushImage]) {
+task all(dependsOn: [build, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
 

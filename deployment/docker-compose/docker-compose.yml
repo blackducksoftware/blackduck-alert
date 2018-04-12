@@ -1,0 +1,27 @@
+version: '2.1'
+services:
+  cfssl:
+    image: blackducksoftware/hub-cfssl:4.5.0
+    volumes: ['cert-volume:/etc/cfssl']
+    healthcheck:
+      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'http://localhost:8888/api/v1/cfssl/scaninfo']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    user: cfssl:root
+    restart: always
+    mem_limit: 512M
+  alert:
+    image: blackducksoftware/hub-alert:0.0.5
+    ports: ['8443:8443']
+    links: [cfssl]
+    env_file: [hub-alert.env]
+    user: hubalert:root
+    healthcheck:
+      test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'http://localhost:8443/api']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data', 'alert-volume:/opt/blackduck/security']
+    mem_limit: 512M
+volumes: {cert-volume: null, alert-db-volume: null, alert-volume: null }
