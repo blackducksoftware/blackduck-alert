@@ -60,7 +60,7 @@ function scrubConfig(config) {
         mailSmtpMailExtension: config.mailSmtpMailExtension,
         mailSmtpUserSet: config.mailSmtpUserSet,
         mailSmtpNoopStrict: config.mailSmtpNoopStrict,
-        id: (config.id?''+config.id: '')
+        id: (config.id ? `${config.id}` : '')
     };
 }
 
@@ -128,12 +128,8 @@ export function toggleAdvancedEmailOptions(toggle) {
 export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
-        const csrfToken = getState().session.csrfToken;
         fetch(CONFIG_URL, {
-            credentials: 'include',
-            headers: {
-              'X-CSRF-TOKEN': csrfToken
-            }
+            credentials: 'same-origin'
         })
             .then(response => response.json().then((body) => {
                 if (body.length > 0) {
@@ -151,9 +147,9 @@ export function updateEmailConfig(config) {
         dispatch(updatingEmailConfig());
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             method,
             body: JSON.stringify(body),
             headers: {
@@ -163,8 +159,9 @@ export function updateEmailConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then((data) => { dispatch(emailConfigUpdated({ ...config, id: data.id })); })
-                    .then(() => {
+                    response.json().then((data) => {
+                        dispatch(emailConfigUpdated({ ...config, id: data.id }));
+                    }).then(() => {
                         dispatch(getEmailConfig());
                     });
                 } else {

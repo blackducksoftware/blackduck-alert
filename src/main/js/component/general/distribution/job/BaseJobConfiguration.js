@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import {frequencyOptions, notificationOptions} from '../../../../util/distribution-data';
+import { frequencyOptions, notificationOptions } from '../../../../util/distribution-data';
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
