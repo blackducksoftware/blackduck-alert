@@ -6,27 +6,6 @@ import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 import { confirmLogout } from './store/actions/session';
 
-// TEMPORARY: This code belongs in Redux Action
-const logout = (evt) => {
-    evt.stopPropagation();
-    evt.preventDefault();
-    const csrfToken = this.props.csrfToken;
-    fetch('/api/logout', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
-    }).then((response) => {
-        if (response.ok) {
-            window.location.reload();
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
-};
-
 const Navigation = props => (
     <div className="navigation">
         <div className="navigationLogo">
@@ -102,7 +81,7 @@ Navigation.propTypes = {
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
-  csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken
 });
 
 const mapDispatchToProps = dispatch => ({

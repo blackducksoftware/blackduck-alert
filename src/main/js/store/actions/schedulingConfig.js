@@ -100,11 +100,11 @@ function accumulatorError(error) {
 export function getSchedulingConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             headers: {
-              'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': csrfToken
             }
         })
             .then(response => response.json().then((body) => {
@@ -126,66 +126,59 @@ export function updateSchedulingConfig(config) {
             ...config,
             id: 1
         };
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
             method: 'PUT',
             headers: {
                 'content-type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
-            credentials: 'include',
+            credentials: 'same-origin',
             body: JSON.stringify(body)
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then(() => dispatch(schedulingConfigUpdated({ ...config })));
-                } else {
-                    response.json()
-                        .then((data) => {
-                            console.log('data', data.message);
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(schedulingConfigError(data.message, data.errors));
-                                case 412:
-                                    return dispatch(schedulingConfigError(data.message, data.errors));
-                                default:
-                                    return dispatch(schedulingConfigError(data.message, null));
-                            }
-                        });
-                }
-            })
-            .then(() => {
-                dispatch(getSchedulingConfig());
-            })
-            .catch(console.error);
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then(() => dispatch(schedulingConfigUpdated({ ...config })));
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(schedulingConfigError(data.message, data.errors));
+                            case 412:
+                                return dispatch(schedulingConfigError(data.message, data.errors));
+                            default:
+                                return dispatch(schedulingConfigError(data.message, null));
+                        }
+                    });
+            }
+        }).then(() => {
+            dispatch(getSchedulingConfig());
+        }).catch(console.error);
     };
 }
 
 export function runSchedulingAccumulator() {
     return (dispatch, getState) => {
         dispatch(runningAccumulator());
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(ACCUMULATOR_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    response.json().then((json) => {
-                        dispatch(accumulatorError(json.message));
-                    });
-                } else {
-                    dispatch(accumulatorSuccess());
-                }
-            })
-            .then(() => {
-                dispatch(getSchedulingConfig());
-            })
-            .catch((err) => {
-                dispatch(accumulatorError(err));
-            });
+        }).then((response) => {
+            if (!response.ok) {
+                response.json().then((json) => {
+                    dispatch(accumulatorError(json.message));
+                });
+            } else {
+                dispatch(accumulatorSuccess());
+            }
+        }).then(() => {
+            dispatch(getSchedulingConfig());
+        }).catch((err) => {
+            dispatch(accumulatorError(err));
+        });
     };
 }

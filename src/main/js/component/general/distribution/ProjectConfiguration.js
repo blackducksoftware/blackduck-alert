@@ -6,11 +6,21 @@ import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap
 import CheckboxInput from '../../../field/input/CheckboxInput';
 import { getProjects } from '../../../store/actions/projects';
 
+function assignClassName(row, rowIdx) {
+    return 'tableRow';
+}
+
+function assignDataFormat(cell, row) {
+    const cellContent = (row.missing) ?
+        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ row.name }</span> :
+        row.name;
+    return <div title={row.name}> {cellContent} </div>;
+}
+
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
         this.onRowSelected = this.onRowSelected.bind(this);
-        this.assignDataFormat = this.assignDataFormat.bind(this);
     }
 
     componentWillMount() {
@@ -51,17 +61,6 @@ class ProjectConfiguration extends Component {
         return projectData;
     }
 
-    assignClassName(row, rowIdx) {
-        return 'tableRow';
-    }
-
-    assignDataFormat(cell, row) {
-        const cellContent = (row.missing) ?
-            <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ row.name }</span> :
-            row.name;
-        return <div title={row.name}> {cellContent} </div>;
-    }
-
     render() {
         const projectData = this.createProjectList();
 
@@ -83,9 +82,9 @@ class ProjectConfiguration extends Component {
         let projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = (<div>
-                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
-                    <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={this.assignDataFormat}>Project</TableHeaderColumn>
-                    <TableHeaderColumn dataField="missing" dataFormat={this.assignDataFormat} hidden>Missing Project</TableHeaderColumn>
+                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
+                    <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
                 {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" /></div>}
@@ -115,7 +114,7 @@ ProjectConfiguration.defaultProps = {
     configuredProjects: [],
     errorMsg: null,
     includeAllProjects: false
-}
+};
 
 ProjectConfiguration.propTypes = {
     includeAllProjects: PropTypes.bool,

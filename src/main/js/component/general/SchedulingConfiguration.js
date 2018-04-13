@@ -30,7 +30,7 @@ class SchedulingConfiguration extends React.Component {
         this.cancelAutoTick();
         if (nextProps.accumulatorNextRun && nextProps.accumulatorNextRun !== '-1') {
             this.setState({
-                accumulatorNextRun: parseInt(nextProps.accumulatorNextRun)
+                accumulatorNextRun: parseInt(nextProps.accumulatorNextRun, 10)
             });
             this.startAutoTick();
         }
@@ -93,7 +93,7 @@ class SchedulingConfiguration extends React.Component {
 
     render() {
         const {
-            errorFields, errorMessage, updateStatus, runSchedulingAccumulator
+            errorFields, errorMessage, updateStatus
         } = this.props;
         return (
             <div>
@@ -178,9 +178,11 @@ class SchedulingConfiguration extends React.Component {
 
 SchedulingConfiguration.propTypes = {
     accumulatorNextRun: PropTypes.string,
+    purgeDataNextRun: PropTypes.string,
+    purgeDataFrequencyDays: PropTypes.number.isRequired,
+    dailyDigestHourOfDay: PropTypes.number.isRequired,
     getConfig: PropTypes.func.isRequired,
-    runSchedulingAccumulator: PropTypes.func.isRequired,
-    purgeDataNextRun: PropTypes.string
+    updateConfig: PropTypes.func.isRequired
 };
 
 SchedulingConfiguration.defaultProps = {
@@ -203,7 +205,6 @@ const mapStateToProps = state => ({
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getSchedulingConfig()),
-    runSchedulingAccumulator: () => dispatch(runSchedulingAccumulator()),
     updateConfig: config => dispatch(updateSchedulingConfig(config))
 });
 

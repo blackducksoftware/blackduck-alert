@@ -10,16 +10,15 @@ const mediumVulnerabilityIcon = <span key="mediumVulnerabilityIcon" alt="Medium 
 const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerability" className="fa fa-shield lowVulnerability" aria-hidden="true" />;
 const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield vulnerability" aria-hidden="true" />;
 
-const NotificationTypeLegend = (
-    {
-        hasPolicyViolation,
-        hasPolicyViolationCleared,
-        hasPolicyViolationOverride,
-        hasHighVulnerability,
-        hasMediumVulnerability,
-        hasLowVulnerability,
-        hasVulnerability
-    }) => (
+const NotificationTypeLegend = ({
+    hasPolicyViolation,
+    hasPolicyViolationCleared,
+    hasPolicyViolationOverride,
+    hasHighVulnerability,
+    hasMediumVulnerability,
+    hasLowVulnerability,
+    hasVulnerability
+}) => (
     <OverlayTrigger
         trigger={['hover', 'focus']}
         placement="right"
