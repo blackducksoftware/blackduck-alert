@@ -12,7 +12,7 @@ services:
     restart: always
     mem_limit: 512M
   alert:
-    image: blackducksoftware/hub-alert:0.0.5
+    image: blackducksoftware/hub-alert:VERSION_TOKEN
     ports: ['8443:8443']
     links: [cfssl]
     env_file: [hub-alert.env]

@@ -174,8 +174,16 @@ task runServer4Profiling(type: Exec, dependsOn: [build]) {
     commandLine commandArray
 }
 
-task createDeploymentZip(type: Zip) {
+task copyDeploymentFiles(type: Copy) {
     from 'deployment'
+    into "${project.buildDir}/deployment"
+    doLast {
+        ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+    }
+}
+
+task createDeploymentZip(type: Zip, dependsOn: [copyDeploymentFiles]) {
+    from "${project.buildDir}/deployment"
     into "${project.name}-${project.version}-deployment"
     baseName "${project.name}"
     classifier 'deployment'
