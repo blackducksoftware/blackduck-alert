@@ -19,7 +19,7 @@ plugins {
     id 'com.moowork.node' version '1.2.0'
 }
 
-version = '0.0.8-SNAPSHOT'
+version = '0.0.8'
 def dbChangeLogVersion = '1.0.0'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
