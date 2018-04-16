@@ -248,7 +248,6 @@ class Index extends Component {
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
-            clearSearch: true,
             expandBy: 'column',
             expandRowBgColor: '#e8e8e8',
             sizePerPage: this.state.currentPageSize,
@@ -271,13 +270,13 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" search fetchInfo={auditFetchInfo}  options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody" remote pagination>
-                        <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationProjectName" dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationTypes" width="145" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="timeCreated" width="160" dataSort columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
-                        <TableHeaderColumn dataField="timeLastSent" width="160" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
-                        <TableHeaderColumn dataField="status" width="75" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" fetchInfo={auditFetchInfo}  options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody" remote pagination>
+                        <TableHeaderColumn dataField="jobName" columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationProjectName" columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationTypes" width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="timeCreated" width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
+                        <TableHeaderColumn dataField="timeLastSent" width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
+                        <TableHeaderColumn dataField="status" width="75" columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
                     </BootstrapTable>
