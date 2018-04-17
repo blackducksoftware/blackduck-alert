@@ -17,12 +17,12 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 
         const roomId = data.roomId || this.props.roomId;
         let notify = null;
-        if (data.notify && data.notify === 'true') {
+        if (data.notify) {
             notify = data.notify;
-        } else if (this.props.notify && this.props.notify === 'true') {
+        } else if (this.props.notify) {
             notify = this.props.notify;
         } else {
-            notify = 'false';
+            notify = false;
         }
         const color = data.color || this.props.color;
 
