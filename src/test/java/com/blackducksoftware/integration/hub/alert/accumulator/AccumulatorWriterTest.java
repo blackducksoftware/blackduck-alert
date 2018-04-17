@@ -42,6 +42,24 @@ public class AccumulatorWriterTest {
         Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
     }
 
+    @Test
+    public void testWriteNullData() throws Exception {
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
+
+        final AccumulatorWriter accumulatorWriter = new AccumulatorWriter(notificationManager, channelTemplateManager);
+
+        final String eventKey = "_event_key_";
+        final NotificationCategoryEnum categoryType = NotificationCategoryEnum.HIGH_VULNERABILITY;
+
+        final NotificationEvent notificationEvent = new NotificationEvent(eventKey, categoryType, generateBadeDataSet());
+        final DBStoreEvent storeEvent = new DBStoreEvent(Arrays.asList(notificationEvent));
+
+        accumulatorWriter.write(Arrays.asList(storeEvent));
+
+        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
+    }
+
     private Map<String, Object> generateDataSet() {
         final Map<String, Object> dataSet = new HashMap<>();
 
@@ -52,6 +70,29 @@ public class AccumulatorWriterTest {
         final ComponentVersionView componentVersionView = new ComponentVersionView();
         final String componentVersionUrl = "sss";
         final String componentIssueUrl = "ddd";
+        dataSet.put(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT, new NotificationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentVersionUrl, componentIssueUrl));
+
+        dataSet.put(ItemTypeEnum.RULE.name(), "policyRuleName");
+        dataSet.put(ItemTypeEnum.PERSON.name(), "policyUserName");
+        dataSet.put(VulnerabilityCache.VULNERABILITY_OPERATION, VulnerabilityOperationEnum.ADD.name());
+
+        final Set<String> vulnSet = new HashSet<>();
+        vulnSet.add("vulnerabilityId");
+        dataSet.put(VulnerabilityCache.VULNERABILITY_ID_SET, vulnSet);
+
+        return dataSet;
+    }
+
+    private Map<String, Object> generateBadeDataSet() {
+        final Map<String, Object> dataSet = new HashMap<>();
+
+        final Date createdAt = new Date();
+        final ProjectVersionModel projectVersionModel = new ProjectVersionModel();
+        projectVersionModel.setProjectLink("New project link");
+        final String componentName = null;
+        final ComponentVersionView componentVersionView = null;
+        final String componentVersionUrl = null;
+        final String componentIssueUrl = null;
         dataSet.put(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT, new NotificationContentItem(createdAt, projectVersionModel, componentName, componentVersionView, componentVersionUrl, componentIssueUrl));
 
         dataSet.put(ItemTypeEnum.RULE.name(), "policyRuleName");

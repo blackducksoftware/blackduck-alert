@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -44,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
@@ -51,6 +53,7 @@ import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 
 @Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
+    private static final String COMPONENT_VERSION_UNKNOWN = "UNKNOWN";
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
@@ -69,24 +72,12 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
                     final List<NotificationEvent> notificationList = item.getNotificationList();
                     final List<NotificationModel> entityList = new ArrayList<>();
                     notificationList.forEach(notification -> {
-                        final String eventKey = notification.getEventKey();
-                        final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
-                        final Date createdAt = content.getCreatedAt();
-                        final NotificationCategoryEnum notificationType = notification.getCategoryType();
-                        final String projectName = content.getProjectVersion().getProjectName();
-                        final String projectUrl = content.getProjectVersion().getProjectLink();
-                        final String projectVersion = content.getProjectVersion().getProjectVersionName();
-                        final String projectVersionUrl = content.getProjectVersion().getUrl();
-                        final String componentName = content.getComponentName();
-                        final String componentVersion = content.getComponentVersion().versionName;
-                        final String policyRuleName = getPolicyRule(notification);
-                        final String person = getPerson(notification);
-
-                        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
-                        final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification, entity);
-                        NotificationModel model = new NotificationModel(entity, vulnerabilityList);
-                        model = notificationManager.saveNotification(model);
-                        entityList.add(model);
+                        final Optional<NotificationModel> optionalModel = createNotificationModel(notification);
+                        if (optionalModel.isPresent()) {
+                            NotificationModel model = optionalModel.get();
+                            model = notificationManager.saveNotification(model);
+                            entityList.add(model);
+                        }
                     });
                     final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
                     channelTemplateManager.sendEvent(realTimeEvent);
@@ -96,6 +87,44 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
             }
         } catch (final Exception ex) {
             logger.error("Error occurred writing notification data", ex);
+        }
+    }
+
+    private Optional<NotificationModel> createNotificationModel(final NotificationEvent notification) {
+        try {
+            final String eventKey = notification.getEventKey();
+            final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
+            final Date createdAt = content.getCreatedAt();
+            final NotificationCategoryEnum notificationType = notification.getCategoryType();
+            final String projectName = content.getProjectVersion().getProjectName();
+            final String projectUrl = content.getProjectVersion().getProjectLink();
+            final String projectVersion = content.getProjectVersion().getProjectVersionName();
+            final String projectVersionUrl = content.getProjectVersion().getUrl();
+            final String componentName = content.getComponentName();
+            final String componentVersion = getComponentVersionName(content.getComponentVersion());
+            final String policyRuleName = getPolicyRule(notification);
+            final String person = getPerson(notification);
+
+            final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
+            final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification, entity);
+            final NotificationModel model = new NotificationModel(entity, vulnerabilityList);
+            return Optional.of(model);
+        } catch (final Exception ex) {
+            // component version could be null if a versionless component is added.
+            // catch the exception and continue writing notifications that can be handled.
+            logger.error("Accumulator writer failed to create a notification model...");
+            logger.error("NotificationEvent {}", notification);
+            logger.error("Exception caused by: ", ex);
+
+            return Optional.empty();
+        }
+    }
+
+    private String getComponentVersionName(final ComponentVersionView componentVersionView) {
+        if (componentVersionView == null) {
+            return COMPONENT_VERSION_UNKNOWN;
+        } else {
+            return componentVersionView.versionName;
         }
     }
 
