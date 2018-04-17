@@ -45,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
+import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
 import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
@@ -52,6 +53,7 @@ import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 
 @Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
+    private static final String COMPONENT_VERSION_UNKNOWN = "UNKNOWN";
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
@@ -99,7 +101,7 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
             final String projectVersion = content.getProjectVersion().getProjectVersionName();
             final String projectVersionUrl = content.getProjectVersion().getUrl();
             final String componentName = content.getComponentName();
-            final String componentVersion = content.getComponentVersion().versionName;
+            final String componentVersion = getComponentVersionName(content.getComponentVersion());
             final String policyRuleName = getPolicyRule(notification);
             final String person = getPerson(notification);
 
@@ -115,6 +117,14 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
             logger.error("Exception caused by: ", ex);
 
             return Optional.empty();
+        }
+    }
+
+    private String getComponentVersionName(final ComponentVersionView componentVersionView) {
+        if (componentVersionView == null) {
+            return COMPONENT_VERSION_UNKNOWN;
+        } else {
+            return componentVersionView.versionName;
         }
     }
 
