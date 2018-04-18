@@ -4,6 +4,8 @@ import {
     PROJECTS_FETCH_ERROR
 } from './types';
 
+import { logout } from './session';
+
 const PROJECTS_URL = '/api/hub/projects';
 
 /**
@@ -46,7 +48,13 @@ export function getProjects() {
         }).then((response) => {
             response.json().then((json) => {
                 if (!response.ok) {
-                    dispatch(projectsError(json.message));
+                    switch(response.status) {
+                        case 401:
+                        case 403:
+                            return dispatch(logout());
+                        default:
+                            return dispatch(projectsError(json.message));
+                    }
                 } else {
                     const jsonArray = JSON.parse(json.message) || [];
                     const projects = jsonArray.map(({ name, url }) => ({ name, url }));

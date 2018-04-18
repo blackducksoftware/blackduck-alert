@@ -8,6 +8,8 @@ import {
     EMAIL_CONFIG_HIDE_ADVANCED
 } from './types';
 
+import {logout} from './session';
+
 const CONFIG_URL = '/api/configuration/channel/email';
 
 function scrubConfig(config) {
@@ -131,14 +133,24 @@ export function getEmailConfig() {
         fetch(CONFIG_URL, {
             credentials: 'same-origin'
         })
-            .then(response => response.json().then((body) => {
-                if (body.length > 0) {
-                    dispatch(emailConfigFetched(body[0]));
-                } else {
-                    dispatch(emailConfigFetched({}));
+        .then((response) => {
+            if(response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(emailConfigFetched(body[0]));
+                    } else {
+                        dispatch(emailConfigFetched({}));
+                    }
+                })
+            } else {
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        return dispatch(logout());
                 }
-            }))
-            .catch(console.error);
+            }
+        })
+        .catch(console.error);
     };
 }
 
@@ -170,6 +182,9 @@ export function updateEmailConfig(config) {
                             switch (response.status) {
                                 case 400:
                                     return dispatch(configError(data.message, data.errors));
+                                case 401:
+                                case 403:
+                                    return dispatch(logout());
                                 case 412:
                                     return dispatch(configError(data.message, data.errors));
                                 default:

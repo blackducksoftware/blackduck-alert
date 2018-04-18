@@ -9,6 +9,8 @@ import {
     SCHEDULING_ACCUMULATOR_SUCCESS
 } from './types';
 
+import {logout} from './session';
+
 const CONFIG_URL = '/api/configuration/global/scheduling';
 const ACCUMULATOR_URL = '/api/configuration/global/scheduling/accumulator/run';
 
@@ -107,13 +109,23 @@ export function getSchedulingConfig() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-            .then(response => response.json().then((body) => {
-                if (body.length > 0) {
-                    dispatch(schedulingConfigFetched(body[0]));
-                } else {
-                    dispatch(schedulingConfigFetched({}));
+        .then((response) => {
+            if(response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(schedulingConfigFetched(body[0]));
+                    } else {
+                        dispatch(schedulingConfigFetched({}));
+                    }
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                    case 403:
+                        return dispatch(logout());
                 }
-            }))
+            }
+        })
             .catch(console.error);
     };
 }
@@ -144,6 +156,9 @@ export function updateSchedulingConfig(config) {
                         switch (response.status) {
                             case 400:
                                 return dispatch(schedulingConfigError(data.message, data.errors));
+                            case 401:
+                            case 403:
+                                    return dispatch(logout());
                             case 412:
                                 return dispatch(schedulingConfigError(data.message, data.errors));
                             default:
@@ -169,9 +184,15 @@ export function runSchedulingAccumulator() {
             }
         }).then((response) => {
             if (!response.ok) {
-                response.json().then((json) => {
-                    dispatch(accumulatorError(json.message));
-                });
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        return dispatch(logout());
+                    default:
+                        return response.json().then((json) => {
+                            dispatch(accumulatorError(json.message));
+                        });
+                }
             } else {
                 dispatch(accumulatorSuccess());
             }
