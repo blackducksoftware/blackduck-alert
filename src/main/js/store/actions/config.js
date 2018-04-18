@@ -9,6 +9,8 @@ import {
     CONFIG_TEST_FAILED
 } from './types';
 
+import { logout } from './session';
+
 const CONFIG_URL = '/api/configuration/provider/hub';
 const TEST_URL = '/api/configuration/provider/hub/test';
 
@@ -108,14 +110,24 @@ export function getConfig() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-            .then(response => response.json().then((body) => {
-                if (body.length > 0) {
-                    dispatch(configFetched(body[0]));
-                } else {
-                    dispatch(configFetched({}));
+        .then((response) => {
+            if(response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configFetched(body[0]));
+                    } else {
+                        dispatch(configFetched({}));
+                    }
+                })
+            } else {
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        return dispatch(logout());
                 }
-            }))
-            .catch(console.error);
+            }
+        })
+        .catch(console.error);
     };
 }
 
@@ -146,7 +158,8 @@ export function updateConfig(config) {
                             case 400:
                                 return dispatch(configError(data.message, data.errors));
                             case 401:
-                                return dispatch(configError('API Key isn\'t valid, try a different one'));
+                            case 403:
+                                return dispatch(logout());
                             case 412:
                                 return dispatch(configError(data.message, data.errors));
                             default:

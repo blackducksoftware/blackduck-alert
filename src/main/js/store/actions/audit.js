@@ -3,6 +3,8 @@ import {
     AUDIT_FETCHED
 } from './types';
 
+import { logout } from './session';
+
 const FETCH_URL = '/api/audit';
 
 /**
@@ -47,31 +49,18 @@ export function getAuditData(pageNumber, pageSize) {
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
-        }).then(response => response.json()).then((body) => {
-            dispatch(auditDataFetched(body.totalPages, body.content));
-            // getPagedAuditData(dispatch, getState, body.currentPage+1, body.pageSize, body.totalPages, contentList);
+        }).then((response) => {
+            if(response.ok) {
+                response.json().then((body) => {
+                    dispatch(auditDataFetched(body.totalPages, body.content));
+                });
+            } else {
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        return dispatch(logout());
+                }
+            }
         }).catch(console.error);
     };
-}
-
-function getPagedAuditData(dispatch, getState, currentPage, pageSize, totalPages, currentContentList) {
-    const { csrfToken } = getState().session;
-    if (currentPage <= totalPages) {
-        const fetchUrl = createPagedQueryURL(currentPage, pageSize);
-        fetch(fetchUrl, {
-            credentials: 'include',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
-        }).then(response => response.json()).then((body) => {
-            const contentList = currentContentList.concat(body.content);
-            if (body.currentPage < body.totalPages) {
-                dispatch(fetchingAuditData(contentList));
-                getPagedAuditData(dispatch, getState, body.currentPage + 1, body.pageSize, body.totalPages, contentList);
-            } else {
-                console.log('Finished Fetching Audit Data');
-                dispatch(auditDataFetched(contentList));
-            }
-        }).catch(console.error);
-    }
 }
