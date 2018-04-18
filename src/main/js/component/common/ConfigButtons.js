@@ -1,42 +1,45 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import CancelButton from '../../field/input/CancelButton';
 import SubmitButton from '../../field/input/SubmitButton';
 import GeneralButton from '../../field/input/GeneralButton';
 
-export default class ConfigButtons extends Component {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        const includeCancel = this.props.includeCancel || false;
-        const includeTest = this.props.includeTest || false;
-        let includeSave = true;
-        if (this.props.includeSave != null && this.props.includeSave === false) {
-            includeSave = false;
-        }
-
-        return (
-            <div className="form-group">
-                <div className="col-sm-3" />
-                <div className="col-sm-8">
-                    { includeTest &&
-                        <div style={{
-                            display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
-                        }}
-                        >
-                            <GeneralButton onClick={this.props.onTestClick}>Test Configuration</GeneralButton>
-                        </div>
-
-                    }
-                    { includeSave &&
-                    <SubmitButton>Save</SubmitButton>
-                    }
-                    { includeCancel &&
-                    <CancelButton onClick={this.props.onCancelClick} />
-                    }
-                </div>
+const ConfigButtons = props => (
+    <div className="form-group">
+        <div className="col-sm-3" />
+        <div className="col-sm-8">
+            { props.includeTest &&
+            <div style={{
+                display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
+            }}
+            >
+                <GeneralButton onClick={props.onTestClick}>Test Configuration</GeneralButton>
             </div>
-        );
-    }
-}
+            }
+            { props.includeSave &&
+            <SubmitButton>Save</SubmitButton>
+            }
+            { props.includeCancel &&
+            <CancelButton onClick={props.onCancelClick} />
+            }
+        </div>
+    </div>
+);
+
+ConfigButtons.propTypes = {
+    includeCancel: PropTypes.bool,
+    includeSave: PropTypes.bool,
+    includeTest: PropTypes.bool,
+    onCancelClick: PropTypes.func,
+    onTestClick: PropTypes.func
+};
+
+ConfigButtons.defaultProps = {
+    includeCancel: false,
+    includeSave: true,
+    includeTest: false,
+    onCancelClick: () => {},
+    onTestClick: () => {}
+};
+
+export default ConfigButtons;
