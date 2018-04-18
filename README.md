@@ -10,8 +10,7 @@ This application provides the ability to send notifications from the hub to vari
 
 ## Where can I get the latest release? ##
 
-This product is currently in beta.  
-Please see releases for the binary.
+All releases are on the GitHub release page. https://github.com/blackducksoftware/hub-alert/releases
 
 ## Documentation ##
-Public documentation is currently in development.  Will be provided with the 1.0.0 release.
+Our public Confluence page: https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/202047489/Black+Duck+Alert
