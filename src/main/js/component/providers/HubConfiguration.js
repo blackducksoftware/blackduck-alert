@@ -28,6 +28,10 @@ class HubConfiguration extends React.Component {
         this.handleTest = this.handleTest.bind(this);
     }
 
+    componentDidMount() {
+        this.props.getConfig();
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
             this.setState({
@@ -42,10 +46,6 @@ class HubConfiguration extends React.Component {
                 hubUrl: nextProps.hubUrl
             });
         }
-    }
-
-    componentDidMount() {
-        this.props.getConfig();
     }
 
     handleChange({ target }) {

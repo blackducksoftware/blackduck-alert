@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Select from 'react-select-2';
 import TextInput from '../../../../field/input/TextInput';
-
 import BaseJobConfiguration from './BaseJobConfiguration';
 
 class GroupEmailJobConfiguration extends BaseJobConfiguration {

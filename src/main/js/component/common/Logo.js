@@ -71,8 +71,8 @@ const Logo = () => (
                             </g>
                         </g>
                         <text id="ALERT" fontFamily="OpenSans-Bold, Open Sans" fontSize="20" fontWeight="bold" fill="#FFFFFE">
-                            <tspan x="165" y="30">ALERT</tspan>
-                        </text>
+                            <tspan x="165" y="30">ALERT</tspan>
+                        </text>
                     </g>
                 </g>
             </g>

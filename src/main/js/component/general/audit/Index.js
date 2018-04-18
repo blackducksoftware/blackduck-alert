@@ -68,7 +68,7 @@ class Index extends Component {
 
         fetch(resendUrl, {
             method: 'POST',
-            credentials: 'include',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken

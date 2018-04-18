@@ -23,7 +23,7 @@ function scrubConfig(config) {
         hubProxyUsername: config.hubProxyUsername,
         hubTimeout: config.hubTimeout,
         hubUrl: config.hubUrl,
-        id: (config.id?''+config.id: '')
+        id: (config.id ? `${config.id}` : '')
     };
 }
 
@@ -101,11 +101,11 @@ function testFailed(message, errors) {
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             headers: {
-              'X-CSRF-TOKEN': csrfToken
+                'X-CSRF-TOKEN': csrfToken
             }
         })
             .then(response => response.json().then((body) => {
@@ -122,12 +122,12 @@ export function getConfig() {
 export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
         fetch(CONFIG_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             method,
             body: JSON.stringify(body),
             headers: {
@@ -137,24 +137,22 @@ export function updateConfig(config) {
         })
             .then((response) => {
                 if (response.ok) {
-                    response.json().then(data => {
-                        dispatch(configUpdated({ ...config, id: data.id }))})
-                        .then(() => {dispatch(getConfig())});
+                    response.json().then((data) => {
+                        dispatch(configUpdated({ ...config, id: data.id }));
+                    }).then(() => dispatch(getConfig()));
                 } else {
-                    response.json()
-                        .then((data) => {
-                            console.log('data', data.message);
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(configError(data.message, data.errors));
-                                case 401:
-                                    return dispatch(configError('API Key isn\'t valid, try a different one'));
-                                case 412:
-                                    return dispatch(configError(data.message, data.errors));
-                                default:
-                                    return dispatch(configError(data.message));
-                            }
-                        });
+                    response.json().then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(configError(data.message, data.errors));
+                            case 401:
+                                return dispatch(configError('API Key isn\'t valid, try a different one'));
+                            case 412:
+                                return dispatch(configError(data.message, data.errors));
+                            default:
+                                return dispatch(configError(data.message));
+                        }
+                    });
                 }
             })
             .catch(console.error);
@@ -165,9 +163,9 @@ export function updateConfig(config) {
 export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
-        const csrfToken = getState().session.csrfToken;
+        const { csrfToken } = getState().session;
         fetch(TEST_URL, {
-            credentials: 'include',
+            credentials: 'same-origin',
             method: 'POST',
             body: JSON.stringify(scrubConfig(config)),
             headers: {

@@ -36,6 +36,9 @@
         "react/no-string-refs": [
             "warn"
         ],
+        "react/jsx-closing-tag-location": [
+            "warn"
+        ],
         "comma-dangle": [
             "error", "never"
         ],

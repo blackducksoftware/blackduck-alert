@@ -58,13 +58,13 @@ export function verifyLogin() {
     return (dispatch) => {
         dispatch(initializing());
         fetch('/api/verify', {
-            credentials: 'include'
-        }).then(function(response) {
+            credentials: 'same-origin'
+        }).then((response) => {
             if (!response.ok) {
                 dispatch(loggedOut());
             } else {
                 const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({csrfToken: token}));
+                dispatch(loggedIn({ csrfToken: token }));
             }
         }).catch((error) => {
             // TODO: Dispatch Error
@@ -84,7 +84,7 @@ export function login(username, password) {
 
         fetch('/api/login', {
             method: 'POST',
-            credentials: 'include',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -92,12 +92,11 @@ export function login(username, password) {
         }).then((response) => {
             if (response.ok) {
                 const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({csrfToken: token}));
+                dispatch(loggedIn({ csrfToken: token }));
             } else {
-                dispatch(loginError("Login Failed.", []));
+                dispatch(loginError('Login Failed.', []));
             }
-        })
-        .catch((error) => {
+        }).catch((error) => {
             dispatch(loginError(error.message));
             console.log(error);
         });
@@ -119,11 +118,11 @@ export function cancelLogout() {
 
 export function logout() {
     return (dispatch, getState) => {
-        //dispatch(loggingOut());
-        const csrfToken = getState().session.csrfToken;
+        // dispatch(loggingOut());
+        const { csrfToken } = getState().session;
         fetch('/api/logout', {
             method: 'POST',
-            credentials: 'include',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
