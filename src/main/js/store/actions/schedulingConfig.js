@@ -1,6 +1,7 @@
 import {
     SCHEDULING_CONFIG_FETCHING,
     SCHEDULING_CONFIG_FETCHED,
+    SCHEDULING_CONFIG_FETCH_ERROR,
     SCHEDULING_CONFIG_UPDATE_ERROR,
     SCHEDULING_CONFIG_UPDATING,
     SCHEDULING_CONFIG_UPDATED,
@@ -9,7 +10,7 @@ import {
     SCHEDULING_ACCUMULATOR_SUCCESS
 } from './types';
 
-import {logout} from './session';
+import { verifyLoginByStatus } from './session';
 
 const CONFIG_URL = '/api/configuration/global/scheduling';
 const ACCUMULATOR_URL = '/api/configuration/global/scheduling/accumulator/run';
@@ -33,6 +34,15 @@ function schedulingConfigFetched(config) {
         type: SCHEDULING_CONFIG_FETCHED,
         config
     };
+}
+
+function schedulingConfigFetchError(message) {
+    return {
+        type: SCHEDULING_CONFIG_FETCH_ERROR,
+        error: {
+            message
+        }
+    }
 }
 
 /**
@@ -119,14 +129,10 @@ export function getSchedulingConfig() {
                     }
                 });
             } else {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        return dispatch(logout());
-                }
+                dispatch(verifyLoginByStatus(response.status));
             }
         })
-            .catch(console.error);
+        .catch(dispatch(schedulingConfigFetchError(console.error)));
     };
 }
 
@@ -156,13 +162,12 @@ export function updateSchedulingConfig(config) {
                         switch (response.status) {
                             case 400:
                                 return dispatch(schedulingConfigError(data.message, data.errors));
-                            case 401:
-                            case 403:
-                                    return dispatch(logout());
                             case 412:
                                 return dispatch(schedulingConfigError(data.message, data.errors));
-                            default:
-                                return dispatch(schedulingConfigError(data.message, null));
+                            default: {
+                                dispatch(schedulingConfigError(data.message, null));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            }
                         }
                     });
             }
@@ -184,15 +189,10 @@ export function runSchedulingAccumulator() {
             }
         }).then((response) => {
             if (!response.ok) {
-                switch(response.status) {
-                    case 401:
-                    case 403:
-                        return dispatch(logout());
-                    default:
-                        return response.json().then((json) => {
-                            dispatch(accumulatorError(json.message));
-                        });
-                }
+                response.json().then((json) => {
+                    dispatch(accumulatorError(json.message));
+                });
+                dispatch(verifyLoginByStatus(response.status));
             } else {
                 dispatch(accumulatorSuccess());
             }

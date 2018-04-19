@@ -1,9 +1,10 @@
 import {
     AUDIT_FETCHING,
-    AUDIT_FETCHED
+    AUDIT_FETCHED,
+    AUDIT_FETCH_ERROR
 } from './types';
 
-import { logout } from './session';
+import { verifyLoginByStatus } from './session';
 
 const FETCH_URL = '/api/audit';
 
@@ -27,6 +28,15 @@ function auditDataFetched(totalDataCount, items) {
         totalDataCount,
         items
     };
+}
+
+function auditDataFetchError(message) {
+    return {
+        type: AUDIT_FETCH_ERROR,
+        error: {
+            message
+        }
+    }
 }
 
 function createPagedQueryURL(pageNumber, pageSize) {
@@ -55,12 +65,8 @@ export function getAuditData(pageNumber, pageSize) {
                     dispatch(auditDataFetched(body.totalPages, body.content));
                 });
             } else {
-                switch(response.status) {
-                    case 401:
-                    case 403:
-                        return dispatch(logout());
-                }
+                dispatch(verifyLoginByStatus(response.status));
             }
-        }).catch(console.error);
+        }).catch(dispatch(auditDataFetchError(console.error)));
     };
 }
