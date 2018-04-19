@@ -8,7 +8,7 @@ import {
     EMAIL_CONFIG_HIDE_ADVANCED
 } from './types';
 
-import {logout} from './session';
+import { verifyLoginByStatus } from './session';
 
 const CONFIG_URL = '/api/configuration/channel/email';
 
@@ -143,11 +143,7 @@ export function getEmailConfig() {
                     }
                 })
             } else {
-                switch(response.status) {
-                    case 401:
-                    case 403:
-                        return dispatch(logout());
-                }
+                dispatch(verifyLoginByStatus(response.status));
             }
         })
         .catch(console.error);
@@ -182,13 +178,12 @@ export function updateEmailConfig(config) {
                             switch (response.status) {
                                 case 400:
                                     return dispatch(configError(data.message, data.errors));
-                                case 401:
-                                case 403:
-                                    return dispatch(logout());
                                 case 412:
                                     return dispatch(configError(data.message, data.errors));
-                                default:
-                                    return dispatch(configError(data.message, null));
+                                default: {
+                                    dispatch(configError(data.message, null));
+                                    return dispatch(verifyLoginByStatus(response.status));
+                                }
                             }
                         });
                 }
