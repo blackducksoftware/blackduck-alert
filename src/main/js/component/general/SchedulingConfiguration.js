@@ -64,6 +64,7 @@ class SchedulingConfiguration extends React.Component {
             this.setState({
                 accumulatorNextRun: 60
             });
+            this.props.getConfig();
         }
     }
 
