@@ -14,8 +14,7 @@ package com.blackducksoftware.integration.hub.alert.digest.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.util.Arrays;
-
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 
 public class CategoryDataTest {
@@ -34,11 +33,11 @@ public class CategoryDataTest {
     @Test
     public void testData() {
         final ItemData itemData = new ItemData(null);
-        final CategoryData categoryData = new CategoryData("CategoryKey", Arrays.asList(itemData), 3);
+        final CategoryData categoryData = new CategoryData("CategoryKey", Sets.newLinkedHashSet(itemData), 3);
 
         assertEquals("CategoryKey", categoryData.getCategoryKey());
         assertEquals(3, categoryData.getItemCount());
-        assertEquals(itemData, categoryData.getItemList().get(0));
+        assertEquals(itemData, categoryData.getItemList().iterator().next());
 
         assertEquals("{\"categoryKey\":\"CategoryKey\",\"itemList\":[{\"dataSet\":null}],\"itemCount\":3}", categoryData.toString());
     }

@@ -23,16 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.model;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class CategoryDataBuilder {
     private String categoryKey;
 
-    private final List<ItemData> itemList;
+    private final Set<ItemData> itemList;
 
     public CategoryDataBuilder() {
-        this.itemList = new LinkedList<>();
+        this.itemList = new LinkedHashSet<>();
     }
 
     public void addItem(final ItemData item) {
@@ -51,7 +51,7 @@ public class CategoryDataBuilder {
         this.categoryKey = categoryKey;
     }
 
-    public List<ItemData> getItemList() {
+    public Set<ItemData> getItemList() {
         return itemList;
     }
 

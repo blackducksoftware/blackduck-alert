@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 
+import org.assertj.core.util.Sets;
 import org.junit.After;
 import org.junit.Before;
 
@@ -52,7 +53,7 @@ public class ChannelTest {
         dataMap.put("VERSION", "version in violation");
         dataMap.put("RULE", "my policy rule");
 
-        return new CategoryData("POLICY_VIOLATION", Arrays.asList(new ItemData(dataMap)), 1);
+        return new CategoryData("POLICY_VIOLATION", Sets.newLinkedHashSet(new ItemData(dataMap)), 1);
     }
 
     protected CategoryData createMockVulnerability() {
@@ -61,7 +62,7 @@ public class ChannelTest {
         dataMap.put("VERSION", "vuln ver");
         dataMap.put("COUNT", 7);
 
-        return new CategoryData("MEDIUM_VULNERABILITY", Arrays.asList(new ItemData(dataMap)), 1);
+        return new CategoryData("MEDIUM_VULNERABILITY", Sets.newLinkedHashSet(new ItemData(dataMap)), 1);
     }
 
     public Collection<ProjectData> createProjectData(final String testName) {

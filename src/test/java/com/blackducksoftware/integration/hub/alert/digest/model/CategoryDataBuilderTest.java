@@ -17,11 +17,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -35,7 +34,7 @@ public class CategoryDataBuilderTest {
         assertNotNull(categoryDataBuilder.getItemList());
         assertTrue(categoryDataBuilder.getItemList().isEmpty());
 
-        final CategoryData categoryData = new CategoryData(null, new LinkedList<>(), 0);
+        final CategoryData categoryData = new CategoryData(null, new LinkedHashSet<>(), 0);
         assertEquals(categoryData, categoryDataBuilder.build());
     }
 
@@ -53,9 +52,9 @@ public class CategoryDataBuilderTest {
         assertEquals("CategoryKey", categoryDataBuilder.getCategoryKey());
         assertNotNull(categoryDataBuilder.getItemList());
         assertFalse(categoryDataBuilder.getItemList().isEmpty());
-        assertEquals(itemData, categoryDataBuilder.getItemList().get(0));
+        assertEquals(itemData, categoryDataBuilder.getItemList().iterator().next());
 
-        final List<ItemData> dataList = new ArrayList<>();
+        final Set<ItemData> dataList = new LinkedHashSet<>();
         dataList.add(itemData);
         CategoryData categoryData = new CategoryData("CategoryKey", dataList, 1);
         assertEquals(categoryData, categoryDataBuilder.build());
@@ -64,7 +63,7 @@ public class CategoryDataBuilderTest {
         assertNotNull(categoryDataBuilder.getItemList());
         assertTrue(categoryDataBuilder.getItemList().isEmpty());
 
-        categoryData = new CategoryData("CategoryKey", new LinkedList<>(), 0);
+        categoryData = new CategoryData("CategoryKey", new LinkedHashSet<>(), 0);
         assertEquals(categoryData, categoryDataBuilder.build());
     }
 }
