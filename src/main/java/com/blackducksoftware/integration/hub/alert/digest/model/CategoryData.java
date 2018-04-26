@@ -23,16 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.model;
 
-import java.util.List;
+import java.util.Set;
 
 public class CategoryData extends DigestData {
     private final String categoryKey;
 
-    private final List<ItemData> itemList;
+    private final Set<ItemData> itemList;
 
     private final int itemCount;
 
-    public CategoryData(final String categoryKey, final List<ItemData> itemList, final int itemCount) {
+    public CategoryData(final String categoryKey, final Set<ItemData> itemList, final int itemCount) {
         this.categoryKey = categoryKey;
         this.itemList = itemList;
         this.itemCount = itemCount;
@@ -42,7 +42,7 @@ public class CategoryData extends DigestData {
         return categoryKey;
     }
 
-    public List<ItemData> getItemList() {
+    public Set<ItemData> getItemList() {
         return itemList;
     }
 
