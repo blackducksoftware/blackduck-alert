@@ -11,10 +11,11 @@ function assignClassName(row, rowIdx) {
 }
 
 function assignDataFormat(cell, row) {
+    console.log("Cell ", cell);
     const cellContent = (row.missing) ?
-        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ row.name }</span> :
-        row.name;
-    return <div title={row.name}> {cellContent} </div>;
+        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ cell }</span> :
+        cell;
+    return <div title={cell}> {cellContent} </div>;
 }
 
 class ProjectConfiguration extends Component {
@@ -45,8 +46,7 @@ class ProjectConfiguration extends Component {
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
-
-        const projectData = projects.map(({ name }) => ({ name, missing: false }));
+        const projectData = projects.map(({ name, description }) => ({ name, description: description || '', missing: false }));
 
         configuredProjects.forEach((project) => {
             const projectFound = projectData.find(p => project === p.name);
@@ -84,6 +84,7 @@ class ProjectConfiguration extends Component {
             projectTable = (<div>
                 <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
