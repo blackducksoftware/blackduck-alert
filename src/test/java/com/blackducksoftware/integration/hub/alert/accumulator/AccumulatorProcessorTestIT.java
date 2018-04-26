@@ -34,6 +34,7 @@ import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
@@ -116,6 +117,9 @@ public class AccumulatorProcessorTestIT {
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);
+        final ProjectVersionWrapper projectWrapper = projectService.getProjectVersion(testProjectName, testProjectVersionName);
+        projectService.deleteHubProject(projectWrapper.getProjectView());
+
     }
 
     private void uploadBdio(final String bdioFile) throws IntegrationException, URISyntaxException, IOException {
