@@ -125,6 +125,10 @@ public class GlobalProperties {
         }
     }
 
+    public AboutModel getAboutModel() {
+        return aboutModel.orElse(null);
+    }
+
     public String getHubUrl() {
         return hubUrl;
     }
