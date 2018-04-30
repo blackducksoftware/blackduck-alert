@@ -23,9 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,6 +37,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.model.AboutModel;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -44,6 +45,7 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.util.ResourceUtil;
+import com.google.gson.Gson;
 
 @Component
 public class GlobalProperties {
@@ -97,25 +99,30 @@ public class GlobalProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
-    private String productVersion;
+    private Optional<AboutModel> aboutModel;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository) {
+    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
-        initVersion();
+        readAboutInformation(gson);
     }
 
-    private void initVersion() {
+    protected void readAboutInformation(final Gson gson) {
         try {
-            productVersion = ResourceUtil.getResourceAsString(getClass(), "/version.txt", StandardCharsets.UTF_8.toString());
-        } catch (final IOException e) {
-            productVersion = PRODUCT_VERSION_UNKNOWN;
+            final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
+            aboutModel = Optional.of(gson.fromJson(aboutJson, AboutModel.class));
+        } catch (final Exception e) {
+            aboutModel = Optional.empty();
             throw new RuntimeException(e);
         }
     }
 
     public String getProductVersion() {
-        return productVersion;
+        if (aboutModel.isPresent()) {
+            return aboutModel.get().getVersion();
+        } else {
+            return PRODUCT_VERSION_UNKNOWN;
+        }
     }
 
     public String getHubUrl() {
