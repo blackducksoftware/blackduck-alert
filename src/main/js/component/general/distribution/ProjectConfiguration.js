@@ -43,8 +43,6 @@ class ProjectConfiguration extends Component {
     }
 
     onRowSelectedAll(isSelected, rows) {
-        console.log("Selected rows ", rows);
-        console.log("isSelected ",isSelected);
         if(rows) {
             const selected = Object.assign([], this.props.configuredProjects);
             rows.forEach(row => {
