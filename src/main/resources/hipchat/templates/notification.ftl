@@ -4,7 +4,7 @@
         <br />Type: ${categoryItem.categoryKey}
         <br />Number of Changes: ${categoryItem.itemCount}
         <br />
-        <#list categoryItem.itemList as item>
+        <#list categoryItem.items as item>
             <#if item.dataSet?? && item.dataSet?size gt 0>
                 <#if item.dataSet.RULE??>
                     <br /> Rule: ${item.dataSet.RULE}
