@@ -26,7 +26,7 @@
 	                <div style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: bold;font-size: 18px;color: #445B68;margin-bottom: 10px;">${topic.projectName} > ${topic.projectVersion}</div>
 	                <#if topic.categoryMap?? && topic.categoryMap?size gt 0> 
 	                  <#list topic.categoryMap?values as categoryItem>
-	                    <#if categoryItem.itemList?? && categoryItem.itemList?size gt 0>
+	                    <#if categoryItem.items?? && categoryItem.items?size gt 0>
 	                        <#assign categoryType="${categoryItem.categoryKey}">
 	                        <#if categoryType == "POLICY_VIOLATION">
 	                          <#assign categoryName="Policy Violations">
@@ -44,7 +44,7 @@
 	                          <#assign categoryName="${categoryItem.categoryKey}">
 	                        </#if>
 	                        <div style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: bold;font-size: 14px;color: #445B68; margin-top: 10px; margin-bottom: 10px;">${categoryItem.itemCount} ${categoryName}</div>
-	                        <#list categoryItem.itemList as item>
+	                        <#list categoryItem.items as item>
 	                            <#if item.dataSet?? && item.dataSet?size gt 0>
 	                               <div>
 	                                   <div style="font-family: monospace;font-size: 14px;color: #445B68;padding-right: 15px;display: inline-block;">
