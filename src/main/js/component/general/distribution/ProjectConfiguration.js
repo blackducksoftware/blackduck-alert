@@ -11,7 +11,6 @@ function assignClassName(row, rowIdx) {
 }
 
 function assignDataFormat(cell, row) {
-    console.log("Cell ", cell);
     const cellContent = (row.missing) ?
         <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ cell }</span> :
         cell;
