@@ -21,25 +21,42 @@ class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
         this.onRowSelected = this.onRowSelected.bind(this);
+        this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
     }
 
     componentWillMount() {
         this.props.getProjects();
     }
 
-    onRowSelected(row, isSelected) {
-        const selected = Object.assign([], this.props.configuredProjects);
+    createSelectedArray(selectedArray, row, isSelected) {
         if (isSelected) {
-            const projectFound = selected.find(project => project === row.name);
+            const projectFound = selectedArray.find(project => project === row.name);
             if (!projectFound) {
-                selected.push(row.name);
+                selectedArray.push(row.name);
             }
         } else {
-            const index = selected.indexOf(row.name);
+            const index = selectedArray.indexOf(row.name);
             if (index >= 0) {
-                selected.splice(index, 1); // if found, remove that element from selected array
+                selectedArray.splice(index, 1); // if found, remove that element from selected array
             }
         }
+    }
+
+    onRowSelectedAll(isSelected, rows) {
+        if(rows) {
+            const selected = Object.assign([], this.props.configuredProjects);
+            rows.forEach(row => {
+                this.createSelectedArray(selected, row, isSelected);
+            });
+            this.props.handleProjectChanged(selected);
+        } else {
+            this.props.handleProjectChanged([]);
+        }
+    }
+
+    onRowSelected(row, isSelected) {
+        const selected = Object.assign([], this.props.configuredProjects);
+        this.createSelectedArray(selected, row, isSelected);
         this.props.handleProjectChanged(selected);
     }
 
@@ -76,7 +93,8 @@ class ProjectConfiguration extends Component {
             clickToSelect: true,
             showOnlySelected: true,
             selected: this.props.configuredProjects,
-            onSelect: this.onRowSelected
+            onSelect: this.onRowSelected,
+            onSelectAll: this.onRowSelectedAll
         };
 
         let projectTable = null;
