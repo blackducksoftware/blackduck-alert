@@ -52,7 +52,7 @@ export function getProjects() {
                     dispatch(verifyLoginByStatus(response.status));
                 } else {
                     const jsonArray = JSON.parse(json.message) || [];
-                    const projects = jsonArray.map(({ name, url }) => ({ name, url }));
+                    const projects = jsonArray.map(({ name, description, url }) => ({ name, description, url }));
                     dispatch(projectsFetched(projects));
                 }
             });
