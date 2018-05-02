@@ -9,6 +9,7 @@ import AuditDetails from './Details';
 import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 
 import '../../../../css/audit.scss';
+import { logout } from '../../../store/actions/session';
 
 class Index extends Component {
     constructor(props) {
@@ -76,9 +77,14 @@ class Index extends Component {
         }).then((response) => {
             this.setState({ inProgress: false });
             if (!response.ok) {
-                return response.json().then((json) => {
-                    this.setState({ message: json.message });
-                });
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        this.props.logout();
+                    return response.json().then((json) => {
+                        this.setState({ message: json.message });
+                    });
+                }
             }
             return response.json().then((json) => {
                 this.setState({ message: '' });
@@ -313,7 +319,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: (pageNumber, pageSize) => dispatch(getAuditData(pageNumber, pageSize))
+    getAuditData: (pageNumber, pageSize) => dispatch(getAuditData(pageNumber, pageSize)),
+    logout: () => dispatch(logout())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

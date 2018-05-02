@@ -1,6 +1,7 @@
 import {
     SCHEDULING_CONFIG_FETCHING,
     SCHEDULING_CONFIG_FETCHED,
+    SCHEDULING_CONFIG_FETCH_ERROR,
     SCHEDULING_CONFIG_UPDATE_ERROR,
     SCHEDULING_CONFIG_UPDATING,
     SCHEDULING_CONFIG_UPDATED,
@@ -31,6 +32,14 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 ...action.config
+            });
+
+        case SCHEDULING_CONFIG_FETCH_ERROR:
+            return Object.assign({}, state, {
+                fetching: false,
+                error: {
+                    message: action.message
+                }
             });
 
         case SCHEDULING_CONFIG_UPDATE_ERROR:
