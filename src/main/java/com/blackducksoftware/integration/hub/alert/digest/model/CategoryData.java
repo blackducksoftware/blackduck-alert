@@ -28,13 +28,13 @@ import java.util.Set;
 public class CategoryData extends DigestData {
     private final String categoryKey;
 
-    private final Set<ItemData> itemList;
+    private final Set<ItemData> items;
 
     private final int itemCount;
 
-    public CategoryData(final String categoryKey, final Set<ItemData> itemList, final int itemCount) {
+    public CategoryData(final String categoryKey, final Set<ItemData> items, final int itemCount) {
         this.categoryKey = categoryKey;
-        this.itemList = itemList;
+        this.items = items;
         this.itemCount = itemCount;
     }
 
@@ -42,8 +42,8 @@ public class CategoryData extends DigestData {
         return categoryKey;
     }
 
-    public Set<ItemData> getItemList() {
-        return itemList;
+    public Set<ItemData> getItems() {
+        return items;
     }
 
     public int getItemCount() {

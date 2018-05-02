@@ -25,9 +25,9 @@ public class CategoryDataTest {
 
         assertNull(categoryData.getCategoryKey());
         assertEquals(0, categoryData.getItemCount());
-        assertNull(categoryData.getItemList());
+        assertNull(categoryData.getItems());
 
-        assertEquals("{\"categoryKey\":null,\"itemList\":null,\"itemCount\":0}", categoryData.toString());
+        assertEquals("{\"categoryKey\":null,\"items\":null,\"itemCount\":0}", categoryData.toString());
     }
 
     @Test
@@ -37,8 +37,8 @@ public class CategoryDataTest {
 
         assertEquals("CategoryKey", categoryData.getCategoryKey());
         assertEquals(3, categoryData.getItemCount());
-        assertEquals(itemData, categoryData.getItemList().iterator().next());
+        assertEquals(itemData, categoryData.getItems().iterator().next());
 
-        assertEquals("{\"categoryKey\":\"CategoryKey\",\"itemList\":[{\"dataSet\":null}],\"itemCount\":3}", categoryData.toString());
+        assertEquals("{\"categoryKey\":\"CategoryKey\",\"items\":[{\"dataSet\":null}],\"itemCount\":3}", categoryData.toString());
     }
 }
