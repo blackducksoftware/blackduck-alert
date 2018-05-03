@@ -16,6 +16,6 @@ public class AboutModelTest {
 
         assertEquals(version, model.getVersion());
         assertEquals(description, model.getDescription());
-        assertEquals(gitHubUrl, model.getGithubProjectUrl());
+        assertEquals(gitHubUrl, model.getProjectUrl());
     }
 }

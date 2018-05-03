@@ -26,16 +26,16 @@ package com.blackducksoftware.integration.hub.alert.model;
 public class AboutModel extends Model {
     private String version;
     private String description;
-    private String githubProjectUrl;
+    private String projectUrl;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String description, final String githubProjectUrl) {
+    public AboutModel(final String version, final String description, final String projectUrl) {
         this.version = version;
         this.description = description;
-        this.githubProjectUrl = githubProjectUrl;
+        this.projectUrl = projectUrl;
     }
 
     public String getVersion() {
@@ -46,7 +46,7 @@ public class AboutModel extends Model {
         return description;
     }
 
-    public String getGithubProjectUrl() {
-        return githubProjectUrl;
+    public String getProjectUrl() {
+        return projectUrl;
     }
 }

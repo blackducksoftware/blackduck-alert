@@ -107,7 +107,7 @@ task createAboutText(type: Task) {
         standardOutput = gitCommandOutput
     }
     def gitUrl = gitCommandOutput.toString().trim()
-    final def aboutJson = JsonOutput.toJson([version: version, gitUrl: gitUrl]) 
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl]) 
     logger.info("About text file: {} content: {}", aboutFile, aboutJson)
     aboutFile << aboutJson
 }
