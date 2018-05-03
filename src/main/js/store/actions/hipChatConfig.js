@@ -9,6 +9,8 @@ import {
     HIPCHAT_CONFIG_TEST_FAILED
 } from './types';
 
+import { verifyLoginByStatus } from './session';
+
 const CONFIG_URL = '/api/configuration/channel/hipchat';
 const TEST_URL = '/api/configuration/channel/hipchat/test';
 
@@ -101,14 +103,19 @@ export function getConfig() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-            .then(response =>
-                response.json().then((body) => {
-                    if (body.length > 0) {
-                        dispatch(configFetched(body[0]));
-                    } else {
-                        dispatch(configFetched({}));
-                    }
-                }))
+            .then((response) => {
+                if(response.ok) {
+                    response.json().then((body) => {
+                        if (body.length > 0) {
+                            dispatch(configFetched(body[0]));
+                        } else {
+                            dispatch(configFetched({}));
+                        }
+                    })
+                } else {
+                    dispatch(verifyLoginByStatus(response.status));
+                }
+            })
             .catch(console.error);
     };
 }
@@ -143,12 +150,12 @@ export function updateConfig(config) {
                             switch (response.status) {
                                 case 400:
                                     return dispatch(configError(data.message, data.errors));
-                                case 401:
-                                    return dispatch(configError('API Key isn\'t valid, try a different one', null));
                                 case 412:
                                     return dispatch(configError(data.message, data.errors));
-                                default:
-                                    return dispatch(configError(data.message, null));
+                                default: {
+                                    dispatch(configError(data.message, null));
+                                    return dispatch(verifyLoginByStatus(response.status));
+                                }
                             }
                         });
                 }
