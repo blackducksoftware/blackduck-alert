@@ -48,7 +48,7 @@ public class AboutHandler extends ControllerHandler {
 
     public ResponseEntity<String> getAboutData() {
         final AboutModel model = aboutActions.getAboutModel();
-        final AboutRestModel restModel = new AboutRestModel(model.getVersion(), model.getDescription(), model.getGithubProjectUrl());
+        final AboutRestModel restModel = new AboutRestModel(model.getVersion(), model.getDescription(), model.getProjectUrl());
         return new ResponseEntity<>(gson.toJson(restModel), HttpStatus.OK);
     }
 }

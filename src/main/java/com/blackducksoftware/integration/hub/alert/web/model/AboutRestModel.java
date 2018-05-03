@@ -28,16 +28,16 @@ import com.blackducksoftware.integration.hub.alert.model.Model;
 public class AboutRestModel extends Model {
     private String version;
     private String description;
-    private String githubProjectUrl;
+    private String projectUrl;
 
-    public AboutRestModel() {
+    protected AboutRestModel() {
 
     }
 
-    public AboutRestModel(final String version, final String description, final String githubProjectUrl) {
+    public AboutRestModel(final String version, final String description, final String projectUrl) {
         this.version = version;
         this.description = description;
-        this.githubProjectUrl = githubProjectUrl;
+        this.projectUrl = projectUrl;
     }
 
     public String getVersion() {
@@ -48,7 +48,7 @@ public class AboutRestModel extends Model {
         return description;
     }
 
-    public String getGithubProjectUrl() {
-        return githubProjectUrl;
+    public String getProjectUrl() {
+        return projectUrl;
     }
 }
