@@ -7,6 +7,7 @@ import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
+import AboutInfo from './AboutInfo';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from './store/actions/session';
 
@@ -21,10 +22,15 @@ class App extends Component {
     render() {
         if (this.props.initializing) {
             return (<div />);
-        } else if (this.props.loggedIn) {
-            return <MainPage />;
+        } else {
+            const contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+            return (
+                <div>
+                    {contentPage}
+                    <AboutInfo/>
+                </div>
+            );
         }
-        return <LoginPage />;
     }
 }
 
