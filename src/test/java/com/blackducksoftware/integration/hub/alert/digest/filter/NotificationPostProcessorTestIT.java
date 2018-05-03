@@ -27,7 +27,6 @@ import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -110,21 +109,6 @@ public class NotificationPostProcessorTestIT {
     }
 
     @Test
-    public void isApplicableTest() {
-
-        final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
-        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
-
-        Mockito.when(distributionNotificationTypeRepository.findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(Collections.emptyList());
-
-        final ProjectData projectData = new ProjectData(null, null, null, null, null);
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 1", DigestTypeEnum.DAILY, true);
-        config.setId(13L);
-
-        assertFalse(postProcessor.isApplicable(config, projectData));
-    }
-
-    @Test
     public void doFrequenciesMatchTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
         final DigestTypeEnum digestType = DigestTypeEnum.DAILY;
@@ -136,20 +120,6 @@ public class NotificationPostProcessorTestIT {
         assertTrue(postProcessor.doFrequenciesMatch(config, projectDataMatching));
         assertFalse(postProcessor.doFrequenciesMatch(config, projectDataOther));
         assertFalse(postProcessor.doFrequenciesMatch(configOther, projectDataOther));
-    }
-
-    @Test
-    public void doNotificationTypesMatchWithNoneConfiguredTest() {
-        final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
-        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
-
-        Mockito.when(distributionNotificationTypeRepository.findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(Collections.emptyList());
-
-        final ProjectData projectData = new ProjectData(null, null, null, null, null);
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 1", DigestTypeEnum.DAILY, true);
-        config.setId(13L);
-
-        assertFalse(postProcessor.doNotificationTypesMatch(config, projectData));
     }
 
 }
