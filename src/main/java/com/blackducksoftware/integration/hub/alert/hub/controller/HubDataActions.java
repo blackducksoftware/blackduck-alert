@@ -74,7 +74,7 @@ public class HubDataActions {
 
             final List<HubProject> projects = new ArrayList<>();
             for (final ProjectView projectView : rawProjects) {
-                final HubProject project = new HubProject(projectView.name);
+                final HubProject project = new HubProject(projectView.name, projectView.description);
                 projects.add(project);
             }
             return projects;
