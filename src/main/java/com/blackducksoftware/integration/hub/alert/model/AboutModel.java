@@ -28,7 +28,7 @@ public class AboutModel extends Model {
     private String description;
     private String githubProjectUrl;
 
-    public AboutModel() {
+    protected AboutModel() {
 
     }
 

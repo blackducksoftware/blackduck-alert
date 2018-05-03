@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +38,7 @@ public class AboutController extends BaseController {
     }
 
     @GetMapping(value = "/about")
-    public ResponseEntity<String> about(final HttpServletRequest request) {
+    public ResponseEntity<String> about() {
         return aboutDataHandler.getAboutData();
     }
 }
