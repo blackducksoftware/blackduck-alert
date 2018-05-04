@@ -37,13 +37,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
-public abstract class AlertTaskScheduler implements Runnable {
+public abstract class ScheduledTask implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
 
-    public AlertTaskScheduler(final TaskScheduler taskScheduler) {
+    public ScheduledTask(final TaskScheduler taskScheduler) {
         this.taskScheduler = taskScheduler;
     }
 

@@ -43,8 +43,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 
-public abstract class JobScheduler<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> extends AlertTaskScheduler {
-    private final Logger logger = LoggerFactory.getLogger(JobScheduler.class);
+public abstract class JobScheduledTask<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> extends ScheduledTask {
+    private final Logger logger = LoggerFactory.getLogger(JobScheduledTask.class);
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
     protected final SimpleJobLauncher jobLauncher;
@@ -54,7 +54,7 @@ public abstract class JobScheduler<R extends ItemReader<?>, P extends ItemProces
     protected final NotificationManager notificationManager;
     protected final PlatformTransactionManager transactionManager;
 
-    public JobScheduler(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
+    public JobScheduledTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         super(taskScheduler);
         this.jobLauncher = jobLauncher;

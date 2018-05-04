@@ -36,14 +36,14 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.scheduler.AlertTaskScheduler;
+import com.blackducksoftware.integration.hub.alert.scheduler.ScheduledTask;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.hub.service.model.PhoneHomeResponse;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
 @Component
-public class PhoneHomeTask extends AlertTaskScheduler {
+public class PhoneHomeTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final GlobalProperties globalProperties;
     private final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper;
