@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,6 +32,4 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 @Transactional
 public interface CommonDistributionRepository extends JpaRepository<CommonDistributionConfigEntity, Long> {
     public CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType);
-
-    public List<CommonDistributionConfigEntity> findByDistributionType(String distributionType);
 }
