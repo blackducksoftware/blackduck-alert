@@ -32,8 +32,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduler;
 
-public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends CommonConfig<R, P, W>> {
+public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduler<R, P, W>> {
 
     private OutputLogger outputLogger;
     private GlobalProperties globalProperties;
@@ -95,11 +96,11 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
     public void testScheduleJobExecutionBlankCron() throws IOException {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         final ScheduledFuture<?> future = Mockito.mock(ScheduledFuture.class);
-        Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(CommonConfig.class), Mockito.any(CronTrigger.class));
+        Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(JobScheduler.class), Mockito.any(CronTrigger.class));
         // Mockito.when(taskScheduler.schedule(Mockito.any(CommonConfig.class), Mockito.any(CronTrigger.class))).thenReturn(future);
         final C config = getConfigWithTaskScheduler(taskScheduler);
-        config.scheduleJobExecution("1 1 1 1 1 1");
-        config.scheduleJobExecution("");
+        config.scheduleExecution("1 1 1 1 1 1");
+        config.scheduleExecution("");
 
         assertTrue(outputLogger.isLineContainingText("Un-Scheduling "));
     }
@@ -109,7 +110,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
     @Test
     public void testScheduleJobExecutionException() throws IOException {
         final C config = getConfigWithNullParams();
-        config.scheduleJobExecution("fail");
+        config.scheduleExecution("fail");
 
         assertTrue(outputLogger.isLineContainingText("IllegalArgumentException"));
     }
