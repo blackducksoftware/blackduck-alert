@@ -72,7 +72,7 @@ public class ProjectDataTest {
         assertEquals("Version", projectData.getProjectVersion());
 
         assertEquals(
-                "{\"digestType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"notificationIds\":[1],\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"itemList\":null,\"itemCount\":0}}}",
+                "{\"digestType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"notificationIds\":[1],\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"items\":null,\"itemCount\":0}}}",
                 projectData.toString());
     }
 }

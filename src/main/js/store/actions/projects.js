@@ -4,6 +4,8 @@ import {
     PROJECTS_FETCH_ERROR
 } from './types';
 
+import { verifyLoginByStatus } from './session';
+
 const PROJECTS_URL = '/api/hub/projects';
 
 /**
@@ -47,9 +49,10 @@ export function getProjects() {
             response.json().then((json) => {
                 if (!response.ok) {
                     dispatch(projectsError(json.message));
+                    dispatch(verifyLoginByStatus(response.status));
                 } else {
                     const jsonArray = JSON.parse(json.message) || [];
-                    const projects = jsonArray.map(({ name, url }) => ({ name, url }));
+                    const projects = jsonArray.map(({ name, description, url }) => ({ name, description, url }));
                     dispatch(projectsFetched(projects));
                 }
             });
