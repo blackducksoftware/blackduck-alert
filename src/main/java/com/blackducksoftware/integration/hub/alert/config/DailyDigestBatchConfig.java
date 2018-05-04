@@ -44,24 +44,22 @@ import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduledTask;
 
 @Component
-public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
+public class DailyDigestBatchConfig extends JobScheduledTask<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
     private final ChannelTemplateManager channelTemplateManager;
     private final DigestNotificationProcessor notificationProcessor;
-    private final GlobalProperties globalProperties;
 
     @Autowired
     public DailyDigestBatchConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
-            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor,
-            final GlobalProperties globalProperties) {
+            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager, final DigestNotificationProcessor notificationProcessor) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
-        this.globalProperties = globalProperties;
     }
 
     @Override
@@ -72,7 +70,7 @@ public class DailyDigestBatchConfig extends CommonConfig<DailyItemReader, Digest
 
     @Override
     public DailyItemReader reader() {
-        return new DailyItemReader(notificationManager, globalProperties);
+        return new DailyItemReader(notificationManager);
     }
 
     @Override
