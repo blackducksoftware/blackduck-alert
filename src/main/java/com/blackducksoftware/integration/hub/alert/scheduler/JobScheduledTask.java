@@ -21,17 +21,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.config;
+package com.blackducksoftware.integration.hub.alert.scheduler;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.TimeZone;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -48,13 +39,12 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 
-public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> implements Runnable {
-    private final Logger logger = LoggerFactory.getLogger(CommonConfig.class);
+public abstract class JobScheduledTask<R extends ItemReader<?>, P extends ItemProcessor<?, ?>, W extends ItemWriter<?>> extends ScheduledTask {
+    private final Logger logger = LoggerFactory.getLogger(JobScheduledTask.class);
     public static final String JOB_ID_PROPERTY_NAME = "JobID";
 
     protected final SimpleJobLauncher jobLauncher;
@@ -63,60 +53,16 @@ public abstract class CommonConfig<R extends ItemReader<?>, P extends ItemProces
     protected final TaskExecutor taskExecutor;
     protected final NotificationManager notificationManager;
     protected final PlatformTransactionManager transactionManager;
-    private final TaskScheduler taskScheduler;
 
-    private ScheduledFuture<?> future;
-
-    public CommonConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
+    public JobScheduledTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
+        super(taskScheduler);
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;
         this.taskExecutor = taskExecutor;
         this.notificationManager = notificationManager;
         this.transactionManager = transactionManager;
-        this.taskScheduler = taskScheduler;
-    }
-
-    public void scheduleJobExecution(final String cron) {
-        if (StringUtils.isNotBlank(cron)) {
-            try {
-                final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
-                if (future != null) {
-                    future.cancel(false);
-                }
-                logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
-                future = taskScheduler.schedule(this, cronTrigger);
-            } catch (final IllegalArgumentException e) {
-                logger.error(e.getMessage(), e);
-            }
-        } else {
-            if (future != null) {
-                logger.info("Un-Scheduling " + this.getClass().getSimpleName());
-                future.cancel(false);
-            }
-        }
-    }
-
-    public Long getMillisecondsToNextRun() {
-        if (future == null || future.isCancelled() || future.isDone()) {
-            return null;
-        } else {
-            return future.getDelay(TimeUnit.MILLISECONDS);
-        }
-    }
-
-    public String getFormatedNextRunTime() {
-        final Long msToNextRun = getMillisecondsToNextRun();
-        if (msToNextRun == null) {
-            return null;
-        } else {
-            final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
-            ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun, ChronoUnit.MILLIS);
-            nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
-            final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern("MM/dd/yyy hh:mm a"));
-            return formattedString + " UTC";
-        }
     }
 
     @Override

@@ -46,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcess
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.scheduler.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 
@@ -59,19 +60,20 @@ public class StartupManager {
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
-
+    private final PhoneHomeTask phoneHomeTask;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
+        this.phoneHomeTask = phoneHometask;
     }
 
     public void startup() {
@@ -116,22 +118,25 @@ public class StartupManager {
             final GlobalSchedulingConfigEntity savedGlobalSchedulingConfig = globalSchedulingRepository.save(globalSchedulingConfig);
             logger.info(savedGlobalSchedulingConfig.toString());
         }
-        scheduleCronJobs(dailyDigestHourOfDay, purgeDataFrequencyDays);
+        scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
-    public void scheduleCronJobs(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        accumulatorConfig.scheduleJobExecution("0 0/1 * 1/1 * *");
+    public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
+        accumulatorConfig.scheduleExecution("0 0/1 * 1/1 * *");
         final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
         logger.info("Accumulator next run: {} seconds", seconds);
 
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-        dailyDigestBatchConfig.scheduleJobExecution(dailyDigestCron);
-        purgeConfig.scheduleJobExecution(purgeDataCron);
+        dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
+        purgeConfig.scheduleExecution(purgeDataCron);
 
         logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
         logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
+
+        phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
+        logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
     }
 
     private Boolean purgeOldData() {
