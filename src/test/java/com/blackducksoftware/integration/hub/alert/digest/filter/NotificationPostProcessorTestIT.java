@@ -122,4 +122,37 @@ public class NotificationPostProcessorTestIT {
         assertFalse(postProcessor.doFrequenciesMatch(configOther, projectDataOther));
     }
 
+    @Test
+    public void filterMatchingNotificationsTest() {
+        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
+
+        final DigestTypeEnum digestType = DigestTypeEnum.REAL_TIME;
+        final String projectName = "Project Name";
+        final String projectVersion = "Project Version";
+        final List<Long> notificationIds = Collections.emptyList();
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
+        for (final NotificationCategoryEnum categoryEnum : NotificationCategoryEnum.values()) {
+            categoryMap.put(categoryEnum, new CategoryData(null, null, 0));
+            notificationTypeRepository.save(new NotificationTypeEntity(categoryEnum));
+        }
+        final ProjectData projectData = new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
+        final Long config1Id = 13L;
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", digestType, true);
+        config1.setId(config1Id);
+
+        final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
+        final Long notificationTypeId = notificationType.getId();
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
+
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+        distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
+
+        assertEquals(NotificationCategoryEnum.values().length, projectData.getCategoryMap().size());
+
+        postProcessor.filterMatchingNotificationTypes(config1, projectData);
+
+        assertTrue(projectData.getCategoryMap().containsKey(notificationType.getType()));
+        assertEquals(1, projectData.getCategoryMap().size());
+    }
+
 }
