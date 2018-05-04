@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 
 @Transactional
 @Component

@@ -46,9 +46,9 @@ import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.request.Request;
+import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 

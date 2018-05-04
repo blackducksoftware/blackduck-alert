@@ -30,10 +30,10 @@ import org.springframework.batch.item.ItemProcessor;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
 
-public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
+public class AccumulatorProcessor implements ItemProcessor<OldNotificationResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
 
@@ -42,7 +42,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
     }
 
     @Override
-    public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
+    public DBStoreEvent process(final OldNotificationResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);

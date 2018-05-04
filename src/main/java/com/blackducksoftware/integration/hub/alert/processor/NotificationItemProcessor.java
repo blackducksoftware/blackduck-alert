@@ -30,15 +30,15 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.NotificationProcessor;
-import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.notification.VulnerabilityContentItem;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.throwaway.MapProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.NotificationProcessor;
+import com.blackducksoftware.integration.hub.throwaway.PolicyOverrideContentItem;
+import com.blackducksoftware.integration.hub.throwaway.PolicyViolationClearedContentItem;
+import com.blackducksoftware.integration.hub.throwaway.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.VulnerabilityContentItem;
 import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {

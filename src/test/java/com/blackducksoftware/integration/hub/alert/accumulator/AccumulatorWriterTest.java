@@ -16,11 +16,11 @@ import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOper
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
+import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.ProjectVersionModel;
 
 public class AccumulatorWriterTest {
 

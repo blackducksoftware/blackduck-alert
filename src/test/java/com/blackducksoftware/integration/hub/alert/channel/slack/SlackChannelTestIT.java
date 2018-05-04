@@ -41,8 +41,8 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.request.Request;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class SlackChannelTestIT extends ChannelTest {

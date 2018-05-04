@@ -38,12 +38,13 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
+import com.blackducksoftware.integration.hub.throwaway.OldNotificationService;
 
-public class AccumulatorReader implements ItemReader<NotificationResults> {
+public class AccumulatorReader implements ItemReader<OldNotificationResults> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
 
     private final GlobalProperties globalProperties;
@@ -67,7 +68,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
     }
 
     @Override
-    public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public OldNotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
             logger.info("Accumulator Reader Starting Operation");
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
@@ -94,8 +95,10 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                     logger.error("Error creating date range", e);
                 }
 
-                final NotificationService notificationService = hubServicesFactory.createNotificationService();
-                final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
+                // final NotificationService notificationService = hubServicesFactory.createNotificationService();
+                final HubService hubService = hubServicesFactory.createHubService();
+                final OldNotificationService notificationService = new OldNotificationService(hubService, null);
+                final OldNotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
                 if (notificationResults.getNotificationContentItems().isEmpty()) {
                     logger.debug("Read Notification Count: 0");

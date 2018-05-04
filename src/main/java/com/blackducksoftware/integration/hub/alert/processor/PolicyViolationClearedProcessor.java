@@ -28,11 +28,11 @@ import java.util.Map;
 
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
-import com.blackducksoftware.integration.hub.notification.SubProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.PolicyViolationClearedContentItem;
+import com.blackducksoftware.integration.hub.throwaway.SubProcessorCache;
 import com.blackducksoftware.integration.log.IntLogger;
 
 public class PolicyViolationClearedProcessor extends PolicyViolationProcessor {

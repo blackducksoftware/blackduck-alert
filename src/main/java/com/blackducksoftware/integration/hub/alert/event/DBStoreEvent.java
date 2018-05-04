@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.alert.event;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
 
 public class DBStoreEvent extends AbstractEvent {
     public final static String TOPIC_NAME = "DB_STORE_EVENT";
