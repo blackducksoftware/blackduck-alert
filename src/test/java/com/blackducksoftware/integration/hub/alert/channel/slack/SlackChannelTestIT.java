@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
@@ -166,7 +167,7 @@ public class SlackChannelTestIT extends ChannelTest {
         itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED, 1);
         itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED, 1);
 
-        final CategoryData categoryData = new CategoryData("key", Arrays.asList(new ItemData(itemDataDataSet)), 0);
+        final CategoryData categoryData = new CategoryData("key", Sets.newLinkedHashSet(new ItemData(itemDataDataSet)), 0);
 
         return categoryData;
     }

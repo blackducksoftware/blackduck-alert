@@ -17,7 +17,7 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
-
+import { logout } from '../../../store/actions/session';
 
 /**
  * Selects className based on field value
@@ -305,11 +305,18 @@ class Index extends Component {
                     });
                 });
             } else {
-                response.json().then((json) => {
-                    this.setState({ jobConfigTableMessage: json.message });
-                });
+                switch(response.status) {
+                    case 401:
+                    case 403:
+                        this.props.logout();
+                    default:
+                        response.json().then((json) => {
+                            this.setState({ jobConfigTableMessage: json.message });
+                        });
+                }
             }
         }).catch((error) => {
+            this.startAutoReload();
             console.log(error);
         });
     }
@@ -453,6 +460,8 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+    logout: () => dispatch(logout())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

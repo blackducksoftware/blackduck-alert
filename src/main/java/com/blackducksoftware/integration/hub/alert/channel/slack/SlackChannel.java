@@ -113,7 +113,7 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
                         messageBuilder.append(System.lineSeparator());
                         messageBuilder.append("Number of Changes: ");
                         messageBuilder.append(data.getItemCount());
-                        for (final ItemData item : data.getItemList()) {
+                        for (final ItemData item : data.getItems()) {
                             messageBuilder.append(System.lineSeparator());
                             final Map<String, Object> dataSet = item.getDataSet();
                             final String ruleKey = ItemTypeEnum.RULE.toString();

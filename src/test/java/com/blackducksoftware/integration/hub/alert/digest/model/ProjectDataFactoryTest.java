@@ -101,7 +101,7 @@ public class ProjectDataFactoryTest {
         assertEquals(notification.getProjectVersion(), projectData.getProjectVersion());
 
         final CategoryData categoryData = projectData.getCategoryMap().get(notification.getNotificationType());
-        final ItemData itemData = categoryData.getItemList().get(0);
+        final ItemData itemData = categoryData.getItems().iterator().next();
         assertEquals(notification.getNotificationType().name(), categoryData.getCategoryKey());
         assertEquals(notification.getPolicyRuleName(), itemData.getDataSet().get(ItemTypeEnum.RULE.name()));
         assertEquals(notification.getComponentName(), itemData.getDataSet().get(ItemTypeEnum.COMPONENT.name()));

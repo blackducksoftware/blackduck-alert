@@ -12,41 +12,57 @@ function assignClassName(row, rowIdx) {
 
 function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
-        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ row.name }</span> :
-        row.name;
-    return <div title={row.name}> {cellContent} </div>;
+        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ cell }</span> :
+        cell;
+    return <div title={cell}> {cellContent} </div>;
 }
 
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
         this.onRowSelected = this.onRowSelected.bind(this);
+        this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
     }
 
     componentWillMount() {
         this.props.getProjects();
     }
 
-    onRowSelected(row, isSelected) {
-        const selected = Object.assign([], this.props.configuredProjects);
+    createSelectedArray(selectedArray, row, isSelected) {
         if (isSelected) {
-            const projectFound = selected.find(project => project === row.name);
+            const projectFound = selectedArray.find(project => project === row.name);
             if (!projectFound) {
-                selected.push(row.name);
+                selectedArray.push(row.name);
             }
         } else {
-            const index = selected.indexOf(row.name);
+            const index = selectedArray.indexOf(row.name);
             if (index >= 0) {
-                selected.splice(index, 1); // if found, remove that element from selected array
+                selectedArray.splice(index, 1); // if found, remove that element from selected array
             }
         }
+    }
+
+    onRowSelectedAll(isSelected, rows) {
+        if(rows) {
+            const selected = Object.assign([], this.props.configuredProjects);
+            rows.forEach(row => {
+                this.createSelectedArray(selected, row, isSelected);
+            });
+            this.props.handleProjectChanged(selected);
+        } else {
+            this.props.handleProjectChanged([]);
+        }
+    }
+
+    onRowSelected(row, isSelected) {
+        const selected = Object.assign([], this.props.configuredProjects);
+        this.createSelectedArray(selected, row, isSelected);
         this.props.handleProjectChanged(selected);
     }
 
     createProjectList() {
         const { projects, configuredProjects } = this.props;
-
-        const projectData = projects.map(({ name }) => ({ name, missing: false }));
+        const projectData = projects.map(({ name, description }) => ({ name, description: description || '', missing: false }));
 
         configuredProjects.forEach((project) => {
             const projectFound = projectData.find(p => project === p.name);
@@ -76,7 +92,8 @@ class ProjectConfiguration extends Component {
             clickToSelect: true,
             showOnlySelected: true,
             selected: this.props.configuredProjects,
-            onSelect: this.onRowSelected
+            onSelect: this.onRowSelected,
+            onSelectAll: this.onRowSelectedAll
         };
 
         let projectTable = null;
@@ -84,6 +101,7 @@ class ProjectConfiguration extends Component {
             projectTable = (<div>
                 <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
+                    <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
