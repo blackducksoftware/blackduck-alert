@@ -26,14 +26,8 @@ package com.blackducksoftware.integration.hub.alert.digest;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.List;
-
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class DailyItemReader extends DigestItemReader {
 
@@ -50,12 +44,5 @@ public class DailyItemReader extends DigestItemReader {
         final Date startDate = Date.from(zonedStartDate.toInstant());
         final Date endDate = Date.from(zonedEndDate.toInstant());
         return new DateRange(startDate, endDate);
-    }
-
-    @Override
-    public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-        List<NotificationModel> notificationList;
-        notificationList = super.read();
-        return notificationList;
     }
 }

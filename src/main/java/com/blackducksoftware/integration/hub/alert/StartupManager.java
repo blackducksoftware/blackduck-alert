@@ -118,13 +118,11 @@ public class StartupManager {
             final GlobalSchedulingConfigEntity savedGlobalSchedulingConfig = globalSchedulingRepository.save(globalSchedulingConfig);
             logger.info(savedGlobalSchedulingConfig.toString());
         }
-        scheduleCronJobs(dailyDigestHourOfDay, purgeDataFrequencyDays);
-        phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
-
+        scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
-    public void scheduleCronJobs(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
+    public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
         accumulatorConfig.scheduleExecution("0 0/1 * 1/1 * *");
         final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
         logger.info("Accumulator next run: {} seconds", seconds);
@@ -136,6 +134,9 @@ public class StartupManager {
 
         logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
         logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
+
+        phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
+        logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
     }
 
     private Boolean purgeOldData() {

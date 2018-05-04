@@ -44,10 +44,10 @@ import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduler;
+import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduledTask;
 
 @Component
-public class DailyDigestBatchConfig extends JobScheduler<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
+public class DailyDigestBatchConfig extends JobScheduledTask<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "DailyDigestBatchStep";
     private static final String ACCUMULATOR_JOB_NAME = "DailyDigestBatchJob";
 
