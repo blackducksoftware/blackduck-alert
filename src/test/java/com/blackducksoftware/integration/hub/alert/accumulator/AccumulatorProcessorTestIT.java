@@ -27,14 +27,14 @@ import com.blackducksoftware.integration.hub.api.generated.component.ProjectVers
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionDistributionType;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionPhaseType;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.CodeLocationService;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
+import com.blackducksoftware.integration.hub.throwaway.OldNotificationService;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 public class AccumulatorProcessorTestIT {
     private TestGlobalProperties globalProperties;
     private ProjectService projectService;
-    private NotificationService notificationDataService;
+    private OldNotificationService notificationDataService;
     private HubService hubService;
     private CodeLocationService codeLocationService;
 
@@ -54,7 +54,7 @@ public class AccumulatorProcessorTestIT {
         globalProperties = new TestGlobalProperties();
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryWithCredential(new PrintStreamIntLogger(System.out, LogLevel.TRACE));
         projectService = hubServicesFactory.createProjectService();
-        notificationDataService = hubServicesFactory.createNotificationService();
+        notificationDataService = new OldNotificationService(hubServicesFactory.createHubService(), null);
         codeLocationService = hubServicesFactory.createCodeLocationService();
         hubService = hubServicesFactory.createHubService();
     }
@@ -89,7 +89,7 @@ public class AccumulatorProcessorTestIT {
 
         TimeUnit.SECONDS.sleep(60);
 
-        final NotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
+        final OldNotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
 
         final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
 

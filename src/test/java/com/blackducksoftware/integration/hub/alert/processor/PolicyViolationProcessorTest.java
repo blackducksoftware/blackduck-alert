@@ -20,13 +20,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.api.generated.component.ResourceMetadata;
+import com.blackducksoftware.integration.hub.api.core.ResourceMetadata;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
+import com.blackducksoftware.integration.hub.throwaway.MapProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.ProjectVersionModel;
 import com.blackducksoftware.integration.test.TestLogger;
 
 public class PolicyViolationProcessorTest {

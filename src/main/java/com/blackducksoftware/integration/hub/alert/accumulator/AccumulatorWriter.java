@@ -46,10 +46,10 @@ import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
 
 @Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {

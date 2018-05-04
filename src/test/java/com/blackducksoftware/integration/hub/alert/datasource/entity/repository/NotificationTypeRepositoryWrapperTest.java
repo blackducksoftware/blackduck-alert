@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 
 public class NotificationTypeRepositoryWrapperTest extends RepositoryWrapperTest<NotificationTypeEntity, NotificationTypeRepository, NotificationTypeRepositoryWrapper> {
 

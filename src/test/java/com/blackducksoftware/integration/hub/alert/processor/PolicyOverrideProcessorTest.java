@@ -24,9 +24,9 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
-import com.blackducksoftware.integration.hub.notification.ProjectVersionModel;
+import com.blackducksoftware.integration.hub.throwaway.MapProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.PolicyOverrideContentItem;
+import com.blackducksoftware.integration.hub.throwaway.ProjectVersionModel;
 import com.blackducksoftware.integration.test.TestLogger;
 
 public class PolicyOverrideProcessorTest {

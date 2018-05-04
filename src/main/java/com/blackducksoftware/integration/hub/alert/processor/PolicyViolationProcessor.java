@@ -29,14 +29,14 @@ import java.util.Map;
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.api.view.MetaHandler;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.NotificationEventConstants;
-import com.blackducksoftware.integration.hub.notification.NotificationSubProcessor;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.notification.SubProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEventConstants;
+import com.blackducksoftware.integration.hub.throwaway.NotificationSubProcessor;
+import com.blackducksoftware.integration.hub.throwaway.PolicyViolationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.SubProcessorCache;
 import com.blackducksoftware.integration.log.IntLogger;
 
 public class PolicyViolationProcessor extends NotificationSubProcessor {

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 
 @Component
 public class NotificationTypeRepositoryWrapper extends SimpleKeyRepositoryWrapper<NotificationTypeEntity, NotificationTypeRepository> {

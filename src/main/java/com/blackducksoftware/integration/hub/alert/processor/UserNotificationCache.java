@@ -36,11 +36,11 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.api.generated.view.AssignedUserView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.throwaway.MapProcessorCache;
+import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.throwaway.NotificationContentItem;
+import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
 
 public class UserNotificationCache extends MapProcessorCache {
     private final Logger logger = LoggerFactory.getLogger(UserNotificationCache.class);
