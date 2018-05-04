@@ -40,9 +40,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcess
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduler;
 
 @Component
-public class PurgeConfig extends CommonConfig<PurgeReader, PurgeProcessor, PurgeWriter> {
+public class PurgeConfig extends JobScheduler<PurgeReader, PurgeProcessor, PurgeWriter> {
 
     public static final String PURGE_STEP_NAME = "PurgeStep";
     public static final String PURGE_JOB_NAME = "PurgeJob";

@@ -28,27 +28,17 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.PhoneHomeService;
-import com.blackducksoftware.integration.hub.service.model.PhoneHomeResponse;
-import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
 public class DailyItemReader extends DigestItemReader {
-    private final static Logger logger = LoggerFactory.getLogger(DailyItemReader.class);
-    private final GlobalProperties globalProperties;
 
-    public DailyItemReader(final NotificationManager notificationManager, final GlobalProperties globalProperties) {
+    public DailyItemReader(final NotificationManager notificationManager) {
         super(DailyItemReader.class.getName(), notificationManager);
-        this.globalProperties = globalProperties;
     }
 
     @Override
@@ -65,29 +55,7 @@ public class DailyItemReader extends DigestItemReader {
     @Override
     public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         List<NotificationModel> notificationList;
-        PhoneHomeResponse phoneHomeResponse = null;
-        try {
-            notificationList = super.read();
-            phoneHomeResponse = phoneHome();
-        } finally {
-            if (phoneHomeResponse != null) {
-                phoneHomeResponse.endPhoneHome();
-            }
-        }
-
+        notificationList = super.read();
         return notificationList;
-    }
-
-    private PhoneHomeResponse phoneHome() {
-        final String productVersion = globalProperties.getProductVersion();
-        if (!GlobalProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-            final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
-            final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder = phoneHomeService.createInitialPhoneHomeRequestBodyBuilder("blackduck-alert", productVersion);
-            final PhoneHomeRequestBody phoneHomeRequestBody = phoneHomeRequestBodyBuilder.build();
-            return phoneHomeService.startPhoneHome(phoneHomeRequestBody);
-        } else {
-            return null;
-        }
     }
 }
