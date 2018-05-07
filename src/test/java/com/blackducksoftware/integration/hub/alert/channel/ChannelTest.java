@@ -23,11 +23,11 @@ import org.junit.Before;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
 public class ChannelTest {

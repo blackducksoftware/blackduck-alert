@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.hub.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

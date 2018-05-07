@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

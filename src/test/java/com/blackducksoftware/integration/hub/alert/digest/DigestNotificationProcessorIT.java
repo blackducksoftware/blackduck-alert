@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
@@ -53,7 +54,6 @@ import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

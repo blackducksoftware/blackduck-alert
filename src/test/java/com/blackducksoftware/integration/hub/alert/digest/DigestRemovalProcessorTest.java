@@ -19,11 +19,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 
 public class DigestRemovalProcessorTest {
 

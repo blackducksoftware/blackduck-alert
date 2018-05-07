@@ -27,13 +27,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
