@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,19 +23,19 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectRequest;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectVersionRequest;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionDistributionType;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionPhaseType;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.CodeLocationService;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
 import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
-import com.blackducksoftware.integration.hub.throwaway.NotificationEvent;
-import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
-import com.blackducksoftware.integration.hub.throwaway.OldNotificationService;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
@@ -43,7 +44,7 @@ import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 public class AccumulatorProcessorTestIT {
     private TestGlobalProperties globalProperties;
     private ProjectService projectService;
-    private OldNotificationService notificationDataService;
+    private NotificationService notificationDataService;
     private HubService hubService;
     private CodeLocationService codeLocationService;
 
@@ -54,7 +55,7 @@ public class AccumulatorProcessorTestIT {
         globalProperties = new TestGlobalProperties();
         final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryWithCredential(new PrintStreamIntLogger(System.out, LogLevel.TRACE));
         projectService = hubServicesFactory.createProjectService();
-        notificationDataService = new OldNotificationService(hubServicesFactory.createHubService(), null);
+        notificationDataService = hubServicesFactory.createNotificationService();
         codeLocationService = hubServicesFactory.createCodeLocationService();
         hubService = hubServicesFactory.createHubService();
     }
@@ -68,6 +69,7 @@ public class AccumulatorProcessorTestIT {
 
     @Test
     public void testProcess() throws Exception {
+
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;
         final String testProjectVersionName = "1.0.0";
@@ -89,31 +91,31 @@ public class AccumulatorProcessorTestIT {
 
         TimeUnit.SECONDS.sleep(60);
 
-        final OldNotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
+        final NotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
 
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, Collections.emptyList());
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
 
-        final List<NotificationEvent> notificationEvents = storeEvent.getNotificationList();
+        final List<NotificationModel> notifications = storeEvent.getNotificationList();
 
-        assertFalse(notificationEvents.isEmpty());
+        assertFalse(notifications.isEmpty());
         assertEquals(storeEvent.getEventId().length(), 36);
 
-        NotificationEvent apacheEvent = null;
+        NotificationModel apacheModel = null;
 
-        for (final NotificationEvent event : notificationEvents) {
-            System.out.println(event);
-            if ("Apache Commons FileUpload".equals(event.getDataSet().get("COMPONENT"))) {
-                apacheEvent = event;
+        for (final NotificationModel model : notifications) {
+            System.out.println(model);
+            if ("Apache Commons FileUpload".equals(model.getComponentName())) {
+                apacheModel = model;
             }
         }
 
-        assertNotNull(apacheEvent);
+        assertNotNull(apacheModel);
 
-        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null);
+        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null, null);
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);

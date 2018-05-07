@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.util.List;
+
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -39,7 +41,8 @@ import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
+import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 
 @Component
 public class AccumulatorConfig extends CommonConfig<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
@@ -48,19 +51,21 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     private final ChannelTemplateManager channelTemplateManager;
     private final GlobalProperties globalProperties;
+    private final List<NotificationTypeProcessor> processorList;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
-            final ChannelTemplateManager channelTemplateManager) {
+            final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor> processorList) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;
+        this.processorList = processorList;
     }
 
     @Override
     public Step createStep(final AccumulatorReader reader, final AccumulatorProcessor processor, final AccumulatorWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<OldNotificationResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
     }
 
     @Override
@@ -75,7 +80,7 @@ public class AccumulatorConfig extends CommonConfig<AccumulatorReader, Accumulat
 
     @Override
     public AccumulatorProcessor processor() {
-        return new AccumulatorProcessor(globalProperties);
+        return new AccumulatorProcessor(globalProperties, processorList);
     }
 
     @Override

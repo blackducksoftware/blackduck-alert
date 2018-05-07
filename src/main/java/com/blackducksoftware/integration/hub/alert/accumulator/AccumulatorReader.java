@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -38,13 +40,12 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.throwaway.OldNotificationResults;
-import com.blackducksoftware.integration.hub.throwaway.OldNotificationService;
+import com.blackducksoftware.integration.hub.service.NotificationService;
 
-public class AccumulatorReader implements ItemReader<OldNotificationResults> {
+public class AccumulatorReader implements ItemReader<NotificationResults> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
 
     private final GlobalProperties globalProperties;
@@ -68,7 +69,8 @@ public class AccumulatorReader implements ItemReader<OldNotificationResults> {
     }
 
     @Override
-    public OldNotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         try {
             logger.info("Accumulator Reader Starting Operation");
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
@@ -95,10 +97,8 @@ public class AccumulatorReader implements ItemReader<OldNotificationResults> {
                     logger.error("Error creating date range", e);
                 }
 
-                // final NotificationService notificationService = hubServicesFactory.createNotificationService();
-                final HubService hubService = hubServicesFactory.createHubService();
-                final OldNotificationService notificationService = new OldNotificationService(hubService, null);
-                final OldNotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
+                final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
+                final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
                 if (notificationResults.getNotificationContentItems().isEmpty()) {
                     logger.debug("Read Notification Count: 0");
@@ -110,6 +110,7 @@ public class AccumulatorReader implements ItemReader<OldNotificationResults> {
         } catch (final Exception ex) {
             logger.error("Error in Accumulator Reader", ex);
         } finally {
+            executor.shutdownNow();
             logger.info("Accumulator Reader Finished Operation");
         }
         return null;

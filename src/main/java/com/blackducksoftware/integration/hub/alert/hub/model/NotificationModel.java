@@ -27,9 +27,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
 
 public class NotificationModel {
     private final NotificationEntity notification;

@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.throwaway.NotificationCategoryEnum;
-
 @Entity
 @Table(schema = "alert", name = "notification_types")
 public class NotificationTypeEntity extends DatabaseEntity {
