@@ -39,8 +39,12 @@ applicationDefaultJvmArgs = [
     '-DAPP_HOME=APP_HOME_VAR_TOKEN'
 ]
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:31.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:32.0.0-SNAPSHOT'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch'
