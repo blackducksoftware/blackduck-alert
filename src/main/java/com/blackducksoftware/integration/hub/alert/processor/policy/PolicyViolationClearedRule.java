@@ -23,22 +23,47 @@
  */
 package com.blackducksoftware.integration.hub.alert.processor.policy;
 
+import java.util.Date;
 import java.util.Map;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingRule;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
+import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public class PolicyViolationClearedRule extends NotificationProcessingRule {
+public class PolicyViolationClearedRule extends AbstractPolicyViolationRule {
 
     public PolicyViolationClearedRule() {
         super(NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Override
-    public void apply(final Map<String, NotificationModel> modelMap, final CommonNotificationState commonNotificationState) {
-
+    public void apply(final Map<String, NotificationModel> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket) {
+        addOrRemoveIfExists(modelMap, commonNotificationState);
     }
 
+    @Override
+    public NotificationEntity createNotificationEntity(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail) {
+        final Date createdAt = commonNotificationState.getCreatedAt();
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.POLICY_VIOLATION_CLEARED;
+        final String contentKey = notificationContentDetail.getContentDetailKey();
+        final String projectName = notificationContentDetail.getProjectName();
+        final String projectUrl = null;
+        final String projectVersion = notificationContentDetail.getProjectVersionName();
+        final String projectVersionUrl = notificationContentDetail.getProjectVersion().get().uri;
+        String componentName = null;
+        if (notificationContentDetail.getComponentName().isPresent()) {
+            componentName = notificationContentDetail.getComponentName().get();
+        }
+        String componentVersion = null;
+        if (notificationContentDetail.getComponentVersionName().isPresent()) {
+            componentVersion = notificationContentDetail.getComponentVersionName().get();
+        }
+        final String policyRuleName = notificationContentDetail.getPolicyName().get();
+        final String policyRuleUser = null;
+        return new NotificationEntity(contentKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser);
+    }
 }

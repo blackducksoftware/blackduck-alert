@@ -78,7 +78,7 @@ public class NotificationItemProcessor {
 
         processorList.forEach(processor -> {
             if (processor.isApplicable(commonNotificationState)) {
-                processor.process(commonNotificationState);
+                processor.process(commonNotificationState, bucket);
             }
         });
 

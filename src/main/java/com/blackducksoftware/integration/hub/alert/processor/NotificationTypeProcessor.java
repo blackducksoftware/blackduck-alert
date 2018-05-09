@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class NotificationTypeProcessor {
     private final Map<String, NotificationModel> modelMap = new LinkedHashMap<>(500);
@@ -51,18 +52,22 @@ public class NotificationTypeProcessor {
         return isApplicable;
     }
 
-    public void process(final CommonNotificationState commonNotificationState) {
+    public void process(final CommonNotificationState commonNotificationState, final HubBucket bucket) {
         processingRules.forEach(rule -> {
             if (rule.isApplicable(commonNotificationState)) {
-                rule.apply(modelMap, commonNotificationState);
+                rule.apply(getModelMap(), commonNotificationState, bucket);
             }
         });
     }
 
     public List<NotificationModel> getModels() {
-        final List<NotificationModel> modelList = modelMap.values().stream().sorted((model1, model2) -> {
+        final List<NotificationModel> modelList = getModelMap().values().stream().sorted((model1, model2) -> {
             return model2.getCreatedAt().compareTo(model1.getCreatedAt());
         }).collect(Collectors.toList());
         return modelList;
+    }
+
+    protected Map<String, NotificationModel> getModelMap() {
+        return modelMap;
     }
 }
