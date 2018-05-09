@@ -19,15 +19,17 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
     private final String apiKey;
     private final boolean apiKeyIsSet;
     private final String id;
+    private final String hostServer;
 
     public MockHipChatGlobalRestModel() {
-        this("ApiKey", false, "1");
+        this("ApiKey", false, "1", "");
     }
 
-    private MockHipChatGlobalRestModel(final String apiKey, final boolean apiKeyIsSet, final String id) {
+    private MockHipChatGlobalRestModel(final String apiKey, final boolean apiKeyIsSet, final String id, final String hostServer) {
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
         this.id = id;
+        this.hostServer = hostServer;
     }
 
     public String getApiKey() {
@@ -45,7 +47,7 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
 
     @Override
     public GlobalHipChatConfigRestModel createGlobalRestModel() {
-        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel(id, apiKey, apiKeyIsSet);
+        final GlobalHipChatConfigRestModel restModel = new GlobalHipChatConfigRestModel(id, apiKey, apiKeyIsSet, hostServer);
         return restModel;
     }
 
@@ -60,6 +62,7 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
         json.addProperty("apiKey", apiKey);
         json.addProperty("apiKeyIsSet", apiKeyIsSet);
         json.addProperty("id", id);
+        json.addProperty("hostServer", hostServer);
         return json.toString();
     }
 

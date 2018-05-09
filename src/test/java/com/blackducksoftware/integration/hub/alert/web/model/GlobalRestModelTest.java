@@ -14,7 +14,9 @@ package com.blackducksoftware.integration.hub.alert.web.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import org.json.JSONException;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.google.gson.Gson;
@@ -43,14 +45,14 @@ public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
     public abstract void assertGlobalRestModelFieldsNull(GR restModel);
 
     @Test
-    public void testGlobalRestModel() {
+    public void testGlobalRestModel() throws JSONException {
         final GR configRestModel = getMockUtil().createGlobalRestModel();
 
         assertGlobalRestModelFieldsFull(configRestModel);
         assertEquals(String.valueOf(getMockUtil().getId()), configRestModel.getId());
 
         final String expectedString = getMockUtil().getGlobalRestModelJson();
-        assertEquals(expectedString, gson.toJson(configRestModel));
+        JSONAssert.assertEquals(expectedString, gson.toJson(configRestModel), false);
 
         final GR configRestModelNew = getMockUtil().createGlobalRestModel();
         assertEquals(configRestModel, configRestModelNew);

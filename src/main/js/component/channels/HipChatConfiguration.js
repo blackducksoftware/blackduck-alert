@@ -13,6 +13,7 @@ class HipChatConfiguration extends React.Component {
         this.state = {
             apiKey: '',
             apiKeyIsSet: false,
+            hostServer: '',
             dataLoaded: false
         };
 
@@ -30,7 +31,8 @@ class HipChatConfiguration extends React.Component {
             this.setState({
                 dataLoaded: true,
                 apiKey: nextProps.apiKey || '',
-                apiKeyIsSet: nextProps.apiKeyIsSet
+                apiKeyIsSet: nextProps.apiKeyIsSet,
+                hostServer: nextProps.hostServer || ''
             });
         }
     }
@@ -77,6 +79,7 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
+                    <TextInput label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
                     <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
                     <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
                 </form>
@@ -86,6 +89,7 @@ class HipChatConfiguration extends React.Component {
 }
 
 HipChatConfiguration.propTypes = {
+    hostServer: PropTypes.string,
     apiKey: PropTypes.string,
     apiKeyIsSet: PropTypes.bool,
     id: PropTypes.string,
@@ -100,6 +104,7 @@ HipChatConfiguration.propTypes = {
 };
 
 HipChatConfiguration.defaultProps = {
+    hostServer: null,
     apiKey: null,
     apiKeyIsSet: false,
     id: null,
@@ -111,6 +116,7 @@ HipChatConfiguration.defaultProps = {
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
+    hostServer: state.hipChatConfig.hostServer,
     apiKey: state.hipChatConfig.apiKey,
     apiKeyIsSet: state.hipChatConfig.apiKeyIsSet,
     testStatus: state.hipChatConfig.testStatus,

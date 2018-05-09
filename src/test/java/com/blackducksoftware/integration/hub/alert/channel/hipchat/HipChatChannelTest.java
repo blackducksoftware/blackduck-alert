@@ -64,7 +64,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
-        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY))).when(hipChatChannel).getGlobalConfigEntity();
+        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
         hipChatChannel.sendAuditedMessage(event, config);
 
@@ -78,7 +78,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         IntegrationException intException = null;
         try {
-            hipChatChannel.createRequest(null, new HipChatDistributionConfigEntity(null, null, null), null);
+            hipChatChannel.createRequest(null, new HipChatDistributionConfigEntity(null, null, null), null, null);
         } catch (final IntegrationException e) {
             intException = e;
         }
@@ -99,7 +99,7 @@ public class HipChatChannelTest extends ChannelTest {
             System.getProperties().setProperty("user.dir", "garbage");
             RuntimeException thrownException = null;
             try {
-                hipChatChannel.createRequest(channelRequestHelper, config, projectData);
+                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), projectData);
             } catch (final RuntimeException e) {
                 thrownException = e;
             }

@@ -19,8 +19,8 @@ plugins {
     id 'com.moowork.node' version '1.2.0'
 }
 
-version = '1.0.1-SNAPSHOT'
-def dbChangeLogVersion = '1.0.0'
+version = '1.1.0-SNAPSHOT'
+def dbChangeLogVersion = '1.1.0'
 
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
