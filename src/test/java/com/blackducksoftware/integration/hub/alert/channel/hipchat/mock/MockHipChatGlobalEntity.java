@@ -19,15 +19,17 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     private String apiKey;
     private boolean apiKeyIsSet;
     private Long id;
+    private String hostServer;
 
     public MockHipChatGlobalEntity() {
-        this("ApiKey", false, 1L);
+        this("ApiKey", false, 1L, "");
     }
 
-    private MockHipChatGlobalEntity(final String apiKey, final boolean apiKeyIsSet, final Long id) {
+    private MockHipChatGlobalEntity(final String apiKey, final boolean apiKeyIsSet, final Long id, final String hostServer) {
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
         this.id = id;
+        this.hostServer = hostServer;
     }
 
     public String getApiKey() {
@@ -55,9 +57,13 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
         return id;
     }
 
+    public String getHostServer() {
+        return hostServer;
+    }
+
     @Override
     public GlobalHipChatConfigEntity createGlobalEntity() {
-        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity(apiKey);
+        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity(apiKey, hostServer);
         configEntity.setId(id);
         return configEntity;
     }
@@ -66,6 +72,7 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     public String getGlobalEntityJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("id", id);
+        json.addProperty("hostServer", hostServer);
         return json.toString();
     }
 
