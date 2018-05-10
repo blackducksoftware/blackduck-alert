@@ -25,22 +25,22 @@ public class DailyDigestBatchConfigTest extends CommonConfigTest<DailyItemReader
 
     @Override
     public DailyDigestBatchConfig getConfigWithNullParams() {
-        return new DailyDigestBatchConfig(null, null, null, null, null, null, null, null, null, getGlobalProperties());
+        return new DailyDigestBatchConfig(null, null, null, null, null, null, null, null, null);
     }
 
     @Override
     public DailyDigestBatchConfig getConfigWithSimpleJobLauncher(final SimpleJobLauncher simpleJobLauncher) {
-        return new DailyDigestBatchConfig(simpleJobLauncher, null, null, null, null, null, null, null, null, getGlobalProperties());
+        return new DailyDigestBatchConfig(simpleJobLauncher, null, null, null, null, null, null, null, null);
     }
 
     @Override
     public DailyDigestBatchConfig getConfigWithTaskScheduler(final TaskScheduler taskScheduler) {
-        return new DailyDigestBatchConfig(null, null, null, null, null, null, taskScheduler, null, null, getGlobalProperties());
+        return new DailyDigestBatchConfig(null, null, null, null, null, null, taskScheduler, null, null);
     }
 
     @Override
     public DailyDigestBatchConfig getConfigWithParams(final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final PlatformTransactionManager platformTransactionManager) {
-        return new DailyDigestBatchConfig(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, null, null, null, getGlobalProperties());
+        return new DailyDigestBatchConfig(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, null, null, null);
     }
 
     @Override

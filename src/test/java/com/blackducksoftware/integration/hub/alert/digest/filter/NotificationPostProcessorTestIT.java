@@ -27,7 +27,6 @@ import javax.transaction.Transactional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -78,50 +77,26 @@ public class NotificationPostProcessorTestIT {
     public void getApplicableConfigurationsTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        final DigestTypeEnum digestType = DigestTypeEnum.REAL_TIME;
-        final String projectName = "Project Name";
-        final String projectVersion = "Project Version";
-        final List<Long> notificationIds = Collections.emptyList();
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
-        for (final NotificationCategoryEnum categoryEnum : NotificationCategoryEnum.values()) {
-            categoryMap.put(categoryEnum, new CategoryData(null, null, 0));
-            notificationTypeRepository.save(new NotificationTypeEntity(categoryEnum));
-        }
-        final ProjectData projectData = new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
+        final ProjectData projectData = createProjectData();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", digestType, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", projectData.getDigestType(), true);
         config1.setId(config1Id);
 
         final Long config2Id = 17L;
-        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, SupportedChannels.EMAIL_GROUP, "Config 2", digestType, false);
+        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, SupportedChannels.EMAIL_GROUP, "Config 2", projectData.getDigestType(), false);
         config2.setId(config2Id);
 
         final Long notificationTypeId = notificationTypeRepository.findAll().get(0).getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config2.getId(), notificationTypeId));
 
-        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectData.getProjectName()));
         distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
 
         final Set<CommonDistributionConfigEntity> applicableConfigs = postProcessor.getApplicableConfigurations(Arrays.asList(config1, config2), projectData);
         assertTrue(applicableConfigs.contains(config1));
         assertTrue(applicableConfigs.contains(config2));
         assertEquals(2, applicableConfigs.size());
-    }
-
-    @Test
-    public void isApplicableTest() {
-
-        final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
-        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
-
-        Mockito.when(distributionNotificationTypeRepository.findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(Collections.emptyList());
-
-        final ProjectData projectData = new ProjectData(null, null, null, null, null);
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 1", DigestTypeEnum.DAILY, true);
-        config.setId(13L);
-
-        assertFalse(postProcessor.isApplicable(config, projectData));
     }
 
     @Test
@@ -139,17 +114,41 @@ public class NotificationPostProcessorTestIT {
     }
 
     @Test
-    public void doNotificationTypesMatchWithNoneConfiguredTest() {
-        final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository = Mockito.mock(DistributionNotificationTypeRepositoryWrapper.class);
+    public void filterMatchingNotificationsTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        Mockito.when(distributionNotificationTypeRepository.findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(Collections.emptyList());
+        final ProjectData projectData = createProjectData();
+        final Long config1Id = 13L;
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", projectData.getDigestType(), true);
+        config1.setId(config1Id);
 
-        final ProjectData projectData = new ProjectData(null, null, null, null, null);
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 1", DigestTypeEnum.DAILY, true);
-        config.setId(13L);
+        final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
+        final Long notificationTypeId = notificationType.getId();
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
 
-        assertFalse(postProcessor.doNotificationTypesMatch(config, projectData));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectData.getProjectName()));
+        distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
+
+        assertEquals(NotificationCategoryEnum.values().length, projectData.getCategoryMap().size());
+
+        postProcessor.filterMatchingNotificationTypes(config1, projectData);
+
+        assertTrue(projectData.getCategoryMap().containsKey(notificationType.getType()));
+        assertEquals(1, projectData.getCategoryMap().size());
+    }
+
+    private ProjectData createProjectData() {
+        final DigestTypeEnum digestType = DigestTypeEnum.REAL_TIME;
+        final String projectName = "Project Name";
+        final String projectVersion = "Project Version";
+        final List<Long> notificationIds = Collections.emptyList();
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
+        for (final NotificationCategoryEnum categoryEnum : NotificationCategoryEnum.values()) {
+            categoryMap.put(categoryEnum, new CategoryData(null, null, 0));
+            notificationTypeRepository.save(new NotificationTypeEntity(categoryEnum));
+        }
+        final ProjectData projectData = new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
+        return projectData;
     }
 
 }
