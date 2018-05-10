@@ -62,12 +62,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final GlobalProperties globalProperties;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationManager notificationManager;
-    private final List<NotificationTypeProcessor> processorList;
+    private final List<NotificationTypeProcessor<?>> processorList;
 
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
             final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationManager notificationManager,
-            final List<NotificationTypeProcessor> processorList) {
+            final List<NotificationTypeProcessor<?>> processorList) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
