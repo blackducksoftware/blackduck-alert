@@ -81,8 +81,9 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 ZonedDateTime zonedStartDate = zonedEndDate;
                 final Date endDate = Date.from(zonedEndDate.toInstant());
                 Date startDate = Date.from(zonedStartDate.toInstant());
+                final File lastRunFile = new File(lastRunPath);
                 try {
-                    final File lastRunFile = new File(lastRunPath);
+
                     if (lastRunFile.exists()) {
                         final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
                         final Date startTime = RestConnection.parseDateString(lastRunValue);
@@ -92,7 +93,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                     }
                     zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
                     startDate = Date.from(zonedStartDate.toInstant());
-                    FileUtils.write(lastRunFile, RestConnection.formatDate(endDate), "UTF-8");
+
                 } catch (final Exception e) {
                     logger.error("Error creating date range", e);
                 }
@@ -104,6 +105,11 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
+
+                if (notificationResults.getLatestNotificationCreatedAtString().isPresent()) {
+                    FileUtils.write(lastRunFile, notificationResults.getLatestNotificationCreatedAtString().get(), "UTF-8");
+                }
+
                 logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
                 return notificationResults;
             }

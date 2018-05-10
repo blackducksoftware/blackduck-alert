@@ -27,17 +27,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public abstract class NotificationProcessingRule {
+public abstract class NotificationProcessingRule<M extends NotificationProcessingModel> {
+    private final GlobalProperties globalProperties;
     private final NotificationType notificationType;
 
-    public NotificationProcessingRule(final NotificationType notificationType) {
+    public NotificationProcessingRule(final GlobalProperties globalProperties, final NotificationType notificationType) {
+        this.globalProperties = globalProperties;
         this.notificationType = notificationType;
+    }
+
+    public GlobalProperties getGlobalProperties() {
+        return globalProperties;
     }
 
     public boolean isApplicable(final CommonNotificationState commonNotificationState) {
@@ -50,5 +56,5 @@ public abstract class NotificationProcessingRule {
         return contentKeyList;
     }
 
-    public abstract void apply(final Map<String, NotificationModel> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket);
+    public abstract void apply(final Map<String, M> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket);
 }

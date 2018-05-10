@@ -29,19 +29,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public class NotificationTypeProcessor {
-    private final Map<String, NotificationModel> modelMap = new LinkedHashMap<>(500);
-    private final Collection<NotificationProcessingRule> processingRules;
+public abstract class NotificationTypeProcessor<M extends NotificationProcessingModel> {
+    private final GlobalProperties globalProperties;
+    private final Map<String, M> modelMap = new LinkedHashMap<>(500);
+    private final Collection<NotificationProcessingRule<M>> processingRules;
 
-    public NotificationTypeProcessor(final Collection<NotificationProcessingRule> processingRules) {
+    public NotificationTypeProcessor(final GlobalProperties globalProperties, final Collection<NotificationProcessingRule<M>> processingRules) {
         this.processingRules = processingRules;
+        this.globalProperties = globalProperties;
     }
 
-    public Collection<NotificationProcessingRule> getProcessingRules() {
+    public Collection<NotificationProcessingRule<M>> getProcessingRules() {
         return processingRules;
     }
 
@@ -60,14 +63,21 @@ public class NotificationTypeProcessor {
         });
     }
 
-    public List<NotificationModel> getModels() {
-        final List<NotificationModel> modelList = getModelMap().values().stream().sorted((model1, model2) -> {
+    public List<NotificationModel> getModels(final HubBucket bucket) {
+        final List<NotificationModel> unsortedModelList = createModelList();
+        final List<NotificationModel> modelList = unsortedModelList.stream().sorted((model1, model2) -> {
             return model2.getCreatedAt().compareTo(model1.getCreatedAt());
         }).collect(Collectors.toList());
         return modelList;
     }
 
-    protected Map<String, NotificationModel> getModelMap() {
+    protected Map<String, M> getModelMap() {
         return modelMap;
     }
+
+    protected GlobalProperties getGlobalProperties() {
+        return globalProperties;
+    }
+
+    protected abstract List<NotificationModel> createModelList();
 }

@@ -27,19 +27,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
-import com.blackducksoftware.integration.log.IntLogger;
 
 public class NotificationItemProcessor {
-    private final List<NotificationTypeProcessor> processorList;
+    private final List<NotificationTypeProcessor<?>> processorList;
 
-    public NotificationItemProcessor(final GlobalProperties globalProperties, final IntLogger intLogger, final List<NotificationTypeProcessor> processorList) {
-        // init(globalProperties, intLogger);
+    public NotificationItemProcessor(final List<NotificationTypeProcessor<?>> processorList) {
         this.processorList = processorList;
     }
 
@@ -83,7 +80,7 @@ public class NotificationItemProcessor {
         });
 
         processorList.forEach(processor -> {
-            modelList.addAll(processor.getModels());
+            modelList.addAll(processor.getModels(bucket));
         });
 
         return modelList;

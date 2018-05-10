@@ -24,38 +24,34 @@
 package com.blackducksoftware.integration.hub.alert.processor.policy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingRule;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
 
-public abstract class AbstractPolicyViolationRule extends NotificationProcessingRule {
+public abstract class AbstractPolicyViolationRule extends NotificationProcessingRule<NotificationProcessingModel> {
 
-    public AbstractPolicyViolationRule(final NotificationType notificationType) {
-        super(notificationType);
+    public AbstractPolicyViolationRule(final GlobalProperties globalProperties, final NotificationType notificationType) {
+        super(globalProperties, notificationType);
     }
 
-    public List<NotificationModel> createNotificationModels(final CommonNotificationState commonNotificationState) {
-        final List<NotificationModel> modelList = new ArrayList<>();
+    public List<NotificationProcessingModel> createProcessingModels(final CommonNotificationState commonNotificationState) {
+        final List<NotificationProcessingModel> modelList = new ArrayList<>();
         final List<NotificationContentDetail> contentDetails = commonNotificationState.getContent().getNotificationContentDetails();
         contentDetails.forEach(contentDetail -> {
-            modelList.add(createNotificationModel(commonNotificationState, contentDetail));
+            modelList.add(createProcessingModel(commonNotificationState, contentDetail));
         });
         return modelList;
     }
 
-    public NotificationModel createNotificationModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail contentDetail) {
-        return new NotificationModel(createNotificationEntity(commonNotificationState, contentDetail), Collections.emptyList());
-    }
-
-    public void addOrRemoveIfExists(final Map<String, NotificationModel> modelMap, final CommonNotificationState commonNotificationState) {
+    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState) {
         final List<String> keyList = getContentDetailKeys(commonNotificationState);
         for (final String key : keyList) {
             if (modelMap.containsKey(key)) {
@@ -68,12 +64,16 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
 
                 if (!filteredList.isEmpty()) {
                     final NotificationContentDetail contentDetail = filteredList.get(0);
-                    final NotificationModel model = createNotificationModel(commonNotificationState, contentDetail);
+                    final NotificationProcessingModel model = createProcessingModel(commonNotificationState, contentDetail);
                     modelMap.put(key, model);
                 }
             }
         }
     }
 
-    public abstract NotificationEntity createNotificationEntity(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail);
+    protected NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationType) {
+        return new NotificationProcessingModel(notificationContentDetail, commonNotificationState, commonNotificationState.getContent(), notificationType);
+    }
+
+    protected abstract NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail);
 }
