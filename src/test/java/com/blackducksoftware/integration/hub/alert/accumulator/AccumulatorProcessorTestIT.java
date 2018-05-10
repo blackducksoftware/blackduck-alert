@@ -8,7 +8,7 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +24,9 @@ import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.alert.processor.policy.PolicyNotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.alert.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectRequest;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectVersionRequest;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionDistributionType;
@@ -92,8 +95,10 @@ public class AccumulatorProcessorTestIT {
         TimeUnit.SECONDS.sleep(60);
 
         final NotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
-
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, Collections.emptyList());
+        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor(globalProperties);
+        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor(globalProperties);
+        final List<NotificationTypeProcessor<?>> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
