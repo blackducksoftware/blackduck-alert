@@ -83,7 +83,6 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 Date startDate = Date.from(zonedStartDate.toInstant());
                 final File lastRunFile = new File(lastRunPath);
                 try {
-
                     if (lastRunFile.exists()) {
                         final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
                         final Date startTime = RestConnection.parseDateString(lastRunValue);
