@@ -155,8 +155,8 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
             final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
             final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-            dailyDigestBatchConfig.scheduleJobExecution(dailyDigestCron);
-            purgeConfig.scheduleJobExecution(purgeDataCron);
+            dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
+            purgeConfig.scheduleExecution(purgeDataCron);
         }
     }
 

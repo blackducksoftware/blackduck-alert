@@ -81,6 +81,10 @@
               </#list>	             
           </#if>
         <div style="display:inline-block;width:100%;">
+        	<span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are part of the group: ${hub_group_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the group.</span>
+        </div>
+        <br/>
+        <div style="display:inline-block;width:100%;">
             <img src="cid:${logo_image}" height="20" width="20"/>
             <div style="float:right;">
               <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 12px;color: #4A4A4A;">Powered by </span><span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-weight: 600;font-size: 14px;color: #445B68;">BLACK</span><span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 12px;color: #4A4A4A;">DUCK</span>

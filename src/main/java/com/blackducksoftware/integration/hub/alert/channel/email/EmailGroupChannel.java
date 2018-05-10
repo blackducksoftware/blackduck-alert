@@ -89,13 +89,13 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
             final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory, hubGroupName);
-            sendMessage(emailAddresses, event, subjectLine);
+            sendMessage(emailAddresses, event, subjectLine, hubGroupName);
         } else {
             logger.warn("No configuration found with id {}.", event.getCommonDistributionConfigId());
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent event, final String subjectLine)
+    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent event, final String subjectLine, final String hubGroupName)
             throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, MessagingException, IOException, TemplateException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
@@ -106,6 +106,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
         model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
         model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
+        model.put(EmailProperties.TEMPLATE_KEY_HUB_GROUP_NAME, hubGroupName);
 
         model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 

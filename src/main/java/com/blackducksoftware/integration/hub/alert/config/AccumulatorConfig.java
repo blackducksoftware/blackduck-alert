@@ -42,10 +42,11 @@ import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduledTask;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 
 @Component
-public class AccumulatorConfig extends CommonConfig<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
+public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
