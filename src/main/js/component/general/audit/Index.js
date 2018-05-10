@@ -75,7 +75,10 @@ class Index extends Component {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then((response) => {
-            this.setState({ inProgress: false });
+            this.setState({ 
+                message: 'Completed',
+                inProgress: false
+             });
             if (!response.ok) {
                 switch(response.status) {
                     case 401:
@@ -87,7 +90,9 @@ class Index extends Component {
                 }
             }
             return response.json().then((json) => {
-                this.setState({ message: '' });
+                setTimeout(function() {
+                    this.setState({ message: '' });
+                }.bind(this), 3000);
                 this.setEntriesFromArray(JSON.parse(json.message));
             });
         }).catch(console.error);
