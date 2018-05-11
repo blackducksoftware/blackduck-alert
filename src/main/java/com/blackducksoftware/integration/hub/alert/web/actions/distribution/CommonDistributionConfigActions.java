@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.audit.repository.relation.Aud
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
@@ -145,5 +147,10 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
             auditNotificationRepository.delete(relationList);
         });
         auditEntryRepository.delete(auditEntryList);
+    }
+
+    @Override
+    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+        // This does not validate anything
     }
 }

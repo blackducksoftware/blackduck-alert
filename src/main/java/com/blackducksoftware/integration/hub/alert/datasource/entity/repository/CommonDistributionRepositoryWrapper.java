@@ -47,4 +47,14 @@ public class CommonDistributionRepositoryWrapper extends SimpleKeyRepositoryWrap
             return null;
         }
     }
+
+    public CommonDistributionConfigEntity findByName(final String name) {
+        final CommonDistributionConfigEntity entity = getRepository().findByName(name);
+        try {
+            return decryptSensitiveData(entity);
+        } catch (final EncryptionException ex) {
+            getLogger().error("Error finding common distribution config", ex);
+            return null;
+        }
+    }
 }

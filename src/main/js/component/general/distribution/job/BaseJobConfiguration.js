@@ -35,24 +35,24 @@ class BaseJobConfiguration extends Component {
         event.preventDefault();
         const { handleSaveBtnClick, handleCancel } = this.props;
 
-        let jobName = null;
-        if (this.state.values && this.state.values.name) {
-            const trimmedName = this.state.values.name.trim();
-            if (trimmedName.length > 0) {
-                jobName = trimmedName;
-            }
-        }
-        if (!jobName) {
-            this.handleErrorValues('nameError', 'You must provide a Job name');
-        } else {
-            this.handleErrorValues('nameError', '');
+        // let jobName = null;
+        // if (this.state.values && this.state.values.name) {
+        //     const trimmedName = this.state.values.name.trim();
+        //     if (trimmedName.length > 0) {
+        //         jobName = trimmedName;
+        //     }
+        // }
+        // if (!jobName) {
+        //     this.handleErrorValues('nameError', 'You must provide a Job name');
+        // } else {
+        //     this.handleErrorValues('nameError', '');
             await this.handleSubmit();
-            if (handleSaveBtnClick) {
-                handleSaveBtnClick(this.state.values);
-            } else if (handleCancel) {
-                handleCancel();
-            }
-        }
+        //     if (handleSaveBtnClick) {
+        //         handleSaveBtnClick(this.state.values);
+        //     } else if (handleCancel) {
+        //         handleCancel();
+        //     }
+        // }
     }
 
     initializeValues(data) {

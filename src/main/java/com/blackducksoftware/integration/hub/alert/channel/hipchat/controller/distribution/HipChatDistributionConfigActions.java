@@ -23,6 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.di
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
@@ -69,6 +73,13 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
     @Override
     public String getDistributionName() {
         return SupportedChannels.HIPCHAT;
+    }
+
+    @Override
+    public void validateDistributionConfig(final HipChatDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+        if (StringUtils.isBlank(restModel.getRoomId())) {
+            fieldErrors.put("rommId", "A Room Id is required");
+        }
     }
 
 }
