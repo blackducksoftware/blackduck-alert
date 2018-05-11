@@ -28,10 +28,13 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemReader;
@@ -46,6 +49,8 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 
 public class AccumulatorReader implements ItemReader<NotificationResults> {
+    private static final String ENCODING = "UTF-8";
+
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
 
     private final GlobalProperties globalProperties;
@@ -75,27 +80,10 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
             logger.info("Accumulator Reader Starting Operation");
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
             if (hubServicesFactory != null) {
-                ZonedDateTime zonedEndDate = ZonedDateTime.now();
-                zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
-                zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
-                ZonedDateTime zonedStartDate = zonedEndDate;
-                final Date endDate = Date.from(zonedEndDate.toInstant());
-                Date startDate = Date.from(zonedStartDate.toInstant());
                 final File lastRunFile = new File(lastRunPath);
-                try {
-                    if (lastRunFile.exists()) {
-                        final String lastRunValue = FileUtils.readFileToString(lastRunFile, "UTF-8");
-                        final Date startTime = RestConnection.parseDateString(lastRunValue);
-                        zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
-                    } else {
-                        zonedStartDate = zonedEndDate;
-                    }
-                    zonedStartDate = zonedStartDate.withSecond(0).withNano(0);
-                    startDate = Date.from(zonedStartDate.toInstant());
-
-                } catch (final Exception e) {
-                    logger.error("Error creating date range", e);
-                }
+                final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
+                final Date startDate = dateRange.getLeft();
+                final Date endDate = dateRange.getRight();
 
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
                 final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
@@ -104,11 +92,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
-
-                if (notificationResults.getLatestNotificationCreatedAtString().isPresent()) {
-                    FileUtils.write(lastRunFile, notificationResults.getLatestNotificationCreatedAtString().get(), "UTF-8");
-                }
-
+                writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
                 return notificationResults;
             }
@@ -119,6 +103,51 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
             logger.info("Accumulator Reader Finished Operation");
         }
         return null;
+    }
+
+    private Pair<Date, Date> createDateRange(final File lastRunFile) {
+        ZonedDateTime zonedEndDate = ZonedDateTime.now();
+        zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
+        ZonedDateTime zonedStartDate = zonedEndDate;
+        final Date endDate = Date.from(zonedEndDate.toInstant());
+
+        Date startDate = Date.from(zonedStartDate.toInstant());
+        try {
+            if (lastRunFile.exists()) {
+                final String lastRunValue = FileUtils.readFileToString(lastRunFile, ENCODING);
+                final Date startTime = RestConnection.parseDateString(lastRunValue);
+                zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
+            } else {
+                zonedStartDate = zonedEndDate;
+            }
+            startDate = Date.from(zonedStartDate.toInstant());
+
+        } catch (final Exception e) {
+            logger.error("Error creating date range", e);
+        }
+
+        final Pair<Date, Date> dateRange = new ImmutablePair<>(startDate, endDate);
+        return dateRange;
+    }
+
+    private void writeNextStartTime(final File lastRunFile, final Optional<Date> latestNotificationCreatedAt, final Date searchEndDate) throws IOException {
+        final String startString;
+        if (latestNotificationCreatedAt.isPresent()) {
+            final Date latestNotification = latestNotificationCreatedAt.get();
+            ZonedDateTime newSearchStart = ZonedDateTime.ofInstant(latestNotification.toInstant(), ZoneOffset.UTC);
+            // increment 1 millisecond
+            newSearchStart = newSearchStart.plusNanos(1000000);
+            final Date newSearchStartDate = Date.from(newSearchStart.toInstant());
+            startString = RestConnection.formatDate(newSearchStartDate);
+            logger.info("Last Notification Read Timestamp Found");
+        } else {
+            startString = RestConnection.formatDate(searchEndDate);
+            logger.info("Last Notification Read Timestamp Not Found");
+        }
+        logger.info("Accumulator The Next Poll Start Time: {} ", startString);
+        FileUtils.write(lastRunFile, startString, ENCODING);
+
     }
 
 }
