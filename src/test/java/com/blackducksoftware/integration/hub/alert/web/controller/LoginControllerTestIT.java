@@ -51,8 +51,8 @@ public class LoginControllerTestIT {
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
-    private final String loginUrl = "/api/login";
-    private final String logoutUrl = "/api/logout";
+    private final String loginUrl = "/api/alert/login";
+    private final String logoutUrl = "/api/alert/logout";
 
     @Before
     public void setup() {
