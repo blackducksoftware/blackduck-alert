@@ -27,10 +27,7 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'org.liquibase.gradle'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-
-final def versionFile = new File("${projectDir}/src/main/resources/version.txt")
-versionFile.delete()
-versionFile << version
+import groovy.json.JsonOutput
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 springBoot { mainClass = mainClassName }
@@ -100,6 +97,22 @@ liquibase {
         }
     }
 }
+
+task createAboutText(type: Task) {
+    final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
+    aboutFile.delete()
+    def gitCommandOutput = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'remote', 'get-url', 'origin'
+        standardOutput = gitCommandOutput
+    }
+    def gitUrl = gitCommandOutput.toString().trim()
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl]) 
+    logger.info("About text file: {} content: {}", aboutFile, aboutJson)
+    aboutFile << aboutJson
+}
+
+tasks.compileJava.mustRunAfter(createAboutText)
 
 task cleanBundles(type: Delete) {
     File testDatabaseDirectory = new File('testDB')
