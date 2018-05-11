@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -70,7 +71,7 @@ public class AuditEntryControllerTestIT {
     private MockAuditEntryEntity mockAuditEntity;
     private MockCommonDistributionEntity mockCommonDistributionEntity;
 
-    private final String auditUrl = "/api/audit";
+    private final String auditUrl = BaseController.BASE_PATH + "/audit";
 
     @Before
     public void setup() {
