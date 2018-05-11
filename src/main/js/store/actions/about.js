@@ -7,7 +7,7 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const ABOUT_INFO_URL = '/api/about';
+const ABOUT_INFO_URL = '/api/alert/about';
 
 function fetchingAboutInfo() {
     return {
