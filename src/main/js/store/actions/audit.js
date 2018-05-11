@@ -6,7 +6,7 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const FETCH_URL = '/api/audit';
+const FETCH_URL = '/api/alert/audit';
 
 /**
  * Triggers Config Fetching reducer

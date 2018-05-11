@@ -21,12 +21,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.model;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+public class AboutModel extends Model {
+    private String version;
+    private String description;
+    private String projectUrl;
 
-@RequestMapping(BaseController.BASE_PATH)
-public abstract class BaseController {
-    public static final String BASE_PATH = "/api/alert";
+    protected AboutModel() {
 
+    }
+
+    public AboutModel(final String version, final String description, final String projectUrl) {
+        this.version = version;
+        this.description = description;
+        this.projectUrl = projectUrl;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getProjectUrl() {
+        return projectUrl;
+    }
 }

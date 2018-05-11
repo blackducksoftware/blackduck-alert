@@ -100,7 +100,7 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
         entity = globalEntityMockUtil.createGlobalEntity();
         globalEntityRepository.save(entity);
 
-        restUrl = "/api/" + getRestControllerUrl();
+        restUrl = "/api/alert" + getRestControllerUrl();
     }
 
     @Test

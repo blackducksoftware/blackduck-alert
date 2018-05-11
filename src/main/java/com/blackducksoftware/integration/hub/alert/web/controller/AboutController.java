@@ -23,10 +23,24 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping(BaseController.BASE_PATH)
-public abstract class BaseController {
-    public static final String BASE_PATH = "/api/alert";
+import com.blackducksoftware.integration.hub.alert.web.controller.handler.AboutHandler;
 
+@RestController
+public class AboutController extends BaseController {
+    private final AboutHandler aboutDataHandler;
+
+    @Autowired
+    public AboutController(final AboutHandler aboutDataHandler) {
+        this.aboutDataHandler = aboutDataHandler;
+    }
+
+    @GetMapping(value = "/about")
+    public ResponseEntity<String> about() {
+        return aboutDataHandler.getAboutData();
+    }
 }

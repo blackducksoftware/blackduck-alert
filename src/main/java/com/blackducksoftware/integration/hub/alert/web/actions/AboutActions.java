@@ -21,12 +21,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.controller;
+package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequestMapping(BaseController.BASE_PATH)
-public abstract class BaseController {
-    public static final String BASE_PATH = "/api/alert";
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.alert.model.AboutModel;
+
+@Component
+public class AboutActions {
+    private final GlobalProperties globalProperties;
+
+    @Autowired
+    public AboutActions(final GlobalProperties globalProperties) {
+        this.globalProperties = globalProperties;
+    }
+
+    public AboutModel getAboutModel() {
+        return globalProperties.getAboutModel();
+    }
 
 }
