@@ -31,6 +31,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+
 @EnableWebSecurity
 @Configuration
 @ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true", relaxedNames = false)
@@ -54,9 +56,9 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/alert/login",
-                "/api/alert/logout",
-                "/api/alert/about" };
+                BaseController.BASE_PATH + "/login",
+                BaseController.BASE_PATH + "/logout",
+                BaseController.BASE_PATH + "/about" };
 
         final String[] csrfIgnoredPaths = {
                 "/",
@@ -67,9 +69,9 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/alert/login",
-                "/api/alert/verify",
-                "/api/alert/about" };
+                BaseController.BASE_PATH + "/login",
+                BaseController.BASE_PATH + "/verify",
+                BaseController.BASE_PATH + "/about" };
         http.requiresChannel().anyRequest().requiresSecure()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
                 .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
