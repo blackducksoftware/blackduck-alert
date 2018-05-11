@@ -84,7 +84,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
                 final Date startDate = dateRange.getLeft();
                 final Date endDate = dateRange.getRight();
-
+                logger.info("Accumulating Notifications Between {} and {} ", startDate, endDate);
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
                 final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
@@ -140,12 +140,12 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
             newSearchStart = newSearchStart.plusNanos(1000000);
             final Date newSearchStartDate = Date.from(newSearchStart.toInstant());
             startString = RestConnection.formatDate(newSearchStartDate);
-            logger.info("Last Notification Read Timestamp Found");
+            logger.debug("Last Notification Read Timestamp Found");
         } else {
             startString = RestConnection.formatDate(searchEndDate);
-            logger.info("Last Notification Read Timestamp Not Found");
+            logger.debug("Last Notification Read Timestamp Not Found");
         }
-        logger.info("Accumulator The Next Poll Start Time: {} ", startString);
+        logger.info("Accumulator Next Range Start Time: {} ", startString);
         FileUtils.write(lastRunFile, startString, ENCODING);
 
     }
