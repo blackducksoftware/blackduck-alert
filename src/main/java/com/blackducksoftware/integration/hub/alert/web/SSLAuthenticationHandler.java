@@ -55,7 +55,8 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/css/style.css",
                 "index.html",
                 "/api/alert/login",
-                "/api/alert/logout" };
+                "/api/alert/logout",
+                "/api/alert/about" };
 
         final String[] csrfIgnoredPaths = {
                 "/",
@@ -67,7 +68,8 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/css/style.css",
                 "index.html",
                 "/api/alert/login",
-                "/api/alert/verify" };
+                "/api/alert/verify",
+                "/api/alert/about" };
         http.requiresChannel().anyRequest().requiresSecure()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
                 .and().authorizeRequests().antMatchers(allowedPaths).permitAll()

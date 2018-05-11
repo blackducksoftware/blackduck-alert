@@ -103,7 +103,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         entity = entityMockUtil.createEntity();
         entityRepository.save(entity);
 
-        restUrl = "/api/alert/" + getRestControllerUrl();
+        restUrl = BaseController.BASE_PATH + getRestControllerUrl();
     }
 
     @After

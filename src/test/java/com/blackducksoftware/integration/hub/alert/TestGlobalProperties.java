@@ -23,6 +23,7 @@ import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
+import com.google.gson.Gson;
 
 public class TestGlobalProperties extends GlobalProperties {
     private Integer hubTimeout;
@@ -40,7 +41,7 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     public TestGlobalProperties(final GlobalHubRepositoryWrapper globalHubRepositoryWrapper, final Integer hubTimeout) {
-        super(globalHubRepositoryWrapper);
+        super(globalHubRepositoryWrapper, new Gson());
         this.hubTimeout = hubTimeout;
 
         testProperties = new TestProperties();
