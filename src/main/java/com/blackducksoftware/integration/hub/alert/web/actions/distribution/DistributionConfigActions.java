@@ -140,6 +140,12 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !isBoolean(restModel.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
+        if (StringUtils.isBlank(restModel.getFrequency())) {
+            fieldErrors.put("frequency", "Frequency cannot be blank.");
+        }
+        if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
+            fieldErrors.put("notificationTypes", "Must have at least one notification type.");
+        }
         validateDistributionConfig(restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

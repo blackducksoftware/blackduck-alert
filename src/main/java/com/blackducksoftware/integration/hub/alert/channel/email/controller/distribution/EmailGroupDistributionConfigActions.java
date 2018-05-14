@@ -78,7 +78,7 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     @Override
     public void validateDistributionConfig(final EmailGroupDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         if (StringUtils.isBlank(restModel.getGroupName())) {
-            fieldErrors.put("groupName", "A group must be specified");
+            fieldErrors.put("groupName", "A group must be specified.");
         }
     }
 

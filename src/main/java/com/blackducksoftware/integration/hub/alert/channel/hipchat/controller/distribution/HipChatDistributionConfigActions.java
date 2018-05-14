@@ -78,7 +78,7 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
     @Override
     public void validateDistributionConfig(final HipChatDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         if (StringUtils.isBlank(restModel.getRoomId())) {
-            fieldErrors.put("rommId", "A Room Id is required");
+            fieldErrors.put("roomId", "A Room Id is required.");
         }
     }
 
