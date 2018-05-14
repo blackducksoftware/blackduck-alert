@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduledTask;
+import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 
 @Component
 public class DailyDigestBatchConfig extends JobScheduledTask<DailyItemReader, DigestItemProcessor, DigestItemWriter> {
