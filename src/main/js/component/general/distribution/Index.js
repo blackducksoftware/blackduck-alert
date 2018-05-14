@@ -114,6 +114,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.cancelRowSelect}
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
@@ -127,6 +128,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.cancelRowSelect}
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
@@ -140,6 +142,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.cancelRowSelect}
                 />);
             }
         }

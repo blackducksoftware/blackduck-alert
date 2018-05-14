@@ -78,10 +78,10 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
     @Override
     public void validateDistributionConfig(final SlackDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         if (StringUtils.isBlank(restModel.getWebhook())) {
-            fieldErrors.put("webhook", "A webhook is required");
+            fieldErrors.put("webhook", "A webhook is required.");
         }
         if (StringUtils.isBlank(restModel.getChannelName())) {
-            fieldErrors.put("channelName", "A channel name is required");
+            fieldErrors.put("channelName", "A channel name is required.");
         }
     }
 
