@@ -53,7 +53,7 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 
     render() {
         const content = (<div>
-            <TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.roomIdError} />
+            <TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.state.errors.roomIdError} />
             <CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError} />
             <div className="form-group">
                 <label className="col-sm-3 control-label">Color</label>
@@ -82,7 +82,7 @@ HipChatJobConfiguration.propTypes = {
 };
 
 HipChatJobConfiguration.defaultProps = {
-    baseUrl: '/api/configuration/distribution/hipchat',
-    testUrl: '/api/configuration/distribution/hipchat/test',
+    baseUrl: '/api/alert/configuration/distribution/hipchat',
+    testUrl: '/api/alert/configuration/distribution/hipchat/test',
     distributionType: 'hipchat_channel'
 };

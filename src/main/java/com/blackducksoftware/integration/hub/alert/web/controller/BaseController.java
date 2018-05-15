@@ -27,6 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
-    public static final String BASE_PATH = "/api";
+    public static final String BASE_PATH = "/api/alert";
 
 }

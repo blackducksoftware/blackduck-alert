@@ -18,6 +18,7 @@ export default class TextInput extends LabeledField {
                 onChange={this.props.onChange}
                 placeholder={placeholderText}
             />
+            <label className="fieldError">{this.props.errorValue}</label>
         </div>));
     }
 }

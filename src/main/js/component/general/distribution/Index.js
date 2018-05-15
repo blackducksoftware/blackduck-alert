@@ -83,6 +83,7 @@ class Index extends Component {
         this.editButtonClick = this.editButtonClick.bind(this);
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
         this.reloadJobs = this.reloadJobs.bind(this);
+        this.saveBtn = this.saveBtn.bind(this);
     }
 
     componentDidMount() {
@@ -114,6 +115,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'hipchat_channel') {
                 return (<HipChatJobConfiguration
@@ -127,6 +129,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'slack_channel') {
                 return (<SlackJobConfiguration
@@ -140,6 +143,7 @@ class Index extends Component {
                     configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     projectTableMessage={this.state.projectTableMessage}
+                    handleSaveBtnClick={this.saveBtn}
                 />);
             }
         }
@@ -150,6 +154,11 @@ class Index extends Component {
         this.setState({
             currentRowSelected: null
         });
+    }
+
+    saveBtn() {
+        this.cancelRowSelect();
+        this.reloadJobs();
     }
 
     handleAutoRefreshChange({ target }) {
@@ -212,7 +221,7 @@ class Index extends Component {
 
             matchingJobs.forEach((job) => {
                 const jsonBody = JSON.stringify(job);
-                fetch('/api/configuration/distribution/common', {
+                fetch('/api/alert/configuration/distribution/common', {
                     method: 'DELETE',
                     credentials: 'same-origin',
                     headers: {
@@ -246,7 +255,7 @@ class Index extends Component {
     }
 
     retrieveGroups() {
-        fetch('/api/hub/groups', {
+        fetch('/api/alert/hub/groups', {
             credentials: 'same-origin'
         }).then((response) => {
             this.setState({ waitingForGroups: false });
@@ -271,7 +280,7 @@ class Index extends Component {
     }
 
     fetchDistributionJobs() {
-        fetch('/api/configuration/distribution/common', {
+        fetch('/api/alert/configuration/distribution/common', {
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'

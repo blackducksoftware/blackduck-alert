@@ -6,7 +6,7 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const PROJECTS_URL = '/api/hub/projects';
+const PROJECTS_URL = '/api/alert/hub/projects';
 
 /**
  * Triggers Config Fetching reducer
