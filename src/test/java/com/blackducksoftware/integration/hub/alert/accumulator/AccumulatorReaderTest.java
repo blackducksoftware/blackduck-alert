@@ -36,23 +36,22 @@ public class AccumulatorReaderTest {
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final TestLogger logger = new TestLogger();
         final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO);
-        final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
         final String componentName = "notification test";
         final String componentVersionUrl = "sss";
 
-        final NotificationView view = notificationUtils.createNotificationView(NotificationType.VULNERABILITY);
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
         content.componentName = componentName;
         content.componentVersion = componentVersionUrl;
         content.versionName = "1.0.0";
 
-        final CommonNotificationState notificationContentItem = notificationUtils.createCommonNotificationState(view, content);
+        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);
 
-        final NotificationResults notificationResults = notificationUtils.createNotificationResults(notificationContentItems);
+        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
         Mockito.doReturn(restConnection).when(service).getRestConnection();
@@ -75,23 +74,22 @@ public class AccumulatorReaderTest {
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final TestLogger logger = new TestLogger();
         final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO);
-        final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
         final String componentName = "notification test";
         final String componentVersionUrl = "sss";
 
-        final NotificationView view = notificationUtils.createNotificationView(NotificationType.VULNERABILITY);
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
         content.componentName = componentName;
         content.componentVersion = componentVersionUrl;
         content.versionName = "1.0.0";
 
-        final CommonNotificationState notificationContentItem = notificationUtils.createCommonNotificationState(view, content);
+        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);
 
-        final NotificationResults notificationResults = notificationUtils.createNotificationResults(notificationContentItems);
+        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
         Mockito.doReturn(restConnection).when(service).getRestConnection();
