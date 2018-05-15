@@ -31,10 +31,9 @@ public class PolicyViolationRuleTest {
     public void testIsApplicableTrue() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationRule rule = new PolicyViolationRule(globalProperties);
-        final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
-        final NotificationView view = notificationUtils.createNotificationView(NotificationType.RULE_VIOLATION);
-        final CommonNotificationState commonNotificationState = notificationUtils.createCommonNotificationState(view, null);
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION);
+        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
         assertTrue(rule.isApplicable(commonNotificationState));
 
     }
@@ -43,10 +42,9 @@ public class PolicyViolationRuleTest {
     public void testIsApplicableFalse() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationRule rule = new PolicyViolationRule(globalProperties);
-        final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
-        final NotificationView view = notificationUtils.createNotificationView(NotificationType.VULNERABILITY);
-        final CommonNotificationState commonNotificationState = notificationUtils.createCommonNotificationState(view, null);
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
+        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
         assertFalse(rule.isApplicable(commonNotificationState));
     }
 
@@ -55,13 +53,12 @@ public class PolicyViolationRuleTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationRule rule = new PolicyViolationRule(globalProperties);
         final Map<String, NotificationProcessingModel> modelMap = new HashMap<>();
-        final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
         final String componentName = "notification test component";
         final String componentVersionName = "1.2.3";
 
-        final NotificationView view = notificationUtils.createNotificationView(NotificationType.RULE_VIOLATION);
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION);
 
         final RuleViolationNotificationContent content = new RuleViolationNotificationContent();
         content.projectName = "PolicyProject";
@@ -84,10 +81,10 @@ public class PolicyViolationRuleTest {
         componentVersionStatus.bomComponentVersionPolicyStatus = "IN_VIOLATION";
         content.componentVersionStatuses = Arrays.asList(componentVersionStatus);
 
-        final CommonNotificationState notificationContentItem = notificationUtils.createCommonNotificationState(view, content);
+        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);
 
-        final NotificationResults notificationResults = notificationUtils.createNotificationResults(notificationContentItems);
+        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
 
         notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
             rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket());
@@ -101,7 +98,6 @@ public class PolicyViolationRuleTest {
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, model.getNotificationType());
         assertEquals(notificationContentItem, model.getCommonNotificationState());
         assertEquals(contentDetail, model.getContentDetail());
-        assertTrue(notificationUtils.assertContentDetailEqual(contentDetail, model.getContentDetail()));
     }
 
 }
