@@ -18,12 +18,12 @@ import com.blackducksoftware.integration.hub.api.generated.view.NotificationView
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
-import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnection;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 import com.blackducksoftware.integration.test.TestLogger;
 
 public class AccumulatorReaderTest {
@@ -35,7 +35,7 @@ public class AccumulatorReaderTest {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final TestLogger logger = new TestLogger();
-        final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO, null);
+        final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO);
         final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
@@ -74,7 +74,7 @@ public class AccumulatorReaderTest {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final TestLogger logger = new TestLogger();
-        final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO, null);
+        final RestConnection restConnection = new UnauthenticatedRestConnection(logger, null, 300, ProxyInfo.NO_PROXY_INFO);
         final NotificationGeneratorUtils notificationUtils = new NotificationGeneratorUtils();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();

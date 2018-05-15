@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 @Transactional

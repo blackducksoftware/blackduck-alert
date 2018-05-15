@@ -12,12 +12,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
-import com.blackducksoftware.integration.hub.Credentials;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.credentials.Credentials;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 
 public class ChannelRestConnectionFactoryTest {
     private OutputLogger outputLogger;

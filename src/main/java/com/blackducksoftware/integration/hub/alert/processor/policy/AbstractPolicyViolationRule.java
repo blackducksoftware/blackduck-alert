@@ -44,7 +44,7 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
 
     public List<NotificationProcessingModel> createProcessingModels(final CommonNotificationState commonNotificationState) {
         final List<NotificationProcessingModel> modelList = new ArrayList<>();
-        final List<NotificationContentDetail> contentDetails = commonNotificationState.getContent().getNotificationContentDetails();
+        final List<NotificationContentDetail> contentDetails = commonNotificationState.getContent().createNotificationContentDetails();
         contentDetails.forEach(contentDetail -> {
             modelList.add(createProcessingModel(commonNotificationState, contentDetail));
         });
@@ -57,7 +57,7 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
             if (modelMap.containsKey(key)) {
                 modelMap.remove(key);
             } else {
-                final List<NotificationContentDetail> detailList = commonNotificationState.getContent().getNotificationContentDetails();
+                final List<NotificationContentDetail> detailList = commonNotificationState.getContent().createNotificationContentDetails();
                 final List<NotificationContentDetail> filteredList = detailList.stream().filter(detail -> {
                     return detail.getContentDetailKey().equals(key);
                 }).collect(Collectors.toList());

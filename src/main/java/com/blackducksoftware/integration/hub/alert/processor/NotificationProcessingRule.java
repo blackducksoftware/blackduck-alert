@@ -51,7 +51,7 @@ public abstract class NotificationProcessingRule<M extends NotificationProcessin
     }
 
     public List<String> getContentDetailKeys(final CommonNotificationState commonNotificationState) {
-        final List<NotificationContentDetail> contentDetailList = commonNotificationState.getContent().getNotificationContentDetails();
+        final List<NotificationContentDetail> contentDetailList = commonNotificationState.getContent().createNotificationContentDetails();
         final List<String> contentKeyList = contentDetailList.stream().map(NotificationContentDetail::getContentDetailKey).collect(Collectors.toList());
         return contentKeyList;
     }

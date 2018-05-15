@@ -89,17 +89,18 @@ public class PolicyViolationRuleTest {
 
         final NotificationResults notificationResults = notificationUtils.createNotificationResults(notificationContentItems);
 
-        notificationResults.getNotificationContentItems().forEach(commonNotificationState -> {
+        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
             rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket());
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = content.getNotificationContentDetails().get(0);
+        final NotificationContentDetail contentDetail = content.createNotificationContentDetails().get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, model.getNotificationType());
         assertEquals(notificationContentItem, model.getCommonNotificationState());
+        assertEquals(contentDetail, model.getContentDetail());
         assertTrue(notificationUtils.assertContentDetailEqual(contentDetail, model.getContentDetail()));
     }
 

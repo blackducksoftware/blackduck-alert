@@ -12,8 +12,8 @@ import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.notification.NotificationViewResults;
 import com.blackducksoftware.integration.hub.notification.content.NotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class NotificationGeneratorUtils {
 

@@ -44,9 +44,9 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class AccumulatorReader implements ItemReader<NotificationResults> {
     private static final String ENCODING = "UTF-8";
@@ -88,12 +88,12 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
                 final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
-                if (notificationResults.getNotificationContentItems().isEmpty()) {
+                if (notificationResults.getCommonNotificationStates().isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
                 writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
-                logger.debug("Read Notification Count: {}", notificationResults.getNotificationContentItems().size());
+                logger.debug("Read Notification Count: {}", notificationResults.getCommonNotificationStates().size());
                 return notificationResults;
             }
         } catch (final Exception ex) {
