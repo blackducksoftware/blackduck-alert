@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.scheduler;
+package com.blackducksoftware.integration.hub.alert.scheduled;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

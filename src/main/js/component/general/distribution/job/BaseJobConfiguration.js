@@ -12,6 +12,7 @@ class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            success: false,
             values: {},
             errors: {}
         };
@@ -34,24 +35,11 @@ class BaseJobConfiguration extends Component {
     async onSubmit(event) {
         event.preventDefault();
         const { handleSaveBtnClick, handleCancel } = this.props;
-
-        let jobName = null;
-        if (this.state.values && this.state.values.name) {
-            const trimmedName = this.state.values.name.trim();
-            if (trimmedName.length > 0) {
-                jobName = trimmedName;
-            }
-        }
-        if (!jobName) {
-            this.handleErrorValues('nameError', 'You must provide a Job name');
-        } else {
-            this.handleErrorValues('nameError', '');
-            await this.handleSubmit();
-            if (handleSaveBtnClick) {
-                handleSaveBtnClick(this.state.values);
-            } else if (handleCancel) {
-                handleCancel();
-            }
+        await this.handleSubmit();
+        if (handleSaveBtnClick && this.state.success) {
+            handleSaveBtnClick(this.state.values);
+        } else if (handleCancel && !handleSaveBtnClick) {
+            handleCancel();
         }
     }
 
@@ -86,6 +74,7 @@ class BaseJobConfiguration extends Component {
 
     async handleSubmit(event) {
         this.setState({
+            success: false,
             configurationMessage: 'Saving...',
             inProgress: true,
             errors: {}
@@ -122,6 +111,7 @@ class BaseJobConfiguration extends Component {
             if (response.ok) {
                 return response.json().then((json) => {
                     self.setState({
+                        success: true,
                         configurationMessage: json.message
                     });
                 });
@@ -305,6 +295,9 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the frequency"
                             value={this.state.values.frequency}
                         />
+                        { this.state.errors.frequencyError && <label className="fieldError" name="frequencyError">
+                            { this.state.errors.frequencyError }
+                        </label> }
                     </div>
                 </div>
                 <div className="form-group">
@@ -320,6 +313,9 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the notification types"
                             value={this.state.values.notificationTypes}
                         />
+                        { this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                            { this.state.errors.notificationTypesError }
+                        </label> }
                     </div>
                 </div>
                 {content}

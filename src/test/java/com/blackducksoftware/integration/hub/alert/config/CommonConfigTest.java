@@ -32,7 +32,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.scheduler.JobScheduledTask;
+import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
 
