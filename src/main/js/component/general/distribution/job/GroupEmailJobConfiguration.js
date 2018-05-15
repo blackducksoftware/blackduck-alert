@@ -77,7 +77,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
                         <Select
                             className="typeAheadField"
                             onChange={this.handleGroupsChanged}
-                            clearble
+                            clearable
                             options={options}
                             optionRenderer={this.renderOption}
                             placeholder="Choose the Hub user group"
@@ -85,15 +85,15 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
                             valueRenderer={this.renderOption}
                             searchable
                         />
+
+                        { this.state.errors.groupNameError && <label className="fieldError" name="groupError">
+                            { this.state.errors.groupNameError }
+                        </label> }
                     </div>
                 </div>
                 { this.props.waitingForGroups && <div className="inline">
                     <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden />
                 </div> }
-
-                { this.props.groupError && <p className="fieldError" name="groupError">
-                    { this.props.groupError }
-                </p> }
             </div>);
         return super.render(content);
     }
