@@ -19,8 +19,8 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
 
     render() {
         const content = (<div>
-            <TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.webhookError} />
-            <TextInput label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.channelNameError} />
+            <TextInput label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.state.errors.webhookError} />
+            <TextInput label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.state.errors.channelNameError} />
             <TextInput label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError} />
         </div>);
 
@@ -36,7 +36,7 @@ SlackJobConfiguration.propTypes = {
 };
 
 SlackJobConfiguration.defaultProps = {
-    baseUrl: '/api/configuration/distribution/slack',
-    testUrl: '/api/configuration/distribution/slack/test',
+    baseUrl: '/api/alert/configuration/distribution/slack',
+    testUrl: '/api/alert/configuration/distribution/slack/test',
     distributionType: 'slack_channel'
 };

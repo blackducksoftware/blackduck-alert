@@ -29,6 +29,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
+
 @EnableWebSecurity
 @Configuration
 @ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false", relaxedNames = false)
@@ -47,9 +49,10 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                "/api/configuration/provider/hub",
-                "/api/login",
-                "/api/logout" };
+                BaseController.BASE_PATH + "/configuration/provider/hub",
+                BaseController.BASE_PATH + "/login",
+                BaseController.BASE_PATH + "/logout",
+                BaseController.BASE_PATH + "/about" };
 
         http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll()
                 .and().authorizeRequests().anyRequest().hasRole("ADMIN")

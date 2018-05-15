@@ -23,6 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution;
 
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.dist
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
@@ -69,6 +73,13 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     @Override
     public String getDistributionName() {
         return SupportedChannels.EMAIL_GROUP;
+    }
+
+    @Override
+    public void validateDistributionConfig(final EmailGroupDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+        if (StringUtils.isBlank(restModel.getGroupName())) {
+            fieldErrors.put("groupName", "A group must be specified.");
+        }
     }
 
 }
