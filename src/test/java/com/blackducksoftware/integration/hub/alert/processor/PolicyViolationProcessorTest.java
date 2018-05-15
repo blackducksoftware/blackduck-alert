@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.hub.alert.throwaway.PolicyViolationProcessor;
 import com.blackducksoftware.integration.hub.api.core.ResourceMetadata;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;

@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.throwaway.PolicyOverrideProcessor;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.PolicyRuleView;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;

@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
+import com.blackducksoftware.integration.hub.alert.throwaway.UserNotificationCache;
 import com.blackducksoftware.integration.hub.api.generated.view.AssignedUserView;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.service.ProjectService;
