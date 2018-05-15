@@ -118,21 +118,18 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         }
     }
 
+    public abstract void validateDistributionConfig(R restModel, Map<String, String> fieldErrors) throws AlertFieldException;
+
     @Override
     public String validateConfig(final R restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        if (restModel.getName() != null) {
-            final List<CommonDistributionConfigEntity> configuredEntities = commonDistributionRepository.findAll();
-            for (final CommonDistributionConfigEntity entity : configuredEntities) {
-                final boolean areIdsEqual = entity.getId().toString().equals(restModel.getId());
-                final boolean areNamesEqual = entity.getName().trim().equalsIgnoreCase((restModel.getName().trim()));
-                if (!areIdsEqual && areNamesEqual) {
-                    fieldErrors.put("name", "A distribution configuration with this name already exists.");
-                    break;
-                }
+        if (StringUtils.isNotBlank(restModel.getName())) {
+            final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(restModel.getName());
+            if (entity != null && (entity.getId() != getObjectTransformer().stringToLong(restModel.getId()))) {
+                fieldErrors.put("name", "A distribution configuration with this name already exists.");
             }
         } else {
-            fieldErrors.put("name", "Name cannot be null.");
+            fieldErrors.put("name", "Name cannot be blank.");
         }
         if (StringUtils.isNotBlank(restModel.getId()) && !StringUtils.isNumeric(restModel.getId())) {
             fieldErrors.put("id", "Not an Integer.");
@@ -143,6 +140,13 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !isBoolean(restModel.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
+        if (StringUtils.isBlank(restModel.getFrequency())) {
+            fieldErrors.put("frequency", "Frequency cannot be blank.");
+        }
+        if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
+            fieldErrors.put("notificationTypes", "Must have at least one notification type.");
+        }
+        validateDistributionConfig(restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
