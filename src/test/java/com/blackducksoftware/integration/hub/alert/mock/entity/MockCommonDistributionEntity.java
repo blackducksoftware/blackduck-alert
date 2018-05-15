@@ -6,12 +6,12 @@ import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.google.gson.JsonObject;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
-    private final Long distributionConfigId;
-    private final String distributionType;
-    private final String name;
-    private final DigestTypeEnum frequency;
-    private final Boolean filterByProject;
-    private final Long id;
+    private Long distributionConfigId;
+    private String distributionType;
+    private String name;
+    private DigestTypeEnum frequency;
+    private Boolean filterByProject;
+    private Long id;
 
     public MockCommonDistributionEntity() {
         this(1L, SupportedChannels.HIPCHAT.toString(), "Name", DigestTypeEnum.REAL_TIME, true, 2L);
@@ -50,6 +50,30 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
     @Override
     public Long getId() {
         return id;
+    }
+
+    public void setDistributionConfigId(final Long distributionConfigId) {
+        this.distributionConfigId = distributionConfigId;
+    }
+
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setFrequency(final DigestTypeEnum frequency) {
+        this.frequency = frequency;
+    }
+
+    public void setFilterByProject(final Boolean filterByProject) {
+        this.filterByProject = filterByProject;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override
