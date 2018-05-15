@@ -39,6 +39,14 @@ public class PolicyViolationRuleTest {
     }
 
     @Test
+    public void testGetGlobalProperties() {
+        final TestGlobalProperties globalProperties = new TestGlobalProperties();
+        final PolicyViolationRule rule = new PolicyViolationRule(globalProperties);
+
+        assertEquals(globalProperties, rule.getGlobalProperties());
+    }
+
+    @Test
     public void testIsApplicableFalse() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationRule rule = new PolicyViolationRule(globalProperties);

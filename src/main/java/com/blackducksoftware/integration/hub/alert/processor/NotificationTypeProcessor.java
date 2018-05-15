@@ -29,19 +29,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public abstract class NotificationTypeProcessor<M extends NotificationProcessingModel> {
-    private final GlobalProperties globalProperties;
     private final Map<String, M> modelMap = new LinkedHashMap<>(500);
     private final Collection<NotificationProcessingRule<M>> processingRules;
 
-    public NotificationTypeProcessor(final GlobalProperties globalProperties, final Collection<NotificationProcessingRule<M>> processingRules) {
+    public NotificationTypeProcessor(final Collection<NotificationProcessingRule<M>> processingRules) {
         this.processingRules = processingRules;
-        this.globalProperties = globalProperties;
     }
 
     public Collection<NotificationProcessingRule<M>> getProcessingRules() {
@@ -73,10 +70,6 @@ public abstract class NotificationTypeProcessor<M extends NotificationProcessing
 
     protected Map<String, M> getModelMap() {
         return modelMap;
-    }
-
-    protected GlobalProperties getGlobalProperties() {
-        return globalProperties;
     }
 
     protected abstract List<NotificationModel> createModelList();
