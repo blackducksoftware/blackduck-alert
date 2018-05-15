@@ -48,7 +48,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<N
 
     @Autowired
     public PolicyNotificationTypeProcessor(final GlobalProperties globalProperties) {
-        super(globalProperties, Arrays.asList(new PolicyViolationRule(globalProperties), new PolicyViolationClearedRule(globalProperties), new PolicyViolationOverrideRule(globalProperties)));
+        super(Arrays.asList(new PolicyViolationRule(globalProperties), new PolicyViolationClearedRule(globalProperties), new PolicyViolationOverrideRule(globalProperties)));
     }
 
     @Override
