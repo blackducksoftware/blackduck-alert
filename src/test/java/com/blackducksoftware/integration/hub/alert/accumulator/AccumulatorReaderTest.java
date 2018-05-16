@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.mock.notification.NotificationGeneratorUtils;
+import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
@@ -43,10 +45,16 @@ public class AccumulatorReaderTest {
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
+        final AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
+        affectedProjectVersion.projectName = "VulnerableProject";
+        affectedProjectVersion.projectVersion = "VulnerableProjectUrl";
+        affectedProjectVersion.projectVersionName = "1.2.3";
+
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
         content.componentName = componentName;
         content.componentVersion = componentVersionUrl;
         content.versionName = "1.0.0";
+        content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
         final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);
@@ -81,10 +89,16 @@ public class AccumulatorReaderTest {
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
+        final AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
+        affectedProjectVersion.projectName = "VulnerableProject";
+        affectedProjectVersion.projectVersion = "VulnerableProjectUrl";
+        affectedProjectVersion.projectVersionName = "1.2.3";
+
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
         content.componentName = componentName;
         content.componentVersion = componentVersionUrl;
         content.versionName = "1.0.0";
+        content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
         final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);

@@ -40,8 +40,8 @@ import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
 @Component
 public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<NotificationProcessingModel> {

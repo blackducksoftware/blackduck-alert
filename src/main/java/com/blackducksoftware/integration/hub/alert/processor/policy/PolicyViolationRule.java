@@ -31,7 +31,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class PolicyViolationRule extends AbstractPolicyViolationRule {
@@ -41,8 +42,8 @@ public class PolicyViolationRule extends AbstractPolicyViolationRule {
     }
 
     @Override
-    public void apply(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket) {
-        final List<NotificationProcessingModel> modelList = createProcessingModels(commonNotificationState);
+    public void apply(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket, final NotificationContentDetailResults detailResults) {
+        final List<NotificationProcessingModel> modelList = createProcessingModels(commonNotificationState, detailResults);
         modelList.forEach(model -> {
             modelMap.put(model.getContentDetail().getContentDetailKey(), model);
         });
