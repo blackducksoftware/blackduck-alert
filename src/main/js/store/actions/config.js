@@ -11,8 +11,8 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const CONFIG_URL = '/api/alert/configuration/provider/hub';
-const TEST_URL = '/api/alert/configuration/provider/hub/test';
+const CONFIG_URL = '/alert/api/configuration/provider/hub';
+const TEST_URL = '/alert/api/configuration/provider/hub/test';
 
 function scrubConfig(config) {
     return {

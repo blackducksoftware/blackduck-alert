@@ -17,7 +17,7 @@ const Navigation = props => (
                     Providers
                 </li>
                 <li>
-                    <NavLink to="/providers/hub" activeClassName="activeNav">
+                    <NavLink to="/alert/providers/hub" activeClassName="activeNav">
                         <FontAwesome name="laptop" fixedWidth /> Hub
                     </NavLink>
                 </li>
@@ -25,17 +25,17 @@ const Navigation = props => (
                     Channels
                 </li>
                 <li>
-                    <NavLink to="/channels/email" activeClassName="activeNav">
+                    <NavLink to="/alert/channels/email" activeClassName="activeNav">
                         <FontAwesome name="envelope" fixedWidth /> Email
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/channels/hipchat" activeClassName="activeNav">
+                    <NavLink to="/alert/channels/hipchat" activeClassName="activeNav">
                         <FontAwesome name="comments" fixedWidth /> HipChat
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/channels/slack" activeClassName="activeNav">
+                    <NavLink to="/alert/channels/slack" activeClassName="activeNav">
                         <FontAwesome name="slack" fixedWidth /> Slack
                     </NavLink>
                 </li>
@@ -43,18 +43,18 @@ const Navigation = props => (
                     Jobs
                 </li>
                 <li>
-                    <NavLink to="/jobs/distribution" activeClassName="activeNav">
+                    <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
                         <FontAwesome name="truck" fixedWidth /> Distribution
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink to="/jobs/scheduling" activeClassName="activeNav">
+                    <NavLink to="/alert/jobs/scheduling" activeClassName="activeNav">
                         <FontAwesome name="clock-o" fixedWidth /> Scheduling
                     </NavLink>
                 </li>
                 <li className="divider" />
                 <li>
-                    <NavLink to="/general/audit" activeClassName="activeNav">
+                    <NavLink to="/alert/general/audit" activeClassName="activeNav">
                         <FontAwesome name="history" fixedWidth /> Audit
                     </NavLink>
                 </li>
