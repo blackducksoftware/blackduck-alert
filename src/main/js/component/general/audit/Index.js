@@ -64,7 +64,7 @@ class Index extends Component {
             inProgress: true
         });
 
-        const resendUrl = `/api/alert/audit/${currentEntry.id}/resend`;
+        const resendUrl = `/alert/api/audit/${currentEntry.id}/resend`;
         const { csrfToken } = this.props;
 
         fetch(resendUrl, {
