@@ -19,11 +19,12 @@ import com.blackducksoftware.integration.hub.alert.processor.NotificationProcess
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
+import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
-import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
 public class PolicyViolationRuleTest {
 
@@ -93,13 +94,13 @@ public class PolicyViolationRuleTest {
         notificationContentItems.add(notificationContentItem);
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
-
+        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
         notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket());
+            rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket(), detailResults);
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = content.createNotificationContentDetails().get(0);
+        final NotificationContentDetail contentDetail = detailResults.getDetails(content).get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 

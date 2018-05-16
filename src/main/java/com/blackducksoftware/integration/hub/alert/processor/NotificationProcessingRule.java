@@ -23,14 +23,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.processor;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.content.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public abstract class NotificationProcessingRule<M extends NotificationProcessingModel> {
@@ -50,11 +48,5 @@ public abstract class NotificationProcessingRule<M extends NotificationProcessin
         return notificationType == commonNotificationState.getType();
     }
 
-    public List<String> getContentDetailKeys(final CommonNotificationState commonNotificationState) {
-        final List<NotificationContentDetail> contentDetailList = commonNotificationState.getContent().createNotificationContentDetails();
-        final List<String> contentKeyList = contentDetailList.stream().map(NotificationContentDetail::getContentDetailKey).collect(Collectors.toList());
-        return contentKeyList;
-    }
-
-    public abstract void apply(final Map<String, M> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket);
+    public abstract void apply(final Map<String, M> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket, final NotificationContentDetailResults detailResults);
 }
