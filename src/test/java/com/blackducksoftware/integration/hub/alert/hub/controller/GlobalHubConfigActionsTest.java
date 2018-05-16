@@ -41,9 +41,8 @@ import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalActi
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigValidator;
-import com.blackducksoftware.integration.hub.proxy.ProxyInfo;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.UriCombiner;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfigRestModel, GlobalHubConfigEntity, GlobalHubRepositoryWrapper, GlobalHubConfigActions> {
@@ -271,7 +270,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         Mockito.doAnswer(new Answer<HubServerConfig>() {
             @Override
             public HubServerConfig answer(final InvocationOnMock invocation) throws Throwable {
-                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiToken, new ProxyInfo(null, 0, null, null, null, null), false, new UriCombiner());
+                final HubServerConfig hubServerConfig = new HubServerConfig(new URL(url), 0, apiToken, new ProxyInfo(null, 0, null, null, null, null), false);
                 return hubServerConfig;
             }
         }).when(serverConfigBuilder).build();

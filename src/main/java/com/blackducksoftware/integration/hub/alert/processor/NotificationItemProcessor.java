@@ -25,50 +25,47 @@ package com.blackducksoftware.integration.hub.alert.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.NotificationProcessor;
-import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.notification.VulnerabilityContentItem;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.ProjectService;
-import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
+import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
+import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
+public class NotificationItemProcessor {
+    private final List<NotificationTypeProcessor<?>> processorList;
 
-    public NotificationItemProcessor(final GlobalProperties globalProperties, final IntLogger intLogger) {
-        init(globalProperties, intLogger);
+    public NotificationItemProcessor(final List<NotificationTypeProcessor<?>> processorList) {
+        this.processorList = processorList;
     }
 
-    public void init(final GlobalProperties globalProperties, final IntLogger intLogger) {
-        HubServicesFactory hubServicesFactory;
-        try {
-            hubServicesFactory = globalProperties.createHubServicesFactory(intLogger);
+    public DBStoreEvent process(final NotificationResults notificationData) {
+        final Collection<CommonNotificationState> notificationContentItems = notificationData.getCommonNotificationStates();
+        final HubBucket bucket = notificationData.getHubBucket();
+        final NotificationContentDetailResults detailResults = notificationData.getNotificationContentDetails();
+        final List<NotificationModel> notificationList = new ArrayList<>(notificationContentItems.size());
+        notificationContentItems.forEach(commonNotificationState -> {
+            notificationList.addAll(createModels(commonNotificationState, bucket, detailResults));
+        });
 
-            final ProjectService projectService = hubServicesFactory.createProjectService();
-            final MapProcessorCache policyCache = new UserNotificationCache(projectService);
-            final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, hubServicesFactory);
-            getCacheList().add(policyCache);
-            getCacheList().add(vulnerabilityCache);
-            getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
-            getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, intLogger));
-            getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, intLogger));
-            getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, intLogger));
-        } catch (final IntegrationException ex) {
-            intLogger.error("Error building the notification processor", ex);
-        }
+        return new DBStoreEvent(notificationList);
     }
 
-    @Override
-    public DBStoreEvent processEvents(final Collection<NotificationEvent> eventList) throws HubIntegrationException {
-        final DBStoreEvent dbStoreEvent = new DBStoreEvent(new ArrayList<>(eventList));
-        return dbStoreEvent;
+    private List<NotificationModel> createModels(final CommonNotificationState commonNotificationState, final HubBucket bucket, final NotificationContentDetailResults detailResults) {
+        final List<NotificationModel> modelList = new ArrayList<>(50);
+
+        processorList.forEach(processor -> {
+            if (processor.isApplicable(commonNotificationState)) {
+                processor.process(commonNotificationState, bucket, detailResults);
+            }
+        });
+
+        processorList.forEach(processor -> {
+            modelList.addAll(processor.getModels(bucket));
+        });
+
+        return modelList;
     }
 }

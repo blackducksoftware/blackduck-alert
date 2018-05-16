@@ -35,6 +35,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
@@ -43,7 +44,6 @@ import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalH
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class ObjectTransformerTest {
 

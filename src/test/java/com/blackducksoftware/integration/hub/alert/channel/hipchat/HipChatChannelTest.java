@@ -37,11 +37,10 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHe
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
-import com.blackducksoftware.integration.hub.rest.UnauthenticatedRestConnection;
-import com.blackducksoftware.integration.hub.rest.UriCombiner;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnection;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class HipChatChannelTest extends ChannelTest {
@@ -178,7 +177,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, restFactory);
 
-        RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null, new UriCombiner());
+        RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);
         restConnection = Mockito.spy(restConnection);
         Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).connect();
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);

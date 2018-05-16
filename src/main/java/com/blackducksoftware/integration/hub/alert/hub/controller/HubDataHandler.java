@@ -37,7 +37,7 @@ import com.blackducksoftware.integration.hub.alert.hub.model.HubGroup;
 import com.blackducksoftware.integration.hub.alert.hub.model.HubProject;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 @Component
