@@ -13,7 +13,7 @@ module.exports = {
     output: {
         path: buildDir,
         filename: 'js/bundle.js',
-        publicPath: '/'
+        publicPath: '/alert/'
     },
     module: {
         rules: [{
