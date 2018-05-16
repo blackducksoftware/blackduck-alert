@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
-import { getConfig, testConfig, updateConfig } from '../../store/actions/hipChatConfig';
+import { getConfig, testConfig, updateConfig, toggleShowHostServer } from '../../store/actions/hipChatConfig';
+import CheckboxInput from '../../field/input/CheckboxInput';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -60,6 +61,7 @@ class HipChatConfiguration extends React.Component {
     render() {
         const disabled = this.props.fetching || !this.state.dataLoaded;
         const { errorMessage, testStatus, updateStatus } = this.props;
+        const showAdvanced = this.props.showAdvanced;
         return (
             <div>
                 <h1>
@@ -79,8 +81,22 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <TextInput label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
-                    <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <TextInput label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+
+                    <div className="form-group">
+                        <div className="col-sm-8 col-sm-offset-3">
+                            <button type="button" className="btn-link" onClick={() => { this.props.toggleShowHostServer(!showAdvanced); return false; }}>
+                                Custom HipChat Server Url
+                            </button>
+                        </div>
+                    </div>
+
+                    {showAdvanced &&
+                    <div>
+                        <TextInput label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
+                    </div>
+                    }
+                    
                     <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
                 </form>
             </div>
@@ -100,7 +116,9 @@ HipChatConfiguration.propTypes = {
     fetching: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
-    updateConfig: PropTypes.func.isRequired
+    updateConfig: PropTypes.func.isRequired,
+    showAdvanced: PropTypes.bool.isRequired,
+    toggleShowHostServer: PropTypes.func.isRequired,
 };
 
 HipChatConfiguration.defaultProps = {
@@ -124,11 +142,13 @@ const mapStateToProps = state => ({
     errorMessage: state.hipChatConfig.error.message,
     fieldErrors: state.hipChatConfig.error.fieldErrors,
     id: state.hipChatConfig.id,
-    fetching: state.hipChatConfig.fetching
+    fetching: state.hipChatConfig.fetching,
+    showAdvanced: state.hipChatConfig.showAdvanced
 });
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
+    toggleShowHostServer: toggle => dispatch(toggleShowHostServer(toggle)),
     getConfig: () => dispatch(getConfig()),
     updateConfig: config => dispatch(updateConfig(config)),
     testConfig: config => dispatch(testConfig(config))

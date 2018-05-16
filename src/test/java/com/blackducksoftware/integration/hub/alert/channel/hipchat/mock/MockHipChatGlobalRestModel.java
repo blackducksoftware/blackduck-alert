@@ -22,7 +22,7 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHi
     private final String hostServer;
 
     public MockHipChatGlobalRestModel() {
-        this("ApiKey", false, "1", "");
+        this("ApiKey", false, "1", "HostServer");
     }
 
     private MockHipChatGlobalRestModel(final String apiKey, final boolean apiKeyIsSet, final String id, final String hostServer) {

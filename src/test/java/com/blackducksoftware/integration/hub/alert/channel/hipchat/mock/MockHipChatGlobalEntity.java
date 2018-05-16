@@ -22,7 +22,7 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     private String hostServer;
 
     public MockHipChatGlobalEntity() {
-        this("ApiKey", false, 1L, "");
+        this("ApiKey", false, 1L, "HostServer");
     }
 
     private MockHipChatGlobalEntity(final String apiKey, final boolean apiKeyIsSet, final Long id, final String hostServer) {
@@ -59,6 +59,10 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
 
     public String getHostServer() {
         return hostServer;
+    }
+
+    public void setHostServer(final String hostServer) {
+        this.hostServer = hostServer;
     }
 
     @Override

@@ -15,4 +15,5 @@
     </changeSet>
 
   <include file="changelog/alert/changelog-1.0.0.xml" relativeToChangelogFile="true"/>
+  <include file="changelog/alert/changelog-1.1.0.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog> 
