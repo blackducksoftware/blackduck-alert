@@ -18,18 +18,18 @@ const MainPage = () => (
         <div className="contentArea">
             <Route
                 exact
-                path="/"
+                path="/alert/"
                 render={() => (
-                    <Redirect to="/providers/hub" />
+                    <Redirect to="/alert/providers/hub" />
                 )}
             />
-            <Route path="/providers/hub" component={HubConfiguration} />
-            <Route path="/channels/email" component={EmailConfiguration} />
-            <Route path="/channels/hipchat" component={HipChatConfiguration} />
-            <Route path="/channels/slack" component={SlackConfiguration} />
-            <Route path="/jobs/scheduling" component={SchedulingConfiguration} />
-            <Route path="/jobs/distribution" component={DistributionConfiguration} />
-            <Route path="/general/audit" component={Audit} />
+            <Route path="/alert/providers/hub" component={HubConfiguration} />
+            <Route path="/alert/channels/email" component={EmailConfiguration} />
+            <Route path="/alert/channels/hipchat" component={HipChatConfiguration} />
+            <Route path="/alert/channels/slack" component={SlackConfiguration} />
+            <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />
+            <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
+            <Route path="/alert/general/audit" component={Audit} />
         </div>
         <div className="modalsArea">
             <LogoutConfirmation />
