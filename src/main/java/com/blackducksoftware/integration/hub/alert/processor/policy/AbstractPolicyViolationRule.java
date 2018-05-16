@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.hub.alert.processor.NotificationProcess
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingRule;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
 public abstract class AbstractPolicyViolationRule extends NotificationProcessingRule<NotificationProcessingModel> {
@@ -43,37 +43,37 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
         super(globalProperties, notificationType);
     }
 
-    public List<NotificationProcessingModel> createProcessingModels(final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
+    public List<NotificationProcessingModel> createProcessingModels(final NotificationViewResult notificationViewResult) {
         final List<NotificationProcessingModel> modelList = new ArrayList<>();
-        final List<NotificationContentDetail> contentDetails = detailResults.getDetails(commonNotificationState.getContent());
+        final List<NotificationContentDetail> contentDetails = notificationViewResult.getNotificationContentDetails();
         contentDetails.forEach(contentDetail -> {
-            modelList.add(createProcessingModel(commonNotificationState, contentDetail));
+            modelList.add(createProcessingModel(notificationViewResult.getCommonNotificationState(), contentDetail));
         });
         return modelList;
     }
 
-    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
-        final List<String> keyList = getContentDetailKeys(commonNotificationState, detailResults);
+    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final NotificationViewResult notificationViewResult) {
+        final List<String> keyList = getContentDetailKeys(notificationViewResult);
         for (final String key : keyList) {
             if (modelMap.containsKey(key)) {
                 modelMap.remove(key);
             } else {
-                final List<NotificationContentDetail> detailList = detailResults.getDetails(commonNotificationState.getContent());
+                final List<NotificationContentDetail> detailList = notificationViewResult.getNotificationContentDetails();
                 final List<NotificationContentDetail> filteredList = detailList.stream().filter(detail -> {
                     return detail.getContentDetailKey().equals(key);
                 }).collect(Collectors.toList());
 
                 if (!filteredList.isEmpty()) {
                     final NotificationContentDetail contentDetail = filteredList.get(0);
-                    final NotificationProcessingModel model = createProcessingModel(commonNotificationState, contentDetail);
+                    final NotificationProcessingModel model = createProcessingModel(notificationViewResult.getCommonNotificationState(), contentDetail);
                     modelMap.put(key, model);
                 }
             }
         }
     }
 
-    public List<String> getContentDetailKeys(final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
-        final List<NotificationContentDetail> contentDetailList = detailResults.getDetails(commonNotificationState.getContent());
+    public List<String> getContentDetailKeys(final NotificationViewResult notificationViewResult) {
+        final List<NotificationContentDetail> contentDetailList = notificationViewResult.getNotificationContentDetails();
         final List<String> contentKeyList = contentDetailList.stream().map(NotificationContentDetail::getContentDetailKey).collect(Collectors.toList());
         return contentKeyList;
     }

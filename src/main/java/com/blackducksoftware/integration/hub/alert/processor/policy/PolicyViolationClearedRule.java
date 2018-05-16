@@ -30,7 +30,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
@@ -41,8 +41,8 @@ public class PolicyViolationClearedRule extends AbstractPolicyViolationRule {
     }
 
     @Override
-    public void apply(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket, final NotificationContentDetailResults detailResults) {
-        addOrRemoveIfExists(modelMap, commonNotificationState, detailResults);
+    public void apply(final Map<String, NotificationProcessingModel> modelMap, final NotificationViewResult notificationViewResult, final HubBucket bucket) {
+        addOrRemoveIfExists(modelMap, notificationViewResult);
     }
 
     @Override

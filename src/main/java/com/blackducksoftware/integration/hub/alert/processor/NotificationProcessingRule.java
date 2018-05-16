@@ -27,8 +27,7 @@ import java.util.Map;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public abstract class NotificationProcessingRule<M extends NotificationProcessingModel> {
@@ -44,9 +43,9 @@ public abstract class NotificationProcessingRule<M extends NotificationProcessin
         return globalProperties;
     }
 
-    public boolean isApplicable(final CommonNotificationState commonNotificationState) {
-        return notificationType == commonNotificationState.getType();
+    public boolean isApplicable(final NotificationViewResult notificationViewResult) {
+        return notificationType == notificationViewResult.getCommonNotificationState().getType();
     }
 
-    public abstract void apply(final Map<String, M> modelMap, final CommonNotificationState commonNotificationState, final HubBucket bucket, final NotificationContentDetailResults detailResults);
+    public abstract void apply(final Map<String, M> modelMap, final NotificationViewResult notificationViewResult, final HubBucket bucket);
 }

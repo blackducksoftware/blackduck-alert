@@ -88,12 +88,12 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
                 final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
-                if (notificationResults.getCommonNotificationStates().isEmpty()) {
+                if (notificationResults.getNotificationViewResults().getResultList().isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
                 writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
-                logger.debug("Read Notification Count: {}", notificationResults.getCommonNotificationStates().size());
+                logger.debug("Read Notification Count: {}", notificationResults.getNotificationViewResults().getResultList().size());
                 return notificationResults;
             }
         } catch (final Exception ex) {
