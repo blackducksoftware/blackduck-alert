@@ -28,7 +28,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.request.Request;
+import com.blackducksoftware.integration.rest.request.Request;
 
 public class RestDistributionChannelTest extends ChannelTest {
     @Test

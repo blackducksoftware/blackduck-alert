@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,12 +23,15 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.ResourceLoader;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.alert.processor.policy.PolicyNotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.alert.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectRequest;
 import com.blackducksoftware.integration.hub.api.generated.component.ProjectVersionRequest;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionDistributionType;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.ProjectVersionPhaseType;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.service.CodeLocationService;
 import com.blackducksoftware.integration.hub.service.HubService;
@@ -68,6 +72,7 @@ public class AccumulatorProcessorTestIT {
 
     @Test
     public void testProcess() throws Exception {
+
         final Long timestamp = (new Date()).getTime();
         final String testProjectName = "hub-Alert-NotificationAccumulatorTest-" + timestamp;
         final String testProjectVersionName = "1.0.0";
@@ -90,30 +95,32 @@ public class AccumulatorProcessorTestIT {
         TimeUnit.SECONDS.sleep(60);
 
         final NotificationResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
-
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties);
+        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor(globalProperties);
+        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor(globalProperties);
+        final List<NotificationTypeProcessor<?>> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
 
-        final List<NotificationEvent> notificationEvents = storeEvent.getNotificationList();
+        final List<NotificationModel> notifications = storeEvent.getNotificationList();
 
-        assertFalse(notificationEvents.isEmpty());
+        assertFalse(notifications.isEmpty());
         assertEquals(storeEvent.getEventId().length(), 36);
 
-        NotificationEvent apacheEvent = null;
+        NotificationModel apacheModel = null;
 
-        for (final NotificationEvent event : notificationEvents) {
-            System.out.println(event);
-            if ("Apache Commons FileUpload".equals(event.getDataSet().get("COMPONENT"))) {
-                apacheEvent = event;
+        for (final NotificationModel model : notifications) {
+            System.out.println(model);
+            if ("Apache Commons FileUpload".equals(model.getComponentName())) {
+                apacheModel = model;
             }
         }
 
-        assertNotNull(apacheEvent);
+        assertNotNull(apacheModel);
 
-        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null);
+        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null, null);
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);

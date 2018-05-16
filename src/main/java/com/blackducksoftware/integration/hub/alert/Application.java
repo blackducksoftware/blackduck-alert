@@ -49,7 +49,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.hub.RestConstants;
+import com.blackducksoftware.integration.rest.RestConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
