@@ -19,8 +19,8 @@ import com.blackducksoftware.integration.hub.alert.processor.NotificationProcess
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationClearedNotificationContent;
@@ -32,10 +32,31 @@ public class PolicyViolationRuleClearedTest {
     public void testIsApplicableTrue() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationClearedRule rule = new PolicyViolationClearedRule(globalProperties);
+        final RuleViolationClearedNotificationContent content = new RuleViolationClearedNotificationContent();
+        content.projectName = "PolicyProject";
+        content.projectVersionName = "1.2.3";
+        content.projectVersion = "policy url";
+        content.componentVersionsCleared = 1;
 
+        final PolicyInfo policyInfo = new PolicyInfo();
+        policyInfo.policyName = "PolicyViolation";
+        policyInfo.policy = "policyUrl";
+        content.policyInfos = Arrays.asList(policyInfo);
+
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
+        final ComponentVersionStatus componentVersionStatus = new ComponentVersionStatus();
+        componentVersionStatus.componentName = componentName;
+        componentVersionStatus.componentVersionName = componentVersionName;
+        componentVersionStatus.component = "component url";
+        componentVersionStatus.componentVersion = "component version url";
+        componentVersionStatus.componentIssueLink = "issuesLink";
+        componentVersionStatus.policies = Arrays.asList(policyInfo.policy);
+        componentVersionStatus.bomComponentVersionPolicyStatus = "VIOLATION_CLEARED";
+        content.componentVersionStatuses = Arrays.asList(componentVersionStatus);
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION_CLEARED);
-        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
-        assertTrue(rule.isApplicable(commonNotificationState));
+        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
+        assertTrue(rule.isApplicable(notificationViewResult));
 
     }
 
@@ -44,9 +65,32 @@ public class PolicyViolationRuleClearedTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationClearedRule rule = new PolicyViolationClearedRule(globalProperties);
 
+        final RuleViolationClearedNotificationContent content = new RuleViolationClearedNotificationContent();
+        content.projectName = "PolicyProject";
+        content.projectVersionName = "1.2.3";
+        content.projectVersion = "policy url";
+        content.componentVersionsCleared = 1;
+
+        final PolicyInfo policyInfo = new PolicyInfo();
+        policyInfo.policyName = "PolicyViolation";
+        policyInfo.policy = "policyUrl";
+        content.policyInfos = Arrays.asList(policyInfo);
+
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
+        final ComponentVersionStatus componentVersionStatus = new ComponentVersionStatus();
+        componentVersionStatus.componentName = componentName;
+        componentVersionStatus.componentVersionName = componentVersionName;
+        componentVersionStatus.component = "component url";
+        componentVersionStatus.componentVersion = "component version url";
+        componentVersionStatus.componentIssueLink = "issuesLink";
+        componentVersionStatus.policies = Arrays.asList(policyInfo.policy);
+        componentVersionStatus.bomComponentVersionPolicyStatus = "VIOLATION_CLEARED";
+        content.componentVersionStatuses = Arrays.asList(componentVersionStatus);
+
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
-        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
-        assertFalse(rule.isApplicable(commonNotificationState));
+        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
+        assertFalse(rule.isApplicable(notificationViewResult));
     }
 
     @Test
@@ -56,8 +100,6 @@ public class PolicyViolationRuleClearedTest {
         final Map<String, NotificationProcessingModel> modelMap = new HashMap<>();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
-        final String componentName = "notification test component";
-        final String componentVersionName = "1.2.3";
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION_CLEARED);
 
@@ -72,6 +114,8 @@ public class PolicyViolationRuleClearedTest {
         policyInfo.policy = "policyUrl";
         content.policyInfos = Arrays.asList(policyInfo);
 
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
         final ComponentVersionStatus componentVersionStatus = new ComponentVersionStatus();
         componentVersionStatus.componentName = componentName;
         componentVersionStatus.componentVersionName = componentVersionName;
@@ -86,13 +130,12 @@ public class PolicyViolationRuleClearedTest {
         notificationContentItems.add(notificationContentItem);
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket(), detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            rule.apply(modelMap, notificationViewResult, notificationResults.getHubBucket());
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = detailResults.getDetails(content).get(0);
+        final NotificationContentDetail contentDetail = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails().get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 

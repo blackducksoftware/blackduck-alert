@@ -1,16 +1,16 @@
 package com.blackducksoftware.integration.hub.alert.mock.notification;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.notification.NotificationViewResults;
 import com.blackducksoftware.integration.hub.notification.content.NotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.ContentDetailCollector;
@@ -40,20 +40,29 @@ public class NotificationGeneratorUtils {
         return new CommonNotificationState(view, content);
     }
 
+    public static NotificationViewResult createNotificationViewResult(final NotificationView view, final NotificationContent content) {
+        final CommonNotificationState commonNotificationState = new CommonNotificationState(view, content);
+        final List<NotificationContentDetail> notificationContentDetails = createNotificationDetailList(commonNotificationState);
+        final NotificationViewResult notificationViewResult = new NotificationViewResult(commonNotificationState, notificationContentDetails);
+        return notificationViewResult;
+    }
+
     public static List<NotificationContentDetail> createNotificationDetailList(final CommonNotificationState commonNotificationState) {
         final ContentDetailCollector detailsCollector = new ContentDetailCollector();
-        final Map<NotificationContent, List<NotificationContentDetail>> detailMap = detailsCollector.collect(Arrays.asList(commonNotificationState));
-        return detailMap.get(commonNotificationState.getContent());
+        final List<NotificationViewResult> resultList = detailsCollector.collect(Arrays.asList(commonNotificationState));
+        final List<NotificationContentDetail> detailList = new ArrayList<>();
+        resultList.forEach(notificationViewResult -> {
+            detailList.addAll(notificationViewResult.getNotificationContentDetails());
+        });
+        return detailList;
     }
 
     public static NotificationResults createNotificationResults(final List<CommonNotificationState> commonNotificationStates) {
         final Date createdAt = commonNotificationStates.get(commonNotificationStates.size() - 1).getCreatedAt();
-        final NotificationViewResults viewResults = new NotificationViewResults(commonNotificationStates, Optional.of(createdAt), Optional.of(RestConnection.formatDate(createdAt)));
-
         final ContentDetailCollector detailsCollector = new ContentDetailCollector();
-        final Map<NotificationContent, List<NotificationContentDetail>> detailMap = detailsCollector.collect(commonNotificationStates);
-        final NotificationContentDetailResults detailResults = new NotificationContentDetailResults(detailMap);
-        final NotificationResults results = new NotificationResults(viewResults, new HubBucket(), detailResults);
+        final List<NotificationViewResult> resultList = detailsCollector.collect(commonNotificationStates);
+        final NotificationViewResults viewResults = new NotificationViewResults(resultList, Optional.of(createdAt), Optional.of(RestConnection.formatDate(createdAt)));
+        final NotificationResults results = new NotificationResults(viewResults, new HubBucket());
         return results;
     }
 }

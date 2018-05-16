@@ -19,8 +19,8 @@ import com.blackducksoftware.integration.hub.alert.processor.NotificationProcess
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
@@ -32,9 +32,25 @@ public class PolicyViolationOverrideRuleTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationOverrideRule rule = new PolicyViolationOverrideRule(globalProperties);
 
+        final PolicyInfo policyInfo = new PolicyInfo();
+        policyInfo.policyName = "PolicyViolation";
+        policyInfo.policy = "policyUrl";
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
+        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
+        content.projectName = "PolicyProject";
+        content.projectVersionName = "1.2.3";
+        content.projectVersion = "policy url";
+        content.componentName = componentName;
+        content.componentVersionName = componentVersionName;
+        content.componentVersion = "componentVersionUrl";
+        content.policyInfos = Arrays.asList(policyInfo);
+        content.policies = Arrays.asList(policyInfo.policy);
+        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
+
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
-        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
-        assertTrue(rule.isApplicable(commonNotificationState));
+        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
+        assertTrue(rule.isApplicable(notificationViewResult));
 
     }
 
@@ -42,10 +58,24 @@ public class PolicyViolationOverrideRuleTest {
     public void testIsApplicableFalse() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationOverrideRule rule = new PolicyViolationOverrideRule(globalProperties);
-
+        final PolicyInfo policyInfo = new PolicyInfo();
+        policyInfo.policyName = "PolicyViolation";
+        policyInfo.policy = "policyUrl";
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
+        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
+        content.projectName = "PolicyProject";
+        content.projectVersionName = "1.2.3";
+        content.projectVersion = "policy url";
+        content.componentName = componentName;
+        content.componentVersionName = componentVersionName;
+        content.componentVersion = "componentVersionUrl";
+        content.policyInfos = Arrays.asList(policyInfo);
+        content.policies = Arrays.asList(policyInfo.policy);
+        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
-        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, null);
-        assertFalse(rule.isApplicable(commonNotificationState));
+        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
+        assertFalse(rule.isApplicable(notificationViewResult));
     }
 
     @Test
@@ -55,14 +85,13 @@ public class PolicyViolationOverrideRuleTest {
         final Map<String, NotificationProcessingModel> modelMap = new HashMap<>();
 
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
-        final String componentName = "notification test component";
-        final String componentVersionName = "1.2.3";
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
         final PolicyInfo policyInfo = new PolicyInfo();
         policyInfo.policyName = "PolicyViolation";
         policyInfo.policy = "policyUrl";
-
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
         final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
         content.projectName = "PolicyProject";
         content.projectVersionName = "1.2.3";
@@ -78,13 +107,12 @@ public class PolicyViolationOverrideRuleTest {
         notificationContentItems.add(notificationContentItem);
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            rule.apply(modelMap, commonNotificationState, notificationResults.getHubBucket(), notificationResults.getNotificationContentDetails());
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            rule.apply(modelMap, notificationViewResult, notificationResults.getHubBucket());
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = detailResults.getDetails(content).get(0);
+        final NotificationContentDetail contentDetail = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails().get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 

@@ -21,7 +21,6 @@ import com.blackducksoftware.integration.hub.alert.processor.NotificationProcess
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.NotificationResults;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
@@ -63,16 +62,15 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
 
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
-        final List<NotificationContentDetail> detailList = detailResults.getDetails(notificationContentItem.getContent());
+        final List<NotificationContentDetail> detailList = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails();
 
         final NotificationContentDetail detail = detailList.get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
@@ -92,16 +90,15 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
 
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
-        final List<NotificationContentDetail> detailList = detailResults.getDetails(notificationContentItem.getContent());
+        final List<NotificationContentDetail> detailList = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails();
 
         final NotificationContentDetail detail = detailList.get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
@@ -121,16 +118,15 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
 
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
-        final List<NotificationContentDetail> detailList = detailResults.getDetails(notificationContentItem.getContent());
+        final List<NotificationContentDetail> detailList = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails();
 
         final NotificationContentDetail detail = detailList.get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
@@ -150,9 +146,8 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
@@ -168,9 +163,8 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
@@ -187,16 +181,15 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
 
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
-        final List<NotificationContentDetail> detailList = detailResults.getDetails(duplicateCleared.getContent());
+        final List<NotificationContentDetail> detailList = notificationResults.getNotificationViewResults().getResultList().get(2).getNotificationContentDetails();
 
         final NotificationContentDetail detail = detailList.get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
@@ -217,16 +210,15 @@ public class PolicyNotificationTypeProcessorTest {
 
         final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
         final HubBucket bucket = notificationResults.getHubBucket();
-        final NotificationContentDetailResults detailResults = notificationResults.getNotificationContentDetails();
-        notificationResults.getCommonNotificationStates().forEach(commonNotificationState -> {
-            processor.process(commonNotificationState, bucket, detailResults);
+        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+            processor.process(notificationViewResult, bucket);
         });
 
         final List<NotificationModel> modelList = processor.getModels(bucket);
 
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
-        final List<NotificationContentDetail> detailList = detailResults.getDetails(duplicateOverride.getContent());
+        final List<NotificationContentDetail> detailList = notificationResults.getNotificationViewResults().getResultList().get(2).getNotificationContentDetails();
 
         final NotificationContentDetail detail = detailList.get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
