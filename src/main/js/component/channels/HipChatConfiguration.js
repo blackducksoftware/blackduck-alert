@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 import { getConfig, testConfig, updateConfig, toggleShowHostServer } from '../../store/actions/hipChatConfig';
-import CheckboxInput from '../../field/input/CheckboxInput';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {

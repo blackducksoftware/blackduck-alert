@@ -50,7 +50,7 @@ module.exports = {
         disableHostCheck: true,
         proxy: [{
             context: ['/api'],
-            target: 'http://localhost:8080',
+            target: 'http://localhost.local:8080',
             secure: false,
             cookieDomainRewrite: {
                 '*': ''
