@@ -151,6 +151,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(null, null, null, null, null, restFactory);
 
         hipChatMockUtil.setApiKey(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
+        hipChatMockUtil.setHostServer("");
         final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
         final String validMessage = hipChatChannel.testGlobalConfig(entity);
         assertEquals("API key is valid.", validMessage);
