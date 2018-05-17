@@ -79,7 +79,7 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
     }
 
     protected NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationType) {
-        return new NotificationProcessingModel(notificationContentDetail, commonNotificationState, commonNotificationState.getContent(), notificationType);
+        return new NotificationProcessingModel(notificationContentDetail, commonNotificationState, notificationType);
     }
 
     protected abstract NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail);
