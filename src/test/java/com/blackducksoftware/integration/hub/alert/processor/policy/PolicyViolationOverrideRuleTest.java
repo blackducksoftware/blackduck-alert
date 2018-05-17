@@ -35,19 +35,7 @@ public class PolicyViolationOverrideRuleTest {
         final PolicyInfo policyInfo = new PolicyInfo();
         policyInfo.policyName = "PolicyViolation";
         policyInfo.policy = "policyUrl";
-        final String componentName = "notification test component";
-        final String componentVersionName = "1.2.3";
-        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
-        content.projectName = "PolicyProject";
-        content.projectVersionName = "1.2.3";
-        content.projectVersion = "policy url";
-        content.componentName = componentName;
-        content.componentVersionName = componentVersionName;
-        content.componentVersion = "componentVersionUrl";
-        content.policyInfos = Arrays.asList(policyInfo);
-        content.policies = Arrays.asList(policyInfo.policy);
-        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
-
+        final PolicyOverrideNotificationContent content = createContent();
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
         final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
         assertTrue(rule.isApplicable(notificationViewResult));
@@ -58,21 +46,8 @@ public class PolicyViolationOverrideRuleTest {
     public void testIsApplicableFalse() {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PolicyViolationOverrideRule rule = new PolicyViolationOverrideRule(globalProperties);
-        final PolicyInfo policyInfo = new PolicyInfo();
-        policyInfo.policyName = "PolicyViolation";
-        policyInfo.policy = "policyUrl";
-        final String componentName = "notification test component";
-        final String componentVersionName = "1.2.3";
-        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
-        content.projectName = "PolicyProject";
-        content.projectVersionName = "1.2.3";
-        content.projectVersion = "policy url";
-        content.componentName = componentName;
-        content.componentVersionName = componentVersionName;
-        content.componentVersion = "componentVersionUrl";
-        content.policyInfos = Arrays.asList(policyInfo);
-        content.policies = Arrays.asList(policyInfo.policy);
-        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
+
+        final PolicyOverrideNotificationContent content = createContent();
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
         final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
         assertFalse(rule.isApplicable(notificationViewResult));
@@ -87,21 +62,7 @@ public class PolicyViolationOverrideRuleTest {
         final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
-        final PolicyInfo policyInfo = new PolicyInfo();
-        policyInfo.policyName = "PolicyViolation";
-        policyInfo.policy = "policyUrl";
-        final String componentName = "notification test component";
-        final String componentVersionName = "1.2.3";
-        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
-        content.projectName = "PolicyProject";
-        content.projectVersionName = "1.2.3";
-        content.projectVersion = "policy url";
-        content.componentName = componentName;
-        content.componentVersionName = componentVersionName;
-        content.componentVersion = "componentVersionUrl";
-        content.policyInfos = Arrays.asList(policyInfo);
-        content.policies = Arrays.asList(policyInfo.policy);
-        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
+        final PolicyOverrideNotificationContent content = createContent();
 
         final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         notificationContentItems.add(notificationContentItem);
@@ -121,4 +82,22 @@ public class PolicyViolationOverrideRuleTest {
         assertEquals(contentDetail, model.getContentDetail());
     }
 
+    private PolicyOverrideNotificationContent createContent() {
+        final PolicyInfo policyInfo = new PolicyInfo();
+        policyInfo.policyName = "PolicyViolation";
+        policyInfo.policy = "policyUrl";
+        final String componentName = "notification test component";
+        final String componentVersionName = "1.2.3";
+        final PolicyOverrideNotificationContent content = new PolicyOverrideNotificationContent();
+        content.projectName = "PolicyProject";
+        content.projectVersionName = "1.2.3";
+        content.projectVersion = "policy url";
+        content.componentName = componentName;
+        content.componentVersionName = componentVersionName;
+        content.componentVersion = "componentVersionUrl";
+        content.policyInfos = Arrays.asList(policyInfo);
+        content.policies = Arrays.asList(policyInfo.policy);
+        content.bomComponentVersionPolicyStatus = "POLICY_OVERRIDE";
+        return content;
+    }
 }
