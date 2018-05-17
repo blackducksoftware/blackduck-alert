@@ -46,10 +46,10 @@ public class NotificationProcessingModelTest {
         final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, content);
         final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(commonNotificationState);
         final NotificationContentDetail detail = detailList.get(0);
-        final NotificationProcessingModel model = new NotificationProcessingModel(detail, commonNotificationState, content, NotificationCategoryEnum.POLICY_VIOLATION);
+        final NotificationProcessingModel model = new NotificationProcessingModel(detail, commonNotificationState, NotificationCategoryEnum.POLICY_VIOLATION);
         assertEquals(commonNotificationState, model.getCommonNotificationState());
         assertEquals(detail, model.getContentDetail());
-        assertEquals(content, model.getContent());
+        assertEquals(content, model.getCommonNotificationState().getContent());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, model.getNotificationType());
     }
 }
