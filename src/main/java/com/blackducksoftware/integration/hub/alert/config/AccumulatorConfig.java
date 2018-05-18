@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManage
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
 public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, AccumulatorProcessor, AccumulatorWriter> {
@@ -66,7 +66,7 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
 
     @Override
     public Step createStep(final AccumulatorReader reader, final AccumulatorProcessor processor, final AccumulatorWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationDetailResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
     }
 
     @Override

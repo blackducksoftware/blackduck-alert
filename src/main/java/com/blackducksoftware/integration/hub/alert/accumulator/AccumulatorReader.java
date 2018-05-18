@@ -43,12 +43,12 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
-public class AccumulatorReader implements ItemReader<NotificationResults> {
+public class AccumulatorReader implements ItemReader<NotificationDetailResults> {
     private static final String ENCODING = "UTF-8";
 
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorReader.class);
@@ -74,7 +74,7 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
     }
 
     @Override
-    public NotificationResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         try {
             logger.info("Accumulator Reader Starting Operation");
@@ -86,14 +86,14 @@ public class AccumulatorReader implements ItemReader<NotificationResults> {
                 final Date endDate = dateRange.getRight();
                 logger.info("Accumulating Notifications Between {} and {} ", startDate, endDate);
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
-                final NotificationResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
+                final NotificationDetailResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
-                if (notificationResults.getNotificationViewResults().getResultList().isEmpty()) {
+                if (notificationResults.isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
                 writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
-                logger.debug("Read Notification Count: {}", notificationResults.getNotificationViewResults().getResultList().size());
+                logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
                 return notificationResults;
             }
         } catch (final Exception ex) {

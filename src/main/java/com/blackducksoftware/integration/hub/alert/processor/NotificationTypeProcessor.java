@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public abstract class NotificationTypeProcessor<M extends NotificationProcessingModel> {
@@ -45,17 +45,17 @@ public abstract class NotificationTypeProcessor<M extends NotificationProcessing
         return processingRules;
     }
 
-    public boolean isApplicable(final NotificationViewResult notificationViewResult) {
+    public boolean isApplicable(final NotificationContentDetail notificationContentDetail) {
         final boolean isApplicable = processingRules.parallelStream().anyMatch(rule -> {
-            return rule.isApplicable(notificationViewResult);
+            return rule.isApplicable(notificationContentDetail);
         });
         return isApplicable;
     }
 
-    public void process(final NotificationViewResult notificationViewResult, final HubBucket bucket) {
+    public void process(final NotificationContentDetail notificationContentDetail, final HubBucket bucket) {
         processingRules.forEach(rule -> {
-            if (rule.isApplicable(notificationViewResult)) {
-                rule.apply(getModelMap(), notificationViewResult, bucket);
+            if (rule.isApplicable(notificationContentDetail)) {
+                rule.apply(getModelMap(), notificationContentDetail, bucket);
             }
         });
     }
