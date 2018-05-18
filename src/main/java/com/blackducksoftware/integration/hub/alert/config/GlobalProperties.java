@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -209,28 +209,41 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServicesFactory createHubServicesFactory(final Logger logger) throws IntegrationException {
-        final IntLogger intLogger = new Slf4jIntLogger(logger);
-        return createHubServicesFactory(intLogger);
+    public HubServicesFactory createHubServicesFactory(final RestConnection restConnection) {
+        return new HubServicesFactory(restConnection);
     }
 
-    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
-        final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
-        if (hubServerConfig != null) {
-            final RestConnection restConnection = hubServerConfig.createRestConnection(intLogger);
-            return new HubServicesFactory(restConnection);
+    public RestConnection createRestConnectionAndLogErrors(final Logger logger) {
+        try {
+            return createRestConnection(logger);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
         }
         return null;
     }
 
-    public HubServicesFactory createHubServicesFactoryAndLogErrors(final Logger logger) {
+    public RestConnection createRestConnection(final Logger logger) throws AlertException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
+        return createRestConnection(intLogger);
+    }
+
+    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
+        final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
+        RestConnection restConnection = null;
+        if (hubServerConfig != null) {
+            restConnection = createRestConnection(intLogger, hubServerConfig);
+        }
+        return restConnection;
+    }
+
+    public RestConnection createRestConnection(final IntLogger intLogger, final HubServerConfig hubServerConfig) {
+        RestConnection restConnection = null;
         try {
-            return createHubServicesFactory(intLogger);
-        } catch (final Exception e) {
+            restConnection = hubServerConfig.createRestConnection(intLogger);
+        } catch (final EncryptionException e) {
             intLogger.error(e.getMessage(), e);
         }
-        return null;
+        return restConnection;
     }
 
     public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {

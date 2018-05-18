@@ -81,7 +81,7 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
 
     @Override
     public AccumulatorProcessor processor() {
-        return new AccumulatorProcessor(globalProperties, processorList);
+        return new AccumulatorProcessor(processorList);
     }
 
     @Override

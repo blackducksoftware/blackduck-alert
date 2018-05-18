@@ -162,7 +162,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     public void runAccumulator() throws Exception {
         final AccumulatorReader reader = new AccumulatorReader(globalProperties);
-        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(processorList);
         final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final NotificationResults results = reader.read();

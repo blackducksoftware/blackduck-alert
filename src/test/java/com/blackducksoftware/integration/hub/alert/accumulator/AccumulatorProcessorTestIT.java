@@ -98,7 +98,7 @@ public class AccumulatorProcessorTestIT {
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor(globalProperties);
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor(globalProperties);
         final List<NotificationTypeProcessor<?>> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(processorList);
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
 
@@ -120,7 +120,7 @@ public class AccumulatorProcessorTestIT {
 
         assertNotNull(apacheModel);
 
-        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null, null);
+        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null);
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);
