@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +17,7 @@ import com.blackducksoftware.integration.hub.alert.mock.notification.Notificatio
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
-import com.blackducksoftware.integration.hub.notification.NotificationViewResult;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
@@ -37,8 +34,8 @@ public class PolicyViolationOverrideRuleTest {
         policyInfo.policy = "policyUrl";
         final PolicyOverrideNotificationContent content = createContent();
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
-        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
-        assertTrue(rule.isApplicable(notificationViewResult));
+        final NotificationContentDetail detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
+        assertTrue(rule.isApplicable(detail));
 
     }
 
@@ -49,8 +46,8 @@ public class PolicyViolationOverrideRuleTest {
 
         final PolicyOverrideNotificationContent content = createContent();
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
-        final NotificationViewResult notificationViewResult = NotificationGeneratorUtils.createNotificationViewResult(view, content);
-        assertFalse(rule.isApplicable(notificationViewResult));
+        final NotificationContentDetail detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
+        assertFalse(rule.isApplicable(detail));
     }
 
     @Test
@@ -59,26 +56,21 @@ public class PolicyViolationOverrideRuleTest {
         final PolicyViolationOverrideRule rule = new PolicyViolationOverrideRule(globalProperties);
         final Map<String, NotificationProcessingModel> modelMap = new HashMap<>();
 
-        final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
-
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.POLICY_OVERRIDE);
         final PolicyOverrideNotificationContent content = createContent();
 
-        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
-        notificationContentItems.add(notificationContentItem);
-
-        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
-        notificationResults.getNotificationViewResults().getResultList().forEach(notificationViewResult -> {
+        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
+        notificationResults.getResults().forEach(notificationViewResult -> {
             rule.apply(modelMap, notificationViewResult, notificationResults.getHubBucket());
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = notificationResults.getNotificationViewResults().getResultList().get(0).getNotificationContentDetails().get(0);
+        final NotificationContentDetail contentDetail = notificationResults.getResults().get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE, model.getNotificationType());
-        assertEquals(notificationContentItem, model.getCommonNotificationState());
         assertEquals(contentDetail, model.getContentDetail());
     }
 

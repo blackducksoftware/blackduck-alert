@@ -24,27 +24,20 @@
 package com.blackducksoftware.integration.hub.alert.processor;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.util.Stringable;
 
 public class NotificationProcessingModel extends Stringable {
     private final NotificationContentDetail contentDetail;
-    private final CommonNotificationState commonNotificationState;
     private final NotificationCategoryEnum notificationType;
 
-    public NotificationProcessingModel(final NotificationContentDetail contentDetail, final CommonNotificationState commonNotificationState, final NotificationCategoryEnum notificationType) {
+    public NotificationProcessingModel(final NotificationContentDetail contentDetail, final NotificationCategoryEnum notificationType) {
         this.contentDetail = contentDetail;
-        this.commonNotificationState = commonNotificationState;
         this.notificationType = notificationType;
     }
 
     public NotificationContentDetail getContentDetail() {
         return contentDetail;
-    }
-
-    public CommonNotificationState getCommonNotificationState() {
-        return commonNotificationState;
     }
 
     public NotificationCategoryEnum getNotificationType() {

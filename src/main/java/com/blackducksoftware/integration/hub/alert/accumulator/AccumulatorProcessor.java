@@ -33,10 +33,10 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
-public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
+public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor<?>> notificationProcessors;
@@ -47,7 +47,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
     }
 
     @Override
-    public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
+    public DBStoreEvent process(final NotificationDetailResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);

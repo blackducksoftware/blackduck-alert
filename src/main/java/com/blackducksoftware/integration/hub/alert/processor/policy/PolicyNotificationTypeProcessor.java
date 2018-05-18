@@ -39,7 +39,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
@@ -68,8 +67,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<N
 
     private NotificationEntity createNotificationEntity(final NotificationProcessingModel processingModel) {
         final NotificationContentDetail notificationContentDetail = processingModel.getContentDetail();
-        final CommonNotificationState commonNotificationState = processingModel.getCommonNotificationState();
-        final Date createdAt = commonNotificationState.getCreatedAt();
+        final Date createdAt = notificationContentDetail.getCreatedAt();
         final NotificationCategoryEnum notificationType = processingModel.getNotificationType();
         final String contentKey = notificationContentDetail.getContentDetailKey();
         final String projectName = notificationContentDetail.getProjectName();
@@ -87,7 +85,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<N
         final String policyRuleName = notificationContentDetail.getPolicyName().get();
         String policyRuleUser = null;
         if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationType)) {
-            final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) commonNotificationState.getContent();
+            final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationContentDetail.getNotificationContent();
             policyRuleUser = StringUtils.join(" ", content.firstName, content.lastName);
         }
         return new NotificationEntity(contentKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser);
