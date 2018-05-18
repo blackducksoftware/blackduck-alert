@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
@@ -72,10 +71,10 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public HubServicesFactory createHubServicesFactory(final IntLogger intLogger) throws IntegrationException {
+    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
         setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         setHubTrustCertificate(true);
-        return super.createHubServicesFactory(intLogger);
+        return super.createRestConnection(intLogger);
     }
 
     @Override
