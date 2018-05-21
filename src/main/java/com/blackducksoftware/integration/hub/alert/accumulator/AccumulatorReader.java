@@ -84,7 +84,7 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
                 final Date startDate = dateRange.getLeft();
                 final Date endDate = dateRange.getRight();
-                logger.info("Accumulating Notifications Between {} and {} ", startDate, endDate);
+                logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
                 final NotificationDetailResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
 
