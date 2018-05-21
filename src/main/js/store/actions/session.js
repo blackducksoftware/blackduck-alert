@@ -57,7 +57,7 @@ function loginError(errorMessage, errors) {
 export function verifyLogin() {
     return (dispatch) => {
         dispatch(initializing());
-        fetch('/api/alert/verify', {
+        fetch('/alert/api/verify', {
             credentials: 'same-origin'
         }).then((response) => {
             if (!response.ok) {
@@ -82,7 +82,7 @@ export function login(username, password) {
             hubPassword: password
         };
 
-        fetch('/api/alert/login', {
+        fetch('/alert/api/login', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -120,7 +120,7 @@ export function logout() {
     return (dispatch, getState) => {
         // dispatch(loggingOut());
         const { csrfToken } = getState().session;
-        fetch('/api/alert/logout', {
+        fetch('/alert/api/logout', {
             method: 'POST',
             credentials: 'same-origin',
             headers: {

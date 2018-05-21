@@ -53,7 +53,7 @@ public class HomeControllerTestIT {
     protected HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     private MockMvc mockMvc;
-    private final String homeVerifyUrl = "/api/verify";
+    private final String homeVerifyUrl = BaseController.BASE_PATH + "/verify";
     private final String homeUrl = "/";
 
     @Before
