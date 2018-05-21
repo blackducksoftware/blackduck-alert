@@ -7,6 +7,8 @@ import {
     HIPCHAT_CONFIG_TESTING,
     HIPCHAT_CONFIG_TEST_SUCCESS,
     HIPCHAT_CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
+    HIPCHAT_CONFIG_HIDE_HOST_SERVER,
     SERIALIZE
 } from '../actions/types';
 
@@ -21,7 +23,8 @@ const initialState = {
     },
     apiKeyIsSet: false,
     apiKey: null,
-    id: null
+    id: null,
+    showAdvanced: false
 };
 
 const config = (state = initialState, action) => {
@@ -42,6 +45,7 @@ const config = (state = initialState, action) => {
                 testStatus: '',
                 apiKeyIsSet: action.apiKeyIsSet,
                 apiKey: action.apiKey,
+                hostServer: action.hostServer,
                 id: action.id
             });
 
@@ -110,6 +114,17 @@ const config = (state = initialState, action) => {
                     fieldErrors: action.errors || []
                 }
             });
+
+        case HIPCHAT_CONFIG_SHOW_HOST_SERVER:
+            return Object.assign({}, state, {
+                showAdvanced: true
+            });
+
+        case HIPCHAT_CONFIG_HIDE_HOST_SERVER:
+            return Object.assign({}, state, {
+                showAdvanced: false
+            });
+
         case SERIALIZE:
             return initialState;
 

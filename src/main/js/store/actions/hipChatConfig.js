@@ -6,7 +6,9 @@ import {
     HIPCHAT_CONFIG_UPDATED,
     HIPCHAT_CONFIG_TESTING,
     HIPCHAT_CONFIG_TEST_SUCCESS,
-    HIPCHAT_CONFIG_TEST_FAILED
+    HIPCHAT_CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
+    HIPCHAT_CONFIG_HIDE_HOST_SERVER
 } from './types';
 
 import { verifyLoginByStatus } from './session';
@@ -18,6 +20,7 @@ function scrubConfig(config) {
     return {
         apiKeyIsSet: config.apiKeyIsSet,
         apiKey: config.apiKey,
+        hostServer: config.hostServer,
         id: config.id || ''
     };
 }
@@ -91,6 +94,13 @@ function testFailed(message, errors) {
         errors
 
     };
+}
+
+export function toggleShowHostServer(toggle) {
+    if (toggle) {
+        return { type: HIPCHAT_CONFIG_SHOW_HOST_SERVER };
+    }
+    return { type: HIPCHAT_CONFIG_HIDE_HOST_SERVER };
 }
 
 export function getConfig() {
