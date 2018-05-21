@@ -51,7 +51,7 @@ import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {
@@ -165,7 +165,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         final AccumulatorProcessor processor = new AccumulatorProcessor(processorList);
         final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
-        final NotificationResults results = reader.read();
+        final NotificationDetailResults results = reader.read();
         final DBStoreEvent event = processor.process(results);
         final List<DBStoreEvent> events = new ArrayList<>();
         if (event != null) {

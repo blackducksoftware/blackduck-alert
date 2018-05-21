@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,9 +16,9 @@ import com.blackducksoftware.integration.hub.alert.mock.notification.Notificatio
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -33,7 +32,6 @@ public class AccumulatorReaderTest {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
-        final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
         final String componentName = "notification test";
         final String componentVersionUrl = "sss";
 
@@ -50,10 +48,8 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
-        notificationContentItems.add(notificationContentItem);
-
-        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
+        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
 
         Mockito.doReturn(restConnection).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
@@ -63,7 +59,7 @@ public class AccumulatorReaderTest {
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
 
-        final NotificationResults actualNotificationResults = accumulatorReader.read();
+        final NotificationDetailResults actualNotificationResults = accumulatorReader.read();
         assertNotNull(actualNotificationResults);
     }
 
@@ -74,7 +70,6 @@ public class AccumulatorReaderTest {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
-        final List<CommonNotificationState> notificationContentItems = new ArrayList<>();
         final String componentName = "notification test";
         final String componentVersionUrl = "sss";
 
@@ -91,10 +86,8 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final CommonNotificationState notificationContentItem = NotificationGeneratorUtils.createCommonNotificationState(view, content);
-        notificationContentItems.add(notificationContentItem);
-
-        final NotificationResults notificationResults = NotificationGeneratorUtils.createNotificationResults(notificationContentItems);
+        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
         Mockito.doReturn(restConnection).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
@@ -104,7 +97,7 @@ public class AccumulatorReaderTest {
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
 
-        final NotificationResults actualNotificationResults = accumulatorReader.read();
+        final NotificationDetailResults actualNotificationResults = accumulatorReader.read();
         assertNotNull(actualNotificationResults);
     }
 

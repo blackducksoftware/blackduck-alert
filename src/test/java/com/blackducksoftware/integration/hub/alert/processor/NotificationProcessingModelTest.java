@@ -11,7 +11,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.mock.notification.NotificationGeneratorUtils;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
@@ -43,13 +42,11 @@ public class NotificationProcessingModelTest {
         content.componentVersionStatuses = Arrays.asList(componentVersionStatus);
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION);
-        final CommonNotificationState commonNotificationState = NotificationGeneratorUtils.createCommonNotificationState(view, content);
-        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(commonNotificationState);
+
+        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationContentDetail detail = detailList.get(0);
-        final NotificationProcessingModel model = new NotificationProcessingModel(detail, commonNotificationState, content, NotificationCategoryEnum.POLICY_VIOLATION);
-        assertEquals(commonNotificationState, model.getCommonNotificationState());
+        final NotificationProcessingModel model = new NotificationProcessingModel(detail, NotificationCategoryEnum.POLICY_VIOLATION);
         assertEquals(detail, model.getContentDetail());
-        assertEquals(content, model.getContent());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, model.getNotificationType());
     }
 }

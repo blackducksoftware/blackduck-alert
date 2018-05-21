@@ -26,15 +26,12 @@ package com.blackducksoftware.integration.hub.alert.processor.policy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingRule;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
-import com.blackducksoftware.integration.hub.api.view.CommonNotificationState;
-import com.blackducksoftware.integration.hub.notification.NotificationContentDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
 public abstract class AbstractPolicyViolationRule extends NotificationProcessingRule<NotificationProcessingModel> {
@@ -43,44 +40,25 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
         super(globalProperties, notificationType);
     }
 
-    public List<NotificationProcessingModel> createProcessingModels(final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
+    public List<NotificationProcessingModel> createProcessingModels(final NotificationContentDetail notificationContentDetail) {
         final List<NotificationProcessingModel> modelList = new ArrayList<>();
-        final List<NotificationContentDetail> contentDetails = detailResults.getDetails(commonNotificationState.getContent());
-        contentDetails.forEach(contentDetail -> {
-            modelList.add(createProcessingModel(commonNotificationState, contentDetail));
-        });
+        modelList.add(createProcessingModel(notificationContentDetail));
         return modelList;
     }
 
-    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
-        final List<String> keyList = getContentDetailKeys(commonNotificationState, detailResults);
-        for (final String key : keyList) {
-            if (modelMap.containsKey(key)) {
-                modelMap.remove(key);
-            } else {
-                final List<NotificationContentDetail> detailList = detailResults.getDetails(commonNotificationState.getContent());
-                final List<NotificationContentDetail> filteredList = detailList.stream().filter(detail -> {
-                    return detail.getContentDetailKey().equals(key);
-                }).collect(Collectors.toList());
-
-                if (!filteredList.isEmpty()) {
-                    final NotificationContentDetail contentDetail = filteredList.get(0);
-                    final NotificationProcessingModel model = createProcessingModel(commonNotificationState, contentDetail);
-                    modelMap.put(key, model);
-                }
-            }
+    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final NotificationContentDetail notificationContentDetail) {
+        final String key = notificationContentDetail.getContentDetailKey();
+        if (modelMap.containsKey(key)) {
+            modelMap.remove(key);
+        } else {
+            final NotificationProcessingModel model = createProcessingModel(notificationContentDetail);
+            modelMap.put(key, model);
         }
     }
 
-    public List<String> getContentDetailKeys(final CommonNotificationState commonNotificationState, final NotificationContentDetailResults detailResults) {
-        final List<NotificationContentDetail> contentDetailList = detailResults.getDetails(commonNotificationState.getContent());
-        final List<String> contentKeyList = contentDetailList.stream().map(NotificationContentDetail::getContentDetailKey).collect(Collectors.toList());
-        return contentKeyList;
+    protected NotificationProcessingModel createProcessingModel(final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationType) {
+        return new NotificationProcessingModel(notificationContentDetail, notificationType);
     }
 
-    protected NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationType) {
-        return new NotificationProcessingModel(notificationContentDetail, commonNotificationState, commonNotificationState.getContent(), notificationType);
-    }
-
-    protected abstract NotificationProcessingModel createProcessingModel(final CommonNotificationState commonNotificationState, final NotificationContentDetail notificationContentDetail);
+    protected abstract NotificationProcessingModel createProcessingModel(final NotificationContentDetail notificationContentDetail);
 }

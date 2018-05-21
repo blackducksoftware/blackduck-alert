@@ -32,9 +32,9 @@ import org.springframework.batch.item.ItemProcessor;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
-import com.blackducksoftware.integration.hub.notification.NotificationResults;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
-public class AccumulatorProcessor implements ItemProcessor<NotificationResults, DBStoreEvent> {
+public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final List<NotificationTypeProcessor<?>> notificationProcessors;
 
@@ -43,7 +43,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationResults, 
     }
 
     @Override
-    public DBStoreEvent process(final NotificationResults notificationData) throws Exception {
+    public DBStoreEvent process(final NotificationDetailResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
                 logger.info("Processing accumulated notifications");
