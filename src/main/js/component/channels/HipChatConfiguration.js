@@ -61,6 +61,7 @@ class HipChatConfiguration extends React.Component {
         const disabled = this.props.fetching || !this.state.dataLoaded;
         const { errorMessage, testStatus, updateStatus } = this.props;
         const showAdvanced = this.props.showAdvanced;
+        const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
         return (
             <div>
                 <h1>
@@ -85,7 +86,7 @@ class HipChatConfiguration extends React.Component {
                     <div className="form-group">
                         <div className="col-sm-8 col-sm-offset-3">
                             <button type="button" className="btn-link" onClick={() => { this.props.toggleShowHostServer(!showAdvanced); return false; }}>
-                                Custom HipChat Server Url
+                                {showAdvancedLabel}
                             </button>
                         </div>
                     </div>
