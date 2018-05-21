@@ -37,15 +37,23 @@ public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
     @Column(name = "api_key")
     private String apiKey;
 
+    @Column(name = "host_server")
+    private String hostServer;
+
     public GlobalHipChatConfigEntity() {
     }
 
-    public GlobalHipChatConfigEntity(final String apiKey) {
+    public GlobalHipChatConfigEntity(final String apiKey, final String hostServer) {
         this.apiKey = apiKey;
+        this.hostServer = hostServer;
     }
 
     public String getApiKey() {
         return apiKey;
+    }
+
+    public String getHostServer() {
+        return hostServer;
     }
 
 }

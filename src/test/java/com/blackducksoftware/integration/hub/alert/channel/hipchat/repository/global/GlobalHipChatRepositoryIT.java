@@ -35,7 +35,7 @@ public class GlobalHipChatRepositoryIT {
     @Test
     public void testSaveEntity() {
         final String apiKey = "api_key";
-        final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity(apiKey);
+        final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity(apiKey, "");
         final GlobalHipChatConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
