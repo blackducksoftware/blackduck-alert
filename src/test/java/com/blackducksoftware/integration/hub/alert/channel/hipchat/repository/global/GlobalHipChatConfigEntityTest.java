@@ -27,6 +27,7 @@ public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipCha
     @Override
     public void assertGlobalEntityFieldsFull(final GlobalHipChatConfigEntity entity) {
         assertEquals(getMockUtil().getApiKey(), entity.getApiKey());
+        assertEquals(getMockUtil().getHostServer(), entity.getHostServer());
     }
 
     @Override

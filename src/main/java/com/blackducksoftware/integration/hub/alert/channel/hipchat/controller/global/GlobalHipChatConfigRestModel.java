@@ -30,14 +30,16 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
     @SensitiveField
     private String apiKey;
     private boolean apiKeyIsSet;
+    private String hostServer;
 
     public GlobalHipChatConfigRestModel() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet) {
+    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
         super(id);
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
+        this.hostServer = hostServer;
     }
 
     public String getApiKey() {
@@ -46,6 +48,10 @@ public class GlobalHipChatConfigRestModel extends ConfigRestModel {
 
     public boolean isApiKeyIsSet() {
         return apiKeyIsSet;
+    }
+
+    public String getHostServer() {
+        return hostServer;
     }
 
 }
