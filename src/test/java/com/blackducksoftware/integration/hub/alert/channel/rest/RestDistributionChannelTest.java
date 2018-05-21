@@ -38,12 +38,13 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity>(
                 null, null, null, null, null, null, channelRestConnectionFactory) {
             @Override
-            public String getApiUrl() {
+            public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final Collection<ProjectData> projectData) throws AlertException {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final Collection<ProjectData> projectData)
+                    throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
             }
         };
