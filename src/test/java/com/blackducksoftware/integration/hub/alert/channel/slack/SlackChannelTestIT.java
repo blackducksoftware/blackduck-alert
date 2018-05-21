@@ -87,7 +87,7 @@ public class SlackChannelTestIT extends ChannelTest {
         Request request = null;
 
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEmptyEntity(), null);
+            request = slackChannel.createRequest(null, mockSlackEntity.createEmptyEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -95,7 +95,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         mockSlackEntity.setChannelName("");
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEntity(), null);
+            request = slackChannel.createRequest(null, mockSlackEntity.createEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -121,7 +121,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), projectData);
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, projectData);
 
         assertNull(request);
 
@@ -145,7 +145,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), Arrays.asList(projectData));
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, Arrays.asList(projectData));
 
         assertNull(request);
 

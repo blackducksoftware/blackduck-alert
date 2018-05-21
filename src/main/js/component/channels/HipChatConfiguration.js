@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
-import { getConfig, testConfig, updateConfig } from '../../store/actions/hipChatConfig';
+import { getConfig, testConfig, updateConfig, toggleShowHostServer } from '../../store/actions/hipChatConfig';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -13,6 +13,7 @@ class HipChatConfiguration extends React.Component {
         this.state = {
             apiKey: '',
             apiKeyIsSet: false,
+            hostServer: '',
             dataLoaded: false
         };
 
@@ -30,7 +31,8 @@ class HipChatConfiguration extends React.Component {
             this.setState({
                 dataLoaded: true,
                 apiKey: nextProps.apiKey || '',
-                apiKeyIsSet: nextProps.apiKeyIsSet
+                apiKeyIsSet: nextProps.apiKeyIsSet,
+                hostServer: nextProps.hostServer || ''
             });
         }
     }
@@ -58,6 +60,8 @@ class HipChatConfiguration extends React.Component {
     render() {
         const disabled = this.props.fetching || !this.state.dataLoaded;
         const { errorMessage, testStatus, updateStatus } = this.props;
+        const showAdvanced = this.props.showAdvanced;
+        const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
         return (
             <div>
                 <h1>
@@ -77,7 +81,22 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <TextInput label="Api Key" type="text" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <TextInput label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+
+                    <div className="form-group">
+                        <div className="col-sm-8 col-sm-offset-3">
+                            <button type="button" className="btn-link" onClick={() => { this.props.toggleShowHostServer(!showAdvanced); return false; }}>
+                                {showAdvancedLabel}
+                            </button>
+                        </div>
+                    </div>
+
+                    {showAdvanced &&
+                    <div>
+                        <TextInput label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
+                    </div>
+                    }
+                    
                     <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
                 </form>
             </div>
@@ -86,6 +105,7 @@ class HipChatConfiguration extends React.Component {
 }
 
 HipChatConfiguration.propTypes = {
+    hostServer: PropTypes.string,
     apiKey: PropTypes.string,
     apiKeyIsSet: PropTypes.bool,
     id: PropTypes.string,
@@ -96,10 +116,13 @@ HipChatConfiguration.propTypes = {
     fetching: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
-    updateConfig: PropTypes.func.isRequired
+    updateConfig: PropTypes.func.isRequired,
+    showAdvanced: PropTypes.bool.isRequired,
+    toggleShowHostServer: PropTypes.func.isRequired,
 };
 
 HipChatConfiguration.defaultProps = {
+    hostServer: null,
     apiKey: null,
     apiKeyIsSet: false,
     id: null,
@@ -111,6 +134,7 @@ HipChatConfiguration.defaultProps = {
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
+    hostServer: state.hipChatConfig.hostServer,
     apiKey: state.hipChatConfig.apiKey,
     apiKeyIsSet: state.hipChatConfig.apiKeyIsSet,
     testStatus: state.hipChatConfig.testStatus,
@@ -118,11 +142,13 @@ const mapStateToProps = state => ({
     errorMessage: state.hipChatConfig.error.message,
     fieldErrors: state.hipChatConfig.error.fieldErrors,
     id: state.hipChatConfig.id,
-    fetching: state.hipChatConfig.fetching
+    fetching: state.hipChatConfig.fetching,
+    showAdvanced: state.hipChatConfig.showAdvanced
 });
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
+    toggleShowHostServer: toggle => dispatch(toggleShowHostServer(toggle)),
     getConfig: () => dispatch(getConfig()),
     updateConfig: config => dispatch(updateConfig(config)),
     testConfig: config => dispatch(testConfig(config))

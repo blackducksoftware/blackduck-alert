@@ -69,12 +69,13 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     }
 
     @Override
-    public String getApiUrl() {
+    public String getApiUrl(final GlobalSlackConfigEntity globalConfig) {
         return SLACK_API;
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final Collection<ProjectData> projectDataCollection) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalSlackConfigEntity globalConfig, final Collection<ProjectData> projectDataCollection)
+            throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {
