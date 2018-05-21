@@ -75,8 +75,13 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public String getApiUrl() {
-        return HIP_CHAT_API;
+    public String getApiUrl(final GlobalHipChatConfigEntity globalConfig) {
+        String hipChatHostServer = HIP_CHAT_API;
+        final String customHostServer = globalConfig.getHostServer();
+        if (!StringUtils.isBlank(customHostServer)) {
+            hipChatHostServer = customHostServer;
+        }
+        return hipChatHostServer;
     }
 
     @Override
@@ -87,10 +92,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
         if (StringUtils.isBlank(entity.getApiKey())) {
             throw new IntegrationException("Invalid API key: API key not provided");
         }
-        final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(HIP_CHAT_API);
+        final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(entity));
         if (restConnection != null) {
             try {
-                final String url = HIP_CHAT_API + "/v2/room/*/notification";
+                final String url = getApiUrl(entity) + "/v2/room/*/notification";
                 final Map<String, String> queryParameters = new HashMap<>();
                 queryParameters.put("auth_test", "true");
 
@@ -116,17 +121,18 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final Collection<ProjectData> projectDataCollection) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final GlobalHipChatConfigEntity globalConfig, final Collection<ProjectData> projectDataCollection)
+            throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
             final String htmlMessage = createHtmlMessage(projectDataCollection);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
-            final String url = HIP_CHAT_API + "/v2/room/" + config.getRoomId().toString() + "/notification";
+            final String url = getApiUrl(globalConfig) + "/v2/room/" + config.getRoomId().toString() + "/notification";
 
             final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Authorization", "Bearer " + getGlobalConfigEntity().getApiKey());
+            requestHeaders.put("Authorization", "Bearer " + globalConfig.getApiKey());
             requestHeaders.put("Content-Type", "application/json");
 
             return channelRequestHelper.createPostMessageRequest(url, requestHeaders, jsonString);

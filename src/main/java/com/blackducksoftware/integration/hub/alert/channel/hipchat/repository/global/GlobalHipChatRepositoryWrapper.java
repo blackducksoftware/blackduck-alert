@@ -47,7 +47,7 @@ public class GlobalHipChatRepositoryWrapper extends SimpleKeyRepositoryWrapper<G
             return entity;
         } else {
             apiKey = PasswordEncrypter.encrypt(apiKey);
-            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
+            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey, entity.getHostServer());
             newEntity.setId(entity.getId());
             return newEntity;
         }
@@ -60,7 +60,7 @@ public class GlobalHipChatRepositoryWrapper extends SimpleKeyRepositoryWrapper<G
             return entity;
         } else {
             apiKey = PasswordDecrypter.decrypt(apiKey);
-            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey);
+            final GlobalHipChatConfigEntity newEntity = new GlobalHipChatConfigEntity(apiKey, entity.getHostServer());
             newEntity.setId(entity.getId());
             return newEntity;
         }
