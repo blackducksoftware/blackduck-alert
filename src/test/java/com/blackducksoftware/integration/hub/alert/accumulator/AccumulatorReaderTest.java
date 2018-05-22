@@ -16,9 +16,9 @@ import com.blackducksoftware.integration.hub.alert.mock.notification.Notificatio
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
@@ -54,7 +54,7 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final List<NotificationDetailResult> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
@@ -62,7 +62,7 @@ public class AccumulatorReaderTest {
         Mockito.doReturn(service).when(hubServicesFactory).createHubService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any());
-        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationResults(Mockito.any(), Mockito.any());
+        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
 
@@ -95,7 +95,7 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final List<NotificationDetailResult> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
@@ -103,7 +103,7 @@ public class AccumulatorReaderTest {
         Mockito.doReturn(service).when(hubServicesFactory).createHubService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any());
-        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationResults(Mockito.any(), Mockito.any());
+        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
 

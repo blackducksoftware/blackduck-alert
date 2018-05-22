@@ -32,7 +32,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingRule;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 
 public abstract class AbstractPolicyViolationRule extends NotificationProcessingRule<NotificationProcessingModel> {
 
@@ -40,25 +40,25 @@ public abstract class AbstractPolicyViolationRule extends NotificationProcessing
         super(globalProperties, notificationType);
     }
 
-    public List<NotificationProcessingModel> createProcessingModels(final NotificationContentDetail notificationContentDetail) {
+    public List<NotificationProcessingModel> createProcessingModels(final NotificationDetailResult notificationDetailResult) {
         final List<NotificationProcessingModel> modelList = new ArrayList<>();
-        modelList.add(createProcessingModel(notificationContentDetail));
+        modelList.add(createProcessingModel(notificationDetailResult));
         return modelList;
     }
 
-    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final NotificationContentDetail notificationContentDetail) {
-        final String key = notificationContentDetail.getContentDetailKey();
+    protected void addOrRemoveIfExists(final Map<String, NotificationProcessingModel> modelMap, final NotificationDetailResult notificationDetailResult) {
+        final String key = notificationDetailResult.getContentDetailKey();
         if (modelMap.containsKey(key)) {
             modelMap.remove(key);
         } else {
-            final NotificationProcessingModel model = createProcessingModel(notificationContentDetail);
+            final NotificationProcessingModel model = createProcessingModel(notificationDetailResult);
             modelMap.put(key, model);
         }
     }
 
-    protected NotificationProcessingModel createProcessingModel(final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationType) {
-        return new NotificationProcessingModel(notificationContentDetail, notificationType);
+    protected NotificationProcessingModel createProcessingModel(final NotificationDetailResult notificationDetailResult, final NotificationCategoryEnum notificationType) {
+        return new NotificationProcessingModel(notificationDetailResult, notificationType);
     }
 
-    protected abstract NotificationProcessingModel createProcessingModel(final NotificationContentDetail notificationContentDetail);
+    protected abstract NotificationProcessingModel createProcessingModel(final NotificationDetailResult notificationDetailResult);
 }
