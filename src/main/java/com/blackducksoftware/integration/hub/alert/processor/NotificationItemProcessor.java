@@ -28,8 +28,8 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class NotificationItemProcessor {
@@ -40,7 +40,7 @@ public class NotificationItemProcessor {
     }
 
     public DBStoreEvent process(final NotificationDetailResults notificationData) {
-        final List<NotificationContentDetail> resultList = notificationData.getResults();
+        final List<NotificationDetailResult> resultList = notificationData.getResults();
         final HubBucket bucket = notificationData.getHubBucket();
         final List<NotificationModel> notificationList = new ArrayList<>(resultList.size());
         resultList.forEach(notificationViewResult -> {
@@ -50,12 +50,12 @@ public class NotificationItemProcessor {
         return new DBStoreEvent(notificationList);
     }
 
-    private List<NotificationModel> createModels(final NotificationContentDetail notificationViewResult, final HubBucket bucket) {
+    private List<NotificationModel> createModels(final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
         final List<NotificationModel> modelList = new ArrayList<>(50);
 
         processorList.forEach(processor -> {
-            if (processor.isApplicable(notificationViewResult)) {
-                processor.process(notificationViewResult, bucket);
+            if (processor.isApplicable(notificationDetailResult)) {
+                processor.process(notificationDetailResult, bucket);
             }
         });
 

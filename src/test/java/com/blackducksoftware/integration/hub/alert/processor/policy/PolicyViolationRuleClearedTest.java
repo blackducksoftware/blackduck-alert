@@ -17,11 +17,11 @@ import com.blackducksoftware.integration.hub.alert.mock.notification.Notificatio
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationClearedNotificationContent;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
 public class PolicyViolationRuleClearedTest {
 
@@ -31,7 +31,7 @@ public class PolicyViolationRuleClearedTest {
         final PolicyViolationClearedRule rule = new PolicyViolationClearedRule(globalProperties);
         final RuleViolationClearedNotificationContent content = createContent();
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION_CLEARED);
-        final NotificationContentDetail detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
+        final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
         assertTrue(rule.isApplicable(detail));
 
     }
@@ -44,7 +44,7 @@ public class PolicyViolationRuleClearedTest {
         final RuleViolationClearedNotificationContent content = createContent();
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
-        final NotificationContentDetail detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
+        final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content).get(0);
         assertFalse(rule.isApplicable(detail));
     }
 
@@ -57,14 +57,14 @@ public class PolicyViolationRuleClearedTest {
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.RULE_VIOLATION_CLEARED);
 
         final RuleViolationClearedNotificationContent content = createContent();
-        final List<NotificationContentDetail> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final List<NotificationDetailResult> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
         notificationResults.getResults().forEach(notificationViewResult -> {
             rule.apply(modelMap, notificationViewResult, notificationResults.getHubBucket());
         });
 
         assertEquals(1, modelMap.size());
-        final NotificationContentDetail contentDetail = notificationResults.getResults().get(0);
+        final NotificationDetailResult contentDetail = notificationResults.getResults().get(0);
         final String key = contentDetail.getContentDetailKey();
         final NotificationProcessingModel model = modelMap.get(key);
 

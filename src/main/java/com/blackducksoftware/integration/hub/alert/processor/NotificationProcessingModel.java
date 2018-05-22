@@ -24,19 +24,19 @@
 package com.blackducksoftware.integration.hub.alert.processor;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.util.Stringable;
 
 public class NotificationProcessingModel extends Stringable {
-    private final NotificationContentDetail contentDetail;
+    private final NotificationDetailResult contentDetail;
     private final NotificationCategoryEnum notificationType;
 
-    public NotificationProcessingModel(final NotificationContentDetail contentDetail, final NotificationCategoryEnum notificationType) {
+    public NotificationProcessingModel(final NotificationDetailResult contentDetail, final NotificationCategoryEnum notificationType) {
         this.contentDetail = contentDetail;
         this.notificationType = notificationType;
     }
 
-    public NotificationContentDetail getContentDetail() {
+    public NotificationDetailResult getContentDetail() {
         return contentDetail;
     }
 
