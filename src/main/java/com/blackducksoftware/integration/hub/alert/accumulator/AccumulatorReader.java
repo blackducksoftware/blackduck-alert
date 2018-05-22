@@ -87,7 +87,7 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final Date endDate = dateRange.getRight();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                 final HubBucket hubBucket = new HubBucket();
-                final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
+                final NotificationService notificationService = hubServicesFactory.createNotificationService(executor, true);
                 final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
                 if (notificationResults.isEmpty()) {

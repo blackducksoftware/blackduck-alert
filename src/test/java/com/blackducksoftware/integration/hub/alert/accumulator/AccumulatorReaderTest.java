@@ -61,7 +61,7 @@ public class AccumulatorReaderTest {
         Mockito.doReturn(restConnection).when(service).getRestConnection();
         Mockito.doReturn(service).when(hubServicesFactory).createHubService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any());
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
@@ -102,7 +102,7 @@ public class AccumulatorReaderTest {
         Mockito.doReturn(restConnection).when(service).getRestConnection();
         Mockito.doReturn(service).when(hubServicesFactory).createHubService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any());
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
         final AccumulatorReader accumulatorReader = new AccumulatorReader(globalProperties);
