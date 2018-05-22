@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.hub.service.ProjectService;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.hub.service.model.ProjectVersionWrapper;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
@@ -93,8 +94,8 @@ public class AccumulatorProcessorTestIT {
         uploadBdio("bdio/component-bdio.jsonld");
 
         TimeUnit.SECONDS.sleep(60);
-
-        final NotificationDetailResults notificationData = notificationDataService.getAllNotificationResults(new Date(System.currentTimeMillis() - 100000), new Date());
+        final HubBucket hubBucket = new HubBucket();
+        final NotificationDetailResults notificationData = notificationDataService.getAllNotificationDetailResultsPopulated(hubBucket, new Date(System.currentTimeMillis() - 100000), new Date());
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor(globalProperties);
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor(globalProperties);
         final List<NotificationTypeProcessor<?>> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);

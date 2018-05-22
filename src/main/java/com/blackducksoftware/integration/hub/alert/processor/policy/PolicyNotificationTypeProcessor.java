@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 
@@ -66,13 +67,15 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<N
     }
 
     private NotificationEntity createNotificationEntity(final NotificationProcessingModel processingModel) {
-        final NotificationContentDetail notificationContentDetail = processingModel.getContentDetail();
-        final Date createdAt = notificationContentDetail.getCreatedAt();
+        final NotificationDetailResult notificationDetailResult = processingModel.getContentDetail();
+        final NotificationContentDetail notificationContentDetail = notificationDetailResult.getNotificationContentDetail();
+        final Date createdAt = notificationDetailResult.getCreatedAt();
         final NotificationCategoryEnum notificationType = processingModel.getNotificationType();
-        final String contentKey = notificationContentDetail.getContentDetailKey();
-        final String projectName = notificationContentDetail.getProjectName();
+
+        final String contentKey = notificationDetailResult.getContentDetailKey();
+        final String projectName = notificationContentDetail.getProjectName().get();
         final String projectUrl = null;
-        final String projectVersion = notificationContentDetail.getProjectVersionName();
+        final String projectVersion = notificationContentDetail.getProjectVersionName().get();
         final String projectVersionUrl = notificationContentDetail.getProjectVersion().get().uri;
         String componentName = null;
         if (notificationContentDetail.getComponentName().isPresent()) {
@@ -85,7 +88,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<N
         final String policyRuleName = notificationContentDetail.getPolicyName().get();
         String policyRuleUser = null;
         if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationType)) {
-            final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationContentDetail.getNotificationContent();
+            final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationDetailResult.getNotificationContent();
             policyRuleUser = StringUtils.join(" ", content.firstName, content.lastName);
         }
         return new NotificationEntity(contentKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser);
