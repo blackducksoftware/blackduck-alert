@@ -8,9 +8,16 @@ export default class TextArea extends LabeledField {
             inputClass, readOnly, name, value, onChange
         } = this.props;
         if (readOnly) {
-            return super.render(<textarea rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />);
+            return super.render(
+                <div className="col-sm-8">
+                    <textarea rows="8" cols="60" readOnly className={inputClass} name={name} value={value} />
+                </div>
+            );
         }
-        return super.render(<textarea rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />);
+        return super.render(
+            <div className="col-sm-8"> 
+                <textarea rows="8" cols="60" className={inputClass} name={name} value={value} onChange={onChange} />
+            </div>);
     }
 }
 
