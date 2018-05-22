@@ -46,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class AccumulatorReader implements ItemReader<NotificationDetailResults> {
@@ -85,8 +86,9 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final Date startDate = dateRange.getLeft();
                 final Date endDate = dateRange.getRight();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
+                final HubBucket hubBucket = new HubBucket();
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor);
-                final NotificationDetailResults notificationResults = notificationService.getAllNotificationResults(startDate, endDate);
+                final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
                 if (notificationResults.isEmpty()) {
                     logger.debug("Read Notification Count: 0");

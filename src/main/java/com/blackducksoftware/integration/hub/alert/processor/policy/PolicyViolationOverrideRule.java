@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
-import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class PolicyViolationOverrideRule extends AbstractPolicyViolationRule {
@@ -39,12 +39,12 @@ public class PolicyViolationOverrideRule extends AbstractPolicyViolationRule {
     }
 
     @Override
-    public void apply(final Map<String, NotificationProcessingModel> modelMap, final NotificationContentDetail notificationContentDetail, final HubBucket bucket) {
-        addOrRemoveIfExists(modelMap, notificationContentDetail);
+    public void apply(final Map<String, NotificationProcessingModel> modelMap, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
+        addOrRemoveIfExists(modelMap, notificationDetailResult);
     }
 
     @Override
-    protected NotificationProcessingModel createProcessingModel(final NotificationContentDetail notificationContentDetail) {
-        return createProcessingModel(notificationContentDetail, NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE);
+    protected NotificationProcessingModel createProcessingModel(final NotificationDetailResult notificationDetailResult) {
+        return createProcessingModel(notificationDetailResult, NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE);
     }
 }
