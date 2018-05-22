@@ -54,7 +54,7 @@ class Details extends Component {
         }
         let errorStackTrace = null;
         if (this.state.values.errorStackTrace) {
-            errorStackTrace = <TextArea label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace} />;
+            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace} />;
         }
 
         return (
