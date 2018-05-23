@@ -31,6 +31,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
@@ -46,6 +48,7 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 @Component
 public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
+    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationTypeProcessor.class);
 
     public PolicyNotificationTypeProcessor() {
         super(new LinkedHashSet<>(Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE)));
@@ -55,10 +58,14 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
     public List<NotificationModel> process(final GlobalProperties globalProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
         final List<NotificationContentDetail> detailList = notificationDetailResult.getNotificationContentDetails();
         final List<NotificationModel> modelList = new ArrayList<>(detailList.size());
-        detailList.forEach(detail -> {
-            final NotificationCategoryEnum notificationCategory = getNotificationCategory(notificationDetailResult.getType());
-            modelList.add(new NotificationModel(createNotificationEntity(notificationDetailResult, detail, notificationCategory), Collections.emptyList()));
-        });
+        try {
+            detailList.forEach(detail -> {
+                final NotificationCategoryEnum notificationCategory = getNotificationCategory(notificationDetailResult.getType());
+                modelList.add(new NotificationModel(createNotificationEntity(notificationDetailResult, detail, notificationCategory), Collections.emptyList()));
+            });
+        } catch (final Exception ex) {
+            logger.error("Error processing policy violation {}", ex);
+        }
         return modelList;
     }
 
