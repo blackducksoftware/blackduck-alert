@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -166,4 +166,5 @@ public class StartupManager {
             logger.info("Finished startup purge of old data");
         }
     }
+
 }
