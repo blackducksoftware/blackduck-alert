@@ -1,5 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.mock.notification;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,29 +43,29 @@ public class NotificationGeneratorUtils {
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final List<NotificationDetailResult> detailList = factory.generateContentDetails(commonNotificationView, content);
-        return detailList;
+        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
+        return Arrays.asList(detail);
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationClearedNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final List<NotificationDetailResult> detailList = factory.generateContentDetails(commonNotificationView, content);
-        return detailList;
+        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
+        return Arrays.asList(detail);
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final PolicyOverrideNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final List<NotificationDetailResult> detailList = factory.generateContentDetails(commonNotificationView, content);
-        return detailList;
+        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
+        return Arrays.asList(detail);
     }
 
-    public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final VulnerabilityNotificationContent content) {
+    public static NotificationDetailResult createNotificationDetailList(final NotificationView view, final VulnerabilityNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final List<NotificationDetailResult> detailList = factory.generateContentDetails(commonNotificationView, content);
-        return detailList;
+        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
+        return detail;
     }
 
     public static NotificationDetailResults createNotificationResults(final List<NotificationDetailResult> detailList) {
