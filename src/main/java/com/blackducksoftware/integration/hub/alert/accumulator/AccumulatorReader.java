@@ -90,11 +90,11 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final NotificationService notificationService = hubServicesFactory.createNotificationService(executor, true);
                 final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
+                writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 if (notificationResults.isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
-                writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
                 return notificationResults;
             }

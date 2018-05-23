@@ -39,9 +39,9 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
-    private final List<NotificationTypeProcessor<?>> notificationProcessors;
+    private final List<NotificationTypeProcessor> notificationProcessors;
 
-    public AccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor<?>> notificationProcessors) {
+    public AccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors) {
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
     }
@@ -54,7 +54,7 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationDetailRes
                 if (hubServicesFactory != null) {
                     logger.info("Processing accumulated notifications");
                     final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors);
-                    final DBStoreEvent storeEvent = notificationItemProcessor.process(notificationData);
+                    final DBStoreEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
                     return storeEvent;
                 }
             } catch (final Exception ex) {

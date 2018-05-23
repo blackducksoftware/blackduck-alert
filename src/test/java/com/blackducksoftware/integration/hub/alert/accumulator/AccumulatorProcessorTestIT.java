@@ -96,9 +96,9 @@ public class AccumulatorProcessorTestIT {
         TimeUnit.SECONDS.sleep(60);
         final HubBucket hubBucket = new HubBucket();
         final NotificationDetailResults notificationData = notificationDataService.getAllNotificationDetailResultsPopulated(hubBucket, new Date(System.currentTimeMillis() - 100000), new Date());
-        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor(globalProperties);
-        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor(globalProperties);
-        final List<NotificationTypeProcessor<?>> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
+        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
+        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
+        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
         final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
 
         final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);

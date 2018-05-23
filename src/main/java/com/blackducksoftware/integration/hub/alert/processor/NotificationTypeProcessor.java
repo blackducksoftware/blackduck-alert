@@ -23,54 +23,26 @@
  */
 package com.blackducksoftware.integration.hub.alert.processor;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public abstract class NotificationTypeProcessor<M extends NotificationProcessingModel> {
-    private final Map<String, M> modelMap = new LinkedHashMap<>(500);
-    private final Collection<NotificationProcessingRule<M>> processingRules;
+public abstract class NotificationTypeProcessor {
+    private final Set<NotificationType> applicableNotificationTypes;
 
-    public NotificationTypeProcessor(final Collection<NotificationProcessingRule<M>> processingRules) {
-        this.processingRules = processingRules;
-    }
-
-    public Collection<NotificationProcessingRule<M>> getProcessingRules() {
-        return processingRules;
+    public NotificationTypeProcessor(final Set<NotificationType> applicableNotificationTypes) {
+        this.applicableNotificationTypes = applicableNotificationTypes;
     }
 
     public boolean isApplicable(final NotificationDetailResult notificationDetailResult) {
-        final boolean isApplicable = processingRules.parallelStream().anyMatch(rule -> {
-            return rule.isApplicable(notificationDetailResult);
-        });
+        final boolean isApplicable = applicableNotificationTypes.contains(notificationDetailResult.getType());
         return isApplicable;
     }
 
-    public void process(final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
-        processingRules.forEach(rule -> {
-            if (rule.isApplicable(notificationDetailResult)) {
-                rule.apply(getModelMap(), notificationDetailResult, bucket);
-            }
-        });
-    }
-
-    public List<NotificationModel> getModels(final HubBucket bucket) {
-        final List<NotificationModel> unsortedModelList = createModelList();
-        final List<NotificationModel> modelList = unsortedModelList.stream().sorted((model1, model2) -> {
-            return model2.getCreatedAt().compareTo(model1.getCreatedAt());
-        }).collect(Collectors.toList());
-        return modelList;
-    }
-
-    protected Map<String, M> getModelMap() {
-        return modelMap;
-    }
-
-    protected abstract List<NotificationModel> createModelList();
+    public abstract List<NotificationModel> process(final GlobalProperties globalProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket);
 }
