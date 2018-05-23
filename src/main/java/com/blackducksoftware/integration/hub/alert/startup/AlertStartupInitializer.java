@@ -25,45 +25,54 @@ package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
 public class AlertStartupInitializer {
     public static String ALERT_PROPERTY_PREFIX = "blackduck.";
 
+    private final ObjectTransformer objectTransformer;
     private final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper;
+    private final Environment environment;
 
     @Autowired
-    public AlertStartupInitializer(final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper, final Environment environment) {
+        this.objectTransformer = objectTransformer;
         this.globalEmailRepositoryWrapper = globalEmailRepositoryWrapper;
+        this.environment = environment;
     }
 
-    public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         if (globalEmailRepositoryWrapper.findAll().isEmpty()) {
-            final GlobalEmailConfigEntity globalEmailConfigEntity = new GlobalEmailConfigEntity();
-            initializeConfig(globalEmailConfigEntity);
-            globalEmailRepositoryWrapper.save(globalEmailConfigEntity);
+            final GlobalEmailConfigRestModel globalEmailConfigRestModel = new GlobalEmailConfigRestModel();
+            initializeConfig(globalEmailConfigRestModel);
+            globalEmailRepositoryWrapper.save(objectTransformer.configRestModelToDatabaseEntity(globalEmailConfigRestModel, GlobalEmailConfigEntity.class));
         }
-
     }
 
-    private <T extends GlobalChannelConfigEntity> void initializeConfig(final T globalConfigEntity) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    private <T extends ConfigRestModel> void initializeConfig(final T globalConfigEntity) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(globalConfigEntity.getClass());
-        globalConfigEntity.setId(1L);
+        globalConfigEntity.setId("1");
         for (final AlertStartupProperty property : configProperties) {
             final String value = System.getProperty(property.getPropertyKey());
+            if (StringUtils.isBlank(value)) {
+                environment.getProperty(property.getPropertyKey());
+            }
             final Field declaredField = globalConfigEntity.getClass().getDeclaredField(property.getFieldName());
             final boolean accessible = declaredField.isAccessible();
 
@@ -71,13 +80,6 @@ public class AlertStartupInitializer {
             declaredField.set(globalConfigEntity, value);
             declaredField.setAccessible(accessible);
         }
-    }
-
-    public Map<String, String> getAlertEnvironmentVariables() {
-        final Map<String, String> alertEnvironment = System.getenv().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith(ALERT_PROPERTY_PREFIX))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return alertEnvironment;
     }
 
     public Set<AlertStartupProperty> findAllPropertyNames(final Set<Class<?>> globalConfigClasses) {
