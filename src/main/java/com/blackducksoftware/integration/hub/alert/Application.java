@@ -50,6 +50,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.blackducksoftware.integration.hub.RestConstants;
+import com.blackducksoftware.integration.hub.alert.startup.StartupManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
