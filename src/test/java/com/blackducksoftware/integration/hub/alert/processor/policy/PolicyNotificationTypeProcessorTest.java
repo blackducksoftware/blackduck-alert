@@ -69,7 +69,7 @@ public class PolicyNotificationTypeProcessorTest {
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
 
-        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetail();
+        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetails().get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION, model.getNotificationType());
         assertEquals(detail.getProjectName().get(), model.getProjectName());
@@ -94,7 +94,7 @@ public class PolicyNotificationTypeProcessorTest {
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
 
-        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetail();
+        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetails().get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, model.getNotificationType());
         assertEquals(detail.getProjectName().get(), model.getProjectName());
@@ -119,7 +119,7 @@ public class PolicyNotificationTypeProcessorTest {
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
 
-        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetail();
+        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetails().get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE, model.getNotificationType());
         assertEquals(detail.getProjectName().get(), model.getProjectName());
@@ -187,7 +187,7 @@ public class PolicyNotificationTypeProcessorTest {
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
 
-        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetail();
+        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetails().get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED, model.getNotificationType());
         assertEquals(detail.getProjectName().get(), model.getProjectName());
@@ -218,7 +218,7 @@ public class PolicyNotificationTypeProcessorTest {
         assertEquals(1, modelList.size());
         final NotificationModel model = modelList.get(0);
 
-        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetail();
+        final NotificationContentDetail detail = detailList.get(0).getNotificationContentDetails().get(0);
         assertEquals(detail.getContentDetailKey(), model.getEventKey());
         assertEquals(NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE, model.getNotificationType());
         assertEquals(detail.getProjectName().get(), model.getProjectName());

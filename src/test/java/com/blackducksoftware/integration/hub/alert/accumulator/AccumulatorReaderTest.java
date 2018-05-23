@@ -3,7 +3,6 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -54,8 +53,8 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final List<NotificationDetailResult> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
-        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
+        final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
         Mockito.doReturn(restConnection).when(service).getRestConnection();
@@ -95,8 +94,8 @@ public class AccumulatorReaderTest {
         content.versionName = "1.0.0";
         content.affectedProjectVersions = Arrays.asList(affectedProjectVersion);
 
-        final List<NotificationDetailResult> detailList = NotificationGeneratorUtils.createNotificationDetailList(view, content);
-        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
+        final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactoryAndLogErrors(Mockito.any());
         Mockito.doReturn(restConnection).when(service).getRestConnection();
