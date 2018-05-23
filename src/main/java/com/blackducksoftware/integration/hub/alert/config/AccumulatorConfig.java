@@ -52,12 +52,12 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
 
     private final ChannelTemplateManager channelTemplateManager;
     private final GlobalProperties globalProperties;
-    private final List<NotificationTypeProcessor<?>> processorList;
+    private final List<NotificationTypeProcessor> processorList;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
             final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
-            final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor<?>> processorList) {
+            final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor> processorList) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;
@@ -81,7 +81,7 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
 
     @Override
     public AccumulatorProcessor processor() {
-        return new AccumulatorProcessor(processorList);
+        return new AccumulatorProcessor(globalProperties, processorList);
     }
 
     @Override
