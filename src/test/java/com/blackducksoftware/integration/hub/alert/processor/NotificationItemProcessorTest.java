@@ -24,7 +24,7 @@ public class NotificationItemProcessorTest {
     @Test
     public void testInit() {
         final GlobalProperties globalProperties = new TestGlobalProperties();
-        final List<NotificationTypeProcessor<?>> processorList = null;
+        final List<NotificationTypeProcessor> processorList = null;
         final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
     }
 

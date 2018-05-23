@@ -27,80 +27,76 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.processor.NotificationProcessingModel;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 @Component
-public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor<NotificationProcessingModel> {
+public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
 
-    @Autowired
-    public PolicyNotificationTypeProcessor(final GlobalProperties globalProperties) {
-        super(Arrays.asList(new PolicyViolationRule(globalProperties), new PolicyViolationClearedRule(globalProperties), new PolicyViolationOverrideRule(globalProperties)));
+    public PolicyNotificationTypeProcessor() {
+        super(new LinkedHashSet<>(Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE)));
     }
 
     @Override
-    protected List<NotificationModel> createModelList() {
-        final List<NotificationModel> modelList = new ArrayList<>(getModelMap().size());
-
-        getModelMap().entrySet().forEach(entry -> {
-            modelList.addAll(createNotificationModel(entry.getValue()));
-        });
-
-        return modelList;
-    }
-
-    private List<NotificationModel> createNotificationModel(final NotificationProcessingModel processingModel) {
-        final List<NotificationEntity> entityList = createNotificationEntity(processingModel);
-        final List<NotificationModel> modelList = new ArrayList<>(entityList.size());
-        entityList.forEach(entity -> {
-            modelList.add(new NotificationModel(entity, Collections.emptyList()));
+    public List<NotificationModel> process(final GlobalProperties globalProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
+        final List<NotificationContentDetail> detailList = notificationDetailResult.getNotificationContentDetails();
+        final List<NotificationModel> modelList = new ArrayList<>(detailList.size());
+        detailList.forEach(detail -> {
+            final NotificationCategoryEnum notificationCategory = getNotificationCategory(notificationDetailResult.getType());
+            modelList.add(new NotificationModel(createNotificationEntity(notificationDetailResult, detail, notificationCategory), Collections.emptyList()));
         });
         return modelList;
     }
 
-    private List<NotificationEntity> createNotificationEntity(final NotificationProcessingModel processingModel) {
-        final NotificationDetailResult notificationDetailResult = processingModel.getContentDetail();
-        final List<NotificationContentDetail> notificationContentDetails = notificationDetailResult.getNotificationContentDetails();
-        final List<NotificationEntity> entityList = new ArrayList<>(notificationContentDetails.size());
-        notificationContentDetails.forEach(notificationContentDetail -> {
-            final Date createdAt = notificationDetailResult.getCreatedAt();
-            final NotificationCategoryEnum notificationType = processingModel.getNotificationType();
+    private NotificationCategoryEnum getNotificationCategory(final NotificationType notificationType) {
+        if (NotificationType.RULE_VIOLATION == notificationType) {
+            return NotificationCategoryEnum.POLICY_VIOLATION;
+        } else if (NotificationType.RULE_VIOLATION_CLEARED == notificationType) {
+            return NotificationCategoryEnum.POLICY_VIOLATION_CLEARED;
+        } else if (NotificationType.POLICY_OVERRIDE == notificationType) {
+            return NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE;
+        } else {
+            return NotificationCategoryEnum.POLICY_VIOLATION;
+        }
+    }
 
-            final String contentKey = notificationDetailResult.getContentDetailKey();
-            final String projectName = notificationContentDetail.getProjectName().get();
-            final String projectUrl = null;
-            final String projectVersion = notificationContentDetail.getProjectVersionName().get();
-            final String projectVersionUrl = notificationContentDetail.getProjectVersion().get().uri;
-            String componentName = null;
-            if (notificationContentDetail.getComponentName().isPresent()) {
-                componentName = notificationContentDetail.getComponentName().get();
-            }
-            String componentVersion = null;
-            if (notificationContentDetail.getComponentVersionName().isPresent()) {
-                componentVersion = notificationContentDetail.getComponentVersionName().get();
-            }
-            final String policyRuleName = notificationContentDetail.getPolicyName().get();
-            String policyRuleUser = null;
-            if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationType)) {
-                final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationDetailResult.getNotificationContent();
-                policyRuleUser = StringUtils.join(" ", content.firstName, content.lastName);
-            }
-            entityList.add(new NotificationEntity(contentKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser));
-        });
-        return entityList;
+    private NotificationEntity createNotificationEntity(final NotificationDetailResult notificationDetailResult, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationCategory) {
+        final Date createdAt = notificationDetailResult.getCreatedAt();
+
+        final String contentKey = notificationContentDetail.getContentDetailKey();
+        final String projectName = notificationContentDetail.getProjectName().get();
+        final String projectUrl = null;
+        final String projectVersion = notificationContentDetail.getProjectVersionName().get();
+        final String projectVersionUrl = notificationContentDetail.getProjectVersion().get().uri;
+        String componentName = null;
+        if (notificationContentDetail.getComponentName().isPresent()) {
+            componentName = notificationContentDetail.getComponentName().get();
+        }
+        String componentVersion = null;
+        if (notificationContentDetail.getComponentVersionName().isPresent()) {
+            componentVersion = notificationContentDetail.getComponentVersionName().get();
+        }
+        final String policyRuleName = notificationContentDetail.getPolicyName().get();
+        String policyRuleUser = null;
+        if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationCategory)) {
+            final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationDetailResult.getNotificationContent();
+            policyRuleUser = StringUtils.join(" ", content.firstName, content.lastName);
+        }
+        return new NotificationEntity(contentKey, createdAt, notificationCategory, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, policyRuleUser);
     }
 
 }
