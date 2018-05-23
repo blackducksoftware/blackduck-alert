@@ -45,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
@@ -61,19 +62,21 @@ public class StartupManager {
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
+    private final AlertStartupInitializer alertStartupInitializer;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
+        this.alertStartupInitializer = alertStartupInitializer;
     }
 
     public void startup() {
@@ -81,7 +84,11 @@ public class StartupManager {
         logConfiguration();
 
         initializeCronJobs();
-
+        try {
+            alertStartupInitializer.initializeConfigs();
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException e) {
+            logger.error("Error inserting startup values", e);
+        }
     }
 
     public void logConfiguration() {
