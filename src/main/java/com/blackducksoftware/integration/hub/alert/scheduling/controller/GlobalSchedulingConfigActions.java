@@ -62,12 +62,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final GlobalProperties globalProperties;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationManager notificationManager;
-    private final List<NotificationTypeProcessor<?>> processorList;
+    private final List<NotificationTypeProcessor> processorList;
 
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
             final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationManager notificationManager,
-            final List<NotificationTypeProcessor<?>> processorList) {
+            final List<NotificationTypeProcessor> processorList) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -162,7 +162,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     public void runAccumulator() throws Exception {
         final AccumulatorReader reader = new AccumulatorReader(globalProperties);
-        final AccumulatorProcessor processor = new AccumulatorProcessor(processorList);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList);
         final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final NotificationDetailResults results = reader.read();

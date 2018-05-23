@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.hub.alert.processor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
@@ -33,36 +34,24 @@ import com.blackducksoftware.integration.hub.notification.NotificationDetailResu
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class NotificationItemProcessor {
-    private final List<NotificationTypeProcessor<?>> processorList;
+    private final List<NotificationTypeProcessor> processorList;
 
-    public NotificationItemProcessor(final List<NotificationTypeProcessor<?>> processorList) {
+    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList) {
         this.processorList = processorList;
     }
 
-    public DBStoreEvent process(final NotificationDetailResults notificationData) {
+    public DBStoreEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
         final List<NotificationDetailResult> resultList = notificationData.getResults();
         final HubBucket bucket = notificationData.getHubBucket();
-        final List<NotificationModel> notificationList = new ArrayList<>(resultList.size());
-        resultList.forEach(notificationViewResult -> {
-            notificationList.addAll(createModels(notificationViewResult, bucket));
+        final int size = resultList.size();
+        final List<NotificationModel> notificationModelList = new ArrayList<>(size);
+        resultList.forEach(notificationDetailResult -> {
+            processorList.forEach(processor -> {
+                if (processor.isApplicable(notificationDetailResult)) {
+                    notificationModelList.addAll(processor.process(globalProperties, notificationDetailResult, bucket));
+                }
+            });
         });
-
-        return new DBStoreEvent(notificationList);
-    }
-
-    private List<NotificationModel> createModels(final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
-        final List<NotificationModel> modelList = new ArrayList<>(50);
-
-        processorList.forEach(processor -> {
-            if (processor.isApplicable(notificationDetailResult)) {
-                processor.process(notificationDetailResult, bucket);
-            }
-        });
-
-        processorList.forEach(processor -> {
-            modelList.addAll(processor.getModels(bucket));
-        });
-
-        return modelList;
+        return new DBStoreEvent(notificationModelList);
     }
 }
