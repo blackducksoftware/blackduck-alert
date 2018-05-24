@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
@@ -45,7 +46,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
@@ -63,13 +63,14 @@ public class StartupManager {
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
+    private final List<AbstractChannelPropertyManager> channelPropertyManagers;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<AbstractChannelPropertyManager> channelPropertyManagers) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
@@ -77,18 +78,14 @@ public class StartupManager {
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
+        this.channelPropertyManagers = channelPropertyManagers;
     }
 
     public void startup() {
         logger.info("Hub Alert Starting...");
         logConfiguration();
-
+        initializeChannelPropertyManagers();
         initializeCronJobs();
-        try {
-            alertStartupInitializer.initializeConfigs();
-        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException e) {
-            logger.error("Error inserting startup values", e);
-        }
     }
 
     public void logConfiguration() {
@@ -108,6 +105,18 @@ public class StartupManager {
             logger.info("Hub Timeout:             {}", globalHubConfig.getHubTimeout());
         }
         logger.info("----------------------------------------");
+    }
+
+    public void initializeChannelPropertyManagers() {
+        try {
+            channelPropertyManagers.forEach(channelPropertyManager -> {
+                channelPropertyManager.process();
+            });
+
+            // alertStartupInitializer.initializeConfigs();
+        } catch (final Exception e) {
+            logger.error("Error inserting startup values", e);
+        }
     }
 
     public void initializeCronJobs() {
