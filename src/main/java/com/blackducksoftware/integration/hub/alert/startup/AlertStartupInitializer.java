@@ -54,11 +54,14 @@ public class AlertStartupInitializer {
     private final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper;
     private final Environment environment;
 
+    private final Set<String> alertProperties;
+
     @Autowired
     public AlertStartupInitializer(final ObjectTransformer objectTransformer, final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper, final Environment environment) {
         this.objectTransformer = objectTransformer;
         this.globalEmailRepositoryWrapper = globalEmailRepositoryWrapper;
         this.environment = environment;
+        alertProperties = new HashSet<>();
     }
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
@@ -67,6 +70,8 @@ public class AlertStartupInitializer {
             initializeConfig(globalEmailConfigRestModel, GlobalEmailConfigEntity.class);
             logger.debug("EmailConfigRestModel: {}", globalEmailConfigRestModel);
             globalEmailRepositoryWrapper.save(objectTransformer.configRestModelToDatabaseEntity(globalEmailConfigRestModel, GlobalEmailConfigEntity.class));
+        } else {
+            findPropertyNames(GlobalEmailConfigEntity.class);
         }
     }
 
@@ -111,6 +116,7 @@ public class AlertStartupInitializer {
                 final String propertyKey = classNamePrefix + field.getAnnotation(Column.class).name().replaceAll("_", ".");
                 final AlertStartupProperty alertStartupProperty = new AlertStartupProperty(getClass(), propertyKey, field.getName());
                 filteredConfigColumns.add(alertStartupProperty);
+                alertProperties.add(propertyKey);
             }
         }
 
@@ -125,6 +131,10 @@ public class AlertStartupInitializer {
         }
 
         return classNamePrefix;
+    }
+
+    public Set<String> getAlertProperties() {
+        return alertProperties;
     }
 
 }
