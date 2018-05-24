@@ -87,14 +87,14 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final Date endDate = dateRange.getRight();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                 final HubBucket hubBucket = new HubBucket();
-                final NotificationService notificationService = hubServicesFactory.createNotificationService(executor, true);
+                final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
                 final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
-                writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 if (notificationResults.isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
                 }
+                writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
                 return notificationResults;
             }
