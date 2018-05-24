@@ -48,7 +48,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 @Component
 public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-    public static String ALERT_PROPERTY_PREFIX = "blackduck.";
+    public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_";
 
     private final ObjectTransformer objectTransformer;
     private final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper;
@@ -108,12 +108,12 @@ public class AlertStartupInitializer {
     }
 
     public Set<AlertStartupProperty> findPropertyNames(final Class<?> alertConfigClass) {
-        final String classNamePrefix = ALERT_PROPERTY_PREFIX + getClassNamePrefix(alertConfigClass) + ".";
+        final String classNamePrefix = ALERT_PROPERTY_PREFIX + getClassNamePrefix(alertConfigClass) + "_";
         final Field[] alertConfigColumns = alertConfigClass.getDeclaredFields();
         final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();
         for (final Field field : alertConfigColumns) {
             if (field.isAnnotationPresent(Column.class)) {
-                final String propertyKey = classNamePrefix + field.getAnnotation(Column.class).name().replaceAll("_", ".");
+                final String propertyKey = (classNamePrefix + field.getAnnotation(Column.class).name()).toUpperCase();
                 final AlertStartupProperty alertStartupProperty = new AlertStartupProperty(getClass(), propertyKey, field.getName());
                 filteredConfigColumns.add(alertStartupProperty);
                 alertProperties.add(propertyKey);
@@ -127,7 +127,7 @@ public class AlertStartupInitializer {
         String classNamePrefix = alertConfigClass.getName();
         final Table classAnnotation = alertConfigClass.getAnnotation(Table.class);
         if (classAnnotation != null) {
-            classNamePrefix = classAnnotation.name().replaceAll("_", ".");
+            classNamePrefix = classAnnotation.name();
         }
 
         return classNamePrefix;
