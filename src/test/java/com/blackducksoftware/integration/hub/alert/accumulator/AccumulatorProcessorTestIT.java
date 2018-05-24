@@ -121,7 +121,7 @@ public class AccumulatorProcessorTestIT {
 
         assertNotNull(apacheModel);
 
-        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(null, null);
+        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(globalProperties, null);
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
         assertNull(storeEventNull);

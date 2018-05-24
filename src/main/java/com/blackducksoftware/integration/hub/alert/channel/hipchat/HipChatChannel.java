@@ -115,6 +115,12 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
                 throw new IntegrationException("Invalid API key: " + e.getMessage());
+            } finally {
+                try {
+                    restConnection.close();
+                } catch (final IOException ex) {
+                    // close the connection quietly
+                }
             }
         }
         return "Connection error: see logs for more information.";

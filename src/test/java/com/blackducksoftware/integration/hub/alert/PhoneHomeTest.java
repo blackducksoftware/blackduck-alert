@@ -1,53 +1,53 @@
 package com.blackducksoftware.integration.hub.alert;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
+import com.blackducksoftware.integration.test.tool.TestLogger;
 
 public class PhoneHomeTest {
 
     @Test
-    public void testProductVersionNull() {
+    @Category(HubConnectionTest.class)
+    public void testProductVersion() throws AlertException, IOException {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
-        globalProperties.setProductVersionOverride(GlobalProperties.PRODUCT_VERSION_UNKNOWN);
-        final PhoneHome phoneHome = new PhoneHome(globalProperties, null);
-        final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(null);
+        final PhoneHome phoneHome = new PhoneHome(null);
 
-        Assert.assertNull(builder);
-    }
+        try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger())) {
+            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+            final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
+            final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, "test");
 
-    @Test
-    public void testProductVersion() {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties();
-        final PhoneHome phoneHome = new PhoneHome(globalProperties, null);
-        final PhoneHomeService phoneHomeService = phoneHome.createPhoneHomeService();
-        final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService);
+            Assert.assertNotNull(builder);
+            Assert.assertEquals("test", builder.getArtifactVersion());
+            Assert.assertEquals("blackduck-alert", builder.getArtifactId());
+        }
 
-        Assert.assertNotNull(builder);
-        Assert.assertEquals(globalProperties.getProductVersion(), builder.getArtifactVersion());
-        Assert.assertEquals("blackduck-alert", builder.getArtifactId());
     }
 
     @Test
     public void testChannelMetaData() {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
         Mockito.when(commonDistributionRepositoryWrapper.findAll()).thenReturn(createConfigEntities());
-        final PhoneHome phoneHome = new PhoneHome(globalProperties, commonDistributionRepositoryWrapper);
-        final PhoneHomeService phoneHomeService = phoneHome.createPhoneHomeService();
-        final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService);
+        final PhoneHome phoneHome = new PhoneHome(commonDistributionRepositoryWrapper);
+        final PhoneHomeRequestBody.Builder builder = new PhoneHomeRequestBody.Builder();
 
         phoneHome.addChannelMetaData(builder);
         final Map<String, String> metaData = builder.getMetaData();

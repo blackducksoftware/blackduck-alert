@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -83,16 +84,18 @@ public class LoginActions {
 
         try {
             validateHubConfiguration(serverConfigBuilder);
-            final RestConnection restConnection = createRestConnection(serverConfigBuilder);
-            restConnection.connect();
-            logger.info("Connected");
-            final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
-            if (isValidLoginUser) {
-                final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                return authentication.isAuthenticated();
+            try (final RestConnection restConnection = createRestConnection(serverConfigBuilder)) {
+                restConnection.connect();
+                logger.info("Connected");
+                final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
+                if (isValidLoginUser) {
+                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    return authentication.isAuthenticated();
+                }
+            } catch (final IOException ex) {
+                logger.error("Rest connection close failure", ex);
             }
-
         } catch (final AlertFieldException afex) {
             logger.error("Error establishing connection", afex);
             final Map<String, String> fieldErrorMap = afex.getFieldErrors();

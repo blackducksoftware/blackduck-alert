@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 
 public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, DBStoreEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
@@ -50,13 +49,10 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationDetailRes
     public DBStoreEvent process(final NotificationDetailResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-                if (hubServicesFactory != null) {
-                    logger.info("Processing accumulated notifications");
-                    final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors);
-                    final DBStoreEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
-                    return storeEvent;
-                }
+                logger.info("Processing accumulated notifications");
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors);
+                final DBStoreEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+                return storeEvent;
             } catch (final Exception ex) {
                 logger.error("Error occurred durring processing of accumulated notifications", ex);
             }

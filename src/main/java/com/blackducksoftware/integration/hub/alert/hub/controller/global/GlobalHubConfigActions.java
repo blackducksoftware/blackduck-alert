@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.hub.controller.global;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -170,8 +171,11 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         }
         hubServerConfigBuilder.setLogger(intLogger);
         validateHubConfiguration(hubServerConfigBuilder);
-        final RestConnection restConnection = createRestConnection(hubServerConfigBuilder);
-        restConnection.connect();
+        try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
+            restConnection.connect();
+        } catch (final IOException ex) {
+            logger.error("Failed to close rest connection", ex);
+        }
         return "Successfully connected to the Hub.";
     }
 
