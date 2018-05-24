@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -37,10 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyManager;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -51,29 +50,36 @@ public class AlertStartupInitializer {
     public static String ALERT_PROPERTY_PREFIX = "blackduck.";
 
     private final ObjectTransformer objectTransformer;
-    private final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper;
     private final Environment environment;
+    private final List<AbstractChannelPropertyManager<? extends DatabaseEntity>> propertyManagerList;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper, final Environment environment) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractChannelPropertyManager<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
         this.objectTransformer = objectTransformer;
-        this.globalEmailRepositoryWrapper = globalEmailRepositoryWrapper;
+        this.propertyManagerList = propertyManagerList;
         this.environment = environment;
     }
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
-        if (globalEmailRepositoryWrapper.findAll().isEmpty()) {
-            final GlobalEmailConfigRestModel globalEmailConfigRestModel = new GlobalEmailConfigRestModel();
-            initializeConfig(globalEmailConfigRestModel, GlobalEmailConfigEntity.class);
-            logger.debug("EmailConfigRestModel: {}", globalEmailConfigRestModel);
-            globalEmailRepositoryWrapper.save(objectTransformer.configRestModelToDatabaseEntity(globalEmailConfigRestModel, GlobalEmailConfigEntity.class));
-        }
+
+        this.propertyManagerList.forEach(propertyManager -> {
+            if (propertyManager.canSetDefaultProperties()) {
+                try {
+                    final ConfigRestModel restModel = propertyManager.getRestModelInstance();
+                    final Class<? extends DatabaseEntity> entityClass = propertyManager.getEntityClass();
+                    initializeConfig(restModel, entityClass);
+                    final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                    propertyManager.save(entity);
+                } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException ex) {
+                    logger.error("Error initializing property manager", ex);
+                }
+            }
+        });
     }
 
-    private <T extends ConfigRestModel> void initializeConfig(final T globalRestModel, final Class<? extends GlobalChannelConfigEntity> globalConfigEntityClass)
+    private <T extends ConfigRestModel> void initializeConfig(final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass)
             throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(globalConfigEntityClass);
-        globalRestModel.setId("1");
         for (final AlertStartupProperty property : configProperties) {
             logger.debug("Checking property key {}", property.getPropertyKey());
             String value = System.getProperty(property.getPropertyKey());

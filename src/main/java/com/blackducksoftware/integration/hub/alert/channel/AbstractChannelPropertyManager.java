@@ -23,9 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-public abstract class AbstractChannelPropertyManager {
-    public final static String CHANNEL_PROPERTY_PREFIX = "blackduck.alert.channel";
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-    public abstract void process();
+public abstract class AbstractChannelPropertyManager<E extends DatabaseEntity> {
 
+    public abstract Class<E> getEntityClass();
+
+    public abstract ConfigRestModel getRestModelInstance();
+
+    public abstract void save(DatabaseEntity entity);
+
+    public abstract boolean canSetDefaultProperties();
 }
