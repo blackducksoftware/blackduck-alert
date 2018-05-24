@@ -31,6 +31,8 @@ import javax.persistence.Column;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -38,12 +40,14 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
 public class AlertStartupInitializer {
+    private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     public static String ALERT_PROPERTY_PREFIX = "blackduck.";
 
     private final ObjectTransformer objectTransformer;
@@ -60,25 +64,32 @@ public class AlertStartupInitializer {
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         if (globalEmailRepositoryWrapper.findAll().isEmpty()) {
             final GlobalEmailConfigRestModel globalEmailConfigRestModel = new GlobalEmailConfigRestModel();
-            initializeConfig(globalEmailConfigRestModel);
+            initializeConfig(globalEmailConfigRestModel, GlobalEmailConfigEntity.class);
+            logger.debug("EmailConfigRestModel: {}", globalEmailConfigRestModel);
             globalEmailRepositoryWrapper.save(objectTransformer.configRestModelToDatabaseEntity(globalEmailConfigRestModel, GlobalEmailConfigEntity.class));
         }
     }
 
-    private <T extends ConfigRestModel> void initializeConfig(final T globalConfigEntity) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        final Set<AlertStartupProperty> configProperties = findPropertyNames(globalConfigEntity.getClass());
-        globalConfigEntity.setId("1");
+    private <T extends ConfigRestModel> void initializeConfig(final T globalRestModel, final Class<? extends GlobalChannelConfigEntity> globalConfigEntityClass)
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        final Set<AlertStartupProperty> configProperties = findPropertyNames(globalConfigEntityClass);
+        globalRestModel.setId("1");
         for (final AlertStartupProperty property : configProperties) {
-            final String value = System.getProperty(property.getPropertyKey());
+            logger.debug("Checking property key {}", property.getPropertyKey());
+            String value = System.getProperty(property.getPropertyKey());
             if (StringUtils.isBlank(value)) {
-                environment.getProperty(property.getPropertyKey());
+                logger.debug("Not found in system env, checking Spring env");
+                value = environment.getProperty(property.getPropertyKey());
             }
-            final Field declaredField = globalConfigEntity.getClass().getDeclaredField(property.getFieldName());
-            final boolean accessible = declaredField.isAccessible();
+            if (value != null) {
+                logger.debug("Found the value: {}", value);
+                final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
+                final boolean accessible = declaredField.isAccessible();
 
-            declaredField.setAccessible(true);
-            declaredField.set(globalConfigEntity, value);
-            declaredField.setAccessible(accessible);
+                declaredField.setAccessible(true);
+                declaredField.set(globalRestModel, value);
+                declaredField.setAccessible(accessible);
+            }
         }
     }
 
