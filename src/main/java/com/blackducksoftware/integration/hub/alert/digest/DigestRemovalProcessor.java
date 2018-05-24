@@ -109,7 +109,11 @@ public class DigestRemovalProcessor {
                 final VulnerabilityOperationEnum operation = vulnerabilityEntity.getOperation();
                 final String id = vulnerabilityEntity.getVulnerabilityId();
                 if (VulnerabilityOperationEnum.DELETE.equals(operation)) {
-                    vulnerabilityIds.remove(id);
+                    if (vulnerabilityIds.contains(id)) {
+                        vulnerabilityIds.remove(id);
+                    } else {
+                        vulnerabilityIds.add(id);
+                    }
                 } else {
                     vulnerabilityIds.add(id);
                 }
