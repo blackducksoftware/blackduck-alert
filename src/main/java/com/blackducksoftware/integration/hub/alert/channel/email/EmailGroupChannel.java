@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +55,7 @@ import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
 import freemarker.core.ParseException;
@@ -83,12 +85,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
 
     @Override
     public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
-
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-            final List<String> emailAddresses = getEmailAddressesForGroup(hubServicesFactory, hubGroupName);
+            final List<String> emailAddresses = getEmailAddressesForGroup(hubGroupName);
             sendMessage(emailAddresses, event, subjectLine, hubGroupName);
         } else {
             logger.warn("No configuration found with id {}.", event.getCommonDistributionConfigId());
@@ -119,17 +119,26 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         }
     }
 
-    private List<String> getEmailAddressesForGroup(final HubServicesFactory hubServicesFactory, final String hubGroup) throws IntegrationException {
-        final UserGroupService groupService = hubServicesFactory.createUserGroupService();
-        final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
+    private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
+        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+            if (restConnection != null) {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final UserGroupService groupService = hubServicesFactory.createUserGroupService();
+                final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
 
-        if (userGroupView == null) {
-            throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+                if (userGroupView == null) {
+                    throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+                }
+                logger.info(userGroupView.toString());
+                logger.info(userGroupView.json);
+
+                final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
+                return users.stream().map(user -> user.email).collect(Collectors.toList());
+            }
+        } catch (final IOException e) {
+            logger.error(e.getMessage(), e);
         }
-        logger.info(userGroupView.toString());
-        logger.info(userGroupView.json);
 
-        final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
-        return users.stream().map(user -> user.email).collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }

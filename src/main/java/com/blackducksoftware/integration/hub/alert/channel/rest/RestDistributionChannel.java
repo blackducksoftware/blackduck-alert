@@ -50,11 +50,12 @@ public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G 
     @Override
     public void sendMessage(final E event, final C config) throws Exception {
         final G globalConfig = getGlobalConfigEntity();
-        final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig));
-        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
+        try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
+            final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
 
-        final Request request = createRequest(channelRequestHelper, config, globalConfig, event.getProjectData());
-        channelRequestHelper.sendMessageRequest(request, event.getTopic());
+            final Request request = createRequest(channelRequestHelper, config, globalConfig, event.getProjectData());
+            channelRequestHelper.sendMessageRequest(request, event.getTopic());
+        }
     }
 
     public abstract String getApiUrl(G globalConfig);

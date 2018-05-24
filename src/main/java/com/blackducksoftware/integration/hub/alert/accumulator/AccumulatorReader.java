@@ -77,10 +77,10 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
     @Override
     public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        try {
-            logger.info("Accumulator Reader Starting Operation");
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactoryAndLogErrors(logger);
-            if (hubServicesFactory != null) {
+        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+            if (restConnection != null) {
+                logger.info("Accumulator Reader Starting Operation");
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final File lastRunFile = new File(lastRunPath);
                 final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
                 final Date startDate = dateRange.getLeft();
