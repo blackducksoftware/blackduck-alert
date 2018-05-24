@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.hub.alert;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class StartupManagerTest {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn("not_blank_data");
-        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null, Collections.emptyList());
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Hub Proxy Authenticated: true"));
@@ -61,7 +62,7 @@ public class StartupManagerTest {
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepositoryWrapper.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepositoryWrapper, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepositoryWrapper, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null, Collections.emptyList());
 
         startupManager.initializeCronJobs();
 
