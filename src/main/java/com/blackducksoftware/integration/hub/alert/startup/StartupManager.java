@@ -85,6 +85,7 @@ public class StartupManager {
         logger.info("Hub Alert Starting...");
         logConfiguration();
         initializeChannelPropertyManagers();
+        listProperties();
         initializeCronJobs();
     }
 
@@ -113,10 +114,19 @@ public class StartupManager {
                 channelPropertyManager.process();
             });
 
-            // alertStartupInitializer.initializeConfigs();
+            alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }
+    }
+
+    public void listProperties() {
+        logger.info("Properties that can be used for initial Alert setup:");
+        logger.info("----------------------------------------");
+        for (final String property : alertStartupInitializer.getAlertProperties()) {
+            logger.info(property);
+        }
+        logger.info("----------------------------------------");
     }
 
     public void initializeCronJobs() {
