@@ -28,19 +28,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyManager;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Component
-public class EmailChannelPropertyManager extends AbstractChannelPropertyManager<GlobalEmailConfigEntity> {
-    private final static Logger logger = LoggerFactory.getLogger(EmailChannelPropertyManager.class);
+public class EmailChannelPropertyInitializer extends AbstractChannelPropertyInitializer<GlobalEmailConfigEntity> {
+    private final static Logger logger = LoggerFactory.getLogger(EmailChannelPropertyInitializer.class);
     private final GlobalEmailRepositoryWrapper globalEmailRepository;
 
     @Autowired
-    public EmailChannelPropertyManager(final GlobalEmailRepositoryWrapper globalEmailRepository) {
+    public EmailChannelPropertyInitializer(final GlobalEmailRepositoryWrapper globalEmailRepository) {
         this.globalEmailRepository = globalEmailRepository;
     }
 
@@ -62,6 +62,7 @@ public class EmailChannelPropertyManager extends AbstractChannelPropertyManager<
     @Override
     public void save(final DatabaseEntity entity) {
         logger.info("Saving Email channel global properties {}", entity);
+        // ps - dislike that I have to do this at all but this is the only place where the check is made.
         if (entity instanceof GlobalEmailConfigEntity) {
             final GlobalEmailConfigEntity entityToSave = (GlobalEmailConfigEntity) entity;
             this.globalEmailRepository.save(entityToSave);

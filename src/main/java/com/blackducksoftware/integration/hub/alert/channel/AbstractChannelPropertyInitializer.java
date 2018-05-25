@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.hub.alert.channel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class AbstractChannelPropertyManager<E extends DatabaseEntity> {
+public abstract class AbstractChannelPropertyInitializer<E extends DatabaseEntity> {
 
     public abstract Class<E> getEntityClass();
 
