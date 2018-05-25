@@ -47,9 +47,9 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.request.Request;
-import com.blackducksoftware.integration.hub.request.Response;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.request.Request;
+import com.blackducksoftware.integration.rest.request.Response;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -115,6 +115,12 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
             } catch (final IntegrationException e) {
                 restConnection.logger.error("Unable to create a response", e);
                 throw new IntegrationException("Invalid API key: " + e.getMessage());
+            } finally {
+                try {
+                    restConnection.close();
+                } catch (final IOException ex) {
+                    // close the connection quietly
+                }
             }
         }
         return "Connection error: see logs for more information.";

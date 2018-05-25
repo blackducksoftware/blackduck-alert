@@ -23,35 +23,54 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduled.task;
 
+import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.PhoneHome;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.scheduled.ScheduledTask;
+import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.hub.service.model.PhoneHomeResponse;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
+    private final GlobalProperties globalProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final GlobalProperties globalProperties) {
         super(taskScheduler);
         this.phoneHome = phoneHome;
+        this.globalProperties = globalProperties;
     }
 
     @Override
     public void run() {
-        final PhoneHomeService phoneHomeService = phoneHome.createPhoneHomeService();
-        final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService);
-        if (builder != null) {
-            phoneHome.addChannelMetaData(builder);
-            final PhoneHomeResponse phoneHomeResponse = phoneHomeService.startPhoneHome(builder.build());
-            phoneHomeResponse.endPhoneHome();
+        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+            if (restConnection != null) {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
+                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, globalProperties.getProductVersion());
+                if (builder != null) {
+                    phoneHome.addChannelMetaData(builder);
+                    final PhoneHomeResponse phoneHomeResponse = phoneHomeService.startPhoneHome(builder.build());
+                    phoneHomeResponse.endPhoneHome();
+                }
+            }
+
+        } catch (final IOException e) {
+            logger.error(e.getMessage(), e);
         }
+
     }
 
 }
