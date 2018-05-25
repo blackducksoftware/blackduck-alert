@@ -82,6 +82,34 @@ public class HubProviderPropertyInitializerTestIT {
     }
 
     @Test
+    public void testSavePreexistingEntitySaveDefault() {
+        repository.deleteAll();
+        final HubProviderPropertyInitializer initializer = new HubProviderPropertyInitializer(repository);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(300, "apiKey");
+        final GlobalHubConfigEntity entityToSave = new GlobalHubConfigEntity(600, "defaultApiKey");
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalHubConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getHubTimeout(), savedEntity.getHubTimeout());
+        assertEquals(entity.getHubApiKey(), savedEntity.getHubApiKey());
+    }
+
+    @Test
+    public void testSavePreexistingValuesNotOverwritten() {
+        repository.deleteAll();
+        final HubProviderPropertyInitializer initializer = new HubProviderPropertyInitializer(repository);
+        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(null, null);
+        final GlobalHubConfigEntity entityToSave = new GlobalHubConfigEntity(300, "apiKeyDefault");
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalHubConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getHubTimeout(), savedEntity.getHubTimeout());
+        assertEquals(entityToSave.getHubApiKey(), savedEntity.getHubApiKey());
+    }
+
+    @Test
     public void testCanSetDefault() {
         repository.deleteAll();
         final HubProviderPropertyInitializer initializer = new HubProviderPropertyInitializer(repository);

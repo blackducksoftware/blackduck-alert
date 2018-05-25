@@ -83,6 +83,39 @@ public class EmailChannelPropertyInitializerTestIT {
     }
 
     @Test
+    public void testSavePreexistingEntitySaveDefault() {
+        repository.deleteAll();
+        final EmailChannelPropertyInitializer initializer = new EmailChannelPropertyInitializer(repository);
+        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity("mailHost", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        final GlobalEmailConfigEntity entityToSave = new GlobalEmailConfigEntity("defaultMailHost", null, null, null, null, null, null, "defaultFrom", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalEmailConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getMailSmtpHost(), savedEntity.getMailSmtpHost());
+    }
+
+    @Test
+    public void testSavePreexistingValuesNotOverwritten() {
+        repository.deleteAll();
+        final EmailChannelPropertyInitializer initializer = new EmailChannelPropertyInitializer(repository);
+        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity("mailHost", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        final GlobalEmailConfigEntity entityToSave = new GlobalEmailConfigEntity(null, null, null, null, null, null, null, "defaultFrom", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalEmailConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getMailSmtpHost(), savedEntity.getMailSmtpHost());
+        assertEquals(entityToSave.getMailSmtpFrom(), savedEntity.getMailSmtpFrom());
+    }
+
+    @Test
     public void testCanSetDefault() {
         repository.deleteAll();
         final EmailChannelPropertyInitializer initializer = new EmailChannelPropertyInitializer(repository);
