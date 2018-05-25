@@ -116,7 +116,7 @@ public class StartupManager {
     public void listProperties() {
         logger.info("Properties that can be used for initial Alert setup:");
         logger.info("----------------------------------------");
-        for (final String property : alertStartupInitializer.getAlertProperties()) {
+        for (final String property : alertStartupInitializer.getAlertPropertyNameSet()) {
             logger.info(property);
         }
         logger.info("----------------------------------------");
