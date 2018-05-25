@@ -35,6 +35,7 @@ public class GlobalRepositoryIT {
 
     @Test
     public void testSaveEntity() {
+        repository.deleteAll();
         final Integer hubTimeout = 300;
         final String hubApiKey = "hub_api_key";
         final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
