@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.startup;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.OutputLogger;
+import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
@@ -16,6 +18,7 @@ import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.startup.StartupManager;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -37,7 +40,7 @@ public class StartupManagerTest {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn("not_blank_data");
-        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Hub Proxy Authenticated: true"));
@@ -60,7 +63,7 @@ public class StartupManagerTest {
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepositoryWrapper.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepositoryWrapper, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask);
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepositoryWrapper, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
 
         startupManager.initializeCronJobs();
 
