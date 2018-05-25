@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +69,16 @@ public class HipChatChannelPropertyInitializer extends AbstractPropertyInitializ
         // ps - dislike that I have to do this at all but this is the only place where the check is made.
         if (entity instanceof GlobalHipChatConfigEntity) {
             final GlobalHipChatConfigEntity entityToSave = (GlobalHipChatConfigEntity) entity;
-            this.globalHipChatRepository.save(entityToSave);
+            final List<GlobalHipChatConfigEntity> savedEntityList = this.globalHipChatRepository.findAll();
+            if (savedEntityList == null || savedEntityList.isEmpty()) {
+                this.globalHipChatRepository.save(entityToSave);
+            } else {
+                savedEntityList.forEach(savedEntity -> {
+                    updateEntityWithDefaults(savedEntity, entityToSave);
+                    this.globalHipChatRepository.save(savedEntity);
+                });
+
+            }
         }
     }
 
@@ -75,5 +86,4 @@ public class HipChatChannelPropertyInitializer extends AbstractPropertyInitializ
     public boolean canSetDefaultProperties() {
         return globalHipChatRepository.findAll().isEmpty();
     }
-
 }

@@ -80,8 +80,8 @@ public class StartupManager {
 
     public void startup() {
         logger.info("Hub Alert Starting...");
-        logConfiguration();
         initializeChannelPropertyManagers();
+        logConfiguration();
         listProperties();
         initializeCronJobs();
     }

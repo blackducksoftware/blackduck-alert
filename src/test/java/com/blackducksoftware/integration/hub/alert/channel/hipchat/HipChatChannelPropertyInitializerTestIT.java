@@ -74,6 +74,34 @@ public class HipChatChannelPropertyInitializerTestIT {
     }
 
     @Test
+    public void testSavePreexistingEntitySaveDefault() {
+        repository.deleteAll();
+        final HipChatChannelPropertyInitializer initializer = new HipChatChannelPropertyInitializer(repository);
+        final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity("api", null);
+        final GlobalHipChatConfigEntity entityToSave = new GlobalHipChatConfigEntity("apiDefault", "hostServerDefault");
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalHipChatConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getApiKey(), savedEntity.getApiKey());
+        assertEquals(entityToSave.getHostServer(), savedEntity.getHostServer());
+    }
+
+    @Test
+    public void testSavePreexistingValuesNotOverwritten() {
+        repository.deleteAll();
+        final HipChatChannelPropertyInitializer initializer = new HipChatChannelPropertyInitializer(repository);
+        final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity("api", "hostServer");
+        final GlobalHipChatConfigEntity entityToSave = new GlobalHipChatConfigEntity("apiDefault", "hostServerDefault");
+        repository.save(entity);
+        initializer.save(entityToSave);
+        assertEquals(1, repository.count());
+        final GlobalHipChatConfigEntity savedEntity = repository.findAll().get(0);
+        assertEquals(entity.getApiKey(), savedEntity.getApiKey());
+        assertEquals(entity.getHostServer(), savedEntity.getHostServer());
+    }
+
+    @Test
     public void testSaveWrongEntity() {
         repository.deleteAll();
         final HipChatChannelPropertyInitializer initializer = new HipChatChannelPropertyInitializer(repository);

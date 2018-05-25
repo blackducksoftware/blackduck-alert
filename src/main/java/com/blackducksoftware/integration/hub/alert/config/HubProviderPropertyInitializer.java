@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.config;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +69,15 @@ public class HubProviderPropertyInitializer extends AbstractPropertyInitializer<
         // ps - dislike that I have to do this at all but this is the only place where the check is made.
         if (entity instanceof GlobalHubConfigEntity) {
             final GlobalHubConfigEntity entityToSave = (GlobalHubConfigEntity) entity;
-            this.globalHubRepository.save(entityToSave);
+            final List<GlobalHubConfigEntity> savedEntityList = this.globalHubRepository.findAll();
+            if (savedEntityList == null || savedEntityList.isEmpty()) {
+                this.globalHubRepository.save(entityToSave);
+            } else {
+                savedEntityList.forEach(savedEntity -> {
+                    updateEntityWithDefaults(savedEntity, entityToSave);
+                    this.globalHubRepository.save(savedEntity);
+                });
+            }
         }
     }
 
