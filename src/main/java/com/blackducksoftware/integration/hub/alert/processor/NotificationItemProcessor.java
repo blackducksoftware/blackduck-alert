@@ -24,51 +24,34 @@
 package com.blackducksoftware.integration.hub.alert.processor;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
-import com.blackducksoftware.integration.hub.notification.MapProcessorCache;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
-import com.blackducksoftware.integration.hub.notification.NotificationProcessor;
-import com.blackducksoftware.integration.hub.notification.PolicyOverrideContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationClearedContentItem;
-import com.blackducksoftware.integration.hub.notification.PolicyViolationContentItem;
-import com.blackducksoftware.integration.hub.notification.VulnerabilityContentItem;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.hub.service.ProjectService;
-import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
-public class NotificationItemProcessor extends NotificationProcessor<DBStoreEvent> {
+public class NotificationItemProcessor {
+    private final List<NotificationTypeProcessor> processorList;
 
-    public NotificationItemProcessor(final GlobalProperties globalProperties, final IntLogger intLogger) {
-        init(globalProperties, intLogger);
+    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList) {
+        this.processorList = processorList;
     }
 
-    public void init(final GlobalProperties globalProperties, final IntLogger intLogger) {
-        HubServicesFactory hubServicesFactory;
-        try {
-            hubServicesFactory = globalProperties.createHubServicesFactory(intLogger);
-
-            final ProjectService projectService = hubServicesFactory.createProjectService();
-            final MapProcessorCache policyCache = new UserNotificationCache(projectService);
-            final VulnerabilityCache vulnerabilityCache = new VulnerabilityCache(projectService, hubServicesFactory);
-            getCacheList().add(policyCache);
-            getCacheList().add(vulnerabilityCache);
-            getProcessorMap().put(PolicyViolationContentItem.class, new PolicyViolationProcessor(policyCache, intLogger));
-            getProcessorMap().put(PolicyViolationClearedContentItem.class, new PolicyViolationClearedProcessor(policyCache, intLogger));
-            getProcessorMap().put(PolicyOverrideContentItem.class, new PolicyOverrideProcessor(policyCache, intLogger));
-            getProcessorMap().put(VulnerabilityContentItem.class, new VulnerabilityProcessor(vulnerabilityCache, intLogger));
-        } catch (final IntegrationException ex) {
-            intLogger.error("Error building the notification processor", ex);
-        }
-    }
-
-    @Override
-    public DBStoreEvent processEvents(final Collection<NotificationEvent> eventList) throws HubIntegrationException {
-        final DBStoreEvent dbStoreEvent = new DBStoreEvent(new ArrayList<>(eventList));
-        return dbStoreEvent;
+    public DBStoreEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
+        final List<NotificationDetailResult> resultList = notificationData.getResults();
+        final HubBucket bucket = notificationData.getHubBucket();
+        final int size = resultList.size();
+        final List<NotificationModel> notificationModelList = new ArrayList<>(size);
+        resultList.forEach(notificationDetailResult -> {
+            processorList.forEach(processor -> {
+                if (processor.isApplicable(notificationDetailResult)) {
+                    notificationModelList.addAll(processor.process(globalProperties, notificationDetailResult, bucket));
+                }
+            });
+        });
+        return new DBStoreEvent(notificationModelList);
     }
 }

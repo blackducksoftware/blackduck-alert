@@ -25,17 +25,17 @@ package com.blackducksoftware.integration.hub.alert.event;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class DBStoreEvent extends AbstractEvent {
     public final static String TOPIC_NAME = "DB_STORE_EVENT";
-    private final List<NotificationEvent> notificationList;
+    private final List<NotificationModel> notificationList;
 
-    public DBStoreEvent(final List<NotificationEvent> notificationList) {
+    public DBStoreEvent(final List<NotificationModel> notificationList) {
         this.notificationList = notificationList;
     }
 
-    public List<NotificationEvent> getNotificationList() {
+    public List<NotificationModel> getNotificationList() {
         return notificationList;
     }
 

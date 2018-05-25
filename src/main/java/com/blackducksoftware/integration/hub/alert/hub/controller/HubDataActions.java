@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.hub.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -40,6 +42,7 @@ import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscover
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class HubDataActions {
@@ -52,35 +55,47 @@ public class HubDataActions {
     }
 
     public List<HubGroup> getHubGroups() throws IntegrationException {
-        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-        if (hubServicesFactory != null) {
-            final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
+        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+            if (restConnection != null) {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
-            final List<HubGroup> groups = new ArrayList<>();
-            for (final UserGroupView userGroupView : rawGroups) {
-                final HubGroup hubGroup = new HubGroup(userGroupView.name, userGroupView.active, userGroupView._meta.href);
-                groups.add(hubGroup);
+                final List<HubGroup> groups = new ArrayList<>();
+                for (final UserGroupView userGroupView : rawGroups) {
+                    final HubGroup hubGroup = new HubGroup(userGroupView.name, userGroupView.active, userGroupView._meta.href);
+                    groups.add(hubGroup);
+                }
+                return groups;
+            } else {
+                throw new AlertException("Missing global configuration.");
             }
-            return groups;
-        } else {
-            throw new AlertException("Missing global configuration.");
+        } catch (final IOException e) {
+            logger.error(e.getMessage(), e);
         }
+
+        return Collections.emptyList();
     }
 
     public List<HubProject> getHubProjects() throws IntegrationException {
-        final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(logger);
-        if (hubServicesFactory != null) {
-            final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
+        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+            if (restConnection != null) {
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
 
-            final List<HubProject> projects = new ArrayList<>();
-            for (final ProjectView projectView : rawProjects) {
-                final HubProject project = new HubProject(projectView.name, projectView.description);
-                projects.add(project);
+                final List<HubProject> projects = new ArrayList<>();
+                for (final ProjectView projectView : rawProjects) {
+                    final HubProject project = new HubProject(projectView.name, projectView.description);
+                    projects.add(project);
+                }
+                return projects;
+            } else {
+                throw new AlertException("Missing global configuration.");
             }
-            return projects;
-        } else {
-            throw new AlertException("Missing global configuration.");
+        } catch (final IOException e) {
+            logger.error(e.getMessage(), e);
         }
+
+        return Collections.emptyList();
     }
 
 }
