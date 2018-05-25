@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,27 +61,29 @@ public class StartupManager {
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
+    private final AlertStartupInitializer alertStartupInitializer;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
+        this.alertStartupInitializer = alertStartupInitializer;
     }
 
     public void startup() {
         logger.info("Hub Alert Starting...");
+        initializeChannelPropertyManagers();
         logConfiguration();
-
+        listProperties();
         initializeCronJobs();
-
     }
 
     public void logConfiguration() {
@@ -99,6 +101,23 @@ public class StartupManager {
         if (globalHubConfig != null) {
             logger.info("Hub API Token:           **********");
             logger.info("Hub Timeout:             {}", globalHubConfig.getHubTimeout());
+        }
+        logger.info("----------------------------------------");
+    }
+
+    public void initializeChannelPropertyManagers() {
+        try {
+            alertStartupInitializer.initializeConfigs();
+        } catch (final Exception e) {
+            logger.error("Error inserting startup values", e);
+        }
+    }
+
+    public void listProperties() {
+        logger.info("Properties that can be used for initial Alert setup:");
+        logger.info("----------------------------------------");
+        for (final String property : alertStartupInitializer.getAlertPropertyNameSet()) {
+            logger.info(property);
         }
         logger.info("----------------------------------------");
     }
@@ -166,4 +185,5 @@ public class StartupManager {
             logger.info("Finished startup purge of old data");
         }
     }
+
 }

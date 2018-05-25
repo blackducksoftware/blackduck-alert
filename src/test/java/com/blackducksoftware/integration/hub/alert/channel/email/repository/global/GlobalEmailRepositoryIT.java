@@ -35,6 +35,8 @@ public class GlobalEmailRepositoryIT {
 
     @Test
     public void testSaveEntity() {
+        // make sure there aren't any entries
+        repository.deleteAll();
         final String mailSmtpHost = "smtp_host";
         final String mailSmtpUser = "smtp_user";
         final String mailSmtpPassword = "smtp_password";

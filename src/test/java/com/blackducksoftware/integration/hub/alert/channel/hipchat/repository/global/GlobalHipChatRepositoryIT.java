@@ -34,6 +34,8 @@ public class GlobalHipChatRepositoryIT {
 
     @Test
     public void testSaveEntity() {
+        // make sure all the test data is deleted
+        repository.deleteAll();
         final String apiKey = "api_key";
         final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity(apiKey, "");
         final GlobalHipChatConfigEntity savedEntity = repository.save(entity);

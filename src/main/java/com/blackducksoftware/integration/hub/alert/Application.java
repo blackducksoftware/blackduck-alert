@@ -49,6 +49,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.blackducksoftware.integration.hub.alert.startup.StartupManager;
 import com.blackducksoftware.integration.rest.RestConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -61,7 +62,8 @@ import com.google.gson.GsonBuilder;
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert.web.**", "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.hub.alert.web.**", "com.blackducksoftware.integration.hub.alert", "com.blackducksoftware.integration.hub.alert.config",
+        "com.blackducksoftware.integration.hub.alert.startup" })
 public class Application {
     @Autowired
     private StartupManager startupManager;
