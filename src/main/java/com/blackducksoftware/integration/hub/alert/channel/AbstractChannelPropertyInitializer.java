@@ -28,6 +28,8 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public abstract class AbstractChannelPropertyInitializer<E extends DatabaseEntity> {
 
+    public abstract String getPropertyNamePrefix();
+
     public abstract Class<E> getEntityClass();
 
     public abstract ConfigRestModel getRestModelInstance();

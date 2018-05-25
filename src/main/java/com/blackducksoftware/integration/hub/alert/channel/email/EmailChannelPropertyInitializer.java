@@ -68,4 +68,9 @@ public class EmailChannelPropertyInitializer extends AbstractChannelPropertyInit
             this.globalEmailRepository.save(entityToSave);
         }
     }
+
+    @Override
+    public String getPropertyNamePrefix() {
+        return "CHANNEL_EMAIL";
+    }
 }

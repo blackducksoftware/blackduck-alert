@@ -23,13 +23,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.startup;
 
-public class AlertStartupProperty {
-    private Class<?> propertyClass;
-    private String propertyKey;
-    private String fieldName;
+import com.blackducksoftware.integration.util.Stringable;
 
-    public AlertStartupProperty() {
-    }
+public class AlertStartupProperty extends Stringable {
+    private final Class<?> propertyClass;
+    private final String propertyKey;
+    private final String fieldName;
 
     public AlertStartupProperty(final Class<?> propertyClass, final String propertyKey, final String fieldName) {
         this.propertyClass = propertyClass;
@@ -41,24 +40,11 @@ public class AlertStartupProperty {
         return propertyClass;
     }
 
-    public void setPropertyClass(final Class<?> propertyClass) {
-        this.propertyClass = propertyClass;
-    }
-
     public String getPropertyKey() {
         return propertyKey;
-    }
-
-    public void setPropertyKey(final String propertyKey) {
-        this.propertyKey = propertyKey;
     }
 
     public String getFieldName() {
         return fieldName;
     }
-
-    public void setFieldName(final String fieldName) {
-        this.fieldName = fieldName;
-    }
-
 }
