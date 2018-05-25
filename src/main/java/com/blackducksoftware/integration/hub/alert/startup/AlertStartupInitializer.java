@@ -38,7 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyManager;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -51,12 +51,12 @@ public class AlertStartupInitializer {
 
     private final ObjectTransformer objectTransformer;
     private final Environment environment;
-    private final List<AbstractChannelPropertyManager<? extends DatabaseEntity>> propertyManagerList;
+    private final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList;
 
     private final Set<String> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractChannelPropertyManager<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
         this.objectTransformer = objectTransformer;
         this.propertyManagerList = propertyManagerList;
         this.environment = environment;
