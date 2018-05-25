@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEnt
 
 @Component
 public class EmailChannelPropertyInitializer extends AbstractChannelPropertyInitializer<GlobalEmailConfigEntity> {
+    public static final String PROPERTY_PREFIX_CHANNEL_EMAIL = "CHANNEL_EMAIL";
     private final static Logger logger = LoggerFactory.getLogger(EmailChannelPropertyInitializer.class);
     private final GlobalEmailRepositoryWrapper globalEmailRepository;
 
@@ -71,6 +72,6 @@ public class EmailChannelPropertyInitializer extends AbstractChannelPropertyInit
 
     @Override
     public String getPropertyNamePrefix() {
-        return "CHANNEL_EMAIL";
+        return PROPERTY_PREFIX_CHANNEL_EMAIL;
     }
 }
