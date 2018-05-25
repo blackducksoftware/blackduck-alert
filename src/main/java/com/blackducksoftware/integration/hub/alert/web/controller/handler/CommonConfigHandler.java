@@ -39,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
 public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);

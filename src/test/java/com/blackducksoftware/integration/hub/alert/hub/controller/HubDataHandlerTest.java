@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 public class HubDataHandlerTest {

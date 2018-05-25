@@ -24,11 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -38,22 +34,12 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.processor.VulnerabilityCache;
-import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
-import com.blackducksoftware.integration.hub.notification.ItemTypeEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.notification.NotificationContentItem;
-import com.blackducksoftware.integration.hub.notification.NotificationEvent;
 
 @Transactional
 public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
-    private static final String COMPONENT_VERSION_UNKNOWN = "UNKNOWN";
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
@@ -69,15 +55,11 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
             if (itemList != null && !itemList.isEmpty()) {
                 logger.info("Writing {} notifications", itemList.size());
                 itemList.forEach(item -> {
-                    final List<NotificationEvent> notificationList = item.getNotificationList();
+                    final List<NotificationModel> notificationList = item.getNotificationList();
                     final List<NotificationModel> entityList = new ArrayList<>();
                     notificationList.forEach(notification -> {
-                        final Optional<NotificationModel> optionalModel = createNotificationModel(notification);
-                        if (optionalModel.isPresent()) {
-                            NotificationModel model = optionalModel.get();
-                            model = notificationManager.saveNotification(model);
-                            entityList.add(model);
-                        }
+                        notificationManager.saveNotification(notification);
+                        entityList.add(notification);
                     });
                     final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
                     channelTemplateManager.sendEvent(realTimeEvent);
@@ -88,83 +70,5 @@ public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
         } catch (final Exception ex) {
             logger.error("Error occurred writing notification data", ex);
         }
-    }
-
-    private Optional<NotificationModel> createNotificationModel(final NotificationEvent notification) {
-        try {
-            final String eventKey = notification.getEventKey();
-            final NotificationContentItem content = (NotificationContentItem) notification.getDataSet().get(NotificationEvent.DATA_SET_KEY_NOTIFICATION_CONTENT);
-            final Date createdAt = content.getCreatedAt();
-            final NotificationCategoryEnum notificationType = notification.getCategoryType();
-            final String projectName = content.getProjectVersion().getProjectName();
-            final String projectUrl = content.getProjectVersion().getProjectLink();
-            final String projectVersion = content.getProjectVersion().getProjectVersionName();
-            final String projectVersionUrl = content.getProjectVersion().getUrl();
-            final String componentName = content.getComponentName();
-            final String componentVersion = getComponentVersionName(content.getComponentVersion());
-            final String policyRuleName = getPolicyRule(notification);
-            final String person = getPerson(notification);
-
-            final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
-            final Collection<VulnerabilityEntity> vulnerabilityList = getVulnerabilities(notification, entity);
-            final NotificationModel model = new NotificationModel(entity, vulnerabilityList);
-            return Optional.of(model);
-        } catch (final Exception ex) {
-            // component version could be null if a versionless component is added.
-            // catch the exception and continue writing notifications that can be handled.
-            logger.error("Accumulator writer failed to create a notification model...");
-            logger.error("NotificationEvent {}", notification);
-            logger.error("Exception caused by: ", ex);
-
-            return Optional.empty();
-        }
-    }
-
-    private String getComponentVersionName(final ComponentVersionView componentVersionView) {
-        if (componentVersionView == null) {
-            return COMPONENT_VERSION_UNKNOWN;
-        } else {
-            return componentVersionView.versionName;
-        }
-    }
-
-    private String getPolicyRule(final NotificationEvent notification) {
-        final String key = ItemTypeEnum.RULE.name();
-        if (notification.getDataSet().containsKey(key)) {
-            final String rule = (String) notification.getDataSet().get(key);
-            return rule;
-        }
-
-        return "";
-    }
-
-    private String getPerson(final NotificationEvent notification) {
-        final String key = ItemTypeEnum.PERSON.name();
-        if (notification.getDataSet().containsKey(key)) {
-            final String person = (String) notification.getDataSet().get(key);
-            return person;
-        }
-
-        return "";
-    }
-
-    // The dataset contains string keys and object values. Therefore we need to type cast because the contents are various types.
-    @SuppressWarnings("unchecked")
-    private Collection<VulnerabilityEntity> getVulnerabilities(final NotificationEvent notification, final NotificationEntity entity) {
-        final List<VulnerabilityEntity> vulnerabilityList = new ArrayList<>();
-        final String key = VulnerabilityCache.VULNERABILITY_OPERATION;
-        if (notification.getDataSet().containsKey(key)) {
-            final String operationName = (String) notification.getDataSet().get(key);
-            final Set<String> vulnerabilitySet = (Set<String>) notification.getDataSet().get(VulnerabilityCache.VULNERABILITY_ID_SET);
-
-            if (!vulnerabilitySet.isEmpty()) {
-                vulnerabilitySet.forEach(vulnerability -> {
-                    final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity(vulnerability, VulnerabilityOperationEnum.valueOf(operationName), entity.getId());
-                    vulnerabilityList.add(vulnerabilityEntity);
-                });
-            }
-        }
-
-        return vulnerabilityList;
     }
 }

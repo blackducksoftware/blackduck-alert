@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.notification.NotificationCategoryEnum;
 
 public class DigestRemovalProcessor {
     private final Map<String, Map<NotificationCategoryEnum, NotificationModel>> entityCache;
@@ -109,7 +109,11 @@ public class DigestRemovalProcessor {
                 final VulnerabilityOperationEnum operation = vulnerabilityEntity.getOperation();
                 final String id = vulnerabilityEntity.getVulnerabilityId();
                 if (VulnerabilityOperationEnum.DELETE.equals(operation)) {
-                    vulnerabilityIds.remove(id);
+                    if (vulnerabilityIds.contains(id)) {
+                        vulnerabilityIds.remove(id);
+                    } else {
+                        vulnerabilityIds.add(id);
+                    }
                 } else {
                     vulnerabilityIds.add(id);
                 }

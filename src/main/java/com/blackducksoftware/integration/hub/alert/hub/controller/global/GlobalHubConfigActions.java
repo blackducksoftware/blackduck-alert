@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.hub.controller.global;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,8 +49,8 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.FieldEnum;
 import com.blackducksoftware.integration.validator.ValidationResult;
@@ -170,8 +171,11 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         }
         hubServerConfigBuilder.setLogger(intLogger);
         validateHubConfiguration(hubServerConfigBuilder);
-        final RestConnection restConnection = createRestConnection(hubServerConfigBuilder);
-        restConnection.connect();
+        try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
+            restConnection.connect();
+        } catch (final IOException ex) {
+            logger.error("Failed to close rest connection", ex);
+        }
         return "Successfully connected to the Hub.";
     }
 

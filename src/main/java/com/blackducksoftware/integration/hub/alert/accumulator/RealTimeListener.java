@@ -34,12 +34,14 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.digest.DigestRemovalProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.google.gson.Gson;
 
 @Component
@@ -63,9 +65,14 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     public void receiveMessage(final String message) {
         try {
             final RealTimeEvent event = getEvent(message);
-            final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(event.getNotificationList(), DigestTypeEnum.REAL_TIME);
-            final List<AbstractChannelEvent> events = eventManager.createChannelEvents(projectDataCollection);
-            channelTemplateManager.sendEvents(events);
+            final List<NotificationModel> notificationList = event.getNotificationList();
+            final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
+            final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
+            if (!processedNotificationList.isEmpty()) {
+                final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(processedNotificationList, DigestTypeEnum.REAL_TIME);
+                final List<AbstractChannelEvent> events = eventManager.createChannelEvents(projectDataCollection);
+                channelTemplateManager.sendEvents(events);
+            }
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
         }
