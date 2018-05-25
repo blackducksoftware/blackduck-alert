@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
@@ -63,14 +62,13 @@ public class StartupManager {
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
-    private final List<AbstractChannelPropertyManager> channelPropertyManagers;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<AbstractChannelPropertyManager> channelPropertyManagers) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
@@ -78,13 +76,13 @@ public class StartupManager {
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
-        this.channelPropertyManagers = channelPropertyManagers;
     }
 
     public void startup() {
         logger.info("Hub Alert Starting...");
         logConfiguration();
         initializeChannelPropertyManagers();
+        listProperties();
         initializeCronJobs();
     }
 
@@ -109,14 +107,19 @@ public class StartupManager {
 
     public void initializeChannelPropertyManagers() {
         try {
-            channelPropertyManagers.forEach(channelPropertyManager -> {
-                channelPropertyManager.process();
-            });
-
-            // alertStartupInitializer.initializeConfigs();
+            alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }
+    }
+
+    public void listProperties() {
+        logger.info("Properties that can be used for initial Alert setup:");
+        logger.info("----------------------------------------");
+        for (final String property : alertStartupInitializer.getAlertProperties()) {
+            logger.info(property);
+        }
+        logger.info("----------------------------------------");
     }
 
     public void initializeCronJobs() {
