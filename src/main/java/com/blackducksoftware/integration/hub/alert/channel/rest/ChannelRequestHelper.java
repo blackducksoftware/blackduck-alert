@@ -30,13 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.request.BodyContent;
-import com.blackducksoftware.integration.hub.request.Request;
-import com.blackducksoftware.integration.hub.request.Response;
-import com.blackducksoftware.integration.hub.rest.HttpMethod;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
+import com.blackducksoftware.integration.rest.HttpMethod;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.request.BodyContent;
+import com.blackducksoftware.integration.rest.request.Request;
+import com.blackducksoftware.integration.rest.request.Response;
 
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);

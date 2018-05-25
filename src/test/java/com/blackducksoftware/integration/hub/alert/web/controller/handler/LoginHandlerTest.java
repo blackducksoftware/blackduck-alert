@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.LoginActions;
-import com.blackducksoftware.integration.hub.rest.exception.IntegrationRestException;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
 public class LoginHandlerTest {
     private final ObjectTransformer objectTransformer = new ObjectTransformer();

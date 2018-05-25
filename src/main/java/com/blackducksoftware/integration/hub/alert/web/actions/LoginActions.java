@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,10 +47,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.hub.api.generated.view.RoleAssignmentView;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.log.IntLogger;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.FieldEnum;
 import com.blackducksoftware.integration.validator.ValidationResult;
@@ -83,16 +84,18 @@ public class LoginActions {
 
         try {
             validateHubConfiguration(serverConfigBuilder);
-            final RestConnection restConnection = createRestConnection(serverConfigBuilder);
-            restConnection.connect();
-            logger.info("Connected");
-            final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
-            if (isValidLoginUser) {
-                final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                return authentication.isAuthenticated();
+            try (final RestConnection restConnection = createRestConnection(serverConfigBuilder)) {
+                restConnection.connect();
+                logger.info("Connected");
+                final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
+                if (isValidLoginUser) {
+                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    return authentication.isAuthenticated();
+                }
+            } catch (final IOException ex) {
+                logger.error("Rest connection close failure", ex);
             }
-
         } catch (final AlertFieldException afex) {
             logger.error("Error establishing connection", afex);
             final Map<String, String> fieldErrorMap = afex.getFieldErrors();
