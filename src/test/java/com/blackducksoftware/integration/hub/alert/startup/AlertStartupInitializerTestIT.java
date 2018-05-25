@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyInitializer;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannelPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
@@ -29,7 +29,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
+        final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertProperties().isEmpty());
@@ -40,7 +40,7 @@ public class AlertStartupInitializerTestIT {
     public void testInitializeConfigsEmptyInitializerList() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Collections.emptyList();
+        final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Collections.emptyList();
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment);
         initializer.initializeConfigs();
         assertTrue(initializer.getAlertProperties().isEmpty());
@@ -52,7 +52,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
+        final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment);
         initializer.initializeConfigs();
         final String value = "newValue";
@@ -75,7 +75,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
+        final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment);
         initializer.initializeConfigs();
 
@@ -120,7 +120,7 @@ public class AlertStartupInitializerTestIT {
     }
 
     private void throwExceptionTest(final Environment environment, final ObjectTransformer objectTransformer, final GlobalEmailRepositoryWrapper globalEmailRepository) throws Exception {
-        final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
+        final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertPropertyNameSet().isEmpty());

@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyInitializer;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 
 @Component
-public class EmailChannelPropertyInitializer extends AbstractChannelPropertyInitializer<GlobalEmailConfigEntity> {
+public class EmailChannelPropertyInitializer extends AbstractPropertyInitializer<GlobalEmailConfigEntity> {
     public static final String PROPERTY_PREFIX_CHANNEL_EMAIL = "CHANNEL_EMAIL";
     private final static Logger logger = LoggerFactory.getLogger(EmailChannelPropertyInitializer.class);
     private final GlobalEmailRepositoryWrapper globalEmailRepository;
