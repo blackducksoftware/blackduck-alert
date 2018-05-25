@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.hub.alert.startup;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractChannelPropertyInitializer;
+import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -52,12 +53,12 @@ public class AlertStartupInitializer {
 
     private final ObjectTransformer objectTransformer;
     private final Environment environment;
-    private final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList;
+    private final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList;
 
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractChannelPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
         this.objectTransformer = objectTransformer;
         this.propertyManagerList = propertyManagerList;
         this.environment = environment;
@@ -130,6 +131,6 @@ public class AlertStartupInitializer {
     }
 
     public Set<String> getAlertPropertyNameSet() {
-        return alertProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toSet());
+        return alertProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
