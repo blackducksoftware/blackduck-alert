@@ -70,15 +70,13 @@ public class AlertStartupInitializer {
             final Class<? extends DatabaseEntity> entityClass = propertyManager.getEntityClass();
             final String initializerNamePrefix = propertyManager.getPropertyNamePrefix();
             findPropertyNames(initializerNamePrefix, entityClass);
-            if (propertyManager.canSetDefaultProperties()) {
-                try {
-                    final ConfigRestModel restModel = propertyManager.getRestModelInstance();
-                    initializeConfig(initializerNamePrefix, restModel, entityClass);
-                    final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
-                    propertyManager.save(entity);
-                } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException ex) {
-                    logger.error("Error initializing property manager", ex);
-                }
+            try {
+                final ConfigRestModel restModel = propertyManager.getRestModelInstance();
+                initializeConfig(initializerNamePrefix, restModel, entityClass);
+                final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                propertyManager.save(entity);
+            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException ex) {
+                logger.error("Error initializing property manager", ex);
             }
         });
     }
