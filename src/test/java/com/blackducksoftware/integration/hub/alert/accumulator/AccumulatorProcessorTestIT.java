@@ -1,9 +1,8 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -117,7 +116,6 @@ public class AccumulatorProcessorTestIT {
         final List<NotificationModel> notifications = storeEvent.getNotificationList();
 
         assertFalse(notifications.isEmpty());
-        assertEquals(storeEvent.getEventId().length(), 36);
 
         NotificationModel apacheModel = null;
 
@@ -133,7 +131,8 @@ public class AccumulatorProcessorTestIT {
         final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(globalProperties, null);
 
         final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
-        assertNull(storeEventNull);
+        assertNotNull(storeEventNull);
+        assertTrue(storeEventNull.getNotificationList().isEmpty());
         final ProjectVersionWrapper projectWrapper = projectService.getProjectVersion(testProjectName, testProjectVersionName);
         projectService.deleteHubProject(projectWrapper.getProjectView());
 
