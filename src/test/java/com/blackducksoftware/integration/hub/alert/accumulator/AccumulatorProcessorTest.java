@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -62,12 +63,71 @@ public class AccumulatorProcessorTest {
         final List<NotificationModel> notifications = storeEvent.getNotificationList();
 
         assertFalse(notifications.isEmpty());
+    }
 
-        final AccumulatorProcessor accumulatorProcessorNull = new AccumulatorProcessor(globalProperties, null);
+    @Test
+    public void testProcessorListNull() throws Exception {
+        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+        final ComponentVersionView versionView = new ComponentVersionView();
+        final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
+        content.newVulnerabilityCount = 4;
+        content.updatedVulnerabilityCount = 3;
+        content.deletedVulnerabilityCount = 4;
+        content.newVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("1", "2", "3", "10");
+        content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
+        content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
-        final DBStoreEvent storeEventNull = accumulatorProcessorNull.process(notificationData);
+        final List<NotificationDetailResult> resultList = new ArrayList<>();
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        resultList.addAll(vulnerabilityResults.getResults());
+        resultList.addAll(createPolicyViolationNotification());
+
+        final NotificationDetailResults notificationData = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
+                vulnerabilityResults.getHubBucket());
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null);
+
+        final DBStoreEvent storeEventNull = accumulatorProcessor.process(notificationData);
         assertNotNull(storeEventNull);
         assertTrue(storeEventNull.getNotificationList().isEmpty());
+    }
+
+    @Test
+    public void testProcessNullList() throws Exception {
+        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null);
+        final DBStoreEvent nullStoreEvent = accumulatorProcessor.process(null);
+        assertNull(nullStoreEvent);
+    }
+
+    @Test
+    public void testProcessThrowsException() throws Exception {
+        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+        final ComponentVersionView versionView = new ComponentVersionView();
+
+        final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
+        content.newVulnerabilityCount = 4;
+        content.updatedVulnerabilityCount = 3;
+        content.deletedVulnerabilityCount = 4;
+        content.newVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("1", "2", "3", "10");
+        content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
+        content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
+
+        final List<NotificationDetailResult> resultList = new ArrayList<>();
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        resultList.addAll(vulnerabilityResults.getResults());
+        resultList.addAll(createPolicyViolationNotification());
+
+        final NotificationDetailResults notificationData = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
+                vulnerabilityResults.getHubBucket());
+        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = Mockito.mock(PolicyNotificationTypeProcessor.class);
+        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = Mockito.mock(VulnerabilityNotificationTypeProcessor.class);
+        Mockito.doThrow(new RuntimeException("Test Exception")).when(policyNotificationTypeProcessor).isApplicable(Mockito.any());
+        Mockito.doThrow(new RuntimeException("Test Exception")).when(vulnerabilityNotificationTypeProcessor).isApplicable(Mockito.any());
+        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
+
+        final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
+        assertNull(storeEvent);
     }
 
     private List<NotificationDetailResult> createPolicyViolationNotification() {
