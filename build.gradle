@@ -37,7 +37,7 @@ applicationDefaultJvmArgs = [
 ]
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:33.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:33.0.2'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-batch'

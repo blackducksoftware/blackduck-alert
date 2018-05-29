@@ -1,5 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.mock.notification;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.blackducksoftware.integration.hub.notification.content.PolicyOverride
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationClearedNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetailFactory;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -43,29 +45,45 @@ public class NotificationGeneratorUtils {
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
-        return Arrays.asList(detail);
+        final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
+        final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
+        factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
+
+        return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
+                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationClearedNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
-        return Arrays.asList(detail);
+        final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
+        final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
+        factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
+
+        return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
+                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final PolicyOverrideNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
-        return Arrays.asList(detail);
+        final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
+        final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
+        factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
+
+        return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
+                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
     }
 
     public static NotificationDetailResult createNotificationDetailList(final NotificationView view, final VulnerabilityNotificationContent content) {
         final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
-        final NotificationDetailResult detail = factory.generateContentDetails(commonNotificationView, content);
-        return detail;
+        final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_VULNERABILITY;
+        final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
+        factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
+
+        return new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
+                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails);
     }
 
     public static NotificationDetailResults createNotificationResults(final List<NotificationDetailResult> detailList) {
