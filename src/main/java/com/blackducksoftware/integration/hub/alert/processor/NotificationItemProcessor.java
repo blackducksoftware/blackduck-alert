@@ -45,13 +45,15 @@ public class NotificationItemProcessor {
         final HubBucket bucket = notificationData.getHubBucket();
         final int size = resultList.size();
         final List<NotificationModel> notificationModelList = new ArrayList<>(size);
-        resultList.forEach(notificationDetailResult -> {
-            processorList.forEach(processor -> {
-                if (processor.isApplicable(notificationDetailResult)) {
-                    notificationModelList.addAll(processor.process(globalProperties, notificationDetailResult, bucket));
-                }
+        if (processorList != null) {
+            resultList.forEach(notificationDetailResult -> {
+                processorList.forEach(processor -> {
+                    if (processor.isApplicable(notificationDetailResult)) {
+                        notificationModelList.addAll(processor.process(globalProperties, notificationDetailResult, bucket));
+                    }
+                });
             });
-        });
+        }
         return new DBStoreEvent(notificationModelList);
     }
 }
