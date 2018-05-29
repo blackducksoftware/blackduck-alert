@@ -92,17 +92,26 @@ public class AccumulatorProcessorTestIT {
         projectService.createHubVersion(projectItem, projectVersionRequest);
 
         uploadBdio("bdio/component-bdio.jsonld");
+        final int attempt = 1;
+        DBStoreEvent storeEvent = null;
+        NotificationDetailResults notificationData = null;
+        while (attempt < 10) {
+            // try for at most 120 seconds (2 minutes)
+            TimeUnit.SECONDS.sleep(12);
+            final HubBucket hubBucket = new HubBucket();
+            notificationData = notificationDataService.getAllNotificationDetailResultsPopulated(hubBucket, new Date(System.currentTimeMillis() - 100000), new Date());
+            final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
+            final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
+            final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
+            final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
 
-        TimeUnit.SECONDS.sleep(60);
-        final HubBucket hubBucket = new HubBucket();
-        final NotificationDetailResults notificationData = notificationDataService.getAllNotificationDetailResultsPopulated(hubBucket, new Date(System.currentTimeMillis() - 100000), new Date());
-        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
-        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
-        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
+            storeEvent = accumulatorProcessor.process(notificationData);
 
-        final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
-
+            if (storeEvent != null) {
+                // found notification data exit the loop
+                break;
+            }
+        }
         assertNotNull(storeEvent);
 
         final List<NotificationModel> notifications = storeEvent.getNotificationList();
