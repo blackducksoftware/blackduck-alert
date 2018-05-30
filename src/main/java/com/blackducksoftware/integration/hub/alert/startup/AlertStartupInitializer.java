@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +52,7 @@ public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
 
+    private final ConversionService conversionService;
     private final ObjectTransformer objectTransformer;
     private final Environment environment;
     private final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList;
@@ -58,10 +60,11 @@ public class AlertStartupInitializer {
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment, final ConversionService conversionService) {
         this.objectTransformer = objectTransformer;
         this.propertyManagerList = propertyManagerList;
         this.environment = environment;
+        this.conversionService = conversionService;
         alertProperties = new ArrayList<>(50);
     }
 
@@ -75,14 +78,13 @@ public class AlertStartupInitializer {
                 initializeConfig(initializerNamePrefix, restModel, entityClass);
                 final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
                 propertyManager.save(entity);
-            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | AlertException ex) {
+            } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("Error initializing property manager", ex);
             }
         });
     }
 
-    private <T extends ConfigRestModel> void initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass)
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+    private <T extends ConfigRestModel> void initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass) {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
         for (final AlertStartupProperty property : configProperties) {
             logger.info("Checking property key {}", property.getPropertyKey());
@@ -91,20 +93,26 @@ public class AlertStartupInitializer {
                 logger.info("Not found in system env, checking Spring env");
                 value = environment.getProperty(property.getPropertyKey());
             }
-            setRestModelValue(value, globalRestModel, property);
+            try {
+                setRestModelValue(value, globalRestModel, property);
+            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+                logger.error("Error initializing {} ", property.getPropertyKey(), ex);
+            }
         }
     }
 
     public <T extends ConfigRestModel> void setRestModelValue(final String value, final T globalRestModel, final AlertStartupProperty property)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        if (value != null) {
+        if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
             final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
             final boolean accessible = declaredField.isAccessible();
-
-            declaredField.setAccessible(true);
-            declaredField.set(globalRestModel, value);
-            declaredField.setAccessible(accessible);
+            if (conversionService.canConvert(String.class, declaredField.getType())) {
+                final Object convertedObject = conversionService.convert(value, declaredField.getType());
+                declaredField.setAccessible(true);
+                declaredField.set(globalRestModel, convertedObject);
+                declaredField.setAccessible(accessible);
+            }
         }
     }
 
