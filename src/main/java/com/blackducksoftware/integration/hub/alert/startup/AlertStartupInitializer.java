@@ -75,17 +75,20 @@ public class AlertStartupInitializer {
             findPropertyNames(initializerNamePrefix, entityClass);
             try {
                 final ConfigRestModel restModel = propertyManager.getRestModelInstance();
-                initializeConfig(initializerNamePrefix, restModel, entityClass);
-                final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
-                propertyManager.save(entity);
+                final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
+                if (propertySet) {
+                    final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                    propertyManager.save(entity);
+                }
             } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                 logger.error("Error initializing property manager", ex);
             }
         });
     }
 
-    private <T extends ConfigRestModel> void initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass) {
+    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass) {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
+        boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
             logger.info("Checking property key {}", property.getPropertyKey());
             String value = System.getProperty(property.getPropertyKey());
@@ -94,14 +97,15 @@ public class AlertStartupInitializer {
                 value = environment.getProperty(property.getPropertyKey());
             }
             try {
-                setRestModelValue(value, globalRestModel, property);
+                propertySet = propertySet || setRestModelValue(value, globalRestModel, property);
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
                 logger.error("Error initializing {} ", property.getPropertyKey(), ex);
             }
         }
+        return propertySet;
     }
 
-    public <T extends ConfigRestModel> void setRestModelValue(final String value, final T globalRestModel, final AlertStartupProperty property)
+    public <T extends ConfigRestModel> boolean setRestModelValue(final String value, final T globalRestModel, final AlertStartupProperty property)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
@@ -112,8 +116,10 @@ public class AlertStartupInitializer {
                 declaredField.setAccessible(true);
                 declaredField.set(globalRestModel, convertedObject);
                 declaredField.setAccessible(accessible);
+                return true;
             }
         }
+        return false;
     }
 
     private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Class<?> alertConfigClass) {
