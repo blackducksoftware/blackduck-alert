@@ -111,7 +111,7 @@ public class AuditEntryActions {
 
     public AuditEntryRestModel get(final Long id) {
         if (id != null) {
-            final AuditEntryEntity auditEntryEntity = auditEntryRepository.findOne(id);
+            final AuditEntryEntity auditEntryEntity = auditEntryRepository.findById(id);
             if (auditEntryEntity != null) {
                 return createRestModel(auditEntryEntity);
             }
@@ -121,7 +121,7 @@ public class AuditEntryActions {
 
     public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
         AuditEntryEntity auditEntryEntity = null;
-        auditEntryEntity = auditEntryRepository.findOne(id);
+        auditEntryEntity = auditEntryRepository.findById(id);
         if (auditEntryEntity == null) {
             throw new AlertException("No audit entry with the provided id exists.");
         }
@@ -129,7 +129,7 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
+        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
             throw new IllegalArgumentException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
@@ -160,7 +160,7 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
 
-        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
+        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
 
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
@@ -180,8 +180,8 @@ public class AuditEntryActions {
                 notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0).getNotificationEntity(), NotificationRestModel.class);
                 final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
                 notificationRestModel.setNotificationTypes(notificationTypes);
-                final Set<ComponentRestModel> components = notifications.stream()
-                        .map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(), notification.getPolicyRuleUser())).collect(Collectors.toSet());
+                final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
+                        notification.getPolicyRuleUser())).collect(Collectors.toSet());
                 notificationRestModel.setComponents(components);
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());

@@ -67,7 +67,7 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> notificationTypes = new ArrayList<>(foundRelations.size());
         for (final DistributionNotificationTypeRelation relation : foundRelations) {
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(relation.getNotificationTypeId());
+            final NotificationTypeEntity foundEntity = notificationTypeRepository.findById(relation.getNotificationTypeId());
             notificationTypes.add(foundEntity.getType().name());
         }
         return notificationTypes;

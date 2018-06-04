@@ -53,7 +53,7 @@ public class DistributionChannelTest extends ChannelTest {
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null);
         entity.setId(1L);
-        Mockito.when(auditEntryRepository.findOne(Mockito.anyLong())).thenReturn(entity);
+        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(entity);
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
         channel.setAuditEntrySuccess(null);
@@ -73,7 +73,7 @@ public class DistributionChannelTest extends ChannelTest {
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, null, null);
         entity.setId(1L);
-        Mockito.when(auditEntryRepository.findOne(Mockito.anyLong())).thenReturn(entity);
+        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(entity);
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
         channel.setAuditEntryFailure(null, null, null);
@@ -109,10 +109,10 @@ public class DistributionChannelTest extends ChannelTest {
         final String jsonRepresentation = gson.toJson(event);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
-        Mockito.when(commonRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(commonEntity);
+        Mockito.when(commonRepositoryWrapper.findById(Mockito.anyLong())).thenReturn(commonEntity);
 
         final EmailGroupDistributionConfigEntity specificEntity = new EmailGroupDistributionConfigEntity("admins", "", "TEST SUBJECT LINE");
-        Mockito.when(emailGroupRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(specificEntity);
+        Mockito.when(emailGroupRepositoryWrapper.findById(Mockito.anyLong())).thenReturn(specificEntity);
 
         channel.receiveMessage(jsonRepresentation);
     }
@@ -137,7 +137,7 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGroupEvent event = new EmailGroupEvent(createProjectData("Distribution Channel Test"), commonId);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.SLACK, "Other Config", DigestTypeEnum.REAL_TIME, false);
-        Mockito.when(commonRepositoryWrapper.findOne(Mockito.anyLong())).thenReturn(commonEntity);
+        Mockito.when(commonRepositoryWrapper.findById(Mockito.anyLong())).thenReturn(commonEntity);
 
         channel.handleEvent(event);
     }

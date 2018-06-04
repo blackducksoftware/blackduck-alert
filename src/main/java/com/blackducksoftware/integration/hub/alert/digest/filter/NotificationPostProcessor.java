@@ -83,7 +83,7 @@ public class NotificationPostProcessor {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         foundRelations.forEach(relation -> {
-            final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findOne(relation.getProjectId());
+            final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findById(relation.getProjectId());
             if (foundEntity != null && foundEntity.getProjectName().equals(projectData.getProjectName())) {
                 applicableConfigurations.add(commonDistributionConfigEntity);
             }
@@ -103,7 +103,7 @@ public class NotificationPostProcessor {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         final Set<NotificationCategoryEnum> foundNotificationCategories = new HashSet<>();
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
+            final NotificationTypeEntity foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
             if (foundEntity != null) {
                 foundNotificationCategories.add(foundEntity.getType());
             }

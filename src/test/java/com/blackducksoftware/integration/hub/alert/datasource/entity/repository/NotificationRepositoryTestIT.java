@@ -70,7 +70,7 @@ public class NotificationRepositoryTestIT {
         final NotificationEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final NotificationEntity foundEntity = repository.findOne(savedEntity.getId());
+        final NotificationEntity foundEntity = repository.findById(savedEntity.getId());
         assertEquals(entity.getEventKey(), foundEntity.getEventKey());
         assertEquals(entity.getNotificationType(), foundEntity.getNotificationType());
         assertEquals(entity.getProjectName(), foundEntity.getProjectName());

@@ -68,7 +68,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     @Override
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final D foundEntity = getRepository().findOne(id);
+            final D foundEntity = getRepository().findById(id);
             if (foundEntity != null) {
                 return Arrays.asList(constructRestModel(foundEntity));
             }
@@ -107,7 +107,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     @Override
     public void deleteConfig(final Long id) {
         if (id != null) {
-            final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findOne(id);
+            final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findById(id);
             if (commonEntity != null) {
                 final Long distributionConfigId = commonEntity.getDistributionConfigId();
                 getRepository().delete(distributionConfigId);
@@ -185,7 +185,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     }
 
     public R constructRestModel(final D entity) throws AlertException {
-        final D distributionEntity = getRepository().findOne(entity.getId());
+        final D distributionEntity = getRepository().findById(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), getDistributionName());
         if (distributionEntity != null && commonEntity != null) {
             final R restModel = constructRestModel(commonEntity, distributionEntity);

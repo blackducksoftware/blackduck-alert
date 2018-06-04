@@ -100,11 +100,11 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
 
     public void handleEvent(final E event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
-        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findOne(eventDistributionId);
+        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
         if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
             try {
                 final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-                final C channelDistributionEntity = distributionRepository.findOne(channelDistributionConfigId);
+                final C channelDistributionEntity = distributionRepository.findById(channelDistributionConfigId);
                 sendAuditedMessage(event, channelDistributionEntity);
             } catch (final IntegrationException ex) {
                 logger.error("There was an error sending the message.", ex);
@@ -140,7 +140,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public void setAuditEntrySuccess(final Long auditEntryId) {
         if (auditEntryId != null) {
             try {
-                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findById(auditEntryId);
                 if (auditEntryEntity != null) {
                     auditEntryEntity.setStatus(StatusEnum.SUCCESS);
                     auditEntryEntity.setErrorMessage(null);
@@ -157,7 +157,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
         if (auditEntryId != null) {
             try {
-                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findOne(auditEntryId);
+                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findById(auditEntryId);
                 if (auditEntryEntity != null) {
                     auditEntryEntity.setStatus(StatusEnum.FAILURE);
                     auditEntryEntity.setErrorMessage(errorMessage);

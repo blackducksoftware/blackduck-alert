@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.BaseController
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true", relaxedNames = false)
+@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true")
 public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;

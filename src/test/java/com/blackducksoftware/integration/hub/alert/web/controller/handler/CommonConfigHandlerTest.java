@@ -45,9 +45,9 @@ public class CommonConfigHandlerTest {
                 CommonDistributionConfigRestModel.class, configActions, objectTransformer);
 
         final List<CommonDistributionConfigRestModel> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
-        Mockito.when(configActions.getConfig(Mockito.anyLong())).thenReturn(restModel);
+        Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong());
 
-        final List<CommonDistributionConfigRestModel> list = handler.getConfig(null);
+        final List<CommonDistributionConfigRestModel> list = handler.getConfig(1L);
         assertEquals(restModel, list);
     }
 

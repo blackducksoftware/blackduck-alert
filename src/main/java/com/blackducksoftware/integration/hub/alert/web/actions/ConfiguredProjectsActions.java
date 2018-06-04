@@ -66,7 +66,7 @@ public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestMod
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> configuredProjects = new ArrayList<>(distributionProjects.size());
         for (final DistributionProjectRelation relation : distributionProjects) {
-            final ConfiguredProjectEntity entity = configuredProjectsRepository.findOne(relation.getProjectId());
+            final ConfiguredProjectEntity entity = configuredProjectsRepository.findById(relation.getProjectId());
             configuredProjects.add(entity.getProjectName());
         }
         return configuredProjects;

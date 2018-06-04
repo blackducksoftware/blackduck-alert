@@ -82,7 +82,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
         GlobalSchedulingConfigEntity databaseEntity = null;
         if (id != null) {
-            databaseEntity = getRepository().findOne(id);
+            databaseEntity = getRepository().findById(id);
         } else {
             final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
             if (databaseEntities != null && !databaseEntities.isEmpty()) {

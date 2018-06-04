@@ -11,11 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.hub.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -74,7 +70,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     @Override
     public void testGetConfig() throws Exception {
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
-        Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
+        Mockito.when(mockedGlobalRepository.findById(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
         final GlobalHubConfigEntity databaseEntity = getGlobalEntityMockUtil().createGlobalEntity();
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
@@ -99,7 +95,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         assertEquals(maskedRestModel, globalConfigById);
         assertEquals(maskedRestModel, globalConfig);
 
-        Mockito.when(mockedGlobalRepository.findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(mockedGlobalRepository.findById(Mockito.anyLong())).thenReturn(null);
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(null);
 
         globalConfigsById = configActions.getConfig(1L);
@@ -156,7 +152,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
             public GlobalHubConfigEntity answer(final InvocationOnMock invocation) throws Throwable {
                 return getGlobalEntityMockUtil().createGlobalEntity();
             }
-        }).when(mockedGlobalRepository).findOne(Mockito.anyLong());
+        }).when(mockedGlobalRepository).findById(Mockito.anyLong());
 
         final String result = configActions.testConfig(partialRestModel);
         assertEquals("Successfully connected to the Hub.", result);
