@@ -39,14 +39,14 @@ public class EmailChannelTestIT extends ChannelTest {
             globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, gson, auditEntryRepository, null, null, null);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(globalProperties, auditEntryRepository, null, null, null);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final EmailGroupEvent event = new EmailGroupEvent(projectData, 1L);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
-        final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
@@ -60,7 +60,7 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailNullGlobalTest() throws Exception {
         final OutputLogger outputLogger = new OutputLogger();
 
-        final EmailGroupChannel emailChannel = new EmailGroupChannel(null, gson, null, null, null, null);
+        final EmailGroupChannel emailChannel = new EmailGroupChannel(null, null, null, null, null);
         emailChannel.sendMessage(new EmailGroupEvent(null, 1L), null);
         assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
 

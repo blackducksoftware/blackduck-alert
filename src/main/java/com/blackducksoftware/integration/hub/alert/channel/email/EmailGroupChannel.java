@@ -36,13 +36,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
@@ -56,7 +54,6 @@ import com.blackducksoftware.integration.hub.api.generated.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.google.gson.Gson;
 
 import freemarker.core.ParseException;
 import freemarker.template.MalformedTemplateNameException;
@@ -70,17 +67,11 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public EmailGroupChannel(final GlobalProperties globalProperties, final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalEmailRepositoryWrapper emailRepository,
+    public EmailGroupChannel(final GlobalProperties globalProperties, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalEmailRepositoryWrapper emailRepository,
             final EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository) {
-        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
+        super(auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
 
         this.globalProperties = globalProperties;
-    }
-
-    @JmsListener(destination = SupportedChannels.EMAIL_GROUP)
-    @Override
-    public void receiveMessage(final String message) {
-        super.receiveMessage(message);
     }
 
     @Override

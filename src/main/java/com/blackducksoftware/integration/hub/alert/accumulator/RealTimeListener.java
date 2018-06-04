@@ -29,7 +29,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
@@ -42,7 +41,6 @@ import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.google.gson.Gson;
 
 @Component
 public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
@@ -53,18 +51,16 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     private final NotificationEventManager eventManager;
 
     @Autowired
-    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
-        super(gson, RealTimeEvent.class);
+    public RealTimeListener(final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
+        super(RealTimeEvent.class);
         this.channelTemplateManager = channelTemplateManager;
         this.projectDataFactory = projectDataFactory;
         this.eventManager = eventManager;
     }
 
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
-    public void receiveMessage(final String message) {
+    public void handleEvent(final RealTimeEvent event) {
         try {
-            final RealTimeEvent event = getEvent(message);
             final List<NotificationModel> notificationList = event.getNotificationList();
             final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
             final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);

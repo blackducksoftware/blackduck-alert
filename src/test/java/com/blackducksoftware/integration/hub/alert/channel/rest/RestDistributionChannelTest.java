@@ -36,7 +36,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity>(
-                null, null, null, null, null, null, channelRestConnectionFactory) {
+                null, null, null, null, null, channelRestConnectionFactory) {
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
