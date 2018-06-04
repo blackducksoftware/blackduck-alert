@@ -99,7 +99,7 @@ public class ChannelTemplateManager {
                 if (channelEvent.getAuditEntryId() == null) {
                     auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
                 } else {
-                    auditEntryEntity = auditEntryRepository.findOne(channelEvent.getAuditEntryId());
+                    auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId());
                 }
                 auditEntryEntity.setStatus(StatusEnum.PENDING);
                 final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);

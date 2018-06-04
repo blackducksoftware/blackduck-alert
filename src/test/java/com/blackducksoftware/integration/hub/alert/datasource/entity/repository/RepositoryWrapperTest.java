@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.datasource.entity.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -61,7 +59,7 @@ public abstract class RepositoryWrapperTest<E extends DatabaseEntity, R extends 
         final W wrapper = getExceptionThrowingRepositoryWrapper();
 
         Mockito.when(wrapper.getRepository().findAll()).thenReturn(null);
-        Mockito.when(wrapper.getRepository().findAll(Mockito.anyList())).thenReturn(null);
+        Mockito.when(wrapper.getRepository().findAllById(Mockito.anyList())).thenReturn(null);
 
         final List<E> allEntities = wrapper.findAll();
         final List<E> allIdEntities = wrapper.findAll(Arrays.asList());
@@ -76,7 +74,7 @@ public abstract class RepositoryWrapperTest<E extends DatabaseEntity, R extends 
         final W wrapper = getExceptionThrowingRepositoryWrapper();
         final MockEntityUtil<E> mockEntityUtil = getMockEntityUtil();
 
-        Mockito.when(wrapper.getRepository().findAll(Mockito.anyList())).thenReturn(Arrays.asList(mockEntityUtil.createEntity()));
+        Mockito.when(wrapper.getRepository().findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockEntityUtil.createEntity()));
 
         final List<E> emptyList = wrapper.findAll(Arrays.asList());
 

@@ -11,12 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -67,7 +62,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testGetConfig() throws Exception {
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
@@ -85,7 +80,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(null);
         Mockito.when(configActions.getRepository().findAll()).thenReturn(null);
 
         configsById = configActions.getConfig(1L);

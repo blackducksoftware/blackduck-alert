@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -64,11 +65,12 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public boolean exists(final ID id) {
-        return getRepository().exists(id);
+        return getRepository().existsById(id);
     }
 
+    // TODO: rename to deleteById
     public void delete(final ID id) {
-        getRepository().delete(id);
+        getRepository().deleteById(id);
     }
 
     public void delete(final D entity) {
@@ -79,14 +81,19 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         getRepository().deleteAll();
     }
 
+    // TODO rename to deleteAll
     public void delete(final Collection<D> entities) {
-        getRepository().delete(entities);
+        getRepository().deleteAll(entities);
     }
 
-    public D findOne(final ID id) {
+    //TODO: change this to return an optional and r
+    public D findById(final ID id) {
         try {
-            final D entity = getRepository().findOne(id);
-            return decryptSensitiveData(entity);
+            Optional<D> foundEntity = getRepository().findById(id);
+            if (foundEntity.isPresent()) {
+                return decryptSensitiveData(foundEntity.get());
+            }
+            return null;
         } catch (final EncryptionException ex) {
             getLogger().error("Error getting entity ", ex);
             return null;
@@ -94,45 +101,26 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public List<D> findAll(final List<ID> idList) {
-        final List<D> entityList = getRepository().findAll(idList);
-        if (entityList == null) {
-            return Collections.emptyList();
-        } else {
-            try {
-                final List<D> returnList = new ArrayList<>(entityList.size());
-                for (final D entity : entityList) {
-                    returnList.add(decryptSensitiveData(entity));
-                }
-                return returnList;
-            } catch (final EncryptionException ex) {
-                getLogger().error("Error finding all entities", ex);
-                return Collections.emptyList();
-            }
-        }
+        final List<D> entityList = getRepository().findAllById(idList);
+        final List<D> contentList = findAllDecrypted(entityList);
+        return contentList;
     }
 
     public List<D> findAll() {
         final List<D> entityList = getRepository().findAll();
-        if (entityList == null) {
-            return Collections.emptyList();
-        } else {
-            try {
-                final List<D> returnList = new ArrayList<>(entityList.size());
-                for (final D entity : entityList) {
-                    returnList.add(decryptSensitiveData(entity));
-                }
-                return returnList;
-            } catch (final EncryptionException ex) {
-                getLogger().error("Error finding all entities", ex);
-                return Collections.emptyList();
-            }
-        }
+        final List<D> contentList = findAllDecrypted(entityList);
+        return contentList;
     }
 
     public AlertPage<D> findAll(final PageRequest pageRequest) {
         final Page<D> entityPage = getRepository().findAll(pageRequest);
         final List<D> entityList = entityPage.getContent();
+        final List<D> contentList = findAllDecrypted(entityList);
 
+        return new AlertPage<>(entityPage.getTotalPages(), entityPage.getNumber(), entityPage.getSize(), contentList);
+    }
+
+    private List<D> findAllDecrypted(List<D> entityList) {
         List<D> contentList;
         if (entityList == null) {
             contentList = Collections.emptyList();
@@ -149,7 +137,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
             }
         }
 
-        return new AlertPage<>(entityPage.getTotalPages(), entityPage.getNumber(), entityPage.getSize(), contentList);
+        return contentList;
     }
 
     public List<D> save(final List<D> entities) {

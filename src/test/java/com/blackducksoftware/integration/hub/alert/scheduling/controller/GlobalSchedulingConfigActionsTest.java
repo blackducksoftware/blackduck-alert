@@ -11,11 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,8 +56,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final NotificationRepositoryWrapper notificationRepository = Mockito.mock(NotificationRepositoryWrapper.class);
         final VulnerabilityRepositoryWrapper vulnerabilityRepository = Mockito.mock(VulnerabilityRepositoryWrapper.class);
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository,
-                objectTransformer, globalProperties, channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, objectTransformer, globalProperties,
+                channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null);
         return configActions;
     }
 
@@ -83,8 +79,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final NotificationRepositoryWrapper notificationRepository = Mockito.mock(NotificationRepositoryWrapper.class);
         final VulnerabilityRepositoryWrapper vulnerabilityRepository = Mockito.mock(VulnerabilityRepositoryWrapper.class);
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository,
-                new ObjectTransformer(), globalProperties, channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, new ObjectTransformer(), globalProperties,
+                channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null);
         configActions.configurationChangeTriggers(null);
         Mockito.verify(mockedAccumulatorConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedDailyDigestBatchConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
@@ -187,7 +183,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Test
     @Override
     public void testGetConfig() throws Exception {
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
@@ -205,7 +201,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(null);
         Mockito.when(configActions.getRepository().findAll()).thenReturn(null);
 
         configsById = configActions.getConfig(1L);

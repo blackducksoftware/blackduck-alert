@@ -67,7 +67,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final D foundEntity = repositoryWrapper.findOne(id);
+            final D foundEntity = repositoryWrapper.findById(id);
             if (foundEntity != null) {
                 final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity, configRestModelClass);
                 if (restModel != null) {
@@ -134,7 +134,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
-            final D savedConfig = repositoryWrapper.findOne(longId);
+            final D savedConfig = repositoryWrapper.findById(longId);
             return updateNewConfigWithSavedConfig(newConfig, savedConfig);
         }
         return newConfig;

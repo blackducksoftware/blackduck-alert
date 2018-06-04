@@ -50,8 +50,8 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Autowired
     public CommonDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final AuditEntryRepositoryWrapper auditEntryRepository,
-            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
-            final ObjectTransformer objectTransformer, final AuditNotificationRepositoryWrapper auditNotificationRepository) {
+            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
+            final AuditNotificationRepositoryWrapper auditNotificationRepository) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -119,7 +119,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
-        final CommonDistributionConfigEntity foundEntity = getCommonDistributionRepository().findOne(entity.getId());
+        final CommonDistributionConfigEntity foundEntity = getCommonDistributionRepository().findById(entity.getId());
         if (foundEntity != null) {
             return constructRestModel(foundEntity, null);
         }

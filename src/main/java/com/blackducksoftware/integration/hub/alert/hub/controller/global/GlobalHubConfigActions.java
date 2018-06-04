@@ -70,7 +70,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public List<GlobalHubConfigRestModel> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final GlobalHubConfigEntity foundEntity = getRepository().findOne(id);
+            final GlobalHubConfigEntity foundEntity = getRepository().findById(id);
             if (foundEntity != null) {
                 GlobalHubConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity, getConfigRestModelClass());
                 restModel = updateModelFromEnvironment(restModel);
@@ -150,7 +150,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
         String apiToken;
         if (restModel.isHubApiKeyIsSet()) {
-            final GlobalHubConfigEntity foundEntity = getRepository().findOne(Long.parseLong(restModel.getId()));
+            final GlobalHubConfigEntity foundEntity = getRepository().findById(Long.parseLong(restModel.getId()));
             apiToken = foundEntity.getHubApiKey();
         } else {
             apiToken = restModel.getHubApiKey();

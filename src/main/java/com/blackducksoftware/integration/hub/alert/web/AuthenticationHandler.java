@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.BaseController
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false", relaxedNames = false)
+@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
