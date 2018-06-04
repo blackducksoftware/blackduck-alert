@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,7 +53,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
 
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory);
+        final SlackChannel slackChannel = new SlackChannel(auditEntryRepository, null, null, channelRestConnectionFactory);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
@@ -70,19 +68,20 @@ public class SlackChannelTestIT extends ChannelTest {
         assertTrue(actual);
     }
 
-    @Test
-    public void receiveMessageTest() {
-        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
-        try {
-            slackChannel.receiveMessage("message");
-        } finally {
-            System.out.println("Complete missing line coverage.");
-        }
-    }
+    //    @Test
+    //    public void receiveMessageTest() {
+    //        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
+    //        try {
+    //            SlackEvent event = new SlackEvent(null, 1L);
+    //            slackChannel.handleEvent(event);
+    //        } finally {
+    //            System.out.println("Complete missing line coverage.");
+    //        }
+    //    }
 
     @Test
     public void testCreateRequestExceptions() {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         Request request = null;
 
@@ -105,7 +104,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
 
@@ -131,7 +130,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
 

@@ -29,11 +29,10 @@ public class RealTimeListenerTest {
         final ProjectDataFactory projectDataFactory = Mockito.mock(ProjectDataFactory.class);
         final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
 
-        final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
+        final RealTimeListener realTimeListener = new RealTimeListener(channelTemplateManager, projectDataFactory, eventManager);
 
         final RealTimeEvent realTimeEvent = new RealTimeEvent(Arrays.asList(model));
-        final String realTimeEventString = gson.toJson(realTimeEvent);
-        realTimeListener.receiveMessage(realTimeEventString);
+        realTimeListener.handleEvent(realTimeEvent);
 
         Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
         Mockito.verify(channelTemplateManager).sendEvents(Mockito.any());
@@ -53,11 +52,10 @@ public class RealTimeListenerTest {
             Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
             Mockito.doThrow(new NullPointerException("null error")).when(projectDataFactory).createProjectDataCollection(Mockito.anyCollection(), Mockito.any());
 
-            final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
+            final RealTimeListener realTimeListener = new RealTimeListener(channelTemplateManager, projectDataFactory, eventManager);
 
             final RealTimeEvent realTimeEvent = new RealTimeEvent(Arrays.asList(model));
-            final String realTimeEventString = gson.toJson(realTimeEvent);
-            realTimeListener.receiveMessage(realTimeEventString);
+            realTimeListener.handleEvent(realTimeEvent);
 
             assertTrue(outputLogger.isLineContainingText("null"));
         }
