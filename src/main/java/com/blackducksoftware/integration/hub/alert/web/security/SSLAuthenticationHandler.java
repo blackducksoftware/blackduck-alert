@@ -21,44 +21,61 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web;
+package com.blackducksoftware.integration.hub.alert.web.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false")
-public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "true")
+public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    @Autowired
+    public SSLAuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-
         final String[] allowedPaths = {
                 "/",
                 "/#",
                 "/favicon.ico",
-                "/h2/**",
                 "/fonts/**",
                 "/js/bundle.js",
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                BaseController.BASE_PATH + "/configuration/provider/hub",
                 BaseController.BASE_PATH + "/login",
                 BaseController.BASE_PATH + "/logout",
                 BaseController.BASE_PATH + "/about" };
 
-        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll()
+        final String[] csrfIgnoredPaths = {
+                "/",
+                "/#",
+                "/favicon.ico",
+                "/fonts/**",
+                "/js/bundle.js",
+                "/js/bundle.js.map",
+                "/css/style.css",
+                "index.html",
+                BaseController.BASE_PATH + "/login",
+                BaseController.BASE_PATH + "/verify",
+                BaseController.BASE_PATH + "/about" };
+        http.requiresChannel().anyRequest().requiresSecure()
+                .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
+                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
                 .and().authorizeRequests().anyRequest().hasRole("ADMIN")
                 .and().logout().logoutSuccessUrl("/");
-        // conditional above ensures that this will not be used if SSL is enabled.
-        http.headers().frameOptions().disable();
     }
-
 }
