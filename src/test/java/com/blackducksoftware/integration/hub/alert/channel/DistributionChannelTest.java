@@ -41,14 +41,14 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 public class DistributionChannelTest extends ChannelTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(null, null, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null);
         channel.setAuditEntrySuccess(1L);
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(null, auditEntryRepository, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null);
         entity.setId(1L);
@@ -61,14 +61,14 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(null, null, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null);
         channel.setAuditEntryFailure(1L, null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(null, auditEntryRepository, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, null, null);
         entity.setId(1L);
@@ -82,7 +82,7 @@ public class DistributionChannelTest extends ChannelTest {
     @Test
     public void getGlobalConfigEntityTest() {
         final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(null, null, globalEmailRepositoryWrapper, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, globalEmailRepositoryWrapper, null, null);
 
         final MockEmailGlobalEntity mockEntity = new MockEmailGlobalEntity();
         final GlobalEmailConfigEntity entity = mockEntity.createGlobalEntity();
@@ -100,7 +100,7 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGroupDistributionRepositoryWrapper emailGroupRepositoryWrapper = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
         final CommonDistributionRepositoryWrapper commonRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(globalProperties, auditEntryRepository, globalEmailRepositoryWrapper, emailGroupRepositoryWrapper, commonRepositoryWrapper);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, globalEmailRepositoryWrapper, emailGroupRepositoryWrapper, commonRepositoryWrapper);
 
         final Long commonId = 1L;
         final EmailGroupEvent event = new EmailGroupEvent(createProjectData("Distribution Channel Test"), commonId);
@@ -126,7 +126,7 @@ public class DistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final CommonDistributionRepositoryWrapper commonRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(globalProperties, null, null, null, commonRepositoryWrapper);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, commonRepositoryWrapper);
 
         final Long commonId = 1L;
         final EmailGroupEvent event = new EmailGroupEvent(createProjectData("Distribution Channel Test"), commonId);
@@ -140,7 +140,7 @@ public class DistributionChannelTest extends ChannelTest {
     @Test
     public void testGlobalConfigTest() throws IntegrationException {
         // Slack has no global config, so we use it to test the default method.
-        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
 
         final String nullMessage = slackChannel.testGlobalConfig(null);
         assertEquals("The provided entity was null.", nullMessage);

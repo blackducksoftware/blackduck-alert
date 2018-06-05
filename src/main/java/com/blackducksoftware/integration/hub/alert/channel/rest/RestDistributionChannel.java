@@ -36,13 +36,14 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
+import com.google.gson.Gson;
 
 public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<E, G, C> {
     final ChannelRestConnectionFactory channelRestConnectionFactory;
 
-    public RestDistributionChannel(final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
+    public RestDistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
             final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, clazz);
+        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, clazz);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
