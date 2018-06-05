@@ -27,12 +27,21 @@ public class SensitiveFieldFinderTest {
         assertNotNull(finder);
 
         final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(TestSensitiveFields.class);
-        assertEquals(1, sensitiveFields.size());
+        assertEquals(3, sensitiveFields.size());
     }
 
     private class TestSensitiveFields {
+
         @SensitiveField
         private String mySensitiveField;
+
+        @SensitiveField
+        @EncryptedStringField
+        private String sensitiveAndEncryted;
+
+        @EncryptedStringField
+        private String encrypted;
+
         @SuppressWarnings("unused")
         private String myInsensitiveField;
     }
