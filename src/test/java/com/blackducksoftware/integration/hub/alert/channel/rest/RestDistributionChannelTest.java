@@ -29,14 +29,16 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.request.Request;
+import com.google.gson.Gson;
 
 public class RestDistributionChannelTest extends ChannelTest {
     @Test
     public void sendMessageFailureTest() {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
+        final Gson gson = new Gson();
         final RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity>(
-                null, null, null, null, null, channelRestConnectionFactory) {
+                gson, null, null, null, null, null, channelRestConnectionFactory) {
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
