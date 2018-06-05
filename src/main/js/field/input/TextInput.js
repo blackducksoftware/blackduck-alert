@@ -9,6 +9,7 @@ export default class TextInput extends LabeledField {
 
         return (super.render(<div className="col-sm-8">
             <input
+                id={this.props.id}
                 type="text"
                 readOnly={this.props.readOnly}
                 autoFocus={this.props.autoFocus}
