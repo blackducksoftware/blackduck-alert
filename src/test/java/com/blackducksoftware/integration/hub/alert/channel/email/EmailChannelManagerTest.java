@@ -8,9 +8,9 @@ import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailE
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
@@ -19,9 +19,9 @@ public class EmailChannelManagerTest extends ChannelManagerTest<EmailGroupEvent,
     @Override
     public EmailGroupManager getChannelManager() {
         final EmailGroupChannel mockEmailChannel = Mockito.mock(EmailGroupChannel.class);
-        final GlobalEmailRepositoryWrapper mockGlobalRepositoryWrapper = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final EmailGroupDistributionRepositoryWrapper mockRepositoryWrapper = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
-        final EmailGroupManager manager = new EmailGroupManager(mockEmailChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer());
+        final GlobalEmailRepository mockGlobalRepository = Mockito.mock(GlobalEmailRepository.class);
+        final EmailGroupDistributionRepository mockRepository = Mockito.mock(EmailGroupDistributionRepository.class);
+        final EmailGroupManager manager = new EmailGroupManager(mockEmailChannel, mockGlobalRepository, mockRepository, new ObjectTransformer());
 
         return manager;
     }

@@ -42,7 +42,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class HipChatDistributionRepositoryTestIT {
     @Autowired
-    private HipChatDistributionRepositoryWrapper hipChatDistributionRepository;
+    private HipChatDistributionRepository hipChatDistributionRepository;
 
     @Test
     public void saveEntityTestIT() {

@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -25,9 +25,9 @@ public class ChannelTemplateManagerTest {
     @Test
     public void testSendEvents() {
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
-        final AuditEntryRepositoryWrapper auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        Mockito.when(auditEntryRepositoryWrapper.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(new Gson(), auditEntryRepositoryWrapper, null, null) {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(new Gson(), auditEntryRepository, null, null) {
 
             @Override
             public boolean hasTemplate(final String destination) {

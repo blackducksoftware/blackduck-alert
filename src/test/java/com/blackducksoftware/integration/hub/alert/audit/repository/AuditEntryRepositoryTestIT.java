@@ -44,7 +44,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class AuditEntryRepositoryTestIT {
     @Autowired
-    private AuditEntryRepositoryWrapper auditEntryRepository;
+    private AuditEntryRepository auditEntryRepository;
 
     @Test
     public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {

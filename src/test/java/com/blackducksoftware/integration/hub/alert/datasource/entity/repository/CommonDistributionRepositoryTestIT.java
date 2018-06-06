@@ -45,7 +45,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class CommonDistributionRepositoryTestIT {
     @Autowired
-    private CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private CommonDistributionRepository commonDistributionRepository;
 
     @Test
     public void saveEntityTestIT() {

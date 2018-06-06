@@ -11,7 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -25,14 +28,14 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
@@ -46,8 +49,8 @@ public class HipChatChannelTest extends ChannelTest {
     @Test
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
@@ -83,7 +86,7 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void createRequestThrowsExceptionTest() throws Exception {
-        final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, null);
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
