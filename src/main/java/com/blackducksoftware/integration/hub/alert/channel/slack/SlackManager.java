@@ -31,15 +31,15 @@ import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 @Component
 public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackEvent, SlackDistributionRestModel> {
-    public SlackManager(final SlackChannel distributionChannel, final GlobalSlackRepositoryWrapper globalRepository, final SlackDistributionRepositoryWrapper localRepository, final ObjectTransformer objectTransformer) {
+    public SlackManager(final SlackChannel distributionChannel, final GlobalSlackRepository globalRepository, final SlackDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
 

@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.DistributionConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 @RestController
 @RequestMapping(DistributionConfigController.DISTRIBUTION_PATH + "/slack")
 public class SlackDistributionConfigController extends DistributionConfigController<SlackDistributionRestModel> {
-    private final CommonConfigHandler<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepositoryWrapper> commonConfigHandler;
+    private final CommonConfigHandler<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> commonConfigHandler;
 
     @Autowired
     public SlackDistributionConfigController(final SlackDistributionConfigActions slackDistributionConfigActions, final ObjectTransformer objectTransformer) {

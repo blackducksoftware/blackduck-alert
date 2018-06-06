@@ -23,7 +23,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.model;
 
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.util.Stringable;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -36,7 +40,9 @@ public abstract class Model extends Stringable {
         final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(final FieldAttributes f) {
-                return null != f.getAnnotation(SensitiveField.class);
+                final boolean hasSensitiveField = null != f.getAnnotation(SensitiveField.class);
+                final Collection<Annotation> annotations = f.getAnnotations();
+                return hasSensitiveField || SensitiveFieldFinder.hasParentSensitiveAnnotation(annotations.toArray(new Annotation[annotations.size()]));
             }
 
             @Override

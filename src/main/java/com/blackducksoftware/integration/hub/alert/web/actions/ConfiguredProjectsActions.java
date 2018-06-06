@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -35,9 +36,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -45,20 +46,20 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(ConfiguredProjectsActions.class);
 
-    private final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
-    private final DistributionProjectRepositoryWrapper distributionProjectRepository;
+    private final ConfiguredProjectsRepository configuredProjectsRepository;
+    private final DistributionProjectRepository distributionProjectRepository;
 
     @Autowired
-    public ConfiguredProjectsActions(final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository, final DistributionProjectRepositoryWrapper distributionProjectRepository) {
+    public ConfiguredProjectsActions(final ConfiguredProjectsRepository configuredProjectsRepository, final DistributionProjectRepository distributionProjectRepository) {
         this.configuredProjectsRepository = configuredProjectsRepository;
         this.distributionProjectRepository = distributionProjectRepository;
     }
 
-    public ConfiguredProjectsRepositoryWrapper getConfiguredProjectsRepository() {
+    public ConfiguredProjectsRepository getConfiguredProjectsRepository() {
         return configuredProjectsRepository;
     }
 
-    public DistributionProjectRepositoryWrapper getDistributionProjectRepository() {
+    public DistributionProjectRepository getDistributionProjectRepository() {
         return distributionProjectRepository;
     }
 
@@ -66,8 +67,8 @@ public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestMod
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> configuredProjects = new ArrayList<>(distributionProjects.size());
         for (final DistributionProjectRelation relation : distributionProjects) {
-            final ConfiguredProjectEntity entity = configuredProjectsRepository.findById(relation.getProjectId());
-            configuredProjects.add(entity.getProjectName());
+            final Optional<ConfiguredProjectEntity> entity = configuredProjectsRepository.findById(relation.getProjectId());
+            entity.ifPresent(presentEntity -> configuredProjects.add(presentEntity.getProjectName()));
         }
         return configuredProjects;
     }
@@ -97,7 +98,7 @@ public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestMod
 
     private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
-        distributionProjectRepository.delete(distributionProjects);
+        distributionProjectRepository.deleteAll(distributionProjects);
     }
 
     private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
