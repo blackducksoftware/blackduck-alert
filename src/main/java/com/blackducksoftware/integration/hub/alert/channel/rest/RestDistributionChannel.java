@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,7 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.rest;
 
-import java.util.Collection;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
@@ -32,34 +35,39 @@ import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositor
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 
-public abstract class RestDistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<E, G, C> {
+public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<G, C> {
     final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public RestDistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, clazz);
+            final CommonDistributionRepositoryWrapper commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
-    public void sendMessage(final E event, final C config) throws Exception {
+    public void sendMessage(final ChannelEvent event, final C config) throws Exception {
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-
-            final Request request = createRequest(channelRequestHelper, config, globalConfig, event.getProjectData());
-            channelRequestHelper.sendMessageRequest(request, event.getTopic());
+            final Optional<DigestModel> optionalModel = event.getContent(DigestModel.class);
+            if (optionalModel.isPresent()) {
+                final Request request = createRequest(channelRequestHelper, config, globalConfig, optionalModel.get());
+                channelRequestHelper.sendMessageRequest(request, event.getDestination());
+            } else {
+                logger.info("No data found to send.");
+            }
         }
     }
 
     public abstract String getApiUrl(G globalConfig);
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final Collection<ProjectData> projectDataCollection) throws IntegrationException;
+    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final DigestModel digestModel) throws IntegrationException;
 
 }

@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.manager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -35,21 +34,22 @@ import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
-public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel> {
-    private final DistributionChannel<E, G, D> distributionChannel;
+public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
+    private final DistributionChannel<G, D> distributionChannel;
     private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
     private final SimpleKeyRepositoryWrapper<D, ?> localRepository;
     private final ObjectTransformer objectTransformer;
 
-    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<D, ?> localRepository,
+    public DistributionChannelManager(final DistributionChannel<G, D> distributionChannel, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<D, ?> localRepository,
             final ObjectTransformer objectTransformer) {
         this.distributionChannel = distributionChannel;
         this.globalRepository = globalRepository;
@@ -57,7 +57,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         this.objectTransformer = objectTransformer;
     }
 
-    public DistributionChannel<E, G, D> getDistributionChannel() {
+    public DistributionChannel<G, D> getDistributionChannel() {
         return distributionChannel;
     }
 
@@ -80,7 +80,7 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     public String sendTestMessage(final R restModel) throws AlertException {
         try {
             final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
-            final E event = createChannelEvent(getTestMessageProjectData(), null);
+            final ChannelEvent event = createChannelEvent(getTestMessageModel(), null);
             getDistributionChannel().sendAuditedMessage(event, entity);
             return "Successfully sent test message";
         } catch (final IntegrationException ex) {
@@ -88,14 +88,16 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         }
     }
 
-    public List<ProjectData> getTestMessageProjectData() {
-        return Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+    public DigestModel getTestMessageModel() {
+        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+        final DigestModel digestModel = new DigestModel(projectDataCollection);
+        return digestModel;
     }
 
     public abstract Class<D> getDatabaseEntityClass();
 
     public abstract boolean isApplicable(final String supportedChannelName);
 
-    public abstract E createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId);
+    public abstract ChannelEvent createChannelEvent(final DigestModel digestModel, final Long commonDistributionConfigId);
 
 }

@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,10 +23,12 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
@@ -39,9 +41,12 @@ import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEn
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.google.gson.Gson;
 
 @Transactional
@@ -81,7 +86,7 @@ public class ChannelTemplateManager {
         jmsTemplateMap.put(destination, template);
     }
 
-    public void sendEvents(final List<? extends AbstractEvent> eventList) {
+    public void sendEvents(final List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(event -> {
                 sendEvent(event);
@@ -90,11 +95,11 @@ public class ChannelTemplateManager {
         }
     }
 
-    public boolean sendEvent(final AbstractEvent event) {
-        final String destination = event.getTopic();
+    public boolean sendEvent(final AlertEvent event) {
+        final String destination = event.getDestination();
         if (hasTemplate(destination)) {
-            if (event instanceof AbstractChannelEvent) {
-                final AbstractChannelEvent channelEvent = (AbstractChannelEvent) event;
+            if (event instanceof ChannelEvent) {
+                final ChannelEvent channelEvent = (ChannelEvent) event;
                 AuditEntryEntity auditEntryEntity = null;
                 if (channelEvent.getAuditEntryId() == null) {
                     auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
@@ -104,22 +109,31 @@ public class ChannelTemplateManager {
                 auditEntryEntity.setStatus(StatusEnum.PENDING);
                 final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
                 channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-                channelEvent.getProjectData().forEach(projectDataItem -> {
-                    projectDataItem.getNotificationIds().forEach(notificationId -> {
-                        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                        auditNotificationRepository.save(auditNotificationRelation);
-                    });
-                });
-                final String jsonMessage = gson.toJson(channelEvent);
-                final AbstractJmsTemplate template = getTemplate(destination);
-                template.convertAndSend(destination, jsonMessage);
+                try {
+                    Optional<DigestModel> optionalModel = channelEvent.getContent(DigestModel.class);
+                    if (!optionalModel.isPresent()) {
+                        return false;
+                    } else {
+                        final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
+                        projectDataCollection.forEach(projectDataItem -> {
+                            projectDataItem.getNotificationIds().forEach(notificationId -> {
+                                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                                auditNotificationRepository.save(auditNotificationRelation);
+                            });
+                        });
+                        final String jsonMessage = gson.toJson(channelEvent);
+                        final AbstractJmsTemplate template = getTemplate(destination);
+                        template.convertAndSend(destination, jsonMessage);
+                    }
+                } catch (AlertException ex) {
+                    return false;
+                }
             } else {
                 final String jsonMessage = gson.toJson(event);
                 final AbstractJmsTemplate template = getTemplate(destination);
                 template.convertAndSend(destination, jsonMessage);
             }
             return true;
-
         } else {
             return false;
         }

@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
@@ -106,6 +107,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
+        final DigestModel digestModel = new DigestModel(projectData);
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
@@ -119,7 +121,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, projectData);
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
 
         assertNull(request);
 
@@ -132,7 +134,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
-
+        final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
             public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
@@ -143,7 +145,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, Arrays.asList(projectData));
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
 
         assertNull(request);
 

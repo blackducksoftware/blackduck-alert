@@ -39,7 +39,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
@@ -50,7 +49,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -110,10 +109,10 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
-        final AbstractChannelEvent event = eventsCreated.get(0);
-        assertTrue(event instanceof HipChatEvent);
+        final ChannelEvent event = eventsCreated.get(0);
+        assertTrue(SupportedChannels.HIPCHAT.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
@@ -144,10 +143,10 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(otherApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
-        final AbstractChannelEvent event = eventsCreated.get(0);
-        assertTrue(event instanceof HipChatEvent);
+        final ChannelEvent event = eventsCreated.get(0);
+        assertTrue(SupportedChannels.HIPCHAT.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
@@ -178,7 +177,7 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(0, eventsCreated.size());
     }
 

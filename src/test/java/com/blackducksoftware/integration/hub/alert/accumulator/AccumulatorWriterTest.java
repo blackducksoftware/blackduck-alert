@@ -7,8 +7,10 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
+import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 
 public class AccumulatorWriterTest {
 
@@ -20,8 +22,8 @@ public class AccumulatorWriterTest {
         final AccumulatorWriter accumulatorWriter = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final NotificationModel model = new NotificationModel(null, null);
-        final DBStoreEvent storeEvent = new DBStoreEvent(Arrays.asList(model));
-
+        final NotificationModels models = new NotificationModels(Arrays.asList(model));
+        final NotificationListEvent storeEvent = new NotificationListEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), models);
         accumulatorWriter.write(Arrays.asList(storeEvent));
 
         Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
@@ -35,8 +37,8 @@ public class AccumulatorWriterTest {
         final AccumulatorWriter accumulatorWriter = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final NotificationModel model = new NotificationModel(null, null);
-        final DBStoreEvent storeEvent = new DBStoreEvent(Arrays.asList(model));
-
+        final NotificationModels models = new NotificationModels(Arrays.asList(model));
+        final NotificationListEvent storeEvent = new NotificationListEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), models);
         accumulatorWriter.write(Arrays.asList(storeEvent));
 
         Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());

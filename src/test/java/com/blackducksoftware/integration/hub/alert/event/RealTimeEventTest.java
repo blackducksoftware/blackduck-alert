@@ -32,7 +32,7 @@ public class RealTimeEventTest {
     @Test
     public void getTopicTest() {
         final RealTimeEvent event = new RealTimeEvent(null);
-        assertEquals(RealTimeEvent.TOPIC_NAME, event.getTopic());
+        assertEquals(RealTimeEvent.TOPIC_NAME, event.getDestination());
     }
 
 }

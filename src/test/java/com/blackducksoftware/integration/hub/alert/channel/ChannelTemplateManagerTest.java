@@ -16,7 +16,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.google.gson.Gson;
 
 public class ChannelTemplateManagerTest {
@@ -76,7 +76,7 @@ public class ChannelTemplateManagerTest {
             }
         };
 
-        final DBStoreEvent dbStoreEvent = new DBStoreEvent(null);
+        final NotificationListEvent dbStoreEvent = new NotificationListEvent("", null);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);
     }
