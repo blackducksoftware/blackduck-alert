@@ -12,7 +12,6 @@ import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -57,7 +56,7 @@ public class ChannelTemplateManagerTest {
     public void testSendEventReturnsFalse() {
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(new Gson(), null, null, null);
 
-        final SlackEvent slackEvent = new SlackEvent(null, 1L);
+        final ChannelEvent slackEvent = new ChannelEvent(SupportedChannels.SLACK, null, 1L);
         final boolean isFalse = channelTemplateManager.sendEvent(slackEvent);
         assertTrue(!isFalse);
     }

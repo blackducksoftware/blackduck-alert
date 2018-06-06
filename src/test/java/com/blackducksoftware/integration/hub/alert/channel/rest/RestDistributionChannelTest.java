@@ -18,12 +18,13 @@ import org.junit.Test;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
@@ -46,8 +47,8 @@ public class RestDistributionChannelTest extends ChannelTest {
                 return new Request.Builder().uri("http://google.com").build();
             }
         };
-
-        final SlackEvent event = new SlackEvent(createProjectData("Rest channel test"), 1L);
+        final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, digestModel, 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
