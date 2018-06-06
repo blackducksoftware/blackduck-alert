@@ -194,7 +194,7 @@ public class AuditEntryActions {
 
         String distributionConfigName = null;
         String eventType = null;
-        if (!commonConfigEntity.isPresent()) {
+        if (commonConfigEntity.isPresent()) {
             distributionConfigName = commonConfigEntity.get().getName();
             eventType = commonConfigEntity.get().getDistributionType();
         }
