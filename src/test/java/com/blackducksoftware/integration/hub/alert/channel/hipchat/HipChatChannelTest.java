@@ -27,6 +27,7 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
@@ -35,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -54,7 +56,8 @@ public class HipChatChannelTest extends ChannelTest {
         HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
 
         final Collection<ProjectData> data = createProjectData("Integration test project");
-        final HipChatEvent event = new HipChatEvent(data, null);
+        final DigestModel digestModel = new DigestModel(data);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.HIPCHAT, digestModel, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
