@@ -35,15 +35,15 @@ public class SensitiveFieldFinder {
     public static Set<Field> findSensitiveFields(final Class<?> clazz) {
         final Set<Field> fields = new HashSet<>();
         for (final Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(SensitiveField.class) || hasParentSensitiveAnnotation(field)) {
+            if (field.isAnnotationPresent(SensitiveField.class) || hasParentSensitiveAnnotation(field.getAnnotations())) {
                 fields.add(field);
             }
         }
         return fields;
     }
 
-    private static boolean hasParentSensitiveAnnotation(final Field field) {
-        for (final Annotation annotation : field.getAnnotations()) {
+    public static boolean hasParentSensitiveAnnotation(final Annotation[] annotations) {
+        for (final Annotation annotation : annotations) {
             final SensitiveField fieldAnnotation = AnnotationUtils.findAnnotation(annotation.getClass(), SensitiveField.class);
             if (fieldAnnotation != null) {
                 return true;

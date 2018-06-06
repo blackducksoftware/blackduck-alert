@@ -25,22 +25,23 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -51,13 +52,13 @@ import com.google.gson.Gson;
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
-    private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
-    private final SimpleKeyRepositoryWrapper<C, ?> distributionRepository;
-    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
-    private final AuditEntryRepositoryWrapper auditEntryRepository;
+    private final JpaRepository<G, Long> globalRepository;
+    private final JpaRepository<C, Long> distributionRepository;
+    private final CommonDistributionRepository commonDistributionRepository;
+    private final AuditEntryRepository auditEntryRepository;
 
-    public DistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz) {
+    public DistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+            final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
         super(gson, clazz);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
@@ -65,11 +66,11 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public AuditEntryRepositoryWrapper getAuditEntryRepository() {
+    public AuditEntryRepository getAuditEntryRepository() {
         return auditEntryRepository;
     }
 
-    public CommonDistributionRepositoryWrapper getCommonDistributionRepository() {
+    public CommonDistributionRepository getCommonDistributionRepository() {
         return commonDistributionRepository;
     }
 
@@ -88,17 +89,17 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     @Override
     public void handleEvent(final E event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
-        final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
-        if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
+        final Optional<CommonDistributionConfigEntity> commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
+        if (commonDistributionEntity.isPresent() && event.getTopic().equals(commonDistributionEntity.get().getDistributionType())) {
             try {
-                final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
-                final C channelDistributionEntity = distributionRepository.findById(channelDistributionConfigId);
+                final Long channelDistributionConfigId = commonDistributionEntity.get().getDistributionConfigId();
+                final C channelDistributionEntity = distributionRepository.getOne(channelDistributionConfigId);
                 sendAuditedMessage(event, channelDistributionEntity);
             } catch (final IntegrationException ex) {
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
+            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.get().getDistributionType());
         }
     }
 
@@ -128,8 +129,9 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public void setAuditEntrySuccess(final Long auditEntryId) {
         if (auditEntryId != null) {
             try {
-                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findById(auditEntryId);
-                if (auditEntryEntity != null) {
+                final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
+                if (auditEntryEntityOptional.isPresent()) {
+                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
                     auditEntryEntity.setStatus(StatusEnum.SUCCESS);
                     auditEntryEntity.setErrorMessage(null);
                     auditEntryEntity.setErrorStackTrace(null);
@@ -145,8 +147,9 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
         if (auditEntryId != null) {
             try {
-                final AuditEntryEntity auditEntryEntity = getAuditEntryRepository().findById(auditEntryId);
-                if (auditEntryEntity != null) {
+                final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
+                if (auditEntryEntityOptional.isPresent()) {
+                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
                     auditEntryEntity.setStatus(StatusEnum.FAILURE);
                     auditEntryEntity.setErrorMessage(errorMessage);
                     final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
