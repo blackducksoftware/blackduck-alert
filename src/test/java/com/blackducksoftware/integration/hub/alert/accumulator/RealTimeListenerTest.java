@@ -29,7 +29,7 @@ public class RealTimeListenerTest {
         final ProjectDataFactory projectDataFactory = Mockito.mock(ProjectDataFactory.class);
         final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
 
-        final RealTimeListener realTimeListener = new RealTimeListener(channelTemplateManager, projectDataFactory, eventManager);
+        final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
 
         final RealTimeEvent realTimeEvent = new RealTimeEvent(Arrays.asList(model));
         realTimeListener.handleEvent(realTimeEvent);
@@ -52,7 +52,7 @@ public class RealTimeListenerTest {
             Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
             Mockito.doThrow(new NullPointerException("null error")).when(projectDataFactory).createProjectDataCollection(Mockito.anyCollection(), Mockito.any());
 
-            final RealTimeListener realTimeListener = new RealTimeListener(channelTemplateManager, projectDataFactory, eventManager);
+            final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
 
             final RealTimeEvent realTimeEvent = new RealTimeEvent(Arrays.asList(model));
             realTimeListener.handleEvent(realTimeEvent);

@@ -78,7 +78,8 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public void deleteAll() {
-        getRepository().deleteAll();
+        Collection<D> entityList = getRepository().findAll();
+        delete(entityList);
     }
 
     // TODO rename to deleteAll

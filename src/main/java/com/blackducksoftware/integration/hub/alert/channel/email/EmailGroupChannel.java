@@ -54,6 +54,7 @@ import com.blackducksoftware.integration.hub.api.generated.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.google.gson.Gson;
 
 import freemarker.core.ParseException;
 import freemarker.template.MalformedTemplateNameException;
@@ -67,9 +68,9 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public EmailGroupChannel(final GlobalProperties globalProperties, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalEmailRepositoryWrapper emailRepository,
+    public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalEmailRepositoryWrapper emailRepository,
             final EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository) {
-        super(auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
+        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
 
         this.globalProperties = globalProperties;
     }

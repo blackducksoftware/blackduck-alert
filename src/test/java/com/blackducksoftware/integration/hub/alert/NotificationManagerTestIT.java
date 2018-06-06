@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

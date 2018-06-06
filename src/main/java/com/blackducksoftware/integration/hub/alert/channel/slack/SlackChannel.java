@@ -47,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 @Component
@@ -54,9 +55,9 @@ public class SlackChannel extends RestDistributionChannel<SlackEvent, GlobalSlac
     public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired
-    public SlackChannel(final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
+    public SlackChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class, channelRestConnectionFactory);
+        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, SlackEvent.class, channelRestConnectionFactory);
     }
 
     @Override

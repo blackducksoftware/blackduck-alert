@@ -45,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
+import com.google.gson.Gson;
 
 @Transactional
 public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
@@ -55,9 +56,9 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final AuditEntryRepositoryWrapper auditEntryRepository;
 
-    public DistributionChannel(final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
+    public DistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
             final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz) {
-        super(clazz);
+        super(gson, clazz);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
