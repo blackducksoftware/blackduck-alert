@@ -87,8 +87,8 @@ public class AccumulatorProcessorTest {
 
         final NotificationListEvent storeEventNull = accumulatorProcessor.process(notificationData);
         assertNotNull(storeEventNull);
-
-        assertFalse(storeEventNull.getContent(NotificationModel.class).isPresent());
+        Optional<NotificationModels> optionalModel = storeEventNull.getContent(NotificationModels.class);
+        assertTrue(optionalModel.get().getNotificationModelList().isEmpty());
     }
 
     @Test

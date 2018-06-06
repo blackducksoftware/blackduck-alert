@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
@@ -41,6 +42,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
@@ -60,7 +62,8 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
-        final SlackEvent event = new SlackEvent(projectData, new Long(0));
+        final DigestModel digestModel = new DigestModel(projectData);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, digestModel, new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 

@@ -12,10 +12,11 @@ import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.google.gson.Gson;
 
@@ -45,8 +46,9 @@ public class ChannelTemplateManagerTest {
 
         testCount = 0;
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
-        final HipChatEvent slackEvent = new HipChatEvent(Arrays.asList(projectData), 1L);
-        channelTemplateManager.sendEvents(Arrays.asList(slackEvent));
+        final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
+        final ChannelEvent hipChatEvent = new ChannelEvent(SupportedChannels.HIPCHAT, digestModel, 1L);
+        channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
 
         assertEquals(1, testCount);
     }
