@@ -121,7 +121,8 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
                 final Date startTime = RestConnection.parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
-                zonedStartDate = zonedEndDate;
+                zonedStartDate = zonedEndDate.minusMinutes(1);
+                writeNextStartTime(lastRunFile, Optional.empty(), endDate);
             }
             startDate = Date.from(zonedStartDate.toInstant());
 

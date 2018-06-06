@@ -90,10 +90,10 @@ public class AlertStartupInitializer {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
-            logger.info("Checking property key {}", property.getPropertyKey());
+            logger.debug("Checking property key {}", property.getPropertyKey());
             String value = System.getProperty(property.getPropertyKey());
             if (StringUtils.isBlank(value)) {
-                logger.info("Not found in system env, checking Spring env");
+                logger.debug("Not found in system env, checking Spring env");
                 value = environment.getProperty(property.getPropertyKey());
             }
             try {
