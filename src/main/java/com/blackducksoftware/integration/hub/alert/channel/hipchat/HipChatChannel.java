@@ -48,6 +48,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.rest.request.Response;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import freemarker.template.TemplateException;
@@ -59,9 +60,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public HipChatChannel(final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
+    public HipChatChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final HipChatDistributionRepositoryWrapper hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class, channelRestConnectionFactory);
+        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class, channelRestConnectionFactory);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 

@@ -41,6 +41,7 @@ import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.google.gson.Gson;
 
 @Component
 public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
@@ -51,8 +52,8 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
     private final NotificationEventManager eventManager;
 
     @Autowired
-    public RealTimeListener(final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
-        super(RealTimeEvent.class);
+    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
+        super(gson, RealTimeEvent.class);
         this.channelTemplateManager = channelTemplateManager;
         this.projectDataFactory = projectDataFactory;
         this.eventManager = eventManager;
