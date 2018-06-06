@@ -14,7 +14,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.glob
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
-public class EmailChannelManagerTest extends ChannelManagerTest<EmailGroupEvent, EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity, EmailGroupManager> {
+public class EmailChannelManagerTest extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity, EmailGroupManager> {
 
     @Override
     public EmailGroupManager getChannelManager() {

@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,24 +23,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Collection;
+public class ChannelEvent extends AlertEvent {
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-
-public class ChannelEvent {
-
-    private final Collection<ProjectData> projectData;
     private final Long commonDistributionConfigId;
 
     private Long auditEntryId;
 
-    public ChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        this.projectData = projectDataCollection;
+    public ChannelEvent(final String destination, final Object content, final Long commonDistributionConfigId) {
+        super(destination, content);
         this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public Collection<ProjectData> getProjectData() {
-        return projectData;
     }
 
     public Long getCommonDistributionConfigId() {

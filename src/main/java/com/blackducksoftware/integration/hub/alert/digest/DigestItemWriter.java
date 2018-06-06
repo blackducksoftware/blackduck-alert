@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -31,9 +31,9 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 
-public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> {
+public class DigestItemWriter implements ItemWriter<List<ChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemWriter.class);
     private final ChannelTemplateManager channelTemplateManager;
 
@@ -43,7 +43,7 @@ public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> 
     }
 
     @Override
-    public void write(final List<? extends List<AbstractChannelEvent>> eventList) throws Exception {
+    public void write(final List<? extends List<ChannelEvent>> eventList) throws Exception {
         try {
             logger.info("Digest Item Writer called");
             eventList.forEach(channelEventList -> {

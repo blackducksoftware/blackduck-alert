@@ -33,6 +33,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.gl
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
@@ -89,13 +90,13 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(12345, Boolean.FALSE, null);
         final Collection<ProjectData> projectData = createProjectData("HipChat IT test");
-
+        final DigestModel digestModel = new DigestModel(projectData);
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
             System.getProperties().setProperty("user.dir", "garbage");
             RuntimeException thrownException = null;
             try {
-                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), projectData);
+                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), digestModel);
             } catch (final RuntimeException e) {
                 thrownException = e;
             }

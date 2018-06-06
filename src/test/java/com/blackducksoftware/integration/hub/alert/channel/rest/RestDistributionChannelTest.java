@@ -13,8 +13,6 @@ package com.blackducksoftware.integration.hub.alert.channel.rest;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Collection;
-
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -25,8 +23,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
@@ -37,16 +34,15 @@ public class RestDistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity>(
-                gson, null, null, null, null, null, channelRestConnectionFactory) {
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, null, null, null, null,
+                channelRestConnectionFactory) {
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final Collection<ProjectData> projectData)
-                    throws AlertException {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
             }
         };

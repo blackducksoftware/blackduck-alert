@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -42,13 +42,13 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 @Transactional
-public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
@@ -57,8 +57,8 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final AuditEntryRepositoryWrapper auditEntryRepository;
 
     public DistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final Class<E> clazz) {
-        super(gson, clazz);
+            final CommonDistributionRepositoryWrapper commonDistributionRepository) {
+        super(gson, ChannelEvent.class);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
@@ -86,10 +86,10 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     @Override
-    public void handleEvent(final E event) {
+    public void handleEvent(final ChannelEvent event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final CommonDistributionConfigEntity commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
-        if (event.getTopic().equals(commonDistributionEntity.getDistributionType())) {
+        if (event.getDestination().equals(commonDistributionEntity.getDistributionType())) {
             try {
                 final Long channelDistributionConfigId = commonDistributionEntity.getDistributionConfigId();
                 final C channelDistributionEntity = distributionRepository.findById(channelDistributionConfigId);
@@ -98,11 +98,11 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.getDistributionType());
+            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getDestination(), commonDistributionEntity.getDistributionType());
         }
     }
 
-    public void sendAuditedMessage(final E event, final C config) throws IntegrationException {
+    public void sendAuditedMessage(final ChannelEvent event, final C config) throws IntegrationException {
         try {
             sendMessage(event, config);
             setAuditEntrySuccess(event.getAuditEntryId());
@@ -116,7 +116,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         }
     }
 
-    public abstract void sendMessage(final E event, final C config) throws Exception;
+    public abstract void sendMessage(final ChannelEvent event, final C config) throws Exception;
 
     public String testGlobalConfig(final G entity) throws IntegrationException {
         if (entity != null) {

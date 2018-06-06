@@ -16,29 +16,19 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-public class AbstractEventTest {
+public class AlertEventTest {
     private static final String TOPIC = "TOPIC";
 
     @Test
     public void getIdTest() {
-        final AbstractEvent event = new AbstractEvent() {
-            @Override
-            public String getTopic() {
-                return null;
-            }
-        };
+        final AlertEvent event = new AlertEvent(TOPIC, null);
         assertNotNull(event.getEventId());
     }
 
     @Test
-    public void getTopicTest() {
-        final AbstractEvent event = new AbstractEvent() {
-            @Override
-            public String getTopic() {
-                return TOPIC;
-            }
-        };
-        assertEquals(TOPIC, event.getTopic());
+    public void getDestinationTest() {
+        final AlertEvent event = new AlertEvent(TOPIC, null);
+        assertEquals(TOPIC, event.getDestination());
     }
 
 }

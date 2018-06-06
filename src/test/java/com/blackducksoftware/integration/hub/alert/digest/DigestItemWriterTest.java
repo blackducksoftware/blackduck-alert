@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 
 public class DigestItemWriterTest {
     private OutputLogger outputLogger;
@@ -25,26 +25,26 @@ public class DigestItemWriterTest {
     @Test
     public void testWrite() throws Exception {
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.anyListOf(AbstractChannelEvent.class));
+        Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
 
         final DigestItemWriter digestItemWriter = new DigestItemWriter(channelTemplateManager);
 
-        final AbstractChannelEvent abstractChannelEvent = Mockito.mock(AbstractChannelEvent.class);
-        final List<AbstractChannelEvent> channelList = Arrays.asList(abstractChannelEvent);
+        final ChannelEvent abstractChannelEvent = Mockito.mock(ChannelEvent.class);
+        final List<ChannelEvent> channelList = Arrays.asList(abstractChannelEvent);
         digestItemWriter.write(Arrays.asList(channelList));
 
-        Mockito.verify(channelTemplateManager).sendEvents(Mockito.anyListOf(AbstractChannelEvent.class));
+        Mockito.verify(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
     }
 
     @Test
     public void testWriteNull() throws Exception {
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        Mockito.doThrow(new NullPointerException()).when(channelTemplateManager).sendEvents(Mockito.anyListOf(AbstractChannelEvent.class));
+        Mockito.doThrow(new NullPointerException()).when(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
 
         final DigestItemWriter digestItemWriter = new DigestItemWriter(channelTemplateManager);
 
-        final AbstractChannelEvent abstractChannelEvent = Mockito.mock(AbstractChannelEvent.class);
-        final List<AbstractChannelEvent> channelList = Arrays.asList(abstractChannelEvent);
+        final ChannelEvent abstractChannelEvent = Mockito.mock(ChannelEvent.class);
+        final List<ChannelEvent> channelList = Arrays.asList(abstractChannelEvent);
         digestItemWriter.write(Arrays.asList(channelList));
 
         final boolean exceptionThrown = outputLogger.isLineContainingText("Error occurred writing digest notification data to channels");

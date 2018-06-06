@@ -14,7 +14,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.gl
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
-public class HipChatManagerTest extends ChannelManagerTest<HipChatEvent, HipChatDistributionRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity, HipChatManager> {
+public class HipChatManagerTest extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity, HipChatManager> {
 
     @Override
     public HipChatManager getChannelManager() {

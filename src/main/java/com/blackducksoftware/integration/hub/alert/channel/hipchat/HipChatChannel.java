@@ -1,9 +1,9 @@
 /**
  * hub-alert
- *
+ * <p>
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -11,9 +11,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -44,6 +44,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHe
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -54,7 +55,7 @@ import com.google.gson.JsonObject;
 import freemarker.template.TemplateException;
 
 @Component
-public class HipChatChannel extends RestDistributionChannel<HipChatEvent, GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
+public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
@@ -62,7 +63,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     @Autowired
     public HipChatChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final GlobalHipChatRepositoryWrapper globalHipChatRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
             final HipChatDistributionRepositoryWrapper hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, HipChatEvent.class, channelRestConnectionFactory);
+        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
@@ -119,11 +120,11 @@ public class HipChatChannel extends RestDistributionChannel<HipChatEvent, Global
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final GlobalHipChatConfigEntity globalConfig, final Collection<ProjectData> projectDataCollection)
-            throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final GlobalHipChatConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
+            final Collection<ProjectData> projectDataCollection = digestModel.getProjectDataCollection();
             final String htmlMessage = createHtmlMessage(projectDataCollection);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
