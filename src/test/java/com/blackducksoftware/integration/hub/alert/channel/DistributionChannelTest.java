@@ -42,14 +42,14 @@ import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 public class DistributionChannelTest extends ChannelTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
         channel.setAuditEntrySuccess(1L);
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null, contentConverter);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null);
         entity.setId(1L);
@@ -62,14 +62,14 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
         channel.setAuditEntryFailure(1L, null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
         final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null, contentConverter);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, null, null);
         entity.setId(1L);
@@ -83,7 +83,7 @@ public class DistributionChannelTest extends ChannelTest {
     @Test
     public void getGlobalConfigEntityTest() {
         final GlobalEmailRepositoryWrapper globalEmailRepositoryWrapper = Mockito.mock(GlobalEmailRepositoryWrapper.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, globalEmailRepositoryWrapper, null, null);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, globalEmailRepositoryWrapper, null, null, contentConverter);
 
         final MockEmailGlobalEntity mockEntity = new MockEmailGlobalEntity();
         final GlobalEmailConfigEntity entity = mockEntity.createGlobalEntity();
@@ -101,11 +101,11 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGroupDistributionRepositoryWrapper emailGroupRepositoryWrapper = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
         final CommonDistributionRepositoryWrapper commonRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, globalEmailRepositoryWrapper, emailGroupRepositoryWrapper, commonRepositoryWrapper);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, globalEmailRepositoryWrapper, emailGroupRepositoryWrapper, commonRepositoryWrapper, contentConverter);
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, commonId);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, contentConverter.convertToString(digestModel), commonId);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepositoryWrapper.findById(Mockito.anyLong())).thenReturn(commonEntity);
@@ -128,11 +128,11 @@ public class DistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final CommonDistributionRepositoryWrapper commonRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, commonRepositoryWrapper);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, commonRepositoryWrapper, contentConverter);
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, commonId);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, contentConverter.convertToString(digestModel), commonId);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.SLACK, "Other Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepositoryWrapper.findById(Mockito.anyLong())).thenReturn(commonEntity);
@@ -143,7 +143,7 @@ public class DistributionChannelTest extends ChannelTest {
     @Test
     public void testGlobalConfigTest() throws IntegrationException {
         // Slack has no global config, so we use it to test the default method.
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
 
         final String nullMessage = slackChannel.testGlobalConfig(null);
         assertEquals("The provided entity was null.", nullMessage);

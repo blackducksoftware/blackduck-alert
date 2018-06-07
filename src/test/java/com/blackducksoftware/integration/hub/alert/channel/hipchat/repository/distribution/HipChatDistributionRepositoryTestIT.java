@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.d
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -43,6 +44,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class HipChatDistributionRepositoryTestIT {
     @Autowired
     private HipChatDistributionRepositoryWrapper hipChatDistributionRepository;
+
+    @Before
+    public void cleanUp() {
+        hipChatDistributionRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

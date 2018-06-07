@@ -29,7 +29,7 @@ public class ChannelEvent extends AlertEvent {
 
     private Long auditEntryId;
 
-    public ChannelEvent(final String destination, final Object content, final Long commonDistributionConfigId) {
+    public ChannelEvent(final String destination, final String content, final Long commonDistributionConfigId) {
         super(destination, content);
         this.commonDistributionConfigId = commonDistributionConfigId;
     }

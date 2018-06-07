@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -61,6 +62,11 @@ public class NotificationRepositoryTestIT {
         final NotificationEntity entity = createNotificationEntity(createdAt);
         final NotificationEntity savedEntity = repository.save(entity);
         return savedEntity;
+    }
+
+    @Before
+    public void cleanup() {
+        repository.deleteAll();
     }
 
     @Test

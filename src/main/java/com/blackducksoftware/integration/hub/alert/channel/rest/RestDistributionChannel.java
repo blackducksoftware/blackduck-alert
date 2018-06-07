@@ -36,6 +36,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -46,8 +47,8 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public RestDistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository);
+            final CommonDistributionRepositoryWrapper commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
+        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
@@ -56,7 +57,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-            final Optional<DigestModel> optionalModel = event.getContent(DigestModel.class);
+            final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
             if (optionalModel.isPresent()) {
                 final Request request = createRequest(channelRequestHelper, config, globalConfig, optionalModel.get());
                 channelRequestHelper.sendMessageRequest(request, event.getDestination());

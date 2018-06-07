@@ -30,28 +30,31 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
-public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, NotificationListEvent> {
+public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, AlertEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
+    private final AlertEventContentConverter contentConverter;
 
-    public AccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors) {
+    public AccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors, final AlertEventContentConverter contentConverter) {
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
+        this.contentConverter = contentConverter;
     }
 
     @Override
-    public NotificationListEvent process(final NotificationDetailResults notificationData) throws Exception {
+    public AlertEvent process(final NotificationDetailResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
                 logger.info("Processing accumulated notifications");
-                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors);
-                final NotificationListEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+                final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
+                final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
                 return storeEvent;
             } catch (final Exception ex) {
                 logger.error("Error occurred durring processing of accumulated notifications", ex);

@@ -46,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
@@ -57,8 +58,8 @@ public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntit
 
     @Autowired
     public SlackChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SlackDistributionRepositoryWrapper slackDistributionRepository, final CommonDistributionRepositoryWrapper commonDistributionRepository,
-            final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
+            final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
+        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
     }
 
     @Override

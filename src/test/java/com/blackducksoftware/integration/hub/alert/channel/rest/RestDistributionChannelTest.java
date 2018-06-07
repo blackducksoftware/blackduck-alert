@@ -36,7 +36,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, null, null, null, null,
-                channelRestConnectionFactory) {
+                channelRestConnectionFactory, contentConverter) {
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
@@ -48,7 +48,7 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, digestModel, 1L);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, contentConverter.convertToString(digestModel), 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {

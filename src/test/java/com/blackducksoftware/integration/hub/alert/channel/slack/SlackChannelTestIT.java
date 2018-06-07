@@ -55,7 +55,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory);
+        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
@@ -63,7 +63,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, digestModel, new Long(0));
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, contentConverter.convertToString(digestModel), new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 
@@ -71,20 +71,9 @@ public class SlackChannelTestIT extends ChannelTest {
         assertTrue(actual);
     }
 
-    //    @Test
-    //    public void receiveMessageTest() {
-    //        final SlackChannel slackChannel = new SlackChannel(null, null, null, null);
-    //        try {
-    //            SlackEvent event = new SlackEvent(null, 1L);
-    //            slackChannel.handleEvent(event);
-    //        } finally {
-    //            System.out.println("Complete missing line coverage.");
-    //        }
-    //    }
-
     @Test
     public void testCreateRequestExceptions() {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         Request request = null;
 
@@ -107,7 +96,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
         final DigestModel digestModel = new DigestModel(projectData);
@@ -134,7 +123,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));

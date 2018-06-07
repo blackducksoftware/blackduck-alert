@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
 
 @Component
 public class RealTimeJmsTemplate extends AbstractJmsTemplate {
@@ -41,6 +41,6 @@ public class RealTimeJmsTemplate extends AbstractJmsTemplate {
 
     @Override
     public String getDestinationName() {
-        return RealTimeEvent.TOPIC_NAME;
+        return InternalEventTypes.REAL_TIME_EVENT.getDestination();
     }
 }
