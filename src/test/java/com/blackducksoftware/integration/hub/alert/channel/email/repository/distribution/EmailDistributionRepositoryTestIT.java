@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.channel.email.repository.dis
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -43,6 +44,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class EmailDistributionRepositoryTestIT {
     @Autowired
     private EmailGroupDistributionRepository emailGroupDistributionRepository;
+
+    @Before
+    public void cleanUpBeforeTest() {
+        emailGroupDistributionRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

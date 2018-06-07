@@ -43,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
@@ -56,14 +57,16 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
+    private final AlertEventContentConverter contentExtractor;
 
     public DistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository) {
+            final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
+        this.contentExtractor = contentExtractor;
     }
 
     public AuditEntryRepository getAuditEntryRepository() {
@@ -171,5 +174,9 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+
+    public <C> Optional<C> extractContentFromEvent(final ChannelEvent event, final Class<C> contentClass) throws AlertException {
+        return contentExtractor.getContent(event.getContent(), contentClass);
     }
 }

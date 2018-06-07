@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.transaction.Transactional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -44,6 +45,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class DistributionProjectRepositoryTestIT {
     @Autowired
     private DistributionProjectRepository distributionProjectRepository;
+
+    @Before
+    public void cleanup() {
+        distributionProjectRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

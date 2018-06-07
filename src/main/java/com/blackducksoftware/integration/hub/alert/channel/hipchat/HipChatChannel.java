@@ -46,6 +46,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistribution
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.rest.request.Response;
@@ -62,8 +63,8 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
 
     @Autowired
     public HipChatChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
-            final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
+            final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
+        super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
@@ -141,7 +142,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
         try {
             final String templatesDirectory = System.getenv("ALERT_TEMPLATES_DIR");
-            String templateDirectoryPath;
+            final String templateDirectoryPath;
             if (StringUtils.isNotBlank(templatesDirectory)) {
                 templateDirectoryPath = templatesDirectory + "/hipchat";
             } else {

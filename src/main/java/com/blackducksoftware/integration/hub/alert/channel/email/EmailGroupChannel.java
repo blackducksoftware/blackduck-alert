@@ -51,6 +51,7 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
@@ -69,10 +70,9 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     private final GlobalProperties globalProperties;
 
     @Autowired
-
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
-        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository);
+            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
+        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
 
         this.globalProperties = globalProperties;
     }
@@ -93,8 +93,8 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
         try {
-            final Optional<DigestModel> optionalModel = event.getContent(DigestModel.class);
-            Collection<ProjectData> data;
+            final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
+            final Collection<ProjectData> data;
             if (optionalModel.isPresent()) {
                 data = optionalModel.get().getProjectDataCollection();
             } else {
@@ -122,7 +122,7 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
-        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final UserGroupService groupService = hubServicesFactory.createUserGroupService();

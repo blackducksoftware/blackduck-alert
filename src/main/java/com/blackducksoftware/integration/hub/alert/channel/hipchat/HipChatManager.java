@@ -34,15 +34,18 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.gl
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 @Component
 public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
+
     @Autowired
-    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepository globalRepository, final HipChatDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
-        super(distributionChannel, globalRepository, localRepository, objectTransformer);
+    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepository globalRepository, final HipChatDistributionRepository localRepository, final ObjectTransformer objectTransformer,
+            final AlertEventContentConverter contentConverter) {
+        super(distributionChannel, globalRepository, localRepository, objectTransformer, contentConverter);
     }
 
     @Override
@@ -52,7 +55,7 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
 
     @Override
     public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
-        return new ChannelEvent(SupportedChannels.HIPCHAT, content, commonDistributionConfigId);
+        return createChannelEvent(SupportedChannels.HIPCHAT, content, commonDistributionConfigId);
     }
 
     @Override

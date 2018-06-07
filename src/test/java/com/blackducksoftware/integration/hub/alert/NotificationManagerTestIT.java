@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -94,7 +94,7 @@ public class NotificationManagerTestIT {
         assertEquals(entity.getProjectVersionUrl(), model.getProjectVersionUrl());
     }
 
-    @After
+    @Before
     public void cleanUpDB() {
         notificationRepository.deleteAll();
         vulnerabilityRepository.deleteAll();
