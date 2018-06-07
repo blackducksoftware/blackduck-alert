@@ -14,7 +14,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.glob
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
-public class SlackChannelManagerTest extends ChannelManagerTest<SlackEvent, SlackDistributionRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity, SlackManager> {
+public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributionRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity, SlackManager> {
 
     @Override
     public SlackManager getChannelManager() {

@@ -21,22 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.hipchat;
+package com.blackducksoftware.integration.hub.alert.digest.model;
 
 import java.util.Collection;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.model.Model;
 
-public class HipChatEvent extends AbstractChannelEvent {
+public class DigestModel extends Model {
+    private Collection<ProjectData> projectDataCollection;
 
-    public HipChatEvent(final Collection<ProjectData> projectDataCollection, final Long configurationId) {
-        super(projectDataCollection, configurationId);
+    public DigestModel(Collection<ProjectData> projectDataCollection) {
+        this.projectDataCollection = projectDataCollection;
     }
 
-    @Override
-    public String getTopic() {
-        return SupportedChannels.HIPCHAT;
+    public Collection<ProjectData> getProjectDataCollection() {
+        return projectDataCollection;
     }
+
 }

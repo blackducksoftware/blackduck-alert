@@ -43,13 +43,13 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
 
 @Transactional
-public abstract class DistributionChannel<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<E> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
@@ -58,8 +58,8 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     private final AuditEntryRepository auditEntryRepository;
 
     public DistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository, final Class<E> clazz) {
-        super(gson, clazz);
+            final CommonDistributionRepository commonDistributionRepository) {
+        super(gson, ChannelEvent.class);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
@@ -87,10 +87,10 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
     }
 
     @Override
-    public void handleEvent(final E event) {
+    public void handleEvent(final ChannelEvent event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final Optional<CommonDistributionConfigEntity> commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
-        if (commonDistributionEntity.isPresent() && event.getTopic().equals(commonDistributionEntity.get().getDistributionType())) {
+        if (commonDistributionEntity.isPresent() && event.getDestination().equals(commonDistributionEntity.get().getDistributionType())) {
             try {
                 final Long channelDistributionConfigId = commonDistributionEntity.get().getDistributionConfigId();
                 final C channelDistributionEntity = distributionRepository.getOne(channelDistributionConfigId);
@@ -99,11 +99,11 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
                 logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getTopic(), commonDistributionEntity.get().getDistributionType());
+            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getDestination(), commonDistributionEntity.get().getDistributionType());
         }
     }
 
-    public void sendAuditedMessage(final E event, final C config) throws IntegrationException {
+    public void sendAuditedMessage(final ChannelEvent event, final C config) throws IntegrationException {
         try {
             sendMessage(event, config);
             setAuditEntrySuccess(event.getAuditEntryId());
@@ -117,7 +117,7 @@ public abstract class DistributionChannel<E extends AbstractChannelEvent, G exte
         }
     }
 
-    public abstract void sendMessage(final E event, final C config) throws Exception;
+    public abstract void sendMessage(final ChannelEvent event, final C config) throws Exception;
 
     public String testGlobalConfig(final G entity) throws IntegrationException {
         if (entity != null) {

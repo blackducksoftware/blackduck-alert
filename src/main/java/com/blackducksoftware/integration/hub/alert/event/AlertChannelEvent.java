@@ -21,17 +21,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.slack;
+package com.blackducksoftware.integration.hub.alert.event;
 
 import java.util.Collection;
 
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AlertChannelEvent;
 
-public class SlackEvent extends AlertChannelEvent {
+public abstract class AlertChannelEvent extends ChannelEvent {
+    private final Collection<ProjectData> projectData;
+    private final Long commonDistributionConfigId;
 
-    public SlackEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        super(projectDataCollection, commonDistributionConfigId);
+    private Long auditEntryId;
+
+    public AlertChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
+        super("", projectDataCollection, commonDistributionConfigId);
+        this.projectData = projectDataCollection;
+        this.commonDistributionConfigId = commonDistributionConfigId;
+    }
+
+    public Collection<ProjectData> getProjectData() {
+        return projectData;
+    }
+
+    public Long getCommonDistributionConfigId() {
+        return commonDistributionConfigId;
+    }
+
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public void setAuditEntryId(final Long auditEntryId) {
+        this.auditEntryId = auditEntryId;
     }
 
 }

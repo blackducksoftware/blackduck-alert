@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,12 +33,13 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.di
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 @Component
-public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatEvent, HipChatDistributionRestModel> {
+public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
     @Autowired
     public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepository globalRepository, final HipChatDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
@@ -52,8 +51,8 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
     }
 
     @Override
-    public HipChatEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        return new HipChatEvent(projectDataCollection, commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(SupportedChannels.HIPCHAT, content, commonDistributionConfigId);
     }
 
     @Override

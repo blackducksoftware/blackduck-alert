@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
@@ -48,7 +49,10 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.glob
 import com.blackducksoftware.integration.hub.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserView;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -56,27 +60,25 @@ import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
-import freemarker.core.ParseException;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateNotFoundException;
 
 @Component
-public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
+public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     private final GlobalProperties globalProperties;
 
     @Autowired
+
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
-        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, EmailGroupEvent.class);
+        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository);
 
         this.globalProperties = globalProperties;
     }
 
     @Override
-    public void sendMessage(final EmailGroupEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
+    public void sendMessage(final ChannelEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
@@ -87,27 +89,35 @@ public class EmailGroupChannel extends DistributionChannel<EmailGroupEvent, Glob
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final EmailGroupEvent event, final String subjectLine, final String hubGroupName)
-            throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, MessagingException, IOException, TemplateException {
+    public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String hubGroupName) throws MessagingException, IOException, TemplateException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
+        try {
+            final Optional<DigestModel> optionalModel = event.getContent(DigestModel.class);
+            Collection<ProjectData> data;
+            if (optionalModel.isPresent()) {
+                data = optionalModel.get().getProjectDataCollection();
+            } else {
+                data = Collections.emptyList();
+            }
 
-        final Collection<ProjectData> data = event.getProjectData();
+            final HashMap<String, Object> model = new HashMap<>();
+            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
+            model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_GROUP_NAME, hubGroupName);
 
-        final HashMap<String, Object> model = new HashMap<>();
-        model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
-        model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
-        model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
-        model.put(EmailProperties.TEMPLATE_KEY_HUB_GROUP_NAME, hubGroupName);
+            model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
 
-        model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
+            model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
+            model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
 
-        model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
-        model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
-
-        for (final String emailAddress : emailAddresses) {
-            final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
-            emailService.sendEmailMessage(emailTarget);
+            for (final String emailAddress : emailAddresses) {
+                final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
+                emailService.sendEmailMessage(emailTarget);
+            }
+        } catch (final AlertException ex) {
+            logger.error("Error sending email project data from event", ex);
         }
     }
 

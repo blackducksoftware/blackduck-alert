@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProces
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
 import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
@@ -55,9 +55,9 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
     private final List<NotificationTypeProcessor> processorList;
 
     @Autowired
-    public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
-            final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor> processorList) {
+    public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
+            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
+            final List<NotificationTypeProcessor> processorList) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;
@@ -66,7 +66,8 @@ public class AccumulatorConfig extends JobScheduledTask<AccumulatorReader, Accum
 
     @Override
     public Step createStep(final AccumulatorReader reader, final AccumulatorProcessor processor, final AccumulatorWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationDetailResults, DBStoreEvent> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationDetailResults, NotificationListEvent>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
+                       .build();
     }
 
     @Override

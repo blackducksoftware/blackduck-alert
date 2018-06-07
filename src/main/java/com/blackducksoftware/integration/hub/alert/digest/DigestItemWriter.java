@@ -31,9 +31,9 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 
-public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> {
+public class DigestItemWriter implements ItemWriter<List<ChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemWriter.class);
     private final ChannelTemplateManager channelTemplateManager;
 
@@ -43,7 +43,7 @@ public class DigestItemWriter implements ItemWriter<List<AbstractChannelEvent>> 
     }
 
     @Override
-    public void write(final List<? extends List<AbstractChannelEvent>> eventList) throws Exception {
+    public void write(final List<? extends List<ChannelEvent>> eventList) throws Exception {
         try {
             logger.info("Digest Item Writer called");
             eventList.forEach(channelEventList -> {

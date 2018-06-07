@@ -23,24 +23,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Collection;
+public class ChannelEvent extends AlertEvent {
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-
-public class ChannelEvent {
-
-    private final Collection<ProjectData> projectData;
     private final Long commonDistributionConfigId;
 
     private Long auditEntryId;
 
-    public ChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        this.projectData = projectDataCollection;
+    public ChannelEvent(final String destination, final Object content, final Long commonDistributionConfigId) {
+        super(destination, content);
         this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public Collection<ProjectData> getProjectData() {
-        return projectData;
     }
 
     public Long getCommonDistributionConfigId() {

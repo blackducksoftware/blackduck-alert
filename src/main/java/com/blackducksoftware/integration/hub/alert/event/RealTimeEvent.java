@@ -27,11 +27,12 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
-public class RealTimeEvent extends AbstractEvent {
+public class RealTimeEvent extends AlertEvent {
     public final static String TOPIC_NAME = "REAL_TIME_EVENT";
     private final List<NotificationModel> notificationList;
 
     public RealTimeEvent(final List<NotificationModel> notificationList) {
+        super(TOPIC_NAME, notificationList);
         this.notificationList = notificationList;
     }
 
@@ -39,8 +40,4 @@ public class RealTimeEvent extends AbstractEvent {
         return notificationList;
     }
 
-    @Override
-    public String getTopic() {
-        return TOPIC_NAME;
-    }
 }

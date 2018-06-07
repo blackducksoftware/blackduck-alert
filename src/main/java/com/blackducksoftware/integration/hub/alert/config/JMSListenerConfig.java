@@ -56,7 +56,6 @@ public class JMSListenerConfig implements JmsListenerConfigurer {
         realTimeEndpoint.setDestination("REAL_TIME_EVENT");
         realTimeEndpoint.setMessageListener(realTimeListener);
         registrar.registerEndpoint(realTimeEndpoint);
-
         channelDescriptorList.forEach(descriptor -> {
             final String listenerId = createListenerId(descriptor.getName());
             logger.info("Registering JMS Listener: {}", listenerId);
@@ -66,6 +65,7 @@ public class JMSListenerConfig implements JmsListenerConfigurer {
             endpoint.setMessageListener(descriptor.getChannelComponent());
             registrar.registerEndpoint(endpoint);
         });
+
     }
 
     private String createListenerId(String name) {

@@ -23,9 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import java.util.Collection;
-
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
@@ -34,11 +32,12 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
-@Component
-public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackEvent, SlackDistributionRestModel> {
+public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackDistributionRestModel> {
+    @Autowired
     public SlackManager(final SlackChannel distributionChannel, final GlobalSlackRepository globalRepository, final SlackDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
     }
@@ -49,8 +48,8 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
     }
 
     @Override
-    public SlackEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        return new SlackEvent(projectDataCollection, commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(SupportedChannels.SLACK, content, commonDistributionConfigId);
     }
 
     @Override

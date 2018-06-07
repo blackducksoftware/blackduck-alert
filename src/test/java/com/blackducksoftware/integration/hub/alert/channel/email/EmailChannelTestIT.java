@@ -14,11 +14,14 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class EmailChannelTestIT extends ChannelTest {
@@ -41,7 +44,8 @@ public class EmailChannelTestIT extends ChannelTest {
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
-        final EmailGroupEvent event = new EmailGroupEvent(projectData, 1L);
+        final DigestModel digestModel = new DigestModel(projectData);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, 1L);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -61,7 +65,9 @@ public class EmailChannelTestIT extends ChannelTest {
         final OutputLogger outputLogger = new OutputLogger();
 
         final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null);
-        emailChannel.sendMessage(new EmailGroupEvent(null, 1L), null);
+        final DigestModel digestModel = new DigestModel(null);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, 1L);
+        emailChannel.sendMessage(event, null);
         assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
 
         outputLogger.close();

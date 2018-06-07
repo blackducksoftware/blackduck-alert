@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,23 +30,23 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class ChannelEventFactory<E extends AbstractChannelEvent, D extends DistributionChannelConfigEntity, G extends GlobalChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
-    private final List<DistributionChannelManager<G, D, E, R>> channelManagers;
+public class ChannelEventFactory<D extends DistributionChannelConfigEntity, G extends GlobalChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
+    private final List<DistributionChannelManager<G, D, R>> channelManagers;
 
     @Autowired
-    public ChannelEventFactory(final List<DistributionChannelManager<G, D, E, R>> channelManagers) {
+    public ChannelEventFactory(final List<DistributionChannelManager<G, D, R>> channelManagers) {
         this.channelManagers = channelManagers;
     }
 
-    public AbstractChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final Collection<ProjectData> projectDataCollection) {
-        for (final DistributionChannelManager<G, D, E, R> manager : channelManagers) {
+    public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final DigestModel digestModel) {
+        for (final DistributionChannelManager<G, D, R> manager : channelManagers) {
             if (manager.isApplicable(distributionType)) {
-                return manager.createChannelEvent(projectDataCollection, commonDistributionConfigId);
+                return manager.createChannelEvent(digestModel, commonDistributionConfigId);
             }
         }
         return null;

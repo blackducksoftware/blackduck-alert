@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email;
 
-import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,12 +33,13 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 @Component
-public class EmailGroupManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupEvent, EmailGroupDistributionRestModel> {
+public class EmailGroupManager extends DistributionChannelManager<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
     @Autowired
     public EmailGroupManager(final EmailGroupChannel distributionChannel, final GlobalEmailRepository globalRepository, final EmailGroupDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer);
@@ -52,8 +51,8 @@ public class EmailGroupManager extends DistributionChannelManager<GlobalEmailCon
     }
 
     @Override
-    public EmailGroupEvent createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        return new EmailGroupEvent(projectDataCollection, commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(SupportedChannels.EMAIL_GROUP, content, commonDistributionConfigId);
     }
 
     @Override

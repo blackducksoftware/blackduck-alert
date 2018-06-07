@@ -30,12 +30,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
-public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, DBStoreEvent> {
+public class AccumulatorProcessor implements ItemProcessor<NotificationDetailResults, NotificationListEvent> {
     private final Logger logger = LoggerFactory.getLogger(AccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
@@ -46,12 +46,12 @@ public class AccumulatorProcessor implements ItemProcessor<NotificationDetailRes
     }
 
     @Override
-    public DBStoreEvent process(final NotificationDetailResults notificationData) throws Exception {
+    public NotificationListEvent process(final NotificationDetailResults notificationData) throws Exception {
         if (notificationData != null) {
             try {
                 logger.info("Processing accumulated notifications");
                 final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors);
-                final DBStoreEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+                final NotificationListEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
                 return storeEvent;
             } catch (final Exception ex) {
                 logger.error("Error occurred durring processing of accumulated notifications", ex);
