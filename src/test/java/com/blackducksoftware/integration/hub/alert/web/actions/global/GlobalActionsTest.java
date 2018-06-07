@@ -24,20 +24,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.gson.Gson;
 
 public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
     protected GCA configActions;
+    protected AlertEventContentConverter contentConverter;
 
     public GlobalActionsTest() {
         configActions = getMockedConfigActions();
@@ -48,6 +52,11 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     public abstract MockGlobalRestModelUtil<GR> getGlobalRestModelMockUtil();
 
     public abstract GCA getMockedConfigActions();
+
+    @Before
+    public void init() {
+        contentConverter = new AlertEventContentConverter(new Gson());
+    }
 
     @Test
     public void testDoesConfigExist() {

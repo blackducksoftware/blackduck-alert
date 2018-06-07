@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -56,6 +57,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class CommonDistributionConfigActionsTestIT {
+    private final ObjectTransformer objectTransformer = new ObjectTransformer();
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
     @Autowired
@@ -67,8 +69,7 @@ public class CommonDistributionConfigActionsTestIT {
     @Autowired
     private NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
 
-    private final ObjectTransformer objectTransformer = new ObjectTransformer();
-
+    @Before
     public void cleanup() {
         commonDistributionRepository.deleteAll();
         auditEntryRepository.deleteAll();

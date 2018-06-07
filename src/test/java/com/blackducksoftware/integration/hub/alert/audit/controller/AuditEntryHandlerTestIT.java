@@ -19,7 +19,7 @@ import java.sql.Date;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -64,17 +64,17 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class AuditEntryHandlerTestIT {
 
     @Autowired
-    private AuditEntryHandler auditEntryHandler;
-    @Autowired
     public AuditEntryRepository auditEntryRepository;
     @Autowired
     public AuditNotificationRepository auditNotificationRepository;
+    @Autowired
+    private AuditEntryHandler auditEntryHandler;
     @Autowired
     private NotificationRepository notificationRepository;
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
 
-    @After
+    @Before
     public void cleanup() {
         auditEntryRepository.deleteAll();
         notificationRepository.deleteAll();
@@ -130,7 +130,8 @@ public class AuditEntryHandlerTestIT {
         final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
         final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
-                .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
+                .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened",
+                        ""));
         final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);

@@ -23,18 +23,15 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Optional;
 import java.util.UUID;
-
-import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 
 public class AlertEvent {
 
     private final String eventId;
     private final String destination;
-    private final Object content;
+    private final String content;
 
-    public AlertEvent(final String destination, final Object content) {
+    public AlertEvent(final String destination, final String content) {
         this.eventId = UUID.randomUUID().toString();
         this.destination = destination;
         this.content = content;
@@ -48,15 +45,7 @@ public class AlertEvent {
         return destination;
     }
 
-    public <C> Optional<C> getContent(Class<C> contentClass) throws AlertException {
-        if (contentClass != null && content != null) {
-            if (contentClass.isAssignableFrom(content.getClass())) {
-                return Optional.of(contentClass.cast(content));
-            } else {
-                final String exceptionMessage = String.format("Cannot get content of type %s from %s", contentClass.getName(), content.getClass().getName());
-                throw new AlertException(exceptionMessage);
-            }
-        }
-        return Optional.empty();
+    public String getContent() {
+        return content;
     }
 }

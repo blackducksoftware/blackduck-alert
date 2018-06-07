@@ -11,8 +11,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.processor;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -23,9 +21,9 @@ public class NotificationItemProcessorTest {
 
     @Test
     public void testInit() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
-        final List<NotificationTypeProcessor> processorList = null;
-        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
+        //        final GlobalProperties globalProperties = new TestGlobalProperties();
+        //        final List<NotificationTypeProcessor> processorList = null;
+        //        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
     }
 
     @Test
@@ -39,7 +37,7 @@ public class NotificationItemProcessorTest {
         // final List<NotificationEvent> eventList = Arrays.asList(event1, event2);
 
         // final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(globalProperties, new TestLogger(), Collections.emptyList());
-        // final DBStoreEvent storeEvent = notificationItemProcessor.process(results);
+        // final AlertEvent storeEvent = notificationItemProcessor.process(results);
 
         // assertEquals("DB_STORE_EVENT", storeEvent.getTopic());
         // assertTrue(storeEvent.getNotificationList().size() == 2);

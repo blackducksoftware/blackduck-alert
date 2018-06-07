@@ -25,18 +25,15 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
@@ -45,6 +42,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.google.gson.Gson;
@@ -52,90 +50,65 @@ import com.google.gson.Gson;
 @Transactional
 @Component
 public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
     private final Gson gson;
-    private final List<AbstractJmsTemplate> templateList;
+    private final JmsTemplate jmsTemplate;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
+    private final AlertEventContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final List<AbstractJmsTemplate> templateList) {
-        jmsTemplateMap = new HashMap<>();
+    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate,
+            final AlertEventContentConverter contentConverter) {
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
-        this.templateList = templateList;
-    }
-
-    @PostConstruct
-    public void init() {
-        templateList.forEach(jmsTemplate -> {
-            addTemplate(jmsTemplate.getDestinationName(), jmsTemplate);
-        });
-    }
-
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
-    }
-
-    public AbstractJmsTemplate getTemplate(final String destination) {
-        return jmsTemplateMap.get(destination);
-    }
-
-    public void addTemplate(final String destination, final AbstractJmsTemplate template) {
-        jmsTemplateMap.put(destination, template);
+        this.jmsTemplate = jmsTemplate;
+        this.contentConverter = contentConverter;
     }
 
     public void sendEvents(final List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(event -> {
                 sendEvent(event);
-
             });
         }
     }
 
     public boolean sendEvent(final AlertEvent event) {
         final String destination = event.getDestination();
-        if (hasTemplate(destination)) {
-            if (event instanceof ChannelEvent) {
-                final ChannelEvent channelEvent = (ChannelEvent) event;
-                Optional<AuditEntryEntity> auditEntryEntity = null;
-                if (channelEvent.getAuditEntryId() == null) {
-                    auditEntryEntity = Optional.of(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
-                } else {
-                    auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId());
-                }
-                auditEntryEntity.get().setStatus(StatusEnum.PENDING);
-                final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity.get());
-                channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-                try {
-                    final Optional<DigestModel> optionalModel = channelEvent.getContent(DigestModel.class);
-                    if (!optionalModel.isPresent()) {
-                        return false;
-                    } else {
-                        final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
-                        projectDataCollection.forEach(projectDataItem -> {
-                            projectDataItem.getNotificationIds().forEach(notificationId -> {
-                                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                                auditNotificationRepository.save(auditNotificationRelation);
-                            });
-                        });
-                        final String jsonMessage = gson.toJson(channelEvent);
-                        final AbstractJmsTemplate template = getTemplate(destination);
-                        template.convertAndSend(destination, jsonMessage);
-                    }
-                } catch (final AlertException ex) {
-                    return false;
-                }
+        if (event instanceof ChannelEvent) {
+            final ChannelEvent channelEvent = (ChannelEvent) event;
+            Optional<AuditEntryEntity> auditEntryEntity = null;
+            if (channelEvent.getAuditEntryId() == null) {
+                auditEntryEntity = Optional.of(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
             } else {
-                final String jsonMessage = gson.toJson(event);
-                final AbstractJmsTemplate template = getTemplate(destination);
-                template.convertAndSend(destination, jsonMessage);
+                auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId());
             }
-            return true;
+            auditEntryEntity.get().setStatus(StatusEnum.PENDING);
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity.get());
+            channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
+            try {
+                final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
+                if (!optionalModel.isPresent()) {
+                    return false;
+                } else {
+                    final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
+                    projectDataCollection.forEach(projectDataItem -> {
+                        projectDataItem.getNotificationIds().forEach(notificationId -> {
+                            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                            auditNotificationRepository.save(auditNotificationRelation);
+                        });
+                    });
+                    final String jsonMessage = gson.toJson(channelEvent);
+                    jmsTemplate.convertAndSend(destination, jsonMessage);
+                }
+            } catch (final AlertException ex) {
+                return false;
+            }
         } else {
-            return false;
+            final String jsonMessage = gson.toJson(event);
+            jmsTemplate.convertAndSend(destination, jsonMessage);
         }
+        return true;
     }
 }

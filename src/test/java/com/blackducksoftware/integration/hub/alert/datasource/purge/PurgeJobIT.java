@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.datasource.purge;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -12,7 +10,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -52,7 +50,7 @@ public class PurgeJobIT {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    @After
+    @Before
     public void cleanup() {
         notificationRepository.deleteAll();
     }

@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -49,13 +50,15 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<D, Long> localRepository;
     private final ObjectTransformer objectTransformer;
+    private final AlertEventContentConverter contentConverter;
 
     public DistributionChannelManager(final DistributionChannel<G, D> distributionChannel, final JpaRepository<G, Long> globalRepository, final JpaRepository<D, Long> localRepository,
-            final ObjectTransformer objectTransformer) {
+            final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter) {
         this.distributionChannel = distributionChannel;
         this.globalRepository = globalRepository;
         this.localRepository = localRepository;
         this.objectTransformer = objectTransformer;
+        this.contentConverter = contentConverter;
     }
 
     public DistributionChannel<G, D> getDistributionChannel() {
@@ -93,6 +96,10 @@ public abstract class DistributionChannelManager<G extends GlobalChannelConfigEn
         final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectDataCollection);
         return digestModel;
+    }
+
+    public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(destination, contentConverter.convertToString(content), commonDistributionConfigId);
     }
 
     public abstract Class<D> getDatabaseEntityClass();

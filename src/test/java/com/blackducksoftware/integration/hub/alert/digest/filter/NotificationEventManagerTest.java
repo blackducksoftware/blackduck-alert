@@ -1,6 +1,8 @@
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -68,8 +71,12 @@ public class NotificationEventManagerTest {
     @Autowired
     private NotificationTypeRepository notificationTypeRepository;
 
+    @Autowired
+    private AlertEventContentConverter contentConverter;
+
     @Before
     public void initializeConfig() {
+        cleanUp();
         long configId = 1;
         CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.SLACK, "Slack Config", DigestTypeEnum.REAL_TIME, false);
         CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.HIPCHAT, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
@@ -86,6 +93,12 @@ public class NotificationEventManagerTest {
             saveDistributionNotificationTypeRelation(hipChatDistributionConfig.getId(), savedNotificationType.getId());
             saveDistributionNotificationTypeRelation(emailDistributionConfig.getId(), savedNotificationType.getId());
         }
+    }
+
+    public void cleanUp() {
+        commonDistributionRepository.deleteAll();
+        distributionNotificationTypeRepository.deleteAll();
+        notificationTypeRepository.deleteAll();
     }
 
     private void saveDistributionNotificationTypeRelation(final Long commonDistributionConfigId, final Long notificationTypeId) {
@@ -115,13 +128,13 @@ public class NotificationEventManagerTest {
 
         channelEvents.forEach(event -> {
             try {
-                final Optional<DigestModel> optionalModel = event.getContent(DigestModel.class);
+                final Optional<DigestModel> optionalModel = contentConverter.getContent(event.getContent(), DigestModel.class);
                 if (optionalModel.isPresent()) {
                     assertEquals(projectDataCollection, optionalModel.get().getProjectDataCollection());
                 } else {
                     fail();
                 }
-            } catch (AlertException ex) {
+            } catch (final AlertException ex) {
                 fail();
             }
         });

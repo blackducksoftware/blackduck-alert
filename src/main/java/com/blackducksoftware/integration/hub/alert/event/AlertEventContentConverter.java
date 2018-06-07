@@ -21,26 +21,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email.template;
+package com.blackducksoftware.integration.hub.alert.event;
 
-import javax.jms.ConnectionFactory;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.google.gson.Gson;
 
 @Component
-public class EmailJmsTemplate extends AbstractJmsTemplate {
+public class AlertEventContentConverter {
+
+    private final Gson gson;
 
     @Autowired
-    public EmailJmsTemplate(final ConnectionFactory connectionFactory) {
-        super(connectionFactory);
+    public AlertEventContentConverter(final Gson gson) {
+        this.gson = gson;
     }
 
-    @Override
-    public String getDestinationName() {
-        return SupportedChannels.EMAIL_GROUP;
+    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) throws AlertException {
+        if (contentClass != null && content != null) {
+            return Optional.ofNullable(gson.fromJson(content, contentClass));
+        }
+        return Optional.empty();
+    }
+
+    public <C> String convertToString(final C content) {
+        return gson.toJson(content);
     }
 }

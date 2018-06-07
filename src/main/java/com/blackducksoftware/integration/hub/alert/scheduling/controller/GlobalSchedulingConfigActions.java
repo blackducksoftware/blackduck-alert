@@ -44,7 +44,8 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
@@ -64,11 +65,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationManager notificationManager;
     private final List<NotificationTypeProcessor> processorList;
+    private final AlertEventContentConverter contentConverter;
 
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
             final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationManager notificationManager,
-            final List<NotificationTypeProcessor> processorList) {
+            final List<NotificationTypeProcessor> processorList, final AlertEventContentConverter contentConverter) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -77,6 +79,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         this.channelTemplateManager = channelTemplateManager;
         this.notificationManager = notificationManager;
         this.processorList = processorList;
+        this.contentConverter = contentConverter;
     }
 
     @Override
@@ -163,12 +166,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     public void runAccumulator() throws Exception {
         final AccumulatorReader reader = new AccumulatorReader(globalProperties);
-        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList);
-        final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList, contentConverter);
+        final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
 
         final NotificationDetailResults results = reader.read();
-        final NotificationListEvent event = processor.process(results);
-        final List<NotificationListEvent> events = new ArrayList<>();
+        final AlertEvent event = processor.process(results);
+        final List<AlertEvent> events = new ArrayList<>();
         if (event != null) {
             events.add(event);
         }

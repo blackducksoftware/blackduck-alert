@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -46,6 +47,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class CommonDistributionRepositoryTestIT {
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
+
+    @Before
+    public void cleanup() {
+        commonDistributionRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

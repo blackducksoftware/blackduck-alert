@@ -19,9 +19,9 @@ public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributio
     @Override
     public SlackManager getChannelManager() {
         final SlackChannel mockSlackChannel = Mockito.mock(SlackChannel.class);
-        final GlobalSlackRepository mockGlobalRepository = Mockito.mock(GlobalSlackRepository.class);
-        final SlackDistributionRepository mockSlackRepository = Mockito.mock(SlackDistributionRepository.class);
-        final SlackManager manager = new SlackManager(mockSlackChannel, mockGlobalRepository, mockSlackRepository, new ObjectTransformer());
+        final GlobalSlackRepository mockGlobalRepositoryWrapper = Mockito.mock(GlobalSlackRepository.class);
+        final SlackDistributionRepository mockSlackRepositoryWrapper = Mockito.mock(SlackDistributionRepository.class);
+        final SlackManager manager = new SlackManager(mockSlackChannel, mockGlobalRepositoryWrapper, mockSlackRepositoryWrapper, new ObjectTransformer(), contentConverter);
 
         return manager;
     }
