@@ -134,7 +134,7 @@ public class AuditEntryActions {
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
-        if (notifications == null || !commonConfigEntity.isPresent()) {
+        if (notifications == null || notifications.isEmpty()) {
             throw new IllegalArgumentException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
         if (!commonConfigEntity.isPresent()) {
