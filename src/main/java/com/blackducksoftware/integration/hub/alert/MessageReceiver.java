@@ -30,10 +30,10 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.google.gson.Gson;
 
-public abstract class MessageReceiver<E extends AbstractEvent> implements MessageListener {
+public abstract class MessageReceiver<E extends AlertEvent> implements MessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
     private final Class<E> clazz;

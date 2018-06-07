@@ -21,22 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.email;
+package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Collection;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-
-public class EmailGroupEvent extends AbstractChannelEvent {
-
-    public EmailGroupEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        super(projectDataCollection, commonDistributionConfigId);
-    }
-
-    @Override
-    public String getTopic() {
-        return SupportedChannels.EMAIL_GROUP;
+public class NotificationListEvent extends AlertEvent {
+    public NotificationListEvent(final String destination, final NotificationModels notificationModels) {
+        super(destination, notificationModels);
     }
 }

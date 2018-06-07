@@ -14,15 +14,16 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity, CM extends DistributionChannelManager<GE, E, CE, R>> {
+public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity, CM extends DistributionChannelManager<GE, E, R>> {
 
     public abstract CM getChannelManager();
 
@@ -42,11 +43,12 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
     public void testCreateChannelEvent() {
         final CM channelManager = getChannelManager();
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
-        final CE channelEvent = channelManager.createChannelEvent(projectData, 1L);
+        final DigestModel digestModel = new DigestModel(projectData);
+        final ChannelEvent channelEvent = channelManager.createChannelEvent(digestModel, 1L);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(channelTopic(), channelEvent.getTopic());
+        assertEquals(channelTopic(), channelEvent.getDestination());
     }
 
     public abstract String channelTopic();
@@ -54,7 +56,7 @@ public abstract class ChannelManagerTest<CE extends AbstractChannelEvent, R exte
     @Test
     public void testSendTestMessage() throws IntegrationException {
         final CM manager = getChannelManager();
-        final DistributionChannel<CE, GE, E> channel = manager.getDistributionChannel();
+        final DistributionChannel<GE, E> channel = manager.getDistributionChannel();
         if (getMockGlobalEntityUtil() != null) {
             Mockito.when(channel.getGlobalConfigEntity()).thenReturn(getMockGlobalEntityUtil().createGlobalEntity());
         }

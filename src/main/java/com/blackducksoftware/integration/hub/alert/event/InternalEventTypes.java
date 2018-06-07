@@ -23,36 +23,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Collection;
+public enum InternalEventTypes {
+    DB_STORE_EVENT("DB_STORE_EVENT"), REAL_TIME_EVENT("REAL_TIME_EVENT");
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+    private final String destination;
 
-public abstract class AbstractChannelEvent extends AbstractEvent {
-    private final Collection<ProjectData> projectData;
-    private final Long commonDistributionConfigId;
-
-    private Long auditEntryId;
-
-    public AbstractChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        super();
-        this.projectData = projectDataCollection;
-        this.commonDistributionConfigId = commonDistributionConfigId;
+    InternalEventTypes(final String destination) {
+        this.destination = destination;
     }
 
-    public Collection<ProjectData> getProjectData() {
-        return projectData;
-    }
-
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
-    }
-
-    public Long getAuditEntryId() {
-        return auditEntryId;
-    }
-
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public String getDestination() {
+        return destination;
     }
 
 }

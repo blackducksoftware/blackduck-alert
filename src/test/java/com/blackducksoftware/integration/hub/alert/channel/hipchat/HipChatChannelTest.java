@@ -30,13 +30,16 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
+import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -56,7 +59,8 @@ public class HipChatChannelTest extends ChannelTest {
         HipChatChannel hipChatChannel = new HipChatChannel(gson, auditEntryRepository, null, null, null, channelRestConnectionFactory);
 
         final Collection<ProjectData> data = createProjectData("Integration test project");
-        final HipChatEvent event = new HipChatEvent(data, null);
+        final DigestModel digestModel = new DigestModel(data);
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.HIPCHAT, digestModel, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
@@ -92,13 +96,13 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null);
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(12345, Boolean.FALSE, null);
         final Collection<ProjectData> projectData = createProjectData("HipChat IT test");
-
+        final DigestModel digestModel = new DigestModel(projectData);
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
             System.getProperties().setProperty("user.dir", "garbage");
             RuntimeException thrownException = null;
             try {
-                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), projectData);
+                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), digestModel);
             } catch (final RuntimeException e) {
                 thrownException = e;
             }

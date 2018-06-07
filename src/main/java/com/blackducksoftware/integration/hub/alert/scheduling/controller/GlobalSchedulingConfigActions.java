@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
@@ -167,8 +167,8 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
 
         final NotificationDetailResults results = reader.read();
-        final DBStoreEvent event = processor.process(results);
-        final List<DBStoreEvent> events = new ArrayList<>();
+        final NotificationListEvent event = processor.process(results);
+        final List<NotificationListEvent> events = new ArrayList<>();
         if (event != null) {
             events.add(event);
         }

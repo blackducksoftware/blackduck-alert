@@ -25,7 +25,6 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupEvent;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
@@ -36,8 +35,10 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.glob
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 
 public class DistributionChannelTest extends ChannelTest {
     @Test
@@ -104,7 +105,8 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, globalEmailRepository, emailGroupRepository, commonRepository);
 
         final Long commonId = 1L;
-        final EmailGroupEvent event = new EmailGroupEvent(createProjectData("Distribution Channel Test"), commonId);
+        final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, commonId);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
@@ -130,7 +132,8 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, commonRepository);
 
         final Long commonId = 1L;
-        final EmailGroupEvent event = new EmailGroupEvent(createProjectData("Distribution Channel Test"), commonId);
+        final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
+        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, digestModel, commonId);
 
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.SLACK, "Other Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
