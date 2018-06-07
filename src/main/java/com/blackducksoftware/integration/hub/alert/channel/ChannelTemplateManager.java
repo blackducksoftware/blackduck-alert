@@ -25,9 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -36,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.AbstractJmsTemplate;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
@@ -53,7 +50,6 @@ import com.google.gson.Gson;
 @Transactional
 @Component
 public class ChannelTemplateManager {
-    private final Map<String, AbstractJmsTemplate> jmsTemplateMap;
     private final Gson gson;
     private final JmsTemplate jmsTemplate;
     private final AuditEntryRepositoryWrapper auditEntryRepository;
@@ -63,16 +59,11 @@ public class ChannelTemplateManager {
     @Autowired
     public ChannelTemplateManager(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final AuditNotificationRepositoryWrapper auditNotificationRepository, final JmsTemplate jmsTemplate,
             final AlertEventContentConverter contentConverter) {
-        jmsTemplateMap = new HashMap<>();
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.jmsTemplate = jmsTemplate;
         this.contentConverter = contentConverter;
-    }
-
-    public boolean hasTemplate(final String destination) {
-        return jmsTemplateMap.containsKey(destination);
     }
 
     public void sendEvents(final List<? extends AlertEvent> eventList) {
