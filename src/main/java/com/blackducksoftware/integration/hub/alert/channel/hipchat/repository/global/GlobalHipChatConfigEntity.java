@@ -24,18 +24,22 @@
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.hub.alert.annotation.EncryptedStringField;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
 public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
 
-    @EncryptedStringField
+    // @EncryptedStringField
     @Column(name = "api_key")
+    @SensitiveField
+    @Convert(converter = StringEncryptionConverter.class)
     private String apiKey;
 
     @Column(name = "host_server")
