@@ -49,8 +49,10 @@ public class HomeControllerTestIT {
 
     private final String homeVerifyUrl = BaseController.BASE_PATH + "/verify";
     private final String homeUrl = "/";
+
     @Autowired
     protected WebApplicationContext webApplicationContext;
+
     @Autowired
     protected HttpSessionCsrfTokenRepository csrfTokenRepository;
     private MockMvc mockMvc;
