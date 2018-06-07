@@ -9,17 +9,18 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public class CommonDistributionConfigControllerTestIT extends ControllerTest<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> {
+public class CommonDistributionConfigControllerTestIT extends ControllerTest<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository, CommonDistributionRepositoryWrapper> {
 
     @Autowired
-    CommonDistributionRepository commonDistributionRepository;
+    CommonDistributionRepositoryWrapper commonDistributionRepository;
 
     @Override
-    public CommonDistributionRepository getEntityRepository() {
+    public CommonDistributionRepositoryWrapper getEntityRepository() {
         return commonDistributionRepository;
     }
 
@@ -67,7 +68,8 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(gson.toJson(restModel));
+        final String content = gson.toJson(restModel);
+        request.content(content);
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }

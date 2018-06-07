@@ -6,17 +6,18 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackE
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
 
-public class SlackDistributionConfigControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> {
+public class SlackDistributionConfigControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository, SlackDistributionRepositoryWrapper> {
 
     @Autowired
-    SlackDistributionRepository slackDistributionRepository;
+    SlackDistributionRepositoryWrapper slackDistributionRepository;
 
     @Override
-    public SlackDistributionRepository getEntityRepository() {
+    public SlackDistributionRepositoryWrapper getEntityRepository() {
         return slackDistributionRepository;
     }
 

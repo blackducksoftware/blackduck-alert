@@ -6,15 +6,16 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
 
-public class HipChatDistributionConfigControllerTestIT extends ControllerTest<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepository> {
+public class HipChatDistributionConfigControllerTestIT extends ControllerTest<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepository, HipChatDistributionRepositoryWrapper> {
 
     @Autowired
-    HipChatDistributionRepository hipChatDistributionRepository;
+    HipChatDistributionRepositoryWrapper hipChatDistributionRepository;
 
     @Override
-    public HipChatDistributionRepository getEntityRepository() {
+    public HipChatDistributionRepositoryWrapper getEntityRepository() {
         return hipChatDistributionRepository;
     }
 

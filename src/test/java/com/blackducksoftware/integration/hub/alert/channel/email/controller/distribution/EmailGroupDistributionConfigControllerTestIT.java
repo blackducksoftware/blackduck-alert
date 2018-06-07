@@ -6,15 +6,16 @@ import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailE
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.web.controller.ControllerTest;
 
-public class EmailGroupDistributionConfigControllerTestIT extends ControllerTest<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository> {
+public class EmailGroupDistributionConfigControllerTestIT extends ControllerTest<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository, EmailGroupDistributionRepositoryWrapper> {
 
     @Autowired
-    EmailGroupDistributionRepository emailGroupDistributionRepository;
+    EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository;
 
     @Override
-    public EmailGroupDistributionRepository getEntityRepository() {
+    public EmailGroupDistributionRepositoryWrapper getEntityRepository() {
         return emailGroupDistributionRepository;
     }
 

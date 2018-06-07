@@ -7,7 +7,7 @@ import javax.jms.ConnectionFactory;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
 
 public class RealTimeJMSTemplateTest {
 
@@ -17,7 +17,7 @@ public class RealTimeJMSTemplateTest {
         final RealTimeJmsTemplate realTimeJmsTemplate = new RealTimeJmsTemplate(connectionFactory);
 
         final String actualDestinationName = realTimeJmsTemplate.getDestinationName();
-        final String expectedDestinationName = RealTimeEvent.TOPIC_NAME;
+        final String expectedDestinationName = InternalEventTypes.REAL_TIME_EVENT.getDestination();
 
         assertEquals(expectedDestinationName, actualDestinationName);
     }

@@ -27,8 +27,10 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.google.gson.Gson;
 
 public class ChannelEventFactoryTest {
     private static final String DISTRIBUTION_TYPE = "TYPE";
@@ -41,6 +43,8 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createEventWithChannelManagerTest() {
+        final Gson gson = new Gson();
+        final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
         final DistributionChannelManager<GlobalChannelConfigEntity, DistributionChannelConfigEntity, CommonDistributionConfigRestModel> manager = Mockito.mock(DistributionChannelManager.class);
         final List<DistributionChannelManager<GlobalChannelConfigEntity, DistributionChannelConfigEntity, CommonDistributionConfigRestModel>> managers = Arrays.asList(manager);
         final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> factory = new ChannelEventFactory<>(managers);
@@ -48,7 +52,7 @@ public class ChannelEventFactoryTest {
         final Long id = 25L;
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, digestModel, id);
+        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.convertToString(digestModel), id);
         Mockito.when(manager.isApplicable(DISTRIBUTION_TYPE)).thenReturn(true);
         Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 

@@ -21,7 +21,7 @@ public class HipChatManagerTest extends ChannelManagerTest<HipChatDistributionRe
         final HipChatChannel mockChannel = Mockito.mock(HipChatChannel.class);
         final GlobalHipChatRepositoryWrapper mockGlobalRepositoryWrapper = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
         final HipChatDistributionRepositoryWrapper mockRepositoryWrapper = Mockito.mock(HipChatDistributionRepositoryWrapper.class);
-        final HipChatManager manager = new HipChatManager(mockChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer());
+        final HipChatManager manager = new HipChatManager(mockChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer(), contentConverter);
 
         return manager;
     }

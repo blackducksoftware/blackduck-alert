@@ -21,17 +21,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel.slack;
+package com.blackducksoftware.integration.hub.alert.event;
 
-import java.util.Collection;
+import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AlertChannelEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class SlackEvent extends AlertChannelEvent {
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.google.gson.Gson;
 
-    public SlackEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId) {
-        super(projectDataCollection, commonDistributionConfigId);
+@Component
+public class AlertEventContentConverter {
+
+    private final Gson gson;
+
+    @Autowired
+    public AlertEventContentConverter(final Gson gson) {
+        this.gson = gson;
     }
 
+    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) throws AlertException {
+        if (contentClass != null && content != null) {
+            return Optional.ofNullable(gson.fromJson(content, contentClass));
+        }
+        return Optional.empty();
+    }
+
+    public <C> String convertToString(final C content) {
+        return gson.toJson(content);
+    }
 }

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -42,6 +43,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.distributio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
@@ -55,14 +57,16 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final SimpleKeyRepositoryWrapper<C, ?> distributionRepository;
     private final CommonDistributionRepositoryWrapper commonDistributionRepository;
     private final AuditEntryRepositoryWrapper auditEntryRepository;
+    private final AlertEventContentConverter contentExtractor;
 
     public DistributionChannel(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<C, ?> distributionRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository) {
+            final CommonDistributionRepositoryWrapper commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
+        this.contentExtractor = contentExtractor;
     }
 
     public AuditEntryRepositoryWrapper getAuditEntryRepository() {
@@ -168,5 +172,9 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
                 logger.error(e.getMessage(), e);
             }
         }
+    }
+
+    public <C> Optional<C> extractContentFromEvent(final ChannelEvent event, final Class<C> contentClass) throws AlertException {
+        return contentExtractor.getContent(event.getContent(), contentClass);
     }
 }

@@ -21,7 +21,7 @@ public class EmailChannelManagerTest extends ChannelManagerTest<EmailGroupDistri
         final EmailGroupChannel mockEmailChannel = Mockito.mock(EmailGroupChannel.class);
         final GlobalEmailRepositoryWrapper mockGlobalRepositoryWrapper = Mockito.mock(GlobalEmailRepositoryWrapper.class);
         final EmailGroupDistributionRepositoryWrapper mockRepositoryWrapper = Mockito.mock(EmailGroupDistributionRepositoryWrapper.class);
-        final EmailGroupManager manager = new EmailGroupManager(mockEmailChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer());
+        final EmailGroupManager manager = new EmailGroupManager(mockEmailChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer(), contentConverter);
 
         return manager;
     }

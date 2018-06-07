@@ -35,29 +35,32 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
-import com.blackducksoftware.integration.hub.alert.event.NotificationListEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 
 @Transactional
-public class AccumulatorWriter implements ItemWriter<NotificationListEvent> {
+public class AccumulatorWriter implements ItemWriter<AlertEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
+    private final AlertEventContentConverter contentConverter;
 
-    public AccumulatorWriter(final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager) {
+    public AccumulatorWriter(final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager, final AlertEventContentConverter contentConverter) {
         this.notificationManager = notificationManager;
         this.channelTemplateManager = channelTemplateManager;
+        this.contentConverter = contentConverter;
     }
 
     @Override
-    public void write(final List<? extends NotificationListEvent> itemList) throws Exception {
+    public void write(final List<? extends AlertEvent> itemList) throws Exception {
         try {
             if (itemList != null && !itemList.isEmpty()) {
                 logger.info("Writing {} notifications", itemList.size());
-                for (NotificationListEvent item : itemList) {
-                    final Optional<NotificationModels> optionalModel = item.getContent(NotificationModels.class);
+                for (final AlertEvent item : itemList) {
+                    final Optional<NotificationModels> optionalModel = contentConverter.getContent(item.getContent(), NotificationModels.class);
                     if (optionalModel.isPresent()) {
                         final NotificationModels notificationModels = optionalModel.get();
                         final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
@@ -66,7 +69,7 @@ public class AccumulatorWriter implements ItemWriter<NotificationListEvent> {
                             notificationManager.saveNotification(notification);
                             entityList.add(notification);
                         });
-                        final NotificationListEvent realTimeEvent = new NotificationListEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), notificationModels);
+                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
                         channelTemplateManager.sendEvent(realTimeEvent);
                     }
                 }

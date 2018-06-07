@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -32,9 +31,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
@@ -51,21 +51,17 @@ import com.google.gson.Gson;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfigRestModel, CR extends JpaRepository<E, Long>> {
-
+public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfigRestModel, CR extends JpaRepository<E, Long>, W extends SimpleKeyRepositoryWrapper<E, CR>> {
+    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
     @Autowired
-    protected CommonDistributionRepository commonDistributionRepository;
-
-    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
+    protected CommonDistributionRepositoryWrapper commonDistributionRepository;
     protected MockMvc mockMvc;
 
     protected Gson gson;
 
-    protected CR entityRepository;
+    protected W entityRepository;
 
     protected MockEntityUtil<E> entityMockUtil;
 
@@ -79,7 +75,9 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
     protected R restModel;
 
-    public abstract CR getEntityRepository();
+    protected E savedEntity;
+
+    public abstract W getEntityRepository();
 
     public abstract MockEntityUtil<E> getEntityMockUtil();
 
@@ -91,9 +89,9 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     public void setup() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-
+        commonDistributionRepository.deleteAll();
         entityRepository = getEntityRepository();
-        entityRepository.deleteAllInBatch();
+        entityRepository.deleteAll();
 
         entityMockUtil = getEntityMockUtil();
         restModelMockUtil = getRestModelMockUtil();
@@ -101,14 +99,8 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
         restModel = restModelMockUtil.createRestModel();
         entity = entityMockUtil.createEntity();
-        entityRepository.save(entity);
-
+        savedEntity = entityRepository.save(entity);
         restUrl = BaseController.BASE_PATH + getRestControllerUrl();
-    }
-
-    @After
-    public void cleanup() {
-        entityRepository.deleteAllInBatch();
     }
 
     @Test
@@ -121,7 +113,6 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
-        entityRepository.deleteAll();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -131,9 +122,15 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPutConfig() throws Exception {
-        entityRepository.deleteAll();
-        final E savedEntity = entityRepository.save(entity);
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
+        System.out.println("Common Distribution count: " + commonDistributionRepository.count());
+        commonDistributionRepository.findAll().forEach(item -> {
+            System.out.println("Common Entity id: " + item.getId());
+        });
+        System.out.println("Entity count: " + entityRepository.count());
+        entityRepository.findAll().forEach(item -> {
+            System.out.println("Entity id: " + item.getId());
+        });
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(commonEntity.getId()));
@@ -152,8 +149,6 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
-        entityRepository.deleteAll();
-        final E savedEntity = entityRepository.save(entity);
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));

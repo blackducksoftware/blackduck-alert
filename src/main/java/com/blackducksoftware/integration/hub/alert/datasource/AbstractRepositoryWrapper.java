@@ -65,7 +65,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public boolean exists(final ID id) {
-        return getRepository().existsById(id);
+        return getRepository().findById(id).isPresent();
     }
 
     // TODO: rename to deleteById
@@ -78,7 +78,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     }
 
     public void deleteAll() {
-        Collection<D> entityList = getRepository().findAll();
+        final Collection<D> entityList = getRepository().findAll();
         delete(entityList);
     }
 
@@ -90,7 +90,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     //TODO: change this to return an optional and r
     public D findById(final ID id) {
         try {
-            Optional<D> foundEntity = getRepository().findById(id);
+            final Optional<D> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
                 return decryptSensitiveData(foundEntity.get());
             }
@@ -121,7 +121,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
         return new AlertPage<>(entityPage.getTotalPages(), entityPage.getNumber(), entityPage.getSize(), contentList);
     }
 
-    private List<D> findAllDecrypted(List<D> entityList) {
+    private List<D> findAllDecrypted(final List<D> entityList) {
         List<D> contentList;
         if (entityList == null) {
             contentList = Collections.emptyList();
@@ -156,7 +156,7 @@ public abstract class AbstractRepositoryWrapper<D extends BaseEntity, ID extends
     public D save(final D entity) {
         try {
             final D encryptedEntity = encryptSensitiveData(entity);
-            return getRepository().save(encryptedEntity);
+            return getRepository().saveAndFlush(encryptedEntity);
         } catch (final EncryptionException ex) {
             getLogger().error("Error saving entity", ex);
             return null;
