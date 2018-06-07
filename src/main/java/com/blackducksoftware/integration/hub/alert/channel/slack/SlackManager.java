@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
@@ -36,6 +37,7 @@ import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
+@Component
 public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEntity, SlackDistributionConfigEntity, SlackDistributionRestModel> {
     @Autowired
     public SlackManager(final SlackChannel distributionChannel, final GlobalSlackRepository globalRepository, final SlackDistributionRepository localRepository, final ObjectTransformer objectTransformer) {
