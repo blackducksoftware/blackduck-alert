@@ -24,8 +24,10 @@
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -43,6 +45,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 
@@ -67,7 +70,6 @@ public class NotificationPostProcessor {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
             if (doFrequenciesMatch(distributionConfig, projectData)) {
-                filterMatchingNotificationTypes(distributionConfig, projectData);
                 if (distributionConfig.getFilterByProject()) {
                     final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, projectData);
                     applicableConfigurations.addAll(filteredConfigurations);
@@ -99,21 +101,26 @@ public class NotificationPostProcessor {
         return false;
     }
 
-    public void filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+    public ProjectData filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+        final ProjectData filteredProjectData = new ProjectData(projectData.getDigestType(), projectData.getProjectName(), projectData.getProjectVersion(), projectData.getNotificationIds(), null);
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
-        final Set<NotificationCategoryEnum> foundNotificationCategories = new HashSet<>();
+        // final Set<NotificationCategoryEnum> foundNotificationCategories = new HashSet<>();
+        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
             if (foundEntity != null) {
-                foundNotificationCategories.add(foundEntity.getType());
+                categoryMap.put(foundEntity.getType(), projectData.getCategoryMap().get(foundEntity.getType()));
+                // foundNotificationCategories.add(foundEntity.getType());
             }
         }
 
-        for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-            if (!foundNotificationCategories.contains(category)) {
-                projectData.getCategoryMap().remove(category);
-            }
-        }
+        // for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
+        // if (!foundNotificationCategories.contains(category)) {
+        // filteredProjectData.getCategoryMap().remove(category);
+        // }
+        // }
+
+        return filteredProjectData;
     }
 
 }
