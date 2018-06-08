@@ -11,18 +11,24 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -33,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.google.gson.Gson;
 
-public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends SimpleKeyRepositoryWrapper<GE, ?>, GCA extends ConfigActions<GE, GR, GW>> {
+public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
     protected GCA configActions;
     protected AlertEventContentConverter contentConverter;
 
@@ -55,11 +61,11 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     @Test
     public void testDoesConfigExist() {
 
-        Mockito.when(configActions.getRepository().exists(Mockito.anyLong())).thenReturn(true);
+        Mockito.when(configActions.getRepository().existsById(Mockito.anyLong())).thenReturn(true);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
-        Mockito.when(configActions.getRepository().exists(Mockito.anyLong())).thenReturn(false);
+        Mockito.when(configActions.getRepository().existsById(Mockito.anyLong())).thenReturn(false);
         assertFalse(configActions.doesConfigExist(1L));
         assertFalse(configActions.doesConfigExist("1"));
 
@@ -71,7 +77,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Test
     public void testGetConfig() throws Exception {
-        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(getGlobalEntityMockUtil().createGlobalEntity());
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(Optional.of(getGlobalEntityMockUtil().createGlobalEntity()));
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
@@ -89,7 +95,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(Optional.empty());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(null);
 
         configsById = configActions.getConfig(1L);
@@ -106,12 +112,12 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     public void testDeleteConfig() {
         configActions.deleteConfig(1L);
 
-        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).deleteById(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
         configActions.deleteConfig("1");
 
-        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).deleteById(Mockito.anyLong());
 
         final String idString = null;
         final Long idLong = null;
@@ -119,12 +125,12 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
         Mockito.reset(configActions.getRepository());
 
         configActions.deleteConfig(idLong);
-        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).deleteById(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
 
         configActions.deleteConfig(idString);
-        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).deleteById(Mockito.anyLong());
 
     }
 

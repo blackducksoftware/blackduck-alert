@@ -21,26 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.datasource;
+package com.blackducksoftware.integration.hub.alert.annotation;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import com.blackducksoftware.integration.exception.EncryptionException;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.BaseEntity;
+import javax.persistence.Convert;
 
-public abstract class SimpleKeyRepositoryWrapper<D extends BaseEntity, R extends JpaRepository<D, Long>> extends AbstractRepositoryWrapper<D, Long, R> {
+import com.blackducksoftware.integration.hub.alert.web.security.StringEncryptionConverter;
 
-    public SimpleKeyRepositoryWrapper(final R repository) {
-        super(repository);
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@SensitiveField
+@Convert(converter = StringEncryptionConverter.class)
+public @interface EncryptedStringField {
 
-    @Override
-    public D encryptSensitiveData(final D entity) throws EncryptionException {
-        return entity;
-    }
-
-    @Override
-    public D decryptSensitiveData(final D entity) throws EncryptionException {
-        return entity;
-    }
 }

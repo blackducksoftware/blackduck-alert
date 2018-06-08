@@ -24,11 +24,13 @@
 package com.blackducksoftware.integration.hub.alert.channel.email.repository.global;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_email_config")
@@ -44,8 +46,10 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     private String mailSmtpUser;
 
     // not a javamail property, but we are going to piggy-back to get the smtp password
-    @SensitiveField
+    // @EncryptedStringField
     @Column(name = "mail_smtp_password")
+    @SensitiveField
+    @Convert(converter = StringEncryptionConverter.class)
     private String mailSmtpPassword;
 
     @Column(name = "mail_smtp_port")

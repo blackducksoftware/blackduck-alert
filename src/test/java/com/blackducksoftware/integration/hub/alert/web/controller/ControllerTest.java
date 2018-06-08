@@ -31,10 +31,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
@@ -51,17 +50,17 @@ import com.google.gson.Gson;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfigRestModel, CR extends JpaRepository<E, Long>, W extends SimpleKeyRepositoryWrapper<E, CR>> {
+public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfigRestModel, CR extends JpaRepository<E, Long>> {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
-    protected CommonDistributionRepositoryWrapper commonDistributionRepository;
+    protected CommonDistributionRepository commonDistributionRepository;
     protected MockMvc mockMvc;
 
     protected Gson gson;
 
-    protected W entityRepository;
+    protected CR entityRepository;
 
     protected MockEntityUtil<E> entityMockUtil;
 
@@ -77,7 +76,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
     protected E savedEntity;
 
-    public abstract W getEntityRepository();
+    public abstract CR getEntityRepository();
 
     public abstract MockEntityUtil<E> getEntityMockUtil();
 

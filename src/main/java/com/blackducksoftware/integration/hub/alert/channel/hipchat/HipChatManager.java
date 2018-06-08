@@ -29,9 +29,9 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
@@ -41,8 +41,9 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 @Component
 public class HipChatManager extends DistributionChannelManager<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
+
     @Autowired
-    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepositoryWrapper globalRepository, final HipChatDistributionRepositoryWrapper localRepository, final ObjectTransformer objectTransformer,
+    public HipChatManager(final HipChatChannel distributionChannel, final GlobalHipChatRepository globalRepository, final HipChatDistributionRepository localRepository, final ObjectTransformer objectTransformer,
             final AlertEventContentConverter contentConverter) {
         super(distributionChannel, globalRepository, localRepository, objectTransformer, contentConverter);
     }

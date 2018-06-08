@@ -8,9 +8,9 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.controller.dist
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackRepository;
 import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
@@ -19,8 +19,8 @@ public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributio
     @Override
     public SlackManager getChannelManager() {
         final SlackChannel mockSlackChannel = Mockito.mock(SlackChannel.class);
-        final GlobalSlackRepositoryWrapper mockGlobalRepositoryWrapper = Mockito.mock(GlobalSlackRepositoryWrapper.class);
-        final SlackDistributionRepositoryWrapper mockSlackRepositoryWrapper = Mockito.mock(SlackDistributionRepositoryWrapper.class);
+        final GlobalSlackRepository mockGlobalRepositoryWrapper = Mockito.mock(GlobalSlackRepository.class);
+        final SlackDistributionRepository mockSlackRepositoryWrapper = Mockito.mock(SlackDistributionRepository.class);
         final SlackManager manager = new SlackManager(mockSlackChannel, mockGlobalRepositoryWrapper, mockSlackRepositoryWrapper, new ObjectTransformer(), contentConverter);
 
         return manager;

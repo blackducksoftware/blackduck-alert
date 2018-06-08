@@ -44,7 +44,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class DistributionProjectRepositoryTestIT {
     @Autowired
-    private DistributionProjectRepositoryWrapper distributionProjectRepository;
+    private DistributionProjectRepository distributionProjectRepository;
 
     @Before
     public void cleanup() {

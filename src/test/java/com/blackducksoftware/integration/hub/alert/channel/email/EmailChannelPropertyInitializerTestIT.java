@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -39,7 +39,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class EmailChannelPropertyInitializerTestIT {
 
     @Autowired
-    private GlobalEmailRepositoryWrapper repository;
+    private GlobalEmailRepository repository;
 
     @Test
     public void testChannelNamePrefix() {

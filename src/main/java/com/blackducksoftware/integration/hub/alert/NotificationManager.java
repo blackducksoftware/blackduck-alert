@@ -37,29 +37,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class NotificationManager {
-    private final NotificationRepositoryWrapper notificationRepository;
-    private final VulnerabilityRepositoryWrapper vulnerabilityRepository;
-    private final AuditEntryRepositoryWrapper auditEntryRepository;
-    private final AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper;
+    private final NotificationRepository notificationRepository;
+    private final VulnerabilityRepository vulnerabilityRepository;
+    private final AuditEntryRepository auditEntryRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public NotificationManager(final NotificationRepositoryWrapper notificationRepository, final VulnerabilityRepositoryWrapper vulnerabilityRepository, final AuditEntryRepositoryWrapper auditEntryRepository,
-            final AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper) {
+    public NotificationManager(final NotificationRepository notificationRepository, final VulnerabilityRepository vulnerabilityRepository, final AuditEntryRepository auditEntryRepository,
+            final AuditNotificationRepository auditNotificationRepository) {
         this.notificationRepository = notificationRepository;
         this.vulnerabilityRepository = vulnerabilityRepository;
         this.auditEntryRepository = auditEntryRepository;
-        this.auditNotificationRepositoryWrapper = auditNotificationRepositoryWrapper;
+        this.auditNotificationRepository = auditNotificationRepository;
     }
 
     public NotificationModel saveNotification(final NotificationModel notification) {
@@ -70,14 +70,14 @@ public class NotificationManager {
             final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
                     .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
                     .collect(Collectors.toList());
-            vulnerabilities = vulnerabilityRepository.save(vulnerabilitiesToSave);
+            vulnerabilities = vulnerabilityRepository.saveAll(vulnerabilitiesToSave);
         }
 
         return new NotificationModel(notificationEntity, vulnerabilities);
     }
 
     public List<NotificationModel> findByIds(final List<Long> notificationIds) {
-        final List<NotificationEntity> notificationList = notificationRepository.findAll(notificationIds);
+        final List<NotificationEntity> notificationList = notificationRepository.findAllById(notificationIds);
         return createModelList(notificationList);
     }
 
@@ -117,18 +117,18 @@ public class NotificationManager {
     }
 
     public void deleteNotification(final NotificationModel model) {
-        vulnerabilityRepository.delete(model.getVulnerabilityList());
+        vulnerabilityRepository.deleteAll(model.getVulnerabilityList());
         notificationRepository.delete(model.getNotificationEntity());
         deleteAuditEntries(model.getNotificationEntity().getId());
     }
 
     private void deleteAuditEntries(final Long notificationId) {
-        final List<AuditNotificationRelation> foundRelations = auditNotificationRepositoryWrapper.findByNotificationId(notificationId);
+        final List<AuditNotificationRelation> foundRelations = auditNotificationRepository.findByNotificationId(notificationId);
         final Function<AuditNotificationRelation, Long> transform = AuditNotificationRelation::getAuditEntryId;
         final List<Long> auditIdList = foundRelations.stream().map(transform).collect(Collectors.toList());
-        auditNotificationRepositoryWrapper.delete(foundRelations);
-        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAll(auditIdList);
-        auditEntryRepository.delete(auditEntryList);
+        auditNotificationRepository.deleteAll(foundRelations);
+        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findAllById(auditIdList);
+        auditEntryRepository.deleteAll(auditEntryList);
 
     }
 
