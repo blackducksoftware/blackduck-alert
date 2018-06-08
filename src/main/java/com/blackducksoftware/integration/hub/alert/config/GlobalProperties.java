@@ -249,6 +249,9 @@ public class GlobalProperties {
     public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
         final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
         if (globalConfigEntity != null) {
+            if (globalConfigEntity.getHubTimeout() == null || globalConfigEntity.getHubApiKey() == null) {
+                throw new AlertException("Global config settings can not be null.");
+            }
             return createHubServerConfig(logger, globalConfigEntity.getHubTimeout(), globalConfigEntity.getHubApiKey());
         }
         return null;
