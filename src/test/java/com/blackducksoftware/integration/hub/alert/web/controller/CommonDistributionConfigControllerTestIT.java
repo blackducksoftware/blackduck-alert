@@ -9,18 +9,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public class CommonDistributionConfigControllerTestIT extends ControllerTest<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository, CommonDistributionRepositoryWrapper> {
+public class CommonDistributionConfigControllerTestIT extends ControllerTest<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> {
 
     @Autowired
-    CommonDistributionRepositoryWrapper commonDistributionRepository;
+    CommonDistributionRepository commonDistributionRepository;
 
     @Override
-    public CommonDistributionRepositoryWrapper getEntityRepository() {
+    public CommonDistributionRepository getEntityRepository() {
         return commonDistributionRepository;
     }
 

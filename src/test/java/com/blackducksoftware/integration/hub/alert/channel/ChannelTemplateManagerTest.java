@@ -11,8 +11,8 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -34,12 +34,12 @@ public class ChannelTemplateManagerTest {
     @Test
     public void testSendEvents() {
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
-        final AuditEntryRepositoryWrapper auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        Mockito.when(auditEntryRepositoryWrapper.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
-        final AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
+        final AuditNotificationRepository auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepository.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepository, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
@@ -50,9 +50,9 @@ public class ChannelTemplateManagerTest {
     @Test
     public void testSendEventReturnsFalse() {
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
-        final AuditEntryRepositoryWrapper auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepositoryWrapper.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
-        final AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepositoryWrapper.class);
+        final AuditNotificationRepository auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepository.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
@@ -65,9 +65,9 @@ public class ChannelTemplateManagerTest {
     @Test
     public void testNotAbstractChannelEvent() {
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
-        final AuditEntryRepositoryWrapper auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepositoryWrapper = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepositoryWrapper.save(Mockito.any(AuditEntryEntity.class))).thenReturn(mockAuditEntryEntity.createEntity());
-        final AuditNotificationRepositoryWrapper auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepositoryWrapper.class);
+        final AuditNotificationRepository auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepository.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);

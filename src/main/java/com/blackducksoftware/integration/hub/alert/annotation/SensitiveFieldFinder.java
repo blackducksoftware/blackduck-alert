@@ -23,20 +23,33 @@
  */
 package com.blackducksoftware.integration.hub.alert.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.core.annotation.AnnotationUtils;
 
 public class SensitiveFieldFinder {
 
     public static Set<Field> findSensitiveFields(final Class<?> clazz) {
         final Set<Field> fields = new HashSet<>();
         for (final Field field : clazz.getDeclaredFields()) {
-            if (field.isAnnotationPresent(SensitiveField.class)) {
+            if (field.isAnnotationPresent(SensitiveField.class) || hasParentSensitiveAnnotation(field.getAnnotations())) {
                 fields.add(field);
             }
         }
         return fields;
+    }
+
+    public static boolean hasParentSensitiveAnnotation(final Annotation[] annotations) {
+        for (final Annotation annotation : annotations) {
+            final SensitiveField fieldAnnotation = AnnotationUtils.findAnnotation(annotation.getClass(), SensitiveField.class);
+            if (fieldAnnotation != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

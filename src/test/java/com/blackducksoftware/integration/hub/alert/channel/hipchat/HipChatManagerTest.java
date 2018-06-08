@@ -8,9 +8,9 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipC
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
@@ -19,8 +19,8 @@ public class HipChatManagerTest extends ChannelManagerTest<HipChatDistributionRe
     @Override
     public HipChatManager getChannelManager() {
         final HipChatChannel mockChannel = Mockito.mock(HipChatChannel.class);
-        final GlobalHipChatRepositoryWrapper mockGlobalRepositoryWrapper = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
-        final HipChatDistributionRepositoryWrapper mockRepositoryWrapper = Mockito.mock(HipChatDistributionRepositoryWrapper.class);
+        final GlobalHipChatRepository mockGlobalRepositoryWrapper = Mockito.mock(GlobalHipChatRepository.class);
+        final HipChatDistributionRepository mockRepositoryWrapper = Mockito.mock(HipChatDistributionRepository.class);
         final HipChatManager manager = new HipChatManager(mockChannel, mockGlobalRepositoryWrapper, mockRepositoryWrapper, new ObjectTransformer(), contentConverter);
 
         return manager;

@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -48,7 +48,7 @@ public class PurgeJobIT {
     @Autowired
     private PurgeConfig purgeConfig;
     @Autowired
-    private NotificationRepositoryWrapper notificationRepository;
+    private NotificationRepository notificationRepository;
 
     @Before
     public void cleanup() {
@@ -127,7 +127,7 @@ public class PurgeJobIT {
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
-        notificationRepository.save(entityList);
+        notificationRepository.saveAll(entityList);
 
         PurgeReader reader = purgeConfig.reader();
         List<NotificationModel> resultList = reader.read();
@@ -140,7 +140,7 @@ public class PurgeJobIT {
         zonedDateTime = zonedDateTime.minusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
-        notificationRepository.save(entityList);
+        notificationRepository.saveAll(entityList);
 
         reader = purgeConfig.reader();
         resultList = reader.read();
@@ -178,7 +178,7 @@ public class PurgeJobIT {
         zonedDateTime = zonedDateTime.plusDays(1);
         createdAt = Date.from(zonedDateTime.toInstant());
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
-        notificationRepository.save(entityList);
+        notificationRepository.saveAll(entityList);
 
         final PurgeReader reader = purgeConfig.createReaderWithDayOffset(2);
         final List<NotificationModel> resultList = reader.read();

@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -44,9 +44,9 @@ public class PhoneHomeTest {
 
     @Test
     public void testChannelMetaData() {
-        final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
-        Mockito.when(commonDistributionRepositoryWrapper.findAll()).thenReturn(createConfigEntities());
-        final PhoneHome phoneHome = new PhoneHome(commonDistributionRepositoryWrapper);
+        final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
+        Mockito.when(commonDistributionRepository.findAll()).thenReturn(createConfigEntities());
+        final PhoneHome phoneHome = new PhoneHome(commonDistributionRepository);
         final PhoneHomeRequestBody.Builder builder = new PhoneHomeRequestBody.Builder();
 
         phoneHome.addChannelMetaData(builder);

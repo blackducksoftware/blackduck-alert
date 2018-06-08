@@ -35,8 +35,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -52,12 +52,12 @@ import com.google.gson.Gson;
 public class ChannelTemplateManager {
     private final Gson gson;
     private final JmsTemplate jmsTemplate;
-    private final AuditEntryRepositoryWrapper auditEntryRepository;
-    private final AuditNotificationRepositoryWrapper auditNotificationRepository;
+    private final AuditEntryRepository auditEntryRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
     private final AlertEventContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditEntryRepositoryWrapper auditEntryRepository, final AuditNotificationRepositoryWrapper auditNotificationRepository, final JmsTemplate jmsTemplate,
+    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate,
             final AlertEventContentConverter contentConverter) {
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
@@ -78,14 +78,14 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
-            AuditEntryEntity auditEntryEntity = null;
+            Optional<AuditEntryEntity> auditEntryEntity = null;
             if (channelEvent.getAuditEntryId() == null) {
-                auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
+                auditEntryEntity = Optional.of(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
             } else {
                 auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId());
             }
-            auditEntryEntity.setStatus(StatusEnum.PENDING);
-            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+            auditEntryEntity.get().setStatus(StatusEnum.PENDING);
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity.get());
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
             try {
                 final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);

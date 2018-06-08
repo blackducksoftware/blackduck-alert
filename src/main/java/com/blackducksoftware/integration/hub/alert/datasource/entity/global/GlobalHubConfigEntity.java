@@ -24,11 +24,13 @@
 package com.blackducksoftware.integration.hub.alert.datasource.entity.global;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_hub_config")
@@ -36,8 +38,10 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     @Column(name = "hub_timeout")
     private Integer hubTimeout;
 
-    @SensitiveField
+    // @EncryptedStringField
     @Column(name = "hub_api_key")
+    @SensitiveField
+    @Convert(converter = StringEncryptionConverter.class)
     private String hubApiKey;
 
     public GlobalHubConfigEntity() {

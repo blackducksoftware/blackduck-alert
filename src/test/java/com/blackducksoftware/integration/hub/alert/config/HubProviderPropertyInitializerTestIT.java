@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -38,7 +38,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class HubProviderPropertyInitializerTestIT {
 
     @Autowired
-    private GlobalHubRepositoryWrapper repository;
+    private GlobalHubRepository repository;
 
     @Test
     public void testChannelNamePrefix() {

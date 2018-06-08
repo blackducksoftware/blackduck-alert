@@ -43,7 +43,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class SlackDistributionRepositoryTestIT {
     @Autowired
-    private SlackDistributionRepositoryWrapper slackDistributionRepository;
+    private SlackDistributionRepository slackDistributionRepository;
 
     @Before
     public void cleanup() {

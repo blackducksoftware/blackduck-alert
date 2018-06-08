@@ -44,12 +44,12 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -65,13 +65,13 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class NotificationPostProcessorTestIT {
     @Autowired
-    DistributionProjectRepositoryWrapper distributionProjectRepository;
+    DistributionProjectRepository distributionProjectRepository;
     @Autowired
-    ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
+    ConfiguredProjectsRepository configuredProjectsRepository;
     @Autowired
-    DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
+    DistributionNotificationTypeRepository distributionNotificationTypeRepository;
     @Autowired
-    NotificationTypeRepositoryWrapper notificationTypeRepository;
+    NotificationTypeRepository notificationTypeRepository;
 
     @Test
     public void getApplicableConfigurationsTest() {

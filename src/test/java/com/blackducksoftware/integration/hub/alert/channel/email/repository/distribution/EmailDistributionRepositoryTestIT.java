@@ -43,7 +43,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class EmailDistributionRepositoryTestIT {
     @Autowired
-    private EmailGroupDistributionRepositoryWrapper emailGroupDistributionRepository;
+    private EmailGroupDistributionRepository emailGroupDistributionRepository;
 
     @Before
     public void cleanUpBeforeTest() {
