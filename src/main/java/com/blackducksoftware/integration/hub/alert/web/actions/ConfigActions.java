@@ -108,7 +108,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                 }
 
             }
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+        } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
         }
         return restModel;
@@ -168,7 +168,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
                     }
                 }
             }
-        } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
+        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
             throw new AlertException(e.getMessage(), e);
         }
 
@@ -210,9 +210,50 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public String testConfig(final R restModel) throws IntegrationException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-            updateNewConfigWithSavedConfig(restModel, restModel.getId());
+            fillNewConfigWithSavedConfig(restModel, restModel.getId());
         }
         return channelTestConfig(restModel);
+    }
+
+    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
+        if (StringUtils.isNotBlank(id)) {
+            final Long longId = objectTransformer.stringToLong(id);
+            final Optional<D> savedConfig = repository.findById(longId);
+            if (savedConfig.isPresent()) {
+                return fillNewConfigWithSavedConfig(newConfig, savedConfig.get());
+            }
+        }
+        return newConfig;
+    }
+
+    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
+        try {
+            final Class<?> newConfigClass = newConfig.getClass();
+
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
+            for (final Field field : sensitiveFields) {
+                field.setAccessible(true);
+                final Object value = field.get(newConfig);
+                if (value == null || StringUtils.isBlank(value.toString())) {
+                    if (savedConfig != null) {
+                        final Class<?> savedConfigClass = savedConfig.getClass();
+                        Field savedField = null;
+                        try {
+                            savedField = savedConfigClass.getDeclaredField(field.getName());
+                        } catch (final NoSuchFieldException e) {
+                            continue;
+                        }
+                        savedField.setAccessible(true);
+                        final String savedValue = (String) savedField.get(savedConfig);
+                        field.set(newConfig, savedValue);
+                    }
+                }
+            }
+        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+
+        return newConfig;
     }
 
     public abstract String channelTestConfig(final R restModel) throws IntegrationException;
