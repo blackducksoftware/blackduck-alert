@@ -37,6 +37,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Transactional
 public abstract class DigestItemReader implements ItemReader<List<NotificationModel>> {
@@ -54,23 +55,28 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationMo
     @Override
     public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         try {
+            logger.info("{} Digest Item Reader started...", readerName);
             if (hasRead) {
                 return null;
             } else {
-                logger.debug("{} Digest Item Reader called...", readerName);
                 final DateRange dateRange = getDateRange();
                 final Date startDate = dateRange.getStart();
                 final Date endDate = dateRange.getEnd();
+                logger.info("{} Digest Item Reader Finding Notifications Between {} and {} ", readerName, RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                 final List<NotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
                 hasRead = true;
                 if (entityList.isEmpty()) {
+                    logger.info("{} Digest Item Reader Notification Count: 0", readerName);
                     return null;
                 } else {
+                    logger.info("{} Digest Item Reader Notification Count: {}", readerName, entityList.size());
                     return entityList;
                 }
             }
         } catch (final Exception ex) {
             logger.error("Error reading Digest Notification Data", ex);
+        } finally {
+            logger.info("{} Digest Item Reader Finished Operation", readerName);
         }
         return null;
     }
