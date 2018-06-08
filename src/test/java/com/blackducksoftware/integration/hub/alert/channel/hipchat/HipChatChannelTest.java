@@ -11,10 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,7 +27,6 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
@@ -60,7 +56,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final Collection<ProjectData> data = createProjectData("Integration test project");
         final DigestModel digestModel = new DigestModel(data);
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.HIPCHAT, contentConverter.convertToString(digestModel), null);
+        final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";

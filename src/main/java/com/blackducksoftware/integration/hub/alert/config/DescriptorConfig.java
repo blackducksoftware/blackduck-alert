@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -32,14 +33,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 
 @Configuration
 public class DescriptorConfig {
-    private ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
     @Autowired
     public DescriptorConfig(final ApplicationContext applicationContext) {
@@ -48,10 +49,21 @@ public class DescriptorConfig {
 
     @Bean
     public List<ChannelDescriptor> channelDescriptorList() {
-        final ChannelDescriptor emailChannelDescriptor = new ChannelDescriptor("Email", SupportedChannels.EMAIL_GROUP, applicationContext.getBean(EmailGroupChannel.class));
-        final ChannelDescriptor hipChatChannelDescriptor = new ChannelDescriptor("HipChat", SupportedChannels.HIPCHAT, applicationContext.getBean(HipChatChannel.class));
-        final ChannelDescriptor slackChannelDescriptor = new ChannelDescriptor("Slack", SupportedChannels.SLACK, applicationContext.getBean(SlackChannel.class));
+        final ChannelDescriptor emailChannelDescriptor = createDescriptor(EmailGroupChannel.COMPONENT_NAME).get();
+        final ChannelDescriptor hipChatChannelDescriptor = createDescriptor(HipChatChannel.COMPONENT_NAME).get();
+        final ChannelDescriptor slackChannelDescriptor = createDescriptor(SlackChannel.COMPONENT_NAME).get();
 
         return Arrays.asList(emailChannelDescriptor, hipChatChannelDescriptor, slackChannelDescriptor);
+    }
+
+    private Optional<ChannelDescriptor> createDescriptor(final String channelName) {
+        final Object channelBean = applicationContext.getBean(channelName);
+        final Class<DistributionChannel> distributionChannelClass = DistributionChannel.class;
+        if (distributionChannelClass.isAssignableFrom(channelBean.getClass())) {
+            final DistributionChannel distributionChannel = distributionChannelClass.cast(channelBean);
+            return Optional.of(new ChannelDescriptor(channelName, channelName, distributionChannel));
+        } else {
+            return Optional.empty();
+        }
     }
 }

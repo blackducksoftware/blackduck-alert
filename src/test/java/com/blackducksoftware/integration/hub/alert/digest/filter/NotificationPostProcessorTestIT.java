@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +36,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
@@ -79,11 +77,11 @@ public class NotificationPostProcessorTestIT {
 
         final ProjectData projectData = createProjectData();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", projectData.getDigestType(), true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", projectData.getDigestType(), true);
         config1.setId(config1Id);
 
         final Long config2Id = 17L;
-        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, SupportedChannels.EMAIL_GROUP, "Config 2", projectData.getDigestType(), false);
+        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, EmailGroupChannel.COMPONENT_NAME, "Config 2", projectData.getDigestType(), false);
         config2.setId(config2Id);
 
         final Long notificationTypeId = notificationTypeRepository.findAll().get(0).getId();
@@ -103,8 +101,8 @@ public class NotificationPostProcessorTestIT {
     public void doFrequenciesMatchTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
         final DigestTypeEnum digestType = DigestTypeEnum.DAILY;
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 1", digestType, true);
-        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, SupportedChannels.EMAIL_GROUP, "Config 2", null, false);
+        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", digestType, true);
+        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", null, false);
         final ProjectData projectDataMatching = new ProjectData(digestType, null, null, null, null);
         final ProjectData projectDataOther = new ProjectData(DigestTypeEnum.REAL_TIME, null, null, null, null);
 
@@ -119,7 +117,7 @@ public class NotificationPostProcessorTestIT {
 
         final ProjectData projectData = createProjectData();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, SupportedChannels.EMAIL_GROUP, "Config 1", projectData.getDigestType(), true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", projectData.getDigestType(), true);
         config1.setId(config1Id);
 
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);

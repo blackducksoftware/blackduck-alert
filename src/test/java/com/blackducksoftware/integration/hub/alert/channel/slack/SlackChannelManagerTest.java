@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
@@ -28,12 +27,12 @@ public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributio
 
     @Override
     public String getSupportedChannelName() {
-        return SupportedChannels.SLACK;
+        return SlackChannel.COMPONENT_NAME;
     }
 
     @Override
     public String channelTopic() {
-        return SupportedChannels.SLACK;
+        return SlackChannel.COMPONENT_NAME;
     }
 
     @Override

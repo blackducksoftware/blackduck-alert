@@ -105,9 +105,9 @@ public class DistributionChannelTest extends ChannelTest {
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, contentConverter.convertToString(digestModel), commonId);
+        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), commonId);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         final EmailGroupDistributionConfigEntity specificEntity = new EmailGroupDistributionConfigEntity("admins", "", "TEST SUBJECT LINE");
@@ -132,9 +132,9 @@ public class DistributionChannelTest extends ChannelTest {
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.EMAIL_GROUP, contentConverter.convertToString(digestModel), commonId);
+        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), commonId);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SupportedChannels.SLACK, "Other Config", DigestTypeEnum.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SlackChannel.COMPONENT_NAME, "Other Config", DigestTypeEnum.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         channel.handleEvent(event);

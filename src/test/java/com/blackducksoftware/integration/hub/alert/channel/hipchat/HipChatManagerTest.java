@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
@@ -28,12 +27,12 @@ public class HipChatManagerTest extends ChannelManagerTest<HipChatDistributionRe
 
     @Override
     public String getSupportedChannelName() {
-        return SupportedChannels.HIPCHAT;
+        return HipChatChannel.COMPONENT_NAME;
     }
 
     @Override
     public String channelTopic() {
-        return SupportedChannels.HIPCHAT;
+        return HipChatChannel.COMPONENT_NAME;
     }
 
     @Override

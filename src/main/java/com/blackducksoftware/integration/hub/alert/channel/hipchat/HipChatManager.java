@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
@@ -50,12 +49,12 @@ public class HipChatManager extends DistributionChannelManager<GlobalHipChatConf
 
     @Override
     public boolean isApplicable(final String supportedChannelName) {
-        return SupportedChannels.HIPCHAT.equals(supportedChannelName);
+        return HipChatChannel.COMPONENT_NAME.equals(supportedChannelName);
     }
 
     @Override
     public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
-        return createChannelEvent(SupportedChannels.HIPCHAT, content, commonDistributionConfigId);
+        return createChannelEvent(HipChatChannel.COMPONENT_NAME, content, commonDistributionConfigId);
     }
 
     @Override

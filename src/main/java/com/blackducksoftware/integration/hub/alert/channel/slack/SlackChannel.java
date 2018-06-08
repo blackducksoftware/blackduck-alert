@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,8 +54,10 @@ import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-@Component
+@Component(value = SlackChannel.COMPONENT_NAME)
+@Transactional
 public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
+    public static final String COMPONENT_NAME = "slack_channel";
     public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired

@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
@@ -48,12 +47,12 @@ public class SlackManager extends DistributionChannelManager<GlobalSlackConfigEn
 
     @Override
     public boolean isApplicable(final String supportedChannelName) {
-        return SupportedChannels.SLACK.equals(supportedChannelName);
+        return SlackChannel.COMPONENT_NAME.equals(supportedChannelName);
     }
 
     @Override
     public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
-        return createChannelEvent(SupportedChannels.SLACK, content, commonDistributionConfigId);
+        return createChannelEvent(SlackChannel.COMPONENT_NAME, content, commonDistributionConfigId);
     }
 
     @Override

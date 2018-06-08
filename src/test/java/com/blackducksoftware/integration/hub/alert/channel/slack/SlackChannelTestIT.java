@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -31,7 +29,6 @@ import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
@@ -65,7 +62,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(SupportedChannels.SLACK, contentConverter.convertToString(digestModel), new Long(0));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 

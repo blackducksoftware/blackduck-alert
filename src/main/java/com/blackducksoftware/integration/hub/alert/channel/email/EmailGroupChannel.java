@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
+import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -63,10 +64,11 @@ import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
 
-@Component
+@Component(value = EmailGroupChannel.COMPONENT_NAME)
+@Transactional
 public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
+    public final static String COMPONENT_NAME = "email_group_channel";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
-
     private final GlobalProperties globalProperties;
 
     @Autowired

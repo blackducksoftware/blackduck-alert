@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
@@ -72,7 +72,7 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
 
     @Override
     public String getDistributionName() {
-        return SupportedChannels.SLACK;
+        return SlackChannel.COMPONENT_NAME;
     }
 
     @Override
