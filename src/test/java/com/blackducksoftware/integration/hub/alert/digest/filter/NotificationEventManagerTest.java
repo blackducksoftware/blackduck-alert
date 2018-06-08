@@ -26,7 +26,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
@@ -76,9 +78,9 @@ public class NotificationEventManagerTest {
     public void initializeConfig() {
         cleanUp();
         long configId = 1;
-        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.SLACK, "Slack Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.HIPCHAT, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestTypeEnum.REAL_TIME, false);
 
         slackDistributionConfig = commonDistributionRepository.save(slackDistributionConfig);
         hipChatDistributionConfig = commonDistributionRepository.save(hipChatDistributionConfig);

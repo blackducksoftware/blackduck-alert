@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,8 +57,10 @@ import com.google.gson.JsonObject;
 
 import freemarker.template.TemplateException;
 
-@Component
+@Component(value = HipChatChannel.COMPONENT_NAME)
+@Transactional
 public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
+    public static final String COMPONENT_NAME = "hipchat_channel";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     private final ChannelRestConnectionFactory channelRestConnectionFactory;

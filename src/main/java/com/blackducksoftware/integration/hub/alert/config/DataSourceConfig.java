@@ -50,7 +50,7 @@ public class DataSourceConfig {
 
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
-    public DataSource dataSource(DataSourceProperties dataSourceProperties) {
+    public DataSource dataSource(final DataSourceProperties dataSourceProperties) {
         return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 

@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
@@ -50,12 +49,12 @@ public class EmailGroupManager extends DistributionChannelManager<GlobalEmailCon
 
     @Override
     public boolean isApplicable(final String supportedChannelName) {
-        return SupportedChannels.EMAIL_GROUP.equals(supportedChannelName);
+        return EmailGroupChannel.COMPONENT_NAME.equals(supportedChannelName);
     }
 
     @Override
     public ChannelEvent createChannelEvent(final DigestModel content, final Long commonDistributionConfigId) {
-        return createChannelEvent(SupportedChannels.EMAIL_GROUP, content, commonDistributionConfigId);
+        return createChannelEvent(EmailGroupChannel.COMPONENT_NAME, content, commonDistributionConfigId);
     }
 
     @Override

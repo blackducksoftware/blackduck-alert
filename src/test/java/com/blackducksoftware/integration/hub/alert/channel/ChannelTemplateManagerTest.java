@@ -13,6 +13,8 @@ import com.blackducksoftware.integration.hub.alert.audit.mock.MockAuditEntryEnti
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -43,7 +45,7 @@ public class ChannelTemplateManagerTest {
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
-        final ChannelEvent hipChatEvent = new ChannelEvent(SupportedChannels.HIPCHAT, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 
@@ -57,7 +59,7 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
 
-        final ChannelEvent slackEvent = new ChannelEvent(SupportedChannels.SLACK, null, 1L);
+        final ChannelEvent slackEvent = new ChannelEvent(SlackChannel.COMPONENT_NAME, null, 1L);
         final boolean isFalse = channelTemplateManager.sendEvent(slackEvent);
         assertTrue(!isFalse);
     }

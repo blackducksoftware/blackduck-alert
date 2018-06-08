@@ -38,7 +38,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
@@ -87,7 +87,7 @@ public class DigestNotificationProcessorIT {
     @Test
     public void processNotificationDataBasicTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
@@ -112,14 +112,14 @@ public class DigestNotificationProcessorIT {
         final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
         final ChannelEvent event = eventsCreated.get(0);
-        assertTrue(SupportedChannels.HIPCHAT.equals(event.getDestination()));
+        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
     @Test
     public void processNotificationDataWithSameEventKeyTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
@@ -146,14 +146,14 @@ public class DigestNotificationProcessorIT {
         final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
         final ChannelEvent event = eventsCreated.get(0);
-        assertTrue(SupportedChannels.HIPCHAT.equals(event.getDestination()));
+        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
     @Test
     public void processNotificationDataWithNegatingTypesTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;

@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
@@ -72,7 +72,7 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
 
     @Override
     public String getDistributionName() {
-        return SupportedChannels.EMAIL_GROUP;
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
     @Override

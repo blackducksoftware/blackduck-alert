@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.channel.email;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
@@ -28,12 +27,12 @@ public class EmailChannelManagerTest extends ChannelManagerTest<EmailGroupDistri
 
     @Override
     public String getSupportedChannelName() {
-        return SupportedChannels.EMAIL_GROUP;
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
     @Override
     public String channelTopic() {
-        return SupportedChannels.EMAIL_GROUP;
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
     @Override
