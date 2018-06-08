@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.hub.alert;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.google.gson.Gson;
 
+@Transactional
 public abstract class MessageReceiver<E extends AlertEvent> implements MessageListener {
 
     private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
