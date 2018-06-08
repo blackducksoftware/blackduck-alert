@@ -149,17 +149,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        String apiToken;
-        if (restModel.isHubApiKeyIsSet()) {
-            final Optional<GlobalHubConfigEntity> foundEntity = getRepository().findById(Long.parseLong(restModel.getId()));
-            if (foundEntity.isPresent()) {
-                apiToken = foundEntity.get().getHubApiKey();
-            } else {
-                throw new IntegrationException("ApiKey not found even though one was set");
-            }
-        } else {
-            apiToken = restModel.getHubApiKey();
-        }
+        final String apiToken = restModel.getHubApiKey();
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
