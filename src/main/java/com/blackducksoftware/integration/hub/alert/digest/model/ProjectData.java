@@ -35,7 +35,7 @@ public class ProjectData extends DigestData {
     private final String projectName;
     private final String projectVersion;
     private final List<Long> notificationIds;
-    private Map<NotificationCategoryEnum, CategoryData> categoryMap;
+    private final Map<NotificationCategoryEnum, CategoryData> categoryMap;
 
     public ProjectData(final DigestTypeEnum digestType, final String projectName, final String projectVersion, final List<Long> notificationIds, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
         this.digestType = digestType;
@@ -74,10 +74,6 @@ public class ProjectData extends DigestData {
 
     public Map<NotificationCategoryEnum, CategoryData> getCategoryMap() {
         return categoryMap;
-    }
-
-    public void setCategoryMap(final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
-        this.categoryMap = categoryMap;
     }
 
 }
