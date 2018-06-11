@@ -124,6 +124,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-3 control-label">Daily Digest Run Time</label>
                         <div className="col-sm-8">
                             <Select
+                                id="scheduling-hour"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handleDailyDigestChanged}
                                 searchable
@@ -149,6 +150,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-3 control-label">Notification Purge Frequency</label>
                         <div className="col-sm-8">
                             <Select
+                                id="scheduling-frequency"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handlePurgeChanged}
                                 searchable
@@ -170,7 +172,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
                     </div>
 
-                    <ConfigButtons includeSave includeTest={false} />
+                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
                 </form>
             </div>
         );

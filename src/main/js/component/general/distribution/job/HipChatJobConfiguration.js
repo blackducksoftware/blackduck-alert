@@ -53,12 +53,13 @@ export default class HipChatJobConfiguration extends BaseJobConfiguration {
 
     render() {
         const content = (<div>
-            <TextInput label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.state.errors.roomIdError} />
-            <CheckboxInput label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError} />
+            <TextInput id="hipChatJob-roomId" label="Room Id" name="roomId" value={this.state.values.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.state.errors.roomIdError} />
+            <CheckboxInput id="hipChatJob-notify" label="Notify" name="notify" value={this.state.values.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError} />
             <div className="form-group">
                 <label className="col-sm-3 control-label">Color</label>
                 <div className="col-sm-8">
                     <Select
+                        id="hipChatJob-color"
                         className="typeAheadField"
                         onChange={this.handleColorChanged}
                         searchable
