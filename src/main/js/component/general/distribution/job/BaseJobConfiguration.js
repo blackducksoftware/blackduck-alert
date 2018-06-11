@@ -283,11 +283,12 @@ class BaseJobConfiguration extends Component {
     render(content) {
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />
+                <TextInput id="job-name" label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
                         <Select
+                            id="job-frequency"
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
                             searchable
@@ -304,6 +305,7 @@ class BaseJobConfiguration extends Component {
                     <label className="col-sm-3 control-label">Notification Types</label>
                     <div className="col-sm-8">
                         <Select
+                            id="job-notificationType"
                             className="typeAheadField"
                             onChange={this.handleNotificationChanged}
                             searchable
@@ -320,7 +322,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {content}
                 <ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
-                <ConfigButtons includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
             </form>
         );
