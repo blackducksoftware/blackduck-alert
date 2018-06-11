@@ -67,6 +67,11 @@ public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntit
     }
 
     @Override
+    public Class<SlackDistributionConfigEntity> getDatabaseEntityClass() {
+        return SlackDistributionConfigEntity.class;
+    }
+
+    @Override
     public String getApiUrl(final GlobalSlackConfigEntity globalConfig) {
         return SLACK_API;
     }

@@ -73,6 +73,11 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     }
 
     @Override
+    public Class<HipChatDistributionConfigEntity> getDatabaseEntityClass() {
+        return HipChatDistributionConfigEntity.class;
+    }
+
+    @Override
     public String getApiUrl(final GlobalHipChatConfigEntity globalConfig) {
         String hipChatHostServer = HIP_CHAT_API;
         final String customHostServer = globalConfig.getHostServer();

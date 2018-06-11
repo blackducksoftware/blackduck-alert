@@ -17,20 +17,20 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 
 public class EmailGroupDistributionConfigActionsTest {
     @Test
     public void testTestConfig() throws Exception {
-        final EmailGroupManager emailManager = Mockito.mock(EmailGroupManager.class);
+        final DistributionChannelManager emailManager = Mockito.mock(DistributionChannelManager.class);
         final EmailGroupDistributionConfigActions configActions = new EmailGroupDistributionConfigActions(null, null, null, null, null, emailManager);
 
         configActions.testConfig(null);
-        verify(emailManager, times(1)).sendTestMessage(Mockito.any());
+        verify(emailManager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
         Mockito.reset(emailManager);
 
         configActions.testConfig(null);
-        verify(emailManager, times(1)).sendTestMessage(Mockito.any());
+        verify(emailManager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
     }
 
 }

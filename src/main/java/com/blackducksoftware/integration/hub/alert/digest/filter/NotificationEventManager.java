@@ -40,8 +40,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -49,7 +47,6 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFacto
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
 @Component
@@ -57,11 +54,11 @@ public class NotificationEventManager {
     private final Logger logger = LoggerFactory.getLogger(NotificationEventManager.class);
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
+    private final ChannelEventFactory channelEventFactory;
     private final ProjectDataFactory projectDataFactory;
 
     @Autowired
-    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory,
+    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory,
             final CommonDistributionRepository commonDistributionRepository, final ProjectDataFactory projectDataFactory) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
