@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
@@ -44,8 +43,8 @@ import com.blackducksoftware.integration.hub.alert.datasource.relation.Distribut
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
 @Component
@@ -64,13 +63,12 @@ public class NotificationPostProcessor {
         this.notificationTypeRepository = notificationTypeRepository;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final ProjectData projectData) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationModel notificationModel, final DigestTypeEnum digestTypeEnum) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
-            if (doFrequenciesMatch(distributionConfig, projectData)) {
-                filterMatchingNotificationTypes(distributionConfig, projectData);
+            if (doFrequenciesMatch(distributionConfig, digestTypeEnum)) {
                 if (distributionConfig.getFilterByProject()) {
-                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, projectData);
+                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, notificationModel);
                     applicableConfigurations.addAll(filteredConfigurations);
                 } else {
                     applicableConfigurations.add(distributionConfig);
@@ -80,41 +78,35 @@ public class NotificationPostProcessor {
         return applicableConfigurations;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         foundRelations.forEach(relation -> {
             final Optional<ConfiguredProjectEntity> foundEntity = configuredProjectsRepository.findById(relation.getProjectId());
-            if (foundEntity.isPresent() && foundEntity.get().getProjectName().equals(projectData.getProjectName())) {
+            if (foundEntity.isPresent() && foundEntity.get().getProjectName().equals(notificationModel.getProjectName())) {
                 applicableConfigurations.add(commonDistributionConfigEntity);
             }
         });
         return applicableConfigurations;
     }
 
-    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
-        final DigestTypeEnum digestTypeEnum = projectData.getDigestType();
+    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final DigestTypeEnum digestTypeEnum) {
         if (commonDistributionConfigEntity.getFrequency() != null) {
             return commonDistributionConfigEntity.getFrequency().equals(digestTypeEnum);
         }
         return false;
     }
 
-    public void filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+    public Optional<NotificationModel> filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
-        final Set<NotificationCategoryEnum> foundNotificationCategories = new HashSet<>();
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
-            if (foundEntity.isPresent()) {
-                foundNotificationCategories.add(foundEntity.get().getType());
+            if (foundEntity.isPresent() && foundEntity.get().getType().equals(notificationModel.getNotificationType())) {
+                return Optional.of(notificationModel);
             }
         }
 
-        for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-            if (!foundNotificationCategories.contains(category)) {
-                projectData.getCategoryMap().remove(category);
-            }
-        }
+        return Optional.empty();
     }
 
 }

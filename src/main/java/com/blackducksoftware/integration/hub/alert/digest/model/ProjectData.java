@@ -75,4 +75,5 @@ public class ProjectData extends DigestData {
     public Map<NotificationCategoryEnum, CategoryData> getCategoryMap() {
         return categoryMap;
     }
+
 }

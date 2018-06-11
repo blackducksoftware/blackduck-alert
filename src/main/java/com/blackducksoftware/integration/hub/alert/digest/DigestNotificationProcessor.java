@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,21 +30,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class DigestNotificationProcessor {
-    private final ProjectDataFactory projectDataFactory;
     private final NotificationEventManager eventManager;
 
     @Autowired
-    public DigestNotificationProcessor(final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
-        this.projectDataFactory = projectDataFactory;
+    public DigestNotificationProcessor(final NotificationEventManager eventManager) {
         this.eventManager = eventManager;
     }
 
@@ -55,9 +49,7 @@ public class DigestNotificationProcessor {
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(processedNotificationList, digestType);
-            final DigestModel digestModel = new DigestModel(projectDataCollection);
-            return eventManager.createChannelEvents(digestModel);
+            return eventManager.createChannelEvents(digestType, processedNotificationList);
         }
     }
 }
