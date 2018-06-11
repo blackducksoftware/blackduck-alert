@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,15 +88,12 @@ public class NotificationEventManager {
                 });
             });
         });
-
+        
         distributionConfigNotificationMap.entrySet().forEach(entry -> {
             final CommonDistributionConfigEntity distributionConfig = entry.getKey();
             final List<NotificationModel> notificationList = entry.getValue();
             if (!notificationList.isEmpty()) {
-                final List<ProjectData> projectData = new ArrayList<>(notificationList.size());
-                notificationList.forEach(notificationModel -> {
-                    projectData.add(projectDataFactory.createProjectData(notificationModel, digestType));
-                });
+                final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notificationList, digestType);
                 channelEvents.add(createChannelEvent(distributionConfig, projectData));
             }
         });
@@ -103,7 +101,7 @@ public class NotificationEventManager {
         return channelEvents;
     }
 
-    private AbstractChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final List<ProjectData> projectData) {
+    private AbstractChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final Collection<ProjectData> projectData) {
         return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), projectData);
     }
 
