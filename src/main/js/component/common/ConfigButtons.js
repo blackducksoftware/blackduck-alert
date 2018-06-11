@@ -17,16 +17,18 @@ const ConfigButtons = props => (
             </div>
             }
             { props.includeSave &&
-            <SubmitButton>Save</SubmitButton>
+            <SubmitButton id={this.props.submitId}>Save</SubmitButton>
             }
             { props.includeCancel &&
-            <CancelButton onClick={props.onCancelClick} />
+            <CancelButton id={this.props.cancelId} onClick={props.onCancelClick} />
             }
         </div>
     </div>
 );
 
 ConfigButtons.propTypes = {
+    cancelId: PropTypes.string,
+    submitId: PropTypes.string,
     includeCancel: PropTypes.bool,
     includeSave: PropTypes.bool,
     includeTest: PropTypes.bool,
@@ -35,6 +37,8 @@ ConfigButtons.propTypes = {
 };
 
 ConfigButtons.defaultProps = {
+    cancelId: null,
+    submitId: null,
     includeCancel: false,
     includeSave: true,
     includeTest: false,

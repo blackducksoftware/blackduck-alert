@@ -114,6 +114,7 @@ class ProjectConfiguration extends Component {
         return (
             <div>
                 <CheckboxInput
+                    id="project-include"
                     label="Include all projects"
                     name="includeAllProjects"
                     value={this.props.includeAllProjects}

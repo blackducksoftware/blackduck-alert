@@ -8,7 +8,7 @@ class EditTableCellFormatter extends Component {
     }
 
     onClick() {
-        const { handleButtonClicked, currentRowSelected } = this.props;
+        const { handleButtonClicked, currentRowSelected, id } = this.props;
         handleButtonClicked(currentRowSelected);
     }
 
@@ -23,12 +23,13 @@ class EditTableCellFormatter extends Component {
         }
 
         return (
-            <button className={buttonClass} type="button" title={buttonText} onClick={this.onClick}><span className="fa fa-pencil" /></button>
+            <button id={id} className={buttonClass} type="button" title={buttonText} onClick={this.onClick}><span className="fa fa-pencil" /></button>
         );
     }
 }
 
 EditTableCellFormatter.PropTypes = {
+    id: PropTypes.string,
     currentRowSelected: PropTypes.object,
     handleButtonClicked: PropTypes.func.isRequired
 };

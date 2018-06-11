@@ -11,12 +11,12 @@ export default class PasswordInput extends LabeledField {
 
         if (this.props.readOnly) {
             return super.render(<div className="col-sm-8">
-                <input type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
+                <input id={this.props.id} type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
             </div>);
         }
 
         return super.render(<div className="col-sm-8">
-            <input type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
+            <input id={this.props.id} type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
         </div>);
     }
 }

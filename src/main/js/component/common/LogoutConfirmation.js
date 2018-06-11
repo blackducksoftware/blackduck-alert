@@ -14,8 +14,8 @@ class LogoutConfirmation extends Component {
                 Are you sure you would like to logout?
             </Modal.Body>
             <Modal.Footer>
-                <button type="button" className="btn btn-link" onClick={this.props.cancelLogout}>Cancel</button>
-                <button type="button" className="btn btn-danger" onClick={this.props.logout}>Logout</button>
+                <button id="logout-cancel" type="button" className="btn btn-link" onClick={this.props.cancelLogout}>Cancel</button>
+                <button id="logout-logout" type="button" className="btn btn-danger" onClick={this.props.logout}>Logout</button>
             </Modal.Footer>
                 </Modal>);
     }

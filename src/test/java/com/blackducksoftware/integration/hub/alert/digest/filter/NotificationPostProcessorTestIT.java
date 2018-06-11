@@ -11,13 +11,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.digest.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -41,16 +44,17 @@ import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -73,25 +77,33 @@ public class NotificationPostProcessorTestIT {
 
     @Test
     public void getApplicableConfigurationsTest() {
-        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        final ProjectData projectData = createProjectData();
+        notificationTypeRepository.deleteAll();
+        distributionNotificationTypeRepository.deleteAll();
+        distributionProjectRepository.deleteAll();
+
+        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
+        final DigestTypeEnum configuredDigestType = DigestTypeEnum.REAL_TIME;
+        final NotificationModel notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", projectData.getDigestType(), true);
+
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", configuredDigestType, true);
         config1.setId(config1Id);
 
         final Long config2Id = 17L;
-        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, EmailGroupChannel.COMPONENT_NAME, "Config 2", projectData.getDigestType(), false);
+        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, EmailGroupChannel.COMPONENT_NAME, "Config 2", configuredDigestType, false);
+
         config2.setId(config2Id);
 
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION));
         final Long notificationTypeId = notificationTypeRepository.findAll().get(0).getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config2.getId(), notificationTypeId));
 
-        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectData.getProjectName()));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(notificationModel.getProjectName()));
         distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
 
-        final Set<CommonDistributionConfigEntity> applicableConfigs = postProcessor.getApplicableConfigurations(Arrays.asList(config1, config2), projectData);
+        final Set<CommonDistributionConfigEntity> applicableConfigs = postProcessor.getApplicableConfigurations(Arrays.asList(config1, config2), notificationModel, configuredDigestType);
         assertTrue(applicableConfigs.contains(config1));
         assertTrue(applicableConfigs.contains(config2));
         assertEquals(2, applicableConfigs.size());
@@ -100,53 +112,86 @@ public class NotificationPostProcessorTestIT {
     @Test
     public void doFrequenciesMatchTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
-        final DigestTypeEnum digestType = DigestTypeEnum.DAILY;
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", digestType, true);
-        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", null, false);
-        final ProjectData projectDataMatching = new ProjectData(digestType, null, null, null, null);
-        final ProjectData projectDataOther = new ProjectData(DigestTypeEnum.REAL_TIME, null, null, null, null);
 
-        assertTrue(postProcessor.doFrequenciesMatch(config, projectDataMatching));
-        assertFalse(postProcessor.doFrequenciesMatch(config, projectDataOther));
-        assertFalse(postProcessor.doFrequenciesMatch(configOther, projectDataOther));
+        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.DAILY, true);
+        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", null, false);
+
+        assertTrue(postProcessor.doFrequenciesMatch(config, DigestTypeEnum.DAILY));
+        assertFalse(postProcessor.doFrequenciesMatch(config, DigestTypeEnum.REAL_TIME));
+        assertFalse(postProcessor.doFrequenciesMatch(configOther, DigestTypeEnum.DAILY));
     }
 
     @Test
     public void filterMatchingNotificationsTest() {
+        notificationTypeRepository.deleteAll();
+        distributionNotificationTypeRepository.deleteAll();
+        distributionProjectRepository.deleteAll();
+
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        final ProjectData projectData = createProjectData();
+        final NotificationModel notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", projectData.getDigestType(), true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.REAL_TIME, true);
+
         config1.setId(config1Id);
 
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION));
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
         final Long notificationTypeId = notificationType.getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
 
-        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectData.getProjectName()));
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(notificationModel.getProjectName()));
+
         distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
 
-        assertEquals(NotificationCategoryEnum.values().length, projectData.getCategoryMap().size());
+        final Optional<NotificationModel> filteredNotificationModel = postProcessor.filterMatchingNotificationTypes(config1, notificationModel);
 
-        postProcessor.filterMatchingNotificationTypes(config1, projectData);
-
-        assertTrue(projectData.getCategoryMap().containsKey(notificationType.getType()));
-        assertEquals(1, projectData.getCategoryMap().size());
+        assertTrue(filteredNotificationModel.isPresent());
+        assertEquals(notificationModel, filteredNotificationModel.get());
     }
 
-    private ProjectData createProjectData() {
-        final DigestTypeEnum digestType = DigestTypeEnum.REAL_TIME;
+    @Test
+    public void filterUnmatchedByTypeNotificationsTest() {
+        notificationTypeRepository.deleteAll();
+        distributionNotificationTypeRepository.deleteAll();
+        distributionProjectRepository.deleteAll();
+        final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
+
+        final NotificationModel notificationModel = createNotificationModel();
+        final Long config1Id = 13L;
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.REAL_TIME, true);
+        config1.setId(config1Id);
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED));
+        final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
+        final Long notificationTypeId = notificationType.getId();
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
+
+        final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(notificationModel.getProjectName()));
+        distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
+
+        final Optional<NotificationModel> filteredNotificationModel = postProcessor.filterMatchingNotificationTypes(config1, notificationModel);
+
+        assertFalse(filteredNotificationModel.isPresent());
+    }
+
+    private NotificationModel createNotificationModel() {
         final String projectName = "Project Name";
         final String projectVersion = "Project Version";
-        final List<Long> notificationIds = Collections.emptyList();
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
-        for (final NotificationCategoryEnum categoryEnum : NotificationCategoryEnum.values()) {
-            categoryMap.put(categoryEnum, new CategoryData(null, null, 0));
-            notificationTypeRepository.save(new NotificationTypeEntity(categoryEnum));
-        }
-        final ProjectData projectData = new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
-        return projectData;
+        final String eventKey = "event key";
+        final Date createdAt = Date.from(ZonedDateTime.now().toInstant());
+        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.POLICY_VIOLATION;
+        final String projectUrl = "project url";
+        final String projectVersionUrl = "project version url";
+        final String componentName = "component name";
+        final String componentVersion = "component version";
+        final String policyRuleName = "policy rule";
+        final String policyRuleUser = "policy user";
+        final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl,
+                componentName, componentVersion, policyRuleName, policyRuleUser);
+
+        final Collection<VulnerabilityEntity> vulnerabilities = Collections.emptyList();
+        final NotificationModel model = new NotificationModel(notification, vulnerabilities);
+        return model;
     }
 
 }
