@@ -42,7 +42,7 @@ public class RealTimeListenerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testReceiveMessageException() throws IOException, Exception {
-        try (OutputLogger outputLogger = new OutputLogger()) {
+        try (final OutputLogger outputLogger = new OutputLogger()) {
             final Gson gson = new Gson();
             final MockNotificationEntity notificationEntity = new MockNotificationEntity();
             final NotificationModel model = new NotificationModel(notificationEntity.createEntity(), Collections.emptyList());
@@ -51,7 +51,7 @@ public class RealTimeListenerTest {
             final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
 
             Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
-            Mockito.doThrow(new NullPointerException("null error")).when(projectDataFactory).createProjectDataCollection(Mockito.anyCollection(), Mockito.any());
+            Mockito.doThrow(new NullPointerException("null error")).when(eventManager).createChannelEvents(Mockito.any(), Mockito.anyList());
 
             final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, projectDataFactory, eventManager);
 
