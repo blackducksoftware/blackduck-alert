@@ -29,11 +29,13 @@ import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 public class ChannelDescriptor extends AbstractDescriptor {
     private final String destinationName;
     private final DistributionChannel channelComponent;
+    private final boolean hasGlobalConfiguration;
 
-    public ChannelDescriptor(final String name, final String destinationName, final DistributionChannel channelComponent) {
+    public ChannelDescriptor(final String name, final String destinationName, final DistributionChannel channelComponent, final boolean hasGlobalConfiguration) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelComponent = channelComponent;
+        this.hasGlobalConfiguration = hasGlobalConfiguration;
     }
 
     public String getDestinationName() {
@@ -41,4 +43,8 @@ public class ChannelDescriptor extends AbstractDescriptor {
     }
 
     public DistributionChannel getChannelComponent() { return channelComponent; }
+
+    public boolean hasGlobalConfiguration() {
+        return hasGlobalConfiguration;
+    }
 }
