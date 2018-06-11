@@ -17,20 +17,20 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 
 public class SlackDistributionConfigActionsTest {
     @Test
     public void testTestConfig() throws Exception {
-        final SlackManager slackManager = Mockito.mock(SlackManager.class);
+        final DistributionChannelManager slackManager = Mockito.mock(DistributionChannelManager.class);
         final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(null, null, null, null, null, slackManager);
 
         configActions.testConfig(null);
-        verify(slackManager, times(1)).sendTestMessage(Mockito.any());
+        verify(slackManager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
         Mockito.reset(slackManager);
 
         configActions.testConfig(null);
-        verify(slackManager, times(1)).sendTestMessage(Mockito.any());
+        verify(slackManager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
     }
 
 }

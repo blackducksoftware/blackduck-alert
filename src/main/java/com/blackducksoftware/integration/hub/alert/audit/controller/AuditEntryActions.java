@@ -49,8 +49,6 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManage
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.AlertPage;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -62,7 +60,6 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
 @Component
@@ -74,14 +71,14 @@ public class AuditEntryActions {
     private final NotificationManager notificationManager;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
-    private final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
+    private final ChannelEventFactory channelEventFactory;
     private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
             final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
-            final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
+            final ChannelEventFactory channelEventFactory, final ProjectDataFactory projectDataFactory,
             final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
@@ -98,7 +95,7 @@ public class AuditEntryActions {
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
-        AlertPage<AuditEntryEntity> auditEntries;
+        final AlertPage<AuditEntryEntity> auditEntries;
         logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         if (pageNumber != null && pageSize != null) {
             final PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
