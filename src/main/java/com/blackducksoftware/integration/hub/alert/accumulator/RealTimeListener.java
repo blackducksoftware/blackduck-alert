@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,7 +35,6 @@ import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.digest.DigestRemovalProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
@@ -69,8 +67,7 @@ public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
             final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
             final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
             if (!processedNotificationList.isEmpty()) {
-                final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(processedNotificationList, DigestTypeEnum.REAL_TIME);
-                final List<AbstractChannelEvent> events = eventManager.createChannelEvents(projectDataCollection);
+                final List<AbstractChannelEvent> events = eventManager.createChannelEvents(DigestTypeEnum.REAL_TIME, processedNotificationList);
                 channelTemplateManager.sendEvents(events);
             }
         } catch (final Exception e) {
