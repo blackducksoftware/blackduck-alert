@@ -129,6 +129,7 @@ class JobAddModal extends Component {
                             <label className="col-sm-3 control-label">Type</label>
                             <div className="col-sm-8">
                                 <Select
+                                    id="job-jobType"
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
                                     clearable={false}

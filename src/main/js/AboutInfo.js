@@ -24,7 +24,7 @@ class AboutInfo extends React.Component {
                 <span className="productVersion">v{version}</span>
                 <span className="copyright">
                     &nbsp;© 2018&nbsp;
-                    <a href='http://www.blackducksoftware.com'>Black Duck Software, Inc</a>
+                    <a id="about-blackduck" href='http://www.blackducksoftware.com'>Black Duck Software, Inc</a>
                     &nbsp;All rights reserved.
                 </span>
             </div>

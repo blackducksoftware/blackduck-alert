@@ -69,12 +69,13 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         const options = groupOptions || [];
         const content =
             (<div>
-                <TextInput label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError} />
+                <TextInput id="emailJob-subject" label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError} />
 
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Group</label>
                     <div className="col-sm-8">
                         <Select
+                            id="emailJob-group"
                             className="typeAheadField"
                             onChange={this.handleGroupsChanged}
                             clearable

@@ -81,7 +81,7 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <TextInput label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <TextInput id="hipChat-key" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
 
                     <div className="form-group">
                         <div className="col-sm-8 col-sm-offset-3">
@@ -93,11 +93,11 @@ class HipChatConfiguration extends React.Component {
 
                     {showAdvanced &&
                     <div>
-                        <TextInput label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
+                        <TextInput id="hipChat-serverUrl" label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
                     </div>
                     }
                     
-                    <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
+                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.handleTest} />
                 </form>
             </div>
         );
