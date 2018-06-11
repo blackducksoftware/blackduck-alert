@@ -49,19 +49,19 @@ public class DescriptorConfig {
 
     @Bean
     public List<ChannelDescriptor> channelDescriptorList() {
-        final ChannelDescriptor emailChannelDescriptor = createDescriptor(EmailGroupChannel.COMPONENT_NAME).get();
-        final ChannelDescriptor hipChatChannelDescriptor = createDescriptor(HipChatChannel.COMPONENT_NAME).get();
-        final ChannelDescriptor slackChannelDescriptor = createDescriptor(SlackChannel.COMPONENT_NAME).get();
+        final ChannelDescriptor emailChannelDescriptor = createDescriptor(EmailGroupChannel.COMPONENT_NAME, true).get();
+        final ChannelDescriptor hipChatChannelDescriptor = createDescriptor(HipChatChannel.COMPONENT_NAME, true).get();
+        final ChannelDescriptor slackChannelDescriptor = createDescriptor(SlackChannel.COMPONENT_NAME, false).get();
 
         return Arrays.asList(emailChannelDescriptor, hipChatChannelDescriptor, slackChannelDescriptor);
     }
 
-    private Optional<ChannelDescriptor> createDescriptor(final String channelName) {
+    private Optional<ChannelDescriptor> createDescriptor(final String channelName, final boolean hasGlobalConfiguration) {
         final Object channelBean = applicationContext.getBean(channelName);
         final Class<DistributionChannel> distributionChannelClass = DistributionChannel.class;
         if (distributionChannelClass.isAssignableFrom(channelBean.getClass())) {
             final DistributionChannel distributionChannel = distributionChannelClass.cast(channelBean);
-            return Optional.of(new ChannelDescriptor(channelName, channelName, distributionChannel));
+            return Optional.of(new ChannelDescriptor(channelName, channelName, distributionChannel, hasGlobalConfiguration));
         } else {
             return Optional.empty();
         }
