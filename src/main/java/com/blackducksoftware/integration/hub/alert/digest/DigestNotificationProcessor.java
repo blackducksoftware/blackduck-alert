@@ -30,19 +30,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Component
 public class DigestNotificationProcessor {
-    private final ProjectDataFactory projectDataFactory;
     private final NotificationEventManager eventManager;
 
     @Autowired
-    public DigestNotificationProcessor(final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
-        this.projectDataFactory = projectDataFactory;
+    public DigestNotificationProcessor(final NotificationEventManager eventManager) {
         this.eventManager = eventManager;
     }
 
