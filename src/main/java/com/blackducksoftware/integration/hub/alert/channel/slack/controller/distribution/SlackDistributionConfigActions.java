@@ -30,8 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
@@ -45,19 +45,19 @@ import com.blackducksoftware.integration.hub.alert.web.actions.distribution.Dist
 
 @Component
 public class SlackDistributionConfigActions extends DistributionConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> {
-    private final SlackManager slackManager;
+    private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
     public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository repository,
             final ConfiguredProjectsActions<SlackDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<SlackDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
-            final SlackManager slackManager) {
+            final DistributionChannelManager distributionChannelManager) {
         super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
-        this.slackManager = slackManager;
+        this.distributionChannelManager = distributionChannelManager;
     }
 
     @Override
     public String channelTestConfig(final SlackDistributionRestModel restModel) throws IntegrationException {
-        return slackManager.sendTestMessage(restModel);
+        return distributionChannelManager.sendTestMessage(SlackChannel.COMPONENT_NAME, restModel);
     }
 
     @Override

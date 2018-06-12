@@ -80,6 +80,11 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     }
 
     @Override
+    public Class<EmailGroupDistributionConfigEntity> getDatabaseEntityClass() {
+        return EmailGroupDistributionConfigEntity.class;
+    }
+
+    @Override
     public void sendMessage(final ChannelEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();

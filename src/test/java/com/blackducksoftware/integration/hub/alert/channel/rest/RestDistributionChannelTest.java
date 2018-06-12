@@ -38,6 +38,11 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, null, null, null, null,
                 channelRestConnectionFactory, contentConverter) {
             @Override
+            public Class<DistributionChannelConfigEntity> getDatabaseEntityClass() {
+                return DistributionChannelConfigEntity.class;
+            }
+
+            @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
             }
