@@ -1,14 +1,34 @@
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
-import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
 
 public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributionRestModel, SlackDistributionConfigEntity, GlobalSlackConfigEntity> {
+
+    @Autowired
+    private SlackDistributionRepository distributionRepository;
+
+    @Override
+    public void cleanGlobalRepository() {
+        // do nothing no global configuration
+    }
+
+    @Override
+    public void saveGlobalConfiguration() {
+        //do nothing no global configuration
+    }
+
+    @Override
+    public void cleanDistributionRepository() {
+        distributionRepository.deleteAll();
+    }
 
     @Override
     public String getDestination() {
@@ -16,18 +36,13 @@ public class SlackChannelManagerTest extends ChannelManagerTest<SlackDistributio
     }
 
     @Override
-    public MockSlackEntity getMockEntityUtil() {
-        return new MockSlackEntity();
-    }
-
-    @Override
-    public MockGlobalEntityUtil<GlobalSlackConfigEntity> getMockGlobalEntityUtil() {
-        return null;
-    }
-
-    @Override
     public MockSlackRestModel getMockRestModelUtil() {
-        return new MockSlackRestModel();
+        final MockSlackRestModel restModel = new MockSlackRestModel();
+        restModel.setChannelName(this.properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
+        restModel.setChannelUsername(this.properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
+        restModel.setWebhook(this.properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
+        restModel.setId("");
+        return restModel;
     }
 
 }

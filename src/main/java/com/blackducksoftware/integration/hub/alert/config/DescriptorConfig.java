@@ -61,7 +61,7 @@ public class DescriptorConfig {
         final Class<DistributionChannel> distributionChannelClass = DistributionChannel.class;
         if (distributionChannelClass.isAssignableFrom(channelBean.getClass())) {
             final DistributionChannel distributionChannel = distributionChannelClass.cast(channelBean);
-            return Optional.of(new ChannelDescriptor(channelName, channelName, distributionChannel, hasGlobalConfiguration));
+            return Optional.of(new ChannelDescriptor(channelName, channelName, hasGlobalConfiguration, distributionChannel));
         } else {
             return Optional.empty();
         }
