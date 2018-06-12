@@ -42,6 +42,7 @@ class LoginPage extends Component {
                             }
 
                             <TextInput
+                                id="loginUsername"
                                 label="Username"
                                 name="hubUsername"
                                 onChange={this.handleChange}
@@ -50,6 +51,7 @@ class LoginPage extends Component {
                             />
 
                             <PasswordInput
+                                id="loginPassword"
                                 label="Password"
                                 name="hubPassword"
                                 onChange={this.handleChange}
@@ -63,7 +65,7 @@ class LoginPage extends Component {
                                             <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                                         </div>
                                     }
-                                    <SubmitButton>Login</SubmitButton>
+                                    <SubmitButton id="loginSubmit">Login</SubmitButton>
                                 </div>
                             </div>
                         </form>

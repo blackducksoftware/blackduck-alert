@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const CheckboxInput = (props) => {
     const { errorName, errorValue } = props;
     const {
-        name, value, label, onChange, readOnly
+        name, value, label, onChange, readOnly, id
     } = props;
     // Sometimes we get checked value as a string
     const isChecked = value === 'true' || value;
@@ -14,6 +14,7 @@ const CheckboxInput = (props) => {
                 <div className="checkbox">
                     <label>
                         <input
+                            id={id}
                             type="checkbox"
                             className="checkboxInput"
                             readOnly={readOnly}
