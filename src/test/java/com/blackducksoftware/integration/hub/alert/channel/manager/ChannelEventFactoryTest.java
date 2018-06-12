@@ -12,49 +12,36 @@
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.google.gson.Gson;
 
 public class ChannelEventFactoryTest {
     private static final String DISTRIBUTION_TYPE = "TYPE";
 
     @Test
-    public void createEventWithNoChannelManagersTest() {
-        final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> factory = new ChannelEventFactory<>(Collections.emptyList());
-        assertNull(factory.createEvent(1L, DISTRIBUTION_TYPE, null));
-    }
-
-    @Test
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
         final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
-        final DistributionChannelManager<GlobalChannelConfigEntity, DistributionChannelConfigEntity, CommonDistributionConfigRestModel> manager = Mockito.mock(DistributionChannelManager.class);
-        final List<DistributionChannelManager<GlobalChannelConfigEntity, DistributionChannelConfigEntity, CommonDistributionConfigRestModel>> managers = Arrays.asList(manager);
-        final ChannelEventFactory<DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> factory = new ChannelEventFactory<>(managers);
+        final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
+        final ChannelEventFactory factory = new ChannelEventFactory(manager);
 
         final Long id = 25L;
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
         final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.convertToString(digestModel), id);
-        Mockito.when(manager.isApplicable(DISTRIBUTION_TYPE)).thenReturn(true);
-        Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
+        Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 
         final ChannelEvent event = factory.createEvent(id, "TYPE", digestModel);
         assertEquals(mockEvent, event);

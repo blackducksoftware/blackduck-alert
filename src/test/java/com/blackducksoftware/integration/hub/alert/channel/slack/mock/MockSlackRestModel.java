@@ -19,10 +19,10 @@ import com.google.gson.JsonObject;
 public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
-    private final String webhook;
-    private final String channelName;
-    private final String channelUsername;
-    private final String id;
+    private String webhook;
+    private String channelName;
+    private String channelUsername;
+    private String id;
 
     public MockSlackRestModel() {
         this("Webhook", "ChannelName", "ChannelUsername", "1");
@@ -39,17 +39,33 @@ public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestM
         return webhook;
     }
 
+    public void setWebhook(final String webhook) {
+        this.webhook = webhook;
+    }
+
     public String getChannelName() {
         return channelName;
+    }
+
+    public void setChannelName(final String channelName) {
+        this.channelName = channelName;
     }
 
     public String getChannelUsername() {
         return channelUsername;
     }
 
+    public void setChannelUsername(final String channelUsername) {
+        this.channelUsername = channelUsername;
+    }
+
     @Override
     public Long getId() {
         return Long.valueOf(id);
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 
     @Override

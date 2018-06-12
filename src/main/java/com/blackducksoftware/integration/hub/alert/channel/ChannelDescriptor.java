@@ -31,11 +31,11 @@ public class ChannelDescriptor extends AbstractDescriptor {
     private final DistributionChannel channelComponent;
     private final boolean hasGlobalConfiguration;
 
-    public ChannelDescriptor(final String name, final String destinationName, final DistributionChannel channelComponent, final boolean hasGlobalConfiguration) {
+    public ChannelDescriptor(final String name, final String destinationName, final boolean hasGlobalConfiguration, final DistributionChannel channelComponent) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
-        this.channelComponent = channelComponent;
         this.hasGlobalConfiguration = hasGlobalConfiguration;
+        this.channelComponent = channelComponent;
     }
 
     public String getDestinationName() {
