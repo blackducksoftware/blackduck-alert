@@ -12,7 +12,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,12 +29,6 @@ import com.google.gson.Gson;
 
 public class ChannelEventFactoryTest {
     private static final String DISTRIBUTION_TYPE = "TYPE";
-
-    @Test
-    public void createEventWithNoChannelManagersTest() {
-        final ChannelEventFactory factory = new ChannelEventFactory(null);
-        assertNull(factory.createEvent(1L, DISTRIBUTION_TYPE, null));
-    }
 
     @Test
     public void createEventWithChannelManagerTest() {

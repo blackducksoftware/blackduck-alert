@@ -32,6 +32,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -51,6 +53,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Transactional
 @Component
 public class DistributionChannelManager {
+    private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
     private final List<ChannelDescriptor> channelDescriptorList;
     private final ObjectTransformer objectTransformer;
     private final AlertEventContentConverter contentConverter;
@@ -87,17 +90,21 @@ public class DistributionChannelManager {
                 final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptor.getChannelComponent();
                 if (channelDescriptor.hasGlobalConfiguration()) {
                     if (channel.getGlobalConfigEntity() == null) {
+                        logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
                         return "ERROR: Missing global configuration!";
                     }
                 }
                 final DistributionChannelConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, channel.getDatabaseEntityClass());
                 final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
                 channel.sendAuditedMessage(event, entity);
+                logger.info("Successfully sent test message for destination {} ", destinationName);
                 return "Successfully sent test message";
             } catch (final IntegrationException ex) {
+                logger.error("Error sending test message for destination {} ", destinationName, ex);
                 return ex.getMessage();
             }
         } else {
+            logger.error("Could not find a channel to send test message for destination {}", destinationName);
             return "Could not find a channel to send the test message";
         }
     }
