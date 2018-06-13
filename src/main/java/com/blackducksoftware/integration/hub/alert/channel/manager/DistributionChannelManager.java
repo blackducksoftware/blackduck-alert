@@ -26,76 +26,96 @@ package com.blackducksoftware.integration.hub.alert.channel.manager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
-public abstract class DistributionChannelManager<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, E extends AbstractChannelEvent, R extends CommonDistributionConfigRestModel> {
-    private final DistributionChannel<E, G, D> distributionChannel;
-    private final SimpleKeyRepositoryWrapper<G, ?> globalRepository;
-    private final SimpleKeyRepositoryWrapper<D, ?> localRepository;
+@Component
+public class DistributionChannelManager {
+    private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
+    private final List<ChannelDescriptor> channelDescriptorList;
     private final ObjectTransformer objectTransformer;
+    private final AlertEventContentConverter contentConverter;
+    private final Map<String, ChannelDescriptor> channelDescriptorMap;
 
-    public DistributionChannelManager(final DistributionChannel<E, G, D> distributionChannel, final SimpleKeyRepositoryWrapper<G, ?> globalRepository, final SimpleKeyRepositoryWrapper<D, ?> localRepository,
-            final ObjectTransformer objectTransformer) {
-        this.distributionChannel = distributionChannel;
-        this.globalRepository = globalRepository;
-        this.localRepository = localRepository;
+    public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter, final List<ChannelDescriptor> channelDescriptorList) {
         this.objectTransformer = objectTransformer;
-    }
+        this.contentConverter = contentConverter;
+        this.channelDescriptorList = channelDescriptorList;
+        channelDescriptorMap = new HashMap<>(channelDescriptorList.size());
 
-    public DistributionChannel<E, G, D> getDistributionChannel() {
-        return distributionChannel;
-    }
-
-    public SimpleKeyRepositoryWrapper<G, ?> getGlobalRepository() {
-        return globalRepository;
-    }
-
-    public SimpleKeyRepositoryWrapper<D, ?> getLocalRepository() {
-        return localRepository;
+        channelDescriptorList.forEach(descriptor -> {
+            channelDescriptorMap.put(descriptor.getDestinationName(), descriptor);
+        });
     }
 
     public ObjectTransformer getObjectTransformer() {
         return objectTransformer;
     }
 
-    public String testGlobalConfig(final G globalConfigEntity) throws IntegrationException {
-        return getDistributionChannel().testGlobalConfig(globalConfigEntity);
-    }
-
-    public String sendTestMessage(final R restModel) throws AlertException {
-        try {
-            final D entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
-            final E event = createChannelEvent(getTestMessageProjectData(), null);
-            getDistributionChannel().sendAuditedMessage(event, entity);
-            return "Successfully sent test message";
-        } catch (final IntegrationException ex) {
-            return ex.getMessage();
+    public String testGlobalConfig(final String destinationName, final GlobalChannelConfigEntity globalConfigEntity) throws IntegrationException {
+        if (channelDescriptorMap.containsKey(destinationName)) {
+            final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptorMap.get(destinationName).getChannelComponent();
+            return channel.testGlobalConfig(globalConfigEntity);
+        } else {
+            return "Could not find a channel to send the test configuration";
         }
     }
 
-    public List<ProjectData> getTestMessageProjectData() {
-        return Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+    public String sendTestMessage(final String destinationName, final CommonDistributionConfigRestModel restModel) throws AlertException {
+        if (channelDescriptorMap.containsKey(destinationName)) {
+            try {
+                final ChannelDescriptor channelDescriptor = channelDescriptorMap.get(destinationName);
+                final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptor.getChannelComponent();
+                if (channelDescriptor.hasGlobalConfiguration()) {
+                    if (channel.getGlobalConfigEntity() == null) {
+                        logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
+                        return "ERROR: Missing global configuration!";
+                    }
+                }
+                final DistributionChannelConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, channel.getDatabaseEntityClass());
+                final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
+                channel.sendAuditedMessage(event, entity);
+                logger.info("Successfully sent test message for destination {} ", destinationName);
+                return "Successfully sent test message";
+            } catch (final IntegrationException ex) {
+                logger.error("Error sending test message for destination {} ", destinationName, ex);
+                return ex.getMessage();
+            }
+        } else {
+            logger.error("Could not find a channel to send test message for destination {}", destinationName);
+            return "Could not find a channel to send the test message";
+        }
     }
 
-    public abstract Class<D> getDatabaseEntityClass();
+    public DigestModel getTestMessageModel() {
+        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+        final DigestModel digestModel = new DigestModel(projectDataCollection);
+        return digestModel;
+    }
 
-    public abstract boolean isApplicable(final String supportedChannelName);
-
-    public abstract E createChannelEvent(final Collection<ProjectData> projectDataCollection, final Long commonDistributionConfigId);
-
+    public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(destination, contentConverter.convertToString(content), commonDistributionConfigId);
+    }
 }

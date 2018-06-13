@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -57,12 +58,12 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
-public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> {
+public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalHubConfigActions.class);
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public GlobalHubConfigActions(final GlobalHubRepositoryWrapper globalRepository, final GlobalProperties globalProperties, final ObjectTransformer objectTransformer) {
+    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final ObjectTransformer objectTransformer) {
         super(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, globalRepository, objectTransformer);
         this.globalProperties = globalProperties;
     }
@@ -70,9 +71,9 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public List<GlobalHubConfigRestModel> getConfig(final Long id) throws AlertException {
         if (id != null) {
-            final GlobalHubConfigEntity foundEntity = getRepository().findOne(id);
-            if (foundEntity != null) {
-                GlobalHubConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity, getConfigRestModelClass());
+            final Optional<GlobalHubConfigEntity> foundEntity = getRepository().findById(id);
+            if (foundEntity.isPresent()) {
+                GlobalHubConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity.get(), getConfigRestModelClass());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
                     final GlobalHubConfigRestModel maskedRestModel = maskRestModel(restModel);
@@ -148,13 +149,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        String apiToken;
-        if (restModel.isHubApiKeyIsSet()) {
-            final GlobalHubConfigEntity foundEntity = getRepository().findOne(Long.parseLong(restModel.getId()));
-            apiToken = foundEntity.getHubApiKey();
-        } else {
-            apiToken = restModel.getHubApiKey();
-        }
+        final String apiToken = restModel.getHubApiKey();
 
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());

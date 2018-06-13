@@ -23,26 +23,43 @@
  */
 package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.event.AbstractEvent;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import javax.transaction.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.google.gson.Gson;
 
-public abstract class MessageReceiver<E extends AbstractEvent> {
-    private final Gson gson;
+@Transactional
+public abstract class MessageReceiver<E extends AlertEvent> implements MessageListener {
+
+    private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
     private final Class<E> clazz;
+    private final Gson gson;
 
     public MessageReceiver(final Gson gson, final Class<E> clazz) {
-        this.gson = gson;
         this.clazz = clazz;
+        this.gson = gson;
     }
 
-    public Gson getGson() {
-        return gson;
-    }
+    public abstract void handleEvent(E event);
 
-    public abstract void receiveMessage(String message);
-
-    public E getEvent(final String message) {
-        final E event = getGson().fromJson(message, clazz);
-        return event;
+    @Override
+    public void onMessage(final Message message) {
+        try {
+            if (TextMessage.class.isAssignableFrom(message.getClass())) {
+                logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+                final TextMessage textMessage = (TextMessage) message;
+                final E event = gson.fromJson(textMessage.getText(), clazz);
+                logger.info(String.format("%s event %s", getClass().getName(), event));
+                handleEvent(event);
+            }
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+        }
     }
 }

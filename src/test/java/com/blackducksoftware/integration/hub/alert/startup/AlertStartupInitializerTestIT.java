@@ -19,7 +19,7 @@ import org.springframework.core.env.Environment;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.EmailChannelPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -31,7 +31,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
         initializer.initializeConfigs();
@@ -56,7 +56,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
         initializer.initializeConfigs();
@@ -80,7 +80,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
         initializer.initializeConfigs();
@@ -104,7 +104,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(false);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
         initializer.initializeConfigs();
@@ -127,7 +127,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(true);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
 
@@ -143,7 +143,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new SecurityException());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
@@ -155,7 +155,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new IllegalArgumentException());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
@@ -168,7 +168,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         Mockito.doThrow(new IllegalArgumentException()).when(environment).getProperty(Mockito.anyString());
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         throwExceptionTest(environment, conversionService, objectTransformer, globalEmailRepository);
     }
 
@@ -178,7 +178,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         Mockito.doThrow(new SecurityException()).when(environment).getProperty(Mockito.anyString());
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         throwExceptionTest(environment, conversionService, objectTransformer, globalEmailRepository);
     }
 
@@ -188,11 +188,11 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         final ObjectTransformer objectTransformer = Mockito.mock(ObjectTransformer.class);
         Mockito.doThrow(new AlertException()).when(objectTransformer).configRestModelToDatabaseEntity(Mockito.any(), Mockito.any());
-        final GlobalEmailRepositoryWrapper globalEmailRepository = Mockito.mock(GlobalEmailRepositoryWrapper.class);
+        final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         throwExceptionTest(environment, conversionService, objectTransformer, globalEmailRepository);
     }
 
-    private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final ObjectTransformer objectTransformer, final GlobalEmailRepositoryWrapper globalEmailRepository) throws Exception {
+    private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final ObjectTransformer objectTransformer, final GlobalEmailRepository globalEmailRepository) throws Exception {
         final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList = Arrays.asList(new EmailChannelPropertyInitializer(globalEmailRepository));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(objectTransformer, propertyManagerList, environment, conversionService);
         initializer.initializeConfigs();

@@ -23,55 +23,55 @@
  */
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.digest.DigestRemovalProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 import com.google.gson.Gson;
 
 @Component
-public class RealTimeListener extends MessageReceiver<RealTimeEvent> {
+public class RealTimeListener extends MessageReceiver<AlertEvent> {
     private final static Logger logger = LoggerFactory.getLogger(RealTimeListener.class);
 
     private final ChannelTemplateManager channelTemplateManager;
-    private final ProjectDataFactory projectDataFactory;
     private final NotificationEventManager eventManager;
+    private final AlertEventContentConverter contentConverter;
 
     @Autowired
-    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final ProjectDataFactory projectDataFactory, final NotificationEventManager eventManager) {
-        super(gson, RealTimeEvent.class);
+    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final NotificationEventManager eventManager, final AlertEventContentConverter contentConverter) {
+        super(gson, AlertEvent.class);
         this.channelTemplateManager = channelTemplateManager;
-        this.projectDataFactory = projectDataFactory;
         this.eventManager = eventManager;
+        this.contentConverter = contentConverter;
+
     }
 
-    @JmsListener(destination = RealTimeEvent.TOPIC_NAME)
     @Override
-    public void receiveMessage(final String message) {
+    public void handleEvent(final AlertEvent event) {
         try {
-            final RealTimeEvent event = getEvent(message);
-            final List<NotificationModel> notificationList = event.getNotificationList();
-            final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
-            final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
-            if (!processedNotificationList.isEmpty()) {
-                final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(processedNotificationList, DigestTypeEnum.REAL_TIME);
-                final List<AbstractChannelEvent> events = eventManager.createChannelEvents(projectDataCollection);
-                channelTemplateManager.sendEvents(events);
+            final Optional<NotificationModels> optionalModel = contentConverter.getContent(event.getContent(), NotificationModels.class);
+            if (optionalModel.isPresent()) {
+                final List<NotificationModel> notificationList = optionalModel.get().getNotificationModelList();
+                final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
+                final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
+                if (!processedNotificationList.isEmpty()) {
+                    final List<ChannelEvent> events = eventManager.createChannelEvents(DigestTypeEnum.REAL_TIME, processedNotificationList);
+                    channelTemplateManager.sendEvents(events);
+                }
             }
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);

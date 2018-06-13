@@ -93,7 +93,7 @@ public class GlobalEmailRepositoryIT {
         final GlobalEmailConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalEmailConfigEntity foundEntity = repository.findOne(savedEntity.getId());
+        final GlobalEmailConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
         assertEquals(mailSmtpHost, foundEntity.getMailSmtpHost());
         assertEquals(mailSmtpUser, foundEntity.getMailSmtpUser());
         assertEquals(mailSmtpPassword, foundEntity.getMailSmtpPassword());

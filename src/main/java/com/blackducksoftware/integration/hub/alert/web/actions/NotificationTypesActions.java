@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -36,9 +37,9 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -46,20 +47,20 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 public class NotificationTypesActions<R extends CommonDistributionConfigRestModel> {
     private static final Logger logger = LoggerFactory.getLogger(NotificationTypesActions.class);
 
-    private final NotificationTypeRepositoryWrapper notificationTypeRepository;
-    private final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
+    private final NotificationTypeRepository notificationTypeRepository;
+    private final DistributionNotificationTypeRepository distributionNotificationTypeRepository;
 
     @Autowired
-    public NotificationTypesActions(final NotificationTypeRepositoryWrapper notificationTypeRepository, final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository) {
+    public NotificationTypesActions(final NotificationTypeRepository notificationTypeRepository, final DistributionNotificationTypeRepository distributionNotificationTypeRepository) {
         this.notificationTypeRepository = notificationTypeRepository;
         this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;
     }
 
-    public NotificationTypeRepositoryWrapper getNotificationTypeRepository() {
+    public NotificationTypeRepository getNotificationTypeRepository() {
         return notificationTypeRepository;
     }
 
-    public DistributionNotificationTypeRepositoryWrapper getDistributionNotificationTypeRepository() {
+    public DistributionNotificationTypeRepository getDistributionNotificationTypeRepository() {
         return distributionNotificationTypeRepository;
     }
 
@@ -67,8 +68,9 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> notificationTypes = new ArrayList<>(foundRelations.size());
         for (final DistributionNotificationTypeRelation relation : foundRelations) {
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(relation.getNotificationTypeId());
-            notificationTypes.add(foundEntity.getType().name());
+            final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(relation.getNotificationTypeId());
+            foundEntity.ifPresent(entity -> notificationTypes.add(entity.getType().name()));
+            ;
         }
         return notificationTypes;
     }
@@ -85,7 +87,7 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
 
     public void removeOldNotificationTypes(final Long commonDistributionConfigId) {
         final List<DistributionNotificationTypeRelation> distributionProjects = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
-        distributionNotificationTypeRepository.delete(distributionProjects);
+        distributionNotificationTypeRepository.deleteAll(distributionProjects);
     }
 
     private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {

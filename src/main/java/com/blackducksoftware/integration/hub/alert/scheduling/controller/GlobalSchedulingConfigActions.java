@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -43,18 +44,19 @@ import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
-public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepositoryWrapper> {
+public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
@@ -63,11 +65,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationManager notificationManager;
     private final List<NotificationTypeProcessor> processorList;
+    private final AlertEventContentConverter contentConverter;
 
     @Autowired
-    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepositoryWrapper repository,
+    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
             final ObjectTransformer objectTransformer, final GlobalProperties globalProperties, final ChannelTemplateManager channelTemplateManager, final NotificationManager notificationManager,
-            final List<NotificationTypeProcessor> processorList) {
+            final List<NotificationTypeProcessor> processorList, final AlertEventContentConverter contentConverter) {
         super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
@@ -76,22 +79,23 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         this.channelTemplateManager = channelTemplateManager;
         this.notificationManager = notificationManager;
         this.processorList = processorList;
+        this.contentConverter = contentConverter;
     }
 
     @Override
     public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
-        GlobalSchedulingConfigEntity databaseEntity = null;
+        Optional<GlobalSchedulingConfigEntity> databaseEntity = null;
         if (id != null) {
-            databaseEntity = getRepository().findOne(id);
+            databaseEntity = getRepository().findById(id);
         } else {
             final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
             if (databaseEntities != null && !databaseEntities.isEmpty()) {
-                databaseEntity = databaseEntities.get(0);
+                databaseEntity = Optional.of(databaseEntities.get(0));
             }
         }
         GlobalSchedulingConfigRestModel restModel = null;
         if (databaseEntity != null) {
-            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity.get(), getConfigRestModelClass());
             restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
             restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
         } else {
@@ -162,12 +166,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     public void runAccumulator() throws Exception {
         final AccumulatorReader reader = new AccumulatorReader(globalProperties);
-        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList);
-        final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager);
+        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList, contentConverter);
+        final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
 
         final NotificationDetailResults results = reader.read();
-        final DBStoreEvent event = processor.process(results);
-        final List<DBStoreEvent> events = new ArrayList<>();
+        final AlertEvent event = processor.process(results);
+        final List<AlertEvent> events = new ArrayList<>();
         if (event != null) {
             events.add(event);
         }

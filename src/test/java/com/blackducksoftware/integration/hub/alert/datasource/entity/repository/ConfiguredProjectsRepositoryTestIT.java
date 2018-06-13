@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -43,7 +44,12 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class ConfiguredProjectsRepositoryTestIT {
     @Autowired
-    private ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
+    private ConfiguredProjectsRepository configuredProjectsRepository;
+
+    @Before
+    public void cleanup() {
+        configuredProjectsRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.mock.NotificationTypeMockUtils;
@@ -26,6 +26,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfigRestModel> {
+    protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
+    protected static final NotificationTypeMockUtils notificationTypeMock = new NotificationTypeMockUtils();
     private String id;
     private String distributionConfigId;
     private String distributionType;
@@ -37,16 +39,12 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     private String lastRan;
     private String status;
 
-    protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
-
-    protected static final NotificationTypeMockUtils notificationTypeMock = new NotificationTypeMockUtils();
-
     public MockCommonDistributionRestModel() {
         this("1");
     }
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
-        this("2", distributionConfigId, SupportedChannels.HIPCHAT.toString(), "Name", DigestTypeEnum.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
+        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestTypeEnum.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
@@ -68,20 +66,40 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         return distributionConfigId;
     }
 
+    public void setDistributionConfigId(final String distributionConfigId) {
+        this.distributionConfigId = distributionConfigId;
+    }
+
     public String getDistributionType() {
         return distributionType;
+    }
+
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(final String name) {
+        this.name = name;
+    }
+
     public String getFrequency() {
         return frequency;
     }
 
+    public void setFrequency(final String frequency) {
+        this.frequency = frequency;
+    }
+
     public String getFilterByProject() {
         return filterByProject;
+    }
+
+    public void setFilterByProject(final String filterByProject) {
+        this.filterByProject = filterByProject;
     }
 
     public List<String> getProjects() {
@@ -100,32 +118,16 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         return lastRan;
     }
 
+    public void setLastRan(final String lastRan) {
+        this.lastRan = lastRan;
+    }
+
     public String getStatus() {
         return status;
     }
 
-    public void setId(final String id) {
-        this.id = id;
-    }
-
-    public void setDistributionConfigId(final String distributionConfigId) {
-        this.distributionConfigId = distributionConfigId;
-    }
-
-    public void setDistributionType(final String distributionType) {
-        this.distributionType = distributionType;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public void setFrequency(final String frequency) {
-        this.frequency = frequency;
-    }
-
-    public void setFilterByProject(final String filterByProject) {
-        this.filterByProject = filterByProject;
+    public void setStatus(final String status) {
+        this.status = status;
     }
 
     public void setConfiguredProjects(final List<String> configuredProjects) {
@@ -136,17 +138,13 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         this.notificationTypes = notificationTypes;
     }
 
-    public void setLastRan(final String lastRan) {
-        this.lastRan = lastRan;
-    }
-
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-
     @Override
     public Long getId() {
         return Long.valueOf(id);
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 
     @Override

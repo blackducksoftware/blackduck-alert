@@ -25,34 +25,33 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 
+import com.zaxxer.hikari.HikariDataSource;
+
 @Configuration
 public class DataSourceConfig {
-
-    @Value("${blackduck.alertdb.url:jdbc:h2:file:./data/alertdb}")
-    String alertDbUrl;
-
-    @Value("${blackduck.alertdb.username:sa}")
-    String alertDbUsername;
-
-    @Value("${blackduck.alertdb.password:}")
-    String alertDbPassword;
-
-    @Value("${blackduck.alertdb.driver-class-name:org.h2.Driver}")
-    String alertDbDriverClassName;
-
     // USING SPRING BATCH HERE. For JPA to work need to configure the JPATransactionManager bean.
     // SEE SPRING ISSUE: https://jira.spring.io/browse/BATCH-2642
     // Stack Overflow: https://stackoverflow.com/questions/38287298/persist-issue-with-a-spring-batch-itemwriter-using-a-jpa-repository
+    // for Spring 2.0 this may no longer be an issue.
+
     @Bean
-    public DataSource dataSource() {
-        return DataSourceBuilder.create().url(alertDbUrl).username(alertDbUsername).password(alertDbPassword).driverClassName(alertDbDriverClassName).build();
+    @Primary
+    @ConfigurationProperties("spring.datasource")
+    public DataSourceProperties dataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public DataSource dataSource(final DataSourceProperties dataSourceProperties) {
+        return dataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
     @Bean

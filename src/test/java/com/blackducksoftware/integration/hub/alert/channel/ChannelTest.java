@@ -28,18 +28,21 @@ import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.google.gson.Gson;
 
 public class ChannelTest {
     protected Gson gson;
     protected TestProperties properties;
     protected OutputLogger outputLogger;
+    protected AlertEventContentConverter contentConverter;
 
     @Before
     public void init() throws IOException {
         gson = new Gson();
         properties = new TestProperties();
         outputLogger = new OutputLogger();
+        contentConverter = new AlertEventContentConverter(gson);
     }
 
     @After

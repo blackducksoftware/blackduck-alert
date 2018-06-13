@@ -12,7 +12,6 @@
 package com.blackducksoftware.integration.hub.alert.channel.manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -30,11 +29,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
+import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -45,38 +44,17 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 @WebAppConfiguration
-public class DistributionChannelManagerTestIT<E extends AbstractChannelEvent, G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
+public class DistributionChannelManagerTestIT<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, R extends CommonDistributionConfigRestModel> {
     @Autowired
-    private List<DistributionChannel<E, G, D>> channelList;
+    private List<DistributionChannel> channelList;
     @Autowired
-    private List<DistributionChannelManager<G, D, E, R>> channelManagerList;
+    private List<ChannelDescriptor> channelDescriptorList;
 
     @Test
     public void assertManagerHasBeenCreatedForChannel() {
         // DO NOT DELETE THIS TEST
         // This test exists to ensure that when a new channel is created, its necessary pieces are created as well.
-        assertEquals(channelList.size(), channelManagerList.size());
-    }
-
-    @Test
-    public void getGlobalRepositoryTest() {
-        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
-            assertNotNull(manager.getGlobalRepository());
-        }
-    }
-
-    @Test
-    public void getLocalRepositoryTest() {
-        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
-            assertNotNull(manager.getLocalRepository());
-        }
-    }
-
-    @Test
-    public void getDatabaseEntityClassTest() {
-        for (final DistributionChannelManager<G, D, E, R> manager : channelManagerList) {
-            assertNotNull(manager.getDatabaseEntityClass());
-        }
+        assertEquals(channelList.size(), channelDescriptorList.size());
     }
 
 }

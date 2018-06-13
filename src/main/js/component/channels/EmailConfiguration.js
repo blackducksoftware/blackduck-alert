@@ -596,7 +596,7 @@ class EmailConfiguration extends React.Component {
                         />
                     </div>
                     }
-                    <ConfigButtons includeSave includeTest={false} />
+                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest={false} />
                 </form>
             </div>
         );

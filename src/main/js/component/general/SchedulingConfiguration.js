@@ -172,7 +172,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
                     </div>
 
-                    <ConfigButtons includeSave includeTest={false} />
+                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
                 </form>
             </div>
         );
