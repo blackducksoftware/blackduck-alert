@@ -21,7 +21,7 @@ export default class SlackJobConfiguration extends BaseJobConfiguration {
         const content = (<div>
             <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.values.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.state.errors.webhookError} />
             <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.values.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.state.errors.channelNameError} />
-            <TextInput  id="jobSlackChannelUsername" label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError} />
+            <TextInput id="jobSlackChannelUsername" label="Channel Username" name="channelUsername" value={this.state.values.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError} />
         </div>);
 
         return super.render(content);
