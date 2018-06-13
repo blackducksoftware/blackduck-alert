@@ -38,7 +38,6 @@ const CheckboxInput = (props) => {
 };
 
 CheckboxInput.propTypes = {
-    id: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.string,
     name: PropTypes.string.isRequired,
@@ -49,7 +48,6 @@ CheckboxInput.propTypes = {
 };
 
 CheckboxInput.defaultProps = {
-    id: null,
     errorName: '',
     errorValue: '',
     readOnly: false,

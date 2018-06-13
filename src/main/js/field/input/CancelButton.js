@@ -6,13 +6,11 @@ const CancelButton = ({ onClick, children, id }) => (
 );
 
 CancelButton.defaultProps = {
-    id: null,
     children: 'Cancel',
     onClick: () => true
 };
 
 CancelButton.propTypes = {
-    id: PropTypes.string,
     children: PropTypes.string,
     onClick: PropTypes.func
 };

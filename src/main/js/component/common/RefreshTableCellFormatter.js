@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected, id }) => (
+const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) => (
     <button
-        id={id}
         className="btn btn-link editJobButton"
         type="button"
         title="Refresh"
@@ -16,7 +15,6 @@ const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected, id
 );
 
 RefreshTableCellFormatter.PropTypes = {
-    id: PropTypes.string,
     currentRowSelected: PropTypes.object,
     handleButtonClicked: PropTypes.func.isRequired
 };

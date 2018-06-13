@@ -13,22 +13,20 @@ const ConfigButtons = props => (
                 display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
             }}
             >
-                <GeneralButton onClick={props.onTestClick}>Test Configuration</GeneralButton>
+                <GeneralButton id="generalButton" onClick={props.onTestClick}>Test Configuration</GeneralButton>
             </div>
             }
             { props.includeSave &&
-            <SubmitButton id={this.props.submitId}>Save</SubmitButton>
+            <SubmitButton id="submitButton">Save</SubmitButton>
             }
             { props.includeCancel &&
-            <CancelButton id={this.props.cancelId} onClick={props.onCancelClick} />
+            <CancelButton id="cancelButton" onClick={props.onCancelClick} />
             }
         </div>
     </div>
 );
 
 ConfigButtons.propTypes = {
-    cancelId: PropTypes.string,
-    submitId: PropTypes.string,
     includeCancel: PropTypes.bool,
     includeSave: PropTypes.bool,
     includeTest: PropTypes.bool,
@@ -37,8 +35,6 @@ ConfigButtons.propTypes = {
 };
 
 ConfigButtons.defaultProps = {
-    cancelId: null,
-    submitId: null,
     includeCancel: false,
     includeSave: true,
     includeTest: false,
