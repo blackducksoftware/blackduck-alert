@@ -283,12 +283,12 @@ class BaseJobConfiguration extends Component {
     render(content) {
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="job-name" label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />
+                <TextInput id="jobName" label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
                         <Select
-                            id="job-frequency"
+                            id="jobFrequency"
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
                             searchable
@@ -305,7 +305,7 @@ class BaseJobConfiguration extends Component {
                     <label className="col-sm-3 control-label">Notification Types</label>
                     <div className="col-sm-8">
                         <Select
-                            id="job-notificationType"
+                            id="jobType"
                             className="typeAheadField"
                             onChange={this.handleNotificationChanged}
                             searchable

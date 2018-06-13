@@ -6,13 +6,11 @@ const GeneralButton = ({ onClick, children, className, id }) => (
 );
 
 GeneralButton.defaultProps = {
-    id: null,
     children: 'Click Me',
     className: 'btn-sm'
 };
 
 GeneralButton.propTypes = {
-    id: PropTypes.string,
     children: PropTypes.string,
     className: PropTypes.string,
     onClick: PropTypes.func.isRequired

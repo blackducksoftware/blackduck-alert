@@ -115,7 +115,7 @@ class EmailConfiguration extends React.Component {
                     </div> }
 
                     <TextInput
-                        id="email-host"
+                        id="emailSmtpHost"
                         label="SMTP Host"
                         name="mailSmtpHost"
                         value={this.state.mailSmtpHost}
@@ -125,7 +125,7 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <TextInput
-                        id="email-from"
+                        id="emailSmtpFrom"
                         label="SMTP From"
                         name="mailSmtpFrom"
                         value={this.state.mailSmtpFrom}
@@ -135,7 +135,7 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <CheckboxInput
-                        id="email-auth"
+                        id="emailSmtpAuth"
                         label="SMTP Auth"
                         name="mailSmtpAuth"
                         value={this.state.mailSmtpAuth}
@@ -145,7 +145,7 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <TextInput
-                        id="email-user"
+                        id="emailSmtpUser"
                         label="SMTP User"
                         name="mailSmtpUser"
                         value={this.state.mailSmtpUser}
@@ -155,7 +155,7 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <PasswordInput
-                        id="email-password"
+                        id="emailSmtpPassword"
                         label="SMTP Password"
                         name="mailSmtpPassword"
                         value={this.state.mailSmtpPassword}
@@ -167,7 +167,7 @@ class EmailConfiguration extends React.Component {
 
                     <div className="form-group">
                         <div className="col-sm-8 col-sm-offset-3">
-                            <button id="email-advanced" type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false; }}>
+                            <button id="emailAdvanced" type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false; }}>
                                 {showAdvancedLabel}
                             </button>
                         </div>
@@ -176,7 +176,7 @@ class EmailConfiguration extends React.Component {
                     {showAdvanced &&
                     <div>
                         <NumberInput
-                            id="email-port"
+                            id="emailSmtpPort"
                             label="SMTP Port"
                             name="mailSmtpPort"
                             value={this.state.mailSmtpPort}
@@ -186,7 +186,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-connectionTimeout"
+                            id="emailSmtpConnectionTimeout"
                             label="SMTP Connection Timeout"
                             name="mailSmtpConnectionTimeout"
                             value={this.state.mailSmtpConnectionTimeout}
@@ -196,7 +196,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-timeout"
+                            id="emailSmtpTimeout"
                             label="SMTP Timeout"
                             name="mailSmtpTimeout"
                             value={this.state.mailSmtpTimeout}
@@ -206,7 +206,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-writeTimeout"
+                            id="emailSmtpWriteTimeout"
                             label="SMTP Write Timeout"
                             name="mailSmtpWriteTimeout"
                             value={this.state.mailSmtpWriteTimeout}
@@ -216,7 +216,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-localhost"
+                            id="emailSmtpLocalhost"
                             label="SMTP Localhost"
                             name="mailSmtpLocalhost"
                             value={this.state.mailSmtpLocalhost}
@@ -226,7 +226,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-localAddress"
+                            id="emailSmtpLocalAddress"
                             label="SMTP Local Address"
                             name="mailSmtpLocalAddress"
                             value={this.state.mailSmtpLocalAddress}
@@ -236,7 +236,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-localPort"
+                            id="emailSmtpLocalPort"
                             label="SMTP Local Port"
                             name="mailSmtpLocalPort"
                             value={this.state.mailSmtpLocalPort}
@@ -246,7 +246,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-ehlo"
+                            id="emailSmtpEhlo"
                             label="SMTP Ehlo"
                             name="mailSmtpEhlo"
                             value={this.state.mailSmtpEhlo}
@@ -256,7 +256,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-authMechanisms"
+                            id="emailSmtpAuthMechanisms"
                             label="SMTP Auth Mechanisms"
                             name="mailSmtpAuthMechanisms"
                             value={this.state.mailSmtpAuthMechanisms}
@@ -266,7 +266,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-loginDisable"
+                            id="emailSmtpAuthLoginDisable"
                             label="SMTP Auth Login Disable"
                             name="mailSmtpAuthLoginDisable"
                             value={this.state.mailSmtpAuthLoginDisable}
@@ -276,7 +276,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-plainDisable"
+                            id="emailSmtpAuthPlainDisable"
                             label="SMTP Auth Plain Disable"
                             name="mailSmtpAuthPlainDisable"
                             value={this.state.mailSmtpAuthPlainDisable}
@@ -286,7 +286,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-md5Disable"
+                            id="emailSmtpAuthDigestDisable"
                             label="SMTP Auth Digest MD5 Disable"
                             name="mailSmtpAuthDigestMd5Disable"
                             value={this.state.mailSmtpAuthDigestMd5Disable}
@@ -296,7 +296,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-ntlmDisable"
+                            id="emailSmtpAuthNtlmDisable"
                             label="SMTP Auth NTLM Disable"
                             name="mailSmtpAuthNtlmDisable"
                             value={this.state.mailSmtpAuthNtlmDisable}
@@ -306,7 +306,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-ntlmDomain"
+                            id="emailSmtpAuthNtlmDomain"
                             label="SMTP Auth NTLM Domain"
                             name="mailSmtpAuthNtlmDomain"
                             value={this.state.mailSmtpAuthNtlmDomain}
@@ -316,7 +316,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-ntlmFlags"
+                            id="emailSmtpAuthNtlmFlags"
                             label="SMTP Auth NTLM Flags"
                             name="mailSmtpAuthNtlmFlags"
                             value={this.state.mailSmtpAuthNtlmFlags}
@@ -326,7 +326,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-xoauth2Disable"
+                            id="emailSmtpAuthXoauth2Disable"
                             label="SMTP Auth XOAuth2 Disable"
                             name="mailSmtpAuthXoauth2Disable"
                             value={this.state.mailSmtpAuthXoauth2Disable}
@@ -336,7 +336,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-submitted"
+                            id="emailSmtpSubmitter"
                             label="SMTP Submitter"
                             name="mailSmtpSubmitter"
                             value={this.state.mailSmtpSubmitter}
@@ -346,7 +346,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-dnsNotify"
+                            id="emailSmtpDnsNotify"
                             label="SMTP DNS Notify"
                             name="mailSmtpDnsNotify"
                             value={this.state.mailSmtpDnsNotify}
@@ -356,7 +356,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-dnsRet"
+                            id="emailSmtpDnsRet"
                             label="SMTP DNS Ret"
                             name="mailSmtpDnsRet"
                             value={this.state.mailSmtpDnsRet}
@@ -366,7 +366,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-8bitMime"
+                            id="emailSmtpAllowMime"
                             label="SMTP Allow 8-bit Mime"
                             name="mailSmtpAllow8bitmime"
                             value={this.state.mailSmtpAllow8bitmime}
@@ -376,7 +376,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-sendPartial"
+                            id="emailSmtpSendPartial"
                             label="SMTP Send Partial"
                             name="mailSmtpSendPartial"
                             value={this.state.mailSmtpSendPartial}
@@ -386,7 +386,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-saslEnable"
+                            id="emailSmtpSaslEnable"
                             label="SMTP SASL Enable"
                             name="mailSmtpSaslEnable"
                             value={this.state.mailSmtpSaslEnable}
@@ -396,7 +396,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-saslMechanisms"
+                            id="emailSmtpSaslMechanisms"
                             label="SMTP SASL Mechanisms"
                             name="mailSmtpSaslMechanisms"
                             value={this.state.mailSmtpSaslMechanisms}
@@ -406,7 +406,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-saslAuthorizationId"
+                            id="emailSmtpSaslAuthorizationId"
                             label="SMTP SASL Authorization ID"
                             name="mailSmtpSaslAuthorizationId"
                             value={this.state.mailSmtpSaslAuthorizationId}
@@ -416,7 +416,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-saslrealm"
+                            id="emailSmtpSaslRealm"
                             label="SMTP SASL Realm"
                             name="mailSmtpSaslRealm"
                             value={this.state.mailSmtpSaslRealm}
@@ -426,7 +426,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-canonicalHostname"
+                            id="emailSmtpSaslUseCanonicalHostname"
                             label="SMTP SASL Use Canonical Hostname"
                             name="mailSmtpSaslUseCanonicalHostname"
                             value={this.state.mailSmtpSaslUseCanonicalHostname}
@@ -436,7 +436,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-quitWait"
+                            id="emailSmtpQuitwait"
                             label="SMTP QuitWait"
                             name="mailSmtpQuitwait"
                             value={this.state.mailSmtpQuitwait}
@@ -446,7 +446,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-reportSuccess"
+                            id="emailSmtpReportSuccess"
                             label="SMTP Report Success"
                             name="mailSmtpReportSuccess"
                             value={this.state.mailSmtpReportSuccess}
@@ -456,7 +456,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-sslEnable"
+                            id="emailSmtpSslEnable"
                             label="SMTP SSL Enable"
                             name="mailSmtpSslEnable"
                             value={this.state.mailSmtpSslEnable}
@@ -466,7 +466,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-checkServerIdentity"
+                            id="emailSmtpSslCheckServerIdentity"
                             label="SMTP SSL Check Server Identity"
                             name="mailSmtpSslCheckServerIdentity"
                             value={this.state.mailSmtpSslCheckServerIdentity}
@@ -476,7 +476,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-sslTrust"
+                            id="emailSmtpSslTrust"
                             label="SMTP SSL Trust"
                             name="mailSmtpSslTrust"
                             value={this.state.mailSmtpSslTrust}
@@ -486,7 +486,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-sslProtocols"
+                            id="emailSmtpSslProtocols"
                             label="SMTP SSL Protocols"
                             name="mailSmtpSslProtocols"
                             value={this.state.mailSmtpSslProtocols}
@@ -496,7 +496,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-cipherSuites"
+                            id="emailSmtpSslCipherSuites"
                             label="SMTP SSL Cipher Suites"
                             name="mailSmtpSslCipherSuites"
                             value={this.state.mailSmtpSslCipherSuites}
@@ -506,7 +506,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-tlsEnabled"
+                            id="emailSmtpStartTlsEnabled"
                             label="SMTP Start TLS Enabled"
                             name="mailSmtpStartTlsEnable"
                             value={this.state.mailSmtpStartTlsEnable}
@@ -516,7 +516,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-tlsRequired"
+                            id="emailSmtpStartTlsRequired"
                             label="SMTP Start TLS Required"
                             name="mailSmtpStartTlsRequired"
                             value={this.state.mailSmtpStartTlsRequired}
@@ -526,7 +526,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-proxyHost"
+                            id="emailSmtpProxyHost"
                             label="SMTP Proxy Host"
                             name="mailSmtpProxyHost"
                             value={this.state.mailSmtpProxyHost}
@@ -536,7 +536,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-proxyPort"
+                            id="emailSmtpProxyPort"
                             label="SMTP Proxy Port"
                             name="mailSmtpProxyPort"
                             value={this.state.mailSmtpProxyPort}
@@ -546,7 +546,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-socksHost"
+                            id="emailSmtpSocksHost"
                             label="SMTP Socks Host"
                             name="mailSmtpSocksHost"
                             value={this.state.mailSmtpSocksHost}
@@ -556,7 +556,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <NumberInput
-                            id="email-socksPort"
+                            id="emailSmtpSocksPort"
                             label="SMTP Socks Port"
                             name="mailSmtpSocksPort"
                             value={this.state.mailSmtpSocksPort}
@@ -566,7 +566,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <TextInput
-                            id="email-mailExtension"
+                            id="emailSmtpMailExtension"
                             label="SMTP Mail Extension"
                             name="mailSmtpMailExtension"
                             value={this.state.mailSmtpMailExtension}
@@ -576,7 +576,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-userSet"
+                            id="emailSmtpUserSet"
                             label="SMTP User Set"
                             name="mailSmtpUserSet"
                             value={this.state.mailSmtpUserSet}
@@ -586,7 +586,7 @@ class EmailConfiguration extends React.Component {
                         />
 
                         <CheckboxInput
-                            id="email-noOpStrict"
+                            id="emailSmtpNoopStrict"
                             label="SMTP NoOp Strict"
                             name="mailSmtpNoopStrict"
                             value={this.state.mailSmtpNoopStrict}

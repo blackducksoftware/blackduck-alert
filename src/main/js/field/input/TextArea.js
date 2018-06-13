@@ -22,7 +22,6 @@ export default class TextArea extends LabeledField {
 }
 
 TextArea.propTypes = {
-    id: PropTypes.string,
     inputClass: PropTypes.string,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
@@ -31,7 +30,6 @@ TextArea.propTypes = {
 };
 
 TextArea.defaultProps = {
-    id: null,
     readOnly: false,
     inputClass: 'textInput',
     value: null
