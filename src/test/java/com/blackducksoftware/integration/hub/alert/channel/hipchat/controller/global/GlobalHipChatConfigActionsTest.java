@@ -15,28 +15,28 @@ import static org.junit.Assert.assertTrue;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.global.GlobalActionsTest;
 
-public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipChatConfigRestModel, GlobalHipChatConfigEntity, GlobalHipChatRepositoryWrapper, GlobalHipChatConfigActions> {
+public class GlobalHipChatConfigActionsTest extends GlobalActionsTest<GlobalHipChatConfigRestModel, GlobalHipChatConfigEntity, GlobalHipChatRepository, GlobalHipChatConfigActions> {
 
     @Override
     public GlobalHipChatConfigActions getMockedConfigActions() {
-        final GlobalHipChatRepositoryWrapper hipChatRepo = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
+        final GlobalHipChatRepository hipChatRepo = Mockito.mock(GlobalHipChatRepository.class);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
+        final DistributionChannelManager hipChatManager = Mockito.mock(DistributionChannelManager.class);
         return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer, hipChatManager);
     }
 
     @Override
     public GlobalHipChatConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final GlobalHipChatRepositoryWrapper hipChatRepo = Mockito.mock(GlobalHipChatRepositoryWrapper.class);
-        final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
+        final GlobalHipChatRepository hipChatRepo = Mockito.mock(GlobalHipChatRepository.class);
+        final DistributionChannelManager hipChatManager = Mockito.mock(DistributionChannelManager.class);
         return new GlobalHipChatConfigActions(hipChatRepo, objectTransformer, hipChatManager);
     }
 

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.accumulator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -34,36 +35,44 @@ import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
-import com.blackducksoftware.integration.hub.alert.event.RealTimeEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 
 @Transactional
-public class AccumulatorWriter implements ItemWriter<DBStoreEvent> {
+public class AccumulatorWriter implements ItemWriter<AlertEvent> {
     private final static Logger logger = LoggerFactory.getLogger(AccumulatorWriter.class);
     private final NotificationManager notificationManager;
     private final ChannelTemplateManager channelTemplateManager;
+    private final AlertEventContentConverter contentConverter;
 
-    public AccumulatorWriter(final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager) {
+    public AccumulatorWriter(final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager, final AlertEventContentConverter contentConverter) {
         this.notificationManager = notificationManager;
         this.channelTemplateManager = channelTemplateManager;
+        this.contentConverter = contentConverter;
     }
 
     @Override
-    public void write(final List<? extends DBStoreEvent> itemList) throws Exception {
+    public void write(final List<? extends AlertEvent> itemList) throws Exception {
         try {
             if (itemList != null && !itemList.isEmpty()) {
                 logger.info("Writing {} notifications", itemList.size());
-                itemList.forEach(item -> {
-                    final List<NotificationModel> notificationList = item.getNotificationList();
-                    final List<NotificationModel> entityList = new ArrayList<>();
-                    notificationList.forEach(notification -> {
-                        notificationManager.saveNotification(notification);
-                        entityList.add(notification);
-                    });
-                    final RealTimeEvent realTimeEvent = new RealTimeEvent(entityList);
-                    channelTemplateManager.sendEvent(realTimeEvent);
-                });
+                for (final AlertEvent item : itemList) {
+                    final Optional<NotificationModels> optionalModel = contentConverter.getContent(item.getContent(), NotificationModels.class);
+                    if (optionalModel.isPresent()) {
+                        final NotificationModels notificationModels = optionalModel.get();
+                        final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
+                        final List<NotificationModel> entityList = new ArrayList<>();
+                        notificationList.forEach(notification -> {
+                            notificationManager.saveNotification(notification);
+                            entityList.add(notification);
+                        });
+                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
+                        channelTemplateManager.sendEvent(realTimeEvent);
+                    }
+                }
             } else {
                 logger.info("No notifications to write");
             }

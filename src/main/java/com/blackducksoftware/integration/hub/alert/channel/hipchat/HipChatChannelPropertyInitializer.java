@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
@@ -41,10 +41,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class HipChatChannelPropertyInitializer extends AbstractPropertyInitializer<GlobalHipChatConfigEntity> {
     public static final String PROPERTY_PREFIX_CHANNEL_HIPCHAT = "CHANNEL_HIPCHAT";
     private final static Logger logger = LoggerFactory.getLogger(HipChatChannelPropertyInitializer.class);
-    private final GlobalHipChatRepositoryWrapper globalHipChatRepository;
+    private final GlobalHipChatRepository globalHipChatRepository;
 
     @Autowired
-    public HipChatChannelPropertyInitializer(final GlobalHipChatRepositoryWrapper globalHipChatRepository) {
+    public HipChatChannelPropertyInitializer(final GlobalHipChatRepository globalHipChatRepository) {
         this.globalHipChatRepository = globalHipChatRepository;
     }
 

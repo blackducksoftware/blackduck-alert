@@ -10,9 +10,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -44,24 +46,24 @@ public class PhoneHomeTest {
 
     @Test
     public void testChannelMetaData() {
-        final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper = Mockito.mock(CommonDistributionRepositoryWrapper.class);
-        Mockito.when(commonDistributionRepositoryWrapper.findAll()).thenReturn(createConfigEntities());
-        final PhoneHome phoneHome = new PhoneHome(commonDistributionRepositoryWrapper);
+        final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
+        Mockito.when(commonDistributionRepository.findAll()).thenReturn(createConfigEntities());
+        final PhoneHome phoneHome = new PhoneHome(commonDistributionRepository);
         final PhoneHomeRequestBody.Builder builder = new PhoneHomeRequestBody.Builder();
 
         phoneHome.addChannelMetaData(builder);
         final Map<String, String> metaData = builder.getMetaData();
 
-        Assert.assertNull(metaData.get("channel." + SupportedChannels.EMAIL_GROUP));
-        Assert.assertEquals(String.valueOf(2), metaData.get("channel." + SupportedChannels.HIPCHAT));
-        Assert.assertEquals(String.valueOf(1), metaData.get("channel." + SupportedChannels.SLACK));
+        Assert.assertNull(metaData.get("channel." + EmailGroupChannel.COMPONENT_NAME));
+        Assert.assertEquals(String.valueOf(2), metaData.get("channel." + HipChatChannel.COMPONENT_NAME));
+        Assert.assertEquals(String.valueOf(1), metaData.get("channel." + SlackChannel.COMPONENT_NAME));
     }
 
     private List<CommonDistributionConfigEntity> createConfigEntities() {
         final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
         final CommonDistributionConfigEntity entity1 = mockCommonDistributionEntity.createEntity();
         final CommonDistributionConfigEntity entity2 = mockCommonDistributionEntity.createEntity();
-        mockCommonDistributionEntity.setDistributionType(SupportedChannels.SLACK);
+        mockCommonDistributionEntity.setDistributionType(SlackChannel.COMPONENT_NAME);
         final CommonDistributionConfigEntity entity3 = mockCommonDistributionEntity.createEntity();
 
         return Arrays.asList(entity1, entity2, entity3);

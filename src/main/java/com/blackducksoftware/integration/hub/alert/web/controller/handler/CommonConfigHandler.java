@@ -28,10 +28,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -41,7 +41,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> extends ControllerHandler {
+public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;

@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -33,10 +33,10 @@ public class CommonGlobalConfigHandlerTest {
     @Test
     public void postConfigWhenAlreadyExistsTest() {
         final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
+        final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
                 objectTransformer);
 
-        final GlobalHubRepositoryWrapper repository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalHubRepository repository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(configActions.getRepository()).thenReturn(repository);
         Mockito.when(repository.findAll()).thenReturn(Arrays.asList(null, null));
 
@@ -47,10 +47,10 @@ public class CommonGlobalConfigHandlerTest {
     @Test
     public void postConfigWhenDoesNotExistsTest() {
         final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepositoryWrapper> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
+        final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
                 objectTransformer);
 
-        final GlobalHubRepositoryWrapper repository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final GlobalHubRepository repository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(configActions.getRepository()).thenReturn(repository);
         Mockito.when(repository.findAll()).thenReturn(Collections.emptyList());
 

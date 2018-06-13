@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.CommonDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.DistributionConfigController;
@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @RestController
 @RequestMapping(DistributionConfigController.DISTRIBUTION_PATH + "/common")
 public class CommonDistributionConfigController extends DistributionConfigController<CommonDistributionConfigRestModel> {
-    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepositoryWrapper> commonConfigHandler;
+    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> commonConfigHandler;
 
     @Autowired
     public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ObjectTransformer objectTransformer) {

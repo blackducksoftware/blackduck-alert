@@ -97,7 +97,7 @@ class HipChatConfiguration extends React.Component {
                     </div>
                     }
                     
-                    <ConfigButtons includeSave includeTest onTestClick={this.handleTest} />
+                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.handleTest} />
                 </form>
             </div>
         );

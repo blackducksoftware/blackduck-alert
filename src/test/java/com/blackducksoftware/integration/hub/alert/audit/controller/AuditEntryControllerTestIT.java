@@ -2,7 +2,6 @@ package com.blackducksoftware.integration.hub.alert.audit.controller;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -52,9 +51,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class AuditEntryControllerTestIT {
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
+    private final String auditUrl = BaseController.BASE_PATH + "/audit";
     @Autowired
     AuditEntryRepository auditEntryRepository;
 
@@ -66,12 +63,11 @@ public class AuditEntryControllerTestIT {
 
     @Autowired
     NotificationRepository notificationRepository;
-
+    @Autowired
+    private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
     private MockAuditEntryEntity mockAuditEntity;
     private MockCommonDistributionEntity mockCommonDistributionEntity;
-
-    private final String auditUrl = BaseController.BASE_PATH + "/audit";
 
     @Before
     public void setup() {
@@ -84,9 +80,9 @@ public class AuditEntryControllerTestIT {
 
         mockAuditEntity = new MockAuditEntryEntity();
         mockCommonDistributionEntity = new MockCommonDistributionEntity();
+        cleanup();
     }
 
-    @After
     public void cleanup() {
         auditEntryRepository.deleteAllInBatch();
         commonDistributionRepository.deleteAllInBatch();

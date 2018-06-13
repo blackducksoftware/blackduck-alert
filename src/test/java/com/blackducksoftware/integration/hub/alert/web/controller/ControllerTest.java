@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -52,15 +51,11 @@ import com.google.gson.Gson;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfigRestModel, CR extends JpaRepository<E, Long>> {
-
+    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
     @Autowired
     protected CommonDistributionRepository commonDistributionRepository;
-
-    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
     protected MockMvc mockMvc;
 
     protected Gson gson;
@@ -79,6 +74,8 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
     protected R restModel;
 
+    protected E savedEntity;
+
     public abstract CR getEntityRepository();
 
     public abstract MockEntityUtil<E> getEntityMockUtil();
@@ -91,9 +88,9 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     public void setup() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-
+        commonDistributionRepository.deleteAll();
         entityRepository = getEntityRepository();
-        entityRepository.deleteAllInBatch();
+        entityRepository.deleteAll();
 
         entityMockUtil = getEntityMockUtil();
         restModelMockUtil = getRestModelMockUtil();
@@ -101,14 +98,8 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
         restModel = restModelMockUtil.createRestModel();
         entity = entityMockUtil.createEntity();
-        entityRepository.save(entity);
-
+        savedEntity = entityRepository.save(entity);
         restUrl = BaseController.BASE_PATH + getRestControllerUrl();
-    }
-
-    @After
-    public void cleanup() {
-        entityRepository.deleteAllInBatch();
     }
 
     @Test
@@ -121,7 +112,6 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
-        entityRepository.deleteAll();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -131,9 +121,15 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPutConfig() throws Exception {
-        entityRepository.deleteAll();
-        final E savedEntity = entityRepository.save(entity);
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
+        System.out.println("Common Distribution count: " + commonDistributionRepository.count());
+        commonDistributionRepository.findAll().forEach(item -> {
+            System.out.println("Common Entity id: " + item.getId());
+        });
+        System.out.println("Entity count: " + entityRepository.count());
+        entityRepository.findAll().forEach(item -> {
+            System.out.println("Entity id: " + item.getId());
+        });
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(commonEntity.getId()));
@@ -152,8 +148,6 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
-        entityRepository.deleteAll();
-        final E savedEntity = entityRepository.save(entity);
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));

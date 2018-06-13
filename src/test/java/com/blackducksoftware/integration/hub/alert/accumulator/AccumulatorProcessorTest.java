@@ -1,20 +1,21 @@
 package com.blackducksoftware.integration.hub.alert.accumulator;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 import com.blackducksoftware.integration.hub.alert.mock.notification.NotificationGeneratorUtils;
 import com.blackducksoftware.integration.hub.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.alert.processor.policy.PolicyNotificationTypeProcessor;
@@ -28,8 +29,18 @@ import com.blackducksoftware.integration.hub.notification.content.ComponentVersi
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
+import com.google.gson.Gson;
 
 public class AccumulatorProcessorTest {
+
+    private Gson gson;
+    private AlertEventContentConverter contentConverter;
+
+    @Before
+    public void init() {
+        gson = new Gson();
+        contentConverter = new AlertEventContentConverter(gson);
+    }
 
     @Test
     public void testProcess() throws Exception {
@@ -54,13 +65,13 @@ public class AccumulatorProcessorTest {
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList, contentConverter);
 
-        final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
+        final AlertEvent storeEvent = accumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
-
-        final List<NotificationModel> notifications = storeEvent.getNotificationList();
+        final Optional<NotificationModels> optionalModel = contentConverter.getContent(storeEvent.getContent(), NotificationModels.class);
+        final List<NotificationModel> notifications = optionalModel.get().getNotificationModelList();
 
         assertFalse(notifications.isEmpty());
     }
@@ -84,18 +95,19 @@ public class AccumulatorProcessorTest {
 
         final NotificationDetailResults notificationData = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
                 vulnerabilityResults.getHubBucket());
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null, contentConverter);
 
-        final DBStoreEvent storeEventNull = accumulatorProcessor.process(notificationData);
+        final AlertEvent storeEventNull = accumulatorProcessor.process(notificationData);
         assertNotNull(storeEventNull);
-        assertTrue(storeEventNull.getNotificationList().isEmpty());
+        final Optional<NotificationModels> optionalModel = contentConverter.getContent(storeEventNull.getContent(), NotificationModels.class);
+        assertTrue(optionalModel.get().getNotificationModelList().isEmpty());
     }
 
     @Test
     public void testProcessNullList() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null);
-        final DBStoreEvent nullStoreEvent = accumulatorProcessor.process(null);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, null, contentConverter);
+        final AlertEvent nullStoreEvent = accumulatorProcessor.process(null);
         assertNull(nullStoreEvent);
     }
 
@@ -124,9 +136,9 @@ public class AccumulatorProcessorTest {
         Mockito.doThrow(new RuntimeException("Test Exception")).when(policyNotificationTypeProcessor).isApplicable(Mockito.any());
         Mockito.doThrow(new RuntimeException("Test Exception")).when(vulnerabilityNotificationTypeProcessor).isApplicable(Mockito.any());
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList);
+        final AccumulatorProcessor accumulatorProcessor = new AccumulatorProcessor(globalProperties, processorList, contentConverter);
 
-        final DBStoreEvent storeEvent = accumulatorProcessor.process(notificationData);
+        final AlertEvent storeEvent = accumulatorProcessor.process(notificationData);
         assertNull(storeEvent);
     }
 

@@ -27,20 +27,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.event.DBStoreEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.hub.alert.event.InternalEventTypes;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class NotificationItemProcessor {
     private final List<NotificationTypeProcessor> processorList;
+    private final AlertEventContentConverter contentConverter;
 
-    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList) {
+    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList, final AlertEventContentConverter contentConverter) {
         this.processorList = processorList;
+        this.contentConverter = contentConverter;
     }
 
-    public DBStoreEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
+    public AlertEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
         final List<NotificationDetailResult> resultList = notificationData.getResults();
         final HubBucket bucket = notificationData.getHubBucket();
         final int size = resultList.size();
@@ -54,6 +59,7 @@ public class NotificationItemProcessor {
                 });
             });
         }
-        return new DBStoreEvent(notificationModelList);
+        final NotificationModels notificationModels = new NotificationModels(notificationModelList);
+        return new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
     }
 }

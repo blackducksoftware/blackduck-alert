@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.channel.slack.repository.dis
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -42,7 +43,12 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class SlackDistributionRepositoryTestIT {
     @Autowired
-    private SlackDistributionRepositoryWrapper slackDistributionRepository;
+    private SlackDistributionRepository slackDistributionRepository;
+
+    @Before
+    public void cleanup() {
+        slackDistributionRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {

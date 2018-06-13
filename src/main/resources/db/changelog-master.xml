@@ -1,19 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?> 
+<?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-   <changeSet id="create_alert_schema-1" author="psantos">
-    		<sql dbms="h2"
-            endDelimiter="\nGO"
-            splitStatements="true"
-            stripComments="true">
+    <changeSet id="create_alert_schema-1" author="psantos">
+        <sql dbms="h2"
+             endDelimiter="\nGO"
+             splitStatements="true"
+             stripComments="true">
             CREATE SCHEMA IF NOT EXISTS ALERT
-    		</sql>
+        </sql>
     </changeSet>
 
-  <include file="changelog/alert/changelog-1.0.0.xml" relativeToChangelogFile="true"/>
-  <include file="changelog/alert/changelog-1.1.0.xml" relativeToChangelogFile="true"/>
-</databaseChangeLog> 
+    <include file="changelog/alert/changelog-1.0.0.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/changelog-1.1.0.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

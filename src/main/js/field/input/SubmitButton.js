@@ -11,7 +11,6 @@ SubmitButton.defaultProps = {
 };
 
 SubmitButton.propTypes = {
-    id: PropTypes.string,
     children: PropTypes.string,
     onClick: PropTypes.func
 };

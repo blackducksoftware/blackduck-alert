@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
@@ -41,10 +41,10 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class HubProviderPropertyInitializer extends AbstractPropertyInitializer<GlobalHubConfigEntity> {
     public static final String PROPERTY_PREFIX_PROVIDER_HUB = "PROVIDER_HUB";
     private final static Logger logger = LoggerFactory.getLogger(HubProviderPropertyInitializer.class);
-    private final GlobalHubRepositoryWrapper globalHubRepository;
+    private final GlobalHubRepository globalHubRepository;
 
     @Autowired
-    public HubProviderPropertyInitializer(final GlobalHubRepositoryWrapper globalHubRepository) {
+    public HubProviderPropertyInitializer(final GlobalHubRepository globalHubRepository) {
         this.globalHubRepository = globalHubRepository;
     }
 

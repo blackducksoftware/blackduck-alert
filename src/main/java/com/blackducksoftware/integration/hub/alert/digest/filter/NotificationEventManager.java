@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -39,60 +40,66 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
+import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
 @Component
 public class NotificationEventManager {
     private final Logger logger = LoggerFactory.getLogger(NotificationEventManager.class);
     private final NotificationPostProcessor notificationPostProcessor;
-    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
-    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
+    private final CommonDistributionRepository commonDistributionRepository;
+    private final ChannelEventFactory channelEventFactory;
+    private final ProjectDataFactory projectDataFactory;
 
     @Autowired
-    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor,
-            final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository) {
+    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory,
+            final CommonDistributionRepository commonDistributionRepository, final ProjectDataFactory projectDataFactory) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionRepository = commonDistributionRepository;
+        this.projectDataFactory = projectDataFactory;
     }
 
-    public List<AbstractChannelEvent> createChannelEvents(final Collection<ProjectData> projectDataCollection) {
-        final List<AbstractChannelEvent> channelEvents = new ArrayList<>();
+    public List<ChannelEvent> createChannelEvents(final DigestTypeEnum digestType, final List<NotificationModel> notificationModelList) {
+        final List<ChannelEvent> channelEvents = new ArrayList<>();
         final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
-        final Map<CommonDistributionConfigEntity, List<ProjectData>> distributionConfigProjectMap = new HashMap<>(distributionConfigurations.size());
+        final Map<CommonDistributionConfigEntity, List<NotificationModel>> distributionConfigNotificationMap = new HashMap<>(distributionConfigurations.size());
 
         distributionConfigurations.forEach(distributionConfig -> {
-            distributionConfigProjectMap.put(distributionConfig, new ArrayList<>());
+            distributionConfigNotificationMap.put(distributionConfig, new ArrayList<>());
         });
 
-        projectDataCollection.forEach(projectData -> {
-            final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, projectData);
+        notificationModelList.forEach(notificationModel -> {
+            final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, notificationModel, digestType);
 
             applicableConfigurations.forEach(distributionConfig -> {
-                distributionConfigProjectMap.get(distributionConfig).add(projectData);
+                final Optional<NotificationModel> filteredNotification = notificationPostProcessor.filterMatchingNotificationTypes(distributionConfig, notificationModel);
+                filteredNotification.ifPresent(notification -> {
+                    distributionConfigNotificationMap.get(distributionConfig).add(notification);
+                });
             });
         });
 
-        distributionConfigProjectMap.entrySet().forEach(entry -> {
+        distributionConfigNotificationMap.entrySet().forEach(entry -> {
             final CommonDistributionConfigEntity distributionConfig = entry.getKey();
-            final List<ProjectData> projectData = entry.getValue();
-            if (!projectData.isEmpty()) {
-                channelEvents.add(createChannelEvent(distributionConfig, projectData));
+            final List<NotificationModel> notificationList = entry.getValue();
+            if (!notificationList.isEmpty()) {
+                final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notificationList, digestType);
+                channelEvents.add(createChannelEvent(distributionConfig, new DigestModel(projectData)));
             }
         });
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private AbstractChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final List<ProjectData> projectData) {
-        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), projectData);
+    private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final DigestModel digestModel) {
+        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), digestModel);
     }
 
 }

@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.hub.alert.digest.filter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
@@ -35,41 +36,39 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 @Transactional
 @Component
 public class NotificationPostProcessor {
-    private final DistributionProjectRepositoryWrapper distributionProjectRepository;
-    private final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
-    private final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
-    private final NotificationTypeRepositoryWrapper notificationTypeRepository;
+    private final DistributionProjectRepository distributionProjectRepository;
+    private final ConfiguredProjectsRepository configuredProjectsRepository;
+    private final DistributionNotificationTypeRepository distributionNotificationTypeRepository;
+    private final NotificationTypeRepository notificationTypeRepository;
 
     @Autowired
-    public NotificationPostProcessor(final DistributionProjectRepositoryWrapper distributionProjectRepository, final ConfiguredProjectsRepositoryWrapper configuredProjectsRepository,
-            final DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository, final NotificationTypeRepositoryWrapper notificationTypeRepository) {
+    public NotificationPostProcessor(final DistributionProjectRepository distributionProjectRepository, final ConfiguredProjectsRepository configuredProjectsRepository,
+            final DistributionNotificationTypeRepository distributionNotificationTypeRepository, final NotificationTypeRepository notificationTypeRepository) {
         this.distributionProjectRepository = distributionProjectRepository;
         this.configuredProjectsRepository = configuredProjectsRepository;
         this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;
         this.notificationTypeRepository = notificationTypeRepository;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final ProjectData projectData) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationModel notificationModel, final DigestTypeEnum digestTypeEnum) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
-            if (doFrequenciesMatch(distributionConfig, projectData)) {
-                filterMatchingNotificationTypes(distributionConfig, projectData);
+            if (doFrequenciesMatch(distributionConfig, digestTypeEnum)) {
                 if (distributionConfig.getFilterByProject()) {
-                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, projectData);
+                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, notificationModel);
                     applicableConfigurations.addAll(filteredConfigurations);
                 } else {
                     applicableConfigurations.add(distributionConfig);
@@ -79,41 +78,35 @@ public class NotificationPostProcessor {
         return applicableConfigurations;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         foundRelations.forEach(relation -> {
-            final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findOne(relation.getProjectId());
-            if (foundEntity != null && foundEntity.getProjectName().equals(projectData.getProjectName())) {
+            final Optional<ConfiguredProjectEntity> foundEntity = configuredProjectsRepository.findById(relation.getProjectId());
+            if (foundEntity.isPresent() && foundEntity.get().getProjectName().equals(notificationModel.getProjectName())) {
                 applicableConfigurations.add(commonDistributionConfigEntity);
             }
         });
         return applicableConfigurations;
     }
 
-    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
-        final DigestTypeEnum digestTypeEnum = projectData.getDigestType();
+    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final DigestTypeEnum digestTypeEnum) {
         if (commonDistributionConfigEntity.getFrequency() != null) {
             return commonDistributionConfigEntity.getFrequency().equals(digestTypeEnum);
         }
         return false;
     }
 
-    public void filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final ProjectData projectData) {
+    public Optional<NotificationModel> filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
-        final Set<NotificationCategoryEnum> foundNotificationCategories = new HashSet<>();
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findOne(foundRelation.getNotificationTypeId());
-            if (foundEntity != null) {
-                foundNotificationCategories.add(foundEntity.getType());
+            final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
+            if (foundEntity.isPresent() && foundEntity.get().getType().equals(notificationModel.getNotificationType())) {
+                return Optional.of(notificationModel);
             }
         }
 
-        for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-            if (!foundNotificationCategories.contains(category)) {
-                projectData.getCategoryMap().remove(category);
-            }
-        }
+        return Optional.empty();
     }
 
 }

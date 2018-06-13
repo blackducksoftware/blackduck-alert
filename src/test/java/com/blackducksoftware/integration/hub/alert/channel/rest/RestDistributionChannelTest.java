@@ -13,43 +13,47 @@ package com.blackducksoftware.integration.hub.alert.channel.rest;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Collection;
-
 import org.junit.Test;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackEvent;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.rest.request.Request;
+import com.google.gson.Gson;
 
 public class RestDistributionChannelTest extends ChannelTest {
     @Test
     public void sendMessageFailureTest() {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<AbstractChannelEvent, GlobalChannelConfigEntity, DistributionChannelConfigEntity>(
-                null, null, null, null, null, null, channelRestConnectionFactory) {
+        final Gson gson = new Gson();
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, null, null, null, null,
+                channelRestConnectionFactory, contentConverter) {
+            @Override
+            public Class<DistributionChannelConfigEntity> getDatabaseEntityClass() {
+                return DistributionChannelConfigEntity.class;
+            }
+
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
                 return null;
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final Collection<ProjectData> projectData)
-                    throws AlertException {
+            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
             }
         };
-
-        final SlackEvent event = new SlackEvent(createProjectData("Rest channel test"), 1L);
+        final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {

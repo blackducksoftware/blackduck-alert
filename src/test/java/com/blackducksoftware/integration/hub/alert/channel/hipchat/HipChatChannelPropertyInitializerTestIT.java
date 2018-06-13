@@ -23,7 +23,7 @@ import com.blackducksoftware.integration.hub.alert.Application;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -39,7 +39,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class HipChatChannelPropertyInitializerTestIT {
 
     @Autowired
-    private GlobalHipChatRepositoryWrapper repository;
+    private GlobalHipChatRepository repository;
 
     @Test
     public void testChannelNamePrefix() {

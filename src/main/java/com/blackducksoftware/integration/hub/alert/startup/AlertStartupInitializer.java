@@ -90,16 +90,17 @@ public class AlertStartupInitializer {
         final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
-            logger.info("Checking property key {}", property.getPropertyKey());
-            String value = System.getProperty(property.getPropertyKey());
+            final String propertyKey = property.getPropertyKey();
+            logger.debug("Checking property key {}", propertyKey);
+            String value = System.getProperty(propertyKey);
             if (StringUtils.isBlank(value)) {
-                logger.info("Not found in system env, checking Spring env");
-                value = environment.getProperty(property.getPropertyKey());
+                logger.debug("Not found in system env, checking Spring env");
+                value = environment.getProperty(propertyKey);
             }
             try {
-                propertySet = propertySet || setRestModelValue(value, globalRestModel, property);
+                propertySet = setRestModelValue(value, globalRestModel, property) || propertySet;
             } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                logger.error("Error initializing {} ", property.getPropertyKey(), ex);
+                logger.error("Error initializing {} ", propertyKey, ex);
             }
         }
         return propertySet;

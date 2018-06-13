@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -47,10 +47,10 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class NotificationManagerTestIT {
 
     @Autowired
-    private NotificationRepositoryWrapper notificationRepository;
+    private NotificationRepository notificationRepository;
 
     @Autowired
-    private VulnerabilityRepositoryWrapper vulnerabilityRepository;
+    private VulnerabilityRepository vulnerabilityRepository;
 
     @Autowired
     private NotificationManager notificationManager;
@@ -94,7 +94,7 @@ public class NotificationManagerTestIT {
         assertEquals(entity.getProjectVersionUrl(), model.getProjectVersionUrl());
     }
 
-    @After
+    @Before
     public void cleanUpDB() {
         notificationRepository.deleteAll();
         vulnerabilityRepository.deleteAll();

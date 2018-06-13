@@ -67,7 +67,8 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(savedEntity.getId()));
-        request.content(gson.toJson(restModel));
+        final String content = gson.toJson(restModel);
+        request.content(content);
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
