@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,7 @@ import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
 @Component
 public class PhoneHome {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
@@ -47,6 +50,7 @@ public class PhoneHome {
 
     public PhoneHomeRequestBody.Builder createPhoneHomeBuilder(final PhoneHomeService phoneHomeService, final String productVersion) {
         if (GlobalProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
+            logger.debug("Unknown version for phone home");
             return null;
         }
 
