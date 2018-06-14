@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.scheduled.ScheduledTask;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
-import com.blackducksoftware.integration.hub.service.model.PhoneHomeResponse;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
@@ -62,8 +61,7 @@ public class PhoneHomeTask extends ScheduledTask {
                 final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, globalProperties.getProductVersion());
                 if (builder != null) {
                     phoneHome.addChannelMetaData(builder);
-                    final PhoneHomeResponse phoneHomeResponse = phoneHomeService.startPhoneHome(builder.build());
-                    phoneHomeResponse.endPhoneHome();
+                    phoneHomeService.phoneHome(builder);
                 }
             }
 
