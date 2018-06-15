@@ -18,7 +18,6 @@ import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.startup.StartupManager;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
