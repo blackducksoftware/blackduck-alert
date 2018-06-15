@@ -29,7 +29,7 @@ public class DailyItemReaderTest {
 
         final Date now = new Date();
 
-        assertTrue(now.before(actualEndDate));
+        assertTrue(now.equals(actualEndDate));
         assertTrue(now.after(actualStartDate));
     }
 

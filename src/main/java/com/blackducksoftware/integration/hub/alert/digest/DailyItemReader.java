@@ -39,10 +39,9 @@ public class DailyItemReader extends DigestItemReader {
     public DateRange getDateRange() {
         ZonedDateTime currentTime = ZonedDateTime.now();
         currentTime = currentTime.withZoneSameInstant(ZoneOffset.UTC);
-        final ZonedDateTime zonedEndDate = currentTime.withHour(23).withMinute(59).withSecond(59).withNano(9999);
-        final ZonedDateTime zonedStartDate = currentTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        final ZonedDateTime zonedStartDate = currentTime.minusDays(1);
         final Date startDate = Date.from(zonedStartDate.toInstant());
-        final Date endDate = Date.from(zonedEndDate.toInstant());
+        final Date endDate = Date.from(currentTime.toInstant());
         return new DateRange(startDate, endDate);
     }
 }
