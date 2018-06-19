@@ -42,6 +42,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
@@ -50,7 +51,7 @@ import com.blackducksoftware.integration.rest.exception.IntegrationRestException
 import com.google.gson.Gson;
 
 @Transactional
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> implements ChannelDescriptor {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
@@ -181,4 +182,14 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     }
 
     public abstract Class<C> getDatabaseEntityClass();
+
+    @Override
+    public DistributionChannel getChannelComponent() {
+        return this;
+    }
+
+    @Override
+    public DescriptorType getType() {
+        return DescriptorType.CHANNEL;
+    }
 }

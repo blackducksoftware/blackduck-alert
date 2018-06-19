@@ -150,4 +150,19 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
 
         return Collections.emptyList();
     }
+
+    @Override
+    public String getName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public boolean hasGlobalConfiguration() {
+        return true;
+    }
 }

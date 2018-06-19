@@ -54,7 +54,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @Component
 public class DistributionChannelManager {
     private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
-    private final List<ChannelDescriptor> channelDescriptorList;
     private final ObjectTransformer objectTransformer;
     private final AlertEventContentConverter contentConverter;
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
@@ -62,7 +61,6 @@ public class DistributionChannelManager {
     public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter, final List<ChannelDescriptor> channelDescriptorList) {
         this.objectTransformer = objectTransformer;
         this.contentConverter = contentConverter;
-        this.channelDescriptorList = channelDescriptorList;
         channelDescriptorMap = new HashMap<>(channelDescriptorList.size());
 
         channelDescriptorList.forEach(descriptor -> {

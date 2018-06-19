@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChanne
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -58,7 +57,7 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
 
     @Override
     public String channelTestConfig(final HipChatDistributionRestModel restModel) throws IntegrationException {
-        return distributionChannelManager.sendTestMessage(SlackChannel.COMPONENT_NAME, restModel);
+        return distributionChannelManager.sendTestMessage(HipChatChannel.COMPONENT_NAME, restModel);
     }
 
     @Override
