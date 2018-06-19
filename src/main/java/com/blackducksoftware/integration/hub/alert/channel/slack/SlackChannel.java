@@ -35,6 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
@@ -43,6 +44,7 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
@@ -165,6 +167,31 @@ public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntit
         json.addProperty("mrkdwn", true);
 
         return json.toString();
+    }
+
+    @Override
+    public String getName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public DescriptorType getType() {
+        return DescriptorType.CHANNEL;
+    }
+
+    @Override
+    public String getDestinationName() {
+        return COMPONENT_NAME;
+    }
+
+    @Override
+    public DistributionChannel getChannelComponent() {
+        return this;
+    }
+
+    @Override
+    public boolean hasGlobalConfiguration() {
+        return false;
     }
 
 }

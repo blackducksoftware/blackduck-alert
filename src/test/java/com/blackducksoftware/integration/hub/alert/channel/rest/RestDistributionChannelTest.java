@@ -51,6 +51,21 @@ public class RestDistributionChannelTest extends ChannelTest {
             public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
             }
+
+            @Override
+            public String getName() {
+                return "RestChannel";
+            }
+
+            @Override
+            public String getDestinationName() {
+                return "RestChannel";
+            }
+
+            @Override
+            public boolean hasGlobalConfiguration() {
+                return false;
+            }
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
         final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);

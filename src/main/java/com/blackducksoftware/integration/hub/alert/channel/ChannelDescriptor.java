@@ -23,28 +23,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel;
 
-import com.blackducksoftware.integration.hub.alert.descriptor.AbstractDescriptor;
 import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 
-public class ChannelDescriptor extends AbstractDescriptor {
-    private final String destinationName;
-    private final DistributionChannel channelComponent;
-    private final boolean hasGlobalConfiguration;
+public interface ChannelDescriptor {
 
-    public ChannelDescriptor(final String name, final String destinationName, final boolean hasGlobalConfiguration, final DistributionChannel channelComponent) {
-        super(name, DescriptorType.CHANNEL);
-        this.destinationName = destinationName;
-        this.hasGlobalConfiguration = hasGlobalConfiguration;
-        this.channelComponent = channelComponent;
-    }
+    public String getName();
 
-    public String getDestinationName() {
-        return destinationName;
-    }
+    public DescriptorType getType();
 
-    public DistributionChannel getChannelComponent() { return channelComponent; }
+    public String getDestinationName();
 
-    public boolean hasGlobalConfiguration() {
-        return hasGlobalConfiguration;
-    }
+    public DistributionChannel getChannelComponent();
+
+    public boolean hasGlobalConfiguration();
 }
