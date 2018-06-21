@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepository;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 
 @Component
 public class NotificationManager {
@@ -68,8 +68,8 @@ public class NotificationManager {
         if (notification.getVulnerabilityList() != null) {
             final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
             final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
-                    .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
-                    .collect(Collectors.toList());
+                                                                            .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
+                                                                            .collect(Collectors.toList());
             vulnerabilities = vulnerabilityRepository.saveAll(vulnerabilitiesToSave);
         }
 

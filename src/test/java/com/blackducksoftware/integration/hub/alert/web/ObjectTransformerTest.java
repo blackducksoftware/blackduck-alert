@@ -11,12 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.sql.Date;
 import java.util.Arrays;
@@ -40,9 +35,9 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubEntity;
-import com.blackducksoftware.integration.hub.alert.hub.mock.MockGlobalHubRestModel;
+import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.provider.hub.mock.MockGlobalHubEntity;
+import com.blackducksoftware.integration.hub.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 public class ObjectTransformerTest {

@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 
 @Component
@@ -59,7 +59,7 @@ public class ProjectDataFactory {
         for (final NotificationModel entity : notifications) {
             final String projectKey = entity.getProjectName() + entity.getProjectVersion();
 
-            ProjectDataBuilder projectDataBuilder;
+            final ProjectDataBuilder projectDataBuilder;
             if (projectDataMap.containsKey(projectKey)) {
                 projectDataBuilder = projectDataMap.get(projectKey);
             } else {
@@ -88,7 +88,7 @@ public class ProjectDataFactory {
 
     // get category map from the project or create the project data if it doesn't exist
     private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final DigestTypeEnum digestType) {
-        ProjectDataBuilder projectBuilder;
+        final ProjectDataBuilder projectBuilder;
         projectBuilder = new ProjectDataBuilder();
         projectBuilder.setDigestType(digestType);
         projectBuilder.setProjectName(notification.getProjectName());
@@ -97,7 +97,7 @@ public class ProjectDataFactory {
     }
 
     private CategoryDataBuilder getCategoryDataBuilder(final NotificationModel notification, final Map<NotificationCategoryEnum, CategoryDataBuilder> categoryBuilderMap) {
-        CategoryDataBuilder categoryData;
+        final CategoryDataBuilder categoryData;
         final NotificationCategoryEnum categoryKey = notification.getNotificationType();
         if (!categoryBuilderMap.containsKey(categoryKey)) {
             categoryData = new CategoryDataBuilder();
