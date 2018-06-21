@@ -23,8 +23,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigActions;
-import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigActions;
+import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 
 public class CommonGlobalConfigHandlerTest {
