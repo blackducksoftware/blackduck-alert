@@ -43,7 +43,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
@@ -71,13 +70,11 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     public final static String COMPONENT_NAME = "email_group_channel";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
     private final GlobalProperties globalProperties;
-    private final GlobalEmailRepository emailRepository;
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
         super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
-        this.emailRepository = emailRepository;
         this.globalProperties = globalProperties;
     }
 
@@ -148,38 +145,4 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
         return Collections.emptyList();
     }
 
-    @Override
-    public String getName() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public boolean hasGlobalConfiguration() {
-        return true;
-    }
-
-    @Override
-    public Class<EmailGroupDistributionConfigEntity> getDistributionEntityClass() {
-        return EmailGroupDistributionConfigEntity.class;
-    }
-
-    @Override
-    public Class<GlobalEmailConfigEntity> getGlobalEntityClass() {
-        return GlobalEmailConfigEntity.class;
-    }
-
-    @Override
-    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
-        return GlobalEmailConfigRestModel.class;
-    }
-
-    @Override
-    public GlobalEmailRepository getGlobalRepository() {
-        return emailRepository;
-    }
 }

@@ -31,7 +31,6 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -42,7 +41,6 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistribution
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
@@ -51,7 +49,6 @@ import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
@@ -163,41 +160,6 @@ public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntit
         json.addProperty("mrkdwn", true);
 
         return json.toString();
-    }
-
-    @Override
-    public String getName() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public String getDestinationName() {
-        return COMPONENT_NAME;
-    }
-
-    @Override
-    public boolean hasGlobalConfiguration() {
-        return false;
-    }
-
-    @Override
-    public Class<SlackDistributionConfigEntity> getDistributionEntityClass() {
-        return SlackDistributionConfigEntity.class;
-    }
-
-    @Override
-    public Class<GlobalSlackConfigEntity> getGlobalEntityClass() {
-        return GlobalSlackConfigEntity.class;
-    }
-
-    @Override
-    public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass() {
-        return null;
-    }
-
-    @Override
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository() {
-        return null;
     }
 
 }
