@@ -34,7 +34,7 @@ import java.util.Set;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 
 public class DigestRemovalProcessor {
     private final Map<String, Map<NotificationCategoryEnum, NotificationModel>> entityCache;
@@ -49,7 +49,7 @@ public class DigestRemovalProcessor {
         final List<NotificationModel> resultList = new ArrayList<>();
 
         notificationList.stream().forEachOrdered(entity -> {
-            Map<NotificationCategoryEnum, NotificationModel> categoryMap;
+            final Map<NotificationCategoryEnum, NotificationModel> categoryMap;
             final String cacheKey = createCacheKey(entity);
             if (entityCache.containsKey(cacheKey)) {
                 categoryMap = entityCache.get(cacheKey);
@@ -97,7 +97,7 @@ public class DigestRemovalProcessor {
         final NotificationCategoryEnum notificationType = entity.getNotificationType();
         final Collection<VulnerabilityEntity> vulnerabilities = entity.getVulnerabilityList();
         final Map<NotificationCategoryEnum, Set<String>> vulnerabilityCategoryMap = vulnerabilityCache.containsKey(cacheKey) ? vulnerabilityCache.get(cacheKey) : new HashMap<>();
-        Set<String> vulnerabilityIds;
+        final Set<String> vulnerabilityIds;
         if (vulnerabilityCategoryMap.containsKey(notificationType)) {
             vulnerabilityIds = vulnerabilityCategoryMap.get(notificationType);
         } else {

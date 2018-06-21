@@ -36,15 +36,15 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Transactional
 public abstract class DigestItemReader implements ItemReader<List<NotificationModel>> {
     private final Logger logger = LoggerFactory.getLogger(DigestItemReader.class);
     private final NotificationManager notificationManager;
-    private boolean hasRead;
     private final String readerName;
+    private boolean hasRead;
 
     public DigestItemReader(final String readerName, final NotificationManager notificationManager) {
         this.notificationManager = notificationManager;

@@ -7,9 +7,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorWriter;
 
 public class AccumulatorConfigTest extends CommonConfigTest<AccumulatorReader, AccumulatorWriter, AccumulatorProcessor, AccumulatorConfig> {
 

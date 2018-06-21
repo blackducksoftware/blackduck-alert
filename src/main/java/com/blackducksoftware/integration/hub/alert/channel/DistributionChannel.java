@@ -42,7 +42,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistr
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 import com.blackducksoftware.integration.hub.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
@@ -186,8 +185,4 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         return this;
     }
 
-    @Override
-    public DescriptorType getType() {
-        return DescriptorType.CHANNEL;
-    }
 }

@@ -23,9 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -40,14 +37,4 @@ public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulin
         super(databaseEntityClass, configRestModelClass, configActions, objectTransformer);
         this.configActions = configActions;
     }
-
-    public ResponseEntity<String> runAccumulator() {
-        try {
-            configActions.runAccumulator();
-            return createResponse(HttpStatus.OK, "");
-        } catch (final Exception e) {
-            return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
-
 }

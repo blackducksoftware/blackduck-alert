@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 
 @Component
 public class DigestNotificationProcessor {

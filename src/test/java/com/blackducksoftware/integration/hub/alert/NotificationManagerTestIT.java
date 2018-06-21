@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,7 +31,7 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Vulnerabili
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

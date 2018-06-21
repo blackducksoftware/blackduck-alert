@@ -33,7 +33,7 @@ import org.springframework.jms.annotation.JmsListenerConfigurer;
 import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
-import com.blackducksoftware.integration.hub.alert.accumulator.RealTimeListener;
+import com.blackducksoftware.integration.hub.alert.RealTimeListener;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 
 @Configuration

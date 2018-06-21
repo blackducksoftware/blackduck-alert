@@ -36,15 +36,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -53,7 +49,6 @@ import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
@@ -163,19 +158,4 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
             purgeConfig.scheduleExecution(purgeDataCron);
         }
     }
-
-    public void runAccumulator() throws Exception {
-        final AccumulatorReader reader = new AccumulatorReader(globalProperties);
-        final AccumulatorProcessor processor = new AccumulatorProcessor(globalProperties, processorList, contentConverter);
-        final AccumulatorWriter writer = new AccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
-
-        final NotificationDetailResults results = reader.read();
-        final AlertEvent event = processor.process(results);
-        final List<AlertEvent> events = new ArrayList<>();
-        if (event != null) {
-            events.add(event);
-        }
-        writer.write(events);
-    }
-
 }
