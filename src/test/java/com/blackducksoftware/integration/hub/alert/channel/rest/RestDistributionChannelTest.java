@@ -14,7 +14,6 @@ package com.blackducksoftware.integration.hub.alert.channel.rest;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
@@ -22,13 +21,11 @@ import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 
@@ -49,44 +46,6 @@ public class RestDistributionChannelTest extends ChannelTest {
             @Override
             public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws AlertException {
                 return new Request.Builder().uri("http://google.com").build();
-            }
-
-            @Override
-            public String getName() {
-                return "RestChannel";
-            }
-
-            @Override
-            public String getDestinationName() {
-                return "RestChannel";
-            }
-
-            @Override
-            public boolean hasGlobalConfiguration() {
-                return false;
-            }
-
-            @Override
-            public Class<DistributionChannelConfigEntity> getDistributionEntityClass() {
-                return DistributionChannelConfigEntity.class;
-            }
-
-            @Override
-            public <E extends DatabaseEntity> Class<E> getGlobalEntityClass() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-
-            @Override
-            public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository() {
-                // TODO Auto-generated method stub
-                return null;
             }
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));

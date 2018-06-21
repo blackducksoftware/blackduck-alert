@@ -50,7 +50,7 @@ import com.blackducksoftware.integration.rest.exception.IntegrationRestException
 import com.google.gson.Gson;
 
 @Transactional
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> implements ChannelDescriptor {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
     private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
@@ -178,11 +178,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
 
     public <CC> Optional<CC> extractContentFromEvent(final ChannelEvent event, final Class<CC> contentClass) throws AlertException {
         return contentExtractor.getContent(event.getContent(), contentClass);
-    }
-
-    @Override
-    public DistributionChannel<G, C> getChannelComponent() {
-        return this;
     }
 
 }
