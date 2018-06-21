@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 
 @Component

@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.hub.model;
+package com.blackducksoftware.integration.hub.alert.model;
 
 import java.util.List;
 

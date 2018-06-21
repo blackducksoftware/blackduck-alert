@@ -39,8 +39,8 @@ import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModels;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModels;
 import com.google.gson.Gson;
 
 @Component
