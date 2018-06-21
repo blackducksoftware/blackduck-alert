@@ -21,24 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface ChannelDescriptor extends Descriptor {
+public interface Descriptor {
 
-    public String getDestinationName();
+    public String getName();
 
-    public DistributionChannel getChannelComponent();
+    public DescriptorType getType();
 
-    public <E extends DatabaseEntity> Class<E> getDistributionEntityClass();
+    public <E extends DatabaseEntity> Class<E> getGlobalEntityClass();
 
-    public boolean hasGlobalConfiguration();
+    public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass();
 
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.CHANNEL;
-    }
+    public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository();
 }

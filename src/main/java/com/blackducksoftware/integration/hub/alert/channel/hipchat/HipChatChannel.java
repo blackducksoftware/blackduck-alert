@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.AlertConstants;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelFreemarkerTemplatingService;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
@@ -64,17 +65,14 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final GlobalHipChatRepository globalHipChatRepository;
 
     @Autowired
     public HipChatChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final GlobalHipChatRepository globalHipChatRepository, final CommonDistributionRepository commonDistributionRepository,
             final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
         super(gson, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
-    }
-
-    @Override
-    public Class<HipChatDistributionConfigEntity> getDatabaseEntityClass() {
-        return HipChatDistributionConfigEntity.class;
+        this.globalHipChatRepository = globalHipChatRepository;
     }
 
     @Override
@@ -198,6 +196,26 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     @Override
     public boolean hasGlobalConfiguration() {
         return true;
+    }
+
+    @Override
+    public Class<HipChatDistributionConfigEntity> getDistributionEntityClass() {
+        return HipChatDistributionConfigEntity.class;
+    }
+
+    @Override
+    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
+        return GlobalHipChatConfigEntity.class;
+    }
+
+    @Override
+    public Class<GlobalHipChatConfigRestModel> getGlobalRestModelClass() {
+        return GlobalHipChatConfigRestModel.class;
+    }
+
+    @Override
+    public GlobalHipChatRepository getGlobalRepository() {
+        return globalHipChatRepository;
     }
 
 }

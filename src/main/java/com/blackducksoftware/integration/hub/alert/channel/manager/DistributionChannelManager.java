@@ -92,7 +92,7 @@ public class DistributionChannelManager {
                         return "ERROR: Missing global configuration!";
                     }
                 }
-                final DistributionChannelConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, channel.getDatabaseEntityClass());
+                final DistributionChannelConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, channel.getDistributionEntityClass());
                 final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
                 channel.sendAuditedMessage(event, entity);
                 logger.info("Successfully sent test message for destination {} ", destinationName);
