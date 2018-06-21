@@ -24,32 +24,25 @@
 package com.blackducksoftware.integration.hub.alert.channel;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.hub.alert.Descriptor;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class AbstractPropertyInitializer<E extends DatabaseEntity> {
+@Component
+public class PropertyInitializer {
     private final Logger logger;
 
-    public AbstractPropertyInitializer() {
+    public PropertyInitializer() {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    public abstract String getPropertyNamePrefix();
-
-    public abstract Class<E> getEntityClass();
-
-    public abstract ConfigRestModel getRestModelInstance();
-
-    public abstract void save(DatabaseEntity entity);
-
-    public abstract boolean canSetDefaultProperties();
-
-    public void updateEntityWithDefaults(final E savedEntity, final E defaultValuesEntity) {
-        final Field[] declaredFields = getEntityClass().getDeclaredFields();
+    private <E extends DatabaseEntity> void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity, final Class<E> entityClass) {
+        final Field[] declaredFields = entityClass.getDeclaredFields();
         for (final Field declaredField : declaredFields) {
             try {
                 final boolean accessible = declaredField.isAccessible();
@@ -63,6 +56,20 @@ public abstract class AbstractPropertyInitializer<E extends DatabaseEntity> {
             } catch (final IllegalAccessException ex) {
                 logger.error("error setting default value for field {}", declaredField.getName(), ex);
             }
+        }
+    }
+
+    public void save(final DatabaseEntity entity, final Descriptor descriptor) {
+        logger.info("Saving HipChat channel global properties {}", entity);
+        final List<DatabaseEntity> savedEntityList = descriptor.getGlobalRepository().findAll();
+        if (savedEntityList == null || savedEntityList.isEmpty()) {
+            descriptor.getGlobalRepository().save(entity);
+        } else {
+            savedEntityList.forEach(savedEntity -> {
+                updateEntityWithDefaults(savedEntity, entity, descriptor.getGlobalEntityClass());
+                descriptor.getGlobalRepository().save(savedEntity);
+            });
+
         }
     }
 }

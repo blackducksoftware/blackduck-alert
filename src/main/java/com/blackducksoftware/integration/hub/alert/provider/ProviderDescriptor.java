@@ -21,24 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.provider;
 
 import com.blackducksoftware.integration.hub.alert.Descriptor;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
 
-public interface ChannelDescriptor extends Descriptor {
-
-    public String getDestinationName();
-
-    public DistributionChannel getChannelComponent();
-
-    public <E extends DatabaseEntity> Class<E> getDistributionEntityClass();
-
-    public boolean hasGlobalConfiguration();
+public interface ProviderDescriptor extends Descriptor {
 
     @Override
     public default DescriptorType getType() {
-        return DescriptorType.CHANNEL;
+        return DescriptorType.PROVIDER;
     }
+
 }
