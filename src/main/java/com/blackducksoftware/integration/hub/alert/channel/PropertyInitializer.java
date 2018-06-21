@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.Descriptor;
@@ -61,13 +62,14 @@ public class PropertyInitializer {
 
     public void save(final DatabaseEntity entity, final Descriptor descriptor) {
         logger.info("Saving HipChat channel global properties {}", entity);
-        final List<DatabaseEntity> savedEntityList = descriptor.getGlobalRepository().findAll();
+        final JpaRepository<DatabaseEntity, Long> repository = descriptor.getGlobalRepository();
+        final List<DatabaseEntity> savedEntityList = repository.findAll();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
-            descriptor.getGlobalRepository().save(entity);
+            repository.save(entity);
         } else {
             savedEntityList.forEach(savedEntity -> {
                 updateEntityWithDefaults(savedEntity, entity, descriptor.getGlobalEntityClass());
-                descriptor.getGlobalRepository().save(savedEntity);
+                repository.save(savedEntity);
             });
 
         }
