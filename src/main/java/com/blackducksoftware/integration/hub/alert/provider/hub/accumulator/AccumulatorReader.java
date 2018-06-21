@@ -77,7 +77,7 @@ public class AccumulatorReader implements ItemReader<NotificationDetailResults> 
     @Override
     public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
                 logger.info("Accumulator Reader Starting Operation");
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
