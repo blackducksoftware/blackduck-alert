@@ -66,7 +66,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         slackChannel.sendAuditedMessage(event, config);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack_channel message!");
+        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + SlackChannel.COMPONENT_NAME + " message!");
         assertTrue(actual);
     }
 

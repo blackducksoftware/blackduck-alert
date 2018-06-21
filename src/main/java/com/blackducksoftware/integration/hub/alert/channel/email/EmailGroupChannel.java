@@ -68,7 +68,7 @@ import freemarker.template.TemplateException;
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 @Transactional
 public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
-    public final static String COMPONENT_NAME = "email_group_channel";
+    public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
     private final GlobalProperties globalProperties;
     private final GlobalEmailRepository emailRepository;

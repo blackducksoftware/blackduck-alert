@@ -60,7 +60,7 @@ import com.google.gson.JsonObject;
 @Component(value = SlackChannel.COMPONENT_NAME)
 @Transactional
 public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
-    public static final String COMPONENT_NAME = "slack_channel";
+    public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired
