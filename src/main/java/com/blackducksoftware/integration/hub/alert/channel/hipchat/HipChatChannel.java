@@ -61,7 +61,7 @@ import freemarker.template.TemplateException;
 @Component(value = HipChatChannel.COMPONENT_NAME)
 @Transactional
 public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
-    public static final String COMPONENT_NAME = "hipchat_channel";
+    public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
