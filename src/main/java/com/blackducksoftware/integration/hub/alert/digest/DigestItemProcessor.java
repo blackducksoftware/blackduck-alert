@@ -31,7 +31,7 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 
 public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationModel>, List<ChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);

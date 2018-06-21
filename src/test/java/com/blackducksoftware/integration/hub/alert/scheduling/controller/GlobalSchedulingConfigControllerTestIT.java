@@ -44,15 +44,6 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
     }
 
     @Test
-    @WithMockUser(roles = "ADMIN")
-    public void testRunAccumulator() throws Exception {
-        globalEntityRepository.deleteAll();
-        final String accumulatorRunRestUrl = restUrl + "/accumulator/run";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(accumulatorRunRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
     @Override
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {

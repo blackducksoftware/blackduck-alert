@@ -11,11 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -173,16 +169,6 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         }
         assertNull(caughtException);
         assertEquals("Valid", validationString);
-    }
-
-    @Test
-    public void runAccumulator() {
-        final GlobalSchedulingConfigActions configActions = getMockedConfigActions();
-        try {
-            configActions.runAccumulator();
-        } catch (final Exception e) {
-            fail("Should not have thrown an exception : " + e.getMessage());
-        }
     }
 
     @Test

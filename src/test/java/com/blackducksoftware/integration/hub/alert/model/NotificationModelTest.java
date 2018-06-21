@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -16,7 +14,6 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.Notificatio
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
 
 public class NotificationModelTest {
 
