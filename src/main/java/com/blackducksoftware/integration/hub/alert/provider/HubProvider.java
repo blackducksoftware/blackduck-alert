@@ -32,7 +32,7 @@ import com.blackducksoftware.integration.hub.alert.provider.hub.controller.globa
 
 @Component
 public class HubProvider implements ProviderDescriptor {
-    public static final String PROVIDER_NAME = "hub_provider";
+    public static final String PROVIDER_NAME = "provider_hub";
 
     private final GlobalHubRepository repository;
 
