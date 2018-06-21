@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyIniti
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
-import com.blackducksoftware.integration.hub.alert.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component

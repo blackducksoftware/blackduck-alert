@@ -36,9 +36,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorProcessor;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorReader;
-import com.blackducksoftware.integration.hub.alert.accumulator.AccumulatorWriter;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorProcessor;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorReader;
+import com.blackducksoftware.integration.hub.alert.provider.hub.accumulator.AccumulatorWriter;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.event.AlertEvent;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
