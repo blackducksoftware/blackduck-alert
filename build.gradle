@@ -150,7 +150,7 @@ tasks.compileJava.finalizedBy(copyToTemplates)
 
 
 task runServer(type: Exec, dependsOn: [build]) {
-    File jarFile = new File("build/libs/hub-alert-${version}.jar")
+    File jarFile = new File("build/libs/blackduck-alert-${version}.jar")
 
     def debugVariables = ['-Xdebug',
                           '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
