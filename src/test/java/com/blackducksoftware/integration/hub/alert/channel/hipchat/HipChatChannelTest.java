@@ -67,7 +67,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         hipChatChannel.sendAuditedMessage(event, config);
 
-        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a hipchat_channel message!");
+        final boolean responseLine = outputLogger.isLineContainingText("Successfully sent a " + HipChatChannel.COMPONENT_NAME + " message!");
 
         assertTrue(responseLine);
     }

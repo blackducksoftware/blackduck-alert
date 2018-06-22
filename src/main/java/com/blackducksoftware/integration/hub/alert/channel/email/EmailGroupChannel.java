@@ -67,7 +67,7 @@ import freemarker.template.TemplateException;
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 @Transactional
 public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
-    public final static String COMPONENT_NAME = "email_group_channel";
+    public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
     private final GlobalProperties globalProperties;
 
@@ -75,13 +75,7 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
         super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
-
         this.globalProperties = globalProperties;
-    }
-
-    @Override
-    public Class<EmailGroupDistributionConfigEntity> getDatabaseEntityClass() {
-        return EmailGroupDistributionConfigEntity.class;
     }
 
     @Override
@@ -150,4 +144,5 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
 
         return Collections.emptyList();
     }
+
 }

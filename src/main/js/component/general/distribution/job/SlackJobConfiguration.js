@@ -38,5 +38,5 @@ SlackJobConfiguration.propTypes = {
 SlackJobConfiguration.defaultProps = {
     baseUrl: '/alert/api/configuration/distribution/slack',
     testUrl: '/alert/api/configuration/distribution/slack/test',
-    distributionType: 'slack_channel'
+    distributionType: 'channel_slack'
 };
