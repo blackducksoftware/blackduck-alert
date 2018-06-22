@@ -25,17 +25,18 @@ package com.blackducksoftware.integration.hub.alert.web.actions.distribution;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -44,14 +45,14 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepositoryWrapper> {
-    private final AuditEntryRepositoryWrapper auditEntryRepository;
-    private final AuditNotificationRepositoryWrapper auditNotificationRepository;
+public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> {
+    private final AuditEntryRepository auditEntryRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public CommonDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final AuditEntryRepositoryWrapper auditEntryRepository,
-            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
-            final ObjectTransformer objectTransformer, final AuditNotificationRepositoryWrapper auditNotificationRepository) {
+    public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final AuditEntryRepository auditEntryRepository,
+            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
+            final AuditNotificationRepository auditNotificationRepository) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -105,7 +106,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     public void deleteConfig(final Long id) {
         if (id != null) {
             deleteAuditEntries(id);
-            getCommonDistributionRepository().delete(id);
+            getCommonDistributionRepository().deleteById(id);
             getConfiguredProjectsActions().cleanUpConfiguredProjects();
             getNotificationTypesActions().removeOldNotificationTypes(id);
         }
@@ -119,9 +120,9 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
-        final CommonDistributionConfigEntity foundEntity = getCommonDistributionRepository().findOne(entity.getId());
-        if (foundEntity != null) {
-            return constructRestModel(foundEntity, null);
+        final Optional<CommonDistributionConfigEntity> foundEntity = getCommonDistributionRepository().findById(entity.getId());
+        if (foundEntity.isPresent()) {
+            return constructRestModel(foundEntity.get(), null);
         }
         return null;
     }
@@ -144,9 +145,9 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
         final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findByCommonConfigId(configID);
         auditEntryList.forEach((auditEntry) -> {
             final List<AuditNotificationRelation> relationList = auditNotificationRepository.findByAuditEntryId(auditEntry.getId());
-            auditNotificationRepository.delete(relationList);
+            auditNotificationRepository.deleteAll(relationList);
         });
-        auditEntryRepository.delete(auditEntryList);
+        auditEntryRepository.deleteAll(auditEntryList);
     }
 
     @Override

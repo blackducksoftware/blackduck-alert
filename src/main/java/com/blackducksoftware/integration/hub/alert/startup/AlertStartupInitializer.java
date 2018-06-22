@@ -41,7 +41,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.AbstractPropertyInitializer;
+import com.blackducksoftware.integration.hub.alert.Descriptor;
+import com.blackducksoftware.integration.hub.alert.channel.PropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -55,34 +56,40 @@ public class AlertStartupInitializer {
     private final ConversionService conversionService;
     private final ObjectTransformer objectTransformer;
     private final Environment environment;
-    private final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList;
+    private final PropertyInitializer propertyInitializer;
+    private final List<Descriptor> configDescriptors;
 
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final List<AbstractPropertyInitializer<? extends DatabaseEntity>> propertyManagerList, final Environment environment, final ConversionService conversionService) {
+    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
+            final ConversionService conversionService) {
         this.objectTransformer = objectTransformer;
-        this.propertyManagerList = propertyManagerList;
+        this.propertyInitializer = propertyInitializer;
+        this.configDescriptors = configDescriptors;
         this.environment = environment;
         this.conversionService = conversionService;
         alertProperties = new ArrayList<>(50);
     }
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
-        this.propertyManagerList.forEach(propertyManager -> {
-            final Class<? extends DatabaseEntity> entityClass = propertyManager.getEntityClass();
-            final String initializerNamePrefix = propertyManager.getPropertyNamePrefix();
-            findPropertyNames(initializerNamePrefix, entityClass);
-            try {
-                final ConfigRestModel restModel = propertyManager.getRestModelInstance();
-                final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
-                if (propertySet) {
-                    final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
-                    propertyManager.save(entity);
+        this.configDescriptors.forEach(descriptor -> {
+            final Class<? extends DatabaseEntity> entityClass = descriptor.getGlobalEntityClass();
+            final String initializerNamePrefix = descriptor.getName();
+            final boolean foundProperties = !findPropertyNames(initializerNamePrefix, entityClass).isEmpty();
+            if (foundProperties) {
+                try {
+                    final ConfigRestModel restModel = descriptor.getGlobalRestModelClass().newInstance();
+                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
+                    if (propertySet) {
+                        final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                        propertyInitializer.save(entity, descriptor);
+                    }
+                } catch (IllegalArgumentException | SecurityException | AlertException | InstantiationException | IllegalAccessException ex) {
+                    logger.error("Error initializing property manager", ex);
                 }
-            } catch (IllegalArgumentException | SecurityException | AlertException ex) {
-                logger.error("Error initializing property manager", ex);
             }
+
         });
     }
 

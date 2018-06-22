@@ -2,6 +2,8 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -42,8 +44,8 @@ public class GlobalRepositoryIT {
         final GlobalHubConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalHubConfigEntity foundEntity = repository.findOne(savedEntity.getId());
-        assertEquals(hubTimeout, foundEntity.getHubTimeout());
-        assertEquals(hubApiKey, foundEntity.getHubApiKey());
+        final Optional<GlobalHubConfigEntity> foundEntity = repository.findById(savedEntity.getId());
+        assertEquals(hubTimeout, foundEntity.get().getHubTimeout());
+        assertEquals(hubApiKey, foundEntity.get().getHubApiKey());
     }
 }

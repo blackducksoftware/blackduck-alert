@@ -34,18 +34,18 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
 @Component
 public class PhoneHome {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper;
+    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public PhoneHome(final CommonDistributionRepositoryWrapper commonDistributionRepositoryWrapper) {
-        this.commonDistributionRepositoryWrapper = commonDistributionRepositoryWrapper;
+    public PhoneHome(final CommonDistributionRepository commonDistributionRepository) {
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
     public PhoneHomeRequestBody.Builder createPhoneHomeBuilder(final PhoneHomeService phoneHomeService, final String productVersion) {
@@ -70,7 +70,7 @@ public class PhoneHome {
     }
 
     private Map<String, Integer> getChannelMetaData() {
-        final List<CommonDistributionConfigEntity> commonConfigList = commonDistributionRepositoryWrapper.findAll();
+        final List<CommonDistributionConfigEntity> commonConfigList = commonDistributionRepository.findAll();
         final Map<String, Integer> createdSupportedChannels = new HashMap<>();
         for (final CommonDistributionConfigEntity commonConfigEntity : commonConfigList) {
             final String supportedChannel = commonConfigEntity.getDistributionType();

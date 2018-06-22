@@ -27,21 +27,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 
 @Component
-public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepositoryWrapper> {
-    final HipChatManager hipChatManager;
+public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepository> {
+    final DistributionChannelManager distributionChannelManager;
 
     @Autowired
-    public GlobalHipChatConfigActions(final GlobalHipChatRepositoryWrapper hipChatRepository, final ObjectTransformer objectTransformer, final HipChatManager hipChatManager) {
+    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
         super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
-        this.hipChatManager = hipChatManager;
+        this.distributionChannelManager = distributionChannelManager;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
     @Override
     public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
         final GlobalHipChatConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
-        return hipChatManager.testGlobalConfig(entity);
+        return distributionChannelManager.testGlobalConfig(HipChatChannel.COMPONENT_NAME, entity);
     }
 
 }

@@ -4,19 +4,19 @@ import LabeledField from '../LabeledField';
 
 export default class PasswordInput extends LabeledField {
     render() {
-        const { isSet, inputClass } = this.props;
+        const { isSet, inputClass, id } = this.props;
 
         const placeholderText = (isSet) ? '***********' : null;
         const className = inputClass || 'form-control';
 
         if (this.props.readOnly) {
             return super.render(<div className="col-sm-8">
-                <input type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
+                <input id={id} type="password" readOnly className={className} name={this.props.name} value={this.props.value} placeholder={placeholderText} />
             </div>);
         }
 
         return super.render(<div className="col-sm-8">
-            <input type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
+            <input id={id} type="password" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange} placeholder={placeholderText} />
         </div>);
     }
 }

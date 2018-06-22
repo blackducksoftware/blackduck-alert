@@ -17,7 +17,7 @@ import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -58,11 +58,11 @@ public class StartupManagerTest {
         final PurgeConfig purgeConfig = Mockito.mock(PurgeConfig.class);
         Mockito.doNothing().when(purgeConfig).scheduleExecution(Mockito.anyString());
         Mockito.doReturn("time").when(purgeConfig).getFormatedNextRunTime();
-        final GlobalSchedulingRepositoryWrapper globalSchedulingRepositoryWrapper = Mockito.mock(GlobalSchedulingRepositoryWrapper.class);
+        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
-        Mockito.when(globalSchedulingRepositoryWrapper.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepositoryWrapper, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
+        Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
 
         startupManager.initializeCronJobs();
 

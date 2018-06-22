@@ -69,12 +69,13 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
         const options = groupOptions || [];
         const content =
             (<div>
-                <TextInput label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError} />
+                <TextInput id="jobEmailSubject" label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError} />
 
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Group</label>
                     <div className="col-sm-8">
                         <Select
+                            id="jobEmailGroup"
                             className="typeAheadField"
                             onChange={this.handleGroupsChanged}
                             clearable
@@ -114,7 +115,7 @@ GroupEmailJobConfiguration.propTypes = {
 GroupEmailJobConfiguration.defaultProps = {
     baseUrl: '/alert/api/configuration/distribution/emailGroup',
     testUrl: '/alert/api/configuration/distribution/emailGroup/test',
-    distributionType: 'email_group_channel'
+    distributionType: 'channel_email'
 };
 
 export default GroupEmailJobConfiguration;

@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -29,19 +27,21 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
@@ -50,39 +50,29 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditEntryRepositoryWrapper auditEntryRepository = Mockito.mock(AuditEntryRepositoryWrapper.class);
-        final GlobalHubRepositoryWrapper mockedGlobalRepository = Mockito.mock(GlobalHubRepositoryWrapper.class);
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory);
+        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity(webHook, username, roomName);
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
-        final SlackEvent event = new SlackEvent(projectData, new Long(0));
+        final DigestModel digestModel = new DigestModel(projectData);
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 
-        final boolean actual = outputLogger.isLineContainingText("Successfully sent a slack_channel message!");
+        final boolean actual = outputLogger.isLineContainingText("Successfully sent a " + SlackChannel.COMPONENT_NAME + " message!");
         assertTrue(actual);
     }
 
     @Test
-    public void receiveMessageTest() {
-        final SlackChannel slackChannel = new SlackChannel(null, null, null, null, null);
-        try {
-            slackChannel.receiveMessage("message");
-        } finally {
-            System.out.println("Complete missing line coverage.");
-        }
-    }
-
-    @Test
     public void testCreateRequestExceptions() {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         Request request = null;
 
@@ -105,9 +95,10 @@ public class SlackChannelTestIT extends ChannelTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
+        final DigestModel digestModel = new DigestModel(projectData);
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
@@ -121,7 +112,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, projectData);
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
 
         assertNull(request);
 
@@ -131,10 +122,10 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
-
+        final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
             public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
@@ -145,7 +136,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, Arrays.asList(projectData));
+        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
 
         assertNull(request);
 

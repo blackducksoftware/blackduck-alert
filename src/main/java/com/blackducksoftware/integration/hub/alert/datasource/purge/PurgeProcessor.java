@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 
 public class PurgeProcessor implements ItemProcessor<List<NotificationModel>, List<NotificationModel>> {
 

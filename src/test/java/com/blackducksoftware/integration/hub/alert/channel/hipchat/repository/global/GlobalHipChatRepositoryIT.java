@@ -41,7 +41,7 @@ public class GlobalHipChatRepositoryIT {
         final GlobalHipChatConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalHipChatConfigEntity foundEntity = repository.findOne(savedEntity.getId());
+        final GlobalHipChatConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
         assertEquals(apiKey, foundEntity.getApiKey());
     }
 }

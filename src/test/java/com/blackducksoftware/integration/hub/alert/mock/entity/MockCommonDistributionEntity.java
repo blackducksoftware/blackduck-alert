@@ -1,6 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.mock.entity;
 
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
 import com.google.gson.JsonObject;
@@ -14,7 +14,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
     private Long id;
 
     public MockCommonDistributionEntity() {
-        this(1L, SupportedChannels.HIPCHAT.toString(), "Name", DigestTypeEnum.REAL_TIME, true, 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestTypeEnum.REAL_TIME, true, 2L);
     }
 
     private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestTypeEnum frequency, final Boolean filterByProject, final Long id) {
@@ -31,45 +31,45 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         return distributionConfigId;
     }
 
-    public String getDistributionType() {
-        return distributionType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public DigestTypeEnum getFrequency() {
-        return frequency;
-    }
-
-    public Boolean getFilterByProject() {
-        return filterByProject;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
     public void setDistributionConfigId(final Long distributionConfigId) {
         this.distributionConfigId = distributionConfigId;
+    }
+
+    public String getDistributionType() {
+        return distributionType;
     }
 
     public void setDistributionType(final String distributionType) {
         this.distributionType = distributionType;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(final String name) {
         this.name = name;
+    }
+
+    public DigestTypeEnum getFrequency() {
+        return frequency;
     }
 
     public void setFrequency(final DigestTypeEnum frequency) {
         this.frequency = frequency;
     }
 
+    public Boolean getFilterByProject() {
+        return filterByProject;
+    }
+
     public void setFilterByProject(final Boolean filterByProject) {
         this.filterByProject = filterByProject;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {

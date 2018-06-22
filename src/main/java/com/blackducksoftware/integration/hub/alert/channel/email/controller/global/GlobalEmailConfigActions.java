@@ -32,15 +32,15 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 
 @Component
-public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepositoryWrapper> {
+public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepository> {
     @Autowired
-    public GlobalEmailConfigActions(final GlobalEmailRepositoryWrapper emailRepository, final ObjectTransformer objectTransformer) {
+    public GlobalEmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer) {
         super(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, emailRepository, objectTransformer);
     }
 

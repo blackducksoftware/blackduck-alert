@@ -19,10 +19,10 @@ import com.google.gson.JsonObject;
 public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionRestModel> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
-    private final String roomId;
-    private final boolean notify;
-    private final String color;
-    private final String id;
+    private String roomId;
+    private boolean notify;
+    private String color;
+    private String id;
 
     public MockHipChatRestModel() {
         this("11", false, "black", "1");
@@ -39,17 +39,36 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
         return roomId;
     }
 
+    public void setRoomId(final String roomId) {
+
+        this.roomId = roomId;
+    }
+
     public boolean getNotify() {
         return notify;
+    }
+
+    public void setNotify(final boolean notify) {
+
+        this.notify = notify;
     }
 
     public String getColor() {
         return color;
     }
 
+    public void setColor(final String color) {
+        this.color = color;
+    }
+
     @Override
     public Long getId() {
         return Long.valueOf(id);
+    }
+
+    public void setId(final String id) {
+
+        this.id = id;
     }
 
     @Override

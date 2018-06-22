@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -32,17 +29,23 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.hub.alert.OutputLogger;
 import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
+import com.google.gson.Gson;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
 
+    protected AlertEventContentConverter contentConverter;
     private OutputLogger outputLogger;
     private GlobalProperties globalProperties;
+    private Gson gson;
 
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
         globalProperties = new TestGlobalProperties();
+        gson = new Gson();
+        contentConverter = new AlertEventContentConverter(gson);
     }
 
     @After

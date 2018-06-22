@@ -22,11 +22,12 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -38,7 +39,7 @@ import com.blackducksoftware.integration.hub.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, W extends SimpleKeyRepositoryWrapper<E, ?>, DCA extends DistributionConfigActions<E, R, W>> {
+public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, W extends JpaRepository<E, Long>, DCA extends DistributionConfigActions<E, R, W>> {
     private final ProjectMockUtils projectMockUtils;
     private final NotificationTypeMockUtils notificationMockUtil;
     private final MockCommonDistributionEntity distributionMockUtils;
@@ -59,11 +60,11 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     @Test
     public void testDoesConfigExist() {
-        Mockito.when(configActions.getCommonDistributionRepository().exists(Mockito.anyLong())).thenReturn(true);
+        Mockito.when(configActions.getCommonDistributionRepository().existsById(Mockito.anyLong())).thenReturn(true);
         assertTrue(configActions.doesConfigExist(1L));
         assertTrue(configActions.doesConfigExist("1"));
 
-        Mockito.when(configActions.getCommonDistributionRepository().exists(Mockito.anyLong())).thenReturn(false);
+        Mockito.when(configActions.getCommonDistributionRepository().existsById(Mockito.anyLong())).thenReturn(false);
         assertFalse(configActions.doesConfigExist(1L));
         assertFalse(configActions.doesConfigExist("1"));
 
@@ -76,14 +77,14 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
     @Test
     public void testGetConfig() throws AlertException {
         Mockito.when(configActions.getCommonDistributionRepository().findByDistributionConfigIdAndDistributionType(Mockito.any(), Mockito.any())).thenReturn(distributionMockUtils.createEntity());
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(getEntityMockUtil().createEntity());
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(Optional.of(getEntityMockUtil().createEntity()));
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList(getEntityMockUtil().createEntity()));
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(1L)).thenReturn(projectMockUtils.getProjectOneEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(2L)).thenReturn(projectMockUtils.getProjectTwoEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(3L)).thenReturn(projectMockUtils.getProjectThreeEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(4L)).thenReturn(projectMockUtils.getProjectFourEntity());
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(1L)).thenReturn(Optional.of(projectMockUtils.getProjectOneEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(2L)).thenReturn(Optional.of(projectMockUtils.getProjectTwoEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(3L)).thenReturn(Optional.of(projectMockUtils.getProjectThreeEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(4L)).thenReturn(Optional.of(projectMockUtils.getProjectFourEntity()));
         Mockito.when(configActions.getConfiguredProjectsActions().getDistributionProjectRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(projectMockUtils.getProjectRelations());
-        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findOne(1L)).thenReturn(notificationMockUtil.createEntity());
+        Mockito.when(configActions.getNotificationTypesActions().getNotificationTypeRepository().findById(1L)).thenReturn(Optional.of(notificationMockUtil.createEntity()));
         Mockito.when(configActions.getNotificationTypesActions().getDistributionNotificationTypeRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(notificationMockUtil.getNotificationTypeRelations());
 
         // We must mask the rest model because the configActions will have masked those returned by getConfig(...)
@@ -102,7 +103,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.getRepository().findOne(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(Optional.empty());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(Arrays.asList());
 
         configsById = configActions.getConfig(1L);
@@ -116,15 +117,15 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     @Test
     public void testDeleteConfig() {
-        Mockito.when(configActions.getCommonDistributionRepository().findOne(Mockito.anyLong())).thenReturn(distributionMockUtils.createEntity());
+        Mockito.when(configActions.getCommonDistributionRepository().findById(Mockito.anyLong())).thenReturn(Optional.of(distributionMockUtils.createEntity()));
         configActions.deleteConfig(1L);
-        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).deleteById(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
 
         configActions.deleteConfig("1");
 
-        verify(configActions.getRepository(), times(1)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(1)).deleteById(Mockito.anyLong());
 
         final String idString = null;
         final Long idLong = null;
@@ -132,12 +133,12 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         Mockito.reset(configActions.getRepository());
         configActions.deleteConfig(idLong);
 
-        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).deleteById(Mockito.anyLong());
 
         Mockito.reset(configActions.getRepository());
         configActions.deleteConfig(idString);
 
-        verify(configActions.getRepository(), times(0)).delete(Mockito.anyLong());
+        verify(configActions.getRepository(), times(0)).deleteById(Mockito.anyLong());
     }
 
     @Test
@@ -194,10 +195,10 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
 
     @Test
     public void testConstructRestModel() throws AlertException {
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(1L)).thenReturn(projectMockUtils.getProjectOneEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(2L)).thenReturn(projectMockUtils.getProjectTwoEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(3L)).thenReturn(projectMockUtils.getProjectThreeEntity());
-        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findOne(4L)).thenReturn(projectMockUtils.getProjectFourEntity());
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(1L)).thenReturn(Optional.of(projectMockUtils.getProjectOneEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(2L)).thenReturn(Optional.of(projectMockUtils.getProjectTwoEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(3L)).thenReturn(Optional.of(projectMockUtils.getProjectThreeEntity()));
+        Mockito.when(configActions.getConfiguredProjectsActions().getConfiguredProjectsRepository().findById(4L)).thenReturn(Optional.of(projectMockUtils.getProjectFourEntity()));
         Mockito.when(configActions.getConfiguredProjectsActions().getDistributionProjectRepository().findByCommonDistributionConfigId(Mockito.anyLong())).thenReturn(projectMockUtils.getProjectRelations());
 
         final CommonDistributionConfigEntity commonEntity = distributionMockUtils.createEntity();

@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.model.AboutModel;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
@@ -50,7 +50,7 @@ import com.google.gson.Gson;
 @Component
 public class GlobalProperties {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
-    private final GlobalHubRepositoryWrapper globalHubRepository;
+    private final GlobalHubRepository globalHubRepository;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -102,7 +102,7 @@ public class GlobalProperties {
     private Optional<AboutModel> aboutModel;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepositoryWrapper globalRepository, final Gson gson) {
+    public GlobalProperties(final GlobalHubRepository globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
         readAboutInformation(gson);
     }
