@@ -44,13 +44,13 @@ function statusColumnClassNameFormat(fieldValue) {
 function typeColumnDataFormat(cell) {
     let fontAwesomeClass = '';
     let cellText = '';
-    if (cell === 'email_group_channel') {
+    if (cell === 'channel_email') {
         fontAwesomeClass = 'fa fa-envelope fa-fw';
         cellText = 'Group Email';
-    } else if (cell === 'hipchat_channel') {
+    } else if (cell === 'channel_hipchat') {
         fontAwesomeClass = 'fa fa-comments fa-fw';
         cellText = 'HipChat';
-    } else if (cell === 'slack_channel') {
+    } else if (cell === 'channel_slack') {
         fontAwesomeClass = 'fa fa-slack fa-fw';
         cellText = 'Slack';
     }
@@ -100,7 +100,7 @@ class Index extends Component {
             const {
                 id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
             } = currentRowSelected;
-            if (distributionType === 'email_group_channel') {
+            if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
                     csrfToken={this.props.csrfToken}
                     id={id}
@@ -117,7 +117,7 @@ class Index extends Component {
                     projectTableMessage={this.state.projectTableMessage}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'hipchat_channel') {
+            } else if (distributionType === 'channel_hipchat') {
                 return (<HipChatJobConfiguration
                     csrfToken={this.props.csrfToken}
                     id={id}
@@ -131,7 +131,7 @@ class Index extends Component {
                     projectTableMessage={this.state.projectTableMessage}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'slack_channel') {
+            } else if (distributionType === 'channel_slack') {
                 return (<SlackJobConfiguration
                     csrfToken={this.props.csrfToken}
                     id={id}
