@@ -13,14 +13,14 @@ const ConfigButtons = props => (
                 display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
             }}
             >
-                <GeneralButton onClick={props.onTestClick}>Test Configuration</GeneralButton>
+                <GeneralButton id="generalButton" onClick={props.onTestClick}>Test Configuration</GeneralButton>
             </div>
             }
             { props.includeSave &&
-            <SubmitButton>Save</SubmitButton>
+            <SubmitButton id="submitButton">Save</SubmitButton>
             }
             { props.includeCancel &&
-            <CancelButton onClick={props.onCancelClick} />
+            <CancelButton id="cancelButton" onClick={props.onCancelClick} />
             }
         </div>
     </div>

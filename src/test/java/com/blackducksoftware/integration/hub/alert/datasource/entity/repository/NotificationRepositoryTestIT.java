@@ -8,8 +8,10 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -41,7 +43,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class NotificationRepositoryTestIT {
     @Autowired
-    private NotificationRepositoryWrapper repository;
+    private NotificationRepository repository;
 
     private NotificationEntity createNotificationEntity(final Date createdAt) {
         final String eventKey = "event_key_for_notification";
@@ -63,6 +65,11 @@ public class NotificationRepositoryTestIT {
         return savedEntity;
     }
 
+    @Before
+    public void cleanup() {
+        repository.deleteAll();
+    }
+
     @Test
     public void testSaveEntity() {
         final Date createdAt = Date.from(Instant.now());
@@ -70,7 +77,8 @@ public class NotificationRepositoryTestIT {
         final NotificationEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final NotificationEntity foundEntity = repository.findOne(savedEntity.getId());
+        final Optional<NotificationEntity> foundEntityOptional = repository.findById(savedEntity.getId());
+        final NotificationEntity foundEntity = foundEntityOptional.get();
         assertEquals(entity.getEventKey(), foundEntity.getEventKey());
         assertEquals(entity.getNotificationType(), foundEntity.getNotificationType());
         assertEquals(entity.getProjectName(), foundEntity.getProjectName());

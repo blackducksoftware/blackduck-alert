@@ -30,12 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupManager;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -44,15 +44,15 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
 
 @Component
-public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepositoryWrapper> {
-    private final EmailGroupManager emailManager;
+public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository> {
+    private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
-    public EmailGroupDistributionConfigActions(final CommonDistributionRepositoryWrapper commonDistributionRepository, final EmailGroupDistributionRepositoryWrapper repository,
+    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final EmailGroupDistributionRepository repository,
             final ConfiguredProjectsActions<EmailGroupDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<EmailGroupDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
-            final EmailGroupManager emailManager) {
+            final DistributionChannelManager distributionChannelManager) {
         super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
-        this.emailManager = emailManager;
+        this.distributionChannelManager = distributionChannelManager;
     }
 
     @Override
@@ -67,12 +67,12 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
 
     @Override
     public String channelTestConfig(final EmailGroupDistributionRestModel restModel) throws IntegrationException {
-        return emailManager.sendTestMessage(restModel);
+        return distributionChannelManager.sendTestMessage(EmailGroupChannel.COMPONENT_NAME, restModel);
     }
 
     @Override
     public String getDistributionName() {
-        return SupportedChannels.EMAIL_GROUP;
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
     @Override

@@ -23,16 +23,16 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.controller.handler;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.hub.alert.datasource.SimpleKeyRepositoryWrapper;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends SimpleKeyRepositoryWrapper<D, ?>> extends CommonConfigHandler<D, R, W> {
+public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 
     public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ObjectTransformer objectTransformer) {

@@ -42,8 +42,8 @@ import com.blackducksoftware.integration.hub.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.hub.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.hub.alert.digest.DigestNotificationProcessor;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 
 @Component
@@ -64,8 +64,7 @@ public class DailyDigestBatchConfig extends JobScheduledTask<DailyItemReader, Di
 
     @Override
     public Step createStep(final DailyItemReader reader, final DigestItemProcessor processor, final DigestItemWriter writer) {
-        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationModel>, List<AbstractChannelEvent>> chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                .build();
+        return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<List<NotificationModel>, List<ChannelEvent>>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager).build();
     }
 
     @Override

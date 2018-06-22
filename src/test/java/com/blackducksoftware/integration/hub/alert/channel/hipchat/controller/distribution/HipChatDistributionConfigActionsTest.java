@@ -17,20 +17,20 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatManager;
+import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 
 public class HipChatDistributionConfigActionsTest {
     @Test
     public void testTestConfig() throws Exception {
-        final HipChatManager hipChatManager = Mockito.mock(HipChatManager.class);
-        final HipChatDistributionConfigActions configActions = new HipChatDistributionConfigActions(null, null, null, null, null, hipChatManager);
+        final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
+        final HipChatDistributionConfigActions configActions = new HipChatDistributionConfigActions(null, null, null, null, null, manager);
 
         configActions.testConfig(null);
-        verify(hipChatManager, times(1)).sendTestMessage(Mockito.any());
-        Mockito.reset(hipChatManager);
+        verify(manager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
+        Mockito.reset(manager);
 
         configActions.testConfig(null);
-        verify(hipChatManager, times(1)).sendTestMessage(Mockito.any());
+        verify(manager, times(1)).sendTestMessage(Mockito.any(), Mockito.any());
     }
 
 }

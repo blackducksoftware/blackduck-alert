@@ -7,10 +7,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.assertj.core.util.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,20 +29,26 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ItemData;
+import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -54,24 +63,28 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class NotificationEventManagerTest {
 
     @Autowired
-    private CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
     private NotificationEventManager notificationEventMananger;
 
     @Autowired
-    private DistributionNotificationTypeRepositoryWrapper distributionNotificationTypeRepository;
+    private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
 
     @Autowired
-    private NotificationTypeRepositoryWrapper notificationTypeRepository;
+    private NotificationTypeRepository notificationTypeRepository;
+
+    @Autowired
+    private AlertEventContentConverter contentConverter;
 
     @Before
     public void initializeConfig() {
-        commonDistributionRepository.deleteAll();
+        cleanUp();
+
         long configId = 1;
-        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.SLACK, "Slack Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.HIPCHAT, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, SupportedChannels.EMAIL_GROUP, "Email Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestTypeEnum.REAL_TIME, false);
 
         slackDistributionConfig = commonDistributionRepository.save(slackDistributionConfig);
         hipChatDistributionConfig = commonDistributionRepository.save(hipChatDistributionConfig);
@@ -86,6 +99,12 @@ public class NotificationEventManagerTest {
         }
     }
 
+    public void cleanUp() {
+        commonDistributionRepository.deleteAll();
+        distributionNotificationTypeRepository.deleteAll();
+        notificationTypeRepository.deleteAll();
+    }
+
     private void saveDistributionNotificationTypeRelation(final Long commonDistributionConfigId, final Long notificationTypeId) {
         final DistributionNotificationTypeRelation notificationRelation = new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationTypeId);
         distributionNotificationTypeRepository.save(notificationRelation);
@@ -95,23 +114,35 @@ public class NotificationEventManagerTest {
     public void createInvalidDigestTypeTest() {
         final NotificationModel notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final List<NotificationModel> notificationModels = Arrays.asList(notificationModel);
-        final List<AbstractChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.DAILY, notificationModels);
         assertTrue(channelEvents.isEmpty());
     }
 
     @Test
-    public void createChannelEventTest() {
+    public void createChannelEventTest() throws Exception {
         final List<CommonDistributionConfigEntity> configEntityList = commonDistributionRepository.findAll();
+
         final NotificationModel notification_1 = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final NotificationModel notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final NotificationModel notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final List<NotificationModel> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
-        final List<AbstractChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.REAL_TIME, notificationModelList);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.REAL_TIME, notificationModelList);
         assertEquals(configEntityList.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
-            assertNotNull(event.getProjectData());
+            assertNotNull(event.getContent());
         });
+    }
+
+    private CategoryData createCategoryData() {
+        final Map<String, Object> itemDataDataSet = new HashMap<>();
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED, 1.0);
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED, 1.0);
+        itemDataDataSet.put(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED, 1.0);
+
+        final CategoryData categoryData = new CategoryData("key", Sets.newLinkedHashSet(new ItemData(itemDataDataSet)), 0);
+
+        return categoryData;
     }
 
     private NotificationModel createNotificationModel(final String projectName, final String projectVersion, final NotificationCategoryEnum notificationType) {

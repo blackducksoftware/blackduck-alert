@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert.datasource.entity.repository
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -45,12 +46,17 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class CommonDistributionRepositoryTestIT {
     @Autowired
-    private CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private CommonDistributionRepository commonDistributionRepository;
+
+    @Before
+    public void cleanup() {
+        commonDistributionRepository.deleteAll();
+    }
 
     @Test
     public void saveEntityTestIT() {
         final Long distributionConfigId = 1L;
-        final String distributionType = SupportedChannels.EMAIL_GROUP;
+        final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String name = "My Config";
         final DigestTypeEnum frequency = DigestTypeEnum.DAILY;
         final Boolean filterByProject = Boolean.TRUE;

@@ -23,7 +23,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -38,20 +38,19 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.hub.alert.Application;
-import com.blackducksoftware.integration.hub.alert.channel.SupportedChannels;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatEvent;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
@@ -66,17 +65,17 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class DigestNotificationProcessorIT {
     @Autowired
-    private CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private CommonDistributionRepository commonDistributionRepository;
     @Autowired
-    private DistributionProjectRepositoryWrapper distributionProjectRepository;
+    private DistributionProjectRepository distributionProjectRepository;
     @Autowired
-    private ConfiguredProjectsRepositoryWrapper configuredProjectsRepository;
+    private ConfiguredProjectsRepository configuredProjectsRepository;
     @Autowired
     private NotificationTypesActions<CommonDistributionConfigRestModel> notificationActions;
     @Autowired
     private DigestNotificationProcessor processor;
 
-    @After
+    @Before
     public void cleanup() {
         commonDistributionRepository.deleteAll();
         distributionProjectRepository.deleteAll();
@@ -88,7 +87,7 @@ public class DigestNotificationProcessorIT {
     @Test
     public void processNotificationDataBasicTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
@@ -110,17 +109,17 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
-        final AbstractChannelEvent event = eventsCreated.get(0);
-        assertTrue(event instanceof HipChatEvent);
+        final ChannelEvent event = eventsCreated.get(0);
+        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
     @Test
     public void processNotificationDataWithSameEventKeyTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
@@ -144,17 +143,17 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(otherApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
-        final AbstractChannelEvent event = eventsCreated.get(0);
-        assertTrue(event instanceof HipChatEvent);
+        final ChannelEvent event = eventsCreated.get(0);
+        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
         assertEquals(commonDistributionConfigEntity.getId(), event.getCommonDistributionConfigId());
     }
 
     @Test
     public void processNotificationDataWithNegatingTypesTestIT() {
         final Long distributionConfigId = 10L;
-        final String distributionType = SupportedChannels.HIPCHAT;
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
         final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
         final Boolean filterByProject = true;
@@ -178,7 +177,7 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<AbstractChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
         assertEquals(0, eventsCreated.size());
     }
 

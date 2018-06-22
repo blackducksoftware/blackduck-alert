@@ -45,17 +45,17 @@ import com.blackducksoftware.integration.hub.alert.datasource.entity.global.Glob
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.hub.alert.datasource.purge.PurgeWriter;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
 
 @Component
 @Transactional
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
-    private final GlobalSchedulingRepositoryWrapper globalSchedulingRepository;
+    private final GlobalSchedulingRepository globalSchedulingRepository;
     private final GlobalProperties globalProperties;
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
@@ -67,7 +67,7 @@ public class StartupManager {
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepositoryWrapper globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
             final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;

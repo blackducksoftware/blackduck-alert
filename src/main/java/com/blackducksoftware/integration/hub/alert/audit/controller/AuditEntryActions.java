@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.audit.controller;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -40,45 +42,43 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepositoryWrapper;
-import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelEventFactory;
 import com.blackducksoftware.integration.hub.alert.datasource.AlertPage;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepositoryWrapper;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.hub.alert.event.AbstractChannelEvent;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.hub.model.NotificationModel;
+import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.NotificationRestModel;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
 @Component
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
-    private final AuditEntryRepositoryWrapper auditEntryRepository;
-    private final AuditNotificationRepositoryWrapper auditNotificationRepository;
+    private final AuditEntryRepository auditEntryRepository;
+    private final AuditNotificationRepository auditNotificationRepository;
     private final NotificationManager notificationManager;
-    private final CommonDistributionRepositoryWrapper commonDistributionRepository;
+    private final CommonDistributionRepository commonDistributionRepository;
     private final ObjectTransformer objectTransformer;
-    private final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory;
+    private final ChannelEventFactory channelEventFactory;
     private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
-    public AuditEntryActions(final AuditEntryRepositoryWrapper auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepositoryWrapper auditNotificationRepository,
-            final CommonDistributionRepositoryWrapper commonDistributionRepository, final ObjectTransformer objectTransformer,
-            final ChannelEventFactory<AbstractChannelEvent, DistributionChannelConfigEntity, GlobalChannelConfigEntity, CommonDistributionConfigRestModel> channelEventFactory, final ProjectDataFactory projectDataFactory,
+    public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
+            final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
+            final ChannelEventFactory channelEventFactory, final ProjectDataFactory projectDataFactory,
             final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
@@ -95,11 +95,12 @@ public class AuditEntryActions {
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
-        AlertPage<AuditEntryEntity> auditEntries;
+        final AlertPage<AuditEntryEntity> auditEntries;
         logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         if (pageNumber != null && pageSize != null) {
-            final PageRequest pageRequest = new PageRequest(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
-            auditEntries = auditEntryRepository.findAll(pageRequest);
+            final PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
+            final Page<AuditEntryEntity> page = auditEntryRepository.findAll(pageRequest);
+            auditEntries = new AlertPage<>(page.getTotalPages(), page.getNumber(), page.getSize(), page.getContent());
         } else {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
             auditEntries = new AlertPage<>(1, 0, contentList.size(), contentList);
@@ -111,34 +112,35 @@ public class AuditEntryActions {
 
     public AuditEntryRestModel get(final Long id) {
         if (id != null) {
-            final AuditEntryEntity auditEntryEntity = auditEntryRepository.findOne(id);
-            if (auditEntryEntity != null) {
-                return createRestModel(auditEntryEntity);
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
+            if (auditEntryEntity.isPresent()) {
+                return createRestModel(auditEntryEntity.get());
             }
         }
         return null;
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
-        AuditEntryEntity auditEntryEntity = null;
-        auditEntryEntity = auditEntryRepository.findOne(id);
-        if (auditEntryEntity == null) {
+        final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
+        if (!auditEntryEntityOptional.isPresent()) {
             throw new AlertException("No audit entry with the provided id exists.");
         }
+
+        final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
+        final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
             throw new IllegalArgumentException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
-        if (commonConfigEntity == null) {
+        if (!commonConfigEntity.isPresent()) {
             throw new IllegalArgumentException("The job for this entry was deleted, can not re-send this entry.");
         }
         final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
-
-        final AbstractChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.getDistributionType(), projectDataCollection);
+        final DigestModel digestModel = new DigestModel(projectDataCollection);
+        final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), digestModel);
         event.setAuditEntryId(auditEntryEntity.getId());
         channelTemplateManager.sendEvent(event);
         return get();
@@ -160,7 +162,7 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
 
-        final CommonDistributionConfigEntity commonConfigEntity = commonDistributionRepository.findOne(commonConfigId);
+        final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
 
         final String id = objectTransformer.objectToString(auditEntryEntity.getId());
         final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
@@ -180,8 +182,8 @@ public class AuditEntryActions {
                 notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0).getNotificationEntity(), NotificationRestModel.class);
                 final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
                 notificationRestModel.setNotificationTypes(notificationTypes);
-                final Set<ComponentRestModel> components = notifications.stream()
-                        .map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(), notification.getPolicyRuleUser())).collect(Collectors.toSet());
+                final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
+                        notification.getPolicyRuleUser())).collect(Collectors.toSet());
                 notificationRestModel.setComponents(components);
             } catch (final AlertException e) {
                 logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
@@ -190,9 +192,9 @@ public class AuditEntryActions {
 
         String distributionConfigName = null;
         String eventType = null;
-        if (commonConfigEntity != null) {
-            distributionConfigName = commonConfigEntity.getName();
-            eventType = commonConfigEntity.getDistributionType();
+        if (commonConfigEntity.isPresent()) {
+            distributionConfigName = commonConfigEntity.get().getName();
+            eventType = commonConfigEntity.get().getDistributionType();
         }
 
         return new AuditEntryRestModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notificationRestModel);
