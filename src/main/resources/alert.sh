@@ -21,12 +21,12 @@
 # under the License.
 #*******************************************************************************
 
-PID_FILE=hub_alert.pid
-TITLE="Hub Alert"
+PID_FILE=blackduck_alert.pid
+TITLE="BlackDuck Alert"
 MAX_ATTEMPTS=20
 PROGRAM="$0"
 DIR=`dirname "$PROGRAM"`
-DIRECTORY_NAME="hub-alert"
+DIRECTORY_NAME="blackduck-alert"
 
 checkIsRunning() {
   if [ -f $DIR/$PID_FILE ]; then

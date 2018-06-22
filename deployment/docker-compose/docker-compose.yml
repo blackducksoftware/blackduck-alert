@@ -12,10 +12,10 @@ services:
     restart: always
     mem_limit: 512M
   alert:
-    image: blackducksoftware/hub-alert:VERSION_TOKEN
+    image: blackducksoftware/blackduck-alert:VERSION_TOKEN
     ports: ['8443:8443']
     links: [cfssl]
-    env_file: [hub-alert.env]
+    env_file: [blackduck-alert.env]
     user: hubalert:root
     healthcheck:
       test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about']
