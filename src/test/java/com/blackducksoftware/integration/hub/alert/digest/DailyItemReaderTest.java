@@ -1,11 +1,13 @@
 package com.blackducksoftware.integration.hub.alert.digest;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,10 +29,11 @@ public class DailyItemReaderTest {
         final Date actualEndDate = actualDateRange.getEnd();
         final Date actualStartDate = actualDateRange.getStart();
 
-        final Date now = new Date();
+        final long endTime = actualEndDate.getTime();
+        final long startTime = actualStartDate.getTime();
+        final long runTime = endTime - startTime;
 
-        assertTrue(now.equals(actualEndDate));
-        assertTrue(now.after(actualStartDate));
+        assertEquals(TimeUnit.DAYS.toMillis(1), runTime);
     }
 
     @Test

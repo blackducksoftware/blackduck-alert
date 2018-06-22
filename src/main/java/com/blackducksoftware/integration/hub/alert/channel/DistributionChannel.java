@@ -176,9 +176,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         }
     }
 
-    public <C> Optional<C> extractContentFromEvent(final ChannelEvent event, final Class<C> contentClass) throws AlertException {
+    public <CC> Optional<CC> extractContentFromEvent(final ChannelEvent event, final Class<CC> contentClass) throws AlertException {
         return contentExtractor.getContent(event.getContent(), contentClass);
     }
 
-    public abstract Class<C> getDatabaseEntityClass();
 }
