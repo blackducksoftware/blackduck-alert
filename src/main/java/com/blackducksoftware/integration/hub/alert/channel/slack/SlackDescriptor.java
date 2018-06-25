@@ -96,7 +96,7 @@ public class SlackDescriptor implements ChannelDescriptor {
     }
 
     @Override
-    public SlackDistributionConfigActions getDistributionConfigActions() {
+    public SlackDistributionConfigActions getSimpleConfigActions() {
         return slackDistributionConfigActions;
     }
 

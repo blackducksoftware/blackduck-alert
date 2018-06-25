@@ -103,7 +103,7 @@ public class EmailGroupDescriptor implements ChannelDescriptor {
     }
 
     @Override
-    public EmailGroupDistributionConfigActions getDistributionConfigActions() {
+    public EmailGroupDistributionConfigActions getSimpleConfigActions() {
         return emailGroupDistributionConfigActions;
     }
 

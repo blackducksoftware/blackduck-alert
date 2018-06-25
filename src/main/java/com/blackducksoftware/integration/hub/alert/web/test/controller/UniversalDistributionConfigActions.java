@@ -152,7 +152,7 @@ public class UniversalDistributionConfigActions {
         if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
             fieldErrors.put("notificationTypes", "Must have at least one notification type.");
         }
-        descriptor.getDistributionConfigActions().validateDistributionConfig(restModel, fieldErrors);
+        descriptor.getSimpleConfigActions().validateDistributionConfig(restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -207,13 +207,6 @@ public class UniversalDistributionConfigActions {
         return newConfig;
     }
 
-    /**
-     * If something needs to be triggered when the configuration is changed, this method should be overriden
-     */
-    public void configurationChangeTriggers(@SuppressWarnings("unused") final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) {
-        descriptor.getDistributionConfigActions().configurationChangeTriggers(restModel);
-    }
-
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
         final String distributionName = descriptor.getName();
         if (distributionName != null) {
@@ -249,7 +242,7 @@ public class UniversalDistributionConfigActions {
         final Optional<DatabaseEntity> distributionEntity = descriptor.getDistributionRepository().findById(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
         if (distributionEntity.isPresent() && commonEntity != null) {
-            final CommonDistributionConfigRestModel restModel = descriptor.getDistributionConfigActions().constructRestModel(commonEntity, distributionEntity.get());
+            final CommonDistributionConfigRestModel restModel = descriptor.getSimpleConfigActions().constructRestModel(commonEntity, distributionEntity.get());
             restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
             return restModel;
@@ -271,18 +264,6 @@ public class UniversalDistributionConfigActions {
         }
         final String trimmedValue = value.trim();
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
-    }
-
-    public CommonDistributionRepository getCommonDistributionRepository() {
-        return commonDistributionRepository;
-    }
-
-    public ConfiguredProjectsActions<CommonDistributionConfigRestModel> getConfiguredProjectsActions() {
-        return configuredProjectsActions;
-    }
-
-    public NotificationTypesActions<CommonDistributionConfigRestModel> getNotificationTypesActions() {
-        return notificationTypesActions;
     }
 
 }

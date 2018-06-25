@@ -21,34 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.channel;
+package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Map;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
-public interface ChannelDescriptor extends Descriptor {
+public interface SimpleConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> {
 
-    public String getDestinationName();
+    public R constructRestModel(final CommonDistributionConfigEntity commonEntity, final D distributionEntity) throws AlertException;
 
-    public DistributionChannel getChannelComponent();
-
-    public <E extends DatabaseEntity> Class<E> getDistributionEntityClass();
-
-    public <R extends CommonDistributionConfigRestModel> Class<R> getDistributionRestModelClass();
-
-    public boolean hasGlobalConfiguration();
-
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getDistributionRepository();
-
-    public <A extends SimpleConfigActions> A getSimpleConfigActions();
-
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.CHANNEL;
-    }
+    public void validateDistributionConfig(final R restModel, final Map<String, String> fieldErrors) throws AlertFieldException;
 }
