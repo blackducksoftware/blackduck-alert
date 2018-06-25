@@ -23,8 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.security;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.BaseController
 
 @EnableWebSecurity
 @Configuration
-@ConditionalOnProperty(name = "blackduck.alert.ssl.enable", havingValue = "false")
+@Profile("!ssl")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override

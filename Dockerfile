@@ -13,11 +13,11 @@ ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/security/bin
 ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
 ENV SECURITY_DIR $BLACKDUCK_HOME/security
-ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/blackduck-alert-$VERSION
+ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/blackduck-alert-boot-$VERSION
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DB_DIR $ALERT_CONFIG_HOME/data/alertdb
-ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
-ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
+#ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
+#ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
 ENV ALERT_MAX_HEAP_SIZE 350m
 
@@ -31,7 +31,7 @@ RUN set -e \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D -H alert
 
-ADD "build/distributions/blackduck-alert-$VERSION.tar" /opt/blackduck/alert/alert-tar/
+ADD "build/distributions/blackduck-alert-boot-$VERSION.tar" /opt/blackduck/alert/alert-tar/
 
 # Override the default logger settings to match other Hub containers
 
@@ -42,7 +42,7 @@ RUN mkdir -p $ALERT_DB_DIR
 
 # The app itself will read in from the -volume directory at runtime.  We write these to an
 # easily accessible location that the entrypoint can always find and copy data from.
-RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_HOME
+#RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_HOME
 
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

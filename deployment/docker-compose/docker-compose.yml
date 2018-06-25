@@ -16,7 +16,7 @@ services:
     ports: ['8443:8443']
     links: [cfssl]
     env_file: [blackduck-alert.env]
-    user: hubalert:root
+    user: alert:root
     healthcheck:
       test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'https://localhost:8443/alert/api/about']
       interval: 30s
