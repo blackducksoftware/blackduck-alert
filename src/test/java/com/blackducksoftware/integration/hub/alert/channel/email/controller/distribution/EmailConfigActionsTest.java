@@ -17,7 +17,6 @@ import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailE
 import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationTypeRepository;
@@ -42,7 +41,6 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
 
     @Override
     public EmailGroupDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
         final EmailGroupDistributionRepository mockedEmailRepository = Mockito.mock(EmailGroupDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
         final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
@@ -51,7 +49,7 @@ public class EmailConfigActionsTest extends ActionsTest<EmailGroupDistributionRe
         final NotificationTypeRepository notificationRepository = Mockito.mock(NotificationTypeRepository.class);
         final DistributionNotificationTypeRepository notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepository.class);
         final NotificationTypesActions<EmailGroupDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
-        final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions = new EmailGroupDistributionConfigActions(commonRepository, mockedEmailRepository, projectsAction, notificationAction, objectTransformer, manager);
+        final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions = new EmailGroupDistributionConfigActions(commonRepository, mockedEmailRepository, projectsAction, notificationAction, objectTransformer);
         return emailGroupDistributionConfigActions;
     }
 

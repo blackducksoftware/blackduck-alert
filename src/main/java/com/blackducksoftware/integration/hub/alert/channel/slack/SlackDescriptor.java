@@ -29,7 +29,10 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -37,10 +40,14 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 @Component
 public class SlackDescriptor implements ChannelDescriptor {
     private final SlackChannel slackChannel;
+    private final SlackDistributionConfigActions slackDistributionConfigActions;
+    private final SlackDistributionRepository slackDistributionRepository;
 
     @Autowired
-    public SlackDescriptor(final SlackChannel slackChannel) {
+    public SlackDescriptor(final SlackChannel slackChannel, final SlackDistributionConfigActions slackDistributionConfigActions, final SlackDistributionRepository slackDistributionRepository) {
         this.slackChannel = slackChannel;
+        this.slackDistributionConfigActions = slackDistributionConfigActions;
+        this.slackDistributionRepository = slackDistributionRepository;
     }
 
     @Override
@@ -81,6 +88,21 @@ public class SlackDescriptor implements ChannelDescriptor {
     @Override
     public DistributionChannel getChannelComponent() {
         return slackChannel;
+    }
+
+    @Override
+    public SlackDistributionRepository getDistributionRepository() {
+        return slackDistributionRepository;
+    }
+
+    @Override
+    public SlackDistributionConfigActions getDistributionConfigActions() {
+        return slackDistributionConfigActions;
+    }
+
+    @Override
+    public Class<SlackDistributionRestModel> getDistributionRestModelClass() {
+        return SlackDistributionRestModel.class;
     }
 
 }

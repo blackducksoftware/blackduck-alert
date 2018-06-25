@@ -29,11 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -45,20 +43,17 @@ import com.blackducksoftware.integration.hub.alert.web.actions.distribution.Dist
 
 @Component
 public class HipChatDistributionConfigActions extends DistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepository> {
-    private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
     public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository channelDistributionRepository,
-            final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
-            final DistributionChannelManager distributionChannelManager) {
+            final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer) {
         super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
-        this.distributionChannelManager = distributionChannelManager;
     }
 
-    @Override
-    public String channelTestConfig(final HipChatDistributionRestModel restModel) throws IntegrationException {
-        return distributionChannelManager.sendTestMessage(HipChatChannel.COMPONENT_NAME, restModel);
-    }
+    // @Override
+    // public String channelTestConfig(final HipChatDistributionRestModel restModel) throws IntegrationException {
+    // return distributionChannelManager.sendTestMessage(HipChatChannel.COMPONENT_NAME, restModel);
+    // }
 
     @Override
     public HipChatDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final HipChatDistributionConfigEntity distributionEntity) throws AlertException {

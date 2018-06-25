@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.provider.hub.controller.global;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +49,6 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
-import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.FieldEnum;
@@ -145,34 +143,34 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return "Valid";
     }
 
-    @Override
-    public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
-        final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
-
-        final String apiToken = restModel.getHubApiKey();
-
-        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
-        hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
-
-        hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
-        hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
-        hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        hubServerConfigBuilder.setApiToken(apiToken);
-        hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
-
-        if (globalProperties.getHubTrustCertificate() != null) {
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
-        }
-        hubServerConfigBuilder.setLogger(intLogger);
-        validateHubConfiguration(hubServerConfigBuilder);
-        try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
-            restConnection.connect();
-        } catch (final IOException ex) {
-            logger.error("Failed to close rest connection", ex);
-        }
-        return "Successfully connected to the Hub.";
-    }
+    // @Override
+    // public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
+    // final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
+    //
+    // final String apiToken = restModel.getHubApiKey();
+    //
+    // final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
+    // hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
+    // hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
+    //
+    // hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
+    // hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
+    // hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
+    // hubServerConfigBuilder.setApiToken(apiToken);
+    // hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
+    //
+    // if (globalProperties.getHubTrustCertificate() != null) {
+    // hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
+    // }
+    // hubServerConfigBuilder.setLogger(intLogger);
+    // validateHubConfiguration(hubServerConfigBuilder);
+    // try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
+    // restConnection.connect();
+    // } catch (final IOException ex) {
+    // logger.error("Failed to close rest connection", ex);
+    // }
+    // return "Successfully connected to the Hub.";
+    // }
 
     public void validateHubConfiguration(final HubServerConfigBuilder hubServerConfigBuilder) throws AlertFieldException {
         final AbstractValidator validator = hubServerConfigBuilder.createValidator();

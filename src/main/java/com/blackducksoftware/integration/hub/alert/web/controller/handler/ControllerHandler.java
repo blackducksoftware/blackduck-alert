@@ -36,6 +36,10 @@ public abstract class ControllerHandler {
         this.objectTransformer = objectTransformer;
     }
 
+    public ObjectTransformer getObjectTransformer() {
+        return objectTransformer;
+    }
+
     public ResponseEntity<String> doNotAllowHttpMethod() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
     }

@@ -13,7 +13,6 @@ package com.blackducksoftware.integration.hub.alert.channel.slack.controller.dis
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
@@ -42,7 +41,6 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
 
     @Override
     public SlackDistributionConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
         final SlackDistributionRepository mockedSlackRepository = Mockito.mock(SlackDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
         final ConfiguredProjectsRepository projectsRepository = Mockito.mock(ConfiguredProjectsRepository.class);
@@ -51,7 +49,7 @@ public class SlackConfigActionsTest extends ActionsTest<SlackDistributionRestMod
         final NotificationTypeRepository notificationRepository = Mockito.mock(NotificationTypeRepository.class);
         final DistributionNotificationTypeRepository notificationDistributionRepository = Mockito.mock(DistributionNotificationTypeRepository.class);
         final NotificationTypesActions<SlackDistributionRestModel> notificationAction = new NotificationTypesActions<>(notificationRepository, notificationDistributionRepository);
-        final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, mockedSlackRepository, projectsAction, notificationAction, objectTransformer, manager);
+        final SlackDistributionConfigActions configActions = new SlackDistributionConfigActions(commonRepository, mockedSlackRepository, projectsAction, notificationAction, objectTransformer);
         return configActions;
     }
 

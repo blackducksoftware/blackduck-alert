@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
@@ -63,9 +62,9 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
         return "Valid";
     }
 
-    @Override
-    public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-        return null;
-    }
+    // @Override
+    // public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
+    // return null;
+    // }
 
 }
