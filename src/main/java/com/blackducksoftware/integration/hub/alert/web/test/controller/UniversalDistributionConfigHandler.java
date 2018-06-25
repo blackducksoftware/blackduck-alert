@@ -70,7 +70,6 @@ public class UniversalDistributionConfigHandler extends ControllerHandler {
         if (!universalDistributionConfigActions.doesConfigExist(restModel.getId())) {
             try {
                 universalDistributionConfigActions.validateConfig(restModel, descriptor);
-                universalDistributionConfigActions.configurationChangeTriggers(restModel, descriptor);
                 try {
                     final DatabaseEntity updatedEntity = universalDistributionConfigActions.saveConfig(restModel, descriptor);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
@@ -94,7 +93,6 @@ public class UniversalDistributionConfigHandler extends ControllerHandler {
         if (universalDistributionConfigActions.doesConfigExist(restModel.getId())) {
             try {
                 universalDistributionConfigActions.validateConfig(restModel, descriptor);
-                universalDistributionConfigActions.configurationChangeTriggers(restModel, descriptor);
                 try {
                     final DatabaseEntity updatedEntity = universalDistributionConfigActions.saveNewConfigUpdateFromSavedConfig(restModel, descriptor);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");

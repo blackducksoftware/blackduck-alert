@@ -29,12 +29,12 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
 public class HipChatDescriptor implements ChannelDescriptor {
@@ -93,9 +93,8 @@ public class HipChatDescriptor implements ChannelDescriptor {
     }
 
     @Override
-    public <R extends CommonDistributionConfigRestModel> Class<R> getDistributionRestModelClass() {
-        // TODO Auto-generated method stub
-        return null;
+    public Class<HipChatDistributionRestModel> getDistributionRestModelClass() {
+        return HipChatDistributionRestModel.class;
     }
 
     @Override
@@ -104,7 +103,7 @@ public class HipChatDescriptor implements ChannelDescriptor {
     }
 
     @Override
-    public HipChatDistributionConfigActions getDistributionConfigActions() {
+    public HipChatDistributionConfigActions getSimpleConfigActions() {
         return hipChatDistributionConfigActions;
     }
 

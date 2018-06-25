@@ -40,9 +40,11 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 @Component
-public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository> {
+public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository>
+        implements SimpleConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
 
     @Autowired
     public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final EmailGroupDistributionRepository repository,
@@ -60,11 +62,6 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
         restModel.setEmailSubjectLine(distributionEntity.getEmailSubjectLine());
         return restModel;
     }
-
-    // @Override
-    // public String channelTestConfig(final EmailGroupDistributionRestModel restModel) throws IntegrationException {
-    // return distributionChannelManager.sendTestMessage(EmailGroupChannel.COMPONENT_NAME, restModel);
-    // }
 
     @Override
     public String getDistributionName() {

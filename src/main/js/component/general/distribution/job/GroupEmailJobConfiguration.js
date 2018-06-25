@@ -113,8 +113,8 @@ GroupEmailJobConfiguration.propTypes = {
 };
 
 GroupEmailJobConfiguration.defaultProps = {
-    baseUrl: '/alert/api/configuration/distribution/emailGroup',
-    testUrl: '/alert/api/configuration/distribution/emailGroup/test',
+    baseUrl: '/alert/api/configuration/distribution/universal/channel_email',
+    testUrl: '/alert/api/configuration/distribution/universal/channel_email/test',
     distributionType: 'channel_email'
 };
 
