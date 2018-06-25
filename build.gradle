@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.2.RELEASE'
-        classpath 'com.bmuschko:gradle-docker-plugin:3.2.4'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.3.5'
         classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
         classpath 'com.h2database:h2:1.4.196'
     }

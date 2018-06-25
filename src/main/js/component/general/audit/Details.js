@@ -29,13 +29,13 @@ class Details extends Component {
     getEventType() {
         let fontAwesomeClass = '';
         let cellText = '';
-        if (this.state.values.eventType === 'email_group_channel') {
+        if (this.state.values.eventType === 'channel_email') {
             fontAwesomeClass = 'fa fa-envelope fa-fw';
             cellText = 'Group Email';
-        } else if (this.state.values.eventType === 'hipchat_channel') {
+        } else if (this.state.values.eventType === 'channel_hipchat') {
             fontAwesomeClass = 'fa fa-comments fa-fw';
             cellText = 'HipChat';
-        } else if (this.state.values.eventType === 'slack_channel') {
+        } else if (this.state.values.eventType === 'channel_slack') {
             fontAwesomeClass = 'fa fa-slack  fa-fw';
             cellText = 'Slack';
         }

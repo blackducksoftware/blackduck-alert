@@ -4,9 +4,9 @@
  */
 export const jobTypes = [
     { label: '', value: '' },
-    { label: 'Group Email', value: 'email_group_channel' },
-    { label: 'HipChat', value: 'hipchat_channel' },
-    { label: 'Slack', value: 'slack_channel' }
+    { label: 'Group Email', value: 'channel_email' },
+    { label: 'HipChat', value: 'channel_hipchat' },
+    { label: 'Slack', value: 'channel_slack' }
 ];
 
 export const frequencyOptions = [
