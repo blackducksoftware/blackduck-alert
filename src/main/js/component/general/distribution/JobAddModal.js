@@ -11,11 +11,11 @@ import { jobTypes } from '../../../util/distribution-data';
 
 function renderOption(option) {
     let fontAwesomeIcon;
-    if (option.value === 'email_group_channel') {
+    if (option.value === 'channel_email') {
         fontAwesomeIcon = 'fa fa-envelope fa-fw';
-    } else if (option.value === 'hipchat_channel') {
+    } else if (option.value === 'channel_hipchat') {
         fontAwesomeIcon = 'fa fa-comments  fa-fw';
-    } else if (option.value === 'slack_channel') {
+    } else if (option.value === 'channel_slack') {
         fontAwesomeIcon = 'fa fa-slack  fa-fw';
     }
     return (
@@ -42,7 +42,7 @@ class JobAddModal extends Component {
 
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
-            case 'email_group_channel':
+            case 'channel_email':
                 return (<GroupEmailJobConfiguration
                     csrfToken={this.props.csrfToken}
                     includeAllProjects={this.props.includeAllProjects}
@@ -55,7 +55,7 @@ class JobAddModal extends Component {
                     projectTableMessage={this.props.projectTableMessage}
                     updateJobsTable={this.props.updateJobsTable}
                 />);
-            case 'hipchat_channel':
+            case 'channel_hipchat':
                 return (<HipChatJobConfiguration
                     csrfToken={this.props.csrfToken}
                     includeAllProjects={this.props.includeAllProjects}
@@ -65,7 +65,7 @@ class JobAddModal extends Component {
                     projectTableMessage={this.props.projectTableMessage}
                     updateJobsTable={this.props.updateJobsTable}
                 />);
-            case 'slack_channel':
+            case 'channel_slack':
                 return (<SlackJobConfiguration
                     csrfToken={this.props.csrfToken}
                     includeAllProjects={this.props.includeAllProjects}
