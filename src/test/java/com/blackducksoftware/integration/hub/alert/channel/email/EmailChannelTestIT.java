@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
@@ -27,6 +28,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
     @Test
     @Category(ExternalConnectionTest.class)
+    @Ignore
     public void sendEmailTest() throws Exception {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalHubRepository globalRepository = Mockito.mock(GlobalHubRepository.class);
