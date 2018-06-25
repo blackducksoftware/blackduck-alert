@@ -28,8 +28,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.channel.email.controller.distribution.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 
@@ -37,11 +40,16 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.glob
 public class EmailGroupDescriptor implements ChannelDescriptor {
     private final EmailGroupChannel emailGroupChannel;
     private final GlobalEmailRepository globalEmailRepository;
+    private final EmailGroupDistributionRepository emailGroupDistributionRepository;
+    private final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions;
 
     @Autowired
-    public EmailGroupDescriptor(final EmailGroupChannel emailGroupChannel, final GlobalEmailRepository globalEmailRepository) {
+    public EmailGroupDescriptor(final EmailGroupChannel emailGroupChannel, final GlobalEmailRepository globalEmailRepository, final EmailGroupDistributionRepository emailGroupDistributionRepository,
+            final EmailGroupDistributionConfigActions emailGroupDistributionConfigActions) {
         this.emailGroupChannel = emailGroupChannel;
         this.globalEmailRepository = globalEmailRepository;
+        this.emailGroupDistributionRepository = emailGroupDistributionRepository;
+        this.emailGroupDistributionConfigActions = emailGroupDistributionConfigActions;
     }
 
     @Override
@@ -82,6 +90,21 @@ public class EmailGroupDescriptor implements ChannelDescriptor {
     @Override
     public DistributionChannel getChannelComponent() {
         return emailGroupChannel;
+    }
+
+    @Override
+    public Class<EmailGroupDistributionRestModel> getDistributionRestModelClass() {
+        return EmailGroupDistributionRestModel.class;
+    }
+
+    @Override
+    public EmailGroupDistributionRepository getDistributionRepository() {
+        return emailGroupDistributionRepository;
+    }
+
+    @Override
+    public EmailGroupDistributionConfigActions getDistributionConfigActions() {
+        return emailGroupDistributionConfigActions;
     }
 
 }

@@ -28,20 +28,28 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
 public class HipChatDescriptor implements ChannelDescriptor {
     private final HipChatChannel hipChatChannel;
     private final GlobalHipChatRepository globalHipChatRepository;
+    private final HipChatDistributionRepository hipChatDistributionRepository;
+    private final HipChatDistributionConfigActions hipChatDistributionConfigActions;
 
     @Autowired
-    public HipChatDescriptor(final GlobalHipChatRepository globalHipChatRepository, final HipChatChannel hipChatChannel) {
+    public HipChatDescriptor(final GlobalHipChatRepository globalHipChatRepository, final HipChatChannel hipChatChannel, final HipChatDistributionRepository hipChatDistributionRepository,
+            final HipChatDistributionConfigActions hipChatDistributionConfigActions) {
         this.globalHipChatRepository = globalHipChatRepository;
         this.hipChatChannel = hipChatChannel;
+        this.hipChatDistributionRepository = hipChatDistributionRepository;
+        this.hipChatDistributionConfigActions = hipChatDistributionConfigActions;
     }
 
     @Override
@@ -82,6 +90,22 @@ public class HipChatDescriptor implements ChannelDescriptor {
     @Override
     public DistributionChannel getChannelComponent() {
         return hipChatChannel;
+    }
+
+    @Override
+    public <R extends CommonDistributionConfigRestModel> Class<R> getDistributionRestModelClass() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public HipChatDistributionRepository getDistributionRepository() {
+        return hipChatDistributionRepository;
+    }
+
+    @Override
+    public HipChatDistributionConfigActions getDistributionConfigActions() {
+        return hipChatDistributionConfigActions;
     }
 
 }

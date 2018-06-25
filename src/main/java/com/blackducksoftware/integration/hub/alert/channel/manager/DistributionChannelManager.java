@@ -34,6 +34,7 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -58,6 +59,7 @@ public class DistributionChannelManager {
     private final AlertEventContentConverter contentConverter;
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
 
+    @Autowired
     public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter, final List<ChannelDescriptor> channelDescriptorList) {
         this.objectTransformer = objectTransformer;
         this.contentConverter = contentConverter;

@@ -36,7 +36,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -208,12 +207,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public abstract String validateConfig(final R restModel) throws AlertFieldException;
 
-    public String testConfig(final R restModel) throws IntegrationException {
-        if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-            fillNewConfigWithSavedConfig(restModel, restModel.getId());
-        }
-        return channelTestConfig(restModel);
-    }
+    // public String testConfig(final R restModel) throws IntegrationException {
+    // if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
+    // fillNewConfigWithSavedConfig(restModel, restModel.getId());
+    // }
+    // return channelTestConfig(restModel);
+    // }
 
     public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
@@ -256,7 +255,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
-    public abstract String channelTestConfig(final R restModel) throws IntegrationException;
+    // public abstract String channelTestConfig(final R restModel) throws IntegrationException;
 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden

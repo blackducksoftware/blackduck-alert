@@ -26,8 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.g
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
@@ -50,10 +48,10 @@ public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfi
         return "Valid";
     }
 
-    @Override
-    public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-        final GlobalHipChatConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
-        return distributionChannelManager.testGlobalConfig(HipChatChannel.COMPONENT_NAME, entity);
-    }
+    // @Override
+    // public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
+    // final GlobalHipChatConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
+    // return distributionChannelManager.testGlobalConfig(HipChatChannel.COMPONENT_NAME, entity);
+    // }
 
 }
