@@ -66,32 +66,18 @@ dependencies {
 }
 
 bootJar {
-    bootInf {
-        from('src/main/resources/ssl.application.properties') { into('/alert-config-defaults') rename('ssl.application.properties', 'application.properties') }
-    }
     launchScript()
 }
 
-//startScripts {
-//    doLast {
-//        unixScript.text = unixScript.text.replace("\"\$APP_ARGS\"", "\"\$APP_ARGS\" --spring.config.location=file:/opt/blackduck/alert/alert-config/application.properties ")
-//        windowsScript.text = windowsScript.text.replace("\"%APP_ARGS%\"", "\"%APP_ARGS%\" --spring.config.location=file:/opt/blackduck/alert/alert-config/application.properties ")
-//        unixScript.text = unixScript.text.replace("APP_HOME_VAR_TOKEN", "\$APP_HOME")
-//        windowsScript.text = windowsScript.text.replace("APP_HOME_VAR_TOKEN", "%APP_HOME%")
-//    }
-//}
-
-//distributions {
-//    main {
-//        contents {
-//            from('src/main/resources/alert.sh') { into 'bin/' }
-//            from('src/main/resources/ssl.application.properties') { into('/alert-config-defaults') rename('ssl.application.properties', 'application.properties') }
-//            from('src/main/resources/email/images/') { into 'images/' }
-//            from('src/main/resources/email/templates/') { into 'templates/email' }
-//            from('src/main/resources/hipchat/templates/') { into 'templates/hipchat' }
-//        }
-//    }
-//}
+distributions {
+    boot {
+        contents {
+            from('src/main/resources/email/images/') { into 'images/' }
+            from('src/main/resources/email/templates/') { into 'templates/email' }
+            from('src/main/resources/hipchat/templates/') { into 'templates/hipchat' }
+        }
+    }
+}
 
 liquibase {
     activities {
