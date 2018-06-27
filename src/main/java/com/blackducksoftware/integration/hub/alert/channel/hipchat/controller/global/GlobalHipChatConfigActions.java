@@ -23,35 +23,21 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
-import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 @Component
-public class GlobalHipChatConfigActions extends ConfigActions<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepository> {
-    final DistributionChannelManager distributionChannelManager;
-
-    @Autowired
-    public GlobalHipChatConfigActions(final GlobalHipChatRepository hipChatRepository, final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
-        super(GlobalHipChatConfigEntity.class, GlobalHipChatConfigRestModel.class, hipChatRepository, objectTransformer);
-        this.distributionChannelManager = distributionChannelManager;
-    }
+public class GlobalHipChatConfigActions implements SimpleConfigActions<GlobalHipChatConfigRestModel> {
 
     @Override
-    public String validateConfig(final GlobalHipChatConfigRestModel restModel) throws AlertFieldException {
-        return "Valid";
+    public void validateConfig(final GlobalHipChatConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        if (StringUtils.isBlank(restModel.getApiKey())) {
+            fieldErrors.put("apiKey", "ApiKey can't be blank");
+        }
     }
-
-    // @Override
-    // public String channelTestConfig(final GlobalHipChatConfigRestModel restModel) throws IntegrationException {
-    // final GlobalHipChatConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, GlobalHipChatConfigEntity.class);
-    // return distributionChannelManager.testGlobalConfig(HipChatChannel.COMPONENT_NAME, entity);
-    // }
 
 }

@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
+import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
 public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);
@@ -137,24 +138,25 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
     }
 
     public ResponseEntity<String> testConfig(final R restModel) {
-        // if (restModel == null) {
-        return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
-        // }
-        // try {
-        // final String responseMessage = "" configActions.testConfig(restModel);
-        // return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
-        // } catch (final IntegrationRestException e) {
-        // logger.error(e.getMessage(), e);
-        // return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
-        // } catch (final AlertFieldException e) {
-        // final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
-        // responseBodyBuilder.putErrors(e.getFieldErrors());
-        // final String responseBody = responseBodyBuilder.build();
-        // return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
-        // } catch (final Exception e) {
-        // logger.error(e.getMessage(), e);
-        // return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
-        // }
+        if (restModel == null) {
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
+        }
+        try {
+            final String responseMessage = "";
+            configActions.testConfig(restModel);
+            return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
+        } catch (final AlertFieldException e) {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
+            responseBodyBuilder.putErrors(e.getFieldErrors());
+            final String responseBody = responseBodyBuilder.build();
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
+        }
     }
 
 }

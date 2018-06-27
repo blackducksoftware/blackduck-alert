@@ -21,22 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.descriptor;
+package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
-public abstract class AbstractDescriptor {
-    private String name;
-    private DescriptorType type;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-    public AbstractDescriptor(final String name, final DescriptorType type) {
-        this.name = name;
-        this.type = type;
-    }
+public interface SimpleDistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends SimpleConfigActions<R> {
 
-    public String getName() {
-        return name;
-    }
+    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final D distributionEntity) throws AlertException;
 
-    public DescriptorType getType() {
-        return type;
-    }
 }

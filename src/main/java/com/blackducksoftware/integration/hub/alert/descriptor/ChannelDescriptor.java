@@ -21,23 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert;
+package com.blackducksoftware.integration.hub.alert.descriptor;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
 
-public interface Descriptor {
+public interface ChannelDescriptor extends Descriptor {
 
-    public String getName();
+    public String getDestinationName();
 
-    public DescriptorType getType();
+    public DistributionChannel getChannelComponent();
 
-    public <E extends DatabaseEntity> Class<E> getGlobalEntityClass();
+    public <E extends DatabaseEntity> Class<E> getDistributionEntityClass();
 
-    public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass();
+    public <R extends CommonDistributionConfigRestModel> Class<R> getDistributionRestModelClass();
 
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository();
+    public boolean hasGlobalConfiguration();
+
+    public <R extends JpaRepository<DatabaseEntity, Long>> R getDistributionRepository();
+
+    public <A extends SimpleDistributionConfigActions> A getDistributionConfigActions();
+
+    @Override
+    public default DescriptorType getType() {
+        return DescriptorType.CHANNEL;
+    }
 }

@@ -29,34 +29,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.distribution.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
 
 @Component
-public class EmailGroupDistributionConfigActions extends DistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository>
-        implements SimpleConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
+public class EmailGroupDistributionConfigActions implements SimpleDistributionConfigActions<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel> {
+    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public EmailGroupDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final EmailGroupDistributionRepository repository,
-            final ConfiguredProjectsActions<EmailGroupDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<EmailGroupDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer) {
-        super(EmailGroupDistributionConfigEntity.class, EmailGroupDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
-        ;
+    public EmailGroupDistributionConfigActions(final ObjectTransformer objectTransformer) {
+        this.objectTransformer = objectTransformer;
     }
 
     @Override
     public EmailGroupDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final EmailGroupDistributionConfigEntity distributionEntity) throws AlertException {
-        final EmailGroupDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
-        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
+        final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
+        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
         restModel.setGroupName(distributionEntity.getGroupName());
         restModel.setEmailTemplateLogoImage(distributionEntity.getEmailTemplateLogoImage());
         restModel.setEmailSubjectLine(distributionEntity.getEmailSubjectLine());
@@ -64,12 +55,7 @@ public class EmailGroupDistributionConfigActions extends DistributionConfigActio
     }
 
     @Override
-    public String getDistributionName() {
-        return EmailGroupChannel.COMPONENT_NAME;
-    }
-
-    @Override
-    public void validateDistributionConfig(final EmailGroupDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+    public void validateConfig(final EmailGroupDistributionRestModel restModel, final Map<String, String> fieldErrors) {
         if (StringUtils.isBlank(restModel.getGroupName())) {
             fieldErrors.put("groupName", "A group must be specified.");
         }

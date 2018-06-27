@@ -29,33 +29,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
 
 @Component
-public class SlackDistributionConfigActions extends DistributionConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository>
-        implements SimpleConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel> {
+public class SlackDistributionConfigActions implements SimpleDistributionConfigActions<SlackDistributionConfigEntity, SlackDistributionRestModel> {
+    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public SlackDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final SlackDistributionRepository repository,
-            final ConfiguredProjectsActions<SlackDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<SlackDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer) {
-        super(SlackDistributionConfigEntity.class, SlackDistributionRestModel.class, commonDistributionRepository, repository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+    public SlackDistributionConfigActions(final ObjectTransformer objectTransformer) {
+        this.objectTransformer = objectTransformer;
     }
 
     @Override
     public SlackDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final SlackDistributionConfigEntity distributionEntity) throws AlertException {
-        final SlackDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
-        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
+        final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
+        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
         restModel.setChannelName(distributionEntity.getChannelName());
         restModel.setChannelUsername(distributionEntity.getChannelUsername());
         restModel.setWebhook(distributionEntity.getWebhook());
@@ -63,12 +55,7 @@ public class SlackDistributionConfigActions extends DistributionConfigActions<Sl
     }
 
     @Override
-    public String getDistributionName() {
-        return SlackChannel.COMPONENT_NAME;
-    }
-
-    @Override
-    public void validateDistributionConfig(final SlackDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+    public void validateConfig(final SlackDistributionRestModel restModel, final Map<String, String> fieldErrors) {
         if (StringUtils.isBlank(restModel.getWebhook())) {
             fieldErrors.put("webhook", "A webhook is required.");
         }
