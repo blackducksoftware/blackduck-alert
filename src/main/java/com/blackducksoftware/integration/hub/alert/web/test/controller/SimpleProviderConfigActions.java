@@ -21,16 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.provider;
+package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
-import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface ProviderDescriptor extends Descriptor {
+public interface SimpleProviderConfigActions<R extends ConfigRestModel> extends SimpleConfigActions<R> {
 
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.PROVIDER;
-    }
+    public String testConfig(final R restModel) throws IntegrationException;
 
+    public void configurationChangeTriggers(final R restModel);
 }

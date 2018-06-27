@@ -28,6 +28,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.descriptor.ProviderDescriptor;
+import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
 
 @Component
@@ -35,10 +37,12 @@ public class HubProvider implements ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
 
     private final GlobalHubRepository repository;
+    private final GlobalHubConfigActions globalHubConfigActions;
 
     @Autowired
-    public HubProvider(final GlobalHubRepository repository) {
+    public HubProvider(final GlobalHubRepository repository, final GlobalHubConfigActions globalHubConfigActions) {
         this.repository = repository;
+        this.globalHubConfigActions = globalHubConfigActions;
     }
 
     @Override
@@ -59,6 +63,11 @@ public class HubProvider implements ProviderDescriptor {
     @Override
     public GlobalHubRepository getGlobalRepository() {
         return repository;
+    }
+
+    @Override
+    public GlobalHubConfigActions getGlobalConfigActions() {
+        return globalHubConfigActions;
     }
 
 }

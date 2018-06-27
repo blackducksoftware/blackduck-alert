@@ -10,7 +10,7 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const CONFIG_URL = '/alert/api/configuration/channel/email';
+const CONFIG_URL = '/alert/api/configuration/channel_email/global';
 
 function scrubConfig(config) {
     return {

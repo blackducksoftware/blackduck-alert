@@ -30,6 +30,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditNotificationRepository;
@@ -111,11 +112,11 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
         }
     }
 
-    // @Override
-    // public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
-    // // Should not be tested
-    // return "Configuration should not be tested at this level.";
-    // }
+    @Override
+    public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
+        // Should not be tested
+        return "Configuration should not be tested at this level.";
+    }
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {

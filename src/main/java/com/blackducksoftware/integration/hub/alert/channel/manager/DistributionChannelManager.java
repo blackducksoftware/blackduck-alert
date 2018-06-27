@@ -38,10 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.hub.alert.enumeration.DigestTypeEnum;
@@ -49,6 +49,7 @@ import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConver
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -74,8 +75,9 @@ public class DistributionChannelManager {
         return objectTransformer;
     }
 
-    public String testGlobalConfig(final String destinationName, final GlobalChannelConfigEntity globalConfigEntity) throws IntegrationException {
+    public String testGlobalConfig(final String destinationName, final ConfigRestModel globalConfigRestModel) throws IntegrationException {
         if (channelDescriptorMap.containsKey(destinationName)) {
+            final GlobalChannelConfigEntity globalConfigEntity = getObjectTransformer().configRestModelToDatabaseEntity(globalConfigRestModel, channelDescriptorMap.get(destinationName).getGlobalEntityClass());
             final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptorMap.get(destinationName).getChannelComponent();
             return channel.testGlobalConfig(globalConfigEntity);
         } else {

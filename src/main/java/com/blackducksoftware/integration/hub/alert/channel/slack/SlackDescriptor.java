@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
@@ -35,7 +34,9 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 @Component
 public class SlackDescriptor implements ChannelDescriptor {
@@ -96,13 +97,18 @@ public class SlackDescriptor implements ChannelDescriptor {
     }
 
     @Override
-    public SlackDistributionConfigActions getSimpleConfigActions() {
+    public SlackDistributionConfigActions getDistributionConfigActions() {
         return slackDistributionConfigActions;
     }
 
     @Override
     public Class<SlackDistributionRestModel> getDistributionRestModelClass() {
         return SlackDistributionRestModel.class;
+    }
+
+    @Override
+    public <A extends SimpleConfigActions> A getGlobalConfigActions() {
+        return null;
     }
 
 }

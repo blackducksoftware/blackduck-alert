@@ -29,33 +29,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ConfiguredProjectsActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypesActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.distribution.DistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
 
 @Component
-public class HipChatDistributionConfigActions extends DistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepository>
-        implements SimpleConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
+public class HipChatDistributionConfigActions implements SimpleDistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel> {
+    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public HipChatDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository channelDistributionRepository,
-            final ConfiguredProjectsActions<HipChatDistributionRestModel> configuredProjectsActions, final NotificationTypesActions<HipChatDistributionRestModel> notificationTypesActions, final ObjectTransformer objectTransformer) {
-        super(HipChatDistributionConfigEntity.class, HipChatDistributionRestModel.class, commonDistributionRepository, channelDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+    public HipChatDistributionConfigActions(final ObjectTransformer objectTransformer) {
+        this.objectTransformer = objectTransformer;
     }
 
     @Override
     public HipChatDistributionRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final HipChatDistributionConfigEntity distributionEntity) throws AlertException {
-        final HipChatDistributionRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
-        restModel.setId(getObjectTransformer().objectToString(commonEntity.getId()));
+        final HipChatDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
+        restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
         restModel.setColor(distributionEntity.getColor());
         restModel.setNotify(distributionEntity.getNotify());
         restModel.setRoomId(String.valueOf(distributionEntity.getRoomId()));
@@ -63,12 +55,7 @@ public class HipChatDistributionConfigActions extends DistributionConfigActions<
     }
 
     @Override
-    public String getDistributionName() {
-        return HipChatChannel.COMPONENT_NAME;
-    }
-
-    @Override
-    public void validateDistributionConfig(final HipChatDistributionRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+    public void validateConfig(final HipChatDistributionRestModel restModel, final Map<String, String> fieldErrors) {
         if (StringUtils.isBlank(restModel.getRoomId())) {
             fieldErrors.put("roomId", "A Room Id is required.");
         } else if (!StringUtils.isNumeric(restModel.getRoomId())) {

@@ -23,29 +23,18 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.email.controller.global;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
-import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 @Component
-public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepository> {
-    @Autowired
-    public GlobalEmailConfigActions(final GlobalEmailRepository emailRepository, final ObjectTransformer objectTransformer) {
-        super(GlobalEmailConfigEntity.class, GlobalEmailConfigRestModel.class, emailRepository, objectTransformer);
-    }
+public class GlobalEmailConfigActions implements SimpleConfigActions<GlobalEmailConfigRestModel> {
 
     @Override
-    public String validateConfig(final GlobalEmailConfigRestModel restModel) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
+    public void validateConfig(final GlobalEmailConfigRestModel restModel, final Map<String, String> fieldErrors) {
         if (StringUtils.isNotBlank(restModel.getMailSmtpPort()) && !StringUtils.isNumeric(restModel.getMailSmtpPort())) {
             fieldErrors.put("mailSmtpPort", "Not an Integer.");
         }
@@ -55,16 +44,6 @@ public class GlobalEmailConfigActions extends ConfigActions<GlobalEmailConfigEnt
         if (StringUtils.isNotBlank(restModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(restModel.getMailSmtpTimeout())) {
             fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
         }
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-        return "Valid";
     }
-
-    // @Override
-    // public String channelTestConfig(final GlobalEmailConfigRestModel restModel) throws IntegrationException {
-    // return null;
-    // }
 
 }

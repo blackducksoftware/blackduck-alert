@@ -21,71 +21,69 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.actions;
+package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.common.collect.Maps;
 
 @Transactional
-public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> {
-    private final Class<D> databaseEntityClass;
-    private final Class<R> configRestModelClass;
-    private final W repository;
+@Component
+public class UniversalConfigActions<R extends ConfigRestModel> {
     private final ObjectTransformer objectTransformer;
 
-    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final W repository, final ObjectTransformer objectTransformer) {
-        this.databaseEntityClass = databaseEntityClass;
-        this.configRestModelClass = configRestModelClass;
-        this.repository = repository;
+    @Autowired
+    public UniversalConfigActions(final ObjectTransformer objectTransformer) {
         this.objectTransformer = objectTransformer;
     }
 
-    public boolean doesConfigExist(final String id) {
-        return doesConfigExist(objectTransformer.stringToLong(id));
+    public boolean doesConfigExist(final String id, final JpaRepository<DatabaseEntity, Long> repository) {
+        return doesConfigExist(objectTransformer.stringToLong(id), repository);
     }
 
-    public boolean doesConfigExist(final Long id) {
+    public boolean doesConfigExist(final Long id, final JpaRepository<DatabaseEntity, Long> repository) {
         return id != null && repository.existsById(id);
     }
 
-    public List<R> getConfig(final Long id) throws AlertException {
+    public List<R> getConfig(final Long id, final Class<R> restModelClass, final JpaRepository<DatabaseEntity, Long> repository) throws AlertException {
         if (id != null) {
-            final Optional<D> foundEntity = repository.findById(id);
+            final Optional<DatabaseEntity> foundEntity = repository.findById(id);
             if (foundEntity.isPresent()) {
-                final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity.get(), configRestModelClass);
+                final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity.get(), restModelClass);
                 if (restModel != null) {
-                    final R maskedRestModel = maskRestModel(restModel);
+                    final R maskedRestModel = maskRestModel(restModel, restModelClass);
                     return Arrays.asList(maskedRestModel);
                 }
             }
             return Collections.emptyList();
         }
-        final List<D> databaseEntities = repository.findAll();
-        final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
-        return maskRestModels(restModels);
+        final List<DatabaseEntity> databaseEntities = repository.findAll();
+        final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, restModelClass);
+        return maskRestModels(restModels, restModelClass);
     }
 
-    public R maskRestModel(final R restModel) throws AlertException {
+    public R maskRestModel(final R restModel, final Class<R> restModelClass) throws AlertException {
         try {
-            final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
             final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
 
             for (final Field sensitiveField : sensitiveFields) {
@@ -114,51 +112,47 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return restModel;
     }
 
-    public List<R> maskRestModels(final List<R> restModels) throws AlertException {
+    public List<R> maskRestModels(final List<R> restModels, final Class<R> restModelClass) throws AlertException {
         final List<R> maskedRestModels = new ArrayList<>();
         for (final R restModel : restModels) {
-            maskedRestModels.add(maskRestModel(restModel));
+            maskedRestModels.add(maskRestModel(restModel, restModelClass));
         }
         return maskedRestModels;
     }
 
-    public void deleteConfig(final String id) {
-        deleteConfig(objectTransformer.stringToLong(id));
+    public void deleteConfig(final String id, final JpaRepository<DatabaseEntity, Long> repository) {
+        deleteConfig(objectTransformer.stringToLong(id), repository);
     }
 
-    public void deleteConfig(final Long id) {
+    public void deleteConfig(final Long id, final JpaRepository<DatabaseEntity, Long> repository) {
         if (id != null) {
             repository.deleteById(id);
         }
     }
 
-    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
+    public <T extends DatabaseEntity> T updateNewConfigWithSavedConfig(final T newConfig, final String id, final JpaRepository<T, Long> repository, final Class<T> entityClass) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
-            final Optional<D> savedConfig = repository.findById(longId);
-            if (savedConfig.isPresent()) {
-                return updateNewConfigWithSavedConfig(newConfig, savedConfig.get());
+            final Optional<T> savedConfig = repository.findById(longId);
+            if (savedConfig.isPresent() && DatabaseEntity.class.isAssignableFrom(entityClass)) {
+                return entityClass.cast(updateNewConfigWithSavedConfig(newConfig, savedConfig.get(), entityClass));
             }
         }
         return newConfig;
     }
 
-    @SuppressWarnings(value = "rawtypes")
-    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
+    public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final DatabaseEntity savedConfig, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
         try {
-            final Class newConfigClass = newConfig.getClass();
-
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
             for (final Field field : sensitiveFields) {
                 field.setAccessible(true);
                 final Object value = field.get(newConfig);
                 if (value != null) {
                     final String newValue = (String) value;
                     if (StringUtils.isBlank(newValue) && savedConfig != null) {
-                        final Class savedConfigClass = savedConfig.getClass();
                         Field savedField = null;
                         try {
-                            savedField = savedConfigClass.getDeclaredField(field.getName());
+                            savedField = entityClass.getDeclaredField(field.getName());
                         } catch (final NoSuchFieldException e) {
                             continue;
                         }
@@ -175,11 +169,11 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
-    public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
+    public <T extends DatabaseEntity> T saveNewConfigUpdateFromSavedConfig(final ConfigRestModel restModel, final JpaRepository<T, Long> repository, final Class<T> entityClass) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
-                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
-                createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
+                T createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId(), repository, entityClass);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -191,10 +185,10 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return null;
     }
 
-    public D saveConfig(final R restModel) throws AlertException {
+    public DatabaseEntity saveConfig(final ConfigRestModel restModel, final JpaRepository<DatabaseEntity, Long> repository, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
         if (restModel != null) {
             try {
-                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
+                DatabaseEntity createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -206,31 +200,20 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return null;
     }
 
-    public abstract String validateConfig(final R restModel) throws AlertFieldException;
-
-    public String testConfig(final R restModel) throws IntegrationException {
-        if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-            fillNewConfigWithSavedConfig(restModel, restModel.getId());
-        }
-        return channelTestConfig(restModel);
-    }
-
-    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
+    public <T extends ConfigRestModel> T fillNewConfigWithSavedConfig(final T newConfig, final String id, final JpaRepository<DatabaseEntity, Long> repository, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = objectTransformer.stringToLong(id);
-            final Optional<D> savedConfig = repository.findById(longId);
+            final Optional<DatabaseEntity> savedConfig = repository.findById(longId);
             if (savedConfig.isPresent()) {
-                return fillNewConfigWithSavedConfig(newConfig, savedConfig.get());
+                return fillNewConfigWithSavedConfig(newConfig, savedConfig.get(), entityClass);
             }
         }
         return newConfig;
     }
 
-    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final D savedConfig) throws AlertException {
+    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final DatabaseEntity savedConfig, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
         try {
-            final Class<?> newConfigClass = newConfig.getClass();
-
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
             for (final Field field : sensitiveFields) {
                 field.setAccessible(true);
                 final Object value = field.get(newConfig);
@@ -256,13 +239,14 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return newConfig;
     }
 
-    public abstract String channelTestConfig(final R restModel) throws IntegrationException;
+    public String validateConfig(final R restModel, final SimpleConfigActions configActions) throws AlertFieldException {
+        final Map<String, String> fieldErrors = Maps.newHashMap();
+        configActions.validateConfig(restModel, fieldErrors);
 
-    /**
-     * If something needs to be triggered when the configuration is changed, this method should be overriden
-     */
-    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
-
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
     }
 
     public Boolean isBoolean(final String value) {
@@ -271,18 +255,6 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         }
         final String trimmedValue = value.trim();
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
-    }
-
-    public Class<D> getDatabaseEntityClass() {
-        return databaseEntityClass;
-    }
-
-    public Class<R> getConfigRestModelClass() {
-        return configRestModelClass;
-    }
-
-    public W getRepository() {
-        return repository;
     }
 
     public ObjectTransformer getObjectTransformer() {

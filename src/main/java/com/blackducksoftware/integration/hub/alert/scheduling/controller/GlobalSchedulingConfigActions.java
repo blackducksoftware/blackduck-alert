@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.NotificationManager;
 import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
@@ -140,10 +141,10 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         return "Valid";
     }
 
-    // @Override
-    // public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
-    // return null;
-    // }
+    @Override
+    public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
+        return null;
+    }
 
     @Override
     public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {

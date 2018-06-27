@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,13 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -62,16 +59,18 @@ public class UniversalDistributionConfigActions {
     private final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
     private final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
     private final DistributionChannelManager distributionChannelManager;
+    private final UniversalConfigActions<CommonDistributionConfigRestModel> configActions;
 
     @Autowired
     public UniversalDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
             final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
-            final DistributionChannelManager distributionChannelManager) {
+            final DistributionChannelManager distributionChannelManager, final UniversalConfigActions<CommonDistributionConfigRestModel> configActions) {
         this.objectTransformer = objectTransformer;
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.distributionChannelManager = distributionChannelManager;
+        this.configActions = configActions;
     }
 
     public List<CommonDistributionConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
@@ -143,7 +142,7 @@ public class UniversalDistributionConfigActions {
         if (StringUtils.isNotBlank(restModel.getDistributionConfigId()) && !StringUtils.isNumeric(restModel.getDistributionConfigId())) {
             fieldErrors.put("distributionConfigId", "Not an Integer.");
         }
-        if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !isBoolean(restModel.getFilterByProject())) {
+        if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !configActions.isBoolean(restModel.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
         if (StringUtils.isBlank(restModel.getFrequency())) {
@@ -152,7 +151,7 @@ public class UniversalDistributionConfigActions {
         if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
             fieldErrors.put("notificationTypes", "Must have at least one notification type.");
         }
-        descriptor.getSimpleConfigActions().validateDistributionConfig(restModel, fieldErrors);
+        descriptor.getDistributionConfigActions().validateConfig(restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -161,50 +160,9 @@ public class UniversalDistributionConfigActions {
 
     public String testConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-            fillNewConfigWithSavedConfig(restModel, restModel.getId(), descriptor);
+            configActions.fillNewConfigWithSavedConfig(restModel, descriptor.getDistributionRepository(), descriptor.getDistributionEntityClass());
         }
         return distributionChannelManager.sendTestMessage(SlackChannel.COMPONENT_NAME, restModel);
-    }
-
-    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id, final ChannelDescriptor descriptor) throws AlertException {
-        if (StringUtils.isNotBlank(id)) {
-            final Long longId = objectTransformer.stringToLong(id);
-            final Optional<DatabaseEntity> savedConfig = descriptor.getDistributionRepository().findById(longId);
-            if (savedConfig.isPresent()) {
-                return fillNewConfigWithSavedConfig(newConfig, savedConfig.get());
-            }
-        }
-        return newConfig;
-    }
-
-    public <T> T fillNewConfigWithSavedConfig(final T newConfig, final DatabaseEntity savedConfig) throws AlertException {
-        try {
-            final Class<?> newConfigClass = newConfig.getClass();
-
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
-            for (final Field field : sensitiveFields) {
-                field.setAccessible(true);
-                final Object value = field.get(newConfig);
-                if (value == null || StringUtils.isBlank(value.toString())) {
-                    if (savedConfig != null) {
-                        final Class<?> savedConfigClass = savedConfig.getClass();
-                        Field savedField = null;
-                        try {
-                            savedField = savedConfigClass.getDeclaredField(field.getName());
-                        } catch (final NoSuchFieldException e) {
-                            continue;
-                        }
-                        savedField.setAccessible(true);
-                        final String savedValue = (String) savedField.get(savedConfig);
-                        field.set(newConfig, savedValue);
-                    }
-                }
-            }
-        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new AlertException(e.getMessage(), e);
-        }
-
-        return newConfig;
     }
 
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
@@ -242,7 +200,7 @@ public class UniversalDistributionConfigActions {
         final Optional<DatabaseEntity> distributionEntity = descriptor.getDistributionRepository().findById(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
         if (distributionEntity.isPresent() && commonEntity != null) {
-            final CommonDistributionConfigRestModel restModel = descriptor.getSimpleConfigActions().constructRestModel(commonEntity, distributionEntity.get());
+            final CommonDistributionConfigRestModel restModel = descriptor.getDistributionConfigActions().constructRestModel(commonEntity, distributionEntity.get());
             restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
             return restModel;
@@ -250,20 +208,8 @@ public class UniversalDistributionConfigActions {
         return null;
     }
 
-    public boolean doesConfigExist(final String id) {
-        return doesConfigExist(objectTransformer.stringToLong(id));
-    }
-
-    public boolean doesConfigExist(final Long id) {
-        return id != null && commonDistributionRepository.existsById(id);
-    }
-
-    public Boolean isBoolean(final String value) {
-        if (StringUtils.isBlank(value)) {
-            return false;
-        }
-        final String trimmedValue = value.trim();
-        return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
+    public UniversalConfigActions<CommonDistributionConfigRestModel> getConfigActions() {
+        return configActions;
     }
 
 }
