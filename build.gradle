@@ -175,6 +175,7 @@ task copyDeploymentFiles(type: Copy) {
     into "${project.buildDir}/deployment"
     doLast {
         ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
 
