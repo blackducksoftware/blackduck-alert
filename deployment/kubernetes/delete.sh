@@ -1,5 +1,5 @@
 #!/bin/bash
 
-kubectl -n sb-hub-stuff delete configmap hub-alert-config
-kubectl -n sb-hub-stuff delete deployment alert
-kubectl -n sb-hub-stuff delete service alert
+kubectl -n blackduck delete configmap blackduck-alert-config
+kubectl -n blackduck delete deployment alert
+kubectl -n blackduck delete service alert
