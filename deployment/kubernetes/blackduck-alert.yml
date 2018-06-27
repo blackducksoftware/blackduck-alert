@@ -20,7 +20,7 @@ spec:
       - emptyDir: {}
         name: alert-db-volume
       containers:
-      - image: blackducksoftware/hub-alert:VERSION_TOKEN
+      - image: blackducksoftware/blackduck-alert:VERSION_TOKEN
         name: alert
         livenessProbe:
           exec:
@@ -46,4 +46,4 @@ spec:
             memory: 512M
         envFrom:
         - configMapRef:
-            name: hub-alert-config
+            name: blackduck-alert-config
