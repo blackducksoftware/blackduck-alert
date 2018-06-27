@@ -1,5 +1,5 @@
 /**
- * hub-alert
+ * blackduck-alert
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -36,7 +36,7 @@ public class SlackDistributionConfigEntity extends DistributionChannelConfigEnti
     private String webhook;
 
     @Column(name = "channel_username")
-    private String channelUsername = "Hub-alert";
+    private String channelUsername = "BlackDuck-Alert";
 
     @Column(name = "channel_name")
     private String channelName;

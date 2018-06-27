@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.hub.alert.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -19,7 +17,6 @@ public class GlobalPropertiesTest {
         final String proxyPort = "proxyPort";
         final String proxyUser = "proxyUser";
         final String proxyPassword = "proxyPassword";
-        final Boolean alertSSLEnabled = Boolean.TRUE;
         final String serverPort = "2138";
         final String keyStoreFile = "keystoreFile";
         final String keyStorePass = "keystorePass";
@@ -35,7 +32,6 @@ public class GlobalPropertiesTest {
         properties.setHubProxyPort(proxyPort);
         properties.setHubProxyUsername(proxyUser);
         properties.setHubProxyPassword(proxyPassword);
-        properties.setAlertSSLEnabled(alertSSLEnabled);
         properties.setServerPort(serverPort);
         properties.setKeyStoreFile(keyStoreFile);
         properties.setKeyStorePass(keyStorePass);
@@ -52,7 +48,6 @@ public class GlobalPropertiesTest {
         assertEquals(proxyPassword, properties.getHubProxyPassword());
 
         assertEquals(hubUrl, properties.getHubUrl());
-        assertEquals(alertSSLEnabled, properties.getAlertSSLEnabled());
         assertEquals(serverPort, properties.getServerPort());
         assertEquals(keyStoreFile, properties.getKeyStoreFile());
         assertEquals(keyStorePass, properties.getKeyStorePass());

@@ -28,7 +28,7 @@ public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEnt
     public void assertEntityFieldsNull(final SlackDistributionConfigEntity entity) {
         assertNull(entity.getWebhook());
         assertNull(entity.getChannelName());
-        assertEquals("Hub-alert", entity.getChannelUsername());
+        assertEquals("BlackDuck-Alert", entity.getChannelUsername());
     }
 
     @Override
