@@ -21,6 +21,11 @@ public enum TestPropertyKey {
     TEST_EMAIL_RECIPIENT("mail.recipient"),
     TEST_EMAIL_SMTP_HOST("mail.smtp.host"),
     TEST_EMAIL_SMTP_FROM("mail.smtp.from"),
+    TEST_EMAIL_SMTP_USER("mail.smtp.user"),
+    TEST_EMAIL_SMTP_PASSWORD("mail.smtp.password"),
+    TEST_EMAIL_SMTP_AUTH("mail.smtp.auth"),
+    TEST_EMAIL_SMTP_EHLO("mail.smtp.ehlo"),
+    TEST_EMAIL_SMTP_PORT("mail.smtp.port"),
     TEST_EMAIL_TEMPLATE("hub.email.template.directory"),
     TEST_EMAIL_LOGO("logo.image");
 

@@ -36,29 +36,29 @@ public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntit
         return webhook;
     }
 
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public String getChannelUsername() {
-        return channelUsername;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
     public void setWebhook(final String webhook) {
         this.webhook = webhook;
+    }
+
+    public String getChannelName() {
+        return channelName;
     }
 
     public void setChannelName(final String channelName) {
         this.channelName = channelName;
     }
 
+    public String getChannelUsername() {
+        return channelUsername;
+    }
+
     public void setChannelUsername(final String channelUsername) {
         this.channelUsername = channelUsername;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {
@@ -90,7 +90,7 @@ public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntit
     @Override
     public String getEmptyEntityJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("channelUsername", "Hub-alert");
+        json.addProperty("channelUsername", "BlackDuck-Alert");
         return json.toString();
     }
 }
