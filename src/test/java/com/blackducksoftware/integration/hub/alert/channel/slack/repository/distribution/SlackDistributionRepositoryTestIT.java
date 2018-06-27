@@ -54,7 +54,7 @@ public class SlackDistributionRepositoryTestIT {
     public void saveEntityTestIT() {
         final String channelName = "My Channel";
         final String webhook = "Webhook";
-        final String channelUsername = "Hub-alert: test";
+        final String channelUsername = "BlackDuck-alert: test";
         final SlackDistributionConfigEntity entity = new SlackDistributionConfigEntity(webhook, channelUsername, channelName);
         final SlackDistributionConfigEntity savedEntity = slackDistributionRepository.save(entity);
         assertEquals(1, slackDistributionRepository.count());

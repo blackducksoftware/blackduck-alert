@@ -1,5 +1,5 @@
 /**
- * hub-alert
+ * blackduck-alert
  *
  * Copyright (C) 2018 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -70,9 +70,6 @@ public class GlobalProperties {
     @Value("${blackduck.hub.proxy.password:}")
     private String hubProxyPassword;
 
-    @Value("${blackduck.alert.ssl.enable:false}")
-    private Boolean alertSSLEnabled;
-
     // SSL properties
 
     @Value("${server.port:")
@@ -133,12 +130,20 @@ public class GlobalProperties {
         return hubUrl;
     }
 
+    public void setHubUrl(final String hubUrl) {
+        this.hubUrl = hubUrl;
+    }
+
     public Boolean getHubTrustCertificate() {
         final String alwaysTrust = System.getenv("HUB_ALWAYS_TRUST_SERVER_CERTIFICATE");
         if (StringUtils.isNotBlank(alwaysTrust)) {
             return Boolean.parseBoolean(alwaysTrust);
         }
         return hubTrustCertificate;
+    }
+
+    public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
+        this.hubTrustCertificate = hubTrustCertificate;
     }
 
     public String getHubProxyHost() {
@@ -150,6 +155,10 @@ public class GlobalProperties {
         }
     }
 
+    public void setHubProxyHost(final String hubProxyHost) {
+        this.hubProxyHost = hubProxyHost;
+    }
+
     public String getHubProxyPort() {
         final String proxyPort = System.getenv("HUB_PROXY_PORT");
         if (StringUtils.isEmpty(proxyPort)) {
@@ -157,6 +166,10 @@ public class GlobalProperties {
         } else {
             return proxyPort;
         }
+    }
+
+    public void setHubProxyPort(final String hubProxyPort) {
+        this.hubProxyPort = hubProxyPort;
     }
 
     public String getHubProxyUsername() {
@@ -168,6 +181,10 @@ public class GlobalProperties {
         }
     }
 
+    public void setHubProxyUsername(final String hubProxyUsername) {
+        this.hubProxyUsername = hubProxyUsername;
+    }
+
     public String getHubProxyPassword() {
         final String proxyPassword = System.getenv("HUB_PROXY_PASSWORD");
         if (StringUtils.isEmpty(proxyPassword)) {
@@ -175,26 +192,6 @@ public class GlobalProperties {
         } else {
             return proxyPassword;
         }
-    }
-
-    public void setHubUrl(final String hubUrl) {
-        this.hubUrl = hubUrl;
-    }
-
-    public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
-        this.hubTrustCertificate = hubTrustCertificate;
-    }
-
-    public void setHubProxyHost(final String hubProxyHost) {
-        this.hubProxyHost = hubProxyHost;
-    }
-
-    public void setHubProxyPort(final String hubProxyPort) {
-        this.hubProxyPort = hubProxyPort;
-    }
-
-    public void setHubProxyUsername(final String hubProxyUsername) {
-        this.hubProxyUsername = hubProxyUsername;
     }
 
     public void setHubProxyPassword(final String hubProxyPassword) {
@@ -312,14 +309,6 @@ public class GlobalProperties {
             return getHubConfig().getHubApiKey();
         }
         return null;
-    }
-
-    public Boolean getAlertSSLEnabled() {
-        return alertSSLEnabled;
-    }
-
-    public void setAlertSSLEnabled(final Boolean alertSSLEnabled) {
-        this.alertSSLEnabled = alertSSLEnabled;
     }
 
     public String getServerPort() {

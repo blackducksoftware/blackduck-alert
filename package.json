@@ -1,6 +1,6 @@
 {
-  "name": "hub-alert",
-  "version": "0.0.1",
+  "name": "blackduck-alert",
+  "version": "2.0.0",
   "description": "Test",
   "keywords": [
     "blackduck",
@@ -10,7 +10,7 @@
   ],
   "author": "Black Duck Software, Inc.",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/blackducksoftware/hub-alert.git",
+  "homepage": "https://github.com/blackducksoftware/blackduck-alert.git",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "enzyme": "^3.3.0",
