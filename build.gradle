@@ -165,12 +165,24 @@ task runServer(type: Exec, dependsOn: [build]) {
 }
 
 task copyDeploymentFiles(type: Copy) {
-    from 'deployment'
+    from('deployment') {
+        include "docker-compose/**", "docker-swarm/**", "kubernetes/**"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-compose"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "kubernetes"
+    }
     into "${project.buildDir}/deployment"
+
     doLast {
         ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/blackduck-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
 

@@ -1,0 +1,64 @@
+kind: List
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: alert
+  spec:
+    selector:
+      matchLabels:
+        app: alert
+        tier: alert
+    replicas: 1
+    template:
+      metadata:
+        name: alert
+        labels:
+          app: alert
+          tier: alert
+      spec:
+        volumes:
+        - emptyDir: {}
+          name: alert-db-volume
+        containers:
+        - image: blackducksoftware/hub-alert:VERSION_TOKEN
+          name: alert
+          livenessProbe:
+            exec:
+              command:
+              - /usr/local/bin/docker-healthcheck.sh
+              - 'https://localhost:8443/alert/api/about'
+            initialDelaySeconds: 240
+            timeoutSeconds: 10
+            periodSeconds: 30
+            failureThreshold: 5
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 512M
+            limits:
+              memory: 512M
+          envFrom:
+          - configMapRef:
+              name: blackduck-alert-config
+          volumeMounts:
+          - mountPath: /opt/blackduck/alert/alert-config/data
+            name: alert-db-volume
+          ports:
+          - containerPort: 8443
+            protocol: TCP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: alert
+  spec:
+    ports:
+    - name: 8443-tcp
+      protocol: TCP
+      port: 8443
+      targetPort: 8443
+    selector:
+      app: alert
+  status:
+    loadBalancer: {}
