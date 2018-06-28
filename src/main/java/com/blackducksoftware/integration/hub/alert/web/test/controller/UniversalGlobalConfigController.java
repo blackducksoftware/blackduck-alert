@@ -40,14 +40,14 @@ import com.google.gson.Gson;
 @RestController
 @RequestMapping(UniversalConfigController.UNIVERSAL_PATH + "/global")
 public class UniversalGlobalConfigController extends UniversalConfigController<ChannelDescriptor> {
-    private final UniversalGlobalConfigHandler controllerHandler;
+    private final UniversalConfigHandler controllerHandler;
     private final Gson gson;
 
     @Autowired
-    public UniversalGlobalConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final UniversalGlobalConfigHandler controllerHandler) {
+    public UniversalGlobalConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final UniversalGlobalConfigActions universalGlobalConfigActions) {
         super(descriptors);
         this.gson = gson;
-        this.controllerHandler = controllerHandler;
+        this.controllerHandler = new UniversalConfigHandler<>(objectTransformer, universalGlobalConfigActions);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class UniversalGlobalConfigController extends UniversalConfigController<C
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
+        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor, descriptor.getGlobalRepository(), descriptor.getGlobalEntityClass());
     }
 
     @Override
