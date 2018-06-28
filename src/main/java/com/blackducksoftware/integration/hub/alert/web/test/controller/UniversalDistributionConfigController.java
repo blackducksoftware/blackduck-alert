@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
@@ -40,14 +42,17 @@ import com.google.gson.Gson;
 @RestController
 @RequestMapping(UniversalConfigController.UNIVERSAL_PATH + "/distribution")
 public class UniversalDistributionConfigController extends UniversalConfigController<ChannelDescriptor> {
-    private final UniversalDistributionConfigHandler controllerHandler;
+    private final UniversalConfigHandler controllerHandler;
+    private final CommonDistributionRepository commonDistributionRepository;
     private final Gson gson;
 
     @Autowired
-    public UniversalDistributionConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final UniversalDistributionConfigHandler controllerHandler) {
+    public UniversalDistributionConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final UniversalDistributionConfigActions universalDistributionConfigActions,
+            final CommonDistributionRepository commonDistributionRepository) {
         super(descriptors);
+        this.commonDistributionRepository = commonDistributionRepository;
         this.gson = gson;
-        this.controllerHandler = controllerHandler;
+        this.controllerHandler = new UniversalConfigHandler<>(objectTransformer, universalDistributionConfigActions);
     }
 
     @Override
@@ -65,7 +70,7 @@ public class UniversalDistributionConfigController extends UniversalConfigContro
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor);
+        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor, commonDistributionRepository, CommonDistributionConfigEntity.class);
     }
 
     @Override

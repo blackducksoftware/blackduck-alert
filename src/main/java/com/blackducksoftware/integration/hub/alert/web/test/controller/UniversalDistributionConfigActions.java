@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
-import com.blackducksoftware.integration.hub.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -52,27 +51,34 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class UniversalDistributionConfigActions {
+public class UniversalDistributionConfigActions extends TestConfigActions<CommonDistributionConfigRestModel, ChannelDescriptor> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ObjectTransformer objectTransformer;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
     private final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
     private final DistributionChannelManager distributionChannelManager;
-    private final UniversalConfigActions<CommonDistributionConfigRestModel> configActions;
 
     @Autowired
     public UniversalDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
             final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
-            final DistributionChannelManager distributionChannelManager, final UniversalConfigActions<CommonDistributionConfigRestModel> configActions) {
-        this.objectTransformer = objectTransformer;
+            final DistributionChannelManager distributionChannelManager) {
+        super(objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.distributionChannelManager = distributionChannelManager;
-        this.configActions = configActions;
     }
 
+    @Override
+    public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
+        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
+    }
+
+    public boolean doesConfigExist(final Long id, final ChannelDescriptor descriptor) {
+        return id != null && commonDistributionRepository.existsById(id);
+    }
+
+    @Override
     public List<CommonDistributionConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
         if (id != null) {
             final Optional<DatabaseEntity> foundEntity = descriptor.getDistributionRepository().findById(id);
@@ -84,11 +90,12 @@ public class UniversalDistributionConfigActions {
         return constructRestModels(descriptor);
     }
 
+    @Override
     public DatabaseEntity saveConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null) {
             try {
-                DatabaseEntity createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, descriptor.getDistributionEntityClass());
-                CommonDistributionConfigEntity commonEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
+                DatabaseEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, descriptor.getDistributionEntityClass());
+                CommonDistributionConfigEntity commonEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
                 if (createdEntity != null && commonEntity != null) {
                     createdEntity = descriptor.getDistributionRepository().save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
@@ -105,12 +112,9 @@ public class UniversalDistributionConfigActions {
         return null;
     }
 
-    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
-        return saveConfig(restModel, descriptor);
-    }
-
+    @Override
     public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
-        deleteConfig(objectTransformer.stringToLong(id), descriptor);
+        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
     }
 
     public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
@@ -126,11 +130,12 @@ public class UniversalDistributionConfigActions {
         }
     }
 
+    @Override
     public String validateConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getName())) {
             final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(restModel.getName());
-            if (entity != null && (entity.getId() != objectTransformer.stringToLong(restModel.getId()))) {
+            if (entity != null && (entity.getId() != getObjectTransformer().stringToLong(restModel.getId()))) {
                 fieldErrors.put("name", "A distribution configuration with this name already exists.");
             }
         } else {
@@ -142,7 +147,7 @@ public class UniversalDistributionConfigActions {
         if (StringUtils.isNotBlank(restModel.getDistributionConfigId()) && !StringUtils.isNumeric(restModel.getDistributionConfigId())) {
             fieldErrors.put("distributionConfigId", "Not an Integer.");
         }
-        if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !configActions.isBoolean(restModel.getFilterByProject())) {
+        if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !isBoolean(restModel.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
         if (StringUtils.isBlank(restModel.getFrequency())) {
@@ -158,11 +163,12 @@ public class UniversalDistributionConfigActions {
         return "Valid";
     }
 
+    @Override
     public String testConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-            configActions.fillNewConfigWithSavedConfig(restModel, descriptor.getDistributionRepository(), descriptor.getDistributionEntityClass());
+            fillNewConfigWithSavedConfig(restModel, restModel.getId(), descriptor.getDistributionRepository(), descriptor.getDistributionEntityClass());
         }
-        return distributionChannelManager.sendTestMessage(SlackChannel.COMPONENT_NAME, restModel);
+        return distributionChannelManager.sendTestMessage(descriptor.getDestinationName(), restModel);
     }
 
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
@@ -206,10 +212,6 @@ public class UniversalDistributionConfigActions {
             return restModel;
         }
         return null;
-    }
-
-    public UniversalConfigActions<CommonDistributionConfigRestModel> getConfigActions() {
-        return configActions;
     }
 
 }

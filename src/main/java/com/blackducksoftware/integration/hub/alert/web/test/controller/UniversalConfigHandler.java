@@ -28,10 +28,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
@@ -41,38 +40,35 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-@Component
-public class UniversalGlobalConfigHandler extends ControllerHandler {
+public class UniversalConfigHandler<R extends ConfigRestModel, D extends Descriptor> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final UniversalGlobalConfigActions configActions;
+    private final TestConfigActions configActions;
 
-    @Autowired
-    public UniversalGlobalConfigHandler(final ObjectTransformer objectTransformer, final UniversalGlobalConfigActions configActions) {
+    public UniversalConfigHandler(final ObjectTransformer objectTransformer, final TestConfigActions configActions) {
         super(objectTransformer);
         this.configActions = configActions;
     }
 
-    public List<ConfigRestModel> getConfig(final Long id, final Descriptor descriptor) {
+    public List<R> getConfig(final Long id, final D descriptor) {
         try {
-            return configActions.getConfigActions().getConfig(id, descriptor.getGlobalRestModelClass(), descriptor.getGlobalRepository());
+            return configActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
         }
         return Collections.emptyList();
     }
 
-    public ResponseEntity<String> postConfig(final ConfigRestModel restModel, final Descriptor descriptor) {
+    public ResponseEntity<String> postConfig(final R restModel, final D descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getGlobalRestModelClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
         }
-        if (!configActions.getConfigActions().doesConfigExist(restModel.getId(), descriptor.getGlobalRepository())) {
+        if (!configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.getConfigActions().validateConfig(restModel, descriptor.getGlobalConfigActions());
+                configActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.getConfigActions().saveConfig(restModel, descriptor.getGlobalRepository(), descriptor.getGlobalEntityClass());
+                    final DatabaseEntity updatedEntity = configActions.saveConfig(restModel, descriptor);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -87,15 +83,15 @@ public class UniversalGlobalConfigHandler extends ControllerHandler {
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final ConfigRestModel restModel, final Descriptor descriptor) {
+    public ResponseEntity<String> putConfig(final R restModel, final D descriptor, final JpaRepository<DatabaseEntity, Long> repository, final Class entityClass) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getGlobalRestModelClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
         }
-        if (configActions.getConfigActions().doesConfigExist(restModel.getId(), descriptor.getGlobalRepository())) {
+        if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.getConfigActions().validateConfig(restModel, descriptor.getGlobalConfigActions());
+                configActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.getConfigActions().saveNewConfigUpdateFromSavedConfig(restModel, descriptor.getGlobalRepository(), descriptor.getGlobalEntityClass());
+                    final DatabaseEntity updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel, repository, entityClass);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -110,23 +106,23 @@ public class UniversalGlobalConfigHandler extends ControllerHandler {
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> deleteConfig(final CommonDistributionConfigRestModel restModel, final Descriptor descriptor) {
+    public ResponseEntity<String> deleteConfig(final R restModel, final D descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getGlobalRestModelClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
         }
-        if (configActions.getConfigActions().doesConfigExist(restModel.getId(), descriptor.getGlobalRepository())) {
-            configActions.getConfigActions().deleteConfig(restModel.getId(), descriptor.getGlobalRepository());
+        if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
+            configActions.deleteConfig(restModel.getId(), descriptor);
             return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> validateConfig(final CommonDistributionConfigRestModel restModel, final Descriptor descriptor) {
+    public ResponseEntity<String> validateConfig(final R restModel, final D descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getGlobalRestModelClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
         }
         try {
-            final String responseMessage = configActions.getConfigActions().validateConfig(restModel, descriptor.getGlobalConfigActions());
+            final String responseMessage = configActions.validateConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
@@ -136,12 +132,12 @@ public class UniversalGlobalConfigHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> testConfig(final CommonDistributionConfigRestModel restModel, final Descriptor descriptor) {
+    public ResponseEntity<String> testConfig(final R restModel, final D descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getGlobalRestModelClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
         }
         try {
-            final String responseMessage = configActions.testConfig(restModel, descriptor.getName());
+            final String responseMessage = configActions.testConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
@@ -156,5 +152,4 @@ public class UniversalGlobalConfigHandler extends ControllerHandler {
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
         }
     }
-
 }

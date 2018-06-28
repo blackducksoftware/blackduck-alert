@@ -84,6 +84,6 @@ HipChatJobConfiguration.propTypes = {
 
 HipChatJobConfiguration.defaultProps = {
     baseUrl: '/alert/api/configuration/channel_hipchat/distribution',
-    testUrl: '/alert/api/configuration/channel_hipchat/distribution',
+    testUrl: '/alert/api/configuration/channel_hipchat/distribution/test',
     distributionType: 'channel_hipchat'
 };

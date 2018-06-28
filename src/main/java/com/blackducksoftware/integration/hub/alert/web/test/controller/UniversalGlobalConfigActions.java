@@ -23,17 +23,33 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.common.collect.Maps;
 
 @Component
-public class UniversalGlobalConfigActions extends ControllerHandler {
+public class UniversalGlobalConfigActions extends TestConfigActions<ConfigRestModel, Descriptor> {
     private final DistributionChannelManager distributionChannelManager;
     private final UniversalConfigActions<ConfigRestModel> configActions;
 
@@ -44,12 +60,124 @@ public class UniversalGlobalConfigActions extends ControllerHandler {
         this.configActions = configActions;
     }
 
-    public String testConfig(final ConfigRestModel restModel, final String channelName) throws IntegrationException {
-        return distributionChannelManager.testGlobalConfig(channelName, restModel);
+    @Override
+    public boolean doesConfigExist(final String id, final Descriptor descriptor) {
+        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
+    }
+
+    public boolean doesConfigExist(final Long id, final Descriptor descriptor) {
+        return id != null && descriptor.getGlobalRepository().existsById(id);
     }
 
     public UniversalConfigActions<ConfigRestModel> getConfigActions() {
         return configActions;
+    }
+
+    @Override
+    public List<ConfigRestModel> getConfig(final Long id, final Descriptor descriptor) throws AlertException {
+        final Class restModelClass = descriptor.getGlobalRestModelClass();
+        if (id != null) {
+            final Optional<DatabaseEntity> foundEntity = descriptor.getGlobalRepository().findById(id);
+            if (foundEntity.isPresent()) {
+                final ConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity.get(), restModelClass);
+                if (restModel != null) {
+                    final ConfigRestModel maskedRestModel = maskRestModel(restModel, restModelClass);
+                    return Arrays.asList(maskedRestModel);
+                }
+            }
+            return Collections.emptyList();
+        }
+        final List<DatabaseEntity> databaseEntities = descriptor.getGlobalRepository().findAll();
+        final List<ConfigRestModel> restModels = getObjectTransformer().databaseEntitiesToConfigRestModels(databaseEntities, restModelClass);
+        return maskRestModels(restModels, restModelClass);
+    }
+
+    @Override
+    public void deleteConfig(final String id, final Descriptor descriptor) {
+        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
+    }
+
+    public void deleteConfig(final Long id, final Descriptor descriptor) {
+        if (id != null) {
+            descriptor.getGlobalRepository().deleteById(id);
+        }
+    }
+
+    @Override
+    public DatabaseEntity saveConfig(final ConfigRestModel restModel, final Descriptor descriptor) throws AlertException {
+        if (restModel != null) {
+            try {
+                DatabaseEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, descriptor.getGlobalEntityClass());
+                if (createdEntity != null) {
+                    createdEntity = descriptor.getGlobalRepository().save(createdEntity);
+                    return createdEntity;
+                }
+            } catch (final Exception e) {
+                throw new AlertException(e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String validateConfig(final ConfigRestModel restModel, final Descriptor descriptor) throws AlertFieldException {
+        final Map<String, String> fieldErrors = Maps.newHashMap();
+        descriptor.getGlobalConfigActions().validateConfig(restModel, fieldErrors);
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
+    }
+
+    @Override
+    public String testConfig(final ConfigRestModel restModel, final Descriptor descriptor) throws IntegrationException {
+        if (descriptor.getGlobalRepository() != null) {
+            final List<DatabaseEntity> globalConfigs = descriptor.getGlobalRepository().findAll();
+            if (globalConfigs.size() == 1) {
+                return distributionChannelManager.testGlobalConfig(descriptor.getName(), (GlobalChannelConfigEntity) globalConfigs.get(0));
+            }
+            return "Global Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
+        }
+        return "No global repository";
+    }
+
+    public ConfigRestModel maskRestModel(final ConfigRestModel restModel, final Class restModelClass) throws AlertException {
+        try {
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
+
+            for (final Field sensitiveField : sensitiveFields) {
+                boolean isFieldSet = false;
+                sensitiveField.setAccessible(true);
+                final Object sensitiveFieldValue = sensitiveField.get(restModel);
+                if (sensitiveFieldValue != null) {
+                    final String sensitiveFieldString = (String) sensitiveFieldValue;
+                    if (StringUtils.isNotBlank(sensitiveFieldString)) {
+                        isFieldSet = true;
+                    }
+                }
+                sensitiveField.set(restModel, null);
+
+                final Field fieldIsSet = restModelClass.getDeclaredField(sensitiveField.getName() + "IsSet");
+                fieldIsSet.setAccessible(true);
+                final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(restModel);
+                if (!sensitiveIsSetFieldValue) {
+                    fieldIsSet.setBoolean(restModel, isFieldSet);
+                }
+
+            }
+        } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+        return restModel;
+    }
+
+    public List<ConfigRestModel> maskRestModels(final List<ConfigRestModel> restModels, final Class restModelClass) throws AlertException {
+        final List<ConfigRestModel> maskedRestModels = new ArrayList<>();
+        for (final ConfigRestModel restModel : restModels) {
+            maskedRestModels.add(maskRestModel(restModel, restModelClass));
+        }
+        return maskedRestModels;
     }
 
 }
