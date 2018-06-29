@@ -32,8 +32,6 @@ import groovy.json.JsonOutput
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 
-applicationDefaultJvmArgs = ['-DAPP_HOME=APP_HOME_VAR_TOKEN']
-
 dependencies {
     compile 'com.blackducksoftware.integration:hub-common:33.0.2'
     compile 'org.springframework.boot:spring-boot-starter'

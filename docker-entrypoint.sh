@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-certificateManagerDir=/opt/blackduck/security/bin
-securityDir=/opt/blackduck/security
+certificateManagerDir=/opt/blackduck/alert/bin
+securityDir=/opt/blackduck/alert/alert-config/security
 
 serverCertName=$APPLICATION_NAME-server
 
