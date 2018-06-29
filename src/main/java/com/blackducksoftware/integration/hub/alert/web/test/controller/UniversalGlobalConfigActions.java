@@ -49,15 +49,13 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.google.common.collect.Maps;
 
 @Component
-public class UniversalGlobalConfigActions extends TestConfigActions<ConfigRestModel, Descriptor> {
+public class UniversalGlobalConfigActions extends UniversalConfigActions<ConfigRestModel, Descriptor> {
     private final DistributionChannelManager distributionChannelManager;
-    private final UniversalConfigActions<ConfigRestModel> configActions;
 
     @Autowired
-    public UniversalGlobalConfigActions(final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager, final UniversalConfigActions<ConfigRestModel> configActions) {
+    public UniversalGlobalConfigActions(final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
         super(objectTransformer);
         this.distributionChannelManager = distributionChannelManager;
-        this.configActions = configActions;
     }
 
     @Override
@@ -67,10 +65,6 @@ public class UniversalGlobalConfigActions extends TestConfigActions<ConfigRestMo
 
     public boolean doesConfigExist(final Long id, final Descriptor descriptor) {
         return id != null && descriptor.getGlobalRepository().existsById(id);
-    }
-
-    public UniversalConfigActions<ConfigRestModel> getConfigActions() {
-        return configActions;
     }
 
     @Override
@@ -140,6 +134,62 @@ public class UniversalGlobalConfigActions extends TestConfigActions<ConfigRestMo
             return "Global Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
         }
         return "No global repository";
+    }
+
+    @Override
+    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final ConfigRestModel restModel, final Descriptor descriptor) throws AlertException {
+        if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
+            try {
+                DatabaseEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, descriptor.getGlobalEntityClass());
+                createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId(), descriptor);
+                if (createdEntity != null) {
+                    createdEntity = descriptor.getGlobalRepository().save(createdEntity);
+                    return createdEntity;
+                }
+            } catch (final Exception e) {
+                throw new AlertException(e.getMessage(), e);
+            }
+        }
+        return null;
+    }
+
+    public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final String id, final Descriptor descriptor) throws AlertException {
+        if (StringUtils.isNotBlank(id)) {
+            final Long longId = getObjectTransformer().stringToLong(id);
+            final Optional<DatabaseEntity> savedConfig = descriptor.getGlobalRepository().findById(longId);
+            if (savedConfig.isPresent() && DatabaseEntity.class.isAssignableFrom(descriptor.getGlobalEntityClass())) {
+                return updateNewConfigWithSavedConfig(newConfig, savedConfig.get(), descriptor.getGlobalEntityClass());
+            }
+        }
+        return newConfig;
+    }
+
+    public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final DatabaseEntity savedConfig, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
+        try {
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
+            for (final Field field : sensitiveFields) {
+                field.setAccessible(true);
+                final Object value = field.get(newConfig);
+                if (value != null) {
+                    final String newValue = (String) value;
+                    if (StringUtils.isBlank(newValue) && savedConfig != null) {
+                        Field savedField = null;
+                        try {
+                            savedField = entityClass.getDeclaredField(field.getName());
+                        } catch (final NoSuchFieldException e) {
+                            continue;
+                        }
+                        savedField.setAccessible(true);
+                        final String savedValue = (String) savedField.get(savedConfig);
+                        field.set(newConfig, savedValue);
+                    }
+                }
+            }
+        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+
+        return newConfig;
     }
 
     public ConfigRestModel maskRestModel(final ConfigRestModel restModel, final Class restModelClass) throws AlertException {
