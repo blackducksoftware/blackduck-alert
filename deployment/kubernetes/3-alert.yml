@@ -20,9 +20,9 @@ items:
       spec:
         volumes:
         - emptyDir: {}
-          name: alert-db-volume
+          name: dir-alert
         containers:
-        - image: blackducksoftware/hub-alert:VERSION_TOKEN
+        - image: blackducksoftware/blackduck-alert:VERSION_TOKEN
           name: alert
           livenessProbe:
             exec:
@@ -43,8 +43,8 @@ items:
           - configMapRef:
               name: blackduck-alert-config
           volumeMounts:
-          - mountPath: /opt/blackduck/alert/alert-config/data
-            name: alert-db-volume
+          - mountPath: /opt/blackduck/alert/alert-config
+            name: dir-alert
           ports:
           - containerPort: 8443
             protocol: TCP
@@ -60,5 +60,6 @@ items:
       targetPort: 8443
     selector:
       app: alert
+    type: LoadBalancer
   status:
     loadBalancer: {}

@@ -26,7 +26,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data', 'alert-volume:/opt/blackduck/security']
+    volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data', 'alert-volume:/opt/blackduck/alert/alert-config/security']
     deploy:
       mode: replicated
       restart_policy: {condition: on-failure, delay: 15s, window:60s}
