@@ -173,14 +173,14 @@ task copyDeploymentFiles(type: Copy) {
         into "docker-swarm"
     }
     from('deployment/blackduck-alert.env') {
-        into "kubernetes"
+        into "kubernetes/standalone"
     }
     into "${project.buildDir}/deployment"
 
     doLast {
         ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
-        ant.replace(file: "${project.buildDir}/deployment/kubernetes/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
 
