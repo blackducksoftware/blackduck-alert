@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.test.controller;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,14 +31,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -51,7 +55,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class UniversalDistributionConfigActions extends TestConfigActions<CommonDistributionConfigRestModel, ChannelDescriptor> {
+public class UniversalDistributionConfigActions extends UniversalConfigActions<CommonDistributionConfigRestModel, ChannelDescriptor> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CommonDistributionRepository commonDistributionRepository;
     private final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
@@ -117,6 +121,11 @@ public class UniversalDistributionConfigActions extends TestConfigActions<Common
         deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
     }
 
+    @Override
+    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+        return saveConfig(restModel, descriptor);
+    }
+
     public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
             final Optional<CommonDistributionConfigEntity> commonEntity = commonDistributionRepository.findById(id);
@@ -169,6 +178,46 @@ public class UniversalDistributionConfigActions extends TestConfigActions<Common
             fillNewConfigWithSavedConfig(restModel, restModel.getId(), descriptor.getDistributionRepository(), descriptor.getDistributionEntityClass());
         }
         return distributionChannelManager.sendTestMessage(descriptor.getDestinationName(), restModel);
+    }
+
+    public CommonDistributionConfigRestModel fillNewConfigWithSavedConfig(final CommonDistributionConfigRestModel newConfig, final String id, final JpaRepository<DatabaseEntity, Long> repository,
+            final Class<? extends DatabaseEntity> entityClass) throws AlertException {
+        if (StringUtils.isNotBlank(id)) {
+            final Long longId = getObjectTransformer().stringToLong(id);
+            final Optional<DatabaseEntity> savedConfig = repository.findById(longId);
+            if (savedConfig.isPresent()) {
+                return fillNewConfigWithSavedConfig(newConfig, savedConfig.get(), entityClass);
+            }
+        }
+        return newConfig;
+    }
+
+    public CommonDistributionConfigRestModel fillNewConfigWithSavedConfig(final CommonDistributionConfigRestModel newConfig, final DatabaseEntity savedConfig, final Class<? extends DatabaseEntity> entityClass) throws AlertException {
+        try {
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
+            for (final Field field : sensitiveFields) {
+                field.setAccessible(true);
+                final Object value = field.get(newConfig);
+                if (value == null || StringUtils.isBlank(value.toString())) {
+                    if (savedConfig != null) {
+                        final Class<?> savedConfigClass = savedConfig.getClass();
+                        Field savedField = null;
+                        try {
+                            savedField = savedConfigClass.getDeclaredField(field.getName());
+                        } catch (final NoSuchFieldException e) {
+                            continue;
+                        }
+                        savedField.setAccessible(true);
+                        final String savedValue = (String) savedField.get(savedConfig);
+                        field.set(newConfig, savedValue);
+                    }
+                }
+            }
+        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            throw new AlertException(e.getMessage(), e);
+        }
+
+        return newConfig;
     }
 
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {

@@ -44,9 +44,9 @@ import com.blackducksoftware.integration.rest.exception.IntegrationRestException
 
 public class UniversalConfigHandler<R extends ConfigRestModel, D extends Descriptor> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final TestConfigActions configActions;
+    private final UniversalConfigActions configActions;
 
-    public UniversalConfigHandler(final ObjectTransformer objectTransformer, final TestConfigActions configActions) {
+    public UniversalConfigHandler(final ObjectTransformer objectTransformer, final UniversalConfigActions configActions) {
         super(objectTransformer);
         this.configActions = configActions;
     }
@@ -91,7 +91,7 @@ public class UniversalConfigHandler<R extends ConfigRestModel, D extends Descrip
             try {
                 configActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel, repository, entityClass);
+                    final DatabaseEntity updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel, descriptor);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
