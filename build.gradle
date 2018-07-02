@@ -1,4 +1,7 @@
 buildscript {
+    ext {
+        springBootVersion = '2.0.3.RELEASE'
+    }
     repositories {
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
@@ -6,10 +9,8 @@ buildscript {
 
     dependencies {
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.3.5'
-        classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
-        classpath 'com.h2database:h2:1.4.196'
     }
 }
 
@@ -25,7 +26,6 @@ def dbChangeLogVersion = '1.1.0'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
-apply plugin: 'org.liquibase.gradle'
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import groovy.json.JsonOutput
@@ -33,6 +33,12 @@ import groovy.json.JsonOutput
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 
 applicationDefaultJvmArgs = ['-DAPP_HOME=APP_HOME_VAR_TOKEN']
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    }
+}
 
 dependencies {
     compile 'com.blackducksoftware.integration:hub-common:33.0.2'
@@ -55,9 +61,9 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
-    compile 'org.apache.activemq:activemq-kahadb-store:5.15.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
+    compile 'org.apache.activemq:activemq-kahadb-store'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile 'javax.interceptor:javax.interceptor-api:1.2.2'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
@@ -75,17 +81,6 @@ distributions {
             from('src/main/resources/email/images/') { into 'images/' }
             from('src/main/resources/email/templates/') { into 'templates/email' }
             from('src/main/resources/hipchat/templates/') { into 'templates/hipchat' }
-        }
-    }
-}
-
-liquibase {
-    activities {
-        main {
-            changeLogFile "$projectDir/src/main/resources/db/changelog/alert/changelog-${dbChangeLogVersion}.xml"
-            url 'jdbc:h2:file:./data/alertdb'
-            username 'sa'
-            defaultSchemaName 'alert'
         }
     }
 }
