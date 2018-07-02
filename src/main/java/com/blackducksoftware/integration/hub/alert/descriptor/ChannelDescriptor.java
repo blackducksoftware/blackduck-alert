@@ -27,8 +27,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.actions.SimpleDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
 
 public interface ChannelDescriptor extends Descriptor {
 

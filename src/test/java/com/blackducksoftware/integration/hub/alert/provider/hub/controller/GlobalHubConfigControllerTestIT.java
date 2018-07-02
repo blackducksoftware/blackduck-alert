@@ -14,15 +14,12 @@ import com.blackducksoftware.integration.hub.alert.TestPropertyKey;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigActions;
-import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigController;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.hub.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.hub.alert.mock.entity.global.MockGlobalEntityUtil;
-import com.blackducksoftware.integration.hub.alert.mock.model.global.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
 
 public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
@@ -35,11 +32,6 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
 
     @Autowired
     GlobalProperties globalProperties;
-
-    @Override
-    public ConfigController<GlobalHubConfigRestModel> getController() {
-        return new GlobalHubConfigController(globalHubConfigActions, new ObjectTransformer());
-    }
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {

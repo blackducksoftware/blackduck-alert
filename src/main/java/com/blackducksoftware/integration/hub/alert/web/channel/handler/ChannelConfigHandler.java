@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.channel.handler;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,16 +37,17 @@ import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.channel.actions.ChannelConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-public class UniversalConfigHandler<R extends ConfigRestModel, D extends Descriptor> extends ControllerHandler {
+public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descriptor> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final UniversalConfigActions configActions;
+    private final ChannelConfigActions configActions;
 
-    public UniversalConfigHandler(final ObjectTransformer objectTransformer, final UniversalConfigActions configActions) {
+    public ChannelConfigHandler(final ObjectTransformer objectTransformer, final ChannelConfigActions configActions) {
         super(objectTransformer);
         this.configActions = configActions;
     }

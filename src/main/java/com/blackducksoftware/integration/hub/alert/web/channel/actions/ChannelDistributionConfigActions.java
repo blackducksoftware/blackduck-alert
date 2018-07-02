@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.channel.actions;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import com.blackducksoftware.integration.hub.alert.web.actions.NotificationTypes
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class UniversalDistributionConfigActions extends UniversalConfigActions<CommonDistributionConfigRestModel, ChannelDescriptor> {
+public class ChannelDistributionConfigActions extends ChannelConfigActions<CommonDistributionConfigRestModel, ChannelDescriptor> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CommonDistributionRepository commonDistributionRepository;
     private final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
@@ -63,7 +63,7 @@ public class UniversalDistributionConfigActions extends UniversalConfigActions<C
     private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
-    public UniversalDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
+    public ChannelDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
             final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
             final DistributionChannelManager distributionChannelManager) {
         super(objectTransformer);

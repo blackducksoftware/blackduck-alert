@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.channel.actions;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -49,11 +49,11 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.google.common.collect.Maps;
 
 @Component
-public class UniversalGlobalConfigActions extends UniversalConfigActions<ConfigRestModel, Descriptor> {
+public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestModel, Descriptor> {
     private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
-    public UniversalGlobalConfigActions(final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
+    public ChannelGlobalConfigActions(final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
         super(objectTransformer);
         this.distributionChannelManager = distributionChannelManager;
     }

@@ -33,7 +33,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.di
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.SimpleDistributionConfigActions;
 
 @Component
 public class HipChatDistributionConfigActions implements SimpleDistributionConfigActions<HipChatDistributionConfigEntity, HipChatDistributionRestModel> {

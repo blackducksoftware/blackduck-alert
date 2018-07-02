@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.channel.controller;
 
 import java.util.List;
 
@@ -32,31 +32,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.channel.actions.ChannelGlobalConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.channel.handler.ChannelConfigHandler;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.google.gson.Gson;
 
 @RestController
-@RequestMapping(UniversalConfigController.UNIVERSAL_PATH + "/distribution")
-public class UniversalDistributionConfigController extends UniversalConfigController<ChannelDescriptor> {
-    private final UniversalConfigHandler controllerHandler;
-    private final CommonDistributionRepository commonDistributionRepository;
+@RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/global/{descriptorName}")
+public class ChannelGlobalConfigController extends ChannelConfigController<ChannelDescriptor> {
+    private final ChannelConfigHandler controllerHandler;
     private final Gson gson;
 
     @Autowired
-    public UniversalDistributionConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final UniversalDistributionConfigActions universalDistributionConfigActions,
-            final CommonDistributionRepository commonDistributionRepository) {
+    public ChannelGlobalConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
         super(descriptors);
-        this.commonDistributionRepository = commonDistributionRepository;
         this.gson = gson;
-        this.controllerHandler = new UniversalConfigHandler<>(objectTransformer, universalDistributionConfigActions);
+        this.controllerHandler = new ChannelConfigHandler<>(objectTransformer, channelGlobalConfigActions);
     }
 
     @Override
-    public List<CommonDistributionConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
+    public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }
@@ -64,31 +61,31 @@ public class UniversalDistributionConfigController extends UniversalConfigContro
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.postConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor);
+        return controllerHandler.postConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor, commonDistributionRepository, CommonDistributionConfigEntity.class);
+        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor, descriptor.getGlobalRepository(), descriptor.getGlobalEntityClass());
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.validateConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor);
+        return controllerHandler.validateConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.deleteConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor);
+        return controllerHandler.deleteConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
     }
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.testConfig(gson.fromJson(restModel, descriptor.getDistributionRestModelClass()), descriptor);
+        return controllerHandler.testConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
     }
 
 }
