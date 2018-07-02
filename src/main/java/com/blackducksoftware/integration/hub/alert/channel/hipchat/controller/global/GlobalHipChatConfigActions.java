@@ -28,7 +28,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.web.actions.SimpleConfigActions;
 
 @Component
 public class GlobalHipChatConfigActions implements SimpleConfigActions<GlobalHipChatConfigRestModel> {

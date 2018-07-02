@@ -26,8 +26,8 @@ package com.blackducksoftware.integration.hub.alert.descriptor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.web.actions.SimpleConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 public interface Descriptor {
 

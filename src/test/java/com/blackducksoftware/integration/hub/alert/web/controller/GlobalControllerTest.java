@@ -1,7 +1,5 @@
 package com.blackducksoftware.integration.hub.alert.web.controller;
 
-import static org.junit.Assert.assertEquals;
-
 import java.nio.charset.Charset;
 
 import javax.transaction.Transactional;
@@ -12,9 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -149,18 +145,19 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
-    public void testValidateConfig() {
-        final ConfigController<GR> controller = getController();
-
-        final ResponseEntity<String> response = controller.validateConfig(restModel);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
+    @WithMockUser(roles = "ADMIN")
+    public void testValidateConfig() throws Exception {
+        final String testRestUrl = restUrl + "/validate";
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
-
-    public abstract ConfigController<GR> getController();
 
 }

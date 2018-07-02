@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.channel.actions;
 
 import java.util.List;
 
@@ -35,10 +35,10 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class UniversalConfigActions<R extends ConfigRestModel, D extends Descriptor> {
+public abstract class ChannelConfigActions<R extends ConfigRestModel, D extends Descriptor> {
     private final ObjectTransformer objectTransformer;
 
-    public UniversalConfigActions(final ObjectTransformer objectTransformer) {
+    public ChannelConfigActions(final ObjectTransformer objectTransformer) {
         this.objectTransformer = objectTransformer;
     }
 

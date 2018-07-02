@@ -35,8 +35,8 @@ import com.blackducksoftware.integration.hub.alert.channel.slack.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.hub.alert.web.actions.SimpleConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.web.test.controller.SimpleConfigActions;
 
 @Component
 public class SlackDescriptor implements ChannelDescriptor {

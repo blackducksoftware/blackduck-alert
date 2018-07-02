@@ -13,8 +13,8 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const CONFIG_URL = '/alert/api/configuration/channel_hipchat/global';
-const TEST_URL = '/alert/api/configuration/channel_hipchat/global/test';
+const CONFIG_URL = '/alert/api/configuration/channel/global/channel_hipchat';
+const TEST_URL = '/alert/api/configuration/channel/global/channel_hipchat/test';
 
 function scrubConfig(config) {
     return {

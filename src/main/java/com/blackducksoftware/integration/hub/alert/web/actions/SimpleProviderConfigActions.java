@@ -21,13 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import java.util.Map;
-
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface SimpleConfigActions<R extends ConfigRestModel> {
+public interface SimpleProviderConfigActions<R extends ConfigRestModel> extends SimpleConfigActions<R> {
 
-    public void validateConfig(final R restModel, final Map<String, String> fieldErrors);
+    public String testConfig(final R restModel) throws IntegrationException;
+
+    public void configurationChangeTriggers(final R restModel);
 }

@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.web.test.controller;
+package com.blackducksoftware.integration.hub.alert.web.actions;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -30,6 +30,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 
 public interface SimpleDistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel> extends SimpleConfigActions<R> {
 
-    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final D distributionEntity) throws AlertException;
+    public R constructRestModel(final CommonDistributionConfigEntity commonEntity, final D distributionEntity) throws AlertException;
 
 }
