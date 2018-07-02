@@ -62,6 +62,5 @@ items:
       targetPort: 8443
     selector:
       app: alert
-    type: LoadBalancer
   status:
     loadBalancer: {}
