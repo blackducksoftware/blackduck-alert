@@ -23,11 +23,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.descriptor;
 
-public interface ProviderDescriptor extends Descriptor {
+public abstract class ProviderDescriptor extends Descriptor {
 
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.PROVIDER;
+    public ProviderDescriptor(final String name) {
+        super(name, DescriptorType.PROVIDER);
     }
 
 }

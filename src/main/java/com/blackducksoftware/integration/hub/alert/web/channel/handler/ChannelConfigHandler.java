@@ -28,12 +28,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
@@ -43,16 +42,16 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descriptor> extends ControllerHandler {
+public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ChannelConfigActions configActions;
+    private final ChannelConfigActions<R> configActions;
 
-    public ChannelConfigHandler(final ObjectTransformer objectTransformer, final ChannelConfigActions configActions) {
+    public ChannelConfigHandler(final ObjectTransformer objectTransformer, final ChannelConfigActions<R> configActions) {
         super(objectTransformer);
         this.configActions = configActions;
     }
 
-    public List<R> getConfig(final Long id, final D descriptor) {
+    public List<ConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) {
         try {
             return configActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
@@ -61,9 +60,9 @@ public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descripto
         return Collections.emptyList();
     }
 
-    public ResponseEntity<String> postConfig(final R restModel, final D descriptor) {
+    public ResponseEntity<String> postConfig(final R restModel, final ChannelDescriptor descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         if (!configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
@@ -84,9 +83,9 @@ public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descripto
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final R restModel, final D descriptor, final JpaRepository<DatabaseEntity, Long> repository, final Class entityClass) {
+    public ResponseEntity<String> putConfig(final R restModel, final ChannelDescriptor descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
@@ -107,9 +106,9 @@ public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descripto
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> deleteConfig(final R restModel, final D descriptor) {
+    public ResponseEntity<String> deleteConfig(final R restModel, final ChannelDescriptor descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
             configActions.deleteConfig(restModel.getId(), descriptor);
@@ -118,9 +117,9 @@ public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descripto
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> validateConfig(final R restModel, final D descriptor) {
+    public ResponseEntity<String> validateConfig(final R restModel, final ChannelDescriptor descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         try {
             final String responseMessage = configActions.validateConfig(restModel, descriptor);
@@ -133,9 +132,9 @@ public class ChannelConfigHandler<R extends ConfigRestModel, D extends Descripto
         }
     }
 
-    public ResponseEntity<String> testConfig(final R restModel, final D descriptor) {
+    public ResponseEntity<String> testConfig(final R restModel, final ChannelDescriptor descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + restModel.getClass().getSimpleName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         try {
             final String responseMessage = configActions.testConfig(restModel, descriptor);

@@ -23,96 +23,164 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.jms.MessageListener;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionConfigActions;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.distribution.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigActions;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.controller.global.GlobalHipChatConfigRestModel;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.distribution.HipChatDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Component
-public class HipChatDescriptor implements ChannelDescriptor {
+public class HipChatDescriptor extends ChannelDescriptor {
     private final HipChatChannel hipChatChannel;
     private final GlobalHipChatRepository globalHipChatRepository;
     private final HipChatDistributionRepository hipChatDistributionRepository;
-    private final HipChatDistributionConfigActions hipChatDistributionConfigActions;
-    private final GlobalHipChatConfigActions globalHipChatConfigActions;
 
     @Autowired
-    public HipChatDescriptor(final GlobalHipChatRepository globalHipChatRepository, final HipChatChannel hipChatChannel, final HipChatDistributionRepository hipChatDistributionRepository,
-            final HipChatDistributionConfigActions hipChatDistributionConfigActions, final GlobalHipChatConfigActions globalHipChatConfigActions) {
+    public HipChatDescriptor(final GlobalHipChatRepository globalHipChatRepository, final HipChatChannel hipChatChannel, final HipChatDistributionRepository hipChatDistributionRepository) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, true);
         this.globalHipChatRepository = globalHipChatRepository;
         this.hipChatChannel = hipChatChannel;
         this.hipChatDistributionRepository = hipChatDistributionRepository;
-        this.hipChatDistributionConfigActions = hipChatDistributionConfigActions;
-        this.globalHipChatConfigActions = globalHipChatConfigActions;
     }
 
     @Override
-    public String getName() {
-        return HipChatChannel.COMPONENT_NAME;
+    public List<? extends DatabaseEntity> readDistributionEntities() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public String getDestinationName() {
-        return HipChatChannel.COMPONENT_NAME;
+    public Optional<? extends DatabaseEntity> readDistributionEntity(final long id) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public boolean hasGlobalConfiguration() {
-        return true;
+    public Optional<? extends DatabaseEntity> saveDistributionEntity(final DatabaseEntity entity) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<HipChatDistributionConfigEntity> getDistributionEntityClass() {
-        return HipChatDistributionConfigEntity.class;
+    public void deleteDistributionEntity(final long id) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
-        return GlobalHipChatConfigEntity.class;
+    public CommonDistributionConfigRestModel convertFromStringToDistributionRestModel(final String json) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<GlobalHipChatConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHipChatConfigRestModel.class;
+    public DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(final CommonDistributionConfigRestModel restModel) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public GlobalHipChatRepository getGlobalRepository() {
-        return globalHipChatRepository;
+    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public DistributionChannel getChannelComponent() {
-        return hipChatChannel;
+    public Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<HipChatDistributionRestModel> getDistributionRestModelClass() {
-        return HipChatDistributionRestModel.class;
+    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public HipChatDistributionRepository getDistributionRepository() {
-        return hipChatDistributionRepository;
+    public MessageListener getChannelListener() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public HipChatDistributionConfigActions getDistributionConfigActions() {
-        return hipChatDistributionConfigActions;
+    public Class<? extends DatabaseEntity> getGlobalEntityClass() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public GlobalHipChatConfigActions getGlobalConfigActions() {
-        return globalHipChatConfigActions;
+    public Class<? extends ConfigRestModel> getGlobalRestModelClass() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<? extends DatabaseEntity> readGlobalEntities() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void deleteGlobalEntity(final long id) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public ConfigRestModel convertFromStringToGlobalRestModel(final String json) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+        // TODO Auto-generated method stub
+
     }
 
 }

@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -45,7 +46,6 @@ import com.blackducksoftware.integration.hub.alert.channel.PropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
@@ -54,7 +54,6 @@ public class AlertStartupInitializer {
     public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
 
     private final ConversionService conversionService;
-    private final ObjectTransformer objectTransformer;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
     private final List<Descriptor> configDescriptors;
@@ -62,9 +61,8 @@ public class AlertStartupInitializer {
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
+    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
             final ConversionService conversionService) {
-        this.objectTransformer = objectTransformer;
         this.propertyInitializer = propertyInitializer;
         this.configDescriptors = configDescriptors;
         this.environment = environment;
@@ -82,7 +80,7 @@ public class AlertStartupInitializer {
                     final ConfigRestModel restModel = descriptor.getGlobalRestModelClass().newInstance();
                     final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
                     if (propertySet) {
-                        final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                        final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
                         propertyInitializer.save(entity, descriptor);
                     }
                 } catch (IllegalArgumentException | SecurityException | AlertException | InstantiationException | IllegalAccessException ex) {
@@ -131,6 +129,10 @@ public class AlertStartupInitializer {
     }
 
     private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Class<?> alertConfigClass) {
+        if (alertConfigClass == null) {
+            return Collections.emptySet();
+        }
+
         final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_";
         final Field[] alertConfigColumns = alertConfigClass.getDeclaredFields();
         final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();

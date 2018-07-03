@@ -23,91 +23,168 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.jms.MessageListener;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionConfigActions;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.slack.controller.distribution.SlackDistributionRestModel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.hub.alert.web.actions.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
+import com.google.gson.Gson;
 
 @Component
-public class SlackDescriptor implements ChannelDescriptor {
+public class SlackDescriptor extends ChannelDescriptor {
     private final SlackChannel slackChannel;
-    private final SlackDistributionConfigActions slackDistributionConfigActions;
     private final SlackDistributionRepository slackDistributionRepository;
+    private final Gson gson;
+    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public SlackDescriptor(final SlackChannel slackChannel, final SlackDistributionConfigActions slackDistributionConfigActions, final SlackDistributionRepository slackDistributionRepository) {
+    public SlackDescriptor(final SlackChannel slackChannel, final SlackDistributionRepository slackDistributionRepository, final Gson gson, final ObjectTransformer objectTransformer) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, false);
         this.slackChannel = slackChannel;
-        this.slackDistributionConfigActions = slackDistributionConfigActions;
         this.slackDistributionRepository = slackDistributionRepository;
+        this.gson = gson;
+        this.objectTransformer = objectTransformer;
     }
 
     @Override
-    public String getName() {
-        return SlackChannel.COMPONENT_NAME;
+    public List<? extends DatabaseEntity> readDistributionEntities() {
+        return slackDistributionRepository.findAll();
     }
 
     @Override
-    public String getDestinationName() {
-        return SlackChannel.COMPONENT_NAME;
+    public Optional<? extends DatabaseEntity> readDistributionEntity(final long id) {
+        return slackDistributionRepository.findById(id);
     }
 
     @Override
-    public boolean hasGlobalConfiguration() {
-        return false;
+    public Optional<? extends DatabaseEntity> saveDistributionEntity(final DatabaseEntity entity) {
+        if (entity instanceof SlackDistributionConfigEntity) {
+            final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
+            return Optional.of(slackDistributionRepository.save(slackEntity));
+        }
+        return Optional.empty();
     }
 
     @Override
-    public Class<SlackDistributionConfigEntity> getDistributionEntityClass() {
-        return SlackDistributionConfigEntity.class;
+    public void deleteDistributionEntity(final long id) {
+        slackDistributionRepository.deleteById(id);
     }
 
     @Override
-    public Class<GlobalSlackConfigEntity> getGlobalEntityClass() {
-        return GlobalSlackConfigEntity.class;
+    public CommonDistributionConfigRestModel convertFromStringToDistributionRestModel(final String json) {
+        return gson.fromJson(json, SlackDistributionRestModel.class);
     }
 
     @Override
-    public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass() {
-        return null;
+    public DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(final CommonDistributionConfigRestModel restModel) throws AlertException {
+        return objectTransformer.configRestModelToDatabaseEntity(restModel, SlackDistributionConfigEntity.class);
     }
 
     @Override
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository() {
-        return null;
+    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        if (restModel instanceof SlackDistributionRestModel) {
+            final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
+
+            if (StringUtils.isBlank(slackRestModel.getWebhook())) {
+                fieldErrors.put("webhook", "A webhook is required.");
+            }
+            if (StringUtils.isBlank(slackRestModel.getChannelName())) {
+                fieldErrors.put("channelName", "A channel name is required.");
+            }
+        }
     }
 
     @Override
-    public DistributionChannel getChannelComponent() {
+    public Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException {
+        if (distributionEntity instanceof SlackDistributionConfigEntity) {
+            final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) distributionEntity;
+            final SlackDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, SlackDistributionRestModel.class);
+            restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
+            restModel.setChannelName(slackEntity.getChannelName());
+            restModel.setChannelUsername(slackEntity.getChannelUsername());
+            restModel.setWebhook(slackEntity.getWebhook());
+            return Optional.ofNullable(restModel);
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public MessageListener getChannelListener() {
         return slackChannel;
     }
 
     @Override
-    public SlackDistributionRepository getDistributionRepository() {
-        return slackDistributionRepository;
+    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+        final SlackDistributionConfigEntity config = (SlackDistributionConfigEntity) convertFromDistributionRestModelToDistributionConfigEntity(restModel);
+        slackChannel.sendAuditedMessage(event, config);
     }
 
     @Override
-    public SlackDistributionConfigActions getDistributionConfigActions() {
-        return slackDistributionConfigActions;
+    public List<? extends DatabaseEntity> readGlobalEntities() {
+        return null;
     }
 
     @Override
-    public Class<SlackDistributionRestModel> getDistributionRestModelClass() {
-        return SlackDistributionRestModel.class;
+    public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
+        return null;
     }
 
     @Override
-    public <A extends SimpleConfigActions> A getGlobalConfigActions() {
+    public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
+        return null;
+    }
+
+    @Override
+    public void deleteGlobalEntity(final long id) {
+    }
+
+    @Override
+    public CommonDistributionConfigRestModel convertFromStringToGlobalRestModel(final String json) {
+        return null;
+    }
+
+    @Override
+    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
+    }
+
+    @Override
+    public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) {
+        return null;
+    }
+
+    @Override
+    public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
+        return null;
+    }
+
+    @Override
+    public void testGlobalConfig(final DatabaseEntity entity) {
+    }
+
+    @Override
+    public Class<? extends DatabaseEntity> getGlobalEntityClass() {
+        return null;
+    }
+
+    @Override
+    public Class<? extends ConfigRestModel> getGlobalRestModelClass() {
         return null;
     }
 

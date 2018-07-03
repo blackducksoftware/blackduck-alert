@@ -63,7 +63,7 @@ public class JMSListenerConfig implements JmsListenerConfigurer {
             final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
             endpoint.setId(listenerId);
             endpoint.setDestination(descriptor.getDestinationName());
-            endpoint.setMessageListener(descriptor.getChannelComponent());
+            endpoint.setMessageListener(descriptor.getChannelListener());
             registrar.registerEndpoint(endpoint);
         });
 

@@ -37,18 +37,15 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.channel.actions.ChannelGlobalConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.channel.handler.ChannelConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
-import com.google.gson.Gson;
 
 @RestController
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/global/{descriptorName}")
-public class ChannelGlobalConfigController extends ChannelConfigController<ChannelDescriptor> {
-    private final ChannelConfigHandler controllerHandler;
-    private final Gson gson;
+public class ChannelGlobalConfigController extends ChannelConfigController {
+    private final ChannelConfigHandler<ConfigRestModel> controllerHandler;
 
     @Autowired
-    public ChannelGlobalConfigController(final Gson gson, final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
+    public ChannelGlobalConfigController(final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
         super(descriptors);
-        this.gson = gson;
         this.controllerHandler = new ChannelConfigHandler<>(objectTransformer, channelGlobalConfigActions);
     }
 
@@ -59,33 +56,33 @@ public class ChannelGlobalConfigController extends ChannelConfigController<Chann
     }
 
     @Override
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.postConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
+        return controllerHandler.postConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.putConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor, descriptor.getGlobalRepository(), descriptor.getGlobalEntityClass());
+        return controllerHandler.putConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.validateConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
+        return controllerHandler.validateConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.deleteConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
+        return controllerHandler.deleteConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = getDescriptor(descriptorName);
-        return controllerHandler.testConfig(gson.fromJson(restModel, descriptor.getGlobalRestModelClass()), descriptor);
+        return controllerHandler.testConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
 }

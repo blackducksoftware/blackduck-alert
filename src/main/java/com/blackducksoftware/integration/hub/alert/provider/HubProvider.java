@@ -23,51 +23,96 @@
  */
 package com.blackducksoftware.integration.hub.alert.provider;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.descriptor.ProviderDescriptor;
-import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigActions;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
-public class HubProvider implements ProviderDescriptor {
+public class HubProvider extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
 
     private final GlobalHubRepository repository;
-    private final GlobalHubConfigActions globalHubConfigActions;
 
     @Autowired
-    public HubProvider(final GlobalHubRepository repository, final GlobalHubConfigActions globalHubConfigActions) {
+    public HubProvider(final GlobalHubRepository repository) {
+        super(PROVIDER_NAME);
         this.repository = repository;
-        this.globalHubConfigActions = globalHubConfigActions;
     }
 
     @Override
-    public String getName() {
-        return PROVIDER_NAME;
+    public List<? extends DatabaseEntity> readGlobalEntities() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
-        return GlobalHubConfigEntity.class;
+    public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
+    public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void deleteGlobalEntity(final long id) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public ConfigRestModel convertFromStringToGlobalRestModel(final String json) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Class<? extends DatabaseEntity> getGlobalEntityClass() {
+        return GlobalHipChatConfigEntity.class;
+    }
+
+    @Override
+    public Class<? extends ConfigRestModel> getGlobalRestModelClass() {
         return GlobalHubConfigRestModel.class;
-    }
-
-    @Override
-    public GlobalHubRepository getGlobalRepository() {
-        return repository;
-    }
-
-    @Override
-    public GlobalHubConfigActions getGlobalConfigActions() {
-        return globalHubConfigActions;
     }
 
 }
