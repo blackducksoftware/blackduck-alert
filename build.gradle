@@ -32,8 +32,6 @@ import groovy.json.JsonOutput
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 
-applicationDefaultJvmArgs = ['-DAPP_HOME=APP_HOME_VAR_TOKEN']
-
 dependencies {
     compile 'com.blackducksoftware.integration:hub-common:33.0.2'
     compile 'org.springframework.boot:spring-boot-starter'
@@ -165,10 +163,33 @@ task runServer(type: Exec, dependsOn: [build]) {
 }
 
 task copyDeploymentFiles(type: Copy) {
-    from 'deployment'
+    from('deployment') {
+        include "docker-compose/**", "docker-swarm/**", "kubernetes/**"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-compose"
+    }
+    from('deployment/blackduck-alert.env') {
+        into "docker-swarm"
+    }
+    from('deployment/cm-alert.yml') {
+        into "kubernetes/standalone"
+        rename('cm-alert.yml', '1-cm-alert.yml')
+    }
+    from('deployment/cm-alert.yml') {
+        into "kubernetes/hub"
+        rename('cm-alert.yml', '2-cm-alert.yml')
+    }
     into "${project.buildDir}/deployment"
+
     doLast {
         ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        // comment out PUBLIC_HUB_WEBSERVER_HOST and PUBLIC_HUB_WEBSERVER_PORT since they are part of the Hub's environment configuration
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/2-cm-alert.yml", token: "PUBLIC_HUB_WEBSERVER_HOST", value: "#PUBLIC_HUB_WEBSERVER_HOST")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/2-cm-alert.yml", token: "PUBLIC_HUB_WEBSERVER_PORT", value: "#PUBLIC_HUB_WEBSERVER_PORT")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
 
