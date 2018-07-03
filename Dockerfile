@@ -8,11 +8,11 @@ LABEL com.blackducksoftware.integration.alert.vendor="Black Duck Software, Inc."
       
 ENV APPLICATION_NAME blackduck-alert
 ENV BLACKDUCK_HOME /opt/blackduck
-ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/security/bin
+ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/alert/bin
 
 ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
-ENV SECURITY_DIR $BLACKDUCK_HOME/security
+ENV SECURITY_DIR $ALERT_CONFIG_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar/blackduck-alert-boot-$VERSION
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DB_DIR $ALERT_CONFIG_HOME/data/alertdb
@@ -40,11 +40,6 @@ RUN mkdir -p $ALERT_CONFIG_HOME
 RUN mkdir -p $SECURITY_DIR
 RUN mkdir -p $ALERT_DB_DIR
 
-# The app itself will read in from the -volume directory at runtime.  We write these to an
-# easily accessible location that the entrypoint can always find and copy data from.
-#RUN cp -r /opt/blackduck/alert/alert-tar/alert-config-defaults/* $ALERT_CONFIG_HOME
-
-
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
@@ -54,6 +49,8 @@ RUN chmod 774 $ALERT_DB_DIR
 
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x $CERTIFICATE_MANAGER_DIR/certificate-manager.sh
+
+VOLUME [ "$SECURITY_DIR" ]
 
 EXPOSE 8080
 
