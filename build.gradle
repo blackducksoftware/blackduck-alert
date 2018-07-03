@@ -186,6 +186,9 @@ task copyDeploymentFiles(type: Copy) {
         ant.replace(file: "${project.buildDir}/deployment/docker-compose/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/docker-swarm/docker-compose.yml", token: "VERSION_TOKEN", value: "${project.version}")
         ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
+        // comment out PUBLIC_HUB_WEBSERVER_HOST and PUBLIC_HUB_WEBSERVER_PORT since they are part of the Hub's environment configuration
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/2-cm-alert.yml", token: "PUBLIC_HUB_WEBSERVER_HOST", value: "#PUBLIC_HUB_WEBSERVER_HOST")
+        ant.replace(file: "${project.buildDir}/deployment/kubernetes/hub/2-cm-alert.yml", token: "PUBLIC_HUB_WEBSERVER_PORT", value: "#PUBLIC_HUB_WEBSERVER_PORT")
         ant.replace(file: "${project.buildDir}/deployment/kubernetes/standalone/3-alert.yml", token: "VERSION_TOKEN", value: "${project.version}")
     }
 }
