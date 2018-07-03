@@ -38,9 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.hub.alert.digest.model.ProjectData;
@@ -49,6 +47,7 @@ import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConver
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -74,39 +73,29 @@ public class DistributionChannelManager {
         return objectTransformer;
     }
 
-    public String testGlobalConfig(final String destinationName, final GlobalChannelConfigEntity globalConfigEntity) throws IntegrationException {
-        if (channelDescriptorMap.containsKey(destinationName)) {
-            final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptorMap.get(destinationName).getChannelComponent();
-            return channel.testGlobalConfig(globalConfigEntity);
-        } else {
-            return "Could not find a channel to send the test configuration";
-        }
+    public String testGlobalConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
+        final DatabaseEntity globalConfigEntity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+        descriptor.testGlobalConfig(globalConfigEntity);
+        return "Successfully sent test message";
     }
 
-    public String sendTestMessage(final String destinationName, final CommonDistributionConfigRestModel restModel) throws AlertException {
-        if (channelDescriptorMap.containsKey(destinationName)) {
-            try {
-                final ChannelDescriptor channelDescriptor = channelDescriptorMap.get(destinationName);
-                final DistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> channel = channelDescriptor.getChannelComponent();
-                if (channelDescriptor.hasGlobalConfiguration()) {
-                    if (channel.getGlobalConfigEntity() == null) {
-                        logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
-                        return "ERROR: Missing global configuration!";
-                    }
-                }
-                final DistributionChannelConfigEntity entity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, channelDescriptor.getDistributionEntityClass());
-                final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
-                channel.sendAuditedMessage(event, entity);
-                logger.info("Successfully sent test message for destination {} ", destinationName);
-                return "Successfully sent test message";
-            } catch (final IntegrationException ex) {
-                logger.error("Error sending test message for destination {} ", destinationName, ex);
-                return ex.getMessage();
+    public String sendTestMessage(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+        final String destinationName = descriptor.getDestinationName();
+        if (descriptor.hasGlobalConfiguration()) {
+            if (descriptor.readGlobalEntities().isEmpty()) {
+                logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
+                return "ERROR: Missing global configuration!";
             }
-        } else {
-            logger.error("Could not find a channel to send test message for destination {}", destinationName);
-            return "Could not find a channel to send the test message";
         }
+        final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
+        try {
+            descriptor.testDistributionConfig(restModel, event);
+        } catch (final IntegrationException ex) {
+            logger.error("Error sending test message for destination {} ", destinationName, ex);
+            return ex.getMessage();
+        }
+        logger.info("Successfully sent test message for destination {} ", destinationName);
+        return "Successfully sent test message";
     }
 
     public DigestModel getTestMessageModel() {

@@ -32,23 +32,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH)
-public abstract class ChannelConfigController<D extends Descriptor> extends BaseController {
+public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
 
-    private final List<D> descriptors;
+    private final List<ChannelDescriptor> descriptors;
 
-    public ChannelConfigController(final List<D> descriptors) {
+    public ChannelConfigController(final List<ChannelDescriptor> descriptors) {
         this.descriptors = descriptors;
     }
 
     @GetMapping
-    public abstract <R extends ConfigRestModel> List<R> getConfig(final Long id, final String descriptorName);
+    public abstract List<ConfigRestModel> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
     public abstract ResponseEntity<String> postConfig(String restModel, final String descriptorName);
@@ -65,8 +65,8 @@ public abstract class ChannelConfigController<D extends Descriptor> extends Base
     @PostMapping(value = "/test")
     public abstract ResponseEntity<String> testConfig(String restModel, final String descriptorName);
 
-    public D getDescriptor(final String descriptorName) {
-        for (final D descriptor : descriptors) {
+    public ChannelDescriptor getDescriptor(final String descriptorName) {
+        for (final ChannelDescriptor descriptor : descriptors) {
             if (descriptorName.equals(descriptor.getName())) {
                 return descriptor;
             }

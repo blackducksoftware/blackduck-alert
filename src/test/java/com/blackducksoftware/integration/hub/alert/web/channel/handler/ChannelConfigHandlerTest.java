@@ -75,14 +75,15 @@ public class ChannelConfigHandlerTest {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
-    // @Test
-    // public void postNullConfigTest() {
-    // final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
-    //
-    // final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-    // final ResponseEntity<String> response = handler.postConfig(null, descriptor);
-    // assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    // }
+    @Test
+    public void postNullConfigTest() {
+        final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
+
+        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final ResponseEntity<String> response = handler.postConfig(null, descriptor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
     @Test
     public void postConfigWithConflictTest() {
@@ -142,14 +143,15 @@ public class ChannelConfigHandlerTest {
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
-    // @Test
-    // public void putNullConfigTest() {
-    // final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
-    //
-    // final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-    // final ResponseEntity<String> response = handler.putConfig(null, descriptor, null, CommonDistributionConfigEntity.class);
-    // assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    // }
+    @Test
+    public void putNullConfigTest() {
+        final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
+
+        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final ResponseEntity<String> response = handler.putConfig(null, descriptor, null, CommonDistributionConfigEntity.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
     @Test
     public void putConfigWithInvalidIdTest() {
@@ -213,13 +215,15 @@ public class ChannelConfigHandlerTest {
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
-    // @Test
-    // public void deleteNullConfigTest() {
-    // final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
-    //
-    // final ResponseEntity<String> response = handler.deleteConfig(null, null);
-    // assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    // }
+    @Test
+    public void deleteNullConfigTest() {
+        final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
+
+        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final ResponseEntity<String> response = handler.deleteConfig(null, descriptor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
     @Test
     public void deleteConfigWithInvalidIdTest() {
@@ -247,13 +251,15 @@ public class ChannelConfigHandlerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    // @Test
-    // public void validateConfigNullTest() {
-    // final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
-    //
-    // final ResponseEntity<String> response = handler.validateConfig(null, null);
-    // assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    // }
+    @Test
+    public void validateConfigNullTest() {
+        final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
+
+        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final ResponseEntity<String> response = handler.validateConfig(null, descriptor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
     @Test
     public void validateConfigWithInvalidConfigTest() throws AlertFieldException {
@@ -282,13 +288,15 @@ public class ChannelConfigHandlerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    // @Test
-    // public void testNullConfigTest() {
-    // final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
-    //
-    // final ResponseEntity<String> response = handler.testConfig(null, null);
-    // assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    // }
+    @Test
+    public void testNullConfigTest() {
+        final ChannelConfigHandler<CommonDistributionConfigRestModel, ChannelDescriptor> handler = new ChannelConfigHandler<>(objectTransformer, null);
+
+        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final ResponseEntity<String> response = handler.testConfig(null, descriptor);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
 
     @Test
     public void testConfigWithRestExceptionTest() throws Exception {

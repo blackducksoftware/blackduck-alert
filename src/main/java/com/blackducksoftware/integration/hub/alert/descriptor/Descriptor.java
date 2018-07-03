@@ -23,23 +23,51 @@
  */
 package com.blackducksoftware.integration.hub.alert.descriptor;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.SimpleConfigActions;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public interface Descriptor {
+public abstract class Descriptor {
+    private final String name;
+    private final DescriptorType type;
 
-    public String getName();
+    public Descriptor(final String name, final DescriptorType type) {
+        this.name = name;
+        this.type = type;
+    }
 
-    public DescriptorType getType();
+    public String getName() {
+        return name;
+    }
 
-    public <E extends DatabaseEntity> Class<E> getGlobalEntityClass();
+    public DescriptorType getType() {
+        return type;
+    }
 
-    public <R extends ConfigRestModel> Class<R> getGlobalRestModelClass();
+    public abstract Class<? extends DatabaseEntity> getGlobalEntityClass();
 
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getGlobalRepository();
+    public abstract Class<? extends ConfigRestModel> getGlobalRestModelClass();
 
-    public <A extends SimpleConfigActions> A getGlobalConfigActions();
+    public abstract List<? extends DatabaseEntity> readGlobalEntities();
+
+    public abstract Optional<? extends DatabaseEntity> readGlobalEntity(long id);
+
+    public abstract Optional<? extends DatabaseEntity> saveGlobalEntity(DatabaseEntity entity);
+
+    public abstract void deleteGlobalEntity(long id);
+
+    public abstract ConfigRestModel convertFromStringToGlobalRestModel(String json);
+
+    public abstract DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(ConfigRestModel restModel) throws AlertException;
+
+    public abstract ConfigRestModel convertFromGlobalEntityToGlobalRestModel(DatabaseEntity entity) throws AlertException;
+
+    public abstract void validateGlobalConfig(ConfigRestModel restModel, Map<String, String> fieldErrors);
+
+    public abstract void testGlobalConfig(DatabaseEntity entity) throws IntegrationException;
 }

@@ -29,32 +29,32 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
-public abstract class ChannelConfigActions<R extends ConfigRestModel, D extends Descriptor> {
+public abstract class ChannelConfigActions<R extends ConfigRestModel> {
     private final ObjectTransformer objectTransformer;
 
     public ChannelConfigActions(final ObjectTransformer objectTransformer) {
         this.objectTransformer = objectTransformer;
     }
 
-    public abstract boolean doesConfigExist(final String id, D descriptor);
+    public abstract boolean doesConfigExist(final String id, ChannelDescriptor descriptor);
 
-    public abstract List<R> getConfig(final Long id, D descriptor) throws AlertException;
+    public abstract List<ConfigRestModel> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
 
-    public abstract void deleteConfig(final String id, D descriptor);
+    public abstract void deleteConfig(final String id, ChannelDescriptor descriptor);
 
-    public abstract DatabaseEntity saveConfig(final R restModel, D descriptor) throws AlertException;
+    public abstract DatabaseEntity saveConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
 
-    public abstract String validateConfig(final R restModel, D descriptor) throws AlertFieldException;
+    public abstract String validateConfig(final R restModel, ChannelDescriptor descriptor) throws AlertFieldException;
 
-    public abstract String testConfig(final R restModel, final D descriptor) throws IntegrationException;
+    public abstract String testConfig(final R restModel, final ChannelDescriptor descriptor) throws IntegrationException;
 
-    public abstract DatabaseEntity saveNewConfigUpdateFromSavedConfig(final R restModel, D descriptor) throws AlertException;
+    public abstract DatabaseEntity saveNewConfigUpdateFromSavedConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
 
     public Boolean isBoolean(final String value) {
         if (StringUtils.isBlank(value)) {

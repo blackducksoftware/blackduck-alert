@@ -23,31 +23,54 @@
  */
 package com.blackducksoftware.integration.hub.alert.descriptor;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import javax.jms.MessageListener;
+
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.web.actions.SimpleDistributionConfigActions;
+import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
-public interface ChannelDescriptor extends Descriptor {
+public abstract class ChannelDescriptor extends Descriptor {
+    private final String destinationName;
+    private final boolean hasGlobalConfiguration;
 
-    public String getDestinationName();
-
-    public DistributionChannel getChannelComponent();
-
-    public <E extends DatabaseEntity> Class<E> getDistributionEntityClass();
-
-    public <R extends CommonDistributionConfigRestModel> Class<R> getDistributionRestModelClass();
-
-    public boolean hasGlobalConfiguration();
-
-    public <R extends JpaRepository<DatabaseEntity, Long>> R getDistributionRepository();
-
-    public <A extends SimpleDistributionConfigActions> A getDistributionConfigActions();
-
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.CHANNEL;
+    public ChannelDescriptor(final String name, final String destinationName, final boolean hasGlobalConfiguration) {
+        super(name, DescriptorType.CHANNEL);
+        this.destinationName = destinationName;
+        this.hasGlobalConfiguration = hasGlobalConfiguration;
     }
+
+    public String getDestinationName() {
+        return destinationName;
+    }
+
+    public boolean hasGlobalConfiguration() {
+        return hasGlobalConfiguration;
+    }
+
+    public abstract List<? extends DatabaseEntity> readDistributionEntities();
+
+    public abstract Optional<? extends DatabaseEntity> readDistributionEntity(long id);
+
+    public abstract Optional<? extends DatabaseEntity> saveDistributionEntity(DatabaseEntity entity);
+
+    public abstract void deleteDistributionEntity(long id);
+
+    public abstract CommonDistributionConfigRestModel convertFromStringToDistributionRestModel(String json);
+
+    public abstract DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(CommonDistributionConfigRestModel restModel) throws AlertException;
+
+    public abstract void validateDistributionConfig(CommonDistributionConfigRestModel restModel, Map<String, String> fieldErrors);
+
+    public abstract Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException;
+
+    public abstract void testDistributionConfig(CommonDistributionConfigRestModel restModel, ChannelEvent event) throws IntegrationException;
+
+    public abstract MessageListener getChannelListener();
 }
