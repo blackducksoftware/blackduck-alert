@@ -1,4 +1,7 @@
 buildscript {
+    ext {
+        springBootVersion = '2.0.3.RELEASE'
+    }
     repositories {
         jcenter()
         maven { url 'https://plugins.gradle.org/m2/' }
@@ -6,10 +9,8 @@ buildscript {
 
     dependencies {
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.0.3.RELEASE'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.3.5'
-        classpath 'org.liquibase:liquibase-gradle-plugin:1.1.1'
-        classpath 'com.h2database:h2:1.4.196'
     }
 }
 
@@ -20,20 +21,25 @@ plugins {
 }
 
 version = '2.0.0-SNAPSHOT'
-def dbChangeLogVersion = '1.1.0'
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
-apply plugin: 'org.liquibase.gradle'
+
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import groovy.json.JsonOutput
 
 mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
 
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    }
+}
+
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:33.0.2'
+    compile 'com.blackducksoftware.integration:hub-common:35.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -53,9 +59,9 @@ dependencies {
 
     compile 'org.springframework.boot:spring-boot-starter-activemq'
     compile 'org.apache.activemq:activemq-broker'
-    compile 'org.apache.activemq:activemq-kahadb-store:5.15.3'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.5'
+    compile 'org.apache.activemq:activemq-kahadb-store'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'com.fasterxml.jackson.core:jackson-annotations'
     compile 'javax.interceptor:javax.interceptor-api:1.2.2'
 
     testCompile 'org.springframework.boot:spring-boot-starter-test'
@@ -77,32 +83,31 @@ distributions {
     }
 }
 
-liquibase {
-    activities {
-        main {
-            changeLogFile "$projectDir/src/main/resources/db/changelog/alert/changelog-${dbChangeLogVersion}.xml"
-            url 'jdbc:h2:file:./data/alertdb'
-            username 'sa'
-            defaultSchemaName 'alert'
-        }
-    }
+// run alert locally
+
+task runServer(type: Exec, dependsOn: [build]) {
+    File jarFile = new File("build/libs/blackduck-alert-${version}.jar")
+
+    def debugVariables = ['-Xdebug',
+                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
+
+    def jmxVariables = ['-Dcom.sun.management.jmxremote',
+                        '-Dcom.sun.management.jmxremote.port=9045',
+                        '-Dcom.sun.management.jmxremote.local.only=false',
+                        '-Dcom.sun.management.jmxremote.authenticate=false',
+                        '-Dcom.sun.management.jmxremote.ssl=false']
+    def applicationVariables = ['--spring.profiles.active=default']
+    def commandArray = []
+    commandArray.add('java')
+    commandArray.addAll(debugVariables)
+    commandArray.addAll(jmxVariables)
+    commandArray.add('-jar')
+    commandArray.add(jarFile.getAbsolutePath())
+    commandArray.addAll(applicationVariables)
+    commandLine commandArray
 }
 
-task createAboutText(type: Task) {
-    final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
-    aboutFile.delete()
-    def gitCommandOutput = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'remote', 'get-url', 'origin'
-        standardOutput = gitCommandOutput
-    }
-    def gitUrl = gitCommandOutput.toString().trim()
-    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl])
-    logger.info("About text file: {} content: {}", aboutFile, aboutJson)
-    aboutFile << aboutJson
-}
-
-tasks.compileJava.mustRunAfter(createAboutText)
+// Build tasks
 
 task cleanBundles(type: Delete) {
     File testDatabaseDirectory = new File('testDB')
@@ -132,35 +137,27 @@ task webpack(type: Exec) {
     commandLine "$projectDir/node_modules/.bin/webpack"
 }
 
+task createAboutText(type: Task) {
+    final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
+    aboutFile.delete()
+    def gitCommandOutput = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'remote', 'get-url', 'origin'
+        standardOutput = gitCommandOutput
+    }
+    def gitUrl = gitCommandOutput.toString().trim()
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl])
+    logger.info("About text file: {} content: {}", aboutFile, aboutJson)
+    aboutFile << aboutJson
+}
+
 task copyToTemplates(type: Copy, dependsOn: [npm_run]) {
     from 'build/resources/main/static/index.html'
     into 'build/resources/main/templates/'
 }
 
+tasks.compileJava.mustRunAfter(createAboutText)
 tasks.compileJava.finalizedBy(copyToTemplates)
-
-
-task runServer(type: Exec, dependsOn: [build]) {
-    File jarFile = new File("build/libs/blackduck-alert-${version}.jar")
-
-    def debugVariables = ['-Xdebug',
-                          '-Xrunjdwp:transport=dt_socket,server=y,address=9095,suspend=n']
-
-    def jmxVariables = ['-Dcom.sun.management.jmxremote',
-                        '-Dcom.sun.management.jmxremote.port=9045',
-                        '-Dcom.sun.management.jmxremote.local.only=false',
-                        '-Dcom.sun.management.jmxremote.authenticate=false',
-                        '-Dcom.sun.management.jmxremote.ssl=false']
-    def applicationVariables = ['--spring.profiles.active=default']
-    def commandArray = []
-    commandArray.add('java')
-    commandArray.addAll(debugVariables)
-    commandArray.addAll(jmxVariables)
-    commandArray.add('-jar')
-    commandArray.add(jarFile.getAbsolutePath())
-    commandArray.addAll(applicationVariables)
-    commandLine commandArray
-}
 
 task copyDeploymentFiles(type: Copy) {
     from('deployment') {
