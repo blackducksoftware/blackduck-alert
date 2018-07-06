@@ -11,12 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions.global;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -29,6 +24,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.hub.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -42,6 +38,7 @@ import com.google.gson.Gson;
 public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
     protected GCA configActions;
     protected AlertEventContentConverter contentConverter;
+    protected AlertEnvironment alertEnvironment;
 
     public GlobalActionsTest() {
         configActions = getMockedConfigActions();
@@ -56,6 +53,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
     @Before
     public void init() {
         contentConverter = new AlertEventContentConverter(new Gson());
+        alertEnvironment = new AlertEnvironment();
     }
 
     @Test

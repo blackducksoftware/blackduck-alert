@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.MessageReceiver;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
@@ -58,10 +59,12 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AlertEventContentConverter contentExtractor;
+    private final GlobalProperties globalProperties;
 
-    public DistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+    public DistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
+        this.globalProperties = globalProperties;
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
@@ -75,6 +78,10 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
 
     public CommonDistributionRepository getCommonDistributionRepository() {
         return commonDistributionRepository;
+    }
+
+    public GlobalProperties getGlobalProperties() {
+        return globalProperties;
     }
 
     public G getGlobalConfigEntity() {
