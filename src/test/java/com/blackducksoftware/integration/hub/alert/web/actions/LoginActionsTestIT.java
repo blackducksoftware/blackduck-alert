@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.actions;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -96,8 +94,8 @@ public class LoginActionsTestIT {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(new Slf4jIntLogger(logger));
-        serverConfigBuilder.setHubUrl(globalProperties.getHubUrl());
-        serverConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
+        serverConfigBuilder.setUrl(globalProperties.getHubUrl());
+        serverConfigBuilder.setTrustCert(globalProperties.getHubTrustCertificate());
         serverConfigBuilder.setTimeout(globalProperties.getHubTimeout());
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());

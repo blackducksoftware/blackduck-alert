@@ -8,9 +8,11 @@ import com.google.gson.Gson;
 
 public class GlobalPropertiesTest {
 
+    private final AlertEnvironment alertEnvironment = new AlertEnvironment();
+
     @Test
     public void testGetSetMethods() {
-        final GlobalProperties properties = new GlobalProperties(null, new Gson());
+        final GlobalProperties properties = new GlobalProperties(alertEnvironment, null, new Gson());
         final String hubUrl = "hubUrl";
         final Boolean hubTrustCertificate = Boolean.TRUE;
         final String proxyHost = "proxyHost";
@@ -62,7 +64,7 @@ public class GlobalPropertiesTest {
     @Test
     public void testAboutReadException() {
         try {
-            new GlobalProperties(null, null);
+            new GlobalProperties(alertEnvironment, null, null);
             fail();
         } catch (final RuntimeException ex) {
 
@@ -71,7 +73,7 @@ public class GlobalPropertiesTest {
 
     @Test
     public void testGetVersionReturnUnknown() {
-        final GlobalProperties globalProperties = new GlobalProperties(null, new Gson());
+        final GlobalProperties globalProperties = new GlobalProperties(alertEnvironment, null, new Gson());
         try {
             globalProperties.readAboutInformation(null);
         } catch (final RuntimeException ex) {

@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.hub.alert.scheduled.JobScheduledTask;
 import com.google.gson.Gson;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
-
     protected AlertEventContentConverter contentConverter;
     private OutputLogger outputLogger;
     private GlobalProperties globalProperties;

@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
+import com.blackducksoftware.integration.hub.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
@@ -74,7 +75,8 @@ public class StartupManager {
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig,
+            final DailyDigestBatchConfig dailyDigestBatchConfig,
             final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
@@ -150,11 +152,22 @@ public class StartupManager {
             if (globalProperties.getHubUrl() == null) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
             } else {
+                final URL hubUrl = new URL(globalProperties.getHubUrl());
+                if ("localhost".equals(hubUrl.getHost())) {
+                    logger.warn("  -> Hub Provider Using localhost...");
+                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.ENV_PUBLIC_HUB_WEBSERVER_HOST);
+                    if (StringUtils.isBlank(hubWebServerEnvValue)) {
+                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
+                    } else {
+                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
+                    }
+                }
                 verifier.verifyIsHubServer(new URL(globalProperties.getHubUrl()), proxyInfo, BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate()), globalProperties.getHubTimeout());
                 logger.info("  -> Hub Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {
-            logger.error("  -> Hub Provider Invalid; cause: ", ex);
+            logger.error("  -> Hub Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> Hub Provider Stack Trace: ", ex);
         }
     }
 
