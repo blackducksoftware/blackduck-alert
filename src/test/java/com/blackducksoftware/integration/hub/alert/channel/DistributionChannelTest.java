@@ -43,14 +43,16 @@ import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 public class DistributionChannelTest extends ChannelTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
+        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, null, contentConverter);
         channel.setAuditEntrySuccess(1L);
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null, contentConverter);
+        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null);
         entity.setId(1L);
@@ -63,14 +65,16 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
+        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, null, contentConverter);
         channel.setAuditEntryFailure(1L, null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
+        final GlobalProperties globalProperties = new TestGlobalProperties();
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, auditEntryRepository, null, null, null, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
@@ -82,8 +86,9 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void getGlobalConfigEntityTest() {
+        final GlobalProperties globalProperties = new TestGlobalProperties();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, null, null, globalEmailRepository, null, null, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, globalEmailRepository, null, null, contentConverter);
 
         final MockEmailGlobalEntity mockEntity = new MockEmailGlobalEntity();
         final GlobalEmailConfigEntity entity = mockEntity.createGlobalEntity();
@@ -142,8 +147,9 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void testGlobalConfigTest() throws IntegrationException {
+        final GlobalProperties globalProperties = new TestGlobalProperties();
         // Slack has no global config, so we use it to test the default method.
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, null, null, null, null, contentConverter);
 
         final String nullMessage = slackChannel.testGlobalConfig(null);
         assertEquals("The provided entity was null.", nullMessage);

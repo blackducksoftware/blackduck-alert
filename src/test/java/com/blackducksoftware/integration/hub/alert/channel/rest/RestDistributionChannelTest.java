@@ -35,7 +35,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, null, null, null, null,
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, globalProperties, null, null,
+                null, null,
                 channelRestConnectionFactory, contentConverter) {
 
             @Override

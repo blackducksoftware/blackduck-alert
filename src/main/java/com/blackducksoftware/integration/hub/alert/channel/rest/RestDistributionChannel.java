@@ -32,6 +32,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.hub.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.distribution.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -46,9 +47,10 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     final ChannelRestConnectionFactory channelRestConnectionFactory;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public RestDistributionChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+    public RestDistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
+            final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
-        super(gson, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
+        super(gson, globalProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
