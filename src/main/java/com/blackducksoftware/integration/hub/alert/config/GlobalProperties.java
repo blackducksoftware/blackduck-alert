@@ -305,7 +305,7 @@ public class GlobalProperties {
         if (globalConfig != null) {
             return getHubConfig().getHubTimeout();
         }
-        return null;
+        return 300;
     }
 
     public String getHubApiKey() {
