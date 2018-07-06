@@ -155,7 +155,7 @@ public class StartupManager {
                 final URL hubUrl = new URL(globalProperties.getHubUrl());
                 if ("localhost".equals(hubUrl.getHost())) {
                     logger.warn("  -> Hub Provider Using localhost...");
-                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.ENV_PUBLIC_HUB_WEBSERVER_HOST);
+                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
                     if (StringUtils.isBlank(hubWebServerEnvValue)) {
                         logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
                     } else {
