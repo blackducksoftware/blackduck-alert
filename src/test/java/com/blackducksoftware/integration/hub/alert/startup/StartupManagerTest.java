@@ -107,7 +107,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateHubProviderHubWebserverEnvironmentSet() throws IOException {
         final AlertEnvironment alertEnvironment = Mockito.mock(AlertEnvironment.class);
-        Mockito.when(alertEnvironment.getVariable(AlertEnvironment.ENV_PUBLIC_HUB_WEBSERVER_HOST)).thenReturn("localhost");
+        Mockito.when(alertEnvironment.getVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST)).thenReturn("localhost");
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(alertEnvironment, Mockito.mock(GlobalHubRepository.class));
         testGlobalProperties.setHubUrl("https://localhost:443");
         final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
