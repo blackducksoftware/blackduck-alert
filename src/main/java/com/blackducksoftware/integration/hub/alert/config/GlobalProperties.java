@@ -25,7 +25,6 @@ package com.blackducksoftware.integration.hub.alert.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,6 +50,7 @@ import com.google.gson.Gson;
 public class GlobalProperties {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepository globalHubRepository;
+    private final AlertEnvironment alertEnvironment;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -96,34 +96,39 @@ public class GlobalProperties {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
-    private Optional<AboutModel> aboutModel;
+    private AboutModel aboutModel;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepository globalRepository, final Gson gson) {
+    public GlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
+        this.alertEnvironment = alertEnvironment;
         readAboutInformation(gson);
     }
 
     protected void readAboutInformation(final Gson gson) {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
-            aboutModel = Optional.of(gson.fromJson(aboutJson, AboutModel.class));
+            aboutModel = gson.fromJson(aboutJson, AboutModel.class);
         } catch (final Exception e) {
-            aboutModel = Optional.empty();
+            aboutModel = null;
             throw new RuntimeException(e);
         }
     }
 
     public String getProductVersion() {
-        if (aboutModel.isPresent()) {
-            return aboutModel.get().getVersion();
+        if (aboutModel != null) {
+            return aboutModel.getVersion();
         } else {
             return PRODUCT_VERSION_UNKNOWN;
         }
     }
 
     public AboutModel getAboutModel() {
-        return aboutModel.orElse(null);
+        return aboutModel;
+    }
+
+    public String getEnvironmentVariable(final String variableName) {
+        return alertEnvironment.getVariable(variableName);
     }
 
     public String getHubUrl() {
@@ -135,7 +140,7 @@ public class GlobalProperties {
     }
 
     public Boolean getHubTrustCertificate() {
-        final String alwaysTrust = System.getenv("HUB_ALWAYS_TRUST_SERVER_CERTIFICATE");
+        final String alwaysTrust = alertEnvironment.getVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
         if (StringUtils.isNotBlank(alwaysTrust)) {
             return Boolean.parseBoolean(alwaysTrust);
         }
@@ -147,7 +152,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyHost() {
-        final String proxyHost = System.getenv("HUB_PROXY_HOST");
+        final String proxyHost = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_HOST);
         if (StringUtils.isEmpty(proxyHost)) {
             return hubProxyHost;
         } else {
@@ -160,7 +165,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyPort() {
-        final String proxyPort = System.getenv("HUB_PROXY_PORT");
+        final String proxyPort = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PORT);
         if (StringUtils.isEmpty(proxyPort)) {
             return hubProxyPort;
         } else {
@@ -173,7 +178,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyUsername() {
-        final String proxyUser = System.getenv("HUB_PROXY_USER");
+        final String proxyUser = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_USER);
         if (StringUtils.isEmpty(proxyUser)) {
             return hubProxyUsername;
         } else {
@@ -186,7 +191,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyPassword() {
-        final String proxyPassword = System.getenv("HUB_PROXY_PASSWORD");
+        final String proxyPassword = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
         if (StringUtils.isEmpty(proxyPassword)) {
             return hubProxyPassword;
         } else {
@@ -279,7 +284,7 @@ public class GlobalProperties {
 
     private HubServerConfigBuilder createHubServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int hubTimeout) {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(getHubUrl());
+        hubServerConfigBuilder.setUrl(getHubUrl());
         hubServerConfigBuilder.setTimeout(hubTimeout);
 
         hubServerConfigBuilder.setProxyHost(getHubProxyHost());
@@ -288,7 +293,7 @@ public class GlobalProperties {
         hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
 
         if (hubTrustCertificate != null) {
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(hubTrustCertificate);
+            hubServerConfigBuilder.setTrustCert(hubTrustCertificate);
         }
         hubServerConfigBuilder.setLogger(logger);
 
@@ -300,7 +305,7 @@ public class GlobalProperties {
         if (globalConfig != null) {
             return getHubConfig().getHubTimeout();
         }
-        return null;
+        return 300;
     }
 
     public String getHubApiKey() {
