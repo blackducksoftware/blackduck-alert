@@ -41,6 +41,7 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
+// TODO try and remove this class and replace it with the new universal controllers
 public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);
     public final Class<D> databaseEntityClass;

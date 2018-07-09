@@ -23,12 +23,10 @@ import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
-    private AlertEnvironment alertEnvironment;
 
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
-        alertEnvironment = new AlertEnvironment();
     }
 
     @After

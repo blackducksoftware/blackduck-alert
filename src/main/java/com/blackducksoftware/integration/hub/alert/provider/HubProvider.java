@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.alert.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
@@ -43,12 +42,9 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public class HubProvider extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
 
-    private final GlobalHubRepository repository;
-
     @Autowired
-    public HubProvider(final GlobalHubRepository repository) {
+    public HubProvider() {
         super(PROVIDER_NAME);
-        this.repository = repository;
     }
 
     @Override

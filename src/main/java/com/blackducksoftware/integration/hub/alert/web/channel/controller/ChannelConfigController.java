@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.channel.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,10 +43,14 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
 
-    private final List<ChannelDescriptor> descriptors;
+    private final Map<String, ChannelDescriptor> channelDescriptorMap;
 
     public ChannelConfigController(final List<ChannelDescriptor> descriptors) {
-        this.descriptors = descriptors;
+        channelDescriptorMap = new HashMap<>(descriptors.size());
+
+        descriptors.forEach(descriptor -> {
+            channelDescriptorMap.put(descriptor.getName(), descriptor);
+        });
     }
 
     @GetMapping
@@ -66,12 +72,6 @@ public abstract class ChannelConfigController extends BaseController {
     public abstract ResponseEntity<String> testConfig(String restModel, final String descriptorName);
 
     public ChannelDescriptor getDescriptor(final String descriptorName) {
-        for (final ChannelDescriptor descriptor : descriptors) {
-            if (descriptorName.equals(descriptor.getName())) {
-                return descriptor;
-            }
-        }
-
-        return null;
+        return channelDescriptorMap.get(descriptorName);
     }
 }

@@ -4,17 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -53,11 +49,11 @@ import com.google.gson.Gson;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     protected Gson gson;
     protected AlertEventContentConverter contentConverter;
     protected ObjectTransformer objectTransformer;
     protected DistributionChannelManager channelManager;
+
     @Autowired
     protected List<ChannelDescriptor> channelDescriptorList;
     protected TestProperties properties;
@@ -79,7 +75,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
 
     public abstract void cleanDistributionRepository();
 
-    public abstract String getDestination();
+    public abstract ChannelDescriptor getDescriptor();
 
     public abstract MockRestModelUtil<R> getMockRestModelUtil();
 
@@ -87,17 +83,17 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
     public void testCreateChannelEvent() {
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent channelEvent = channelManager.createChannelEvent(getDestination(), digestModel, 1L);
+        final ChannelEvent channelEvent = channelManager.createChannelEvent(getDescriptor().getDestinationName(), digestModel, 1L);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(getDestination(), channelEvent.getDestination());
+        assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
     }
 
     @Test
     public void testSendTestMessage() throws IntegrationException {
         saveGlobalConfiguration();
-        final String actual = channelManager.sendTestMessage(getDestination(), getMockRestModelUtil().createRestModel());
+        final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
         final String expected = "Successfully sent test message";
 
         assertEquals(expected, actual);
@@ -105,23 +101,11 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
 
     @Test
     public void testSendTestMessageMissingGlobalConfiguration() throws IntegrationException {
-        final Optional<ChannelDescriptor> channelDescriptor = channelDescriptorList.stream().filter(descriptor -> {
-            return descriptor.getDestinationName().equals(getDestination());
-        }).findFirst();
-        if (channelDescriptor.get().hasGlobalConfiguration()) {
-            final String actual = channelManager.sendTestMessage(getDestination(), getMockRestModelUtil().createRestModel());
+        if (getDescriptor().hasGlobalConfiguration()) {
+            final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
             final String expected = "ERROR: Missing global configuration!";
 
             assertEquals(expected, actual);
         }
-    }
-
-    @Test
-    public void testSendTestMessageEmptyChannelDescriptorList() throws IntegrationException {
-        final DistributionChannelManager distributionChannelManager = new DistributionChannelManager(objectTransformer, contentConverter, Collections.emptyList());
-        final String actual = distributionChannelManager.sendTestMessage(getDestination(), getMockRestModelUtil().createRestModel());
-        final String expected = "Could not find a channel to send the test message";
-
-        assertEquals(expected, actual);
     }
 }

@@ -40,11 +40,9 @@ import com.blackducksoftware.integration.rest.request.Response;
 
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);
-    private final RestConnection restConnection;
     private final HubServicesFactory hubServicesFactory;
 
     public ChannelRequestHelper(final RestConnection restConnection) {
-        this.restConnection = restConnection;
         hubServicesFactory = new HubServicesFactory(restConnection);
     }
 

@@ -100,7 +100,7 @@ public class EmailGroupDescriptor extends ChannelDescriptor {
 
     @Override
     public DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(final CommonDistributionConfigRestModel restModel) throws AlertException {
-        return objectTransformer.configRestModelToDatabaseEntity(null, EmailGroupDistributionConfigEntity.class);
+        return objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
     }
 
     @Override
