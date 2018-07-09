@@ -25,22 +25,22 @@ public class AccumulatorConfigTest extends CommonConfigTest<AccumulatorReader, A
 
     @Override
     public AccumulatorConfig getConfigWithNullParams() {
-        return new AccumulatorConfig(null, null, null, null, null, null, null, null, null, null, contentConverter);
+        return new AccumulatorConfig(null, null, null, null, null, null, getGlobalProperties(), null, null, null, contentConverter);
     }
 
     @Override
     public AccumulatorConfig getConfigWithSimpleJobLauncher(final SimpleJobLauncher simpleJobLauncher) {
-        return new AccumulatorConfig(simpleJobLauncher, null, null, null, null, null, null, null, null, null, contentConverter);
+        return new AccumulatorConfig(simpleJobLauncher, null, null, null, null, null, getGlobalProperties(), null, null, null, contentConverter);
     }
 
     @Override
     public AccumulatorConfig getConfigWithTaskScheduler(final TaskScheduler taskScheduler) {
-        return new AccumulatorConfig(null, null, null, null, null, null, null, taskScheduler, null, null, contentConverter);
+        return new AccumulatorConfig(null, null, null, null, null, null, getGlobalProperties(), taskScheduler, null, null, contentConverter);
     }
 
     @Override
     public AccumulatorConfig getConfigWithParams(final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final PlatformTransactionManager platformTransactionManager) {
-        return new AccumulatorConfig(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, null, null, null, null, contentConverter);
+        return new AccumulatorConfig(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, getGlobalProperties(), null, null, null, contentConverter);
     }
 
     @Override

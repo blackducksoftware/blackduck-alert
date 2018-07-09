@@ -52,9 +52,9 @@ public class SlackChannelTestIT extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final SlackChannel slackChannel = new SlackChannel(gson, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
@@ -72,7 +72,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void testCreateRequestExceptions() {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         Request request = null;
 
@@ -95,7 +95,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
         final DigestModel digestModel = new DigestModel(projectData);
@@ -122,7 +122,7 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));

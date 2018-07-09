@@ -40,6 +40,7 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
+import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -61,9 +62,10 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired
-    public SlackChannel(final Gson gson, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository, final CommonDistributionRepository commonDistributionRepository,
+    public SlackChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository,
+            final CommonDistributionRepository commonDistributionRepository,
             final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
-        super(gson, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+        super(gson, globalProperties, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
     }
 
     @Override

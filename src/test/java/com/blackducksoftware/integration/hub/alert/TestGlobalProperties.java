@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.hub.alert;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.hub.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
@@ -25,22 +26,21 @@ import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
 public class TestGlobalProperties extends GlobalProperties {
+    private final TestProperties testProperties;
     private Integer hubTimeout;
     private String hubApiKey;
     private String productVersionOverride;
 
-    private final TestProperties testProperties;
-
     public TestGlobalProperties() {
-        this(Mockito.mock(GlobalHubRepository.class));
+        this(new AlertEnvironment(), Mockito.mock(GlobalHubRepository.class));
     }
 
-    public TestGlobalProperties(final GlobalHubRepository globalHubRepository) {
-        this(globalHubRepository, 400);
+    public TestGlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalHubRepository) {
+        this(alertEnvironment, globalHubRepository, 400);
     }
 
-    public TestGlobalProperties(final GlobalHubRepository globalHubRepository, final Integer hubTimeout) {
-        super(globalHubRepository, new Gson());
+    public TestGlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalHubRepository, final Integer hubTimeout) {
+        super(alertEnvironment, globalHubRepository, new Gson());
         this.hubTimeout = hubTimeout;
 
         testProperties = new TestProperties();

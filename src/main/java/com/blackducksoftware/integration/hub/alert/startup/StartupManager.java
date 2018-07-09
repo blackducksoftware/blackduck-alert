@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.hub.alert.startup;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
+import com.blackducksoftware.integration.hub.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
@@ -49,6 +54,9 @@ import com.blackducksoftware.integration.hub.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.alert.scheduled.task.PhoneHomeTask;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.hub.service.model.HubServerVerifier;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 @Transactional
@@ -67,7 +75,8 @@ public class StartupManager {
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig,
+            final DailyDigestBatchConfig dailyDigestBatchConfig,
             final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
@@ -83,6 +92,7 @@ public class StartupManager {
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
+        validateProviders();
         initializeCronJobs();
     }
 
@@ -120,6 +130,45 @@ public class StartupManager {
             logger.info(property);
         }
         logger.info("----------------------------------------");
+    }
+
+    public void validateProviders() {
+        logger.info("Validating configured providers: ");
+        logger.info("----------------------------------------");
+        validateHubProvider();
+        logger.info("----------------------------------------");
+    }
+
+    public void validateHubProvider() {
+        logger.info("Validating Hub Provider...");
+        try {
+            final HubServerVerifier verifier = new HubServerVerifier();
+            final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+            proxyBuilder.setHost(globalProperties.getHubProxyHost());
+            proxyBuilder.setPort(globalProperties.getHubProxyPort());
+            proxyBuilder.setUsername(globalProperties.getHubProxyUsername());
+            proxyBuilder.setPassword(globalProperties.getHubProxyPassword());
+            final ProxyInfo proxyInfo = proxyBuilder.build();
+            if (globalProperties.getHubUrl() == null) {
+                logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
+            } else {
+                final URL hubUrl = new URL(globalProperties.getHubUrl());
+                if ("localhost".equals(hubUrl.getHost())) {
+                    logger.warn("  -> Hub Provider Using localhost...");
+                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
+                    if (StringUtils.isBlank(hubWebServerEnvValue)) {
+                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
+                    } else {
+                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
+                    }
+                }
+                verifier.verifyIsHubServer(new URL(globalProperties.getHubUrl()), proxyInfo, BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate()), globalProperties.getHubTimeout());
+                logger.info("  -> Hub Provider Valid!");
+            }
+        } catch (final MalformedURLException | IntegrationException ex) {
+            logger.error("  -> Hub Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> Hub Provider Stack Trace: ", ex);
+        }
     }
 
     public void initializeCronJobs() {
