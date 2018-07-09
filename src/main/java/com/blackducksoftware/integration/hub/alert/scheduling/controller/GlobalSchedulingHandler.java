@@ -30,11 +30,8 @@ import com.blackducksoftware.integration.hub.alert.web.controller.handler.Common
 
 public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
 
-    private final GlobalSchedulingConfigActions configActions;
-
     public GlobalSchedulingHandler(final Class<GlobalSchedulingConfigEntity> databaseEntityClass, final Class<GlobalSchedulingConfigRestModel> configRestModelClass, final GlobalSchedulingConfigActions configActions,
             final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, configActions, objectTransformer);
-        this.configActions = configActions;
     }
 }

@@ -48,7 +48,6 @@ import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.hub.alert.web.actions.SimpleProviderConfigActions;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
@@ -59,7 +58,7 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
-public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> implements SimpleProviderConfigActions<GlobalHubConfigRestModel> {
+public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalHubConfigActions.class);
     private final GlobalProperties globalProperties;
 
@@ -118,6 +117,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return restModels;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalHubConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
@@ -146,6 +146,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return "Valid";
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
@@ -196,11 +197,5 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
         return hubServerConfig.createRestConnection(hubServerConfigBuilder.getLogger());
-    }
-
-    @Override
-    public void validateConfig(final GlobalHubConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        // TODO Auto-generated method stub
-
     }
 }

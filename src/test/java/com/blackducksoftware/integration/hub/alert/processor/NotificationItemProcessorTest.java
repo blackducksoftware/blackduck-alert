@@ -13,22 +13,19 @@ package com.blackducksoftware.integration.hub.alert.processor;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
 public class NotificationItemProcessorTest {
 
     @Test
     public void testInit() {
-        //        final GlobalProperties globalProperties = new TestGlobalProperties();
-        //        final List<NotificationTypeProcessor> processorList = null;
-        //        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
+        // final GlobalProperties globalProperties = new TestGlobalProperties();
+        // final List<NotificationTypeProcessor> processorList = null;
+        // final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
     }
 
     @Test
     public void testProcessEvents() throws HubIntegrationException {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
 
         // TODO fix Test
         // final NotificationResults results = new NotificationResults(Collections.emptyList(), null);

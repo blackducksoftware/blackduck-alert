@@ -11,13 +11,17 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
@@ -178,18 +182,23 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, null, restFactory, contentConverter);
 
-        RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);
-        restConnection = Mockito.spy(restConnection);
-        Mockito.doThrow(new IntegrationException("Mock exception")).when(restConnection).connect();
-        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
+        try (RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);) {
+            final RestConnection mockRestConnection = Mockito.spy(restConnection);
+            Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
+            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);
 
-        hipChatMockUtil.setApiKey("apiKey");
-        try {
-            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
-            hipChatChannel.testGlobalConfig(entity);
-        } catch (final IntegrationException ex) {
-            assertEquals("Invalid API key: Mock exception", ex.getMessage());
+            hipChatMockUtil.setApiKey("apiKey");
+            try {
+                final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+                hipChatChannel.testGlobalConfig(entity);
+            } catch (final IntegrationException ex) {
+                assertEquals("Invalid API key: Mock exception", ex.getMessage());
+            }
+        } catch (final IOException e) {
+            Assert.fail();
+            e.printStackTrace();
         }
+
     }
 
 }

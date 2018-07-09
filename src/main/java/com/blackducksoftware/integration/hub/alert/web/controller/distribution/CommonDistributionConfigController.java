@@ -39,6 +39,7 @@ import com.blackducksoftware.integration.hub.alert.web.controller.DistributionCo
 import com.blackducksoftware.integration.hub.alert.web.controller.handler.CommonConfigHandler;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
+// TODO convert this over to the universal controller. Functionality SHOULD already be in.
 @RestController
 @RequestMapping(DistributionConfigController.DISTRIBUTION_PATH + "/common")
 public class CommonDistributionConfigController extends DistributionConfigController<CommonDistributionConfigRestModel> {
