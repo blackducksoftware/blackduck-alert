@@ -69,13 +69,11 @@ import freemarker.template.TemplateException;
 public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
     public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
-    private final GlobalProperties globalProperties;
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
-        super(gson, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
-        this.globalProperties = globalProperties;
+        super(gson, globalProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
 
     public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String hubGroupName) throws MessagingException, IOException, TemplateException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
-        final EmailMessagingService emailService = new EmailMessagingService(emailProperties);
+        final EmailMessagingService emailService = new EmailMessagingService(getGlobalProperties(), emailProperties);
         try {
             final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
             final Collection<ProjectData> data;
@@ -105,7 +103,7 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
             final HashMap<String, Object> model = new HashMap<>();
             model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
             model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(globalProperties.getHubUrl()));
+            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(getGlobalProperties().getHubUrl()));
             model.put(EmailProperties.TEMPLATE_KEY_HUB_GROUP_NAME, hubGroupName);
 
             model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
@@ -123,9 +121,9 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final RestConnection restConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection);
                 final UserGroupService groupService = hubServicesFactory.createUserGroupService();
                 final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
 
