@@ -42,11 +42,13 @@ public class PropertyInitializer {
     }
 
     public void save(final DatabaseEntity entity, final Descriptor descriptor) {
-        logger.info("Saving channel global properties {}", entity);
+        logger.info("Saving global properties {}", entity);
         final List<? extends DatabaseEntity> savedEntityList = descriptor.readGlobalEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
+            logger.debug("No global entities found, saving new values.");
             descriptor.saveGlobalEntity(entity);
         } else {
+            logger.debug("Found existing properties, inserting new data.");
             savedEntityList.forEach(savedEntity -> {
                 updateEntityWithDefaults(savedEntity, entity);
                 descriptor.saveGlobalEntity(savedEntity);
@@ -58,6 +60,7 @@ public class PropertyInitializer {
     private void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity) {
         final Class<? extends DatabaseEntity> entityClass = savedEntity.getClass();
         final Field[] declaredFields = entityClass.getDeclaredFields();
+        logger.debug("Inserting {} into {}", defaultValuesEntity, savedEntity);
         for (final Field declaredField : declaredFields) {
             try {
                 final boolean accessible = declaredField.isAccessible();

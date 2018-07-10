@@ -26,9 +26,6 @@ package com.blackducksoftware.integration.hub.alert.channel.manager;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -55,17 +52,11 @@ public class DistributionChannelManager {
     private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
     private final ObjectTransformer objectTransformer;
     private final AlertEventContentConverter contentConverter;
-    private final Map<String, ChannelDescriptor> channelDescriptorMap;
 
     @Autowired
-    public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter, final List<ChannelDescriptor> channelDescriptorList) {
+    public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter) {
         this.objectTransformer = objectTransformer;
         this.contentConverter = contentConverter;
-        channelDescriptorMap = new HashMap<>(channelDescriptorList.size());
-
-        channelDescriptorList.forEach(descriptor -> {
-            channelDescriptorMap.put(descriptor.getDestinationName(), descriptor);
-        });
     }
 
     public ObjectTransformer getObjectTransformer() {

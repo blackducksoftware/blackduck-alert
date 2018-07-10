@@ -21,7 +21,7 @@ public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDist
     private EmailGroupDistributionRepository distributionRepository;
 
     @Autowired
-    private EmailGroupDescriptor emailGroupDescriptor;
+    private EmailDescriptor emailDescriptor;
 
     @Override
     public void cleanGlobalRepository() {
@@ -49,7 +49,7 @@ public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDist
 
     @Override
     public ChannelDescriptor getDescriptor() {
-        return emailGroupDescriptor;
+        return emailDescriptor;
     }
 
 }

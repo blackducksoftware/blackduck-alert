@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -179,12 +180,12 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Class<? extends DatabaseEntity> getGlobalEntityClass() {
+    public Field[] getGlobalEntityFields() {
         return null;
     }
 
     @Override
-    public Class<? extends ConfigRestModel> getGlobalRestModelClass() {
+    public ConfigRestModel getGlobalRestModelObject() {
         return null;
     }
 

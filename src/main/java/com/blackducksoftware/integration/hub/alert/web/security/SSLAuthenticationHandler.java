@@ -72,6 +72,7 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
                 BaseController.BASE_PATH + "/login",
                 BaseController.BASE_PATH + "/verify",
                 BaseController.BASE_PATH + "/about" };
+
         http.requiresChannel().anyRequest().requiresSecure()
                 .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
                 .and().authorizeRequests().antMatchers(allowedPaths).permitAll()

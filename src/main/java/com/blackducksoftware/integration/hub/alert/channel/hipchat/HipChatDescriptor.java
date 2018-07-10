@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.hipchat;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -141,16 +142,6 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Class<? extends DatabaseEntity> getGlobalEntityClass() {
-        return GlobalHipChatConfigEntity.class;
-    }
-
-    @Override
-    public Class<? extends ConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHipChatConfigRestModel.class;
-    }
-
-    @Override
     public List<? extends DatabaseEntity> readGlobalEntities() {
         return globalHipChatRepository.findAll();
     }
@@ -207,6 +198,16 @@ public class HipChatDescriptor extends ChannelDescriptor {
         } else {
             throw new IntegrationException("Error: Unexpected entity passed through.");
         }
+    }
+
+    @Override
+    public Field[] getGlobalEntityFields() {
+        return GlobalHipChatConfigEntity.class.getDeclaredFields();
+    }
+
+    @Override
+    public ConfigRestModel getGlobalRestModelObject() {
+        return new GlobalHipChatConfigRestModel();
     }
 
 }

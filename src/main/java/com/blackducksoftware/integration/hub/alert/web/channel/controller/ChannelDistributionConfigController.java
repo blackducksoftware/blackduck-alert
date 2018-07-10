@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.channel.actions.ChannelDistributionConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.channel.handler.ChannelConfigHandler;
@@ -43,34 +44,35 @@ import com.blackducksoftware.integration.hub.alert.web.model.distribution.Common
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/distribution/{descriptorName}")
 public class ChannelDistributionConfigController extends ChannelConfigController {
     private final ChannelConfigHandler<CommonDistributionConfigRestModel> controllerHandler;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ChannelDistributionConfigController(final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final ChannelDistributionConfigActions channelDistributionConfigActions) {
-        super(descriptors);
+    public ChannelDistributionConfigController(final DescriptorMap descriptorMap, final ObjectTransformer objectTransformer, final ChannelDistributionConfigActions channelDistributionConfigActions) {
+        this.descriptorMap = descriptorMap;
         this.controllerHandler = new ChannelConfigHandler<>(objectTransformer, channelDistributionConfigActions);
     }
 
     @Override
     public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.postConfig(descriptor.convertFromStringToDistributionRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.putConfig(descriptor.convertFromStringToDistributionRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.validateConfig(descriptor.convertFromStringToDistributionRestModel(restModel), descriptor);
     }
 
@@ -82,7 +84,7 @@ public class ChannelDistributionConfigController extends ChannelConfigController
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.testConfig(descriptor.convertFromStringToDistributionRestModel(restModel), descriptor);
     }
 

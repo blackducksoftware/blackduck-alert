@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.channel.actions.ChannelGlobalConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.channel.handler.ChannelConfigHandler;
@@ -42,46 +43,47 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/global/{descriptorName}")
 public class ChannelGlobalConfigController extends ChannelConfigController {
     private final ChannelConfigHandler<ConfigRestModel> controllerHandler;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ChannelGlobalConfigController(final List<ChannelDescriptor> descriptors, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
-        super(descriptors);
+    public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
+        this.descriptorMap = descriptorMap;
         this.controllerHandler = new ChannelConfigHandler<>(objectTransformer, channelGlobalConfigActions);
     }
 
     @Override
     public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.postConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.putConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.validateConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.deleteConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = getDescriptor(descriptorName);
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.testConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
     }
 
