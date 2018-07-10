@@ -5,13 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -53,9 +51,6 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
     protected AlertEventContentConverter contentConverter;
     protected ObjectTransformer objectTransformer;
     protected DistributionChannelManager channelManager;
-
-    @Autowired
-    protected List<ChannelDescriptor> channelDescriptorList;
     protected TestProperties properties;
 
     @Before
@@ -64,7 +59,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
         contentConverter = new AlertEventContentConverter(gson);
         objectTransformer = new ObjectTransformer();
         properties = new TestProperties();
-        channelManager = new DistributionChannelManager(objectTransformer, contentConverter, channelDescriptorList);
+        channelManager = new DistributionChannelManager(objectTransformer, contentConverter);
         cleanDistributionRepository();
         cleanGlobalRepository();
     }

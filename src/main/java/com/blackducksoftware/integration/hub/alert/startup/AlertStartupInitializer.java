@@ -72,18 +72,17 @@ public class AlertStartupInitializer {
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         this.configDescriptors.forEach(descriptor -> {
-            final Class<? extends DatabaseEntity> entityClass = descriptor.getGlobalEntityClass();
             final String initializerNamePrefix = descriptor.getName();
-            final boolean foundProperties = !findPropertyNames(initializerNamePrefix, entityClass).isEmpty();
-            if (foundProperties) {
+            final Set<AlertStartupProperty> startupProperties = findPropertyNames(initializerNamePrefix, descriptor);
+            if (!startupProperties.isEmpty()) {
                 try {
-                    final ConfigRestModel restModel = descriptor.getGlobalRestModelClass().newInstance();
-                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
+                    final ConfigRestModel restModel = descriptor.getGlobalRestModelObject();
+                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, startupProperties);
                     if (propertySet) {
                         final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
                         propertyInitializer.save(entity, descriptor);
                     }
-                } catch (IllegalArgumentException | SecurityException | AlertException | InstantiationException | IllegalAccessException ex) {
+                } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                     logger.error("Error initializing property manager", ex);
                 }
             }
@@ -91,8 +90,7 @@ public class AlertStartupInitializer {
         });
     }
 
-    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass) {
-        final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
+    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
             final String propertyKey = property.getPropertyKey();
@@ -128,13 +126,13 @@ public class AlertStartupInitializer {
         return false;
     }
 
-    private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Class<?> alertConfigClass) {
-        if (alertConfigClass == null) {
+    private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Descriptor descriptor) {
+        if (descriptor.getGlobalEntityFields() == null) {
             return Collections.emptySet();
         }
 
         final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_";
-        final Field[] alertConfigColumns = alertConfigClass.getDeclaredFields();
+        final Field[] alertConfigColumns = descriptor.getGlobalEntityFields();
         final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();
         for (final Field field : alertConfigColumns) {
             if (field.isAnnotationPresent(Column.class)) {

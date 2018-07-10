@@ -23,9 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.channel.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,7 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.hub.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
@@ -42,16 +39,6 @@ import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH)
 public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
-
-    private final Map<String, ChannelDescriptor> channelDescriptorMap;
-
-    public ChannelConfigController(final List<ChannelDescriptor> descriptors) {
-        channelDescriptorMap = new HashMap<>(descriptors.size());
-
-        descriptors.forEach(descriptor -> {
-            channelDescriptorMap.put(descriptor.getName(), descriptor);
-        });
-    }
 
     @GetMapping
     public abstract List<ConfigRestModel> getConfig(final Long id, final String descriptorName);
@@ -70,8 +57,4 @@ public abstract class ChannelConfigController extends BaseController {
 
     @PostMapping(value = "/test")
     public abstract ResponseEntity<String> testConfig(String restModel, final String descriptorName);
-
-    public ChannelDescriptor getDescriptor(final String descriptorName) {
-        return channelDescriptorMap.get(descriptorName);
-    }
 }

@@ -16,8 +16,9 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.Environment;
 
 import com.blackducksoftware.integration.hub.alert.channel.PropertyInitializer;
-import com.blackducksoftware.integration.hub.alert.channel.email.EmailGroupDescriptor;
+import com.blackducksoftware.integration.hub.alert.channel.email.EmailDescriptor;
 import com.blackducksoftware.integration.hub.alert.channel.email.controller.global.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
@@ -32,7 +33,7 @@ public class AlertStartupInitializerTestIT {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertProperties().isEmpty());
@@ -58,7 +59,7 @@ public class AlertStartupInitializerTestIT {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
         final String value = "newValue";
@@ -83,7 +84,7 @@ public class AlertStartupInitializerTestIT {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
 
@@ -108,7 +109,7 @@ public class AlertStartupInitializerTestIT {
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
         final GlobalEmailConfigRestModel globalRestModel = new GlobalEmailConfigRestModel();
@@ -131,8 +132,10 @@ public class AlertStartupInitializerTestIT {
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(true);
         final ObjectTransformer objectTransformer = new ObjectTransformer();
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
+        final MockEmailGlobalEntity mockEmailGlobalEntity = new MockEmailGlobalEntity();
+        Mockito.when(globalEmailRepository.save(Mockito.any())).thenReturn(mockEmailGlobalEntity.createGlobalEntity());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
 
         initializer.initializeConfigs();
@@ -150,7 +153,7 @@ public class AlertStartupInitializerTestIT {
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new SecurityException());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
     }
@@ -163,7 +166,7 @@ public class AlertStartupInitializerTestIT {
         final GlobalEmailRepository globalEmailRepository = Mockito.mock(GlobalEmailRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new IllegalArgumentException());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
     }
@@ -200,7 +203,7 @@ public class AlertStartupInitializerTestIT {
 
     private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final ObjectTransformer objectTransformer, final GlobalEmailRepository globalEmailRepository) throws Exception {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<Descriptor> descriptors = Arrays.asList(new EmailGroupDescriptor(null, globalEmailRepository, null, null, objectTransformer));
+        final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, globalEmailRepository, null, null, objectTransformer));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertPropertyNameSet().isEmpty());

@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.alert.descriptor;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,9 +50,9 @@ public abstract class Descriptor {
         return type;
     }
 
-    public abstract Class<? extends DatabaseEntity> getGlobalEntityClass();
+    public abstract Field[] getGlobalEntityFields();
 
-    public abstract Class<? extends ConfigRestModel> getGlobalRestModelClass();
+    public abstract ConfigRestModel getGlobalRestModelObject();
 
     public abstract List<? extends DatabaseEntity> readGlobalEntities();
 
