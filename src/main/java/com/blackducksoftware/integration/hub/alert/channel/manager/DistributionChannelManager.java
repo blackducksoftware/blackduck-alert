@@ -47,7 +47,6 @@ import com.blackducksoftware.integration.hub.alert.event.AlertEventContentConver
 import com.blackducksoftware.integration.hub.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.hub.alert.web.model.distribution.CommonDistributionConfigRestModel;
 
 @Transactional
@@ -73,8 +72,7 @@ public class DistributionChannelManager {
         return objectTransformer;
     }
 
-    public String testGlobalConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        final DatabaseEntity globalConfigEntity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+    public String testGlobalConfig(final DatabaseEntity globalConfigEntity, final ChannelDescriptor descriptor) throws IntegrationException {
         descriptor.testGlobalConfig(globalConfigEntity);
         return "Successfully sent test message";
     }

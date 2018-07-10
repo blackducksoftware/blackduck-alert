@@ -206,6 +206,7 @@ public class EmailGroupDescriptor extends ChannelDescriptor {
 
     @Override
     public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+        throw new IntegrationException("Error, can't test global email configuration");
     }
 
 }

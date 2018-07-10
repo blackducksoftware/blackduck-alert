@@ -123,7 +123,16 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public String validateConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
+    public String validateConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
+        final List<? extends DatabaseEntity> globalConfigs = descriptor.readGlobalEntities();
+        if (globalConfigs.size() == 1) {
+            try {
+                restModel = updateNewConfigWithSavedConfig(restModel, globalConfigs.get(0));
+            } catch (final AlertException e) {
+                return "Error updating config.";
+            }
+        }
+
         final Map<String, String> fieldErrors = Maps.newHashMap();
         descriptor.validateGlobalConfig(restModel, fieldErrors);
 
@@ -134,13 +143,14 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public String testConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        return distributionChannelManager.testGlobalConfig(restModel, descriptor);
-        // final List<? extends DatabaseEntity> globalConfigs = descriptor.readGlobalEntities();
-        // if (globalConfigs.size() == 1) {
-        // return distributionChannelManager.testGlobalConfig(descriptor.getName(), (GlobalChannelConfigEntity) globalConfigs.get(0));
-        // }
-        // return "Global Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
+    public String testConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
+        final List<? extends DatabaseEntity> globalConfigs = descriptor.readGlobalEntities();
+        if (globalConfigs.size() == 1) {
+            restModel = updateNewConfigWithSavedConfig(restModel, globalConfigs.get(0));
+            final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+            return distributionChannelManager.testGlobalConfig(entity, descriptor);
+        }
+        return "Global Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
     }
 
     @Override
@@ -173,19 +183,20 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
         return newConfig;
     }
 
-    public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final DatabaseEntity savedConfig) throws AlertException {
-        final Class<? extends DatabaseEntity> entityClass = savedConfig.getClass();
+    public <T> T updateNewConfigWithSavedConfig(final T newConfig, final DatabaseEntity savedConfig) throws AlertException {
         try {
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
+            final Class<?> newConfigClass = newConfig.getClass();
+
+            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
             for (final Field field : sensitiveFields) {
                 field.setAccessible(true);
                 final Object value = field.get(newConfig);
-                if (value != null) {
-                    final String newValue = (String) value;
-                    if (StringUtils.isBlank(newValue) && savedConfig != null) {
+                if (value == null || StringUtils.isBlank(value.toString())) {
+                    if (savedConfig != null) {
+                        final Class<?> savedConfigClass = savedConfig.getClass();
                         Field savedField = null;
                         try {
-                            savedField = entityClass.getDeclaredField(field.getName());
+                            savedField = savedConfigClass.getDeclaredField(field.getName());
                         } catch (final NoSuchFieldException e) {
                             continue;
                         }
