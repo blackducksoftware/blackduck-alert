@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.hub.alert.web.channel.actions;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.hub.alert.channel.manager.DistributionChannelManager;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
@@ -176,44 +173,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
 
     @Override
     public String testConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        // if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
-        // final Long id = getObjectTransformer().stringToLong(restModel.getId());
-        // final Optional<? extends DatabaseEntity> savedConfig = descriptor.readDistributionEntity(id);
-        // if (savedConfig.isPresent()) {
-        // fillNewConfigWithSavedConfig(restModel, savedConfig.get());
-        // }
-        // }
         return distributionChannelManager.sendTestMessage(restModel, descriptor);
-        // return descriptor.testDistributionConfig(restModel);
-    }
-
-    public ConfigRestModel fillNewConfigWithSavedConfig(final ConfigRestModel newConfig, final DatabaseEntity savedConfig) throws AlertException {
-        try {
-            final Class<? extends DatabaseEntity> entityClass = savedConfig.getClass();
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(entityClass);
-            for (final Field field : sensitiveFields) {
-                field.setAccessible(true);
-                final Object value = field.get(newConfig);
-                if (value == null || StringUtils.isBlank(value.toString())) {
-                    if (savedConfig != null) {
-                        final Class<?> savedConfigClass = savedConfig.getClass();
-                        Field savedField = null;
-                        try {
-                            savedField = savedConfigClass.getDeclaredField(field.getName());
-                        } catch (final NoSuchFieldException e) {
-                            continue;
-                        }
-                        savedField.setAccessible(true);
-                        final String savedValue = (String) savedField.get(savedConfig);
-                        field.set(newConfig, savedValue);
-                    }
-                }
-            }
-        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new AlertException(e.getMessage(), e);
-        }
-
-        return newConfig;
     }
 
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {

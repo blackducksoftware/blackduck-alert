@@ -204,6 +204,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
         if (entity instanceof GlobalHipChatConfigEntity) {
             final GlobalHipChatConfigEntity hipChatEntity = (GlobalHipChatConfigEntity) entity;
             hipChatChannel.testGlobalConfig(hipChatEntity);
+        } else {
+            throw new IntegrationException("Error: Unexpected entity passed through.");
         }
     }
 
