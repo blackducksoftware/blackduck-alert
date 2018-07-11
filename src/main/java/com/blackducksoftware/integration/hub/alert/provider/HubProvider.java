@@ -23,42 +23,100 @@
  */
 package com.blackducksoftware.integration.hub.alert.provider;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.global.GlobalHubRepository;
+import com.blackducksoftware.integration.hub.alert.descriptor.ProviderDescriptor;
+import com.blackducksoftware.integration.hub.alert.exception.AlertException;
 import com.blackducksoftware.integration.hub.alert.provider.hub.controller.global.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
+import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
+import com.google.gson.Gson;
 
 @Component
-public class HubProvider implements ProviderDescriptor {
+public class HubProvider extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
 
-    private final GlobalHubRepository repository;
+    private final GlobalHubRepository globalHubRepository;
+    private final Gson gson;
+    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public HubProvider(final GlobalHubRepository repository) {
-        this.repository = repository;
+    public HubProvider(final GlobalHubRepository globalHubRepository, final Gson gson, final ObjectTransformer objectTransformer) {
+        super(PROVIDER_NAME);
+        this.globalHubRepository = globalHubRepository;
+        this.gson = gson;
+        this.objectTransformer = objectTransformer;
     }
 
     @Override
-    public String getName() {
-        return PROVIDER_NAME;
+    public List<? extends DatabaseEntity> readGlobalEntities() {
+        return globalHubRepository.findAll();
     }
 
     @Override
-    public Class<GlobalHubConfigEntity> getGlobalEntityClass() {
-        return GlobalHubConfigEntity.class;
+    public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
+        return globalHubRepository.findById(id);
     }
 
     @Override
-    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHubConfigRestModel.class;
+    public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
+        if (entity instanceof GlobalHubConfigEntity) {
+            final GlobalHubConfigEntity hubEntity = (GlobalHubConfigEntity) entity;
+            return Optional.ofNullable(globalHubRepository.save(hubEntity));
+        }
+        return Optional.empty();
     }
 
     @Override
-    public GlobalHubRepository getGlobalRepository() {
-        return repository;
+    public void deleteGlobalEntity(final long id) {
+        globalHubRepository.deleteById(id);
+    }
+
+    @Override
+    public ConfigRestModel convertFromStringToGlobalRestModel(final String json) {
+        return gson.fromJson(json, GlobalHubConfigRestModel.class);
+    }
+
+    @Override
+    public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) throws AlertException {
+        return objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalHubConfigEntity.class);
+    }
+
+    @Override
+    public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
+        return objectTransformer.databaseEntityToConfigRestModel(entity, GlobalHubConfigRestModel.class);
+    }
+
+    @Override
+    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Field[] getGlobalEntityFields() {
+        return GlobalHubConfigEntity.class.getDeclaredFields();
+    }
+
+    @Override
+    public ConfigRestModel getGlobalRestModelObject() {
+        return new GlobalHubConfigRestModel();
     }
 
 }

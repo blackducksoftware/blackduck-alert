@@ -11,7 +11,9 @@
  */
 package com.blackducksoftware.integration.hub.alert.channel.slack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -92,7 +94,6 @@ public class SlackChannelTestIT extends ChannelTest {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
@@ -120,7 +121,6 @@ public class SlackChannelTestIT extends ChannelTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();

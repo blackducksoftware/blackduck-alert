@@ -28,11 +28,10 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
 
 @Component
 public class PropertyInitializer {
@@ -42,8 +41,26 @@ public class PropertyInitializer {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    private <E extends DatabaseEntity> void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity, final Class<E> entityClass) {
+    public void save(final DatabaseEntity entity, final Descriptor descriptor) {
+        logger.info("Saving global properties {}", entity);
+        final List<? extends DatabaseEntity> savedEntityList = descriptor.readGlobalEntities();
+        if (savedEntityList == null || savedEntityList.isEmpty()) {
+            logger.debug("No global entities found, saving new values.");
+            descriptor.saveGlobalEntity(entity);
+        } else {
+            logger.debug("Found existing properties, inserting new data.");
+            savedEntityList.forEach(savedEntity -> {
+                updateEntityWithDefaults(savedEntity, entity);
+                descriptor.saveGlobalEntity(savedEntity);
+            });
+
+        }
+    }
+
+    private void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity) {
+        final Class<? extends DatabaseEntity> entityClass = savedEntity.getClass();
         final Field[] declaredFields = entityClass.getDeclaredFields();
+        logger.debug("Inserting {} into {}", defaultValuesEntity, savedEntity);
         for (final Field declaredField : declaredFields) {
             try {
                 final boolean accessible = declaredField.isAccessible();
@@ -57,21 +74,6 @@ public class PropertyInitializer {
             } catch (final IllegalAccessException ex) {
                 logger.error("error setting default value for field {}", declaredField.getName(), ex);
             }
-        }
-    }
-
-    public void save(final DatabaseEntity entity, final Descriptor descriptor) {
-        logger.info("Saving HipChat channel global properties {}", entity);
-        final JpaRepository<DatabaseEntity, Long> repository = descriptor.getGlobalRepository();
-        final List<DatabaseEntity> savedEntityList = repository.findAll();
-        if (savedEntityList == null || savedEntityList.isEmpty()) {
-            repository.save(entity);
-        } else {
-            savedEntityList.forEach(savedEntity -> {
-                updateEntityWithDefaults(savedEntity, entity, descriptor.getGlobalEntityClass());
-                repository.save(savedEntity);
-            });
-
         }
     }
 }

@@ -11,7 +11,10 @@
  */
 package com.blackducksoftware.integration.hub.alert.scheduling.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,14 +23,9 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.hub.alert.NotificationManager;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.hub.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.hub.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.hub.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
@@ -53,12 +51,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final NotificationRepository notificationRepository = Mockito.mock(NotificationRepository.class);
-        final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, objectTransformer, globalProperties,
-                channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null, contentConverter);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, objectTransformer);
         return configActions;
     }
 
@@ -76,12 +69,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         Mockito.when(globalSchedulingRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final NotificationRepository notificationRepository = Mockito.mock(NotificationRepository.class);
-        final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, new ObjectTransformer(), globalProperties,
-                channelTemplateManager, new NotificationManager(notificationRepository, vulnerabilityRepository, null, null), null, contentConverter);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, new ObjectTransformer());
         configActions.configurationChangeTriggers(null);
         Mockito.verify(mockedAccumulatorConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedDailyDigestBatchConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
@@ -101,7 +89,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Override
     public void testInvalidConfig() {
         final String invalidCron = "invalid";
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer(), null, null, null, null, contentConverter);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer());
         GlobalSchedulingConfigRestModel restModel = new GlobalSchedulingConfigRestModel("1", invalidCron, invalidCron, invalidCron, invalidCron, invalidCron);
 
         AlertFieldException caughtException = null;
@@ -157,7 +145,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Test
     public void validateConfigWithValidArgsTest() {
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer(), null, null, null, null, contentConverter);
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer());
         final GlobalSchedulingConfigRestModel restModel = getGlobalRestModelMockUtil().createGlobalRestModel();
 
         String validationString = null;

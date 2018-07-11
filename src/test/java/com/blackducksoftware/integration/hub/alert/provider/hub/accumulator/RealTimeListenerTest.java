@@ -39,7 +39,6 @@ public class RealTimeListenerTest {
         realTimeListener.handleEvent(realTimeEvent);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testReceiveMessageException() throws IOException, Exception {
         try (final OutputLogger outputLogger = new OutputLogger()) {

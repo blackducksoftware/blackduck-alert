@@ -115,6 +115,7 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
         assertTrue(allConfigs.isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void testDeleteConfig() {
         Mockito.when(configActions.getCommonDistributionRepository().findById(Mockito.anyLong())).thenReturn(Optional.of(distributionMockUtils.createEntity()));

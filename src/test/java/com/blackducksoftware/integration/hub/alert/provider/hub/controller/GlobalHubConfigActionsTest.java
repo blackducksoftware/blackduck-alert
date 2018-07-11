@@ -11,7 +11,11 @@
  */
 package com.blackducksoftware.integration.hub.alert.provider.hub.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -162,7 +166,6 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     }
 
     @Test
-    @Override
     public void testChannelTestConfig() throws Exception {
         final MockGlobalHubRestModel mockUtils = new MockGlobalHubRestModel();
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);

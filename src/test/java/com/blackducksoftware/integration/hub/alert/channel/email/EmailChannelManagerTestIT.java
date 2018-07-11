@@ -10,6 +10,7 @@ import com.blackducksoftware.integration.hub.alert.channel.email.repository.dist
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.email.repository.global.GlobalEmailRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 
 public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {
 
@@ -19,10 +20,8 @@ public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDist
     @Autowired
     private EmailGroupDistributionRepository distributionRepository;
 
-    @Override
-    public String getDestination() {
-        return EmailGroupChannel.COMPONENT_NAME;
-    }
+    @Autowired
+    private EmailDescriptor emailDescriptor;
 
     @Override
     public void cleanGlobalRepository() {
@@ -46,6 +45,11 @@ public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDist
     @Override
     public MockEmailRestModel getMockRestModelUtil() {
         return new MockEmailRestModel();
+    }
+
+    @Override
+    public ChannelDescriptor getDescriptor() {
+        return emailDescriptor;
     }
 
 }

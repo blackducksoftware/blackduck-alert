@@ -66,6 +66,7 @@ public class LoginActions {
         this.globalProperties = globalProperties;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean authenticateUser(final LoginRestModel loginRestModel, final IntLogger logger) throws IntegrationException {
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(logger);
