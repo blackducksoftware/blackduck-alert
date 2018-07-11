@@ -21,16 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.hub.alert.provider;
+package com.blackducksoftware.integration.hub.alert.descriptor;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
-import com.blackducksoftware.integration.hub.alert.descriptor.DescriptorType;
+public abstract class ProviderDescriptor extends Descriptor {
 
-public interface ProviderDescriptor extends Descriptor {
-
-    @Override
-    public default DescriptorType getType() {
-        return DescriptorType.PROVIDER;
+    public ProviderDescriptor(final String name) {
+        super(name, DescriptorType.PROVIDER);
     }
 
 }

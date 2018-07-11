@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.hub.alert.startup;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -41,11 +42,10 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.hub.alert.Descriptor;
 import com.blackducksoftware.integration.hub.alert.channel.PropertyInitializer;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.hub.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.hub.alert.exception.AlertException;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
 @Component
@@ -54,7 +54,6 @@ public class AlertStartupInitializer {
     public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
 
     private final ConversionService conversionService;
-    private final ObjectTransformer objectTransformer;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
     private final List<Descriptor> configDescriptors;
@@ -62,9 +61,8 @@ public class AlertStartupInitializer {
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final ObjectTransformer objectTransformer, final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
+    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
             final ConversionService conversionService) {
-        this.objectTransformer = objectTransformer;
         this.propertyInitializer = propertyInitializer;
         this.configDescriptors = configDescriptors;
         this.environment = environment;
@@ -74,18 +72,17 @@ public class AlertStartupInitializer {
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         this.configDescriptors.forEach(descriptor -> {
-            final Class<? extends DatabaseEntity> entityClass = descriptor.getGlobalEntityClass();
             final String initializerNamePrefix = descriptor.getName();
-            final boolean foundProperties = !findPropertyNames(initializerNamePrefix, entityClass).isEmpty();
-            if (foundProperties) {
+            final Set<AlertStartupProperty> startupProperties = findPropertyNames(initializerNamePrefix, descriptor);
+            if (!startupProperties.isEmpty()) {
                 try {
-                    final ConfigRestModel restModel = descriptor.getGlobalRestModelClass().newInstance();
-                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, entityClass);
+                    final ConfigRestModel restModel = descriptor.getGlobalRestModelObject();
+                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, startupProperties);
                     if (propertySet) {
-                        final DatabaseEntity entity = objectTransformer.configRestModelToDatabaseEntity(restModel, entityClass);
+                        final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
                         propertyInitializer.save(entity, descriptor);
                     }
-                } catch (IllegalArgumentException | SecurityException | AlertException | InstantiationException | IllegalAccessException ex) {
+                } catch (IllegalArgumentException | SecurityException | AlertException ex) {
                     logger.error("Error initializing property manager", ex);
                 }
             }
@@ -93,8 +90,7 @@ public class AlertStartupInitializer {
         });
     }
 
-    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Class<? extends DatabaseEntity> globalConfigEntityClass) {
-        final Set<AlertStartupProperty> configProperties = findPropertyNames(initializerNamePrefix, globalConfigEntityClass);
+    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
             final String propertyKey = property.getPropertyKey();
@@ -130,9 +126,13 @@ public class AlertStartupInitializer {
         return false;
     }
 
-    private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Class<?> alertConfigClass) {
+    private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Descriptor descriptor) {
+        if (descriptor.getGlobalEntityFields() == null) {
+            return Collections.emptySet();
+        }
+
         final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_";
-        final Field[] alertConfigColumns = alertConfigClass.getDeclaredFields();
+        final Field[] alertConfigColumns = descriptor.getGlobalEntityFields();
         final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();
         for (final Field field : alertConfigColumns) {
             if (field.isAnnotationPresent(Column.class)) {

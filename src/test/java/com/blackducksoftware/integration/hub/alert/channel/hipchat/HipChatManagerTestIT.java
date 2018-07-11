@@ -10,6 +10,7 @@ import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.di
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.hipchat.repository.global.GlobalHipChatRepository;
 import com.blackducksoftware.integration.hub.alert.channel.manager.ChannelManagerTest;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 
 public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
 
@@ -18,6 +19,9 @@ public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistribution
 
     @Autowired
     private HipChatDistributionRepository distributionRepository;
+
+    @Autowired
+    private HipChatDescriptor hipChatDescriptor;
 
     @Override
     public void cleanGlobalRepository() {
@@ -36,11 +40,6 @@ public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistribution
     }
 
     @Override
-    public String getDestination() {
-        return HipChatChannel.COMPONENT_NAME;
-    }
-
-    @Override
     public MockHipChatRestModel getMockRestModelUtil() {
         final MockHipChatRestModel restModel = new MockHipChatRestModel();
         restModel.setRoomId(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
@@ -48,6 +47,11 @@ public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistribution
         restModel.setColor("random");
         restModel.setId("");
         return restModel;
+    }
+
+    @Override
+    public ChannelDescriptor getDescriptor() {
+        return hipChatDescriptor;
     }
 
 }

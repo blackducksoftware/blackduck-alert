@@ -32,6 +32,7 @@ import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
 import com.blackducksoftware.integration.hub.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.hub.alert.web.model.ConfigRestModel;
 
+// TODO verify if this class is still necessary with our universal controllers
 public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 

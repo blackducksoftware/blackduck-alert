@@ -117,6 +117,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return restModels;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalHubConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
@@ -145,6 +146,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return "Valid";
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);

@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -50,7 +48,6 @@ import com.blackducksoftware.integration.rest.exception.IntegrationRestException
 
 @Component
 public class LoginHandler extends ControllerHandler {
-    private final Logger logger = LoggerFactory.getLogger(LoginHandler.class);
     private final LoginActions loginActions;
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
 

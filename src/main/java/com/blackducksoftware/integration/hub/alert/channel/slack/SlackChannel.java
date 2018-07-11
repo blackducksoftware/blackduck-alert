@@ -40,9 +40,9 @@ import com.blackducksoftware.integration.hub.alert.channel.rest.ChannelRestConne
 import com.blackducksoftware.integration.hub.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.hub.alert.channel.slack.repository.distribution.SlackDistributionRepository;
-import com.blackducksoftware.integration.hub.alert.channel.slack.repository.global.GlobalSlackConfigEntity;
 import com.blackducksoftware.integration.hub.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.hub.alert.datasource.entity.global.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.hub.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.hub.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.hub.alert.digest.model.DigestModel;
@@ -57,7 +57,7 @@ import com.google.gson.JsonObject;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
 @Transactional
-public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntity, SlackDistributionConfigEntity> {
+public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEntity, SlackDistributionConfigEntity> {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_API = "https://hooks.slack.com";
 
@@ -69,12 +69,12 @@ public class SlackChannel extends RestDistributionChannel<GlobalSlackConfigEntit
     }
 
     @Override
-    public String getApiUrl(final GlobalSlackConfigEntity globalConfig) {
+    public String getApiUrl(final GlobalChannelConfigEntity globalConfig) {
         return SLACK_API;
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalSlackConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {

@@ -34,7 +34,7 @@ import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
 import com.blackducksoftware.integration.hub.alert.RealTimeListener;
-import com.blackducksoftware.integration.hub.alert.channel.ChannelDescriptor;
+import com.blackducksoftware.integration.hub.alert.descriptor.ChannelDescriptor;
 
 @Configuration
 public class JMSListenerConfig implements JmsListenerConfigurer {
@@ -63,7 +63,7 @@ public class JMSListenerConfig implements JmsListenerConfigurer {
             final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
             endpoint.setId(listenerId);
             endpoint.setDestination(descriptor.getDestinationName());
-            endpoint.setMessageListener(descriptor.getChannelComponent());
+            endpoint.setMessageListener(descriptor.getChannelListener());
             registrar.registerEndpoint(endpoint);
         });
 

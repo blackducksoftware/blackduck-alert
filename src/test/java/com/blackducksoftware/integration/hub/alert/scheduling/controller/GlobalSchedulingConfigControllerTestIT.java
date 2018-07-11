@@ -11,8 +11,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.blackducksoftware.integration.hub.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.hub.alert.scheduling.repository.global.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.hub.alert.web.ObjectTransformer;
-import com.blackducksoftware.integration.hub.alert.web.controller.ConfigController;
 import com.blackducksoftware.integration.hub.alert.web.controller.GlobalControllerTest;
 
 public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
@@ -55,11 +53,6 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
-    }
-
-    @Override
-    public ConfigController<GlobalSchedulingConfigRestModel> getController() {
-        return new GlobalSchedulingConfigController(globalSchedulingConfigActions, new ObjectTransformer());
     }
 
 }

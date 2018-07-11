@@ -25,7 +25,7 @@ public class DigestItemWriterTest {
     @Test
     public void testWrite() throws Exception {
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
+        Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.anyList());
 
         final DigestItemWriter digestItemWriter = new DigestItemWriter(channelTemplateManager);
 
@@ -33,13 +33,13 @@ public class DigestItemWriterTest {
         final List<ChannelEvent> channelList = Arrays.asList(abstractChannelEvent);
         digestItemWriter.write(Arrays.asList(channelList));
 
-        Mockito.verify(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
+        Mockito.verify(channelTemplateManager).sendEvents(Mockito.anyList());
     }
 
     @Test
     public void testWriteNull() throws Exception {
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        Mockito.doThrow(new NullPointerException()).when(channelTemplateManager).sendEvents(Mockito.anyListOf(ChannelEvent.class));
+        Mockito.doThrow(new NullPointerException()).when(channelTemplateManager).sendEvents(Mockito.anyList());
 
         final DigestItemWriter digestItemWriter = new DigestItemWriter(channelTemplateManager);
 

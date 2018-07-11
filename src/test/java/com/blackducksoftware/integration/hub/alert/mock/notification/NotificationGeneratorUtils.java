@@ -105,6 +105,7 @@ public class NotificationGeneratorUtils {
         return results;
     }
 
+    @SuppressWarnings("unchecked")
     public static NotificationDetailResults initializeTestData(final GlobalProperties globalProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
