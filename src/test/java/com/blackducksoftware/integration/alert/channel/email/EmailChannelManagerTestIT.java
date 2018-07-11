@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.channel.email;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
+import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.channel.email.EmailDescriptor;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
@@ -10,7 +11,6 @@ import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDis
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
-import com.blackducksoftware.integration.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 
 public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {

@@ -3,7 +3,7 @@ package com.blackducksoftware.integration.alert.channel.slack;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
-import com.blackducksoftware.integration.alert.channel.manager.ChannelManagerTest;
+import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.channel.slack.SlackDescriptor;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
