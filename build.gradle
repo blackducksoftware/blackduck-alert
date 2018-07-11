@@ -30,7 +30,7 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import groovy.json.JsonOutput
 
-mainClassName = 'com.blackducksoftware.integration.hub.alert.Application'
+mainClassName = 'com.blackducksoftware.integration.alert.Application'
 
 dependencyManagement {
     imports {
