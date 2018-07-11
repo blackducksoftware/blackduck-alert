@@ -18,7 +18,7 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.alert.mock.model.global.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.google.gson.Gson;
 

@@ -33,7 +33,8 @@ import com.blackducksoftware.integration.alert.scheduling.mock.MockGlobalSchedul
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigRestModel;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.web.actions.global.GlobalActionsTest;
+import com.blackducksoftware.integration.alert.scheduling.model.MockGlobalSchedulingRestModel;
+import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
 
 public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalSchedulingConfigRestModel, GlobalSchedulingConfigEntity, GlobalSchedulingRepository, GlobalSchedulingConfigActions> {
 

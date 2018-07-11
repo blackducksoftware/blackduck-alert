@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRe
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
-import com.blackducksoftware.integration.alert.web.actions.global.GlobalActionsTest;
+import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigValidator;

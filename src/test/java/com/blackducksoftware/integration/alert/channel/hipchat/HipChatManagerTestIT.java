@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.channel.hipchat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
+import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatDescriptor;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
@@ -10,7 +11,6 @@ import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipCh
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.alert.channel.manager.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 
 public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {

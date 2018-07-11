@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.mock.entity.global.MockGlobalEntityUtil;
+import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 
 public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
 
