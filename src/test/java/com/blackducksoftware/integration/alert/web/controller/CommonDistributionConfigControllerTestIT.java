@@ -34,7 +34,7 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
     }
 
     @Override
-    public String getRestControllerUrl() {
+    public String getDescriptorName() {
         return "/configuration/distribution/common";
     }
 
