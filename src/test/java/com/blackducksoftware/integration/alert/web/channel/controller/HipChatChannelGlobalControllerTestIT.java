@@ -9,7 +9,7 @@ import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipCh
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 
-public class ChannelGlobalControllerTestIT extends GlobalControllerTest<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepository> {
+public class HipChatChannelGlobalControllerTestIT extends GlobalControllerTest<GlobalHipChatConfigEntity, GlobalHipChatConfigRestModel, GlobalHipChatRepository> {
 
     @Autowired
     GlobalHipChatRepository globalHipChatRepository;
