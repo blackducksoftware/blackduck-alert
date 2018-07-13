@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.alert.channel.hipchat;
+package com.blackducksoftware.integration.alert.provider.hub;
 
 import java.util.Optional;
 
@@ -7,18 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
-public class HipChatGlobalContentConverter extends DatabaseContentConverter {
+public class HubContentConverter extends DatabaseContentConverter {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public HipChatGlobalContentConverter(final ContentConverter contentConverter) {
+    public HubContentConverter(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
     }
 
@@ -33,18 +34,21 @@ public class HipChatGlobalContentConverter extends DatabaseContentConverter {
 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
-        final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
-        return hipChatEntity;
+        final GlobalHubConfigRestModel hubRestModel = (GlobalHubConfigRestModel) restModel;
+        final int hubTimeout = Integer.parseInt(hubRestModel.getHubTimeout());
+        return new GlobalHubConfigEntity(hubTimeout, hubRestModel.getHubApiKey());
     }
 
+    // TODO This will want to populate more data when ProviderDescriptors are created
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
-        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        final String id = String.valueOf(hipChatEntity.getId());
-        final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
-        final HipChatGlobalConfigRestModel hipChatRestModel = new HipChatGlobalConfigRestModel(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
-        return hipChatRestModel;
+        final GlobalHubConfigEntity hubEntity = (GlobalHubConfigEntity) entity;
+        final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel();
+        final String hubTimeout = String.valueOf(hubEntity.getHubTimeout());
+        hubRestModel.setHubTimeout(hubTimeout);
+        hubRestModel.setHubApiKeyIsSet(StringUtils.isNotBlank(hubEntity.getHubApiKey()));
+        hubRestModel.setHubApiKey(hubEntity.getHubApiKey());
+        return hubRestModel;
     }
 
 }

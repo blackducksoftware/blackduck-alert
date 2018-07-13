@@ -79,10 +79,10 @@ public class AlertStartupInitializer {
                     final ConfigRestModel restModel = descriptor.getGlobalRestModelObject();
                     final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, startupProperties);
                     if (propertySet) {
-                        final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+                        final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
                         propertyInitializer.save(entity, descriptor);
                     }
-                } catch (IllegalArgumentException | SecurityException | AlertException ex) {
+                } catch (IllegalArgumentException | SecurityException ex) {
                     logger.error("Error initializing property manager", ex);
                 }
             }

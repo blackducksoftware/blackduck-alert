@@ -60,15 +60,15 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
 
     @Override
     public boolean doesConfigExist(final Long id, final ChannelDescriptor descriptor) {
-        return id != null && descriptor.readGlobalEntity(id).isPresent();
+        return id != null && descriptor.getGlobalRepositoryAccessor().readEntity(id).isPresent();
     }
 
     @Override
     public List<ConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
         if (id != null) {
-            final Optional<? extends DatabaseEntity> foundEntity = descriptor.readGlobalEntity(id);
+            final Optional<? extends DatabaseEntity> foundEntity = descriptor.getGlobalRepositoryAccessor().readEntity(id);
             if (foundEntity.isPresent()) {
-                final ConfigRestModel restModel = descriptor.convertFromGlobalEntityToGlobalRestModel(foundEntity.get());
+                final ConfigRestModel restModel = descriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
                 if (restModel != null) {
                     final ConfigRestModel maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -76,7 +76,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
             }
             return Collections.emptyList();
         }
-        final List<? extends DatabaseEntity> databaseEntities = descriptor.readGlobalEntities();
+        final List<? extends DatabaseEntity> databaseEntities = descriptor.getGlobalRepositoryAccessor().readEntities();
         final List<ConfigRestModel> restModels = getConvertedRestModels(databaseEntities, descriptor);
         return maskRestModels(restModels);
     }
@@ -84,7 +84,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     private List<ConfigRestModel> getConvertedRestModels(final List<? extends DatabaseEntity> entities, final Descriptor descriptor) throws AlertException {
         final List<ConfigRestModel> restModels = new ArrayList<>(entities.size());
         for (final DatabaseEntity entity : entities) {
-            restModels.add(descriptor.convertFromGlobalEntityToGlobalRestModel(entity));
+            restModels.add(descriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(entity));
         }
         return restModels;
     }
@@ -92,7 +92,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     @Override
     public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
-            descriptor.deleteGlobalEntity(id);
+            descriptor.getGlobalRepositoryAccessor().deleteEntity(id);
         }
     }
 
@@ -100,12 +100,10 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     public DatabaseEntity saveConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null) {
             try {
-                final DatabaseEntity createdEntity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+                final DatabaseEntity createdEntity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null) {
-                    final Optional<? extends DatabaseEntity> savedEntity = descriptor.saveGlobalEntity(createdEntity);
-                    if (savedEntity.isPresent()) {
-                        return savedEntity.get();
-                    }
+                    final DatabaseEntity savedEntity = descriptor.getGlobalRepositoryAccessor().saveEntity(createdEntity);
+                    return savedEntity;
                 }
             } catch (final Exception e) {
                 throw new AlertException(e.getMessage(), e);
@@ -116,7 +114,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
 
     @Override
     public String validateConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
-        final List<? extends DatabaseEntity> globalConfigs = descriptor.readGlobalEntities();
+        final List<? extends DatabaseEntity> globalConfigs = descriptor.getGlobalRepositoryAccessor().readEntities();
         if (globalConfigs.size() == 1) {
             try {
                 restModel = updateNewConfigWithSavedConfig(restModel, globalConfigs.get(0));
@@ -136,10 +134,10 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
 
     @Override
     public String testConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        final List<? extends DatabaseEntity> globalConfigs = descriptor.readGlobalEntities();
+        final List<? extends DatabaseEntity> globalConfigs = descriptor.getGlobalRepositoryAccessor().readEntities();
         if (globalConfigs.size() == 1) {
             restModel = updateNewConfigWithSavedConfig(restModel, globalConfigs.get(0));
-            final DatabaseEntity entity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+            final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
             return distributionChannelManager.testGlobalConfig(entity, descriptor);
         }
         return "Global Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
@@ -149,13 +147,11 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
-                DatabaseEntity createdEntity = descriptor.convertFromGlobalRestModelToGlobalConfigEntity(restModel);
+                DatabaseEntity createdEntity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId(), descriptor);
                 if (createdEntity != null) {
-                    final Optional<? extends DatabaseEntity> savedEntity = descriptor.saveGlobalEntity(createdEntity);
-                    if (savedEntity.isPresent()) {
-                        return savedEntity.get();
-                    }
+                    final DatabaseEntity savedEntity = descriptor.getGlobalRepositoryAccessor().saveEntity(createdEntity);
+                    return savedEntity;
                 }
             } catch (final Exception e) {
                 throw new AlertException(e.getMessage(), e);
@@ -167,7 +163,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final String id, final ChannelDescriptor descriptor) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
             final Long longId = getObjectTransformer().stringToLong(id);
-            final Optional<? extends DatabaseEntity> savedConfig = descriptor.readGlobalEntity(longId);
+            final Optional<? extends DatabaseEntity> savedConfig = descriptor.getGlobalRepositoryAccessor().readEntity(longId);
             if (savedConfig.isPresent()) {
                 return updateNewConfigWithSavedConfig(newConfig, savedConfig.get());
             }

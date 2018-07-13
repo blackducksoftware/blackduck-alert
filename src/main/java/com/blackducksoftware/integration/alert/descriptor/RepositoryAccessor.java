@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.alert.channel.hipchat;
+package com.blackducksoftware.integration.alert.descriptor;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,17 +14,17 @@ public abstract class RepositoryAccessor {
         this.repository = repository;
     }
 
-    public List<? extends DatabaseEntity> readDistributionEntities() {
+    public List<? extends DatabaseEntity> readEntities() {
         return repository.findAll();
     }
 
-    public Optional<? extends DatabaseEntity> readDistributionEntity(final long id) {
+    public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return repository.findById(id);
     }
 
-    public void deleteDistributionEntity(final long id) {
+    public void deleteEntity(final long id) {
         repository.deleteById(id);
     }
 
-    public abstract DatabaseEntity saveDistributionEntity(final DatabaseEntity entity);
+    public abstract DatabaseEntity saveEntity(final DatabaseEntity entity);
 }

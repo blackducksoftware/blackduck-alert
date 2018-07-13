@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.descriptor.RepositoryAccessor;
 
 @Component
 public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
@@ -18,7 +19,7 @@ public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
     }
 
     @Override
-    public DatabaseEntity saveDistributionEntity(final DatabaseEntity entity) {
+    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
         return repository.save(hipChatEntity);
     }
