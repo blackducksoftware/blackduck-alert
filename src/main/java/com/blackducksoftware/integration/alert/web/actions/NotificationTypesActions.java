@@ -40,11 +40,10 @@ import com.blackducksoftware.integration.alert.datasource.entity.NotificationTyp
 import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.alert.datasource.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 
 @Transactional
 @Component
-public class NotificationTypesActions<R extends CommonDistributionConfigRestModel> {
+public class NotificationTypesActions {
     private static final Logger logger = LoggerFactory.getLogger(NotificationTypesActions.class);
 
     private final NotificationTypeRepository notificationTypeRepository;
@@ -75,13 +74,12 @@ public class NotificationTypesActions<R extends CommonDistributionConfigRestMode
         return notificationTypes;
     }
 
-    public void saveNotificationTypes(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        final List<String> configuredNotificationTypesFromRestModel = restModel.getNotificationTypes();
-        if (configuredNotificationTypesFromRestModel != null) {
-            removeOldNotificationTypes(commonEntity.getId());
-            addNewDistributionNotificationTypes(commonEntity.getId(), configuredNotificationTypesFromRestModel);
+    public void saveNotificationTypes(final long entityId, final List<String> configuredNotificationTypes) {
+        if (configuredNotificationTypes != null) {
+            removeOldNotificationTypes(entityId);
+            addNewDistributionNotificationTypes(entityId, configuredNotificationTypes);
         } else {
-            logger.warn("{}: List of configured notification types was null; notification types will not be updated.", commonEntity.getName());
+            logger.warn("Configured notification types was null; notification types will not be updated.");
         }
     }
 

@@ -59,11 +59,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
-        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
-    }
-
-    public boolean doesConfigExist(final Long id, final Descriptor descriptor) {
+    public boolean doesConfigExist(final Long id, final ChannelDescriptor descriptor) {
         return id != null && descriptor.readGlobalEntity(id).isPresent();
     }
 
@@ -94,11 +90,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
-        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
-    }
-
-    public void deleteConfig(final Long id, final Descriptor descriptor) {
+    public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
             descriptor.deleteGlobalEntity(id);
         }

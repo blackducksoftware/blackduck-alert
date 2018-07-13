@@ -49,7 +49,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Autowired
     public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final AuditEntryRepository auditEntryRepository,
-            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions, final ObjectTransformer objectTransformer,
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final ObjectTransformer objectTransformer,
             final AuditNotificationRepository auditNotificationRepository) {
         super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
         this.auditEntryRepository = auditEntryRepository;
@@ -89,8 +89,10 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
                 CommonDistributionConfigEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
                 if (createdEntity != null) {
                     createdEntity = getCommonDistributionRepository().save(createdEntity);
-                    getConfiguredProjectsActions().saveConfiguredProjects(createdEntity, restModel);
-                    getNotificationTypesActions().saveNotificationTypes(createdEntity, restModel);
+                    if (Boolean.TRUE.equals(createdEntity.getFilterByProject())) {
+                        getConfiguredProjectsActions().saveConfiguredProjects(createdEntity.getId(), restModel.getConfiguredProjects());
+                    }
+                    getNotificationTypesActions().saveNotificationTypes(createdEntity.getId(), restModel.getNotificationTypes());
                     return createdEntity;
                 }
             } catch (final Exception e) {

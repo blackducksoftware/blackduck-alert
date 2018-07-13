@@ -55,13 +55,13 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public class ChannelDistributionConfigActions extends ChannelConfigActions<CommonDistributionConfigRestModel> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
-    private final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
+    private final ConfiguredProjectsActions configuredProjectsActions;
+    private final NotificationTypesActions notificationTypesActions;
     private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
     public ChannelDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
-            final ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions, final NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions,
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions,
             final DistributionChannelManager distributionChannelManager) {
         super(objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
@@ -71,10 +71,6 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     }
 
     @Override
-    public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
-        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
-    }
-
     public boolean doesConfigExist(final Long id, final ChannelDescriptor descriptor) {
         return id != null && commonDistributionRepository.existsById(id);
     }
@@ -102,8 +98,10 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
                     if (savedEntity.isPresent()) {
                         commonEntity.setDistributionConfigId(savedEntity.get().getId());
                         commonEntity = commonDistributionRepository.save(commonEntity);
-                        configuredProjectsActions.saveConfiguredProjects(commonEntity, restModel);
-                        notificationTypesActions.saveNotificationTypes(commonEntity, restModel);
+                        if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
+                            configuredProjectsActions.saveConfiguredProjects(commonEntity.getId(), restModel.getConfiguredProjects());
+                        }
+                        notificationTypesActions.saveNotificationTypes(commonEntity.getId(), restModel.getConfiguredProjects());
                         cleanUpStaleChannelConfigurations(descriptor);
                         return savedEntity.get();
                     }
@@ -113,18 +111,10 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             }
         }
         return null;
+
     }
 
     @Override
-    public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
-        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
-    }
-
-    @Override
-    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
-        return saveConfig(restModel, descriptor);
-    }
-
     public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
             final Optional<CommonDistributionConfigEntity> commonEntity = commonDistributionRepository.findById(id);
@@ -136,6 +126,11 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             configuredProjectsActions.cleanUpConfiguredProjects();
             notificationTypesActions.removeOldNotificationTypes(id);
         }
+    }
+
+    @Override
+    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+        return saveConfig(restModel, descriptor);
     }
 
     @Override

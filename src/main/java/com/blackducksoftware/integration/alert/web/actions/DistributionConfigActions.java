@@ -53,11 +53,11 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ConfiguredProjectsActions<R> configuredProjectsActions;
-    private final NotificationTypesActions<R> notificationTypesActions;
+    private final ConfiguredProjectsActions configuredProjectsActions;
+    private final NotificationTypesActions notificationTypesActions;
 
     public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final W channelDistributionRepository,
-            final ConfiguredProjectsActions<R> configuredProjectsActions, final NotificationTypesActions<R> notificationTypesActions, final ObjectTransformer objectTransformer) {
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final ObjectTransformer objectTransformer) {
         super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
@@ -86,8 +86,8 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
                     createdEntity = getRepository().save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
                     commonEntity = commonDistributionRepository.save(commonEntity);
-                    configuredProjectsActions.saveConfiguredProjects(commonEntity, restModel);
-                    notificationTypesActions.saveNotificationTypes(commonEntity, restModel);
+                    configuredProjectsActions.saveConfiguredProjects(commonEntity.getId(), restModel.getConfiguredProjects());
+                    notificationTypesActions.saveNotificationTypes(commonEntity.getId(), restModel.getNotificationTypes());
                     cleanUpStaleChannelConfigurations();
                     return createdEntity;
                 }
@@ -208,11 +208,11 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         return commonDistributionRepository;
     }
 
-    public ConfiguredProjectsActions<R> getConfiguredProjectsActions() {
+    public ConfiguredProjectsActions getConfiguredProjectsActions() {
         return configuredProjectsActions;
     }
 
-    public NotificationTypesActions<R> getNotificationTypesActions() {
+    public NotificationTypesActions getNotificationTypesActions() {
         return notificationTypesActions;
     }
 
