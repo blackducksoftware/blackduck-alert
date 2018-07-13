@@ -8,30 +8,30 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 
-public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<GlobalEmailConfigEntity, GlobalEmailConfigRestModel, GlobalEmailRepository> {
+public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<EmailGlobalConfigEntity, EmailGlobalConfigRestModel, EmailGlobalRepository> {
 
     @Autowired
-    private GlobalEmailRepository globalEmailRepository;
+    private EmailGlobalRepository emailGlobalRepository;
 
     @Override
-    public GlobalEmailRepository getGlobalEntityRepository() {
-        return globalEmailRepository;
+    public EmailGlobalRepository getGlobalEntityRepository() {
+        return emailGlobalRepository;
     }
 
     @Override
-    public MockGlobalEntityUtil<GlobalEmailConfigEntity> getGlobalEntityMockUtil() {
+    public MockGlobalEntityUtil<EmailGlobalConfigEntity> getGlobalEntityMockUtil() {
         return new MockEmailGlobalEntity();
     }
 
     @Override
-    public MockGlobalRestModelUtil<GlobalEmailConfigRestModel> getGlobalRestModelMockUtil() {
+    public MockGlobalRestModelUtil<EmailGlobalConfigRestModel> getGlobalRestModelMockUtil() {
         return new MockEmailGlobalRestModel();
     }
 

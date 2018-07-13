@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.MessageReceiver;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
@@ -43,7 +44,6 @@ import com.blackducksoftware.integration.alert.datasource.entity.channel.Distrib
 import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -58,11 +58,11 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
-    private final AlertEventContentConverter contentExtractor;
+    private final ContentConverter contentExtractor;
     private final GlobalProperties globalProperties;
 
     public DistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
+            final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
         this.globalProperties = globalProperties;
         this.auditEntryRepository = auditEntryRepository;

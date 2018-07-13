@@ -21,34 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.event;
+package com.blackducksoftware.integration.alert.channel.hipchat.model;
 
-import java.util.Optional;
+import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.google.gson.Gson;
-
-@Component
-public class AlertEventContentConverter {
-
-    private final Gson gson;
-
-    @Autowired
-    public AlertEventContentConverter(final Gson gson) {
-        this.gson = gson;
-    }
-
-    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) throws AlertException {
-        if (contentClass != null && content != null) {
-            return Optional.ofNullable(gson.fromJson(content, contentClass));
-        }
-        return Optional.empty();
-    }
-
-    public <C> String convertToString(final C content) {
-        return gson.toJson(content);
-    }
+@Transactional
+public interface HipChatGlobalRepository extends JpaRepository<HipChatGlobalConfigEntity, Long> {
 }

@@ -23,12 +23,13 @@
  */
 package com.blackducksoftware.integration.alert.descriptor;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import javax.jms.MessageListener;
 
+import com.blackducksoftware.integration.alert.channel.hipchat.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.channel.hipchat.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
@@ -38,12 +39,15 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;
-    private final boolean hasGlobalConfiguration;
+    private final DatabaseContentConverter contentConverter;
+    private final RepositoryAccessor repositoryAccessor;
 
-    public ChannelDescriptor(final String name, final String destinationName, final boolean hasGlobalConfiguration) {
-        super(name, DescriptorType.CHANNEL);
+    public ChannelDescriptor(final String name, final String destinationName, final DatabaseContentConverter globalContentConverter, final RepositoryAccessor globalRepositoryAccessor, final DatabaseContentConverter contentConverter,
+            final RepositoryAccessor repositoryAccessor) {
+        super(name, DescriptorType.CHANNEL, globalContentConverter, globalRepositoryAccessor);
         this.destinationName = destinationName;
-        this.hasGlobalConfiguration = hasGlobalConfiguration;
+        this.contentConverter = contentConverter;
+        this.repositoryAccessor = repositoryAccessor;
     }
 
     public String getDestinationName() {
@@ -51,20 +55,16 @@ public abstract class ChannelDescriptor extends Descriptor {
     }
 
     public boolean hasGlobalConfiguration() {
-        return hasGlobalConfiguration;
+        return getGlobalRepositoryAccessor() != null && getGlobalContentConverter() != null;
     }
 
-    public abstract List<? extends DatabaseEntity> readDistributionEntities();
+    public RepositoryAccessor getDistributionRepositoryAccessor() {
+        return repositoryAccessor;
+    }
 
-    public abstract Optional<? extends DatabaseEntity> readDistributionEntity(long id);
-
-    public abstract Optional<? extends DatabaseEntity> saveDistributionEntity(DatabaseEntity entity);
-
-    public abstract void deleteDistributionEntity(long id);
-
-    public abstract CommonDistributionConfigRestModel convertFromStringToDistributionRestModel(String json);
-
-    public abstract DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(CommonDistributionConfigRestModel restModel) throws AlertException;
+    public DatabaseContentConverter getDistribuitionContentConverter() {
+        return contentConverter;
+    }
 
     public abstract void validateDistributionConfig(CommonDistributionConfigRestModel restModel, Map<String, String> fieldErrors);
 

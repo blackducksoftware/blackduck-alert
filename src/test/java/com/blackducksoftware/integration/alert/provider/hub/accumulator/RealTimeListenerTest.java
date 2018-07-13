@@ -9,12 +9,12 @@ import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.RealTimeListener;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.InternalEventTypes;
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
@@ -30,7 +30,7 @@ public class RealTimeListenerTest {
         final NotificationModel model = new NotificationModel(notificationEntity.createEntity(), Collections.emptyList());
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
-        final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson);
 
         Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
         final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, eventManager, contentConverter);
@@ -48,7 +48,7 @@ public class RealTimeListenerTest {
             final NotificationModels model = new NotificationModels(Arrays.asList(notificationModel));
             final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
             final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
-            final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
+            final ContentConverter contentConverter = new ContentConverter(gson);
 
             Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
             Mockito.doThrow(new NullPointerException("null error")).when(eventManager).createChannelEvents(Mockito.any(), Mockito.anyList());

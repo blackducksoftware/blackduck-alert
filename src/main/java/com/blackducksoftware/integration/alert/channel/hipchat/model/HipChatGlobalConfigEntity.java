@@ -23,31 +23,38 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.model;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class GlobalHipChatConfigRestModel extends ConfigRestModel {
+import com.blackducksoftware.integration.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.alert.web.security.StringEncryptionConverter;
+
+@Entity
+@Table(schema = "alert", name = "global_hipchat_config")
+public class HipChatGlobalConfigEntity extends GlobalChannelConfigEntity {
+
+    // @EncryptedStringField
+    @Column(name = "api_key")
     @SensitiveField
+    @Convert(converter = StringEncryptionConverter.class)
     private String apiKey;
-    private boolean apiKeyIsSet;
+
+    @Column(name = "host_server")
     private String hostServer;
 
-    public GlobalHipChatConfigRestModel() {
+    public HipChatGlobalConfigEntity() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
-        super(id);
+    public HipChatGlobalConfigEntity(final String apiKey, final String hostServer) {
         this.apiKey = apiKey;
-        this.apiKeyIsSet = apiKeyIsSet;
         this.hostServer = hostServer;
     }
 
     public String getApiKey() {
         return apiKey;
-    }
-
-    public boolean isApiKeyIsSet() {
-        return apiKeyIsSet;
     }
 
     public String getHostServer() {

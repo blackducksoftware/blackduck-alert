@@ -9,14 +9,14 @@ import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestM
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 
-public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, GlobalEmailConfigEntity> {
+public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
 
     @Autowired
-    private GlobalEmailRepository globalEmailRepository;
+    private EmailGlobalRepository emailGlobalRepository;
 
     @Autowired
     private EmailGroupDistributionRepository distributionRepository;
@@ -26,16 +26,16 @@ public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDist
 
     @Override
     public void cleanGlobalRepository() {
-        globalEmailRepository.deleteAll();
+        emailGlobalRepository.deleteAll();
     }
 
     @Override
     public void saveGlobalConfiguration() {
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
-        final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+        final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-        globalEmailRepository.save(emailGlobalConfigEntity);
+        emailGlobalRepository.save(emailGlobalConfigEntity);
     }
 
     @Override
