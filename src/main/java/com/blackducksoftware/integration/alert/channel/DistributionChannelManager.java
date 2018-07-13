@@ -71,7 +71,7 @@ public class DistributionChannelManager {
     public String sendTestMessage(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
         final String destinationName = descriptor.getDestinationName();
         if (descriptor.hasGlobalConfiguration()) {
-            if (descriptor.readGlobalEntities().isEmpty()) {
+            if (descriptor.getGlobalRepositoryAccessor().readEntities().isEmpty()) {
                 logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
                 return "ERROR: Missing global configuration!";
             }

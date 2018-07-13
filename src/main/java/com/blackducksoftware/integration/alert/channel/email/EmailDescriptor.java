@@ -24,9 +24,7 @@
 package com.blackducksoftware.integration.alert.channel.email;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.jms.MessageListener;
 
@@ -34,74 +32,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.google.gson.Gson;
 
+// TODO finish email descriptor
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
     private final EmailGroupChannel emailGroupChannel;
-    private final EmailGlobalRepository emailGlobalRepository;
-    private final EmailGroupDistributionRepository emailGroupDistributionRepository;
-    private final Gson gson;
-    private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final EmailGlobalRepository emailGlobalRepository, final EmailGroupDistributionRepository emailGroupDistributionRepository, final Gson gson,
-            final ObjectTransformer objectTransformer) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, true);
+    public EmailDescriptor(final EmailGroupChannel emailGroupChannel) {
+        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, null, null, null, null);
         this.emailGroupChannel = emailGroupChannel;
-        this.emailGlobalRepository = emailGlobalRepository;
-        this.emailGroupDistributionRepository = emailGroupDistributionRepository;
-        this.gson = gson;
-        this.objectTransformer = objectTransformer;
-    }
-
-    @Override
-    public List<? extends DatabaseEntity> readDistributionEntities() {
-        return emailGroupDistributionRepository.findAll();
-    }
-
-    @Override
-    public Optional<? extends DatabaseEntity> readDistributionEntity(final long id) {
-        return emailGroupDistributionRepository.findById(id);
-    }
-
-    @Override
-    public Optional<? extends DatabaseEntity> saveDistributionEntity(final DatabaseEntity entity) {
-        if (entity instanceof EmailGroupDistributionConfigEntity) {
-            final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
-            return Optional.of(emailGroupDistributionRepository.save(emailEntity));
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void deleteDistributionEntity(final long id) {
-        emailGroupDistributionRepository.deleteById(id);
-    }
-
-    @Override
-    public CommonDistributionConfigRestModel convertFromStringToDistributionRestModel(final String json) {
-        return gson.fromJson(json, EmailGroupDistributionRestModel.class);
-    }
-
-    @Override
-    public DatabaseEntity convertFromDistributionRestModelToDistributionConfigEntity(final CommonDistributionConfigRestModel restModel) throws AlertException {
-        return objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGroupDistributionConfigEntity.class);
     }
 
     @Override
@@ -115,67 +64,14 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException {
-        if (distributionEntity instanceof EmailGroupDistributionConfigEntity) {
-            final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) distributionEntity;
-            final EmailGroupDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, EmailGroupDistributionRestModel.class);
-            restModel.setId(objectTransformer.objectToString(commonEntity.getId()));
-            restModel.setGroupName(emailEntity.getGroupName());
-            restModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
-            restModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());
-            return Optional.ofNullable(restModel);
-        }
-        return Optional.empty();
-    }
-
-    @Override
     public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
-        final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) convertFromDistributionRestModelToDistributionConfigEntity(restModel);
-        emailGroupChannel.sendAuditedMessage(event, emailEntity);
+        // final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) convertFromDistributionRestModelToDistributionConfigEntity(restModel);
+        // emailGroupChannel.sendAuditedMessage(event, emailEntity);
     }
 
     @Override
     public MessageListener getChannelListener() {
         return emailGroupChannel;
-    }
-
-    @Override
-    public List<? extends DatabaseEntity> readGlobalEntities() {
-        return emailGlobalRepository.findAll();
-    }
-
-    @Override
-    public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
-        return emailGlobalRepository.findById(id);
-    }
-
-    @Override
-    public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
-        if (entity instanceof EmailGlobalConfigEntity) {
-            final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
-            return Optional.of(emailGlobalRepository.save(emailEntity));
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void deleteGlobalEntity(final long id) {
-        emailGlobalRepository.deleteById(id);
-    }
-
-    @Override
-    public ConfigRestModel convertFromStringToGlobalRestModel(final String json) {
-        return gson.fromJson(json, EmailGlobalConfigRestModel.class);
-    }
-
-    @Override
-    public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) throws AlertException {
-        return objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGlobalConfigEntity.class);
-    }
-
-    @Override
-    public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
-        return objectTransformer.databaseEntityToConfigRestModel(entity, EmailGlobalConfigRestModel.class);
     }
 
     @Override

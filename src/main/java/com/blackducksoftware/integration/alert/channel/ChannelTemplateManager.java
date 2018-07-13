@@ -44,7 +44,6 @@ import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.google.gson.Gson;
 
 @Transactional
@@ -87,23 +86,19 @@ public class ChannelTemplateManager {
             auditEntryEntity.get().setStatus(StatusEnum.PENDING);
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity.get());
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-            try {
-                final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
-                if (!optionalModel.isPresent()) {
-                    return false;
-                } else {
-                    final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
-                    projectDataCollection.forEach(projectDataItem -> {
-                        projectDataItem.getNotificationIds().forEach(notificationId -> {
-                            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                            auditNotificationRepository.save(auditNotificationRelation);
-                        });
-                    });
-                    final String jsonMessage = gson.toJson(channelEvent);
-                    jmsTemplate.convertAndSend(destination, jsonMessage);
-                }
-            } catch (final AlertException ex) {
+            final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
+            if (!optionalModel.isPresent()) {
                 return false;
+            } else {
+                final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
+                projectDataCollection.forEach(projectDataItem -> {
+                    projectDataItem.getNotificationIds().forEach(notificationId -> {
+                        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
+                        auditNotificationRepository.save(auditNotificationRelation);
+                    });
+                });
+                final String jsonMessage = gson.toJson(channelEvent);
+                jmsTemplate.convertAndSend(destination, jsonMessage);
             }
         } else {
             final String jsonMessage = gson.toJson(event);

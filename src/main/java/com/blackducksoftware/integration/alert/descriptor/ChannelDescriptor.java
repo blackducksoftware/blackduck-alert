@@ -24,16 +24,10 @@
 package com.blackducksoftware.integration.alert.descriptor;
 
 import java.util.Map;
-import java.util.Optional;
 
 import javax.jms.MessageListener;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.DatabaseContentConverter;
-import com.blackducksoftware.integration.alert.channel.hipchat.RepositoryAccessor;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -62,13 +56,13 @@ public abstract class ChannelDescriptor extends Descriptor {
         return repositoryAccessor;
     }
 
-    public DatabaseContentConverter getDistribuitionContentConverter() {
+    public DatabaseContentConverter getDistributionContentConverter() {
         return contentConverter;
     }
 
     public abstract void validateDistributionConfig(CommonDistributionConfigRestModel restModel, Map<String, String> fieldErrors);
 
-    public abstract Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException;
+    // public abstract Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException;
 
     public abstract void testDistributionConfig(CommonDistributionConfigRestModel restModel, ChannelEvent event) throws IntegrationException;
 

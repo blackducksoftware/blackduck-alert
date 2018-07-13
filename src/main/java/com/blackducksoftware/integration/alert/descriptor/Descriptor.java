@@ -26,8 +26,6 @@ package com.blackducksoftware.integration.alert.descriptor;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.DatabaseContentConverter;
-import com.blackducksoftware.integration.alert.channel.hipchat.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
