@@ -17,8 +17,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -33,7 +33,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class GlobalEmailRepositoryIT {
 
     @Autowired
-    GlobalEmailRepository repository;
+    EmailGlobalRepository repository;
 
     @Test
     public void testSaveEntity() {
@@ -87,15 +87,15 @@ public class GlobalEmailRepositoryIT {
         final Boolean mailSmtpUserSet = true;
         final Boolean mailSmtpNoopStrict = true;
 
-        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost,
+        final EmailGlobalConfigEntity entity = new EmailGlobalConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost,
                 mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth, mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable, mailSmtpAuthNtlmDomain,
                 mailSmtpAuthNtlmFlags, mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, mailSmtpSaslEnable, mailSmtpSaslMechanisms, mailSmtpSaslAuthorizationId,
                 mailSmtpSaslRealm, mailSmtpSaslUseCanonicalHostname, mailSmtpQuitwait, mailSmtpReportSuccess, mailSmtpSslEnable, mailSmtpSslCheckServerIdentity, mailSmtpSslTrust, mailSmtpSslProtocols, mailSmtpSslCipherSuites,
                 mailSmtpStartTlsEnable, mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort, mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict);
-        final GlobalEmailConfigEntity savedEntity = repository.save(entity);
+        final EmailGlobalConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalEmailConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
+        final EmailGlobalConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
         assertEquals(mailSmtpHost, foundEntity.getMailSmtpHost());
         assertEquals(mailSmtpUser, foundEntity.getMailSmtpUser());
         assertEquals(mailSmtpPassword, foundEntity.getMailSmtpPassword());

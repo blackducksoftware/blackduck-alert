@@ -35,10 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalRepository;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
@@ -49,7 +50,6 @@ import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -61,22 +61,22 @@ import freemarker.template.TemplateException;
 
 @Component(value = HipChatChannel.COMPONENT_NAME)
 @Transactional
-public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
+public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigEntity, HipChatDistributionConfigEntity> {
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalHipChatRepository globalHipChatRepository,
+    public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
             final CommonDistributionRepository commonDistributionRepository,
-            final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
-        super(gson, globalProperties, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+            final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
+        super(gson, globalProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
-    public String getApiUrl(final GlobalHipChatConfigEntity globalConfig) {
+    public String getApiUrl(final HipChatGlobalConfigEntity globalConfig) {
         String hipChatHostServer = HIP_CHAT_API;
         final String customHostServer = globalConfig.getHostServer();
         if (!StringUtils.isBlank(customHostServer)) {
@@ -86,7 +86,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     }
 
     @Override
-    public String testGlobalConfig(final GlobalHipChatConfigEntity entity) throws IntegrationException {
+    public String testGlobalConfig(final HipChatGlobalConfigEntity entity) throws IntegrationException {
         if (entity == null) {
             return "The provided entity was null.";
         }
@@ -128,7 +128,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final GlobalHipChatConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {

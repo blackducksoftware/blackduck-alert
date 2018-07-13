@@ -38,9 +38,9 @@ import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
@@ -54,17 +54,17 @@ import com.google.gson.Gson;
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
     private final EmailGroupChannel emailGroupChannel;
-    private final GlobalEmailRepository globalEmailRepository;
+    private final EmailGlobalRepository emailGlobalRepository;
     private final EmailGroupDistributionRepository emailGroupDistributionRepository;
     private final Gson gson;
     private final ObjectTransformer objectTransformer;
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final GlobalEmailRepository globalEmailRepository, final EmailGroupDistributionRepository emailGroupDistributionRepository, final Gson gson,
+    public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final EmailGlobalRepository emailGlobalRepository, final EmailGroupDistributionRepository emailGroupDistributionRepository, final Gson gson,
             final ObjectTransformer objectTransformer) {
         super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, true);
         this.emailGroupChannel = emailGroupChannel;
-        this.globalEmailRepository = globalEmailRepository;
+        this.emailGlobalRepository = emailGlobalRepository;
         this.emailGroupDistributionRepository = emailGroupDistributionRepository;
         this.gson = gson;
         this.objectTransformer = objectTransformer;
@@ -141,47 +141,47 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Override
     public List<? extends DatabaseEntity> readGlobalEntities() {
-        return globalEmailRepository.findAll();
+        return emailGlobalRepository.findAll();
     }
 
     @Override
     public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
-        return globalEmailRepository.findById(id);
+        return emailGlobalRepository.findById(id);
     }
 
     @Override
     public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
-        if (entity instanceof GlobalEmailConfigEntity) {
-            final GlobalEmailConfigEntity emailEntity = (GlobalEmailConfigEntity) entity;
-            return Optional.of(globalEmailRepository.save(emailEntity));
+        if (entity instanceof EmailGlobalConfigEntity) {
+            final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
+            return Optional.of(emailGlobalRepository.save(emailEntity));
         }
         return Optional.empty();
     }
 
     @Override
     public void deleteGlobalEntity(final long id) {
-        globalEmailRepository.deleteById(id);
+        emailGlobalRepository.deleteById(id);
     }
 
     @Override
     public ConfigRestModel convertFromStringToGlobalRestModel(final String json) {
-        return gson.fromJson(json, GlobalEmailConfigRestModel.class);
+        return gson.fromJson(json, EmailGlobalConfigRestModel.class);
     }
 
     @Override
     public DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(final ConfigRestModel restModel) throws AlertException {
-        return objectTransformer.configRestModelToDatabaseEntity(restModel, GlobalEmailConfigEntity.class);
+        return objectTransformer.configRestModelToDatabaseEntity(restModel, EmailGlobalConfigEntity.class);
     }
 
     @Override
     public ConfigRestModel convertFromGlobalEntityToGlobalRestModel(final DatabaseEntity entity) throws AlertException {
-        return objectTransformer.databaseEntityToConfigRestModel(entity, GlobalEmailConfigRestModel.class);
+        return objectTransformer.databaseEntityToConfigRestModel(entity, EmailGlobalConfigRestModel.class);
     }
 
     @Override
     public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof GlobalEmailConfigRestModel) {
-            final GlobalEmailConfigRestModel emailRestModel = (GlobalEmailConfigRestModel) restModel;
+        if (restModel instanceof EmailGlobalConfigRestModel) {
+            final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
 
             if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
                 fieldErrors.put("mailSmtpPort", "Not an Integer.");
@@ -202,12 +202,12 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Override
     public Field[] getGlobalEntityFields() {
-        return GlobalEmailConfigEntity.class.getDeclaredFields();
+        return EmailGlobalConfigEntity.class.getDeclaredFields();
     }
 
     @Override
     public ConfigRestModel getGlobalRestModelObject() {
-        return new GlobalEmailConfigRestModel();
+        return new EmailGlobalConfigRestModel();
     }
 
 }

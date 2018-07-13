@@ -23,181 +23,82 @@
  */
 package com.blackducksoftware.integration.alert.channel.email.model;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import com.blackducksoftware.integration.alert.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.web.security.StringEncryptionConverter;
+import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
-@Entity
-@Table(schema = "alert", name = "global_email_config")
-public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
-    // JavaMail properties https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
-    // Note: SocketFactory properties were omitted
-    // If this class needs to be modified for new parameters the database structure needs to change to a new table that contains key value pairs as strings.
+public class EmailGlobalConfigRestModel extends ConfigRestModel {
+    // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
 
-    @Column(name = "mail_smtp_host")
     private String mailSmtpHost;
-
-    @Column(name = "mail_smtp_user")
     private String mailSmtpUser;
-
     // not a javamail property, but we are going to piggy-back to get the smtp password
-    // @EncryptedStringField
-    @Column(name = "mail_smtp_password")
     @SensitiveField
-    @Convert(converter = StringEncryptionConverter.class)
     private String mailSmtpPassword;
+    private boolean mailSmtpPasswordIsSet;
 
-    @Column(name = "mail_smtp_port")
-    private Integer mailSmtpPort;
-
-    @Column(name = "mail_smtp_connection_timeout")
-    private Integer mailSmtpConnectionTimeout;
-
-    @Column(name = "mail_smtp_timeout")
-    private Integer mailSmtpTimeout;
-
-    @Column(name = "mail_smtp_writetimeout")
-    private Integer mailSmtpWriteTimeout;
-
-    @Column(name = "mail_smtp_from")
+    private String mailSmtpPort;
+    private String mailSmtpConnectionTimeout;
+    private String mailSmtpTimeout;
+    private String mailSmtpWriteTimeout;
     private String mailSmtpFrom;
-
-    @Column(name = "mail_smtp_localhost")
     private String mailSmtpLocalhost;
-
-    @Column(name = "mail_smtp_localaddress")
     private String mailSmtpLocalAddress;
-
-    @Column(name = "mail_smtp_localport")
-    private Integer mailSmtpLocalPort;
-
-    @Column(name = "mail_smtp_ehlo")
-    private Boolean mailSmtpEhlo;
-
-    @Column(name = "mail_smtp_auth")
-    private Boolean mailSmtpAuth;
-
-    @Column(name = "mail_smtp_auth_mechanisms")
+    private String mailSmtpLocalPort;
+    private boolean mailSmtpEhlo;
+    private boolean mailSmtpAuth;
     private String mailSmtpAuthMechanisms;
-
-    @Column(name = "mail_smtp_auth_login_disable")
-    private Boolean mailSmtpAuthLoginDisable;
-
-    @Column(name = "mail_smtp_auth_plain_disable")
-    private Boolean mailSmtpAuthPlainDisable;
-
-    @Column(name = "mail_smtp_auth_digest_md5_disable")
-    private Boolean mailSmtpAuthDigestMd5Disable;
-
-    @Column(name = "mail_smtp_auth_ntlm_disable")
-    private Boolean mailSmtpAuthNtlmDisable;
-
-    @Column(name = "mail_smtp_auth_ntlm_domain")
+    private boolean mailSmtpAuthLoginDisable;
+    private boolean mailSmtpAuthPlainDisable;
+    private boolean mailSmtpAuthDigestMd5Disable;
+    private boolean mailSmtpAuthNtlmDisable;
     private String mailSmtpAuthNtlmDomain;
-
-    @Column(name = "mail_smtp_auth_ntlm_flags")
-    private Integer mailSmtpAuthNtlmFlags;
-
-    @Column(name = "mail_smtp_auth_xoauth2_disable")
-    private Boolean mailSmtpAuthXoauth2Disable;
-
-    @Column(name = "mail_smtp_submitter")
+    private String mailSmtpAuthNtlmFlags;
+    private boolean mailSmtpAuthXoauth2Disable;
     private String mailSmtpSubmitter;
-
-    @Column(name = "mail_smtp_dsn_notify")
     private String mailSmtpDnsNotify;
-
-    @Column(name = "mail_smtp_dns_ret")
     private String mailSmtpDnsRet;
-
-    @Column(name = "mail_smtp_allow_8_bitmime")
-    private Boolean mailSmtpAllow8bitmime;
-
-    @Column(name = "mail_smtp_send_partial")
-    private Boolean mailSmtpSendPartial;
-
-    @Column(name = "mail_smtp_sasl_enable")
-    private Boolean mailSmtpSaslEnable;
-
-    @Column(name = "mail_smtp_sasl_mechanisms")
+    private boolean mailSmtpAllow8bitmime;
+    private boolean mailSmtpSendPartial;
+    private boolean mailSmtpSaslEnable;
     private String mailSmtpSaslMechanisms;
-
-    @Column(name = "mail_smtp_sasl_authorizationid")
     private String mailSmtpSaslAuthorizationId;
-
-    @Column(name = "mail_smtp_sasl_realm")
     private String mailSmtpSaslRealm;
-
-    @Column(name = "mail_smtp_sasl_usecanonicalhostname")
-    private Boolean mailSmtpSaslUseCanonicalHostname;
-
-    @Column(name = "mail_smtp_quitwait")
-    private Boolean mailSmtpQuitwait;
-
-    @Column(name = "mail_smtp_reportsuccess")
-    private Boolean mailSmtpReportSuccess;
-
-    @Column(name = "mail_smtp_ssl_enable")
-    private Boolean mailSmtpSslEnable;
-
-    @Column(name = "mail_smtp_ssl_checkserveridentity")
-    private Boolean mailSmtpSslCheckServerIdentity;
-
-    @Column(name = "mail_smtp_ssl_trust")
+    private boolean mailSmtpSaslUseCanonicalHostname;
+    private boolean mailSmtpQuitwait;
+    private boolean mailSmtpReportSuccess;
+    private boolean mailSmtpSslEnable;
+    private boolean mailSmtpSslCheckServerIdentity;
     private String mailSmtpSslTrust;
-
-    @Column(name = "mail_smtp_ssl_protocols")
     private String mailSmtpSslProtocols;
-
-    @Column(name = "mail_smtp_ssl_ciphersuites")
     private String mailSmtpSslCipherSuites;
-
-    @Column(name = "mail_smtp_starttls_enable")
-    private Boolean mailSmtpStartTlsEnable;
-
-    @Column(name = "mail_smtp_starttls_required")
-    private Boolean mailSmtpStartTlsRequired;
-
-    @Column(name = "mail_smtp_proxy_host")
+    private boolean mailSmtpStartTlsEnable;
+    private boolean mailSmtpStartTlsRequired;
     private String mailSmtpProxyHost;
-
-    @Column(name = "mail_smtp_proxy_port")
-    private Integer mailSmtpProxyPort;
-
-    @Column(name = "mail_smtp_socks_host")
+    private String mailSmtpProxyPort;
     private String mailSmtpSocksHost;
-
-    @Column(name = "mail_smtp_socks_port")
-    private Integer mailSmtpSocksPort;
-
-    @Column(name = "mail_smtp_mailextension")
+    private String mailSmtpSocksPort;
     private String mailSmtpMailExtension;
+    private boolean mailSmtpUserSet;
+    private boolean mailSmtpNoopStrict;
 
-    @Column(name = "mail_smtp_userset")
-    private Boolean mailSmtpUserSet;
-
-    @Column(name = "mail_smtp_noop_strict")
-    private Boolean mailSmtpNoopStrict;
-
-    public GlobalEmailConfigEntity() {
+    public EmailGlobalConfigRestModel() {
     }
 
-    public GlobalEmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
-            final Integer mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final Integer mailSmtpLocalPort, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth,
-            final String mailSmtpAuthMechanisms, final Boolean mailSmtpAuthLoginDisable, final Boolean mailSmtpAuthPlainDisable, final Boolean mailSmtpAuthDigestMd5Disable, final Boolean mailSmtpAuthNtlmDisable,
-            final String mailSmtpAuthNtlmDomain, final Integer mailSmtpAuthNtlmFlags, final Boolean mailSmtpAuthXoauth2Disable, final String mailSmtpSubmitter, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial, final Boolean mailSmtpSaslEnable, final String mailSmtpSaslMechanisms, final String mailSmtpSaslAuthorizationId, final String mailSmtpSaslRealm,
-            final Boolean mailSmtpSaslUseCanonicalHostname, final Boolean mailSmtpQuitwait, final Boolean mailSmtpReportSuccess, final Boolean mailSmtpSslEnable, final Boolean mailSmtpSslCheckServerIdentity, final String mailSmtpSslTrust,
-            final String mailSmtpSslProtocols, final String mailSmtpSslCipherSuites, final Boolean mailSmtpStartTlsEnable, final Boolean mailSmtpStartTlsRequired, final String mailSmtpProxyHost, final Integer mailSmtpProxyPort,
-            final String mailSmtpSocksHost, final Integer mailSmtpSocksPort, final String mailSmtpMailExtension, final Boolean mailSmtpUserSet, final Boolean mailSmtpNoopStrict) {
+    public EmailGlobalConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
+            final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
+            final String mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final String mailSmtpLocalPort, final boolean mailSmtpEhlo, final boolean mailSmtpAuth,
+            final String mailSmtpAuthMechanisms, final boolean mailSmtpAuthLoginDisable, final boolean mailSmtpAuthPlainDisable, final boolean mailSmtpAuthDigestMd5Disable, final boolean mailSmtpAuthNtlmDisable,
+            final String mailSmtpAuthNtlmDomain, final String mailSmtpAuthNtlmFlags, final boolean mailSmtpAuthXoauth2Disable, final String mailSmtpSubmitter, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
+            final boolean mailSmtpAllow8bitmime, final boolean mailSmtpSendPartial, final boolean mailSmtpSaslEnable, final String mailSmtpSaslMechanisms, final String mailSmtpSaslAuthorizationId, final String mailSmtpSaslRealm,
+            final boolean mailSmtpSaslUseCanonicalHostname, final boolean mailSmtpQuitwait, final boolean mailSmtpReportSuccess, final boolean mailSmtpSslEnable, final boolean mailSmtpSslCheckServerIdentity, final String mailSmtpSslTrust,
+            final String mailSmtpSslProtocols, final String mailSmtpSslCipherSuites, final boolean mailSmtpStartTlsEnable, final boolean mailSmtpStartTlsRequired, final String mailSmtpProxyHost, final String mailSmtpProxyPort,
+            final String mailSmtpSocksHost, final String mailSmtpSocksPort, final String mailSmtpMailExtension, final boolean mailSmtpUserSet, final boolean mailSmtpNoopStrict) {
+        super(id);
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;
+        this.mailSmtpPasswordIsSet = mailSmtpPasswordIsSet;
+
         this.mailSmtpPort = mailSmtpPort;
         this.mailSmtpConnectionTimeout = mailSmtpConnectionTimeout;
         this.mailSmtpTimeout = mailSmtpTimeout;
@@ -242,6 +143,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         this.mailSmtpMailExtension = mailSmtpMailExtension;
         this.mailSmtpUserSet = mailSmtpUserSet;
         this.mailSmtpNoopStrict = mailSmtpNoopStrict;
+
     }
 
     public String getMailSmtpHost() {
@@ -256,19 +158,23 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpPassword;
     }
 
-    public Integer getMailSmtpPort() {
+    public boolean isMailSmtpPasswordIsSet() {
+        return mailSmtpPasswordIsSet;
+    }
+
+    public String getMailSmtpPort() {
         return mailSmtpPort;
     }
 
-    public Integer getMailSmtpConnectionTimeout() {
+    public String getMailSmtpConnectionTimeout() {
         return mailSmtpConnectionTimeout;
     }
 
-    public Integer getMailSmtpTimeout() {
+    public String getMailSmtpTimeout() {
         return mailSmtpTimeout;
     }
 
-    public Integer getMailSmtpWriteTimeout() {
+    public String getMailSmtpWriteTimeout() {
         return mailSmtpWriteTimeout;
     }
 
@@ -284,15 +190,15 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpLocalAddress;
     }
 
-    public Integer getMailSmtpLocalPort() {
+    public String getMailSmtpLocalPort() {
         return mailSmtpLocalPort;
     }
 
-    public Boolean getMailSmtpEhlo() {
+    public boolean getMailSmtpEhlo() {
         return mailSmtpEhlo;
     }
 
-    public Boolean getMailSmtpAuth() {
+    public boolean getMailSmtpAuth() {
         return mailSmtpAuth;
     }
 
@@ -300,19 +206,19 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpAuthMechanisms;
     }
 
-    public Boolean getMailSmtpAuthLoginDisable() {
+    public boolean getMailSmtpAuthLoginDisable() {
         return mailSmtpAuthLoginDisable;
     }
 
-    public Boolean getMailSmtpAuthPlainDisable() {
+    public boolean getMailSmtpAuthPlainDisable() {
         return mailSmtpAuthPlainDisable;
     }
 
-    public Boolean getMailSmtpAuthDigestMd5Disable() {
+    public boolean getMailSmtpAuthDigestMd5Disable() {
         return mailSmtpAuthDigestMd5Disable;
     }
 
-    public Boolean getMailSmtpAuthNtlmDisable() {
+    public boolean getMailSmtpAuthNtlmDisable() {
         return mailSmtpAuthNtlmDisable;
     }
 
@@ -320,11 +226,11 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpAuthNtlmDomain;
     }
 
-    public Integer getMailSmtpAuthNtlmFlags() {
+    public String getMailSmtpAuthNtlmFlags() {
         return mailSmtpAuthNtlmFlags;
     }
 
-    public Boolean getMailSmtpAuthXoauth2Disable() {
+    public boolean getMailSmtpAuthXoauth2Disable() {
         return mailSmtpAuthXoauth2Disable;
     }
 
@@ -340,15 +246,15 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpDnsRet;
     }
 
-    public Boolean getMailSmtpAllow8bitmime() {
+    public boolean getMailSmtpAllow8bitmime() {
         return mailSmtpAllow8bitmime;
     }
 
-    public Boolean getMailSmtpSendPartial() {
+    public boolean getMailSmtpSendPartial() {
         return mailSmtpSendPartial;
     }
 
-    public Boolean getMailSmtpSaslEnable() {
+    public boolean getMailSmtpSaslEnable() {
         return mailSmtpSaslEnable;
     }
 
@@ -364,23 +270,23 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpSaslRealm;
     }
 
-    public Boolean getMailSmtpSaslUseCanonicalHostname() {
+    public boolean getMailSmtpSaslUseCanonicalHostname() {
         return mailSmtpSaslUseCanonicalHostname;
     }
 
-    public Boolean getMailSmtpQuitwait() {
+    public boolean getMailSmtpQuitwait() {
         return mailSmtpQuitwait;
     }
 
-    public Boolean getMailSmtpReportSuccess() {
+    public boolean getMailSmtpReportSuccess() {
         return mailSmtpReportSuccess;
     }
 
-    public Boolean getMailSmtpSslEnable() {
+    public boolean getMailSmtpSslEnable() {
         return mailSmtpSslEnable;
     }
 
-    public Boolean getMailSmtpSslCheckServerIdentity() {
+    public boolean getMailSmtpSslCheckServerIdentity() {
         return mailSmtpSslCheckServerIdentity;
     }
 
@@ -396,11 +302,11 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpSslCipherSuites;
     }
 
-    public Boolean getMailSmtpStartTlsEnable() {
+    public boolean getMailSmtpStartTlsEnable() {
         return mailSmtpStartTlsEnable;
     }
 
-    public Boolean getMailSmtpStartTlsRequired() {
+    public boolean getMailSmtpStartTlsRequired() {
         return mailSmtpStartTlsRequired;
     }
 
@@ -408,7 +314,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpProxyHost;
     }
 
-    public Integer getMailSmtpProxyPort() {
+    public String getMailSmtpProxyPort() {
         return mailSmtpProxyPort;
     }
 
@@ -416,7 +322,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpSocksHost;
     }
 
-    public Integer getMailSmtpSocksPort() {
+    public String getMailSmtpSocksPort() {
         return mailSmtpSocksPort;
     }
 
@@ -424,11 +330,12 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
         return mailSmtpMailExtension;
     }
 
-    public Boolean getMailSmtpUserSet() {
+    public boolean getMailSmtpUserSet() {
         return mailSmtpUserSet;
     }
 
-    public Boolean getMailSmtpNoopStrict() {
+    public boolean getMailSmtpNoopStrict() {
         return mailSmtpNoopStrict;
     }
+
 }

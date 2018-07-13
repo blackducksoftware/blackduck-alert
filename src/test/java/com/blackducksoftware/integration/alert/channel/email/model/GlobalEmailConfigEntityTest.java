@@ -15,10 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
 
-public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailConfigEntity> {
+public class GlobalEmailConfigEntityTest extends GlobalEntityTest<EmailGlobalConfigEntity> {
 
     @Override
     public MockEmailGlobalEntity getMockUtil() {
@@ -26,12 +26,12 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
     }
 
     @Override
-    public Class<GlobalEmailConfigEntity> getGlobalEntityClass() {
-        return GlobalEmailConfigEntity.class;
+    public Class<EmailGlobalConfigEntity> getGlobalEntityClass() {
+        return EmailGlobalConfigEntity.class;
     }
 
     @Override
-    public void assertGlobalEntityFieldsNull(final GlobalEmailConfigEntity entity) {
+    public void assertGlobalEntityFieldsNull(final EmailGlobalConfigEntity entity) {
         assertNull(entity.getMailSmtpHost());
         assertNull(entity.getMailSmtpUser());
         assertNull(entity.getMailSmtpPassword());
@@ -82,7 +82,7 @@ public class GlobalEmailConfigEntityTest extends GlobalEntityTest<GlobalEmailCon
     }
 
     @Override
-    public void assertGlobalEntityFieldsFull(final GlobalEmailConfigEntity entity) {
+    public void assertGlobalEntityFieldsFull(final EmailGlobalConfigEntity entity) {
         assertEquals(getMockUtil().getMailSmtpHost(), entity.getMailSmtpHost());
         assertEquals(getMockUtil().getMailSmtpUser(), entity.getMailSmtpUser());
         assertEquals(getMockUtil().getMailSmtpPassword(), entity.getMailSmtpPassword());

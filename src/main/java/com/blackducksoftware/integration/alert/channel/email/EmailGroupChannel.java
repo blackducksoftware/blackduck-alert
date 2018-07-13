@@ -40,18 +40,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -66,13 +66,13 @@ import freemarker.template.TemplateException;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 @Transactional
-public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
+public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity, EmailGroupDistributionConfigEntity> {
     public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final AlertEventContentConverter contentExtractor) {
+    public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
+            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
         super(gson, globalProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
     }
 

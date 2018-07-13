@@ -20,11 +20,11 @@ import java.util.Collections;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.event.ChannelEventFactory;
 import com.google.gson.Gson;
@@ -35,7 +35,7 @@ public class ChannelEventFactoryTest {
     @Test
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
-        final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson);
         final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
         final ChannelEventFactory factory = new ChannelEventFactory(manager);
 

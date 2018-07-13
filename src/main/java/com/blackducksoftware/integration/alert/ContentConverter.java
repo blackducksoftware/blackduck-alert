@@ -21,13 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.email.model;
+package com.blackducksoftware.integration.alert;
 
-import javax.transaction.Transactional;
+import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@Transactional
-public interface GlobalEmailRepository extends JpaRepository<GlobalEmailConfigEntity, Long> {
+import com.google.gson.Gson;
 
+@Component
+public class ContentConverter {
+
+    private final Gson gson;
+
+    @Autowired
+    public ContentConverter(final Gson gson) {
+        this.gson = gson;
+    }
+
+    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) {
+        if (contentClass != null && content != null) {
+            return Optional.ofNullable(gson.fromJson(content, contentClass));
+        }
+        return Optional.empty();
+    }
+
+    public <C> String convertToString(final C content) {
+        return gson.toJson(content);
+    }
 }
