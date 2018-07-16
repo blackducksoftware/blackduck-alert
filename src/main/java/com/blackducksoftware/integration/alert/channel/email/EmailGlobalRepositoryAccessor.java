@@ -21,30 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.hipchat;
+package com.blackducksoftware.integration.alert.channel.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.RepositoryAccessor;
 
 @Component
-public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
-    private final HipChatDistributionRepository repository;
+public class EmailGlobalRepositoryAccessor extends RepositoryAccessor {
+    private final EmailGlobalRepository repository;
 
     @Autowired
-    public HipChatDistributionRepositoryAccessor(final HipChatDistributionRepository repository) {
+    public EmailGlobalRepositoryAccessor(final EmailGlobalRepository repository) {
         super(repository);
         this.repository = repository;
     }
 
     @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
-        return repository.save(hipChatEntity);
+        final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
+        return repository.save(emailEntity);
     }
 
 }
