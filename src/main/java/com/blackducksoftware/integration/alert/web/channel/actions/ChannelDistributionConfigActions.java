@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
@@ -58,16 +59,18 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
     private final DistributionChannelManager distributionChannelManager;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public ChannelDistributionConfigActions(final ObjectTransformer objectTransformer, final CommonDistributionRepository commonDistributionRepository,
             final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions,
-            final DistributionChannelManager distributionChannelManager) {
+            final DistributionChannelManager distributionChannelManager, final ContentConverter contentConverter) {
         super(objectTransformer);
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.distributionChannelManager = distributionChannelManager;
+        this.contentConverter = contentConverter;
     }
 
     @Override
@@ -101,7 +104,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
                     if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
                         configuredProjectsActions.saveConfiguredProjects(commonEntity.getId(), restModel.getConfiguredProjects());
                     }
-                    notificationTypesActions.saveNotificationTypes(commonEntity.getId(), restModel.getConfiguredProjects());
+                    notificationTypesActions.saveNotificationTypes(commonEntity.getId(), restModel.getNotificationTypes());
                     cleanUpStaleChannelConfigurations(descriptor);
                     return savedEntity;
                 }
@@ -202,12 +205,16 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     }
 
     public CommonDistributionConfigRestModel constructRestModel(final DatabaseEntity entity, final ChannelDescriptor descriptor) throws AlertException {
-        final Optional<? extends DatabaseEntity> distributionEntity = descriptor.getDistributionRepositoryAccessor().readEntity(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
-        if (distributionEntity.isPresent() && commonEntity != null) {
-            final CommonDistributionConfigRestModel restModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().populateRestModelFromDatabaseEntity(distributionEntity.get());
+        if (commonEntity != null) {
+            final CommonDistributionConfigRestModel restModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().populateRestModelFromDatabaseEntity(entity);
             restModel.setId(String.valueOf(commonEntity.getId()));
-            // TODO populate all common values in the rest model that aren't related to the specific channel (Perhaps use a ContentConverter
+            restModel.setDistributionConfigId(contentConverter.convertToString(entity.getId()));
+            restModel.setDistributionType(commonEntity.getDistributionType());
+            restModel.setFilterByProject(contentConverter.convertToString(commonEntity.getFilterByProject()));
+            // TODO fix Frequncy setting as I am not setting it to the proper value at the moment.
+            restModel.setFrequency(commonEntity.getFrequency().getDisplayName());
+            restModel.setName(commonEntity.getName());
             restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
             return restModel;

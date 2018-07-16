@@ -57,13 +57,17 @@ public class SlackDistributionContentConverter extends DatabaseContentConverter 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
-        return new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
+        final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
+        addIdToEntityPK(slackRestModel.getId(), slackEntity);
+        return slackEntity;
     }
 
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
         final SlackDistributionRestModel slackRestModel = new SlackDistributionRestModel();
+        final String id = contentConverter.convertToString(slackEntity.getId());
+        slackRestModel.setDistributionConfigId(id);
         slackRestModel.setWebhook(slackEntity.getWebhook());
         slackRestModel.setChannelUsername(slackEntity.getChannelUsername());
         slackRestModel.setChannelName(slackEntity.getChannelName());

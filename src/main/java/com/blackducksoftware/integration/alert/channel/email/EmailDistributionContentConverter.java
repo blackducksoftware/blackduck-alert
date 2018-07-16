@@ -57,13 +57,17 @@ public class EmailDistributionContentConverter extends DatabaseContentConverter 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final EmailGroupDistributionRestModel emailRestModel = (EmailGroupDistributionRestModel) restModel;
-        return new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
+        final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
+        addIdToEntityPK(emailRestModel.getId(), emailEntity);
+        return emailEntity;
     }
 
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
         final EmailGroupDistributionRestModel emailRestModel = new EmailGroupDistributionRestModel();
+        final String id = contentConverter.convertToString(emailEntity.getId());
+        emailRestModel.setDistributionConfigId(id);
         emailRestModel.setGroupName(emailEntity.getGroupName());
         emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
         emailRestModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());

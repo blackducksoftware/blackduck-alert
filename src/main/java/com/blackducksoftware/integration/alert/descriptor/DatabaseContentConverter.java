@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.descriptor;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
@@ -33,5 +35,12 @@ public abstract class DatabaseContentConverter {
     public abstract DatabaseEntity populateDatabaseEntityFromRestModel(ConfigRestModel restModel);
 
     public abstract ConfigRestModel populateRestModelFromDatabaseEntity(DatabaseEntity entity);
+
+    public void addIdToEntityPK(final String id, final DatabaseEntity entity) {
+        if (StringUtils.isNotBlank(id)) {
+            final long longId = Long.parseLong(id);
+            entity.setId(longId);
+        }
+    }
 
 }
