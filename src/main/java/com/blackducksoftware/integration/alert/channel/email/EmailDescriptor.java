@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
@@ -42,14 +43,14 @@ import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfi
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
-// TODO finish email descriptor
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
     private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel emailGroupChannel) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, null, null, null, null);
+    public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final EmailGlobalContentConverter emailGlobalContentConverter, final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor,
+            final EmailDistributionContentConverter emailDistributionContentConverter, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor) {
+        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, emailGlobalContentConverter, emailGlobalRepositoryAccessor, emailDistributionContentConverter, emailDistributionRepositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
     }
 
@@ -65,8 +66,8 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Override
     public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
-        // final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) convertFromDistributionRestModelToDistributionConfigEntity(restModel);
-        // emailGroupChannel.sendAuditedMessage(event, emailEntity);
+        final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) super.getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
+        emailGroupChannel.sendAuditedMessage(event, emailEntity);
     }
 
     @Override
