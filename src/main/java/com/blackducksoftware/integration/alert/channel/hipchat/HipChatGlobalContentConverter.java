@@ -58,13 +58,14 @@ public class HipChatGlobalContentConverter extends DatabaseContentConverter {
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
         final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
+        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
         return hipChatEntity;
     }
 
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        final String id = String.valueOf(hipChatEntity.getId());
+        final String id = contentConverter.convertToString(hipChatEntity.getId());
         final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
         final HipChatGlobalConfigRestModel hipChatRestModel = new HipChatGlobalConfigRestModel(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
         return hipChatRestModel;

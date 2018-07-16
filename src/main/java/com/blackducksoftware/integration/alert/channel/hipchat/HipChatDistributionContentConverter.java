@@ -57,15 +57,20 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
-        final int roomId = Integer.parseInt(hipChatRestModel.getRoomId());
-        return new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
+        final Integer roomId = contentConverter.getInteger(hipChatRestModel.getRoomId());
+        final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
+        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
+        return hipChatEntity;
     }
 
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
         final HipChatDistributionRestModel hipChatRestModel = new HipChatDistributionRestModel();
-        hipChatRestModel.setRoomId(hipChatEntity.getRoomId().toString());
+        final String id = contentConverter.convertToString(hipChatEntity.getId());
+        final String roomId = contentConverter.convertToString(hipChatEntity.getRoomId());
+        hipChatRestModel.setDistributionConfigId(id);
+        hipChatRestModel.setRoomId(roomId);
         hipChatRestModel.setNotify(hipChatEntity.getNotify());
         hipChatRestModel.setColor(hipChatEntity.getColor());
         return hipChatRestModel;

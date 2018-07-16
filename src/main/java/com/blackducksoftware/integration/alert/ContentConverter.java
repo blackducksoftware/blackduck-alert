@@ -25,6 +25,9 @@ package com.blackducksoftware.integration.alert;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +35,7 @@ import com.google.gson.Gson;
 
 @Component
 public class ContentConverter {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Gson gson;
 
@@ -48,6 +52,33 @@ public class ContentConverter {
     }
 
     public <C> String convertToString(final C content) {
+        if (content == null) {
+            return null;
+        }
         return gson.toJson(content);
+    }
+
+    public Integer getInteger(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            try {
+                final Integer intValue = Integer.valueOf(value);
+                return intValue;
+            } catch (final NumberFormatException e) {
+                logger.debug("Passed value is not an integer value");
+            }
+        }
+        return null;
+    }
+
+    public Long getLong(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            try {
+                final Long longValue = Long.valueOf(value);
+                return longValue;
+            } catch (final NumberFormatException e) {
+                logger.debug("Passed value is not a long value");
+            }
+        }
+        return null;
     }
 }
