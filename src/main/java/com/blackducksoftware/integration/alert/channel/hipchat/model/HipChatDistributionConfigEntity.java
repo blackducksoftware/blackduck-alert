@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.model;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;

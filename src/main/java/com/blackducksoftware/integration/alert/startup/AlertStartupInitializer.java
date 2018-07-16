@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -127,20 +128,18 @@ public class AlertStartupInitializer {
     }
 
     private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Descriptor descriptor) {
-        if (descriptor.getGlobalEntityFields() == null) {
+        Map<String, String> globalFieldDetails = descriptor.getGlobalFieldDetails();
+        if (globalFieldDetails == null || globalFieldDetails.isEmpty()) {
             return Collections.emptySet();
         }
 
-        final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_";
-        final Field[] alertConfigColumns = descriptor.getGlobalEntityFields();
+        final String propertyNamePrefix = (ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_").toUpperCase();
         final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();
-        for (final Field field : alertConfigColumns) {
-            if (field.isAnnotationPresent(Column.class)) {
-                final String propertyKey = (propertyNamePrefix + field.getAnnotation(Column.class).name()).toUpperCase();
-                final AlertStartupProperty alertStartupProperty = new AlertStartupProperty(getClass(), propertyKey, field.getName());
+        for (Map.Entry<String, String> entry : globalFieldDetails.entrySet()) {
+                final String propertyKey = (propertyNamePrefix + entry.getKey());
+                final AlertStartupProperty alertStartupProperty = new AlertStartupProperty(getClass(), propertyKey, entry.getValue());
                 filteredConfigColumns.add(alertStartupProperty);
                 alertProperties.add(alertStartupProperty);
-            }
         }
 
         return filteredConfigColumns;

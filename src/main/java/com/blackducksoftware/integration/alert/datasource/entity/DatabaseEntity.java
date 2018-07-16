@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.datasource.entity;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -47,4 +49,5 @@ public abstract class DatabaseEntity extends BaseEntity {
     public void setId(final Long id) {
         this.id = id;
     }
+
 }

@@ -37,6 +37,7 @@ import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDist
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.datasource.entity.EntityFieldHelper;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
@@ -112,8 +113,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Field[] getGlobalEntityFields() {
-        return HipChatGlobalConfigEntity.class.getDeclaredFields();
+    public Map<String, String> getGlobalFieldDetails() {
+        return EntityFieldHelper.SOLE_INSTANCE.getFieldDetailsToMap(HipChatGlobalConfigEntity.class);
     }
 
     @Override
