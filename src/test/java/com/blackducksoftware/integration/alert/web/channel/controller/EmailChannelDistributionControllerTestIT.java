@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.alert.web.channel.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
@@ -33,7 +34,7 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest<Ema
 
     @Override
     public String getDescriptorName() {
-        return "/configuration/channel/distribution/channel_email";
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
 }
