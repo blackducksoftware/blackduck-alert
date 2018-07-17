@@ -32,6 +32,10 @@ import org.springframework.core.annotation.AnnotationUtils;
 
 public class SensitiveFieldFinder {
 
+    private SensitiveFieldFinder() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Set<Field> findSensitiveFields(final Class<?> clazz) {
         final Set<Field> fields = new HashSet<>();
         for (final Field field : clazz.getDeclaredFields()) {

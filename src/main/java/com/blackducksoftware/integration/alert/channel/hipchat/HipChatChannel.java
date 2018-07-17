@@ -50,6 +50,7 @@ import com.blackducksoftware.integration.alert.datasource.entity.repository.Comm
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
+import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -65,14 +66,11 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
-
     @Autowired
     public HipChatChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalHipChatRepository globalHipChatRepository,
             final CommonDistributionRepository commonDistributionRepository,
             final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
         super(gson, globalProperties, auditEntryRepository, globalHipChatRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
-        this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
@@ -93,7 +91,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
         if (StringUtils.isBlank(entity.getApiKey())) {
             throw new IntegrationException("Invalid API key: API key not provided");
         }
-        final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(entity));
+        final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(getApiUrl(entity));
         if (restConnection != null) {
             try {
                 final String url = getApiUrl(entity) + "/v2/room/*/notification";
@@ -146,7 +144,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
         }
     }
 
-    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
+    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
         try {
             final String templatesDirectory = getGlobalProperties().getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
             final String templateDirectoryPath;
@@ -163,7 +161,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
 
             return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
         } catch (final IOException | TemplateException e) {
-            throw new RuntimeException(e);
+            throw new AlertException(e);
         }
     }
 

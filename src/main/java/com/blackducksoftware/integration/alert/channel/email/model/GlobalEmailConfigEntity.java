@@ -185,6 +185,7 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     private Boolean mailSmtpNoopStrict;
 
     public GlobalEmailConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public GlobalEmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,

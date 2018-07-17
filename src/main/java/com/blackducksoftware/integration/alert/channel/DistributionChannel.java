@@ -52,7 +52,7 @@ import com.google.gson.Gson;
 
 @Transactional
 public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
-    private final static Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
+    private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
     private final JpaRepository<C, Long> distributionRepository;
@@ -100,16 +100,20 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     public void handleEvent(final ChannelEvent event) {
         final Long eventDistributionId = event.getCommonDistributionConfigId();
         final Optional<CommonDistributionConfigEntity> commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
-        if (commonDistributionEntity.isPresent() && event.getDestination().equals(commonDistributionEntity.get().getDistributionType())) {
-            try {
-                final Long channelDistributionConfigId = commonDistributionEntity.get().getDistributionConfigId();
-                final C channelDistributionEntity = distributionRepository.getOne(channelDistributionConfigId);
-                sendAuditedMessage(event, channelDistributionEntity);
-            } catch (final IntegrationException ex) {
-                logger.error("There was an error sending the message.", ex);
+        if (commonDistributionEntity.isPresent()) {
+            if (event.getDestination().equals(commonDistributionEntity.get().getDistributionType())) {
+                try {
+                    final Long channelDistributionConfigId = commonDistributionEntity.get().getDistributionConfigId();
+                    final C channelDistributionEntity = distributionRepository.getOne(channelDistributionConfigId);
+                    sendAuditedMessage(event, channelDistributionEntity);
+                } catch (final IntegrationException ex) {
+                    logger.error("There was an error sending the message.", ex);
+                }
+            } else {
+                logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getDestination(), commonDistributionEntity.get().getDistributionType());
             }
         } else {
-            logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getDestination(), commonDistributionEntity.get().getDistributionType());
+            logger.error("Event distribution ID not found {}", eventDistributionId);
         }
     }
 
@@ -117,21 +121,23 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         try {
             sendMessage(event, config);
             setAuditEntrySuccess(event.getAuditEntryId());
+        } catch (final IntegrationRestException irex) {
+            setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
+            logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
+            logger.error(irex.getMessage(), irex);
+            throw new AlertException(irex.getMessage());
         } catch (final Exception e) {
             setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-            if (e instanceof IntegrationRestException) {
-                logger.error(((IntegrationRestException) e).getHttpStatusCode() + ":" + ((IntegrationRestException) e).getHttpStatusMessage());
-            }
             logger.error(e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
     }
 
-    public abstract void sendMessage(final ChannelEvent event, final C config) throws Exception;
+    public abstract void sendMessage(final ChannelEvent event, final C config) throws IntegrationException;
 
     public String testGlobalConfig(final G entity) throws IntegrationException {
         if (entity != null) {
-            return "Not implemented.";
+            throw new AlertException("Test method not implemented.");
         }
         return "The provided entity was null.";
     }
@@ -166,7 +172,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
                     String exceptionStackTrace = "";
                     for (final String line : rootCause) {
                         if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
-                            exceptionStackTrace = exceptionStackTrace + line + System.lineSeparator();
+                            exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
                         } else {
                             break;
                         }
@@ -183,7 +189,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         }
     }
 
-    public <CC> Optional<CC> extractContentFromEvent(final ChannelEvent event, final Class<CC> contentClass) throws AlertException {
+    public <C> Optional<C> extractContentFromEvent(final ChannelEvent event, final Class<C> contentClass) throws AlertException {
         return contentExtractor.getContent(event.getContent(), contentClass);
     }
 
