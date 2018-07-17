@@ -144,12 +144,12 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Override
     public Optional<? extends DatabaseEntity> readGlobalEntity(final long id) {
-        return null;
+        return Optional.empty();
     }
 
     @Override
     public Optional<? extends DatabaseEntity> saveGlobalEntity(final DatabaseEntity entity) {
-        return null;
+        return Optional.empty();
     }
 
     @Override

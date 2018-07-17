@@ -63,18 +63,21 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Override
     public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
-        Optional<GlobalSchedulingConfigEntity> databaseEntity = null;
+        GlobalSchedulingConfigEntity databaseEntity = null;
         if (id != null) {
-            databaseEntity = getRepository().findById(id);
+            final Optional<GlobalSchedulingConfigEntity> repositoryResult = getRepository().findById(id);
+            if (repositoryResult.isPresent()) {
+                databaseEntity = repositoryResult.get();
+            }
         } else {
             final List<GlobalSchedulingConfigEntity> databaseEntities = getRepository().findAll();
             if (databaseEntities != null && !databaseEntities.isEmpty()) {
-                databaseEntity = Optional.of(databaseEntities.get(0));
+                databaseEntity = databaseEntities.get(0);
             }
         }
-        GlobalSchedulingConfigRestModel restModel = null;
+        final GlobalSchedulingConfigRestModel restModel;
         if (databaseEntity != null) {
-            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity.get(), getConfigRestModelClass());
+            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
             restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
             restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
         } else {
