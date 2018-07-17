@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -62,13 +61,11 @@ import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
-import freemarker.template.TemplateException;
-
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 @Transactional
 public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEntity, EmailGroupDistributionConfigEntity> {
-    public final static String COMPONENT_NAME = "channel_email";
-    private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
+    public static final String COMPONENT_NAME = "channel_email";
+    private static final Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final GlobalEmailRepository emailRepository,
@@ -77,7 +74,7 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     }
 
     @Override
-    public void sendMessage(final ChannelEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws Exception {
+    public void sendMessage(final ChannelEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws IntegrationException {
         if (emailConfigEntity != null) {
             final String hubGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
@@ -88,10 +85,10 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String hubGroupName) throws MessagingException, IOException, TemplateException {
+    public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String hubGroupName) throws IntegrationException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
-        final EmailMessagingService emailService = new EmailMessagingService(getGlobalProperties(), emailProperties);
         try {
+            final EmailMessagingService emailService = new EmailMessagingService(getGlobalProperties(), emailProperties);
             final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
             final Collection<ProjectData> data;
             if (optionalModel.isPresent()) {
@@ -115,6 +112,8 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
                 final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
                 emailService.sendEmailMessage(emailTarget);
             }
+        } catch (final IOException ex) {
+            throw new AlertException(ex);
         } catch (final AlertException ex) {
             logger.error("Error sending email project data from event", ex);
         }
@@ -130,8 +129,8 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
                 if (userGroupView == null) {
                     throw new IntegrationException("Could not find the Hub group: " + hubGroup);
                 }
-                logger.info(userGroupView.toString());
-                logger.info(userGroupView.json);
+
+                logger.debug("Current user groups {}", userGroupView.toString());
 
                 final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
                 return users.stream().map(user -> user.email).collect(Collectors.toList());

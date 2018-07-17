@@ -65,7 +65,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private String errorStackTrace;
 
     public AuditEntryEntity() {
-
+        // JPA requires default constructor definitions
     }
 
     public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace) {
@@ -89,28 +89,28 @@ public class AuditEntryEntity extends DatabaseEntity {
         return timeLastSent;
     }
 
-    public StatusEnum getStatus() {
-        return status;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public String getErrorStackTrace() {
-        return errorStackTrace;
-    }
-
     public void setTimeLastSent(final Date timeLastSent) {
         this.timeLastSent = timeLastSent;
+    }
+
+    public StatusEnum getStatus() {
+        return status;
     }
 
     public void setStatus(final StatusEnum status) {
         this.status = status;
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public void setErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String getErrorStackTrace() {
+        return errorStackTrace;
     }
 
     public void setErrorStackTrace(final String errorStackTrace) {

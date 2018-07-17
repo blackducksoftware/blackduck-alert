@@ -51,11 +51,9 @@ import com.blackducksoftware.integration.alert.channel.email.template.EmailTarge
 import com.blackducksoftware.integration.alert.channel.email.template.MimeMultipartBuilder;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.exception.AlertException;
 
-import freemarker.core.ParseException;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.TemplateException;
-import freemarker.template.TemplateNotFoundException;
 
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
@@ -77,36 +75,40 @@ public class EmailMessagingService {
         this.freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
     }
 
-    public void sendEmailMessage(final EmailTarget emailTarget) throws MessagingException, TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
-        final String emailAddress = StringUtils.trimToEmpty(emailTarget.getEmailAddress());
-        final String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
-        final Map<String, Object> model = emailTarget.getModel();
-        if (StringUtils.isBlank(emailAddress) || StringUtils.isBlank(templateName)) {
-            // we've got nothing to do...might as well get out of here...
-            return;
+    public void sendEmailMessage(final EmailTarget emailTarget) throws AlertException {
+        try {
+            final String emailAddress = StringUtils.trimToEmpty(emailTarget.getEmailAddress());
+            final String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
+            final Map<String, Object> model = emailTarget.getModel();
+            if (StringUtils.isBlank(emailAddress) || StringUtils.isBlank(templateName)) {
+                // we've got nothing to do...might as well get out of here...
+                return;
+            }
+
+            final Session session = createMailSession(emailProperties);
+            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
+            final String imagesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
+            final String imageDirectoryPath;
+            if (StringUtils.isNotBlank(imagesDirectory)) {
+                imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
+            } else {
+                imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
+            }
+            addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, imageDirectoryPath);
+            final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
+
+            final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
+            mimeMultipartBuilder.addHtmlContent(html);
+            mimeMultipartBuilder.addTextContent(Jsoup.parse(html).text());
+            mimeMultipartBuilder.addEmbeddedImages(contentIdsToFilePaths);
+            final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
+
+            final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
+            final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
+            sendMessage(emailProperties, session, message);
+        } catch (final MessagingException | IOException | TemplateException ex) {
+            throw new AlertException(ex);
         }
-
-        final Session session = createMailSession(emailProperties);
-        final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-        final String imagesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
-        final String imageDirectoryPath;
-        if (StringUtils.isNotBlank(imagesDirectory)) {
-            imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
-        } else {
-            imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
-        }
-        addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, imageDirectoryPath);
-        final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
-
-        final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
-        mimeMultipartBuilder.addHtmlContent(html);
-        mimeMultipartBuilder.addTextContent(Jsoup.parse(html).text());
-        mimeMultipartBuilder.addEmbeddedImages(contentIdsToFilePaths);
-        final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
-
-        final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
-        final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
-        sendMessage(emailProperties, session, message);
     }
 
     private void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
@@ -123,7 +125,7 @@ public class EmailMessagingService {
         return Session.getInstance(props);
     }
 
-    private Message createMessage(final String emailAddress, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties) throws MessagingException {
+    private Message createMessage(final String emailAddress, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties) throws AlertException, MessagingException {
         final List<InternetAddress> addresses = new ArrayList<>();
         try {
             addresses.add(new InternetAddress(emailAddress));
@@ -132,7 +134,7 @@ public class EmailMessagingService {
         }
 
         if (addresses.isEmpty()) {
-            throw new RuntimeException("There were no valid email addresses supplied.");
+            throw new AlertException("There were no valid email addresses supplied.");
         }
 
         final Message message = new MimeMessage(session);

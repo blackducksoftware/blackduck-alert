@@ -54,17 +54,16 @@ public class PhoneHome {
             return null;
         }
 
-        final PhoneHomeRequestBody.Builder phoneHomeRequestBodyBuilder = phoneHomeService.createInitialPhoneHomeRequestBodyBuilder("blackduck-alert", productVersion);
-        return phoneHomeRequestBodyBuilder;
+        return phoneHomeService.createInitialPhoneHomeRequestBodyBuilder("blackduck-alert", productVersion);
     }
 
     public PhoneHomeRequestBody.Builder addChannelMetaData(final PhoneHomeRequestBody.Builder phoneHomeRequestBody) {
         final Map<String, Integer> createdSupportedChannels = getChannelMetaData();
-        for (final String supportedChannel : createdSupportedChannels.keySet()) {
-            final Integer count = createdSupportedChannels.get(supportedChannel);
-            final String supportedChannelkey = "channel." + supportedChannel;
+        createdSupportedChannels.entrySet().forEach(entry -> {
+            final Integer count = entry.getValue();
+            final String supportedChannelkey = "channel." + entry.getKey();
             phoneHomeRequestBody.addToMetaData(supportedChannelkey, count.toString());
-        }
+        });
 
         return phoneHomeRequestBody;
     }

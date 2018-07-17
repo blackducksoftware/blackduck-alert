@@ -31,7 +31,7 @@ public class DistributionNotificationTypeRelationPK implements Serializable {
     private Long notificationTypeId;
 
     public DistributionNotificationTypeRelationPK() {
-
+        // JPA requires default constructor definitions
     }
 
     public Long getCommonDistributionConfigId() {

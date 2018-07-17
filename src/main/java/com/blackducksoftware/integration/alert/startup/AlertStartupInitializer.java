@@ -50,9 +50,8 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class AlertStartupInitializer {
+    public final static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-    public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
-
     private final ConversionService conversionService;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;

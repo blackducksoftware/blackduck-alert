@@ -46,6 +46,7 @@ public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
     private String hostServer;
 
     public GlobalHipChatConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public GlobalHipChatConfigEntity(final String apiKey, final String hostServer) {
