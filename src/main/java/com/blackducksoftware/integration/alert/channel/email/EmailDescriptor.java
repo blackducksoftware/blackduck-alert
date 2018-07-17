@@ -53,6 +53,7 @@ import com.google.gson.Gson;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
+    public static final String NOT_AN_INTEGER = "Not an Integer.";
     private final EmailGroupChannel emailGroupChannel;
     private final GlobalEmailRepository globalEmailRepository;
     private final EmailGroupDistributionRepository emailGroupDistributionRepository;
@@ -184,13 +185,13 @@ public class EmailDescriptor extends ChannelDescriptor {
             final GlobalEmailConfigRestModel emailRestModel = (GlobalEmailConfigRestModel) restModel;
 
             if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
-                fieldErrors.put("mailSmtpPort", "Not an Integer.");
+                fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
             }
             if (StringUtils.isNotBlank(emailRestModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpConnectionTimeout())) {
-                fieldErrors.put("mailSmtpConnectionTimeout", "Not an Integer.");
+                fieldErrors.put("mailSmtpConnectionTimeout", NOT_AN_INTEGER);
             }
             if (StringUtils.isNotBlank(emailRestModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpTimeout())) {
-                fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
+                fieldErrors.put("mailSmtpTimeout", NOT_AN_INTEGER);
             }
         }
     }

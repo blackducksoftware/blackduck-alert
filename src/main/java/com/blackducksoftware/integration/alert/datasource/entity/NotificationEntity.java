@@ -69,6 +69,7 @@ public class NotificationEntity extends DatabaseEntity {
     private String projectVersionUrl;
 
     public NotificationEntity() {
+        // JPA requires default constructor definitions
     }
 
     public NotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectUrl, final String projectVersion, final String projectVersionUrl,

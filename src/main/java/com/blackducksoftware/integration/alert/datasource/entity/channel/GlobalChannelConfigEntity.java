@@ -30,6 +30,7 @@ import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 @MappedSuperclass
 public abstract class GlobalChannelConfigEntity extends DatabaseEntity {
     public GlobalChannelConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
 }

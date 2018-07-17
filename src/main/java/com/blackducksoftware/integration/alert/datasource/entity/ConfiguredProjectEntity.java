@@ -34,6 +34,7 @@ public class ConfiguredProjectEntity extends DatabaseEntity {
     private String projectName;
 
     public ConfiguredProjectEntity() {
+        // JPA requires default constructor definitions
     }
 
     public ConfiguredProjectEntity(final String projectName) {

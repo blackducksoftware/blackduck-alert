@@ -42,6 +42,7 @@ public class HipChatDistributionConfigEntity extends DistributionChannelConfigEn
     private String color;
 
     public HipChatDistributionConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public HipChatDistributionConfigEntity(final Integer roomId, final Boolean notify, final String color) {

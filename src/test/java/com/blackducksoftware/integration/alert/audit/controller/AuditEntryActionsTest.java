@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.alert.audit.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,8 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.OutputLogger;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryActions;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
@@ -102,10 +97,7 @@ public class AuditEntryActionsTest {
         try {
             restModel = auditEntryActions.resendNotification(1L);
             fail();
-        } catch (final IllegalArgumentException e) {
-            assertTrue(true);
         } catch (final IntegrationException e) {
-            fail();
         }
 
         assertNull(restModel);
@@ -122,8 +114,7 @@ public class AuditEntryActionsTest {
         final AuditEntryEntity entity_2 = new AuditEntryEntity();
         entity_2.setId(2L);
         final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2);
-        @SuppressWarnings("unchecked")
-        final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -163,8 +154,7 @@ public class AuditEntryActionsTest {
         final int totalPages = 1;
         final int currentPage = 1;
         final int pageSize = 1;
-        @SuppressWarnings("unchecked")
-        final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(Collections.emptyList());
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);

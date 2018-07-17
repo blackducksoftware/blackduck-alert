@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.alert;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
@@ -65,16 +67,17 @@ import com.google.gson.GsonBuilder;
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.web.**", "com.blackducksoftware.integration.alert", "com.blackducksoftware.integration.alert.config",
         "com.blackducksoftware.integration.alert.startup" })
 public class Application {
+    private final static Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired
     private StartupManager startupManager;
+
+    public static void main(final String[] args) {
+        new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
+    }
 
     @PostConstruct
     void init() {
         startupManager.startup();
-    }
-
-    public static void main(final String[] args) {
-        new SpringApplicationBuilder(Application.class).logStartupInfo(false).run(args);
     }
 
     @Bean
@@ -86,6 +89,7 @@ public class Application {
     public MapJobRepositoryFactoryBean mapJobRepositoryFactory() throws Exception {
         final MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean(transactionManager());
         factory.afterPropertiesSet();
+
         return factory;
     }
 
@@ -95,21 +99,24 @@ public class Application {
     }
 
     @Bean
-    public SimpleJobLauncher jobLauncher() throws Exception {
+    public SimpleJobLauncher jobLauncher() {
         final SimpleJobLauncher launcher = new SimpleJobLauncher();
-        launcher.setJobRepository(jobRepository());
+        try {
+            launcher.setJobRepository(jobRepository());
+        } catch (final Exception ex) {
+            logger.error("Creating job launcher bean", ex);
+        }
         return launcher;
     }
 
     @Bean
-    public TaskScheduler taskScheduler() throws Exception {
+    public TaskScheduler taskScheduler() {
         return new ThreadPoolTaskScheduler();
     }
 
     @Bean
     public TaskExecutor taskExecutor() {
-        final TaskExecutor executor = new SyncTaskExecutor();
-        return executor;
+        return new SyncTaskExecutor();
     }
 
     @Bean
@@ -119,7 +126,6 @@ public class Application {
 
     @Bean
     public HttpSessionCsrfTokenRepository csrfTokenRepository() {
-        final HttpSessionCsrfTokenRepository tokenRepository = new HttpSessionCsrfTokenRepository();
-        return tokenRepository;
+        return new HttpSessionCsrfTokenRepository();
     }
 }

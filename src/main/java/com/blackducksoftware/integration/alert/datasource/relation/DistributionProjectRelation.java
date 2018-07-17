@@ -44,6 +44,7 @@ public class DistributionProjectRelation extends DatabaseRelation {
     private Long projectId;
 
     public DistributionProjectRelation() {
+        // JPA requires default constructor definitions
     }
 
     public DistributionProjectRelation(final Long commonDistributionConfigId, final Long projectId) {

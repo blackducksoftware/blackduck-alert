@@ -34,7 +34,7 @@ public class NotificationTypeEntity extends DatabaseEntity {
     private NotificationCategoryEnum type;
 
     public NotificationTypeEntity() {
-
+        // JPA requires default constructor definitions
     }
 
     public NotificationTypeEntity(final NotificationCategoryEnum type) {

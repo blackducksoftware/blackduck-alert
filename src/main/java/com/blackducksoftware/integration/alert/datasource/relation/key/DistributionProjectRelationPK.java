@@ -31,6 +31,7 @@ public class DistributionProjectRelationPK implements Serializable {
     private Long projectId;
 
     public DistributionProjectRelationPK() {
+        // JPA requires default constructor definitions
     }
 
     public Long getCommonDistributionConfigId() {

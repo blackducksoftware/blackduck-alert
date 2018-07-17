@@ -21,32 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.audit.repository.relation;
+package com.blackducksoftware.integration.alert.exception;
 
-import java.io.Serializable;
+public class AlertNotificationPurgedException extends AlertException {
 
-@SuppressWarnings("serial")
-public class AuditNotificationRelationPK implements Serializable {
-    private Long auditEntryId;
-    private Long notificationId;
-
-    public AuditNotificationRelationPK() {
-        // JPA requires default constructor definitions
+    public AlertNotificationPurgedException() {
+        super();
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public AlertNotificationPurgedException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public AlertNotificationPurgedException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
-    public Long getNotificationId() {
-        return notificationId;
+    public AlertNotificationPurgedException(final String message) {
+        super(message);
     }
 
-    public void setNotificationId(final Long notificationId) {
-        this.notificationId = notificationId;
+    public AlertNotificationPurgedException(final Throwable cause) {
+        super(cause);
     }
+
 }
