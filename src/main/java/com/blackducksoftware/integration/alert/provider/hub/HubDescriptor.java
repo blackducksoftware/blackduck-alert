@@ -23,18 +23,20 @@
  */
 package com.blackducksoftware.integration.alert.provider.hub;
 
-import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.gson.Gson;
@@ -42,10 +44,13 @@ import com.google.gson.Gson;
 @Component
 public class HubDescriptor extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
+    private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
-    public HubDescriptor(final GlobalHubRepository globalHubRepository, final Gson gson, final ObjectTransformer objectTransformer, final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor) {
+    public HubDescriptor(final GlobalHubRepository globalHubRepository, final Gson gson, final ObjectTransformer objectTransformer, final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
+            final EntityPropertyMapper entityPropertyMapper) {
         super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor);
+        this.entityPropertyMapper = entityPropertyMapper;
     }
 
     @Override
@@ -61,8 +66,8 @@ public class HubDescriptor extends ProviderDescriptor {
     }
 
     @Override
-    public Field[] getGlobalEntityFields() {
-        return GlobalHubConfigEntity.class.getDeclaredFields();
+    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+        return entityPropertyMapper.mapEntityToProperties(getName(), GlobalHubConfigEntity.class);
     }
 
     @Override

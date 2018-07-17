@@ -23,8 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
-import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.MessageListener;
 
@@ -37,6 +37,7 @@ import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistribu
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -85,7 +86,7 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Field[] getGlobalEntityFields() {
+    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
         return null;
     }
 

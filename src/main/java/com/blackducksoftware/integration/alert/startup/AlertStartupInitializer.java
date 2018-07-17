@@ -25,14 +25,10 @@ package com.blackducksoftware.integration.alert.startup;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.persistence.Column;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -51,7 +47,6 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 @Component
 public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-    public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
 
     private final ConversionService conversionService;
     private final Environment environment;
@@ -72,12 +67,11 @@ public class AlertStartupInitializer {
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         this.configDescriptors.forEach(descriptor -> {
-            final String initializerNamePrefix = descriptor.getName();
-            final Set<AlertStartupProperty> startupProperties = findPropertyNames(initializerNamePrefix, descriptor);
-            if (!startupProperties.isEmpty()) {
+            final Set<AlertStartupProperty> startupProperties = descriptor.getGlobalEntityPropertyMapping();
+            if (startupProperties != null && !startupProperties.isEmpty()) {
                 try {
                     final ConfigRestModel restModel = descriptor.getGlobalRestModelObject();
-                    final boolean propertySet = initializeConfig(initializerNamePrefix, restModel, startupProperties);
+                    final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
                         final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
                         propertyInitializer.save(entity, descriptor);
@@ -90,9 +84,10 @@ public class AlertStartupInitializer {
         });
     }
 
-    private <T extends ConfigRestModel> boolean initializeConfig(final String initializerNamePrefix, final T globalRestModel, final Set<AlertStartupProperty> configProperties) {
+    private boolean initializeConfig(final ConfigRestModel globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
+            alertProperties.add(property);
             final String propertyKey = property.getPropertyKey();
             logger.debug("Checking property key {}", propertyKey);
             String value = System.getProperty(propertyKey);
@@ -109,7 +104,7 @@ public class AlertStartupInitializer {
         return propertySet;
     }
 
-    public <T extends ConfigRestModel> boolean setRestModelValue(final String value, final T globalRestModel, final AlertStartupProperty property)
+    public boolean setRestModelValue(final String value, final ConfigRestModel globalRestModel, final AlertStartupProperty property)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
@@ -124,26 +119,6 @@ public class AlertStartupInitializer {
             }
         }
         return false;
-    }
-
-    private Set<AlertStartupProperty> findPropertyNames(final String initializerNamePrefix, final Descriptor descriptor) {
-        if (descriptor.getGlobalEntityFields() == null) {
-            return Collections.emptySet();
-        }
-
-        final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + initializerNamePrefix + "_";
-        final Field[] alertConfigColumns = descriptor.getGlobalEntityFields();
-        final Set<AlertStartupProperty> filteredConfigColumns = new HashSet<>();
-        for (final Field field : alertConfigColumns) {
-            if (field.isAnnotationPresent(Column.class)) {
-                final String propertyKey = (propertyNamePrefix + field.getAnnotation(Column.class).name()).toUpperCase();
-                final AlertStartupProperty alertStartupProperty = new AlertStartupProperty(getClass(), propertyKey, field.getName());
-                filteredConfigColumns.add(alertStartupProperty);
-                alertProperties.add(alertStartupProperty);
-            }
-        }
-
-        return filteredConfigColumns;
     }
 
     public List<AlertStartupProperty> getAlertProperties() {

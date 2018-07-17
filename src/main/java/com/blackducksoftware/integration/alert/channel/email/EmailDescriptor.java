@@ -23,8 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.channel.email;
 
-import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.MessageListener;
 
@@ -37,8 +37,10 @@ import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalCo
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -46,12 +48,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
     private final EmailGroupChannel emailGroupChannel;
+    private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
     public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final EmailGlobalContentConverter emailGlobalContentConverter, final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor,
-            final EmailDistributionContentConverter emailDistributionContentConverter, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor) {
+            final EmailDistributionContentConverter emailDistributionContentConverter, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor, final EntityPropertyMapper entityPropertyMapper) {
         super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, emailGlobalContentConverter, emailGlobalRepositoryAccessor, emailDistributionContentConverter, emailDistributionRepositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
+        this.entityPropertyMapper = entityPropertyMapper;
     }
 
     @Override
@@ -98,8 +102,8 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Field[] getGlobalEntityFields() {
-        return EmailGlobalConfigEntity.class.getDeclaredFields();
+    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+        return entityPropertyMapper.mapEntityToProperties(getName(), EmailGlobalConfigEntity.class);
     }
 
     @Override
