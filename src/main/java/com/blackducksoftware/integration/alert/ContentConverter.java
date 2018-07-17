@@ -81,4 +81,16 @@ public class ContentConverter {
         }
         return null;
     }
+
+    public Boolean getBoolean(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            try {
+                final Boolean booleanValue = Boolean.valueOf(value);
+                return booleanValue;
+            } catch (final NumberFormatException e) {
+                logger.debug("Passed value is not a boolean value");
+            }
+        }
+        return null;
+    }
 }

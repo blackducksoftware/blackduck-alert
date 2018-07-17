@@ -212,8 +212,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             restModel.setDistributionConfigId(contentConverter.convertToString(entity.getId()));
             restModel.setDistributionType(commonEntity.getDistributionType());
             restModel.setFilterByProject(contentConverter.convertToString(commonEntity.getFilterByProject()));
-            // TODO fix Frequncy setting as I am not setting it to the proper value at the moment.
-            restModel.setFrequency(commonEntity.getFrequency().getDisplayName());
+            restModel.setFrequency(commonEntity.getFrequency().name());
             restModel.setName(commonEntity.getName());
             restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));

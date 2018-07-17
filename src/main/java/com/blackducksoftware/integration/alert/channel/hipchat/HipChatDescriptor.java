@@ -23,8 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
-import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jms.MessageListener;
 
@@ -37,8 +37,10 @@ import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDist
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -46,12 +48,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Component
 public class HipChatDescriptor extends ChannelDescriptor {
     private final HipChatChannel hipChatChannel;
+    private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
     public HipChatDescriptor(final HipChatChannel hipChatChannel, final HipChatDistributionContentConverter hipChatDistributionContentConverter, final HipChatGlobalContentConverter hipChatGlobalContentConverter,
-            final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor, final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor) {
+            final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor, final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor, final EntityPropertyMapper entityPropertyMapper) {
         super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, hipChatGlobalContentConverter, hipChatGlobalRepositoryAccessor, hipChatDistributionContentConverter, hipChatDistributionRepositoryAccessor);
         this.hipChatChannel = hipChatChannel;
+        this.entityPropertyMapper = entityPropertyMapper;
     }
 
     @Override
@@ -65,20 +69,6 @@ public class HipChatDescriptor extends ChannelDescriptor {
             }
         }
     }
-
-    // @Override
-    // public Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException {
-    // if (distributionEntity instanceof HipChatDistributionConfigEntity) {
-    // final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) distributionEntity;
-    // final HipChatDistributionRestModel restModel = objectTransformer.databaseEntityToConfigRestModel(commonEntity, HipChatDistributionRestModel.class);
-    // restModel.setId(String.valueOf(commonEntity.getId()));
-    // restModel.setColor(hipChatEntity.getColor());
-    // restModel.setNotify(hipChatEntity.getNotify());
-    // restModel.setRoomId(String.valueOf(hipChatEntity.getRoomId()));
-    // return Optional.ofNullable(restModel);
-    // }
-    // return Optional.empty();
-    // }
 
     @Override
     public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
@@ -112,8 +102,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Field[] getGlobalEntityFields() {
-        return HipChatGlobalConfigEntity.class.getDeclaredFields();
+    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+        return entityPropertyMapper.mapEntityToProperties(getName(), HipChatGlobalConfigEntity.class);
     }
 
     @Override

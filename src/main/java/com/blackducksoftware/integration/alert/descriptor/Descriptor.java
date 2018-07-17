@@ -23,10 +23,11 @@
  */
 package com.blackducksoftware.integration.alert.descriptor;
 
-import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -59,7 +60,7 @@ public abstract class Descriptor {
         return contentConverter;
     }
 
-    public abstract Field[] getGlobalEntityFields();
+    public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
 
     public abstract ConfigRestModel getGlobalRestModelObject();
 
