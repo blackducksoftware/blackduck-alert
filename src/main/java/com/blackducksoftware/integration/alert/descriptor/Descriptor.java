@@ -59,7 +59,7 @@ public abstract class Descriptor {
         return contentConverter;
     }
 
-    public abstract Field[] getGlobalEntityFields();
+    public abstract Map<String, String> getGlobalFieldDetails();
 
     public abstract ConfigRestModel getGlobalRestModelObject();
 
