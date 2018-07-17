@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.alert.web.channel.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
@@ -33,7 +34,7 @@ public class HipChatChannelDistributionControllerTestIT extends ControllerTest<H
 
     @Override
     public String getDescriptorName() {
-        return "/configuration/channel/distribution/channel_hipchat";
+        return HipChatChannel.COMPONENT_NAME;
     }
 
 }
