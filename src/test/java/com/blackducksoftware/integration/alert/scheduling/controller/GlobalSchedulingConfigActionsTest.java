@@ -11,10 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.scheduling.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +25,6 @@ import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.scheduling.controller.GlobalSchedulingConfigActions;
 import com.blackducksoftware.integration.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigRestModel;
@@ -183,7 +179,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         assertEquals(restModel, configById);
         assertEquals(restModel, config);
 
-        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(null);
+        Mockito.when(configActions.getRepository().findById(Mockito.anyLong())).thenReturn(Optional.empty());
         Mockito.when(configActions.getRepository().findAll()).thenReturn(null);
 
         configsById = configActions.getConfig(1L);
