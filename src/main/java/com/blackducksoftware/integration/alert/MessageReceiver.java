@@ -52,10 +52,10 @@ public abstract class MessageReceiver<E extends AlertEvent> implements MessageLi
     public void onMessage(final Message message) {
         try {
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
-                logger.info(String.format("Received %s event message: %s", getClass().getName(), message));
+                logger.info("Received {} event message: {}", getClass().getName(), message);
                 final TextMessage textMessage = (TextMessage) message;
                 final E event = gson.fromJson(textMessage.getText(), clazz);
-                logger.info(String.format("%s event %s", getClass().getName(), event));
+                logger.info("{} event {}", getClass().getName(), event);
                 handleEvent(event);
             }
         } catch (final Exception e) {

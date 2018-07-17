@@ -43,7 +43,7 @@ import com.google.gson.Gson;
 
 @Component
 public class RealTimeListener extends MessageReceiver<AlertEvent> {
-    private final static Logger logger = LoggerFactory.getLogger(RealTimeListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(RealTimeListener.class);
 
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationEventManager eventManager;

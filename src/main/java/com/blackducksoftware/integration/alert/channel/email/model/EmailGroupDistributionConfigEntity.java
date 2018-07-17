@@ -43,6 +43,7 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
     private String emailSubjectLine;
 
     public EmailGroupDistributionConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public EmailGroupDistributionConfigEntity(final String groupName, final String emailTemplateLogoImage, final String emailSubjectLine) {

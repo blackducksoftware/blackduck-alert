@@ -45,6 +45,7 @@ public class GlobalHubConfigEntity extends DatabaseEntity {
     private String hubApiKey;
 
     public GlobalHubConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public GlobalHubConfigEntity(final Integer hubTimeout, final String hubApiKey) {

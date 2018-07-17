@@ -44,7 +44,7 @@ public class DistributionNotificationTypeRelation extends DatabaseRelation {
     private Long notificationTypeId;
 
     public DistributionNotificationTypeRelation() {
-
+        // JPA requires default constructor definitions
     }
 
     public DistributionNotificationTypeRelation(final Long commonDistributionConfigId, final Long notificationTypeId) {

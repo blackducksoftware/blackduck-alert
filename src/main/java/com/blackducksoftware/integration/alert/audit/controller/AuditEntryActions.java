@@ -54,6 +54,7 @@ import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
@@ -119,7 +120,7 @@ public class AuditEntryActions {
         return null;
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
+    public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException {
         final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
         if (!auditEntryEntityOptional.isPresent()) {
             throw new AlertException("No audit entry with the provided id exists.");
@@ -127,15 +128,15 @@ public class AuditEntryActions {
 
         final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
-        final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
+        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
-            throw new IllegalArgumentException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
+            throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
         if (!commonConfigEntity.isPresent()) {
-            throw new IllegalArgumentException("The job for this entry was deleted, can not re-send this entry.");
+            throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
         final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
         final DigestModel digestModel = new DigestModel(projectDataCollection);
@@ -150,15 +151,14 @@ public class AuditEntryActions {
     }
 
     private List<AuditEntryRestModel> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
-        final List<AuditEntryRestModel> restModels = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
-        return restModels;
+        return auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
     }
 
     private AuditEntryRestModel createRestModel(final AuditEntryEntity auditEntryEntity) {
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
 
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
-        final List<Long> notificationIds = relations.stream().map(relation -> relation.getNotificationId()).collect(Collectors.toList());
+        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
         final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
 
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);

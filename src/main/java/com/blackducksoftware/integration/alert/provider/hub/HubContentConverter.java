@@ -58,16 +58,19 @@ public class HubContentConverter extends DatabaseContentConverter {
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final GlobalHubConfigRestModel hubRestModel = (GlobalHubConfigRestModel) restModel;
-        final int hubTimeout = Integer.parseInt(hubRestModel.getHubTimeout());
-        return new GlobalHubConfigEntity(hubTimeout, hubRestModel.getHubApiKey());
+        final Integer hubTimeout = contentConverter.getInteger(hubRestModel.getHubTimeout());
+        final GlobalHubConfigEntity hubEntity = new GlobalHubConfigEntity(hubTimeout, hubRestModel.getHubApiKey());
+        addIdToEntityPK(hubRestModel.getId(), hubEntity);
+        return hubEntity;
     }
 
-    // TODO This will want to populate more data when ProviderDescriptors are created
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final GlobalHubConfigEntity hubEntity = (GlobalHubConfigEntity) entity;
         final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel();
-        final String hubTimeout = String.valueOf(hubEntity.getHubTimeout());
+        final String id = contentConverter.convertToString(hubEntity.getId());
+        final String hubTimeout = contentConverter.convertToString(hubEntity.getHubTimeout());
+        hubRestModel.setId(id);
         hubRestModel.setHubTimeout(hubTimeout);
         hubRestModel.setHubApiKeyIsSet(StringUtils.isNotBlank(hubEntity.getHubApiKey()));
         hubRestModel.setHubApiKey(hubEntity.getHubApiKey());
