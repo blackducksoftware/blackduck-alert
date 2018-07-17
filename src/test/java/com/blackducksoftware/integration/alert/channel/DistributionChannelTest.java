@@ -38,6 +38,7 @@ import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public class DistributionChannelTest extends ChannelTest {
@@ -154,9 +155,11 @@ public class DistributionChannelTest extends ChannelTest {
 
         final String nullMessage = slackChannel.testGlobalConfig(null);
         assertEquals("The provided entity was null.", nullMessage);
-
-        final String validEntityMessage = slackChannel.testGlobalConfig(globalChannelConfigEntity);
-        assertEquals("Not implemented.", validEntityMessage);
+        try {
+            final String validEntityMessage = slackChannel.testGlobalConfig(globalChannelConfigEntity);
+        } catch (final AlertException ex) {
+            assertEquals("Test method not implemented.", ex.getMessage());
+        }
     }
 
 }

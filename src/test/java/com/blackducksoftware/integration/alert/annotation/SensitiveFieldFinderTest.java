@@ -12,24 +12,16 @@
 package com.blackducksoftware.integration.alert.annotation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Field;
 import java.util.Set;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.annotation.EncryptedStringField;
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.annotation.SensitiveFieldFinder;
-
 public class SensitiveFieldFinderTest {
 
     @Test
     public void findSensitiveFieldsTest() {
-        final SensitiveFieldFinder finder = new SensitiveFieldFinder();
-        assertNotNull(finder);
-
         final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(TestSensitiveFields.class);
         assertEquals(3, sensitiveFields.size());
     }

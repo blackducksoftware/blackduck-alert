@@ -48,6 +48,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     private Boolean filterByProject;
 
     public CommonDistributionConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestTypeEnum frequency, final Boolean filterByProject) {

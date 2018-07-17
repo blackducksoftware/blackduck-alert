@@ -32,10 +32,10 @@ import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailCo
 
 public class EmailProperties {
     // property keys
-    public final static String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_INTERVAL_KEY = "email.service.dispatcher.notification.interval";
-    public final static String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_DELAY_KEY = "email.service.dispatcher.notification.delay";
-    public final static String EMAIL_TEMPLATE_DIRECTORY = "hub.email.template.directory";
-    public final static String EMAIL_LOGO_IMAGE = "logo.image";
+    public static final String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_INTERVAL_KEY = "email.service.dispatcher.notification.interval";
+    public static final String EMAIL_SERVICE_DISPATCHER_NOTIFICATION_DELAY_KEY = "email.service.dispatcher.notification.delay";
+    public static final String EMAIL_TEMPLATE_DIRECTORY = "hub.email.template.directory";
+    public static final String EMAIL_LOGO_IMAGE = "logo.image";
 
     // common javamail properties
     // keeping the same order as in the API documentation table located here:
@@ -102,10 +102,8 @@ public class EmailProperties {
     public static final String TEMPLATE_KEY_TOTAL_POLICY_OVERRIDES = "totalPolicyOverrides";
     public static final String TEMPLATE_KEY_TOTAL_VULNERABILITIES = "totalVulnerabilities";
     public static final String TEMPLATE_KEY_EMAIL_CATEGORY = "emailCategory";
-
-    private String mailSmtpPassword;
-
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
+    private String mailSmtpPassword;
 
     public EmailProperties(final GlobalEmailConfigEntity emailConfigEntity) {
         if (emailConfigEntity == null) {

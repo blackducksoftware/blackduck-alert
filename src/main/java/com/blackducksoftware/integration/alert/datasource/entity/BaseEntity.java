@@ -30,5 +30,6 @@ import com.blackducksoftware.integration.alert.model.Model;
 @MappedSuperclass
 public abstract class BaseEntity extends Model {
     public BaseEntity() {
+        // JPA requires default constructor definitions
     }
 }

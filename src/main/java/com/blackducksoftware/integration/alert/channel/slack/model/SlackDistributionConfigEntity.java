@@ -42,6 +42,7 @@ public class SlackDistributionConfigEntity extends DistributionChannelConfigEnti
     private String channelName;
 
     public SlackDistributionConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
     public SlackDistributionConfigEntity(final String webhook, final String channelUsername, final String channelName) {
