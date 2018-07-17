@@ -60,13 +60,11 @@ public class HipChatDescriptor extends ChannelDescriptor {
 
     @Override
     public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof HipChatDistributionRestModel) {
-            final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
-            if (StringUtils.isBlank(hipChatRestModel.getRoomId())) {
-                fieldErrors.put("roomId", "A Room Id is required.");
-            } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
-                fieldErrors.put("roomId", "Room Id must be an integer value");
-            }
+        final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
+        if (StringUtils.isBlank(hipChatRestModel.getRoomId())) {
+            fieldErrors.put("roomId", "A Room Id is required.");
+        } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
+            fieldErrors.put("roomId", "Room Id must be an integer value");
         }
     }
 
@@ -83,22 +81,16 @@ public class HipChatDescriptor extends ChannelDescriptor {
 
     @Override
     public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof HipChatGlobalConfigRestModel) {
-            final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
-            if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
-                fieldErrors.put("apiKey", "ApiKey can't be blank");
-            }
+        final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
+        if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
+            fieldErrors.put("apiKey", "ApiKey can't be blank");
         }
     }
 
     @Override
     public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
-        if (entity instanceof HipChatGlobalConfigEntity) {
-            final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-            hipChatChannel.testGlobalConfig(hipChatEntity);
-        } else {
-            throw new IntegrationException("Error: Unexpected entity passed through.");
-        }
+        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
+        hipChatChannel.testGlobalConfig(hipChatEntity);
     }
 
     @Override

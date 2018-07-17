@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
@@ -36,37 +36,39 @@ public class HubDescriptorTest {
         Mockito.when(globalHubRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(globalHubRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.doNothing().when(globalHubRepository).deleteById(Mockito.anyLong());
+        final HubRepositoryAccessor hubRepositoryAccessor = new HubRepositoryAccessor(globalHubRepository);
 
-        final HubDescriptor hubDescriptor = new HubDescriptor(globalHubRepository, null, null);
+        final HubDescriptor hubDescriptor = new HubDescriptor(null, hubRepositoryAccessor, null);
 
-        final List<? extends DatabaseEntity> entities = hubDescriptor.readGlobalEntities();
-        final Optional<? extends DatabaseEntity> foundEntity = hubDescriptor.readGlobalEntity(1);
-        final Optional<? extends DatabaseEntity> savedEntity = hubDescriptor.saveGlobalEntity(entity);
-        hubDescriptor.deleteGlobalEntity(1);
+        final List<? extends DatabaseEntity> entities = hubDescriptor.getGlobalRepositoryAccessor().readEntities();
+        final Optional<? extends DatabaseEntity> foundEntity = hubDescriptor.getGlobalRepositoryAccessor().readEntity(1);
+        final DatabaseEntity savedEntity = hubDescriptor.getGlobalRepositoryAccessor().saveEntity(entity);
+        hubDescriptor.getGlobalRepositoryAccessor().deleteEntity(1);
 
         assertEquals(1, entities.size());
         assertEquals(entity, entities.get(0));
 
         assertTrue(foundEntity.isPresent());
-        assertTrue(savedEntity.isPresent());
+        assertTrue(savedEntity != null);
 
         assertEquals(entity, foundEntity.get());
-        assertEquals(entity, savedEntity.get());
+        assertEquals(entity, savedEntity);
     }
 
     @Test
     public void testTransformerCalls() throws AlertException {
         final Gson gson = new Gson();
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
+        final ContentConverter contentConverter = new ContentConverter(gson);
+        final HubContentConverter hubContentConverter = new HubContentConverter(contentConverter);
 
-        final HubDescriptor hubDescriptor = new HubDescriptor(null, gson, objectTransformer);
+        final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null);
 
         final GlobalHubConfigEntity hubEntity = mockHubEntity.createGlobalEntity();
         final GlobalHubConfigRestModel hubRestModel = mockHubRestModel.createGlobalRestModel();
 
-        final ConfigRestModel restModel = hubDescriptor.convertFromGlobalEntityToGlobalRestModel(hubEntity);
-        final DatabaseEntity entity = hubDescriptor.convertFromGlobalRestModelToGlobalConfigEntity(hubRestModel);
-        final ConfigRestModel jsonRestModel = hubDescriptor.convertFromStringToGlobalRestModel(gson.toJson(hubEntity));
+        final ConfigRestModel restModel = hubDescriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
+        final DatabaseEntity entity = hubDescriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(hubRestModel);
+        final ConfigRestModel jsonRestModel = hubDescriptor.getGlobalContentConverter().getRestModelFromJson(gson.toJson(hubEntity));
 
         assertEquals(String.valueOf(hubEntity.getId()), restModel.getId());
         assertEquals(hubRestModel.getId(), String.valueOf(entity.getId()));

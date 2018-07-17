@@ -35,13 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.blackducksoftware.integration.alert.AlertConstants;
 import com.blackducksoftware.integration.alert.channel.email.EmailProperties;
 
-import freemarker.core.ParseException;
 import freemarker.template.Configuration;
-import freemarker.template.MalformedTemplateNameException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateNotFoundException;
 
 public class ChannelFreemarkerTemplatingService {
     private final Logger logger = LoggerFactory.getLogger(ChannelFreemarkerTemplatingService.class);
@@ -59,9 +56,9 @@ public class ChannelFreemarkerTemplatingService {
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
         cfg.setLogTemplateExceptions(false);
 
-        final File templateDirectory = findTemplateDirectory();
-        if (templateDirectory != null) {
-            cfg.setDirectoryForTemplateLoading(templateDirectory);
+        final File templateLoadingDirectory = findTemplateDirectory();
+        if (templateLoadingDirectory != null) {
+            cfg.setDirectoryForTemplateLoading(templateLoadingDirectory);
         }
         return cfg;
     }
@@ -83,7 +80,7 @@ public class ChannelFreemarkerTemplatingService {
         }
     }
 
-    public String getResolvedTemplate(final Map<String, Object> model, final String templateName) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, IOException, TemplateException {
+    public String getResolvedTemplate(final Map<String, Object> model, final String templateName) throws IOException, TemplateException {
         final StringWriter stringWriter = new StringWriter();
         final Template template = configuration.getTemplate(templateName);
         template.process(model, stringWriter);

@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.rest;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -38,13 +39,14 @@ import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalC
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 
 public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<G, C> {
-    final ChannelRestConnectionFactory channelRestConnectionFactory;
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public RestDistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
@@ -55,7 +57,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     }
 
     @Override
-    public void sendMessage(final ChannelEvent event, final C config) throws Exception {
+    public void sendMessage(final ChannelEvent event, final C config) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
@@ -66,7 +68,13 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
             } else {
                 logger.info("No data found to send.");
             }
+        } catch (final IOException ex) {
+            throw new AlertException(ex);
         }
+    }
+
+    public ChannelRestConnectionFactory getChannelRestConnectionFactory() {
+        return channelRestConnectionFactory;
     }
 
     public abstract String getApiUrl(G globalConfig);

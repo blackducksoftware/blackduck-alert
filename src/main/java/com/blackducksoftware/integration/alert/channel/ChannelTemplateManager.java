@@ -67,9 +67,7 @@ public class ChannelTemplateManager {
 
     public void sendEvents(final List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
-            eventList.forEach(event -> {
-                sendEvent(event);
-            });
+            eventList.forEach(this::sendEvent);
         }
     }
 
@@ -77,26 +75,26 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
-            Optional<AuditEntryEntity> auditEntryEntity = null;
-            if (channelEvent.getAuditEntryId() == null) {
-                auditEntryEntity = Optional.of(new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null));
-            } else {
-                auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId());
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
+
+            if (channelEvent.getAuditEntryId() != null) {
+                auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId()).orElse(auditEntryEntity);
             }
-            auditEntryEntity.get().setStatus(StatusEnum.PENDING);
-            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity.get());
+
+            auditEntryEntity.setStatus(StatusEnum.PENDING);
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
             final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
             if (!optionalModel.isPresent()) {
                 return false;
             } else {
                 final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
-                projectDataCollection.forEach(projectDataItem -> {
-                    projectDataItem.getNotificationIds().forEach(notificationId -> {
-                        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
-                        auditNotificationRepository.save(auditNotificationRelation);
-                    });
-                });
+                projectDataCollection.stream()
+                        .map(ProjectData::getNotificationIds)
+                        .flatMap(Collection::stream)
+                        .map(notificationId -> new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId))
+                        .forEach(auditNotificationRelation -> auditNotificationRepository.save(auditNotificationRelation));
+
                 final String jsonMessage = gson.toJson(channelEvent);
                 jmsTemplate.convertAndSend(destination, jsonMessage);
             }

@@ -30,6 +30,7 @@ import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 @MappedSuperclass
 public abstract class DistributionChannelConfigEntity extends DatabaseEntity {
     public DistributionChannelConfigEntity() {
+        // JPA requires default constructor definitions
     }
 
 }

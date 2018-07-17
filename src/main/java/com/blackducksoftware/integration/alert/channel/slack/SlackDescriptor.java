@@ -54,15 +54,13 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Override
     public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof SlackDistributionRestModel) {
-            final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
+        final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
 
-            if (StringUtils.isBlank(slackRestModel.getWebhook())) {
-                fieldErrors.put("webhook", "A webhook is required.");
-            }
-            if (StringUtils.isBlank(slackRestModel.getChannelName())) {
-                fieldErrors.put("channelName", "A channel name is required.");
-            }
+        if (StringUtils.isBlank(slackRestModel.getWebhook())) {
+            fieldErrors.put("webhook", "A webhook is required.");
+        }
+        if (StringUtils.isBlank(slackRestModel.getChannelName())) {
+            fieldErrors.put("channelName", "A channel name is required.");
         }
     }
 

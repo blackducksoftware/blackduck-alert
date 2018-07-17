@@ -47,6 +47,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
+    public static final String NOT_AN_INTEGER = "Not an Integer.";
     private final EmailGroupChannel emailGroupChannel;
     private final EntityPropertyMapper entityPropertyMapper;
 
@@ -60,11 +61,9 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Override
     public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof EmailGroupDistributionRestModel) {
-            final EmailGroupDistributionRestModel emailRestModel = (EmailGroupDistributionRestModel) restModel;
-            if (StringUtils.isBlank(emailRestModel.getGroupName())) {
-                fieldErrors.put("groupName", "A group must be specified.");
-            }
+        final EmailGroupDistributionRestModel emailRestModel = (EmailGroupDistributionRestModel) restModel;
+        if (StringUtils.isBlank(emailRestModel.getGroupName())) {
+            fieldErrors.put("groupName", "A group must be specified.");
         }
     }
 
@@ -81,18 +80,16 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Override
     public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        if (restModel instanceof EmailGlobalConfigRestModel) {
-            final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
+        final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
 
-            if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
-                fieldErrors.put("mailSmtpPort", "Not an Integer.");
-            }
-            if (StringUtils.isNotBlank(emailRestModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpConnectionTimeout())) {
-                fieldErrors.put("mailSmtpConnectionTimeout", "Not an Integer.");
-            }
-            if (StringUtils.isNotBlank(emailRestModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpTimeout())) {
-                fieldErrors.put("mailSmtpTimeout", "Not an Integer.");
-            }
+        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
+            fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
+        }
+        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpConnectionTimeout())) {
+            fieldErrors.put("mailSmtpConnectionTimeout", NOT_AN_INTEGER);
+        }
+        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpTimeout())) {
+            fieldErrors.put("mailSmtpTimeout", NOT_AN_INTEGER);
         }
     }
 

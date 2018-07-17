@@ -111,9 +111,7 @@ public class NotificationManager {
     }
 
     public void deleteNotificationList(final List<NotificationModel> notifications) {
-        notifications.forEach(notification -> {
-            deleteNotification(notification);
-        });
+        notifications.forEach(this::deleteNotification);
     }
 
     public void deleteNotification(final NotificationModel model) {

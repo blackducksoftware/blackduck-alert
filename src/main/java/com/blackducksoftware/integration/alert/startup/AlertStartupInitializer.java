@@ -46,8 +46,8 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class AlertStartupInitializer {
+    public static final String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-
     private final ConversionService conversionService;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
@@ -97,7 +97,7 @@ public class AlertStartupInitializer {
             }
             try {
                 propertySet = setRestModelValue(value, globalRestModel, property) || propertySet;
-            } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
                 logger.error("Error initializing {} ", propertyKey, ex);
             }
         }

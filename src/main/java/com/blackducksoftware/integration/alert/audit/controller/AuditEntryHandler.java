@@ -29,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -59,10 +60,10 @@ public class AuditEntryHandler extends ControllerHandler {
         try {
             auditEntries = auditEntryActions.resendNotification(id);
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));
+        } catch (final AlertNotificationPurgedException e) {
+            return createResponse(HttpStatus.GONE, id, e.getMessage());
         } catch (final IntegrationException e) {
             return createResponse(HttpStatus.BAD_REQUEST, id, e.getMessage());
-        } catch (final IllegalArgumentException e) {
-            return createResponse(HttpStatus.GONE, id, e.getMessage());
         }
     }
 

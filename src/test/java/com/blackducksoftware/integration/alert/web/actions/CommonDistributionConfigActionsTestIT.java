@@ -43,9 +43,6 @@ import com.blackducksoftware.integration.alert.datasource.entity.CommonDistribut
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.web.actions.CommonDistributionConfigActions;
-import com.blackducksoftware.integration.alert.web.actions.ConfiguredProjectsActions;
-import com.blackducksoftware.integration.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -66,9 +63,9 @@ public class CommonDistributionConfigActionsTestIT {
     @Autowired
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
-    private ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
+    private ConfiguredProjectsActions configuredProjectsActions;
     @Autowired
-    private NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
+    private NotificationTypesActions notificationTypesActions;
 
     @Before
     public void cleanup() {
