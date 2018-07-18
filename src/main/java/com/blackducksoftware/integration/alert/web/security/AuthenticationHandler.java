@@ -23,11 +23,13 @@
  */
 package com.blackducksoftware.integration.alert.web.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
 
@@ -35,6 +37,13 @@ import com.blackducksoftware.integration.alert.web.controller.BaseController;
 @Configuration
 @Profile("!ssl")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
+    @Autowired
+    AuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
+    }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
@@ -54,7 +63,21 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 BaseController.BASE_PATH + "/logout",
                 BaseController.BASE_PATH + "/about" };
 
-        http.csrf().disable().authorizeRequests().antMatchers(allowedPaths).permitAll()
+        final String[] csrfIgnoredPaths = {
+                "/",
+                "/#",
+                "/favicon.ico",
+                "/fonts/**",
+                "/js/bundle.js",
+                "/js/bundle.js.map",
+                "/css/style.css",
+                "index.html",
+                BaseController.BASE_PATH + "/login",
+                BaseController.BASE_PATH + "/verify",
+                BaseController.BASE_PATH + "/about" };
+
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
+                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
                 .and().authorizeRequests().anyRequest().hasRole("ADMIN")
                 .and().logout().logoutSuccessUrl("/");
         // conditional above ensures that this will not be used if SSL is enabled.
