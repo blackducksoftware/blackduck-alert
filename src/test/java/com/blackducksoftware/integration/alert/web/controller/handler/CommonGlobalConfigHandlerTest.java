@@ -22,11 +22,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.provider.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
-import com.blackducksoftware.integration.alert.web.controller.handler.CommonGlobalConfigHandler;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 
 public class CommonGlobalConfigHandlerTest {
     private final ObjectTransformer objectTransformer = new ObjectTransformer();

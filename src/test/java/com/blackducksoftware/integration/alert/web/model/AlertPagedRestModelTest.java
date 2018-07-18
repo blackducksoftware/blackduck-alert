@@ -9,8 +9,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 
 public class AlertPagedRestModelTest {
 

@@ -17,8 +17,8 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 
 public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfigRestModel> {
 
