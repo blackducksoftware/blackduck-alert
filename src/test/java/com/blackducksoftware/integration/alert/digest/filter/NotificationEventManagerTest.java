@@ -29,6 +29,8 @@ import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
@@ -39,9 +41,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Common
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -72,9 +72,9 @@ public class NotificationEventManagerTest {
         cleanUp();
 
         long configId = 1;
-        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", DigestTypeEnum.REAL_TIME, false);
-        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestTypeEnum.REAL_TIME, false);
+        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", DigestType.REAL_TIME, false);
+        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", DigestType.REAL_TIME, false);
+        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestType.REAL_TIME, false);
 
         slackDistributionConfig = commonDistributionRepository.save(slackDistributionConfig);
         hipChatDistributionConfig = commonDistributionRepository.save(hipChatDistributionConfig);
@@ -104,7 +104,7 @@ public class NotificationEventManagerTest {
     public void createInvalidDigestTypeTest() {
         final NotificationModel notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final List<NotificationModel> notificationModels = Arrays.asList(notificationModel);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.DAILY, notificationModels);
         assertTrue(channelEvents.isEmpty());
     }
 
@@ -116,7 +116,7 @@ public class NotificationEventManagerTest {
         final NotificationModel notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final NotificationModel notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
         final List<NotificationModel> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestTypeEnum.REAL_TIME, notificationModelList);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.REAL_TIME, notificationModelList);
         assertEquals(configEntityList.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {

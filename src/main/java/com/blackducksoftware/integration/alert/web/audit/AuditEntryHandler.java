@@ -29,8 +29,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
+import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.gson.Gson;

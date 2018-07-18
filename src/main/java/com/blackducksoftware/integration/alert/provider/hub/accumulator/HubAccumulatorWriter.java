@@ -36,10 +36,10 @@ import org.springframework.batch.item.ItemWriter;
 import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.event.InternalEventTypes;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
 
 @Transactional
 public class HubAccumulatorWriter implements ItemWriter<AlertEvent> {

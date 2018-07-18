@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.channel.email.template.MimeMultipartBuilder;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 
 import freemarker.template.TemplateException;
 

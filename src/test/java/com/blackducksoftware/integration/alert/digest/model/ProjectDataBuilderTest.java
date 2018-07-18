@@ -19,8 +19,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectDataBuilderTest {
 
@@ -50,32 +50,32 @@ public class ProjectDataBuilderTest {
         final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
 
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryDataBuilder);
-        projectDataBuilder.setDigestType(DigestTypeEnum.DAILY);
+        projectDataBuilder.setDigestType(DigestType.DAILY);
         projectDataBuilder.setProjectName("Project");
         projectDataBuilder.setProjectVersion("Version");
 
         assertNotNull(projectDataBuilder.getCategoryBuilderMap());
         assertFalse(projectDataBuilder.getCategoryBuilderMap().isEmpty());
         assertEquals(categoryDataBuilder, projectDataBuilder.getCategoryBuilderMap().get(NotificationCategoryEnum.HIGH_VULNERABILITY));
-        assertEquals(DigestTypeEnum.DAILY, projectDataBuilder.getDigestType());
+        assertEquals(DigestType.DAILY, projectDataBuilder.getDigestType());
         assertEquals("Project", projectDataBuilder.getProjectName());
         assertEquals("Version", projectDataBuilder.getProjectVersion());
 
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryDataBuilder.build());
 
-        ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", Collections.emptyList(), categoryMap);
+        ProjectData projectData = new ProjectData(DigestType.DAILY, "Project", "Version", Collections.emptyList(), categoryMap);
         assertEquals(projectData, projectDataBuilder.build());
 
         projectDataBuilder.removeCategoryBuilder(NotificationCategoryEnum.HIGH_VULNERABILITY);
 
         assertNotNull(projectDataBuilder.getCategoryBuilderMap());
         assertTrue(projectDataBuilder.getCategoryBuilderMap().isEmpty());
-        assertEquals(DigestTypeEnum.DAILY, projectDataBuilder.getDigestType());
+        assertEquals(DigestType.DAILY, projectDataBuilder.getDigestType());
         assertEquals("Project", projectDataBuilder.getProjectName());
         assertEquals("Version", projectDataBuilder.getProjectVersion());
 
-        projectData = new ProjectData(DigestTypeEnum.DAILY, "Project", "Version", Collections.emptyList(), new HashMap<>());
+        projectData = new ProjectData(DigestType.DAILY, "Project", "Version", Collections.emptyList(), new HashMap<>());
         assertEquals(projectData, projectDataBuilder.build());
     }
 

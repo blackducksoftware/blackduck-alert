@@ -26,8 +26,8 @@ package com.blackducksoftware.integration.alert.processor;
 import java.util.List;
 import java.util.Set;
 
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;

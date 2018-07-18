@@ -26,14 +26,14 @@ import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGloba
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
@@ -178,7 +178,7 @@ public class ObjectTransformerTest {
         assertEquals("false", objectTransformer.objectToString(false));
         assertEquals("hello", objectTransformer.objectToString("hello"));
         assertEquals("123", objectTransformer.objectToString(123));
-        assertEquals("REAL_TIME", objectTransformer.objectToString(DigestTypeEnum.REAL_TIME));
+        assertEquals("REAL_TIME", objectTransformer.objectToString(DigestType.REAL_TIME));
     }
 
     @Test
@@ -238,8 +238,8 @@ public class ObjectTransformerTest {
 
         final TestSpecificDatabaseEntity entity = new TestSpecificDatabaseEntity();
         entity.date = new Date(12345l);
-        entity.digestType = DigestTypeEnum.DAILY;
-        entity.status = StatusEnum.PENDING;
+        entity.digestType = DigestType.DAILY;
+        entity.status = AuditEntryStatus.PENDING;
 
         final TestSpecificConfigRestModel restModel = objectTransformer.convert(entity, TestSpecificConfigRestModel.class);
         assertNotNull(restModel);
@@ -254,8 +254,8 @@ public class ObjectTransformerTest {
 
         final TestSpecificConfigRestModel restModel = new TestSpecificConfigRestModel();
         restModel.date = new Date(12345l).toString();
-        restModel.digestType = DigestTypeEnum.DAILY.name();
-        restModel.status = StatusEnum.PENDING.toString();
+        restModel.digestType = DigestType.DAILY.name();
+        restModel.status = AuditEntryStatus.PENDING.toString();
 
         final TestSpecificDatabaseEntity entity = objectTransformer.convert(restModel, TestSpecificDatabaseEntity.class);
         assertNotNull(restModel);
@@ -266,9 +266,9 @@ public class ObjectTransformerTest {
 
     public static class TestSpecificDatabaseEntity extends DatabaseEntity {
         public Date date;
-        public DigestTypeEnum digestType;
+        public DigestType digestType;
         public NotificationCategoryEnum notificationCategory;
-        public StatusEnum status;
+        public AuditEntryStatus status;
 
         public TestSpecificDatabaseEntity() {
         }

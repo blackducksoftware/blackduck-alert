@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.alert.digest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -16,9 +14,7 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.alert.NotificationManager;
-import com.blackducksoftware.integration.alert.digest.DailyItemReader;
-import com.blackducksoftware.integration.alert.digest.DateRange;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 
 public class DailyItemReaderTest {
 

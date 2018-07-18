@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
@@ -51,7 +52,6 @@ import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.service.model.HubServerVerifier;

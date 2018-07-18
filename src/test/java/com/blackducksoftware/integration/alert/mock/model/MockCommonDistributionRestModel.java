@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
@@ -44,7 +44,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
-        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestTypeEnum.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
+        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestType.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(), null, null);
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,

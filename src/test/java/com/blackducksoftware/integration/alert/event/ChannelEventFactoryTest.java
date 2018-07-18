@@ -22,11 +22,9 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.event.ChannelEventFactory;
 import com.google.gson.Gson;
 
 public class ChannelEventFactoryTest {
@@ -40,7 +38,7 @@ public class ChannelEventFactoryTest {
         final ChannelEventFactory factory = new ChannelEventFactory(manager);
 
         final Long id = 25L;
-        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
         final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.convertToString(digestModel), id);
         Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);

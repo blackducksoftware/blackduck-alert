@@ -38,15 +38,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 @Transactional
 @Component
@@ -66,7 +66,7 @@ public class NotificationEventManager {
         this.projectDataFactory = projectDataFactory;
     }
 
-    public List<ChannelEvent> createChannelEvents(final DigestTypeEnum digestType, final List<NotificationModel> notificationModelList) {
+    public List<ChannelEvent> createChannelEvents(final DigestType digestType, final List<NotificationModel> notificationModelList) {
         final List<ChannelEvent> channelEvents = new ArrayList<>();
         final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
         final Map<CommonDistributionConfigEntity, List<NotificationModel>> distributionConfigNotificationMap = new HashMap<>(distributionConfigurations.size());

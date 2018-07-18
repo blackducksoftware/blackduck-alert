@@ -18,11 +18,11 @@ import com.blackducksoftware.integration.alert.channel.PropertyInitializer;
 import com.blackducksoftware.integration.alert.channel.email.EmailDescriptor;
 import com.blackducksoftware.integration.alert.channel.email.EmailGlobalContentConverter;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
+import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.descriptor.Descriptor;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
 import com.google.gson.Gson;
 

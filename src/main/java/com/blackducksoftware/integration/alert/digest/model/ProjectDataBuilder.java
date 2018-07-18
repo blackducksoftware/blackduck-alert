@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectDataBuilder {
-    private DigestTypeEnum digestType;
+    private DigestType digestType;
     private String projectName;
     private String projectVersion;
 
@@ -61,11 +61,11 @@ public class ProjectDataBuilder {
         return categoryBuilderMap;
     }
 
-    public DigestTypeEnum getDigestType() {
+    public DigestType getDigestType() {
         return digestType;
     }
 
-    public void setDigestType(final DigestTypeEnum digestType) {
+    public void setDigestType(final DigestType digestType) {
         this.digestType = digestType;
     }
 

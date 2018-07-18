@@ -8,9 +8,7 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.digest.DailyDigestItemProcessor;
-import com.blackducksoftware.integration.alert.digest.DigestNotificationProcessor;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 
 public class DailyDigestItemProcessorTest {
@@ -19,7 +17,7 @@ public class DailyDigestItemProcessorTest {
     public void testGetDigestType() {
         final DailyDigestItemProcessor dailyDigestItemProcessor = new DailyDigestItemProcessor(null);
 
-        assertEquals(DigestTypeEnum.DAILY, dailyDigestItemProcessor.getDigestType());
+        assertEquals(DigestType.DAILY, dailyDigestItemProcessor.getDigestType());
     }
 
     @Test

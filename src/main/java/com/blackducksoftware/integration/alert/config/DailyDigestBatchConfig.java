@@ -37,13 +37,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.digest.DailyDigestItemProcessor;
 import com.blackducksoftware.integration.alert.digest.DailyItemReader;
 import com.blackducksoftware.integration.alert.digest.DigestItemProcessor;
 import com.blackducksoftware.integration.alert.digest.DigestItemWriter;
 import com.blackducksoftware.integration.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.scheduled.JobScheduledTask;
 
 @Component

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
 import com.blackducksoftware.integration.alert.NotificationManager;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 
 @Transactional
 public class PurgeWriter implements ItemWriter<List<NotificationModel>> {

@@ -34,8 +34,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -54,7 +54,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private Date timeLastSent;
 
     @Column(name = "status")
-    private StatusEnum status;
+    private AuditEntryStatus status;
 
     @Column(name = "error_message")
     private String errorMessage;
@@ -68,7 +68,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace) {
+    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final AuditEntryStatus status, final String errorMessage, final String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -93,11 +93,11 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.timeLastSent = timeLastSent;
     }
 
-    public StatusEnum getStatus() {
+    public AuditEntryStatus getStatus() {
         return status;
     }
 
-    public void setStatus(final StatusEnum status) {
+    public void setStatus(final AuditEntryStatus status) {
         this.status = status;
     }
 

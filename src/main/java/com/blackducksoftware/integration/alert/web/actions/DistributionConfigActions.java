@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 
 // TODO this class is only used by CommonDistributionConfigActions now and can probably be merged together (If we don't find a way to use the channel config actions)

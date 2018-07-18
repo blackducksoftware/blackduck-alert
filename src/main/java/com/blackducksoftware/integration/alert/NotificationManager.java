@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
@@ -44,7 +45,6 @@ import com.blackducksoftware.integration.alert.database.entity.NotificationEntit
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 @Component
 public class NotificationManager {
