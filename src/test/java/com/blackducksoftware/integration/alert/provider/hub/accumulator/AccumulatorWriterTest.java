@@ -5,10 +5,10 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.InternalEventTypes;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.model.NotificationModels;
@@ -22,7 +22,7 @@ public class AccumulatorWriterTest {
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final Gson gson = new Gson();
-        final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson);
         final HubAccumulatorWriter hubAccumulatorWriter = new HubAccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
 
         final NotificationModel model = new NotificationModel(null, null);
@@ -38,7 +38,7 @@ public class AccumulatorWriterTest {
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final Gson gson = new Gson();
-        final AlertEventContentConverter contentConverter = new AlertEventContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson);
         final HubAccumulatorWriter hubAccumulatorWriter = new HubAccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
 
         final NotificationModel model = new NotificationModel(null, null);

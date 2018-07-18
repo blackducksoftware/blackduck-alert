@@ -39,11 +39,10 @@ import com.blackducksoftware.integration.alert.datasource.entity.ConfiguredProje
 import com.blackducksoftware.integration.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 
 @Transactional
 @Component
-public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestModel> {
+public class ConfiguredProjectsActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfiguredProjectsActions.class);
 
     private final ConfiguredProjectsRepository configuredProjectsRepository;
@@ -73,16 +72,13 @@ public class ConfiguredProjectsActions<R extends CommonDistributionConfigRestMod
         return configuredProjects;
     }
 
-    public void saveConfiguredProjects(final CommonDistributionConfigEntity commonEntity, final R restModel) {
-        if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
-            final List<String> configuredProjectsFromRestModel = restModel.getConfiguredProjects();
-            if (configuredProjectsFromRestModel != null) {
-                removeOldDistributionProjectRelations(commonEntity.getId());
-                addNewDistributionProjectRelations(commonEntity.getId(), configuredProjectsFromRestModel);
-                cleanUpConfiguredProjects();
-            } else {
-                logger.warn("{}: List of configured projects was null; configured projects will not be updated.", commonEntity.getName());
-            }
+    public void saveConfiguredProjects(final long entityId, final List<String> configuredProjects) {
+        if (configuredProjects != null) {
+            removeOldDistributionProjectRelations(entityId);
+            addNewDistributionProjectRelations(entityId, configuredProjects);
+            cleanUpConfiguredProjects();
+        } else {
+            logger.warn("Configured projects was null; configured projects will not be updated.");
         }
     }
 

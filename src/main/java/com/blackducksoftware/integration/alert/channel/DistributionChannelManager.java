@@ -34,13 +34,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
@@ -51,10 +51,10 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public class DistributionChannelManager {
     private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
     private final ObjectTransformer objectTransformer;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public DistributionChannelManager(final ObjectTransformer objectTransformer, final AlertEventContentConverter contentConverter) {
+    public DistributionChannelManager(final ObjectTransformer objectTransformer, final ContentConverter contentConverter) {
         this.objectTransformer = objectTransformer;
         this.contentConverter = contentConverter;
     }
@@ -71,7 +71,7 @@ public class DistributionChannelManager {
     public String sendTestMessage(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
         final String destinationName = descriptor.getDestinationName();
         if (descriptor.hasGlobalConfiguration()) {
-            if (descriptor.readGlobalEntities().isEmpty()) {
+            if (descriptor.getGlobalRepositoryAccessor().readEntities().isEmpty()) {
                 logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
                 return "ERROR: Missing global configuration!";
             }

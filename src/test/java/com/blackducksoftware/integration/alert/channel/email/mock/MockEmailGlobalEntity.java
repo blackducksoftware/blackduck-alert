@@ -11,11 +11,11 @@
  */
 package com.blackducksoftware.integration.alert.channel.email.mock;
 
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.google.gson.JsonObject;
 
-public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfigEntity> {
+public class MockEmailGlobalEntity extends MockGlobalEntityUtil<EmailGlobalConfigEntity> {
     private String mailSmtpHost;
     private String mailSmtpUser;
     private String mailSmtpPassword;
@@ -396,8 +396,8 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
     }
 
     @Override
-    public GlobalEmailConfigEntity createGlobalEntity() {
-        final GlobalEmailConfigEntity entity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout,
+    public EmailGlobalConfigEntity createGlobalEntity() {
+        final EmailGlobalConfigEntity entity = new EmailGlobalConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout,
                 mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth,
                 mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable,
                 mailSmtpAuthNtlmDomain, mailSmtpAuthNtlmFlags, mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet,
@@ -410,8 +410,8 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<GlobalEmailConfi
     }
 
     @Override
-    public GlobalEmailConfigEntity createEmptyGlobalEntity() {
-        return new GlobalEmailConfigEntity();
+    public EmailGlobalConfigEntity createEmptyGlobalEntity() {
+        return new EmailGlobalConfigEntity();
     }
 
     @Override

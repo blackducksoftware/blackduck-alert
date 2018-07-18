@@ -21,6 +21,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
@@ -31,7 +32,6 @@ import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
     protected Gson gson;
-    protected AlertEventContentConverter contentConverter;
+    protected ContentConverter contentConverter;
     protected ObjectTransformer objectTransformer;
     protected DistributionChannelManager channelManager;
     protected TestProperties properties;
@@ -57,7 +57,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new AlertEventContentConverter(gson);
+        contentConverter = new ContentConverter(gson);
         objectTransformer = new ObjectTransformer();
         properties = new TestProperties();
         channelManager = new DistributionChannelManager(objectTransformer, contentConverter);

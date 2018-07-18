@@ -27,15 +27,15 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.scheduled.JobScheduledTask;
 import com.google.gson.Gson;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
-    protected AlertEventContentConverter contentConverter;
+    protected ContentConverter contentConverter;
     private OutputLogger outputLogger;
     private GlobalProperties globalProperties;
     private Gson gson;
@@ -45,7 +45,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger = new OutputLogger();
         globalProperties = new TestGlobalProperties();
         gson = new Gson();
-        contentConverter = new AlertEventContentConverter(gson);
+        contentConverter = new ContentConverter(gson);
     }
 
     @After

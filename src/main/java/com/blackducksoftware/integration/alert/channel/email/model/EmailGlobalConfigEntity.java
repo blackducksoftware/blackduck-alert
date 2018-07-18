@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.alert.web.security.StringEncryptionConv
 
 @Entity
 @Table(schema = "alert", name = "global_email_config")
-public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
+public class EmailGlobalConfigEntity extends GlobalChannelConfigEntity {
     // JavaMail properties https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
     // Note: SocketFactory properties were omitted
     // If this class needs to be modified for new parameters the database structure needs to change to a new table that contains key value pairs as strings.
@@ -184,11 +184,10 @@ public class GlobalEmailConfigEntity extends GlobalChannelConfigEntity {
     @Column(name = "mail_smtp_noop_strict")
     private Boolean mailSmtpNoopStrict;
 
-    public GlobalEmailConfigEntity() {
-        // JPA requires default constructor definitions
+    public EmailGlobalConfigEntity() {
     }
 
-    public GlobalEmailConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
+    public EmailGlobalConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
             final Integer mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final Integer mailSmtpLocalPort, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth,
             final String mailSmtpAuthMechanisms, final Boolean mailSmtpAuthLoginDisable, final Boolean mailSmtpAuthPlainDisable, final Boolean mailSmtpAuthDigestMd5Disable, final Boolean mailSmtpAuthNtlmDisable,
             final String mailSmtpAuthNtlmDomain, final Integer mailSmtpAuthNtlmFlags, final Boolean mailSmtpAuthXoauth2Disable, final String mailSmtpSubmitter, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,

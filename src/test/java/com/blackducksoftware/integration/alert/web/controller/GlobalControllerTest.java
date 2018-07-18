@@ -35,7 +35,6 @@ import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;

@@ -16,7 +16,7 @@ import com.blackducksoftware.integration.alert.audit.repository.AuditEntryReposi
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
@@ -55,7 +55,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final Boolean smtpAuth = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        final GlobalEmailConfigEntity emailGlobalConfigEntity = new GlobalEmailConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
+        final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
                 null,
                 null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);

@@ -60,31 +60,31 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.postConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
+        return controllerHandler.postConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.putConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
+        return controllerHandler.putConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.validateConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
+        return controllerHandler.validateConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.deleteConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
+        return controllerHandler.deleteConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.testConfig(descriptor.convertFromStringToGlobalRestModel(restModel), descriptor);
+        return controllerHandler.testConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
     }
 
 }

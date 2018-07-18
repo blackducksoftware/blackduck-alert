@@ -21,34 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.event;
-
-import java.util.Optional;
+package com.blackducksoftware.integration.alert.channel.hipchat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.google.gson.Gson;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
+import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.descriptor.RepositoryAccessor;
 
 @Component
-public class AlertEventContentConverter {
-
-    private final Gson gson;
+public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
+    private final HipChatDistributionRepository repository;
 
     @Autowired
-    public AlertEventContentConverter(final Gson gson) {
-        this.gson = gson;
+    public HipChatDistributionRepositoryAccessor(final HipChatDistributionRepository repository) {
+        super(repository);
+        this.repository = repository;
     }
 
-    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) throws AlertException {
-        if (contentClass != null && content != null) {
-            return Optional.ofNullable(gson.fromJson(content, contentClass));
-        }
-        return Optional.empty();
+    @Override
+    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
+        final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
+        return repository.save(hipChatEntity);
     }
 
-    public <C> String convertToString(final C content) {
-        return gson.toJson(content);
-    }
 }
