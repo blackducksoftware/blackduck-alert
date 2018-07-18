@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.audit.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.Date;
 
@@ -36,13 +34,11 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryHandler;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.audit.repository.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
@@ -50,6 +46,8 @@ import com.blackducksoftware.integration.alert.datasource.entity.repository.Noti
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryHandler;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;

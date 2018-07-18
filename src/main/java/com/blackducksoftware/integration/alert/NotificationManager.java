@@ -36,10 +36,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.audit.repository.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationRepository;
@@ -68,8 +68,8 @@ public class NotificationManager {
         if (notification.getVulnerabilityList() != null) {
             final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
             final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
-                                                                            .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
-                                                                            .collect(Collectors.toList());
+                    .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
+                    .collect(Collectors.toList());
             vulnerabilities = vulnerabilityRepository.saveAll(vulnerabilitiesToSave);
         }
 

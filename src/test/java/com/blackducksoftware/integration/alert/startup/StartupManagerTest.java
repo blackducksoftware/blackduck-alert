@@ -15,12 +15,11 @@ import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
-import com.blackducksoftware.integration.alert.scheduling.mock.MockGlobalSchedulingEntity;
-import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.startup.StartupManager;
+import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;

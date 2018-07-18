@@ -14,13 +14,13 @@ import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.provider.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 
 public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
 

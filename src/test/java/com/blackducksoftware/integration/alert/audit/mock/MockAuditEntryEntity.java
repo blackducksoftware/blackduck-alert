@@ -2,7 +2,7 @@ package com.blackducksoftware.integration.alert.audit.mock;
 
 import java.util.Date;
 
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;

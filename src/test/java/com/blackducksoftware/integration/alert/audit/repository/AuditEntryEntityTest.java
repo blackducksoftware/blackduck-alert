@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.EntityTest;
 
 public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {

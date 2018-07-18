@@ -11,9 +11,9 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.mock;
 
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {

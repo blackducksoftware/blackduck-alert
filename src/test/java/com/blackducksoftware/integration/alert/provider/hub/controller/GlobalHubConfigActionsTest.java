@@ -11,11 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.provider.hub.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -32,13 +28,13 @@ import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.provider.hub.controller.global.GlobalHubConfigActions;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigValidator;
