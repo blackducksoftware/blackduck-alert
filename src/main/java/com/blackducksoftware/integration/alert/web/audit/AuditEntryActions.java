@@ -39,9 +39,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
@@ -50,15 +54,11 @@ import com.blackducksoftware.integration.alert.database.audit.AuditNotificationR
 import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional

@@ -28,8 +28,8 @@ import java.util.Set;
 
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class Descriptor {

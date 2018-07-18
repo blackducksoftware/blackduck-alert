@@ -51,7 +51,7 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.alert.startup.StartupManager;
+import com.blackducksoftware.integration.alert.workflow.startup.StartupManager;
 import com.blackducksoftware.integration.rest.RestConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -65,7 +65,7 @@ import com.google.gson.GsonBuilder;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.web.**", "com.blackducksoftware.integration.alert", "com.blackducksoftware.integration.alert.config",
-        "com.blackducksoftware.integration.alert.startup" })
+        "com.blackducksoftware.integration.alert.workflow.startup" })
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired

@@ -37,8 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;

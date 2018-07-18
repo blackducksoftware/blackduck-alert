@@ -33,9 +33,9 @@ import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescrip
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component

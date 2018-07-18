@@ -28,7 +28,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.security.StringEncryptionConverter;
 

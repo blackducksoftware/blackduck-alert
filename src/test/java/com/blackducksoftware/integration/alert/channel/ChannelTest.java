@@ -21,15 +21,15 @@ import org.assertj.core.util.Sets;
 import org.junit.After;
 import org.junit.Before;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestProperties;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.digest.model.CategoryData;
+import com.blackducksoftware.integration.alert.common.digest.model.ItemData;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.alert.digest.model.ItemData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.google.gson.Gson;
 
 public class ChannelTest {

@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
@@ -31,6 +30,7 @@ import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntit
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryActions;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public class AuditEntryActionsTest {
