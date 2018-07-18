@@ -17,8 +17,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalRepository;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -32,18 +32,18 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class GlobalHipChatRepositoryIT {
     @Autowired
-    private GlobalHipChatRepository repository;
+    private HipChatGlobalRepository repository;
 
     @Test
     public void testSaveEntity() {
         // make sure all the test data is deleted
         repository.deleteAll();
         final String apiKey = "api_key";
-        final GlobalHipChatConfigEntity entity = new GlobalHipChatConfigEntity(apiKey, "");
-        final GlobalHipChatConfigEntity savedEntity = repository.save(entity);
+        final HipChatGlobalConfigEntity entity = new HipChatGlobalConfigEntity(apiKey, "");
+        final HipChatGlobalConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final GlobalHipChatConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
+        final HipChatGlobalConfigEntity foundEntity = repository.findById(savedEntity.getId()).get();
         assertEquals(apiKey, foundEntity.getApiKey());
     }
 }

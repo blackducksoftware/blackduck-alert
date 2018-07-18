@@ -11,11 +11,11 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.google.gson.JsonObject;
 
-public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatConfigEntity> {
+public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<HipChatGlobalConfigEntity> {
     private String apiKey;
     private boolean apiKeyIsSet;
     private Long id;
@@ -66,8 +66,8 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     }
 
     @Override
-    public GlobalHipChatConfigEntity createGlobalEntity() {
-        final GlobalHipChatConfigEntity configEntity = new GlobalHipChatConfigEntity(apiKey, hostServer);
+    public HipChatGlobalConfigEntity createGlobalEntity() {
+        final HipChatGlobalConfigEntity configEntity = new HipChatGlobalConfigEntity(apiKey, hostServer);
         configEntity.setId(id);
         return configEntity;
     }
@@ -81,8 +81,8 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<GlobalHipChatC
     }
 
     @Override
-    public GlobalHipChatConfigEntity createEmptyGlobalEntity() {
-        return new GlobalHipChatConfigEntity();
+    public HipChatGlobalConfigEntity createEmptyGlobalEntity() {
+        return new HipChatGlobalConfigEntity();
     }
 
 }

@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.alert.web.channel.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
@@ -11,7 +12,7 @@ import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.controller.ControllerTest;
 
-public class ChannelDistributionControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> {
+public class SlackChannelDistributionControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> {
 
     @Autowired
     private SlackDistributionRepository slackDistributionRepository;
@@ -32,8 +33,8 @@ public class ChannelDistributionControllerTestIT extends ControllerTest<SlackDis
     }
 
     @Override
-    public String getRestControllerUrl() {
-        return "/configuration/channel/distribution/channel_slack";
+    public String getDescriptorName() {
+        return SlackChannel.COMPONENT_NAME;
     }
 
 }

@@ -15,25 +15,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
-import com.blackducksoftware.integration.alert.web.channel.model.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
 
-public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<GlobalHipChatConfigRestModel> {
+public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipChatGlobalConfigRestModel> {
 
     @Override
-    public void assertGlobalRestModelFieldsNull(final GlobalHipChatConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsNull(final HipChatGlobalConfigRestModel restModel) {
         assertNull(restModel.getApiKey());
     }
 
     @Override
-    public void assertGlobalRestModelFieldsFull(final GlobalHipChatConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsFull(final HipChatGlobalConfigRestModel restModel) {
         assertEquals(getMockUtil().getApiKey(), restModel.getApiKey());
         assertEquals(getMockUtil().isApiKeyIsSet(), restModel.isApiKeyIsSet());
     }
 
     @Override
-    public Class<GlobalHipChatConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHipChatConfigRestModel.class;
+    public Class<HipChatGlobalConfigRestModel> getGlobalRestModelClass() {
+        return HipChatGlobalConfigRestModel.class;
     }
 
     @Override

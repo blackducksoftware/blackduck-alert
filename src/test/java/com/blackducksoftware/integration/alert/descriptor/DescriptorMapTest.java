@@ -9,15 +9,12 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.alert.descriptor.DescriptorMap;
-import com.blackducksoftware.integration.alert.descriptor.DescriptorType;
-import com.blackducksoftware.integration.alert.descriptor.ProviderDescriptor;
+import com.blackducksoftware.integration.alert.exception.AlertException;
 
 public class DescriptorMapTest {
 
     @Test
-    public void testInit() {
+    public void testInit() throws AlertException {
         final ChannelDescriptor channelDescriptor1 = Mockito.mock(ChannelDescriptor.class);
         final ChannelDescriptor channelDescriptor2 = Mockito.mock(ChannelDescriptor.class);
         final ProviderDescriptor providerDescriptor = Mockito.mock(ProviderDescriptor.class);

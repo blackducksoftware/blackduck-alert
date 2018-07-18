@@ -63,9 +63,9 @@ public class CommonDistributionConfigActionsTestIT {
     @Autowired
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
-    private ConfiguredProjectsActions<CommonDistributionConfigRestModel> configuredProjectsActions;
+    private ConfiguredProjectsActions configuredProjectsActions;
     @Autowired
-    private NotificationTypesActions<CommonDistributionConfigRestModel> notificationTypesActions;
+    private NotificationTypesActions notificationTypesActions;
 
     @Before
     public void cleanup() {

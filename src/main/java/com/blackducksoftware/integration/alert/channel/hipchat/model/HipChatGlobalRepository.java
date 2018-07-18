@@ -28,5 +28,5 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Transactional
-public interface GlobalHipChatRepository extends JpaRepository<GlobalHipChatConfigEntity, Long> {
+public interface HipChatGlobalRepository extends JpaRepository<HipChatGlobalConfigEntity, Long> {
 }

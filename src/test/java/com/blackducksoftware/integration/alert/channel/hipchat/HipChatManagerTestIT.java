@@ -5,17 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalRepository;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
 
-public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, GlobalHipChatConfigEntity> {
+public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
 
     @Autowired
-    private GlobalHipChatRepository hipChatRepository;
+    private HipChatGlobalRepository hipChatRepository;
 
     @Autowired
     private HipChatDistributionRepository distributionRepository;
@@ -30,7 +30,7 @@ public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistribution
 
     @Override
     public void saveGlobalConfiguration() {
-        final GlobalHipChatConfigEntity globalEntity = new GlobalHipChatConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "");
+        final HipChatGlobalConfigEntity globalEntity = new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "");
         hipChatRepository.save(globalEntity);
     }
 
