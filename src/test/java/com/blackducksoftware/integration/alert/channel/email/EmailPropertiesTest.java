@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.channel.email.EmailProperties;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 
 public class EmailPropertiesTest {
     @Test
@@ -70,7 +70,7 @@ public class EmailPropertiesTest {
         final Boolean mailSmtpUserSet = true;
         final Boolean mailSmtpNoopStrict = true;
 
-        final GlobalEmailConfigEntity emailConfigEntity = new GlobalEmailConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpFrom,
+        final EmailGlobalConfigEntity emailConfigEntity = new EmailGlobalConfigEntity(mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpFrom,
                 mailSmtpLocalhost,
                 mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth, mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable, mailSmtpAuthNtlmDomain,
                 mailSmtpAuthNtlmFlags, mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, mailSmtpSaslEnable, mailSmtpSaslMechanisms, mailSmtpSaslAuthorizationId,

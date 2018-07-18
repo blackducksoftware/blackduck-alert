@@ -107,4 +107,19 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
         this.status = status;
     }
 
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setFrequency(final String frequency) {
+        this.frequency = frequency;
+    }
+
+    public void setFilterByProject(final String filterByProject) {
+        this.filterByProject = filterByProject;
+    }
 }

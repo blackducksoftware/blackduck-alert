@@ -25,8 +25,8 @@ package com.blackducksoftware.integration.alert.descriptor;
 
 public abstract class ProviderDescriptor extends Descriptor {
 
-    public ProviderDescriptor(final String name) {
-        super(name, DescriptorType.PROVIDER);
+    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
+        super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
     }
 
 }

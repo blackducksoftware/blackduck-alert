@@ -37,7 +37,6 @@ import com.blackducksoftware.integration.alert.datasource.entity.repository.Comm
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
@@ -83,7 +82,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
 
     public abstract MockRestModelUtil<R> getRestModelMockUtil();
 
-    public abstract String getRestControllerUrl();
+    public abstract String getDescriptorName();
 
     @Before
     public void setup() {
@@ -100,13 +99,27 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         restModel = restModelMockUtil.createRestModel();
         entity = entityMockUtil.createEntity();
         savedEntity = entityRepository.save(entity);
-        restUrl = BaseController.BASE_PATH + getRestControllerUrl();
+        restUrl = BaseController.BASE_PATH + "/configuration/channel/distribution/" + getDescriptorName();
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
+        distributionMockUtil.setDistributionType(getDescriptorName());
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
+        System.out.println("Common Distribution count: " + commonDistributionRepository.count());
+        commonDistributionRepository.findAll().forEach(item -> {
+            System.out.println("Common Entity id: " + item.getId());
+        });
+        System.out.println("Entity count: " + entityRepository.count());
+        entityRepository.findAll().forEach(item -> {
+            System.out.println("Entity id: " + item.getId());
+        });
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
+        restModel.setId(String.valueOf(commonEntity.getId()));
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 

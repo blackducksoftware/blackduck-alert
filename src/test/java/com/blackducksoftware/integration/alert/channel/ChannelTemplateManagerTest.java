@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
@@ -19,18 +20,17 @@ import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.google.gson.Gson;
 
 public class ChannelTemplateManagerTest {
     private Gson gson;
-    private AlertEventContentConverter contentConverter;
+    private ContentConverter contentConverter;
 
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new AlertEventContentConverter(gson);
+        contentConverter = new ContentConverter(gson);
     }
 
     @Test

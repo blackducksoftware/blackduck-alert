@@ -48,12 +48,10 @@ import com.blackducksoftware.integration.alert.datasource.entity.repository.Comm
 import com.blackducksoftware.integration.alert.datasource.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.alert.datasource.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.alert.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.web.actions.NotificationTypesActions;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -72,7 +70,7 @@ public class DigestNotificationProcessorIT {
     @Autowired
     private ConfiguredProjectsRepository configuredProjectsRepository;
     @Autowired
-    private NotificationTypesActions<CommonDistributionConfigRestModel> notificationActions;
+    private NotificationTypesActions notificationActions;
     @Autowired
     private DigestNotificationProcessor processor;
 
@@ -99,8 +97,7 @@ public class DigestNotificationProcessorIT {
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
-        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity.getId(), Arrays.asList("POLICY_VIOLATION"));
 
         final List<NotificationModel> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity("event_key_1", new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", "", "", "Test Component",
@@ -133,8 +130,7 @@ public class DigestNotificationProcessorIT {
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION"));
-        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity.getId(), Arrays.asList("POLICY_VIOLATION"));
 
         final List<NotificationModel> notificationList = new ArrayList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",
@@ -167,8 +163,7 @@ public class DigestNotificationProcessorIT {
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(projectName));
         distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigEntity.getId(), configuredProjectEntity.getId()));
 
-        final CommonDistributionConfigRestModel restModel = new CommonDistributionConfigRestModel(null, null, null, null, null, null, null, Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"));
-        notificationActions.saveNotificationTypes(commonDistributionConfigEntity, restModel);
+        notificationActions.saveNotificationTypes(commonDistributionConfigEntity.getId(), Arrays.asList("POLICY_VIOLATION", "POLICY_VIOLATION_CLEARED"));
 
         final List<NotificationModel> notificationList = new LinkedList<>();
         final NotificationEntity applicableNotification = new NotificationEntity(eventKey, new Date(System.currentTimeMillis()), NotificationCategoryEnum.POLICY_VIOLATION, projectName, "", projectVersionName, "", "Test Component",

@@ -42,11 +42,19 @@ public abstract class ChannelConfigActions<R extends ConfigRestModel> {
         this.objectTransformer = objectTransformer;
     }
 
-    public abstract boolean doesConfigExist(final String id, ChannelDescriptor descriptor);
+    public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
+        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
+    }
+
+    public abstract boolean doesConfigExist(final Long id, ChannelDescriptor descriptor);
 
     public abstract List<ConfigRestModel> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
 
-    public abstract void deleteConfig(final String id, ChannelDescriptor descriptor);
+    public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
+        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
+    }
+
+    public abstract void deleteConfig(final Long id, ChannelDescriptor descriptor);
 
     public abstract DatabaseEntity saveConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
 

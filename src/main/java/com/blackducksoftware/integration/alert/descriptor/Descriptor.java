@@ -23,23 +23,25 @@
  */
 package com.blackducksoftware.integration.alert.descriptor;
 
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
+    private final DatabaseContentConverter contentConverter;
+    private final RepositoryAccessor repositoryAccessor;
 
-    public Descriptor(final String name, final DescriptorType type) {
+    public Descriptor(final String name, final DescriptorType type, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
         this.name = name;
         this.type = type;
+        this.contentConverter = contentConverter;
+        this.repositoryAccessor = repositoryAccessor;
     }
 
     public String getName() {
@@ -50,25 +52,20 @@ public abstract class Descriptor {
         return type;
     }
 
-    public abstract Field[] getGlobalEntityFields();
+    public RepositoryAccessor getGlobalRepositoryAccessor() {
+        return repositoryAccessor;
+    }
+
+    public DatabaseContentConverter getGlobalContentConverter() {
+        return contentConverter;
+    }
+
+    public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
 
     public abstract ConfigRestModel getGlobalRestModelObject();
-
-    public abstract List<? extends DatabaseEntity> readGlobalEntities();
-
-    public abstract Optional<? extends DatabaseEntity> readGlobalEntity(long id);
-
-    public abstract Optional<? extends DatabaseEntity> saveGlobalEntity(DatabaseEntity entity);
-
-    public abstract void deleteGlobalEntity(long id);
-
-    public abstract ConfigRestModel convertFromStringToGlobalRestModel(String json);
-
-    public abstract DatabaseEntity convertFromGlobalRestModelToGlobalConfigEntity(ConfigRestModel restModel) throws AlertException;
-
-    public abstract ConfigRestModel convertFromGlobalEntityToGlobalRestModel(DatabaseEntity entity) throws AlertException;
 
     public abstract void validateGlobalConfig(ConfigRestModel restModel, Map<String, String> fieldErrors);
 
     public abstract void testGlobalConfig(DatabaseEntity entity) throws IntegrationException;
+
 }

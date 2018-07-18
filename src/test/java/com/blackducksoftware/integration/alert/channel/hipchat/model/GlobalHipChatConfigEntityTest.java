@@ -15,25 +15,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
 
-public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<GlobalHipChatConfigEntity> {
+public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<HipChatGlobalConfigEntity> {
 
     @Override
-    public void assertGlobalEntityFieldsNull(final GlobalHipChatConfigEntity entity) {
+    public void assertGlobalEntityFieldsNull(final HipChatGlobalConfigEntity entity) {
         assertNull(entity.getApiKey());
     }
 
     @Override
-    public void assertGlobalEntityFieldsFull(final GlobalHipChatConfigEntity entity) {
+    public void assertGlobalEntityFieldsFull(final HipChatGlobalConfigEntity entity) {
         assertEquals(getMockUtil().getApiKey(), entity.getApiKey());
         assertEquals(getMockUtil().getHostServer(), entity.getHostServer());
     }
 
     @Override
-    public Class<GlobalHipChatConfigEntity> getGlobalEntityClass() {
-        return GlobalHipChatConfigEntity.class;
+    public Class<HipChatGlobalConfigEntity> getGlobalEntityClass() {
+        return HipChatGlobalConfigEntity.class;
     }
 
     @Override

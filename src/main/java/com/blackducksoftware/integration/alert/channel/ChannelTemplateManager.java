@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
@@ -42,9 +43,7 @@ import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.google.gson.Gson;
 
 @Transactional
@@ -54,11 +53,11 @@ public class ChannelTemplateManager {
     private final JmsTemplate jmsTemplate;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate,
-            final AlertEventContentConverter contentConverter) {
+            final ContentConverter contentConverter) {
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -85,25 +84,20 @@ public class ChannelTemplateManager {
             auditEntryEntity.setStatus(StatusEnum.PENDING);
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-            try {
-                final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
-                if (!optionalModel.isPresent()) {
-                    return false;
-                } else {
-                    final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
-                    projectDataCollection.stream()
-                            .map(ProjectData::getNotificationIds)
-                            .flatMap(Collection::stream)
-                            .map(notificationId -> new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId))
-                            .forEach(auditNotificationRelation -> auditNotificationRepository.save(auditNotificationRelation));
-
-                    final String jsonMessage = gson.toJson(channelEvent);
-                    jmsTemplate.convertAndSend(destination, jsonMessage);
-                }
-            } catch (final AlertException ex) {
+            final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
+            if (!optionalModel.isPresent()) {
                 return false;
-            }
+            } else {
+                final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
+                projectDataCollection.stream()
+                        .map(ProjectData::getNotificationIds)
+                        .flatMap(Collection::stream)
+                        .map(notificationId -> new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId))
+                        .forEach(auditNotificationRelation -> auditNotificationRepository.save(auditNotificationRelation));
 
+                final String jsonMessage = gson.toJson(channelEvent);
+                jmsTemplate.convertAndSend(destination, jsonMessage);
+            }
         } else {
             final String jsonMessage = gson.toJson(event);
             jmsTemplate.convertAndSend(destination, jsonMessage);

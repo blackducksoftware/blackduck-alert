@@ -26,18 +26,12 @@ package com.blackducksoftware.integration.alert.startup;
 import com.blackducksoftware.integration.util.Stringable;
 
 public class AlertStartupProperty extends Stringable {
-    private final Class<?> propertyClass;
     private final String propertyKey;
     private final String fieldName;
 
-    public AlertStartupProperty(final Class<?> propertyClass, final String propertyKey, final String fieldName) {
-        this.propertyClass = propertyClass;
+    public AlertStartupProperty(final String propertyKey, final String fieldName) {
         this.propertyKey = propertyKey;
         this.fieldName = fieldName;
-    }
-
-    public Class<?> getPropertyClass() {
-        return propertyClass;
     }
 
     public String getPropertyKey() {
