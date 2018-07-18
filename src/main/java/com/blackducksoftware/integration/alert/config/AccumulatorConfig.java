@@ -35,10 +35,10 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
@@ -54,12 +54,12 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
     private final ChannelTemplateManager channelTemplateManager;
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> processorList;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
             final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
-            final List<NotificationTypeProcessor> processorList, final AlertEventContentConverter contentConverter) {
+            final List<NotificationTypeProcessor> processorList, final ContentConverter contentConverter) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
         this.channelTemplateManager = channelTemplateManager;

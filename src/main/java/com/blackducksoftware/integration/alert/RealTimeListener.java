@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.alert.digest.DigestRemovalProcessor;
 import com.blackducksoftware.integration.alert.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.model.NotificationModels;
@@ -48,10 +47,10 @@ public class RealTimeListener extends MessageReceiver<AlertEvent> {
 
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationEventManager eventManager;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final NotificationEventManager eventManager, final AlertEventContentConverter contentConverter) {
+    public RealTimeListener(final Gson gson, final ChannelTemplateManager channelTemplateManager, final NotificationEventManager eventManager, final ContentConverter contentConverter) {
         super(gson, AlertEvent.class);
         this.channelTemplateManager = channelTemplateManager;
         this.eventManager = eventManager;

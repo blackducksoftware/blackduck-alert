@@ -24,10 +24,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
@@ -37,7 +37,7 @@ import com.google.gson.Gson;
 
 public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
     protected GCA configActions;
-    protected AlertEventContentConverter contentConverter;
+    protected ContentConverter contentConverter;
     protected AlertEnvironment alertEnvironment;
 
     public GlobalActionsTest() {
@@ -52,7 +52,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Before
     public void init() {
-        contentConverter = new AlertEventContentConverter(new Gson());
+        contentConverter = new ContentConverter(new Gson());
         alertEnvironment = new AlertEnvironment();
     }
 

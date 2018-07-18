@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
@@ -37,7 +38,6 @@ import com.blackducksoftware.integration.alert.datasource.entity.channel.Distrib
 import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -51,7 +51,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public RestDistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
             final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final AlertEventContentConverter contentExtractor) {
+            final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
         super(gson, globalProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
