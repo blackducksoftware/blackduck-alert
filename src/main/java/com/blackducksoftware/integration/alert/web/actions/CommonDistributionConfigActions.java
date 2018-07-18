@@ -31,10 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.audit.repository.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.exception.AlertException;

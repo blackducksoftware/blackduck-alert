@@ -36,16 +36,16 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.web.channel.model.GlobalHipChatConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;

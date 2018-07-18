@@ -10,12 +10,11 @@ import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;

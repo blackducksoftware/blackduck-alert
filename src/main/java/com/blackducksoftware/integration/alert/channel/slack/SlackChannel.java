@@ -33,13 +33,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRepository;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;

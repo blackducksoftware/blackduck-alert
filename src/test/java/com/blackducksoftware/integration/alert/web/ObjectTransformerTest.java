@@ -25,11 +25,9 @@ import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
@@ -38,8 +36,10 @@ import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 
 public class ObjectTransformerTest {
 

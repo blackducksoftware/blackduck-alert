@@ -31,9 +31,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
