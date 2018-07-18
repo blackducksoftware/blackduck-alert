@@ -62,8 +62,6 @@ public abstract class ChannelDescriptor extends Descriptor {
 
     public abstract void validateDistributionConfig(CommonDistributionConfigRestModel restModel, Map<String, String> fieldErrors);
 
-    // public abstract Optional<? extends CommonDistributionConfigRestModel> constructRestModel(final CommonDistributionConfigEntity commonEntity, final DatabaseEntity distributionEntity) throws AlertException;
-
     public abstract void testDistributionConfig(CommonDistributionConfigRestModel restModel, ChannelEvent event) throws IntegrationException;
 
     public abstract MessageListener getChannelListener();

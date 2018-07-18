@@ -49,8 +49,8 @@ public class DescriptorMap {
         final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
         for (final D descriptor : descriptorList) {
             final String descriptorName = descriptor.getName();
-            if (descriptorMapping.containsKey(descriptorName)) {
-                throw new AlertException("Can't have duplicate Descriptor's of type " + descriptor.getType().toString());
+            if (descriptorMapping.containsKey(descriptorName) || descriptorMap.containsKey(descriptorName)) {
+                throw new AlertException("Found duplicate descriptor name of: " + descriptor.getName());
             }
             descriptorMap.put(descriptorName, descriptor);
             descriptorMapping.put(descriptorName, descriptor);
