@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.annotation.SensitiveFieldFinder;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;

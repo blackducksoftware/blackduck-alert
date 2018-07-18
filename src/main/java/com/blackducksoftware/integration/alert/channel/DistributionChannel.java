@@ -34,8 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.MessageReceiver;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.workflow.MessageReceiver;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;

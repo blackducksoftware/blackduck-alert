@@ -32,6 +32,7 @@ import com.blackducksoftware.integration.alert.database.entity.NotificationEntit
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

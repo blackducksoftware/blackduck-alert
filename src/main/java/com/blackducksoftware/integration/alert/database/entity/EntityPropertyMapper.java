@@ -31,7 +31,7 @@ import javax.persistence.Column;
 
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
+import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
 public class EntityPropertyMapper {

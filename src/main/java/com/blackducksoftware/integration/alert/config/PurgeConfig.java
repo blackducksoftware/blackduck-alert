@@ -35,12 +35,12 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
-import com.blackducksoftware.integration.alert.scheduled.JobScheduledTask;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
+import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 
 @Component
 public class PurgeConfig extends JobScheduledTask<PurgeReader, PurgeProcessor, PurgeWriter> {

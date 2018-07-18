@@ -37,8 +37,8 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Transactional
 public class PurgeReader implements ItemReader<List<NotificationModel>> {

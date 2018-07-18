@@ -35,11 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
-import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
@@ -49,8 +51,6 @@ import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatD
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;

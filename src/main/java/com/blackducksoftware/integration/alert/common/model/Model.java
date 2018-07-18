@@ -26,8 +26,8 @@ package com.blackducksoftware.integration.alert.common.model;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.annotation.SensitiveFieldFinder;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.util.Stringable;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
