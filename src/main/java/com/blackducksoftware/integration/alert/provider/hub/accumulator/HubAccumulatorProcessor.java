@@ -29,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
@@ -40,9 +40,9 @@ public class HubAccumulatorProcessor implements ItemProcessor<NotificationDetail
     private final Logger logger = LoggerFactory.getLogger(HubAccumulatorProcessor.class);
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
-    public HubAccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors, final AlertEventContentConverter contentConverter) {
+    public HubAccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors, final ContentConverter contentConverter) {
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;

@@ -11,11 +11,11 @@
  */
 package com.blackducksoftware.integration.alert.channel.email.mock;
 
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.google.gson.JsonObject;
 
-public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmailConfigRestModel> {
+public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<EmailGlobalConfigRestModel> {
     private String mailSmtpHost;
     private String mailSmtpUser;
     private String mailSmtpPassword;
@@ -528,8 +528,8 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     }
 
     @Override
-    public GlobalEmailConfigRestModel createGlobalRestModel() {
-        final GlobalEmailConfigRestModel restModel = new GlobalEmailConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort,
+    public EmailGlobalConfigRestModel createGlobalRestModel() {
+        final EmailGlobalConfigRestModel restModel = new EmailGlobalConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort,
                 mailSmtpConnectionTimeout, mailSmtpTimeout,
                 mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth,
                 mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable,
@@ -542,8 +542,8 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<GlobalEmai
     }
 
     @Override
-    public GlobalEmailConfigRestModel createEmptyGlobalRestModel() {
-        return new GlobalEmailConfigRestModel();
+    public EmailGlobalConfigRestModel createEmptyGlobalRestModel() {
+        return new EmailGlobalConfigRestModel();
     }
 
     @Override

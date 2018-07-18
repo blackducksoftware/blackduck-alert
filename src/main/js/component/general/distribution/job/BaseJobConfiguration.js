@@ -45,7 +45,7 @@ class BaseJobConfiguration extends Component {
 
     initializeValues(data) {
         const {
-            id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, projects, configuredProjects
+            id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, configuredProjects
         } = data;
 
         const { values } = this.state;

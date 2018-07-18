@@ -21,37 +21,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.hipchat.model;
+package com.blackducksoftware.integration.alert.descriptor;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
+import org.apache.commons.lang3.StringUtils;
+
+import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
-public class GlobalHipChatConfigRestModel extends ConfigRestModel {
-    @SensitiveField
-    private String apiKey;
-    private boolean apiKeyIsSet;
-    private String hostServer;
+public abstract class DatabaseContentConverter {
 
-    public GlobalHipChatConfigRestModel() {
-    }
+    public abstract ConfigRestModel getRestModelFromJson(final String json);
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
-        super(id);
-        this.apiKey = apiKey;
-        this.apiKeyIsSet = apiKeyIsSet;
-        this.hostServer = hostServer;
-    }
+    public abstract DatabaseEntity populateDatabaseEntityFromRestModel(ConfigRestModel restModel);
 
-    public String getApiKey() {
-        return apiKey;
-    }
+    public abstract ConfigRestModel populateRestModelFromDatabaseEntity(DatabaseEntity entity);
 
-    public boolean isApiKeyIsSet() {
-        return apiKeyIsSet;
-    }
-
-    public String getHostServer() {
-        return hostServer;
+    public void addIdToEntityPK(final String id, final DatabaseEntity entity) {
+        if (StringUtils.isNotBlank(id)) {
+            final long longId = Long.parseLong(id);
+            entity.setId(longId);
+        }
     }
 
 }

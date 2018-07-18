@@ -26,9 +26,9 @@ package com.blackducksoftware.integration.alert.processor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.event.InternalEventTypes;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.model.NotificationModels;
@@ -38,9 +38,9 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 public class NotificationItemProcessor {
     private final List<NotificationTypeProcessor> processorList;
-    private final AlertEventContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
-    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList, final AlertEventContentConverter contentConverter) {
+    public NotificationItemProcessor(final List<NotificationTypeProcessor> processorList, final ContentConverter contentConverter) {
         this.processorList = processorList;
         this.contentConverter = contentConverter;
     }

@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.alert.channel.email.model;
 import com.blackducksoftware.integration.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
-public class GlobalEmailConfigRestModel extends ConfigRestModel {
+public class EmailGlobalConfigRestModel extends ConfigRestModel {
     // JavaMail properties http://connector.sourceforge.net/doc-files/Properties.html
 
     private String mailSmtpHost;
@@ -81,10 +81,10 @@ public class GlobalEmailConfigRestModel extends ConfigRestModel {
     private boolean mailSmtpUserSet;
     private boolean mailSmtpNoopStrict;
 
-    public GlobalEmailConfigRestModel() {
+    public EmailGlobalConfigRestModel() {
     }
 
-    public GlobalEmailConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
+    public EmailGlobalConfigRestModel(final String id, final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final String mailSmtpPort,
             final String mailSmtpConnectionTimeout, final String mailSmtpTimeout,
             final String mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final String mailSmtpLocalPort, final boolean mailSmtpEhlo, final boolean mailSmtpAuth,
             final String mailSmtpAuthMechanisms, final boolean mailSmtpAuthLoginDisable, final boolean mailSmtpAuthPlainDisable, final boolean mailSmtpAuthDigestMd5Disable, final boolean mailSmtpAuthNtlmDisable,

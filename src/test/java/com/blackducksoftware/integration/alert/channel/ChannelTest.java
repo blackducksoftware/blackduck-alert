@@ -21,6 +21,7 @@ import org.assertj.core.util.Sets;
 import org.junit.After;
 import org.junit.Before;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
@@ -29,14 +30,13 @@ import com.blackducksoftware.integration.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.google.gson.Gson;
 
 public class ChannelTest {
     protected Gson gson;
     protected TestProperties properties;
     protected OutputLogger outputLogger;
-    protected AlertEventContentConverter contentConverter;
+    protected ContentConverter contentConverter;
     protected AlertEnvironment alertEnvironment;
 
     @Before
@@ -44,7 +44,7 @@ public class ChannelTest {
         gson = new Gson();
         properties = new TestProperties();
         outputLogger = new OutputLogger();
-        contentConverter = new AlertEventContentConverter(gson);
+        contentConverter = new ContentConverter(gson);
         alertEnvironment = new AlertEnvironment();
     }
 

@@ -21,13 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.email.model;
+package com.blackducksoftware.integration.alert.channel.hipchat.model;
 
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Transactional
-public interface GlobalEmailRepository extends JpaRepository<GlobalEmailConfigEntity, Long> {
-
+public interface HipChatGlobalRepository extends JpaRepository<HipChatGlobalConfigEntity, Long> {
 }

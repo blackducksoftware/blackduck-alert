@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigEntity;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 
 public class EmailProperties {
     // property keys
@@ -105,14 +105,14 @@ public class EmailProperties {
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
     private String mailSmtpPassword;
 
-    public EmailProperties(final GlobalEmailConfigEntity emailConfigEntity) {
+    public EmailProperties(final EmailGlobalConfigEntity emailConfigEntity) {
         if (emailConfigEntity == null) {
             throw new IllegalArgumentException("Could not find the global Email configuration");
         }
         updateFromConfig(emailConfigEntity);
     }
 
-    public void updateFromConfig(final GlobalEmailConfigEntity emailConfigEntity) {
+    public void updateFromConfig(final EmailGlobalConfigEntity emailConfigEntity) {
         addJavaMailOption(JAVAMAIL_USER_KEY, emailConfigEntity.getMailSmtpUser());
         addJavaMailOption(JAVAMAIL_HOST_KEY, emailConfigEntity.getMailSmtpHost());
         addJavaMailOption(JAVAMAIL_PORT_KEY, emailConfigEntity.getMailSmtpPort());

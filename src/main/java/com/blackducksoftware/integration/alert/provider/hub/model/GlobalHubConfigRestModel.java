@@ -138,4 +138,8 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
         this.hubAlwaysTrustCertificate = hubAlwaysTrustCertificate;
     }
 
+    public void setHubApiKey(final String hubApiKey) {
+        this.hubApiKey = hubApiKey;
+    }
+
 }

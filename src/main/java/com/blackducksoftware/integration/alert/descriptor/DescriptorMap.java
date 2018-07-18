@@ -30,6 +30,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.exception.AlertException;
+
 @Component
 public class DescriptorMap {
     private final Map<String, Descriptor> descriptorMap;
@@ -37,18 +39,22 @@ public class DescriptorMap {
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors) {
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors) throws AlertException {
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
         channelDescriptorMap = initMap(channelDescriptors);
         providerDescriptorMap = initMap(providerDescriptors);
     }
 
-    private <D extends Descriptor> Map<String, D> initMap(final List<D> descriptorList) {
+    private <D extends Descriptor> Map<String, D> initMap(final List<D> descriptorList) throws AlertException {
         final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
-        descriptorList.forEach(descriptor -> {
-            descriptorMap.put(descriptor.getName(), descriptor);
-            descriptorMapping.put(descriptor.getName(), descriptor);
-        });
+        for (final D descriptor : descriptorList) {
+            final String descriptorName = descriptor.getName();
+            if (descriptorMapping.containsKey(descriptorName) || descriptorMap.containsKey(descriptorName)) {
+                throw new AlertException("Found duplicate descriptor name of: " + descriptor.getName());
+            }
+            descriptorMap.put(descriptorName, descriptor);
+            descriptorMapping.put(descriptorName, descriptor);
+        }
         return descriptorMapping;
     }
 
