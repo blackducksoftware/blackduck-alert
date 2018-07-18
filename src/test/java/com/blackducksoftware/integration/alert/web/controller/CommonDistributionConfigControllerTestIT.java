@@ -41,7 +41,9 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
     @Test
     @Override
     public void testPostConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
@@ -52,7 +54,9 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
     public void testDeleteConfig() throws Exception {
         entityRepository.deleteAll();
         final CommonDistributionConfigEntity savedEntity = entityRepository.save(entity);
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -64,7 +68,9 @@ public class CommonDistributionConfigControllerTestIT extends ControllerTest<Com
     public void testPutConfig() throws Exception {
         entityRepository.deleteAll();
         final CommonDistributionConfigEntity savedEntity = entityRepository.save(entity);
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
         restModel.setId(String.valueOf(savedEntity.getId()));
         final String content = gson.toJson(restModel);
