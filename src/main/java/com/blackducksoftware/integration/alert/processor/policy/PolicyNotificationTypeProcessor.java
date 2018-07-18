@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -40,7 +41,9 @@ import com.blackducksoftware.integration.alert.datasource.entity.NotificationCat
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
+import com.blackducksoftware.integration.hub.api.generated.view.ProjectVersionView;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.content.PolicyOverrideNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
@@ -48,7 +51,7 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 
 @Component
 public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
-    private final Logger logger = LoggerFactory.getLogger(PolicyNotificationTypeProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(PolicyNotificationTypeProcessor.class);
 
     public PolicyNotificationTypeProcessor() {
         super(new LinkedHashSet<>(Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE)));
@@ -85,19 +88,29 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
         final Date createdAt = notificationDetailResult.getCreatedAt();
 
         final String contentKey = notificationContentDetail.getContentDetailKey();
-        final String projectName = notificationContentDetail.getProjectName().get();
+        final String projectName = notificationContentDetail.getProjectName().orElse(null);
         final String projectUrl = null;
-        final String projectVersion = notificationContentDetail.getProjectVersionName().get();
-        final String projectVersionUrl = notificationContentDetail.getProjectVersion().get().uri;
+        final String projectVersion = notificationContentDetail.getProjectVersionName().orElse(null);
+        String projectVersionUrl = null;
+        final Optional<UriSingleResponse<ProjectVersionView>> projectVersionResponse = notificationContentDetail.getProjectVersion();
+        final Optional<String> componentNameDetail = notificationContentDetail.getComponentName();
+        final Optional<String> componentVersionDetail = notificationContentDetail.getComponentVersionName();
+        if (projectVersionResponse.isPresent()) {
+            projectVersionUrl = projectVersionResponse.get().uri;
+        }
         String componentName = null;
-        if (notificationContentDetail.getComponentName().isPresent()) {
-            componentName = notificationContentDetail.getComponentName().get();
+        if (componentNameDetail.isPresent()) {
+            componentName = componentNameDetail.get();
         }
         String componentVersion = null;
-        if (notificationContentDetail.getComponentVersionName().isPresent()) {
-            componentVersion = notificationContentDetail.getComponentVersionName().get();
+        if (componentVersionDetail.isPresent()) {
+            componentVersion = componentVersionDetail.get();
         }
-        final String policyRuleName = notificationContentDetail.getPolicyName().get();
+        final Optional<String> policyRuleDetail = notificationContentDetail.getPolicyName();
+        String policyRuleName = null;
+        if (policyRuleDetail.isPresent()) {
+            policyRuleName = policyRuleDetail.get();
+        }
         String policyRuleUser = null;
         if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationCategory)) {
             final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationDetailResult.getNotificationContent();
