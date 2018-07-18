@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.email.model;
+package com.blackducksoftware.integration.alert.web.channel.model;
 
 import com.blackducksoftware.integration.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;

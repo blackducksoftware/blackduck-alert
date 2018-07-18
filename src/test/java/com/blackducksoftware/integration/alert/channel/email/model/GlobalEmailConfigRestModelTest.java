@@ -14,6 +14,7 @@ package com.blackducksoftware.integration.alert.channel.email.model;
 import static org.junit.Assert.*;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
 
 public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGlobalConfigRestModel> {

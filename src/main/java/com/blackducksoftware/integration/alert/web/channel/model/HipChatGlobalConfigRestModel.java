@@ -26,16 +26,16 @@ package com.blackducksoftware.integration.alert.web.channel.model;
 import com.blackducksoftware.integration.alert.annotation.SensitiveField;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
-public class GlobalHipChatConfigRestModel extends ConfigRestModel {
+public class HipChatGlobalConfigRestModel extends ConfigRestModel {
     @SensitiveField
     private String apiKey;
     private boolean apiKeyIsSet;
     private String hostServer;
 
-    public GlobalHipChatConfigRestModel() {
+    public HipChatGlobalConfigRestModel() {
     }
 
-    public GlobalHipChatConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
+    public HipChatGlobalConfigRestModel(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
         super(id);
         this.apiKey = apiKey;
         this.apiKeyIsSet = apiKeyIsSet;
