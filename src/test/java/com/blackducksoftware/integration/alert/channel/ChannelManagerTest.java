@@ -24,13 +24,13 @@ import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.TestProperties;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
@@ -76,7 +76,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestM
 
     @Test
     public void testCreateChannelEvent() {
-        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
         final ChannelEvent channelEvent = channelManager.createChannelEvent(getDescriptor().getDestinationName(), digestModel, 1L);
 

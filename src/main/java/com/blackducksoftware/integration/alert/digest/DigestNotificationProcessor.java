@@ -29,10 +29,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 @Component
 public class DigestNotificationProcessor {
@@ -43,7 +43,7 @@ public class DigestNotificationProcessor {
         this.eventManager = eventManager;
     }
 
-    public List<ChannelEvent> processNotifications(final DigestTypeEnum digestType, final List<NotificationModel> notificationList) {
+    public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationModel> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
         final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
         if (processedNotificationList.isEmpty()) {

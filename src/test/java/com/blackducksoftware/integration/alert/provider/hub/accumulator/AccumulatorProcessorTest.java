@@ -12,15 +12,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
 import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.processor.policy.PolicyNotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;

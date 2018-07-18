@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.event.InternalEventTypes;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;

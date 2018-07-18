@@ -28,9 +28,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.actions.LoginActions;
-import com.blackducksoftware.integration.alert.web.controller.handler.LoginHandler;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 

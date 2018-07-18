@@ -39,6 +39,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
@@ -48,9 +50,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Common
 import com.blackducksoftware.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.web.actions.NotificationTypesActions;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -88,7 +88,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
-        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
+        final DigestType frequency = DigestType.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String projectName = "Test Hub Project Name";
@@ -107,7 +107,7 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
         final ChannelEvent event = eventsCreated.get(0);
         assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
@@ -119,7 +119,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
-        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
+        final DigestType frequency = DigestType.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
@@ -140,7 +140,7 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(otherApplicableNotification, Collections.emptyList()));
 
-        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
         assertEquals(1, eventsCreated.size());
         final ChannelEvent event = eventsCreated.get(0);
         assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
@@ -152,7 +152,7 @@ public class DigestNotificationProcessorIT {
         final Long distributionConfigId = 10L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String name = "Config Name";
-        final DigestTypeEnum frequency = DigestTypeEnum.REAL_TIME;
+        final DigestType frequency = DigestType.REAL_TIME;
         final Boolean filterByProject = true;
 
         final String eventKey = "event_key";
@@ -173,7 +173,7 @@ public class DigestNotificationProcessorIT {
         notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
 
-        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestTypeEnum.REAL_TIME, notificationList);
+        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
         assertEquals(0, eventsCreated.size());
     }
 

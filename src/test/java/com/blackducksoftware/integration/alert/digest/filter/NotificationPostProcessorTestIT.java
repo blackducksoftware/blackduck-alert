@@ -38,6 +38,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
@@ -51,8 +53,6 @@ import com.blackducksoftware.integration.alert.database.relation.DistributionNot
 import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -81,7 +81,7 @@ public class NotificationPostProcessorTestIT {
         distributionProjectRepository.deleteAll();
 
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
-        final DigestTypeEnum configuredDigestType = DigestTypeEnum.REAL_TIME;
+        final DigestType configuredDigestType = DigestType.REAL_TIME;
         final NotificationModel notificationModel = createNotificationModel();
         final Long config1Id = 13L;
 
@@ -111,12 +111,12 @@ public class NotificationPostProcessorTestIT {
     public void doFrequenciesMatchTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.DAILY, true);
+        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.DAILY, true);
         final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", null, false);
 
-        assertTrue(postProcessor.doFrequenciesMatch(config, DigestTypeEnum.DAILY));
-        assertFalse(postProcessor.doFrequenciesMatch(config, DigestTypeEnum.REAL_TIME));
-        assertFalse(postProcessor.doFrequenciesMatch(configOther, DigestTypeEnum.DAILY));
+        assertTrue(postProcessor.doFrequenciesMatch(config, DigestType.DAILY));
+        assertFalse(postProcessor.doFrequenciesMatch(config, DigestType.REAL_TIME));
+        assertFalse(postProcessor.doFrequenciesMatch(configOther, DigestType.DAILY));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class NotificationPostProcessorTestIT {
 
         final NotificationModel notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.REAL_TIME, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.REAL_TIME, true);
 
         config1.setId(config1Id);
 
@@ -157,7 +157,7 @@ public class NotificationPostProcessorTestIT {
 
         final NotificationModel notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestTypeEnum.REAL_TIME, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.REAL_TIME, true);
         config1.setId(config1Id);
         notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED));
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);

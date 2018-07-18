@@ -34,11 +34,11 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityOperation;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 
 @Component
@@ -51,10 +51,10 @@ public class ProjectDataFactory {
     public final static String VULNERABILITY_DELETED_ID_SET = "vulnerabilityDeletedIdSet";
 
     public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications) {
-        return createProjectDataCollection(notifications, DigestTypeEnum.REAL_TIME);
+        return createProjectDataCollection(notifications, DigestType.REAL_TIME);
     }
 
-    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications, final DigestTypeEnum digestType) {
+    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications, final DigestType digestType) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationModel entity : notifications) {
             final String projectKey = entity.getProjectName() + entity.getProjectVersion();
@@ -74,10 +74,10 @@ public class ProjectDataFactory {
     }
 
     public ProjectData createProjectData(final NotificationModel notification) {
-        return createProjectData(notification, DigestTypeEnum.REAL_TIME);
+        return createProjectData(notification, DigestType.REAL_TIME);
     }
 
-    public ProjectData createProjectData(final NotificationModel notification, final DigestTypeEnum digestType) {
+    public ProjectData createProjectData(final NotificationModel notification, final DigestType digestType) {
         final ProjectDataBuilder projectDataBuilder = getProjectDataBuilder(notification, digestType);
         projectDataBuilder.addNotificationId(notification.getNotificationEntity().getId());
         final CategoryDataBuilder categoryData = getCategoryDataBuilder(notification, projectDataBuilder.getCategoryBuilderMap());
@@ -87,7 +87,7 @@ public class ProjectDataFactory {
     }
 
     // get category map from the project or create the project data if it doesn't exist
-    private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final DigestTypeEnum digestType) {
+    private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final DigestType digestType) {
         final ProjectDataBuilder projectBuilder;
         projectBuilder = new ProjectDataBuilder();
         projectBuilder.setDigestType(digestType);
@@ -149,9 +149,9 @@ public class ProjectDataFactory {
         final Set<String> deletedIdSet = new HashSet<>();
         if (vulnerabilityList != null && !vulnerabilityList.isEmpty()) {
             vulnerabilityList.forEach(vulnerability -> {
-                if (vulnerability.getOperation() == VulnerabilityOperationEnum.ADD) {
+                if (vulnerability.getOperation() == VulnerabilityOperation.ADD) {
                     addedIdSet.add(vulnerability.getVulnerabilityId());
-                } else if (vulnerability.getOperation() == VulnerabilityOperationEnum.UPDATE) {
+                } else if (vulnerability.getOperation() == VulnerabilityOperation.UPDATE) {
                     updatedIdSet.add(vulnerability.getVulnerabilityId());
                 } else {
                     deletedIdSet.add(vulnerability.getVulnerabilityId());

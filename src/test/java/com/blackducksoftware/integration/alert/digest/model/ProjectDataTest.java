@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectDataTest {
 
@@ -63,10 +63,10 @@ public class ProjectDataTest {
         final List<Long> notificationIds = new ArrayList<>();
         notificationIds.add(1L);
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, "Project", "Version", notificationIds, categoryMap);
+        final ProjectData projectData = new ProjectData(DigestType.REAL_TIME, "Project", "Version", notificationIds, categoryMap);
 
         assertEquals(categoryMap, projectData.getCategoryMap());
-        assertEquals(DigestTypeEnum.REAL_TIME, projectData.getDigestType());
+        assertEquals(DigestType.REAL_TIME, projectData.getDigestType());
         assertEquals("ProjectVersion", projectData.getProjectKey());
         assertEquals("Project", projectData.getProjectName());
         assertEquals("Version", projectData.getProjectVersion());

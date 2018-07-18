@@ -34,6 +34,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
@@ -43,8 +45,6 @@ import com.blackducksoftware.integration.alert.database.relation.DistributionNot
 import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionProjectRepository;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 @Transactional
 @Component
@@ -63,7 +63,7 @@ public class NotificationPostProcessor {
         this.notificationTypeRepository = notificationTypeRepository;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationModel notificationModel, final DigestTypeEnum digestTypeEnum) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationModel notificationModel, final DigestType digestTypeEnum) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
             if (doFrequenciesMatch(distributionConfig, digestTypeEnum)) {
@@ -90,7 +90,7 @@ public class NotificationPostProcessor {
         return applicableConfigurations;
     }
 
-    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final DigestTypeEnum digestTypeEnum) {
+    public boolean doFrequenciesMatch(final CommonDistributionConfigEntity commonDistributionConfigEntity, final DigestType digestTypeEnum) {
         if (commonDistributionConfigEntity.getFrequency() != null) {
             return commonDistributionConfigEntity.getFrequency().equals(digestTypeEnum);
         }

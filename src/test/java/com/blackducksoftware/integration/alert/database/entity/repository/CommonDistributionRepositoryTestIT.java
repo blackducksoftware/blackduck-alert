@@ -31,9 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -58,7 +58,7 @@ public class CommonDistributionRepositoryTestIT {
         final Long distributionConfigId = 1L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String name = "My Config";
-        final DigestTypeEnum frequency = DigestTypeEnum.DAILY;
+        final DigestType frequency = DigestType.DAILY;
         final Boolean filterByProject = Boolean.TRUE;
         final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);

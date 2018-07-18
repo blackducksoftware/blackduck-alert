@@ -19,11 +19,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityOperation;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 public class DigestRemovalProcessorTest {
 
@@ -85,9 +85,9 @@ public class DigestRemovalProcessorTest {
     }
 
     private List<VulnerabilityEntity> createVulnerabilityList() {
-        final VulnerabilityEntity vuln1 = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, 1L);
-        final VulnerabilityEntity vuln2 = new VulnerabilityEntity("id2", VulnerabilityOperationEnum.DELETE, 2L);
-        final VulnerabilityEntity vuln3 = new VulnerabilityEntity("id3", VulnerabilityOperationEnum.UPDATE, 1L);
+        final VulnerabilityEntity vuln1 = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, 1L);
+        final VulnerabilityEntity vuln2 = new VulnerabilityEntity("id2", VulnerabilityOperation.DELETE, 2L);
+        final VulnerabilityEntity vuln3 = new VulnerabilityEntity("id3", VulnerabilityOperation.UPDATE, 1L);
 
         return Arrays.asList(vuln1, vuln2, vuln1, vuln3, vuln2);
     }

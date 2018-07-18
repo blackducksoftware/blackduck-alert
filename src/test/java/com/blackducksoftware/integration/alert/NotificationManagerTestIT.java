@@ -24,14 +24,14 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityOperation;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
-import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -101,7 +101,7 @@ public class NotificationManagerTestIT {
     @Test
     public void testSave() {
         final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
+        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
         NotificationModel savedModel = notificationManager.saveNotification(model);
@@ -121,7 +121,7 @@ public class NotificationManagerTestIT {
     @Test
     public void testFindByIds() {
         final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
+        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
         final NotificationModel savedModel = notificationManager.saveNotification(model);
@@ -134,7 +134,7 @@ public class NotificationManagerTestIT {
     @Test
     public void testFindByIdsInvalidIds() {
         final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id2", VulnerabilityOperationEnum.ADD, null);
+        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id2", VulnerabilityOperation.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
         notificationManager.saveNotification(model);
@@ -227,7 +227,7 @@ public class NotificationManagerTestIT {
 
     @Test
     public void testDeleteNotificationList() {
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
+        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         final LocalDateTime time = LocalDateTime.now();
         final Date startDate = createDate(time.minusHours(1));
@@ -258,7 +258,7 @@ public class NotificationManagerTestIT {
     @Test
     public void testDeleteNotification() {
         final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperationEnum.ADD, null);
+        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
         final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
         final NotificationModel savedModel = notificationManager.saveNotification(model);

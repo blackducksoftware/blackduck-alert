@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.digest;
 
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 
 public class DailyDigestItemProcessor extends DigestItemProcessor {
     public DailyDigestItemProcessor(final DigestNotificationProcessor notificationProcessor) {
@@ -31,7 +31,7 @@ public class DailyDigestItemProcessor extends DigestItemProcessor {
     }
 
     @Override
-    public DigestTypeEnum getDigestType() {
-        return DigestTypeEnum.DAILY;
+    public DigestType getDigestType() {
+        return DigestType.DAILY;
     }
 }

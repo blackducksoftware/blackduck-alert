@@ -29,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 public abstract class DigestItemProcessor implements ItemProcessor<List<NotificationModel>, List<ChannelEvent>> {
     private final static Logger logger = LoggerFactory.getLogger(DigestItemProcessor.class);
@@ -58,5 +58,5 @@ public abstract class DigestItemProcessor implements ItemProcessor<List<Notifica
         return null;
     }
 
-    public abstract DigestTypeEnum getDigestType();
+    public abstract DigestType getDigestType();
 }

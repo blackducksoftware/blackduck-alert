@@ -32,13 +32,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.digest.DigestRemovalProcessor;
 import com.blackducksoftware.integration.alert.digest.filter.NotificationEventManager;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
 import com.google.gson.Gson;
 
 @Component
@@ -67,7 +67,7 @@ public class RealTimeListener extends MessageReceiver<AlertEvent> {
                 final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
                 final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
                 if (!processedNotificationList.isEmpty()) {
-                    final List<ChannelEvent> events = eventManager.createChannelEvents(DigestTypeEnum.REAL_TIME, processedNotificationList);
+                    final List<ChannelEvent> events = eventManager.createChannelEvents(DigestType.REAL_TIME, processedNotificationList);
                     channelTemplateManager.sendEvents(events);
                 }
             }

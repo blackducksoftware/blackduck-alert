@@ -30,6 +30,7 @@ import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
@@ -39,7 +40,6 @@ import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -122,7 +122,7 @@ public class SlackChannelTestIT extends ChannelTest {
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, null);
+        final ProjectData projectData = new ProjectData(DigestType.DAILY, "Slack", "1", null, null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
@@ -145,7 +145,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, createCategoryData());
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "Slack", "1", null, categoryMap);
+        final ProjectData projectData = new ProjectData(DigestType.DAILY, "Slack", "1", null, categoryMap);
 
         return Arrays.asList(projectData);
     }
