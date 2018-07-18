@@ -1,8 +1,6 @@
 package com.blackducksoftware.integration.alert.digest.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -32,16 +30,15 @@ import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationTypeRepository;
-import com.blackducksoftware.integration.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.alert.digest.filter.NotificationEventManager;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
+import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.model.NotificationModel;

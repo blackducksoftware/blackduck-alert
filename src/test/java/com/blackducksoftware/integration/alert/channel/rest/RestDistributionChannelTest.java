@@ -17,14 +17,11 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
-import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.exception.AlertException;

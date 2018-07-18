@@ -1,7 +1,7 @@
 package com.blackducksoftware.integration.alert.mock.entity;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.google.gson.JsonObject;
 
