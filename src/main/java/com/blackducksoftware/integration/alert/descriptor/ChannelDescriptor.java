@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.jms.MessageListener;
 
+import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;

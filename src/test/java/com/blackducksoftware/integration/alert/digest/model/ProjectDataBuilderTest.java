@@ -11,11 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.digest.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,12 +19,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.alert.digest.model.CategoryDataBuilder;
-import com.blackducksoftware.integration.alert.digest.model.ItemData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectDataBuilder;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectDataBuilderTest {

@@ -34,15 +34,15 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.ConfiguredProjectsRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationTypeRepository;
-import com.blackducksoftware.integration.alert.datasource.relation.DistributionNotificationTypeRelation;
-import com.blackducksoftware.integration.alert.datasource.relation.DistributionProjectRelation;
-import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionNotificationTypeRepository;
-import com.blackducksoftware.integration.alert.datasource.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
+import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.alert.database.relation.repository.DistributionProjectRepository;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 

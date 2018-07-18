@@ -34,8 +34,8 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.alert.model.NotificationModel;

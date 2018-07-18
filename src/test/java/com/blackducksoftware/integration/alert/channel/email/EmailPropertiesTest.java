@@ -16,8 +16,7 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.channel.email.EmailProperties;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 
 public class EmailPropertiesTest {
     @Test

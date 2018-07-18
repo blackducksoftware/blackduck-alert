@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectDataBuilder {

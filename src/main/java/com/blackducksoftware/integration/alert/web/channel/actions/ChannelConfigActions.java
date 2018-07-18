@@ -28,7 +28,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.exception.AlertFieldException;

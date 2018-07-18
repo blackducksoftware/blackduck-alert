@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.google.gson.Gson;

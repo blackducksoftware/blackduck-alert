@@ -32,10 +32,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;

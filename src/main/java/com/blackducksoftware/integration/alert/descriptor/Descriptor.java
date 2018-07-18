@@ -26,7 +26,8 @@ package com.blackducksoftware.integration.alert.descriptor;
 import java.util.Map;
 import java.util.Set;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;

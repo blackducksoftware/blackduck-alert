@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.exception.AlertException;

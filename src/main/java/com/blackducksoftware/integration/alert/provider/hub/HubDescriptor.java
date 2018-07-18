@@ -29,10 +29,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.descriptor.ProviderDescriptor;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;

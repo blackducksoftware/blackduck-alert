@@ -31,9 +31,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
