@@ -11,8 +11,8 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigRestModel;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.alert.web.channel.model.GlobalHipChatConfigRestModel;
 import com.google.gson.JsonObject;
 
 public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<GlobalHipChatConfigRestModel> {

@@ -12,9 +12,9 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataActions;
-import com.blackducksoftware.integration.alert.provider.hub.model.HubGroup;
-import com.blackducksoftware.integration.alert.provider.hub.model.HubProject;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubDataActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubGroup;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubProject;
 import com.blackducksoftware.integration.hub.api.core.ResourceMetadata;
 import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;

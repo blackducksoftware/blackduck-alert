@@ -9,8 +9,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.audit.controller.AlertPage;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.web.audit.AlertPage;
 
 public class AlertPageTest {
 

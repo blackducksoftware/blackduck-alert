@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatRepository;
@@ -46,6 +45,7 @@ import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectio
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;

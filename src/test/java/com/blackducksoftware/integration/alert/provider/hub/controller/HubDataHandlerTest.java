@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataActions;
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataHandler;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubDataActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubDataHandler;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
