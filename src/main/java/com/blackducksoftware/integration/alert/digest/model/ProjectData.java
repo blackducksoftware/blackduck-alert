@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.alert.digest.model;
 import java.util.List;
 import java.util.Map;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectData extends DigestData {

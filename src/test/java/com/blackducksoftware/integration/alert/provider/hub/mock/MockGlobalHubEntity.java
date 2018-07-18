@@ -11,8 +11,8 @@
  */
 package com.blackducksoftware.integration.alert.provider.hub.mock;
 
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.google.gson.JsonObject;
 
 public class MockGlobalHubEntity extends MockGlobalEntityUtil<GlobalHubConfigEntity> {

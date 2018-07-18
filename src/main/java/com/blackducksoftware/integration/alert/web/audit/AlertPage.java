@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.web.audit;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.datasource.entity.BaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.BaseEntity;
 
 public class AlertPage<D extends BaseEntity> {
     private final int totalPages;

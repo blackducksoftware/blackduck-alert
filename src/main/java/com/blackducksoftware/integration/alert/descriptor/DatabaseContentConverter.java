@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.descriptor;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 public abstract class DatabaseContentConverter {

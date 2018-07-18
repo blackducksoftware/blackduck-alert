@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelationPK;
+import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelationPK;
 
 public class AuditNotificationRelationPKTest {
 

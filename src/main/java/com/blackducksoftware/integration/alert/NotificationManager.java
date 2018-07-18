@@ -36,14 +36,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.VulnerabilityRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 
 @Component

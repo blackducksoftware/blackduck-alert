@@ -19,10 +19,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.digest.DigestRemovalProcessor;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 

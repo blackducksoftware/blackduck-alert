@@ -25,7 +25,7 @@ import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.alert.digest.model.ItemData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
