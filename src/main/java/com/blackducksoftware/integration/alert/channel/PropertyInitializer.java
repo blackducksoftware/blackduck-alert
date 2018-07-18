@@ -43,15 +43,15 @@ public class PropertyInitializer {
 
     public void save(final DatabaseEntity entity, final Descriptor descriptor) {
         logger.info("Saving global properties {}", entity);
-        final List<? extends DatabaseEntity> savedEntityList = descriptor.readGlobalEntities();
+        final List<? extends DatabaseEntity> savedEntityList = descriptor.getGlobalRepositoryAccessor().readEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
             logger.debug("No global entities found, saving new values.");
-            descriptor.saveGlobalEntity(entity);
+            descriptor.getGlobalRepositoryAccessor().saveEntity(entity);
         } else {
             logger.debug("Found existing properties, inserting new data.");
             savedEntityList.forEach(savedEntity -> {
                 updateEntityWithDefaults(savedEntity, entity);
-                descriptor.saveGlobalEntity(savedEntity);
+                descriptor.getGlobalRepositoryAccessor().saveEntity(savedEntity);
             });
 
         }

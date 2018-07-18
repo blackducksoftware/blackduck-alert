@@ -32,7 +32,7 @@ import com.blackducksoftware.integration.alert.audit.repository.AuditEntryReposi
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.GlobalHipChatConfigEntity;
+import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
@@ -68,7 +68,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
-        Mockito.doReturn(new GlobalHipChatConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
+        Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
         hipChatChannel.sendAuditedMessage(event, config);
 
@@ -124,7 +124,7 @@ public class HipChatChannelTest extends ChannelTest {
         assertEquals("The provided entity was null.", nullEntityMessage);
 
         hipChatMockUtil.setApiKey("apiKey");
-        final GlobalHipChatConfigEntity entityWithKey = hipChatMockUtil.createGlobalEntity();
+        final HipChatGlobalConfigEntity entityWithKey = hipChatMockUtil.createGlobalEntity();
 
         final String restConnectionNullMessage = hipChatChannel.testGlobalConfig(entityWithKey);
         assertEquals("Connection error: see logs for more information.", restConnectionNullMessage);
@@ -138,7 +138,7 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
 
         try {
-            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
+            final HipChatGlobalConfigEntity entity = hipChatMockUtil.createEmptyGlobalEntity();
             hipChatChannel.testGlobalConfig(entity);
             fail();
         } catch (final IntegrationException ex) {
@@ -156,7 +156,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         hipChatMockUtil.setApiKey(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
         hipChatMockUtil.setHostServer("");
-        final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+        final HipChatGlobalConfigEntity entity = hipChatMockUtil.createGlobalEntity();
         final String validMessage = hipChatChannel.testGlobalConfig(entity);
         assertEquals("API key is valid.", validMessage);
     }
@@ -171,7 +171,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         hipChatMockUtil.setApiKey("garbage");
         try {
-            final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+            final HipChatGlobalConfigEntity entity = hipChatMockUtil.createGlobalEntity();
             hipChatChannel.testGlobalConfig(entity);
         } catch (final IntegrationException ex) {
             assertTrue(ex.getMessage().contains("Invalid API key: "));
@@ -190,7 +190,7 @@ public class HipChatChannelTest extends ChannelTest {
 
             hipChatMockUtil.setApiKey("apiKey");
             try {
-                final GlobalHipChatConfigEntity entity = hipChatMockUtil.createGlobalEntity();
+                final HipChatGlobalConfigEntity entity = hipChatMockUtil.createGlobalEntity();
                 hipChatChannel.testGlobalConfig(entity);
             } catch (final IntegrationException ex) {
                 assertEquals("Invalid API key: Mock exception", ex.getMessage());

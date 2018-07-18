@@ -17,13 +17,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.GlobalEmailConfigRestModel;
+import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
 
-public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEmailConfigRestModel> {
+public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<EmailGlobalConfigRestModel> {
 
     @Override
-    public void assertGlobalRestModelFieldsNull(final GlobalEmailConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsNull(final EmailGlobalConfigRestModel restModel) {
         assertNull(restModel.getMailSmtpHost());
         assertNull(restModel.getMailSmtpUser());
         assertNull(restModel.getMailSmtpPassword());
@@ -75,7 +75,7 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     }
 
     @Override
-    public void assertGlobalRestModelFieldsFull(final GlobalEmailConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsFull(final EmailGlobalConfigRestModel restModel) {
         assertEquals(getMockUtil().getMailSmtpHost(), restModel.getMailSmtpHost());
         assertEquals(getMockUtil().getMailSmtpUser(), restModel.getMailSmtpUser());
         assertEquals(getMockUtil().getMailSmtpPassword(), restModel.getMailSmtpPassword());
@@ -128,8 +128,8 @@ public class GlobalEmailConfigRestModelTest extends GlobalRestModelTest<GlobalEm
     }
 
     @Override
-    public Class<GlobalEmailConfigRestModel> getGlobalRestModelClass() {
-        return GlobalEmailConfigRestModel.class;
+    public Class<EmailGlobalConfigRestModel> getGlobalRestModelClass() {
+        return EmailGlobalConfigRestModel.class;
     }
 
     @Override

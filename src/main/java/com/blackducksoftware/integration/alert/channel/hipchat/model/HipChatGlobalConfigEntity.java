@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.alert.web.security.StringEncryptionConv
 
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
-public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
+public class HipChatGlobalConfigEntity extends GlobalChannelConfigEntity {
 
     // @EncryptedStringField
     @Column(name = "api_key")
@@ -45,11 +45,10 @@ public class GlobalHipChatConfigEntity extends GlobalChannelConfigEntity {
     @Column(name = "host_server")
     private String hostServer;
 
-    public GlobalHipChatConfigEntity() {
-        // JPA requires default constructor definitions
+    public HipChatGlobalConfigEntity() {
     }
 
-    public GlobalHipChatConfigEntity(final String apiKey, final String hostServer) {
+    public HipChatGlobalConfigEntity(final String apiKey, final String hostServer) {
         this.apiKey = apiKey;
         this.hostServer = hostServer;
     }

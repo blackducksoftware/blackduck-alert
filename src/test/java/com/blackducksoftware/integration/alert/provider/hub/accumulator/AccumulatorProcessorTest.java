@@ -11,9 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.model.NotificationModels;
@@ -35,12 +35,12 @@ import com.google.gson.Gson;
 public class AccumulatorProcessorTest {
 
     private Gson gson;
-    private AlertEventContentConverter contentConverter;
+    private ContentConverter contentConverter;
 
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new AlertEventContentConverter(gson);
+        contentConverter = new ContentConverter(gson);
     }
 
     @Test
