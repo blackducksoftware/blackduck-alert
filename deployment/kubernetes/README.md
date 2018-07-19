@@ -13,6 +13,8 @@ All below commands assume:
 #### Step 1: Create the configuration map for Alert
 
 Create the config map from the file to specify the environment variables for Alert
+Edit the 1-cm-alert.yml file with the environment variable values you want to use for your configuration of Alert.
+###### Note:  You can edit the contents of the configuration map after it has been created. ######
 
 ```
 kubectl create -f 1-cm-alert.yml -n blackduck-alert
@@ -51,6 +53,8 @@ You can install the Alert container as part of you Hub installation.  This secti
 
 #### Step 2: Create the configuration map for Alert
 
+Edit the 1-cm-alert.yml file with the environment variable values you want to use for your configuration of Alert.
+###### Note:  You can edit the contents of the configuration map after it has been created. ######
 ```
 kubectl create -f 2-cm-alert.yml -n <your_hub_namespace>
 ```
