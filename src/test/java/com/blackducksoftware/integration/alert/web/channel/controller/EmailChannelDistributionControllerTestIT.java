@@ -7,9 +7,9 @@ import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntit
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.controller.ControllerTest;
 
 public class EmailChannelDistributionControllerTestIT extends ControllerTest<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository> {

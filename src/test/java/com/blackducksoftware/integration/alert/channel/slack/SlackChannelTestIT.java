@@ -26,12 +26,12 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.digest.model.CategoryData;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;

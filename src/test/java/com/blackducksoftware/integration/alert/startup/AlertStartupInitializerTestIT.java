@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.alert.startup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -22,11 +19,11 @@ import com.blackducksoftware.integration.alert.channel.email.EmailDescriptor;
 import com.blackducksoftware.integration.alert.channel.email.EmailGlobalContentConverter;
 import com.blackducksoftware.integration.alert.channel.email.EmailGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
 import com.google.gson.Gson;
 
 public class AlertStartupInitializerTestIT {

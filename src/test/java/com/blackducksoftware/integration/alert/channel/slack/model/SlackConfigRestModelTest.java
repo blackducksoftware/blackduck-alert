@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionRestModelTest;
 
 public class SlackConfigRestModelTest extends CommonDistributionRestModelTest<SlackDistributionRestModel> {

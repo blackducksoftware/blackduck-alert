@@ -3,8 +3,8 @@ package com.blackducksoftware.integration.alert.audit.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.RestModelTest;
 
 public class AuditEntryRestModelTest extends RestModelTest<AuditEntryRestModel> {
