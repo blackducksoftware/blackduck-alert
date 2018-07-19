@@ -35,14 +35,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
-import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component

@@ -13,8 +13,8 @@ package com.blackducksoftware.integration.alert.mock.entity;
 
 import java.util.Date;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 import com.google.gson.JsonObject;
 
 public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {

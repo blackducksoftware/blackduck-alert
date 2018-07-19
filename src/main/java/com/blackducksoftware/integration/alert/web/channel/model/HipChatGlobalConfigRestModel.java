@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.channel.model;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 public class HipChatGlobalConfigRestModel extends ConfigRestModel {

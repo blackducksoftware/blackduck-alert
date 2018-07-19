@@ -14,8 +14,8 @@ package com.blackducksoftware.integration.alert.web.scheduling.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
-import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 
 public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSchedulingConfigEntity> {

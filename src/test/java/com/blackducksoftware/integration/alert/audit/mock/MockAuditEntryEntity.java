@@ -2,8 +2,8 @@ package com.blackducksoftware.integration.alert.audit.mock;
 
 import java.util.Date;
 
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;
 
@@ -11,16 +11,16 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private Long commonConfigId;
     private Date timeCreated;
     private Date timeLastSent;
-    private StatusEnum status;
+    private AuditEntryStatus status;
     private String errorMessage;
     private String errorStackTrace;
     private Long id;
 
     public MockAuditEntryEntity() {
-        this(2L, new Date(400), new Date(500), StatusEnum.SUCCESS, "errorMessage", "errorStackTrace", 1L);
+        this(2L, new Date(400), new Date(500), AuditEntryStatus.SUCCESS, "errorMessage", "errorStackTrace", 1L);
     }
 
-    private MockAuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final StatusEnum status, final String errorMessage, final String errorStackTrace, final Long id) {
+    private MockAuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final AuditEntryStatus status, final String errorMessage, final String errorStackTrace, final Long id) {
         super();
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
@@ -43,7 +43,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return timeLastSent;
     }
 
-    public StatusEnum getStatus() {
+    public AuditEntryStatus getStatus() {
         return status;
     }
 
@@ -67,7 +67,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         this.timeLastSent = timeLastSent;
     }
 
-    public void setStatus(final StatusEnum status) {
+    public void setStatus(final AuditEntryStatus status) {
         this.status = status;
     }
 

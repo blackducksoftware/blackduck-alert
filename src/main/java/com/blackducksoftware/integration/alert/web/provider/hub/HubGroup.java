@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.provider.hub;
 
-import com.blackducksoftware.integration.alert.model.Model;
+import com.blackducksoftware.integration.alert.common.model.Model;
 
 public class HubGroup extends Model {
     private final String name;

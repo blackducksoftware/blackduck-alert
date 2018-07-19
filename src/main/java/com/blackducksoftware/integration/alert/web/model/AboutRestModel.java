@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import com.blackducksoftware.integration.alert.model.Model;
+import com.blackducksoftware.integration.alert.common.model.Model;
 
 public class AboutRestModel extends Model {
     private String version;

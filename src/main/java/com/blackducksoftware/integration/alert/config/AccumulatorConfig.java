@@ -35,15 +35,15 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorWriter;
-import com.blackducksoftware.integration.alert.scheduled.JobScheduledTask;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
+import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
@@ -70,7 +70,7 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
     @Override
     public Step createStep(final HubAccumulatorReader reader, final HubAccumulatorProcessor processor, final HubAccumulatorWriter writer) {
         return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationDetailResults, AlertEvent>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                       .build();
+                .build();
     }
 
     @Override
