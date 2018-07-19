@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.channel.email.template.MimeMultipartBuilder;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 
 import freemarker.template.TemplateException;
@@ -65,7 +65,7 @@ public class EmailMessagingService {
     public EmailMessagingService(final GlobalProperties globalProperties, final EmailProperties emailProperties) throws IOException {
         this.globalProperties = globalProperties;
         this.emailProperties = emailProperties;
-        final String templatesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+        final String templatesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR.getVariableName());
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -87,7 +87,7 @@ public class EmailMessagingService {
 
             final Session session = createMailSession(emailProperties);
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
+            final String imagesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR.getVariableName());
             final String imageDirectoryPath;
             if (StringUtils.isNotBlank(imagesDirectory)) {
                 imageDirectoryPath = imagesDirectory + "/Ducky-80.png";

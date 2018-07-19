@@ -41,13 +41,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.datasource.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.datasource.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.datasource.purge.PurgeWriter;
+import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
@@ -155,7 +155,7 @@ public class StartupManager {
                 final URL hubUrl = new URL(globalProperties.getHubUrl());
                 if ("localhost".equals(hubUrl.getHost())) {
                     logger.warn("  -> Hub Provider Using localhost...");
-                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
+                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST.getVariableName());
                     if (StringUtils.isBlank(hubWebServerEnvValue)) {
                         logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
                     } else {

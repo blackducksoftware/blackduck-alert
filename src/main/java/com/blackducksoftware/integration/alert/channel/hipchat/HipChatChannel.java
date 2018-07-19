@@ -45,11 +45,11 @@ import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlob
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -146,7 +146,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
         try {
-            final String templatesDirectory = getGlobalProperties().getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+            final String templatesDirectory = getGlobalProperties().getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR.getVariableName());
             final String templateDirectoryPath;
             if (StringUtils.isNotBlank(templatesDirectory)) {
                 templateDirectoryPath = templatesDirectory + "/hipchat";

@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -32,7 +30,6 @@ import com.blackducksoftware.integration.alert.audit.repository.AuditEntryReposi
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
@@ -55,7 +52,7 @@ public class SlackChannelTestIT extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository, null);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
