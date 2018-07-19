@@ -11,9 +11,9 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
 import com.google.gson.JsonObject;
 
 public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionRestModel> {

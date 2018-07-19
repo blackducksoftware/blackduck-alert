@@ -31,9 +31,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.datasource.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;

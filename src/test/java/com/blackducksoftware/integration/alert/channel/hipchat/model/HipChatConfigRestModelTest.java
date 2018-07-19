@@ -11,12 +11,10 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionRestModelTest;
 
 public class HipChatConfigRestModelTest extends CommonDistributionRestModelTest<HipChatDistributionRestModel> {

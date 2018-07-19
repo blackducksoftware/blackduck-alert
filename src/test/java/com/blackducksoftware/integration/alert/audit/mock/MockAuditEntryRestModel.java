@@ -2,9 +2,9 @@ package com.blackducksoftware.integration.alert.audit.mock;
 
 import java.util.Date;
 
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
