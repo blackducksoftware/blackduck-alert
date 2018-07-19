@@ -209,7 +209,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
         if (commonEntity != null) {
             final CommonDistributionConfigRestModel restModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().populateRestModelFromDatabaseEntity(entity);
-            restModel.setId(String.valueOf(commonEntity.getId()));
+            restModel.setId(contentConverter.getStringValue(commonEntity.getId()));
             restModel.setDistributionConfigId(contentConverter.getStringValue(entity.getId()));
             restModel.setDistributionType(commonEntity.getDistributionType());
             restModel.setFilterByProject(contentConverter.getStringValue(commonEntity.getFilterByProject()));

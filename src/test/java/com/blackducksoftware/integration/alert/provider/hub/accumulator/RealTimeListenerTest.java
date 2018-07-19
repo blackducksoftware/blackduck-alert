@@ -36,7 +36,7 @@ public class RealTimeListenerTest {
         Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
         final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, eventManager, contentConverter);
 
-        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getStringValue(Arrays.asList(model)));
+        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(Arrays.asList(model)));
         realTimeListener.handleEvent(realTimeEvent);
     }
 
@@ -56,7 +56,7 @@ public class RealTimeListenerTest {
 
             final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, eventManager, contentConverter);
 
-            final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getStringValue(model));
+            final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(model));
             realTimeListener.handleEvent(realTimeEvent);
 
             assertTrue(outputLogger.isLineContainingText("null"));

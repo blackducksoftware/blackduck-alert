@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,12 +42,7 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<CommonDistributionConfigRestModel> restModel = getContentConverter().getContent(json, CommonDistributionConfigRestModel.class);
-        if (restModel.isPresent()) {
-            return restModel.get();
-        }
-
-        return null;
+        return getContentConverter().getJsonContent(json, CommonDistributionConfigRestModel.class);
     }
 
     @Override
