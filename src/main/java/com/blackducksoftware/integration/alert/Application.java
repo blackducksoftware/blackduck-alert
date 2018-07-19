@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -64,7 +63,6 @@ import com.google.gson.GsonBuilder;
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.workflow.**", "com.blackducksoftware.integration.alert.workflow.startup", "com.blackducksoftware.integration.alert.config" })
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired
