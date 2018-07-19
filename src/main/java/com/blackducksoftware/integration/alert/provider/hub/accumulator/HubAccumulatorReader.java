@@ -42,8 +42,8 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
@@ -66,7 +66,7 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
     private String findLastRunFilePath() {
         String path = "";
         try {
-            final String configLocation = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME);
+            final String configLocation = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME.getVariableName());
             final File file = new File(configLocation, "accumulator-lastrun.txt");
             path = file.getCanonicalPath();
         } catch (final IOException ex) {

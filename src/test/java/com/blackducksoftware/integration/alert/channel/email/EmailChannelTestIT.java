@@ -14,7 +14,6 @@ import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
-import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
 import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.digest.model.DigestModel;
@@ -34,7 +33,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, globalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
         globalProperties.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);

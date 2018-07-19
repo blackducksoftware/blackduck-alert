@@ -12,15 +12,14 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.startup.StartupManager;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -105,11 +104,12 @@ public class StartupManagerTest {
 
     @Test
     public void testValidateHubProviderHubWebserverEnvironmentSet() throws IOException {
-        final AlertEnvironment alertEnvironment = Mockito.mock(AlertEnvironment.class);
-        Mockito.when(alertEnvironment.getVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST)).thenReturn("localhost");
-        final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(alertEnvironment, Mockito.mock(GlobalHubRepository.class));
-        testGlobalProperties.setHubUrl("https://localhost:443");
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(Mockito.mock(GlobalHubRepository.class));
+        final TestGlobalProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
+        spiedGlobalProperties.setHubUrl("https://localhost:443");
+
+        Mockito.doReturn("localhost").when(spiedGlobalProperties).getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST.getVariableName());
+        final StartupManager startupManager = new StartupManager(null, spiedGlobalProperties, null, null, null, null, null);
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
         assertTrue(outputLogger.isLineContainingText("Hub Provider Using localhost..."));
