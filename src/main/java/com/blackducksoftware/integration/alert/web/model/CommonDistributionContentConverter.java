@@ -28,11 +28,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.descriptor.DatabaseContentConverter;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 
 @Component
 public class CommonDistributionContentConverter extends DatabaseContentConverter {
@@ -57,7 +57,7 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final CommonDistributionConfigRestModel commonRestModel = (CommonDistributionConfigRestModel) restModel;
         final Long distributionConfigId = contentConverter.getLong(commonRestModel.getDistributionConfigId());
-        final DigestTypeEnum digestType = Enum.valueOf(DigestTypeEnum.class, commonRestModel.getFrequency());
+        final DigestType digestType = Enum.valueOf(DigestType.class, commonRestModel.getFrequency());
         final Boolean filterByProject = contentConverter.getBoolean(commonRestModel.getFilterByProject());
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonRestModel.getDistributionType(), commonRestModel.getName(), digestType, filterByProject);
         addIdToEntityPK(commonRestModel.getId(), commonEntity);

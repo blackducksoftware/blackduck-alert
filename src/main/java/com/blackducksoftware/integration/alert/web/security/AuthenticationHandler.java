@@ -80,7 +80,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
                 .and().authorizeRequests().anyRequest().hasRole("ADMIN")
                 .and().logout().logoutSuccessUrl("/");
-        // conditional above ensures that this will not be used if SSL is enabled.
+        // The profile above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }
 

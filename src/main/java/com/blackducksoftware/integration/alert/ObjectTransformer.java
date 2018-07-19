@@ -38,9 +38,9 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.model.Model;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
+import com.blackducksoftware.integration.alert.common.model.Model;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component

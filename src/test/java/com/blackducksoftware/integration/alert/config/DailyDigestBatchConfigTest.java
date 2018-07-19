@@ -7,10 +7,9 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.alert.digest.DailyItemReader;
-import com.blackducksoftware.integration.alert.digest.DigestItemProcessor;
-import com.blackducksoftware.integration.alert.digest.DigestItemWriter;
+import com.blackducksoftware.integration.alert.common.digest.DailyItemReader;
+import com.blackducksoftware.integration.alert.common.digest.DigestItemProcessor;
+import com.blackducksoftware.integration.alert.common.digest.DigestItemWriter;
 
 public class DailyDigestBatchConfigTest extends CommonConfigTest<DailyItemReader, DigestItemWriter, DigestItemProcessor, DailyDigestBatchConfig> {
 

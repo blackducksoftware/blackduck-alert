@@ -14,9 +14,9 @@ package com.blackducksoftware.integration.alert.mock;
 import java.util.Arrays;
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.alert.datasource.relation.DistributionNotificationTypeRelation;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

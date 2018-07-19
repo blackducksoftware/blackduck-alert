@@ -14,8 +14,8 @@ package com.blackducksoftware.integration.alert.mock;
 import java.util.Arrays;
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.datasource.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.alert.datasource.relation.DistributionProjectRelation;
+import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
 import com.google.gson.JsonArray;
 
 public class ProjectMockUtils {

@@ -14,9 +14,9 @@ package com.blackducksoftware.integration.alert.provider.hub.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.alert.database.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 
 public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalHubConfigEntity> {
 
