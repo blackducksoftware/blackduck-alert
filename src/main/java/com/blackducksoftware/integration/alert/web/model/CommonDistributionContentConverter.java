@@ -61,7 +61,7 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
         final CommonDistributionConfigEntity commonEntity = (CommonDistributionConfigEntity) entity;
         final CommonDistributionConfigRestModel commonRestModel = new CommonDistributionConfigRestModel();
         commonRestModel.setId(getContentConverter().getStringValue(commonEntity.getId()));
-        commonRestModel.setDistributionConfigId(getContentConverter().getStringValue(entity.getId()));
+        commonRestModel.setDistributionConfigId(getContentConverter().getStringValue(commonEntity.getDistributionConfigId()));
         commonRestModel.setDistributionType(commonEntity.getDistributionType());
         commonRestModel.setFilterByProject(getContentConverter().getStringValue(commonEntity.getFilterByProject()));
         commonRestModel.setFrequency(commonEntity.getFrequency().name());
