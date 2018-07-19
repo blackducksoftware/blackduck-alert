@@ -23,22 +23,22 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public class DistributionChannelTest extends ChannelTest {
@@ -55,7 +55,7 @@ public class DistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
 
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.SUCCESS, null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -76,7 +76,7 @@ public class DistributionChannelTest extends ChannelTest {
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -113,7 +113,7 @@ public class DistributionChannelTest extends ChannelTest {
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), commonId);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestTypeEnum.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, EmailGroupChannel.COMPONENT_NAME, "Email Config", DigestType.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         final EmailGroupDistributionConfigEntity specificEntity = new EmailGroupDistributionConfigEntity("admins", "", "TEST SUBJECT LINE");
@@ -140,7 +140,7 @@ public class DistributionChannelTest extends ChannelTest {
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), commonId);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SlackChannel.COMPONENT_NAME, "Other Config", DigestTypeEnum.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SlackChannel.COMPONENT_NAME, "Other Config", DigestType.REAL_TIME, false);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         channel.handleEvent(event);

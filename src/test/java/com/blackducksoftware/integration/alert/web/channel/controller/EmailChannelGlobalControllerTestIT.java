@@ -8,8 +8,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;

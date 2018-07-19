@@ -29,11 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.processor.NotificationItemProcessor;
-import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
+import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 public class HubAccumulatorProcessor implements ItemProcessor<NotificationDetailResults, AlertEvent> {

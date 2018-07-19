@@ -14,13 +14,13 @@ import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class EmailChannelTestIT extends ChannelTest {

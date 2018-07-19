@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.EntityTest;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.EntityTest;
 
 public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConfigEntity> {
 

@@ -38,7 +38,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -51,21 +50,19 @@ import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.blackducksoftware.integration.alert.startup.StartupManager;
+import com.blackducksoftware.integration.alert.workflow.startup.StartupManager;
 import com.blackducksoftware.integration.rest.RestConstants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 @EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
-@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.alert.datasource.**", "com.blackducksoftware.integration.alert.**.repository", "com.blackducksoftware.integration.alert.**.model" })
+@EnableJpaRepositories(basePackages = { "com.blackducksoftware.integration.alert.database" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.web.**", "com.blackducksoftware.integration.alert", "com.blackducksoftware.integration.alert.config",
-        "com.blackducksoftware.integration.alert.startup" })
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired

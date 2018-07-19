@@ -24,8 +24,8 @@
 package com.blackducksoftware.integration.alert.web.scheduling;
 
 import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.scheduling.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.controller.handler.CommonConfigHandler;
 
 public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {

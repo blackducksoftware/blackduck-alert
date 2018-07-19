@@ -42,8 +42,8 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;

@@ -21,14 +21,14 @@ import org.assertj.core.util.Sets;
 import org.junit.After;
 import org.junit.Before;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestProperties;
-import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.alert.digest.model.ItemData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.digest.model.CategoryData;
+import com.blackducksoftware.integration.alert.common.digest.model.ItemData;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
 public class ChannelTest {
@@ -73,7 +73,7 @@ public class ChannelTest {
         categoryMap.put(NotificationCategoryEnum.POLICY_VIOLATION, createMockPolicyViolation());
         categoryMap.put(NotificationCategoryEnum.MEDIUM_VULNERABILITY, createMockVulnerability());
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
+        final ProjectData projectData = new ProjectData(DigestType.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
         return Arrays.asList(projectData);
     }
 }

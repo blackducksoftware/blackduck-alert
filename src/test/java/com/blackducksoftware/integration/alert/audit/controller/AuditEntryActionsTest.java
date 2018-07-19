@@ -15,22 +15,22 @@ import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.VulnerabilityRepository;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryActions;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public class AuditEntryActionsTest {

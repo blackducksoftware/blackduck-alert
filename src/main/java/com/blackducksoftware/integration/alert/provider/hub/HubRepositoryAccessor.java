@@ -26,10 +26,10 @@ package com.blackducksoftware.integration.alert.provider.hub;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.descriptor.RepositoryAccessor;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 
 @Component
 public class HubRepositoryAccessor extends RepositoryAccessor {

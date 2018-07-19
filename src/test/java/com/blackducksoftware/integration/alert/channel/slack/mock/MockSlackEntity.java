@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.mock;
 
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;
 
