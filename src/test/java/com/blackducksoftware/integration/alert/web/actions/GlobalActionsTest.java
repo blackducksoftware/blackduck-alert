@@ -54,9 +54,13 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     public abstract GCA getMockedConfigActions();
 
+    public ContentConverter getContentConverter() {
+        return new ContentConverter(new Gson(), new DefaultConversionService());
+    }
+
     @Before
     public void init() {
-        contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
+        contentConverter = getContentConverter();
         alertEnvironment = new AlertEnvironment();
     }
 

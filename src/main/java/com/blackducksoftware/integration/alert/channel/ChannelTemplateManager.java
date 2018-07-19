@@ -84,7 +84,7 @@ public class ChannelTemplateManager {
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-            final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);
+            final Optional<DigestModel> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(channelEvent.getContent(), DigestModel.class));
             if (!optionalModel.isPresent()) {
                 return false;
             } else {

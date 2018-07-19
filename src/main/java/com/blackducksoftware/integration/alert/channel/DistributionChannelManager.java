@@ -91,6 +91,6 @@ public class DistributionChannelManager {
     }
 
     public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
-        return new ChannelEvent(destination, contentConverter.getStringValue(content), commonDistributionConfigId);
+        return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
     }
 }

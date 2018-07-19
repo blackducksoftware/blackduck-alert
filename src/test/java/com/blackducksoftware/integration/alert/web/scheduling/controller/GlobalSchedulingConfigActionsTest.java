@@ -49,7 +49,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
-        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(contentConverter);
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, globalSchedulingContentConverter);
         return configActions;
     }
@@ -68,7 +68,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         Mockito.when(globalSchedulingRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
-        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(contentConverter);
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedAccumulatorConfig, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, globalSchedulingContentConverter);
         configActions.configurationChangeTriggers(null);
         Mockito.verify(mockedAccumulatorConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
@@ -89,7 +89,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Override
     public void testInvalidConfig() {
         final String invalidCron = "invalid";
-        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(contentConverter);
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, globalSchedulingContentConverter);
         GlobalSchedulingConfigRestModel restModel = new GlobalSchedulingConfigRestModel("1", invalidCron, invalidCron, invalidCron, invalidCron, invalidCron);
 
@@ -146,7 +146,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Test
     public void validateConfigWithValidArgsTest() {
-        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(contentConverter);
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
         final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, globalSchedulingContentConverter);
         final GlobalSchedulingConfigRestModel restModel = getGlobalRestModelMockUtil().createGlobalRestModel();
 

@@ -60,7 +60,7 @@ public class HubAccumulatorWriter implements ItemWriter<AlertEvent> {
             if (itemList != null && !itemList.isEmpty()) {
                 logger.info("Writing {} notifications", itemList.size());
                 for (final AlertEvent item : itemList) {
-                    final Optional<NotificationModels> optionalModel = contentConverter.getContent(item.getContent(), NotificationModels.class);
+                    final Optional<NotificationModels> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(item.getContent(), NotificationModels.class));
                     if (optionalModel.isPresent()) {
                         final NotificationModels notificationModels = optionalModel.get();
                         final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
@@ -69,7 +69,7 @@ public class HubAccumulatorWriter implements ItemWriter<AlertEvent> {
                             notificationManager.saveNotification(notification);
                             entityList.add(notification);
                         });
-                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getStringValue(notificationModels));
+                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(notificationModels));
                         channelTemplateManager.sendEvent(realTimeEvent);
                     }
                 }
