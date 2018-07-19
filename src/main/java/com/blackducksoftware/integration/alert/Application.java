@@ -64,8 +64,7 @@ import com.google.gson.GsonBuilder;
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.web.**", "com.blackducksoftware.integration.alert", "com.blackducksoftware.integration.alert.config",
-        "com.blackducksoftware.integration.alert.workflow.startup" })
+@ComponentScan(basePackages = { "com.blackducksoftware.integration.alert.workflow.**", "com.blackducksoftware.integration.alert.workflow.startup", "com.blackducksoftware.integration.alert.config" })
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
     @Autowired
