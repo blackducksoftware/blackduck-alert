@@ -50,6 +50,7 @@ import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplati
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.channel.email.template.MimeMultipartBuilder;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
+import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 
@@ -94,7 +95,7 @@ public class EmailMessagingService {
             } else {
                 imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
             }
-            addTemplateImage(model, contentIdsToFilePaths, EmailProperties.EMAIL_LOGO_IMAGE, imageDirectoryPath);
+            addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
             final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
             final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
@@ -140,7 +141,7 @@ public class EmailMessagingService {
         final Message message = new MimeMessage(session);
         message.setContent(mimeMultipart);
 
-        message.setFrom(new InternetAddress(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_FROM_KEY)));
+        message.setFrom(new InternetAddress(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())));
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSubject(subjectLine);
 
@@ -148,7 +149,7 @@ public class EmailMessagingService {
     }
 
     public void sendMessage(final EmailProperties emailProperties, final Session session, final Message message) throws MessagingException {
-        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_AUTH_KEY))) {
+        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()))) {
             sendAuthenticated(emailProperties, message, session);
         } else {
             Transport.send(message);
@@ -156,10 +157,10 @@ public class EmailMessagingService {
     }
 
     private void sendAuthenticated(final EmailProperties emailProperties, final Message message, final Session session) throws MessagingException {
-        final String host = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_HOST_KEY);
-        final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_PORT_KEY));
-        final String username = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_USER_KEY);
-        final String password = emailProperties.getJavamailOption(EmailProperties.JAVAMAIL_PASSWORD_KEY);
+        final String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
+        final String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
+        final String password = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
 
         final Transport transport = session.getTransport("smtp");
         try {
