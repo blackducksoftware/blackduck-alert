@@ -2,9 +2,9 @@ package com.blackducksoftware.integration.alert.audit.mock;
 
 import java.util.Date;
 
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -21,7 +21,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryRestMod
     private final String id;
 
     public MockAuditEntryRestModel() {
-        this("name", "eventType", new Date(400).toString(), new Date(500).toString(), StatusEnum.SUCCESS.name(), new NotificationRestModel(), "errorMessage", "errorStackTrace", "1");
+        this("name", "eventType", new Date(400).toString(), new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationRestModel(), "errorMessage", "errorStackTrace", "1");
     }
 
     private MockAuditEntryRestModel(final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationRestModel notification, final String errorMessage,

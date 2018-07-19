@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.web.model;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.model.Model;
+import com.blackducksoftware.integration.alert.common.model.Model;
 
 public class AlertPagedRestModel<M extends Model> extends Model {
 

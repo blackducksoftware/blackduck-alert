@@ -30,9 +30,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

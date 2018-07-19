@@ -7,21 +7,21 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.google.gson.Gson;
 
 public class ChannelTemplateManagerTest {
@@ -31,7 +31,7 @@ public class ChannelTemplateManagerTest {
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @Test
@@ -44,7 +44,7 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepository, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
 
-        final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
+        final ProjectData projectData = new ProjectData(DigestType.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.getStringValue(digestModel), 1L);
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));

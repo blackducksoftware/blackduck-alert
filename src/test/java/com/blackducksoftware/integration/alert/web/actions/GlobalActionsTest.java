@@ -11,7 +11,12 @@
  */
 package com.blackducksoftware.integration.alert.web.actions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,16 +27,15 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.google.gson.Gson;
 
@@ -52,7 +56,7 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
 
     @Before
     public void init() {
-        contentConverter = new ContentConverter(new Gson());
+        contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         alertEnvironment = new AlertEnvironment();
     }
 
@@ -152,15 +156,11 @@ public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends D
             assertEquals("test", e.getMessage());
         }
 
-        final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
-        Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
+        configActions = getMockedConfigActions();
 
         emailConfigEntity = configActions.saveConfig(getGlobalRestModelMockUtil().createGlobalRestModel());
         assertNull(emailConfigEntity);
     }
-
-    public abstract GCA createMockedConfigActionsUsingObjectTransformer(ObjectTransformer objectTransformer);
 
     public abstract Class<GE> getGlobalEntityClass();
 

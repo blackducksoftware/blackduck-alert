@@ -6,7 +6,8 @@ import org.junit.Test;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
 import com.google.gson.Gson;
 
 public class ContentConverterTest {

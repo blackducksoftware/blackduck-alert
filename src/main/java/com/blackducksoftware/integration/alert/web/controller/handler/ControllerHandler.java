@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.alert.web.controller.handler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 
 public abstract class ControllerHandler {

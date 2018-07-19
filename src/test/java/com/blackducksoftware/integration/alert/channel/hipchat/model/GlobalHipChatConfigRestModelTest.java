@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalRestModel;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
 
 public class GlobalHipChatConfigRestModelTest extends GlobalRestModelTest<HipChatGlobalConfigRestModel> {

@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.GlobalEntityTest;
 
 public class GlobalHipChatConfigEntityTest extends GlobalEntityTest<HipChatGlobalConfigEntity> {
 

@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.GlobalEntityTest;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.GlobalEntityTest;
 
 public class GlobalEmailConfigEntityTest extends GlobalEntityTest<EmailGlobalConfigEntity> {
 

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestModel;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionRestModelTest;
 
 public class EmailGroupDistributionRestModelTest extends CommonDistributionRestModelTest<EmailGroupDistributionRestModel> {

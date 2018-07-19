@@ -14,8 +14,8 @@ package com.blackducksoftware.integration.alert.audit.repository;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.blackducksoftware.integration.alert.audit.repository.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.alert.datasource.entity.RelationTest;
+import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.blackducksoftware.integration.alert.database.entity.RelationTest;
 
 public class AuditNotificationRelationTest extends RelationTest<AuditNotificationRelation> {
 

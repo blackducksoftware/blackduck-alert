@@ -1,6 +1,9 @@
 package com.blackducksoftware.integration.alert.provider.hub.accumulator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,17 +13,17 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
-import com.blackducksoftware.integration.alert.processor.NotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.processor.policy.PolicyNotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
+import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.processor.policy.PolicyNotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
@@ -40,7 +43,7 @@ public class AccumulatorProcessorTest {
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @Test

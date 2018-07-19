@@ -23,17 +23,15 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfigRestModel;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
@@ -46,11 +44,7 @@ public class HipChatGlobalContentConverter extends DatabaseContentConverter {
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<HipChatGlobalConfigRestModel> restModel = getContentConverter().getContent(json, HipChatGlobalConfigRestModel.class);
-        if (restModel.isPresent()) {
-            return restModel.get();
-        }
-        return null;
+        return getContentConverter().getJsonContent(json, HipChatGlobalConfigRestModel.class);
     }
 
     @Override
