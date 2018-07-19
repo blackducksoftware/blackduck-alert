@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import com.blackducksoftware.integration.alert.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
 
 public class LoginRestModel extends ConfigRestModel {
     private String hubUsername;

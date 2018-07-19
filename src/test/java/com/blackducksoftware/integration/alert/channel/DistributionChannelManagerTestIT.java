@@ -29,11 +29,10 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.channel.DistributionChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;

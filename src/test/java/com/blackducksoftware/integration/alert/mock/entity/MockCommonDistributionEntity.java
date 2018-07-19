@@ -1,23 +1,23 @@
 package com.blackducksoftware.integration.alert.mock.entity;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.google.gson.JsonObject;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
     private Long distributionConfigId;
     private String distributionType;
     private String name;
-    private DigestTypeEnum frequency;
+    private DigestType frequency;
     private Boolean filterByProject;
     private Long id;
 
     public MockCommonDistributionEntity() {
-        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestTypeEnum.REAL_TIME, true, 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", DigestType.REAL_TIME, true, 2L);
     }
 
-    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestTypeEnum frequency, final Boolean filterByProject, final Long id) {
+    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestType frequency, final Boolean filterByProject, final Long id) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -51,11 +51,11 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         this.name = name;
     }
 
-    public DigestTypeEnum getFrequency() {
+    public DigestType getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(final DigestTypeEnum frequency) {
+    public void setFrequency(final DigestType frequency) {
         this.frequency = frequency;
     }
 

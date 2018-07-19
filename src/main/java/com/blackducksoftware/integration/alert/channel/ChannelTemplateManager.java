@@ -34,16 +34,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.audit.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.alert.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.google.gson.Gson;
 
 @Transactional
@@ -81,7 +81,7 @@ public class ChannelTemplateManager {
                 auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId()).orElse(auditEntryEntity);
             }
 
-            auditEntryEntity.setStatus(StatusEnum.PENDING);
+            auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
             final Optional<DigestModel> optionalModel = contentConverter.getContent(channelEvent.getContent(), DigestModel.class);

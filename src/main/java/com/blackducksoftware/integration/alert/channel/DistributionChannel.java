@@ -34,18 +34,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.MessageReceiver;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.datasource.audit.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.workflow.MessageReceiver;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 import com.google.gson.Gson;
@@ -148,7 +148,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
                 if (auditEntryEntityOptional.isPresent()) {
                     final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(StatusEnum.SUCCESS);
+                    auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
                     auditEntryEntity.setErrorMessage(null);
                     auditEntryEntity.setErrorStackTrace(null);
                     auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
@@ -166,7 +166,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
                 if (auditEntryEntityOptional.isPresent()) {
                     final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(StatusEnum.FAILURE);
+                    auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
                     auditEntryEntity.setErrorMessage(errorMessage);
                     final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
                     String exceptionStackTrace = "";
