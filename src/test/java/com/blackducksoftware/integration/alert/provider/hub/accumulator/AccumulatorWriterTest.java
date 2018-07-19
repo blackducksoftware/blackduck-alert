@@ -27,7 +27,7 @@ public class AccumulatorWriterTest {
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));
-        final AlertEvent storeEvent = new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.convertToString(models));
+        final AlertEvent storeEvent = new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.getStringValue(models));
         hubAccumulatorWriter.write(Arrays.asList(storeEvent));
 
         Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
@@ -43,7 +43,7 @@ public class AccumulatorWriterTest {
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));
-        final AlertEvent storeEvent = new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.convertToString(models));
+        final AlertEvent storeEvent = new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.getStringValue(models));
         hubAccumulatorWriter.write(Arrays.asList(storeEvent));
 
         Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());

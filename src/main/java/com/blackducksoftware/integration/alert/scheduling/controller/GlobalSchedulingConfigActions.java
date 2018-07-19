@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
@@ -42,6 +41,7 @@ import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingContentConverter;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -54,8 +54,8 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Autowired
     public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
-            final ObjectTransformer objectTransformer) {
-        super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
+            final GlobalSchedulingContentConverter contentConverter) {
+        super(repository, contentConverter);
         this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
@@ -77,7 +77,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         }
         final GlobalSchedulingConfigRestModel restModel;
         if (databaseEntity != null) {
-            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel = (GlobalSchedulingConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
             restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
             restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
         } else {

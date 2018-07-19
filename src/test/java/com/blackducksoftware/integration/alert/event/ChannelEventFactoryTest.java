@@ -42,7 +42,7 @@ public class ChannelEventFactoryTest {
         final Long id = 25L;
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestTypeEnum.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.convertToString(digestModel), id);
+        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.getStringValue(digestModel), id);
         Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 
         final ChannelEvent event = factory.createEvent(id, "TYPE", digestModel);

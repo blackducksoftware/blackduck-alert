@@ -26,71 +26,65 @@ package com.blackducksoftware.integration.alert;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
 @Component
 public class ContentConverter {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
+    private final ConversionService conversionService;
     private final Gson gson;
 
     @Autowired
-    public ContentConverter(final Gson gson) {
+    public ContentConverter(final Gson gson, final ConversionService conversionService) {
+        this.conversionService = conversionService;
         this.gson = gson;
     }
 
-    public <C> Optional<C> getContent(final String content, final Class<C> contentClass) {
+    public <C> C getJsonContent(final String content, final Class<C> contentClass) {
         if (contentClass != null && content != null) {
-            return Optional.ofNullable(gson.fromJson(content, contentClass));
+            return gson.fromJson(content, contentClass);
+        }
+        return null;
+    }
+
+    public <C> Optional<C> getContent(final Object content, final Class<C> contentClass) {
+        if (contentClass != null && content != null && conversionService.canConvert(content.getClass(), contentClass)) {
+            return Optional.ofNullable(conversionService.convert(content, contentClass));
         }
         return Optional.empty();
     }
 
-    public <C> String convertToString(final C content) {
-        if (content == null) {
+    public <C> C getValue(final Object value, final Class<C> clazz) {
+        final Optional<C> content = getContent(value, clazz);
+        if (content.isPresent()) {
+            return content.get();
+        }
+        return null;
+    }
+
+    public String getStringValue(final Object content) {
+        return getValue(content, String.class);
+    }
+
+    public <C> C getValueOfString(final String value, final Class<C> clazz) {
+        if (StringUtils.isBlank(value)) {
             return null;
         }
-        return gson.toJson(content);
+        return getValue(value, clazz);
     }
 
-    public Integer getInteger(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            try {
-                final Integer intValue = Integer.valueOf(value);
-                return intValue;
-            } catch (final NumberFormatException e) {
-                logger.debug("Passed value is not an integer value");
-            }
-        }
-        return null;
+    public Integer getIntegerValue(final String value) {
+        return getValueOfString(value, Integer.class);
     }
 
-    public Long getLong(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            try {
-                final Long longValue = Long.valueOf(value);
-                return longValue;
-            } catch (final NumberFormatException e) {
-                logger.debug("Passed value is not a long value");
-            }
-        }
-        return null;
+    public Long getLongValue(final String value) {
+        return getValueOfString(value, Long.class);
     }
 
-    public Boolean getBoolean(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            try {
-                final Boolean booleanValue = Boolean.valueOf(value);
-                return booleanValue;
-            } catch (final NumberFormatException e) {
-                logger.debug("Passed value is not a boolean value");
-            }
-        }
-        return null;
+    public Boolean getBooleanValue(final String value) {
+        return getValueOfString(value, Boolean.class);
     }
 }

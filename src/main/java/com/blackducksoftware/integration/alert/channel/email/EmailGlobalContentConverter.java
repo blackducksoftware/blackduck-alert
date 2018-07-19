@@ -38,16 +38,15 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class EmailGlobalContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
 
     @Autowired
     public EmailGlobalContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<EmailGlobalConfigRestModel> restModel = contentConverter.getContent(json, EmailGlobalConfigRestModel.class);
+        final Optional<EmailGlobalConfigRestModel> restModel = getContentConverter().getContent(json, EmailGlobalConfigRestModel.class);
         if (restModel.isPresent()) {
             return restModel.get();
         }
@@ -57,14 +56,14 @@ public class EmailGlobalContentConverter extends DatabaseContentConverter {
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
-        final Integer smtpPort = contentConverter.getInteger(emailRestModel.getMailSmtpPort());
-        final Integer smtpConnectionTimeout = contentConverter.getInteger(emailRestModel.getMailSmtpConnectionTimeout());
-        final Integer smtpTimeout = contentConverter.getInteger(emailRestModel.getMailSmtpTimeout());
-        final Integer smtpWriteTimeout = contentConverter.getInteger(emailRestModel.getMailSmtpWriteTimeout());
-        final Integer smtpLocalPort = contentConverter.getInteger(emailRestModel.getMailSmtpLocalPort());
-        final Integer smtpAuthNtlmFlags = contentConverter.getInteger(emailRestModel.getMailSmtpAuthNtlmFlags());
-        final Integer smtpProxyPort = contentConverter.getInteger(emailRestModel.getMailSmtpProxyPort());
-        final Integer smtpSocksPort = contentConverter.getInteger(emailRestModel.getMailSmtpSocksPort());
+        final Integer smtpPort = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpPort());
+        final Integer smtpConnectionTimeout = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpConnectionTimeout());
+        final Integer smtpTimeout = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpTimeout());
+        final Integer smtpWriteTimeout = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpWriteTimeout());
+        final Integer smtpLocalPort = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpLocalPort());
+        final Integer smtpAuthNtlmFlags = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpAuthNtlmFlags());
+        final Integer smtpProxyPort = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpProxyPort());
+        final Integer smtpSocksPort = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpSocksPort());
         final EmailGlobalConfigEntity emailEntity = new EmailGlobalConfigEntity(emailRestModel.getMailSmtpHost(), emailRestModel.getMailSmtpUser(), emailRestModel.getMailSmtpPassword(), smtpPort, smtpConnectionTimeout,
                 smtpTimeout, smtpWriteTimeout, emailRestModel.getMailSmtpFrom(), emailRestModel.getMailSmtpLocalhost(),
                 emailRestModel.getMailSmtpLocalAddress(), smtpLocalPort, emailRestModel.getMailSmtpEhlo(), emailRestModel.getMailSmtpAuth(), emailRestModel.getMailSmtpAuthMechanisms(),
@@ -82,15 +81,15 @@ public class EmailGlobalContentConverter extends DatabaseContentConverter {
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
-        final String id = contentConverter.convertToString(emailEntity.getId());
-        final String smtpPort = contentConverter.convertToString(emailEntity.getMailSmtpPort());
-        final String smtpConnectionTimeout = contentConverter.convertToString(emailEntity.getMailSmtpConnectionTimeout());
-        final String smtpTimeout = contentConverter.convertToString(emailEntity.getMailSmtpTimeout());
-        final String smtpWriteTimeout = contentConverter.convertToString(emailEntity.getMailSmtpWriteTimeout());
-        final String smtpLocalPort = contentConverter.convertToString(emailEntity.getMailSmtpLocalPort());
-        final String smtpAuthNtlmFlags = contentConverter.convertToString(emailEntity.getMailSmtpAuthNtlmFlags());
-        final String smtpProxyPort = contentConverter.convertToString(emailEntity.getMailSmtpProxyPort());
-        final String smtpSocksPort = contentConverter.convertToString(emailEntity.getMailSmtpSocksPort());
+        final String id = getContentConverter().getStringValue(emailEntity.getId());
+        final String smtpPort = getContentConverter().getStringValue(emailEntity.getMailSmtpPort());
+        final String smtpConnectionTimeout = getContentConverter().getStringValue(emailEntity.getMailSmtpConnectionTimeout());
+        final String smtpTimeout = getContentConverter().getStringValue(emailEntity.getMailSmtpTimeout());
+        final String smtpWriteTimeout = getContentConverter().getStringValue(emailEntity.getMailSmtpWriteTimeout());
+        final String smtpLocalPort = getContentConverter().getStringValue(emailEntity.getMailSmtpLocalPort());
+        final String smtpAuthNtlmFlags = getContentConverter().getStringValue(emailEntity.getMailSmtpAuthNtlmFlags());
+        final String smtpProxyPort = getContentConverter().getStringValue(emailEntity.getMailSmtpProxyPort());
+        final String smtpSocksPort = getContentConverter().getStringValue(emailEntity.getMailSmtpSocksPort());
         return new EmailGlobalConfigRestModel(id, emailEntity.getMailSmtpHost(), emailEntity.getMailSmtpUser(), emailEntity.getMailSmtpPassword(), StringUtils.isNotBlank(emailEntity.getMailSmtpPassword()), smtpPort,
                 smtpConnectionTimeout, smtpTimeout, smtpWriteTimeout, emailEntity.getMailSmtpFrom(), emailEntity.getMailSmtpLocalhost(), emailEntity.getMailSmtpLocalAddress(), smtpLocalPort, emailEntity.getMailSmtpEhlo(),
                 emailEntity.getMailSmtpAuth(), emailEntity.getMailSmtpAuthMechanisms(),

@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
@@ -46,9 +46,9 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ObjectTransformer objectTransformer, final ChannelGlobalConfigActions channelGlobalConfigActions) {
+    public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelGlobalConfigActions channelGlobalConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ChannelConfigHandler<>(objectTransformer, channelGlobalConfigActions);
+        this.controllerHandler = new ChannelConfigHandler<>(contentConverter, channelGlobalConfigActions);
     }
 
     @Override

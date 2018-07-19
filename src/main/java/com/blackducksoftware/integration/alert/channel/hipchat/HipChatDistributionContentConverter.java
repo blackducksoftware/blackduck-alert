@@ -37,16 +37,14 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class HipChatDistributionContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
-
     @Autowired
     public HipChatDistributionContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<HipChatDistributionRestModel> restModel = contentConverter.getContent(json, HipChatDistributionRestModel.class);
+        final Optional<HipChatDistributionRestModel> restModel = getContentConverter().getContent(json, HipChatDistributionRestModel.class);
         if (restModel.isPresent()) {
             return restModel.get();
         }
@@ -57,7 +55,7 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
-        final Integer roomId = contentConverter.getInteger(hipChatRestModel.getRoomId());
+        final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
         final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
         addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
         return hipChatEntity;
@@ -67,8 +65,8 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
         final HipChatDistributionRestModel hipChatRestModel = new HipChatDistributionRestModel();
-        final String id = contentConverter.convertToString(hipChatEntity.getId());
-        final String roomId = contentConverter.convertToString(hipChatEntity.getRoomId());
+        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
+        final String roomId = getContentConverter().getStringValue(hipChatEntity.getRoomId());
         hipChatRestModel.setDistributionConfigId(id);
         hipChatRestModel.setRoomId(roomId);
         hipChatRestModel.setNotify(hipChatEntity.getNotify());

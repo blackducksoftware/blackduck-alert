@@ -37,16 +37,15 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class SlackDistributionContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
 
     @Autowired
     public SlackDistributionContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<SlackDistributionRestModel> restModel = contentConverter.getContent(json, SlackDistributionRestModel.class);
+        final Optional<SlackDistributionRestModel> restModel = getContentConverter().getContent(json, SlackDistributionRestModel.class);
         if (restModel.isPresent()) {
             return restModel.get();
         }
@@ -66,7 +65,7 @@ public class SlackDistributionContentConverter extends DatabaseContentConverter 
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
         final SlackDistributionRestModel slackRestModel = new SlackDistributionRestModel();
-        final String id = contentConverter.convertToString(slackEntity.getId());
+        final String id = getContentConverter().getStringValue(slackEntity.getId());
         slackRestModel.setDistributionConfigId(id);
         slackRestModel.setWebhook(slackEntity.getWebhook());
         slackRestModel.setChannelUsername(slackEntity.getChannelUsername());

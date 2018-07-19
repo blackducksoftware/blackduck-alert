@@ -65,7 +65,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), new Long(0));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.getStringValue(digestModel), new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 
