@@ -28,27 +28,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.model.AboutModel;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.web.actions.AboutActions;
 import com.blackducksoftware.integration.alert.web.model.AboutRestModel;
-import com.google.gson.Gson;
 
 @Component
 public class AboutHandler extends ControllerHandler {
     private final AboutActions aboutActions;
-    private final Gson gson;
 
     @Autowired
-    public AboutHandler(final ContentConverter contentConverter, final Gson gson, final AboutActions aboutActions) {
+    public AboutHandler(final ContentConverter contentConverter, final AboutActions aboutActions) {
         super(contentConverter);
         this.aboutActions = aboutActions;
-        this.gson = gson;
     }
 
     public ResponseEntity<String> getAboutData() {
         final AboutModel model = aboutActions.getAboutModel();
         final AboutRestModel restModel = new AboutRestModel(model.getVersion(), model.getDescription(), model.getProjectUrl());
-        return new ResponseEntity<>(gson.toJson(restModel), HttpStatus.OK);
+        return new ResponseEntity<>(getContentConverter().getJsonString(restModel), HttpStatus.OK);
     }
 }

@@ -19,21 +19,24 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.VulnerabilityRepository;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryActions;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.google.gson.Gson;
 
 public class AuditEntryActionsTest {
     private OutputLogger outputLogger;
@@ -111,7 +114,7 @@ public class AuditEntryActionsTest {
         final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
         final MockNotificationEntity mockNotificationEntity = new MockNotificationEntity();
         final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
-        final ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         Mockito.when(commonDistributionRepository.findAll()).thenReturn(Arrays.asList(mockCommonDistributionEntity.createEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
@@ -152,7 +155,7 @@ public class AuditEntryActionsTest {
         final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
         final MockNotificationEntity mockNotificationEntity = new MockNotificationEntity();
         final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
-        final ContentConverter contentConverter = new ContentConverter(new DefaultConversionService());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         Mockito.when(commonDistributionRepository.findAll()).thenReturn(Arrays.asList(mockCommonDistributionEntity.createEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));

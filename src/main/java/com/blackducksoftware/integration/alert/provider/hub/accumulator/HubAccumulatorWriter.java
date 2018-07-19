@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.event.AlertEvent;
-import com.blackducksoftware.integration.alert.event.InternalEventTypes;
-import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.model.NotificationModels;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.enumeration.InternalEventTypes;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
+import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Transactional
 public class HubAccumulatorWriter implements ItemWriter<AlertEvent> {

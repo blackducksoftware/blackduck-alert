@@ -17,9 +17,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.email.model.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 

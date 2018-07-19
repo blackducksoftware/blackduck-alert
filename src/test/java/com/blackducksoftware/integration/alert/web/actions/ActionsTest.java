@@ -28,16 +28,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.DistributionChannelConfigEntity;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.actions.DistributionConfigActions;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
 
 public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, W extends JpaRepository<E, Long>, DCA extends DistributionConfigActions<E, R, W>> {
@@ -169,17 +167,13 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
             assertEquals("test", e.getMessage());
         }
 
-        final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
-        Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
+        configActions = getMockedConfigActions();
 
         actualConfigEntity = configActions.saveConfig(getRestMockUtil().createRestModel());
         assertNull(actualConfigEntity);
     }
 
     public abstract Class<E> getConfigEntityClass();
-
-    public abstract DCA createMockedConfigActionsUsingObjectTransformer(ObjectTransformer objectTransformer);
 
     @Test
     public void testIsBoolean() {

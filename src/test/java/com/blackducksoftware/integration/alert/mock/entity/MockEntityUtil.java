@@ -15,7 +15,7 @@ import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockUtils;
 
 public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUtils {

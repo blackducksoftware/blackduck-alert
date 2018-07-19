@@ -11,7 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.google.gson.JsonObject;
 

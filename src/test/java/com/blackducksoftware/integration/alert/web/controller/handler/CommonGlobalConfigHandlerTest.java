@@ -18,24 +18,26 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.provider.hub.controller.global.GlobalHubConfigActions;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
-import com.blackducksoftware.integration.alert.web.controller.handler.CommonGlobalConfigHandler;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.google.gson.Gson;
 
 public class CommonGlobalConfigHandlerTest {
-    private final ObjectTransformer objectTransformer = new ObjectTransformer();
 
     @Test
     public void postConfigWhenAlreadyExistsTest() {
         final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
-                objectTransformer);
+                contentConverter);
 
         final GlobalHubRepository repository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(configActions.getRepository()).thenReturn(repository);
@@ -48,8 +50,10 @@ public class CommonGlobalConfigHandlerTest {
     @Test
     public void postConfigWhenDoesNotExistsTest() {
         final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final CommonGlobalConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> handler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions,
-                objectTransformer);
+                contentConverter);
 
         final GlobalHubRepository repository = Mockito.mock(GlobalHubRepository.class);
         Mockito.when(configActions.getRepository()).thenReturn(repository);

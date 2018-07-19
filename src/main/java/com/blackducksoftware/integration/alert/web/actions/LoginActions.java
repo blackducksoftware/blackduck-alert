@@ -41,7 +41,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.RoleAssignmentView;

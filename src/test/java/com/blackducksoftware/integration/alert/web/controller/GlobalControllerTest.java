@@ -32,7 +32,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;

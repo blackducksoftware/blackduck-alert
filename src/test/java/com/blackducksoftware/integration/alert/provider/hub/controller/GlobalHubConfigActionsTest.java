@@ -28,17 +28,17 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.provider.hub.controller.global.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigValidator;
@@ -53,16 +53,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final GlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository);
 
-        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
-        return configActions;
-    }
-
-    @Override
-    public GlobalHubConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository);
-
-        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new HubContentConverter(contentConverter));
         return configActions;
     }
 
@@ -81,9 +72,9 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository);
         globalProperties.setHubTrustCertificate(null);
         globalProperties.setHubUrl(null);
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
-        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, objectTransformer);
-        final GlobalHubConfigRestModel defaultRestModel = objectTransformer.databaseEntityToConfigRestModel(databaseEntity, GlobalHubConfigRestModel.class);
+        final HubContentConverter hubContentConverter = new HubContentConverter(contentConverter);
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, hubContentConverter);
+        final GlobalHubConfigRestModel defaultRestModel = (GlobalHubConfigRestModel) hubContentConverter.populateRestModelFromDatabaseEntity(databaseEntity);
         final GlobalHubConfigRestModel maskedRestModel = configActions.maskRestModel(defaultRestModel);
         List<GlobalHubConfigRestModel> globalConfigsById = configActions.getConfig(1L);
         List<GlobalHubConfigRestModel> allGlobalConfigs = configActions.getConfig(null);
@@ -128,7 +119,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository);
-        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
+        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new HubContentConverter(contentConverter));
 
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
@@ -171,7 +162,7 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
         final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository);
-        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new ObjectTransformer());
+        GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new HubContentConverter(contentConverter));
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
             @Override

@@ -4,13 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
-import com.blackducksoftware.integration.alert.channel.slack.SlackDescriptor;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionRestModel;
-import com.blackducksoftware.integration.alert.datasource.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
 
 public class SlackChannelManagerTestIT extends ChannelManagerTest<SlackDistributionRestModel, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
 

@@ -34,16 +34,17 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.ObjectTransformer;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
-import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
-import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.datasource.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.enumeration.StatusEnum;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
+import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
+import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -55,7 +56,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class CommonDistributionConfigActionsTestIT {
-    private final ObjectTransformer objectTransformer = new ObjectTransformer();
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
     @Autowired
@@ -66,6 +66,8 @@ public class CommonDistributionConfigActionsTestIT {
     private ConfiguredProjectsActions configuredProjectsActions;
     @Autowired
     private NotificationTypesActions notificationTypesActions;
+    @Autowired
+    private ContentConverter contentConverter;
 
     @Before
     public void cleanup() {
@@ -86,12 +88,14 @@ public class CommonDistributionConfigActionsTestIT {
         final List<String> projectList = Arrays.asList("Project 1", "Project 2", "Project 3");
         final List<String> notificationTypeList = Arrays.asList("POLICY_VIOLATION", "VULNERABILITY");
         final Date lastRan = new Date(System.currentTimeMillis());
-        final StatusEnum status = StatusEnum.SUCCESS;
+        final AuditEntryStatus status = AuditEntryStatus.SUCCESS;
 
         auditEntryRepository.save(new AuditEntryEntity(new Long(-1), lastRan, lastRan, status, "", ""));
 
         final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
-        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions, objectTransformer,
+        final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
+        final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions,
+                commonDistributionContentConverter,
                 auditNotificationRepository);
 
         final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
@@ -104,7 +108,7 @@ public class CommonDistributionConfigActionsTestIT {
         assertEquals(notificationTypeList.size(), notificationTypesActions.getDistributionNotificationTypeRepository().count());
         assertEquals(notificationTypeList.size(), notificationTypesActions.getNotificationTypeRepository().count());
 
-        final CommonDistributionConfigRestModel updatedRestModel = objectTransformer.databaseEntityToConfigRestModel(savedEntity, CommonDistributionConfigRestModel.class);
+        final CommonDistributionConfigRestModel updatedRestModel = (CommonDistributionConfigRestModel) commonDistributionContentConverter.populateRestModelFromDatabaseEntity(savedEntity);
         commonDistributionConfigActions.saveConfig(updatedRestModel);
         assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
         assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
@@ -115,10 +119,10 @@ public class CommonDistributionConfigActionsTestIT {
         assertEquals(1, foundRestModels.size());
         final CommonDistributionConfigRestModel foundRestModel = foundRestModels.get(0);
 
-        assertEquals(savedEntity.getId(), objectTransformer.stringToLong(foundRestModel.getId()));
-        assertEquals(savedEntity.getDistributionConfigId(), objectTransformer.stringToLong(foundRestModel.getDistributionConfigId()));
+        assertEquals(savedEntity.getId(), contentConverter.getLongValue(foundRestModel.getId()));
+        assertEquals(savedEntity.getDistributionConfigId(), contentConverter.getLongValue(foundRestModel.getDistributionConfigId()));
         assertEquals(savedEntity.getDistributionType(), foundRestModel.getDistributionType());
-        assertEquals(savedEntity.getFilterByProject(), objectTransformer.stringToBoolean(foundRestModel.getFilterByProject()));
+        assertEquals(savedEntity.getFilterByProject(), contentConverter.getBooleanValue(foundRestModel.getFilterByProject()));
         assertEquals(projectList, foundRestModel.getConfiguredProjects());
     }
 

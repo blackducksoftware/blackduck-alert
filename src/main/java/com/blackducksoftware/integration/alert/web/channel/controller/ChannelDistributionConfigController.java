@@ -32,9 +32,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.alert.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
 import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;

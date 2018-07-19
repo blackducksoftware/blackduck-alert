@@ -36,9 +36,9 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.LoginActions;
+import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.log.IntLogger;

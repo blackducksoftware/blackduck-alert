@@ -9,16 +9,17 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
-import com.blackducksoftware.integration.alert.ContentConverter;
-import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.exception.AlertException;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.exception.AlertException;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
-import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.google.gson.Gson;
 
 // TODO Make these tests more useful once provider descriptors are fully implemented
@@ -58,7 +59,7 @@ public class HubDescriptorTest {
     @Test
     public void testTransformerCalls() throws AlertException {
         final Gson gson = new Gson();
-        final ContentConverter contentConverter = new ContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final HubContentConverter hubContentConverter = new HubContentConverter(contentConverter);
 
         final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null);

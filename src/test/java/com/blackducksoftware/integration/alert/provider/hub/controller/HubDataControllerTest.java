@@ -17,8 +17,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataController;
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataHandler;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubDataController;
+import com.blackducksoftware.integration.alert.web.provider.hub.HubDataHandler;
 
 public class HubDataControllerTest {
 

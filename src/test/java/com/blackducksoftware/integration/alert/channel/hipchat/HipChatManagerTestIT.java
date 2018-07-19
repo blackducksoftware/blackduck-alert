@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
-import com.blackducksoftware.integration.alert.channel.hipchat.HipChatDescriptor;
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatGlobalRepository;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRepository;
-import com.blackducksoftware.integration.alert.channel.hipchat.model.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.alert.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
 
 public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
 

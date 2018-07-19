@@ -15,8 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
-import com.blackducksoftware.integration.alert.channel.slack.model.SlackDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.EntityTest;
+import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.EntityTest;
 
 public class SlackConfigEntityTest extends EntityTest<SlackDistributionConfigEntity> {
 
