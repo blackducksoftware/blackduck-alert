@@ -69,7 +69,7 @@ public class HubAccumulatorWriter implements ItemWriter<AlertEvent> {
                             notificationManager.saveNotification(notification);
                             entityList.add(notification);
                         });
-                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
+                        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getStringValue(notificationModels));
                         channelTemplateManager.sendEvent(realTimeEvent);
                     }
                 }

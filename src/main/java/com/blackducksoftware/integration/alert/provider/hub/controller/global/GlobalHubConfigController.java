@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
@@ -46,8 +46,8 @@ public class GlobalHubConfigController extends GlobalConfigController<GlobalHubC
     private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> commonConfigHandler;
 
     @Autowired
-    public GlobalHubConfigController(final GlobalHubConfigActions configActions, final ObjectTransformer objectTransformer) {
-        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions, objectTransformer);
+    public GlobalHubConfigController(final GlobalHubConfigActions configActions, final ContentConverter contentConverter) {
+        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions, contentConverter);
     }
 
     @Override

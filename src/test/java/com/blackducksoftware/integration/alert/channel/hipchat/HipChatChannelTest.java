@@ -61,7 +61,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final Collection<ProjectData> data = createProjectData("Integration test project");
         final DigestModel digestModel = new DigestModel(data);
-        final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), null);
+        final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.getStringValue(digestModel), null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";

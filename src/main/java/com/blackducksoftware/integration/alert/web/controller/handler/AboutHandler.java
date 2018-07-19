@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.model.AboutModel;
 import com.blackducksoftware.integration.alert.web.actions.AboutActions;
 import com.blackducksoftware.integration.alert.web.model.AboutRestModel;
@@ -40,8 +40,8 @@ public class AboutHandler extends ControllerHandler {
     private final Gson gson;
 
     @Autowired
-    public AboutHandler(final ObjectTransformer objectTransformer, final Gson gson, final AboutActions aboutActions) {
-        super(objectTransformer);
+    public AboutHandler(final ContentConverter contentConverter, final Gson gson, final AboutActions aboutActions) {
+        super(contentConverter);
         this.aboutActions = aboutActions;
         this.gson = gson;
     }

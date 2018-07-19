@@ -27,7 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.datasource.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
@@ -36,8 +36,8 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 
-    public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ObjectTransformer objectTransformer) {
-        super(databaseEntityClass, configRestModelClass, configActions, objectTransformer);
+    public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
+        super(databaseEntityClass, configRestModelClass, configActions, contentConverter);
         this.databaseEntityClass = databaseEntityClass;
     }
 

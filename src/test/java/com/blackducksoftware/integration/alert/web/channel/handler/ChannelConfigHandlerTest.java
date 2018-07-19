@@ -106,7 +106,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel, descriptor);
@@ -174,7 +174,7 @@ public class ChannelConfigHandlerTest {
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel, descriptor);
@@ -265,7 +265,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
 
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel, descriptor);
@@ -301,7 +301,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
         final int responseCode = HttpStatus.BAD_GATEWAY.value();
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", ""));
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.testConfig(restModel, descriptor);
@@ -316,7 +316,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.testConfig(restModel, descriptor);
@@ -331,7 +331,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
-        Mockito.when(configActions.getObjectTransformer()).thenReturn(objectTransformer);
+        Mockito.when(configActions.getContentConverter()).thenReturn(objectTransformer);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.testConfig(restModel, descriptor);

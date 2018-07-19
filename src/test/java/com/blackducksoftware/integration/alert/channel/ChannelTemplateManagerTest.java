@@ -46,7 +46,7 @@ public class ChannelTemplateManagerTest {
 
         final ProjectData projectData = new ProjectData(DigestTypeEnum.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
-        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.getStringValue(digestModel), 1L);
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 

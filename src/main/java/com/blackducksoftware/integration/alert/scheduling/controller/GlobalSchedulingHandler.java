@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.scheduling.controller;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.ContentConverter;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigRestModel;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
@@ -32,7 +32,7 @@ import com.blackducksoftware.integration.alert.web.controller.handler.CommonConf
 public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
 
     public GlobalSchedulingHandler(final Class<GlobalSchedulingConfigEntity> databaseEntityClass, final Class<GlobalSchedulingConfigRestModel> configRestModelClass, final GlobalSchedulingConfigActions configActions,
-            final ObjectTransformer objectTransformer) {
-        super(databaseEntityClass, configRestModelClass, configActions, objectTransformer);
+            final ContentConverter contentConverter) {
+        super(databaseEntityClass, configRestModelClass, configActions, contentConverter);
     }
 }
