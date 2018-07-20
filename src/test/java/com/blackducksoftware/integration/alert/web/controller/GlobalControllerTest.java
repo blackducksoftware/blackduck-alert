@@ -50,13 +50,10 @@ import com.google.gson.Gson;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends ConfigRestModel, CR extends JpaRepository<GE, Long>> {
 
+    protected final TestProperties testProperties = new TestProperties();
+    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     protected WebApplicationContext webApplicationContext;
-
-    protected final TestProperties testProperties = new TestProperties();
-
-    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
-
     protected MockMvc mockMvc;
 
     protected Gson gson;
@@ -102,7 +99,10 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+        ;
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -110,7 +110,10 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
         globalEntityRepository.deleteAll();
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+        ;
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
@@ -121,7 +124,10 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     public void testPutConfig() throws Exception {
         globalEntityRepository.deleteAll();
         final GE savedEntity = globalEntityRepository.save(entity);
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+        ;
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -133,7 +139,9 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     public void testDeleteConfig() throws Exception {
         globalEntityRepository.deleteAll();
         final GE savedEntity = globalEntityRepository.save(entity);
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -144,7 +152,10 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+        ;
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
@@ -154,7 +165,10 @@ public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends
     @WithMockUser(roles = "ADMIN")
     public void testValidateConfig() throws Exception {
         final String testRestUrl = restUrl + "/validate";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+        ;
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
