@@ -51,7 +51,9 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         globalEntityRepository.deleteAll();
         final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
         final String testRestUrl = restUrl + "/test";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);

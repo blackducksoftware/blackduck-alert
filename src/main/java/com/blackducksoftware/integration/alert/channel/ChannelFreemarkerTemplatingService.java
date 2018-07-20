@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
-import com.blackducksoftware.integration.alert.channel.email.EmailProperties;
+import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -88,7 +88,7 @@ public class ChannelFreemarkerTemplatingService {
     }
 
     public String getResolvedSubjectLine(final Map<String, Object> model) throws IOException, TemplateException {
-        String subjectLine = (String) model.get(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE);
+        String subjectLine = (String) model.get(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey());
         if (StringUtils.isBlank(subjectLine)) {
             subjectLine = "Default Subject Line - please define one";
         }

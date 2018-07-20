@@ -45,6 +45,7 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
@@ -98,15 +99,15 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             }
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put(EmailProperties.TEMPLATE_KEY_SUBJECT_LINE, subjectLine);
-            model.put(EmailProperties.TEMPLATE_KEY_EMAIL_CATEGORY, data.iterator().next().getDigestType().getDisplayName());
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_SERVER_URL, StringUtils.trimToEmpty(getGlobalProperties().getHubUrl()));
-            model.put(EmailProperties.TEMPLATE_KEY_HUB_GROUP_NAME, hubGroupName);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_EMAIL_CATEGORY.getPropertyKey(), data.iterator().next().getDigestType().getDisplayName());
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(getGlobalProperties().getHubUrl()));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_GROUP_NAME.getPropertyKey(), hubGroupName);
 
-            model.put(EmailProperties.TEMPLATE_KEY_TOPIC, data);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_TOPIC.getPropertyKey(), data);
 
-            model.put(EmailProperties.TEMPLATE_KEY_START_DATE, String.valueOf(System.currentTimeMillis()));
-            model.put(EmailProperties.TEMPLATE_KEY_END_DATE, String.valueOf(System.currentTimeMillis()));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
             for (final String emailAddress : emailAddresses) {
                 final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
