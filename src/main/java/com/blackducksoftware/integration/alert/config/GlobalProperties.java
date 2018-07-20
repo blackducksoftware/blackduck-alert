@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
@@ -50,7 +51,6 @@ import com.google.gson.Gson;
 public class GlobalProperties {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepository globalHubRepository;
-    private final AlertEnvironment alertEnvironment;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -99,9 +99,8 @@ public class GlobalProperties {
     private AboutModel aboutModel;
 
     @Autowired
-    public GlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalRepository, final Gson gson) {
+    public GlobalProperties(final GlobalHubRepository globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
-        this.alertEnvironment = alertEnvironment;
         readAboutInformation(gson);
     }
 
@@ -127,8 +126,12 @@ public class GlobalProperties {
         return aboutModel;
     }
 
+    public String getEnvironmentVariable(final AlertEnvironment alertEnvironment) {
+        return getEnvironmentVariable(alertEnvironment.getVariableName());
+    }
+
     public String getEnvironmentVariable(final String variableName) {
-        return alertEnvironment.getVariable(variableName);
+        return System.getenv(variableName);
     }
 
     public String getHubUrl() {
@@ -140,7 +143,7 @@ public class GlobalProperties {
     }
 
     public Boolean getHubTrustCertificate() {
-        final String alwaysTrust = alertEnvironment.getVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
+        final String alwaysTrust = getEnvironmentVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
         if (StringUtils.isNotBlank(alwaysTrust)) {
             return Boolean.parseBoolean(alwaysTrust);
         }
@@ -152,7 +155,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyHost() {
-        final String proxyHost = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_HOST);
+        final String proxyHost = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_HOST);
         if (StringUtils.isEmpty(proxyHost)) {
             return hubProxyHost;
         } else {
@@ -165,7 +168,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyPort() {
-        final String proxyPort = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PORT);
+        final String proxyPort = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PORT);
         if (StringUtils.isEmpty(proxyPort)) {
             return hubProxyPort;
         } else {
@@ -178,7 +181,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyUsername() {
-        final String proxyUser = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_USER);
+        final String proxyUser = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_USER);
         if (StringUtils.isEmpty(proxyUser)) {
             return hubProxyUsername;
         } else {
@@ -191,7 +194,7 @@ public class GlobalProperties {
     }
 
     public String getHubProxyPassword() {
-        final String proxyPassword = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
+        final String proxyPassword = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
         if (StringUtils.isEmpty(proxyPassword)) {
             return hubProxyPassword;
         } else {

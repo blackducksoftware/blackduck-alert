@@ -65,7 +65,9 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         final String testRestUrl = restUrl + "/test";
         globalProperties.setHubUrl(hubUrl);
         globalProperties.setHubTrustCertificate(Boolean.valueOf(alwaysTrust));
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel(null, hubUrl, String.valueOf(timeout), apiKey, false, null, null, null, null, false, "true");
         request.content(gson.toJson(hubRestModel));
         request.contentType(contentType);

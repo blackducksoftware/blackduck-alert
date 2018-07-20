@@ -11,8 +11,8 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
@@ -104,11 +104,12 @@ public class StartupManagerTest {
 
     @Test
     public void testValidateHubProviderHubWebserverEnvironmentSet() throws IOException {
-        final AlertEnvironment alertEnvironment = Mockito.mock(AlertEnvironment.class);
-        Mockito.when(alertEnvironment.getVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST)).thenReturn("localhost");
-        final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(alertEnvironment, Mockito.mock(GlobalHubRepository.class));
-        testGlobalProperties.setHubUrl("https://localhost:443");
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(Mockito.mock(GlobalHubRepository.class));
+        final TestGlobalProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
+        spiedGlobalProperties.setHubUrl("https://localhost:443");
+
+        Mockito.doReturn("localhost").when(spiedGlobalProperties).getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST.getVariableName());
+        final StartupManager startupManager = new StartupManager(null, spiedGlobalProperties, null, null, null, null, null);
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
         assertTrue(outputLogger.isLineContainingText("Hub Provider Using localhost..."));

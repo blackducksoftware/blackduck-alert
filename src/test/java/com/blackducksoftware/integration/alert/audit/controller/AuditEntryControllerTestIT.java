@@ -93,7 +93,9 @@ public class AuditEntryControllerTestIT {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -103,7 +105,9 @@ public class AuditEntryControllerTestIT {
         AuditEntryEntity entity = mockAuditEntity.createEntity();
         entity = auditEntryRepository.save(entity);
         final String getUrl = auditUrl + "/" + String.valueOf(entity.getId());
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -120,7 +124,9 @@ public class AuditEntryControllerTestIT {
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
         final String resendUrl = auditUrl + "/" + String.valueOf(auditEntity.getId()) + "/" + "/resend";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

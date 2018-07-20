@@ -43,7 +43,9 @@ public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<Ema
     @Override
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().is5xxServerError());

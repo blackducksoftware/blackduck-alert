@@ -42,8 +42,8 @@ import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChan
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;

@@ -35,7 +35,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -84,7 +83,9 @@ public class HomeControllerTestIT {
     public void testVerifyNoToken() throws Exception {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -92,14 +93,18 @@ public class HomeControllerTestIT {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testVerifyMissingCSRFToken() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testVerifyNullStringCSRFToken() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
         request.headers(headers);

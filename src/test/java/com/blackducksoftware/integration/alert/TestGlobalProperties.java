@@ -15,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
@@ -32,15 +31,15 @@ public class TestGlobalProperties extends GlobalProperties {
     private String productVersionOverride;
 
     public TestGlobalProperties() {
-        this(new AlertEnvironment(), Mockito.mock(GlobalHubRepository.class));
+        this(Mockito.mock(GlobalHubRepository.class));
     }
 
-    public TestGlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalHubRepository) {
-        this(alertEnvironment, globalHubRepository, 400);
+    public TestGlobalProperties(final GlobalHubRepository globalHubRepository) {
+        this(globalHubRepository, 400);
     }
 
-    public TestGlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalHubRepository, final Integer hubTimeout) {
-        super(alertEnvironment, globalHubRepository, new Gson());
+    public TestGlobalProperties(final GlobalHubRepository globalHubRepository, final Integer hubTimeout) {
+        super(globalHubRepository, new Gson());
         this.hubTimeout = hubTimeout;
 
         testProperties = new TestProperties();
@@ -49,13 +48,13 @@ public class TestGlobalProperties extends GlobalProperties {
         setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
     }
 
-    public void setHubTimeout(final Integer hubTimeout) {
-        this.hubTimeout = hubTimeout;
-    }
-
     @Override
     public Integer getHubTimeout() {
         return hubTimeout;
+    }
+
+    public void setHubTimeout(final Integer hubTimeout) {
+        this.hubTimeout = hubTimeout;
     }
 
     @Override
