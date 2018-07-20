@@ -33,7 +33,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, globalRepository);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
         globalProperties.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
