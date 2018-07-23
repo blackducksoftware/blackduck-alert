@@ -99,9 +99,13 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             }
 
             final HashMap<String, Object> model = new HashMap<>();
+
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_EMAIL_CATEGORY.getPropertyKey(), data.iterator().next().getDigestType().getDisplayName());
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(getGlobalProperties().getHubUrl()));
+            Optional<String> optionalHubUrl = getGlobalProperties().getHubUrl();
+            if (optionalHubUrl.isPresent()) {
+                model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalHubUrl.get()));
+            }
             model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_GROUP_NAME.getPropertyKey(), hubGroupName);
 
             model.put(EmailPropertyKeys.TEMPLATE_KEY_TOPIC.getPropertyKey(), data);
@@ -121,25 +125,29 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
-        try (final RestConnection restConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection);
-                final UserGroupService groupService = hubServicesFactory.createUserGroupService();
-                final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
+        Optional<RestConnection> optionalRestConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalRestConnection.get()) {
+                if (restConnection != null) {
+                    final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection);
+                    final UserGroupService groupService = hubServicesFactory.createUserGroupService();
+                    final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
 
-                if (userGroupView == null) {
-                    throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+                    if (userGroupView == null) {
+                        throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+                    }
+
+                    logger.debug("Current user groups {}", userGroupView.toString());
+
+                    final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
+                    return users.stream().map(user -> user.email).collect(Collectors.toList());
                 }
-
-                logger.debug("Current user groups {}", userGroupView.toString());
-
-                final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
-                return users.stream().map(user -> user.email).collect(Collectors.toList());
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
             }
-        } catch (final IOException e) {
-            logger.error(e.getMessage(), e);
+        } else {
+            logger.warn("Could not get the email addresses for this group, could not create the connection.");
         }
-
         return Collections.emptyList();
     }
 

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,9 @@ public class HubDataActions {
     }
 
     public List<HubGroup> getHubGroups() throws IntegrationException {
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
+        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
@@ -64,19 +66,19 @@ public class HubDataActions {
                     groups.add(hubGroup);
                 }
                 return groups;
-            } else {
-                throw new AlertException("Missing global configuration.");
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
             }
-        } catch (final IOException e) {
-            logger.error(e.getMessage(), e);
+        } else {
+            throw new AlertException("Missing global configuration.");
         }
-
         return Collections.emptyList();
     }
 
     public List<HubProject> getHubProjects() throws IntegrationException {
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
+        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
 
@@ -86,13 +88,12 @@ public class HubDataActions {
                     projects.add(project);
                 }
                 return projects;
-            } else {
-                throw new AlertException("Missing global configuration.");
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
             }
-        } catch (final IOException e) {
-            logger.error(e.getMessage(), e);
+        } else {
+            throw new AlertException("Missing global configuration.");
         }
-
         return Collections.emptyList();
     }
 

@@ -11,7 +11,9 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -62,7 +64,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), new Long(0));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), new Long(0));
 
         slackChannel.sendAuditedMessage(event, config);
 

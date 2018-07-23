@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.alert.channel.rest;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,23 +68,8 @@ public class ChannelRestConnectionFactory {
             logger.error("URL WAS NULL");
             return null;
         }
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = globalProperties.createUnauthenticatedRestConnectionBuilder(intLogger, timeout);
         restConnectionBuilder.setBaseUrl(url.toString());
-        restConnectionBuilder.setLogger(intLogger);
-        if (globalProperties.getHubTrustCertificate() != null) {
-            restConnectionBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
-        }
-        restConnectionBuilder.setProxyHost(globalProperties.getHubProxyHost());
-        if (globalProperties.getHubProxyPort() != null) {
-            restConnectionBuilder.setProxyPort(NumberUtils.toInt(globalProperties.getHubProxyPort()));
-        }
-        if (globalProperties.getHubProxyUsername() != null) {
-            restConnectionBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        }
-        if (globalProperties.getHubProxyPassword() != null) {
-            restConnectionBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
-        }
-        restConnectionBuilder.setTimeout(timeout);
 
         final RestConnection connection = restConnectionBuilder.build();
         try {

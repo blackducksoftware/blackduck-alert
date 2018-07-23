@@ -50,7 +50,7 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {

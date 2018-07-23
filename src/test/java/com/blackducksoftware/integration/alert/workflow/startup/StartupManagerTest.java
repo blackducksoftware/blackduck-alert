@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.workflow.startup;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +41,7 @@ public class StartupManagerTest {
     public void testLogConfiguration() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
-        Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn("not_blank_data");
+        Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn(Optional.of("not_blank_data"));
         final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null);
 
         startupManager.logConfiguration();

@@ -26,18 +26,18 @@ package com.blackducksoftware.integration.alert.web.controller.handler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 
 public abstract class ControllerHandler {
-    private final ObjectTransformer objectTransformer;
+    private final ContentConverter contentConverter;
 
-    public ControllerHandler(final ObjectTransformer objectTransformer) {
-        this.objectTransformer = objectTransformer;
+    public ControllerHandler(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
-    public ObjectTransformer getObjectTransformer() {
-        return objectTransformer;
+    public ContentConverter getContentConverter() {
+        return contentConverter;
     }
 
     public ResponseEntity<String> doNotAllowHttpMethod() {
@@ -45,7 +45,7 @@ public abstract class ControllerHandler {
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
-        return createResponse(status, objectTransformer.stringToLong(id), message);
+        return createResponse(status, contentConverter.getLongValue(id), message);
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {

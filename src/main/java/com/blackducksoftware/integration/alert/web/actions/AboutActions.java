@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.web.actions;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +40,7 @@ public class AboutActions {
         this.globalProperties = globalProperties;
     }
 
-    public AboutModel getAboutModel() {
+    public Optional<AboutModel> getAboutModel() {
         return globalProperties.getAboutModel();
     }
 

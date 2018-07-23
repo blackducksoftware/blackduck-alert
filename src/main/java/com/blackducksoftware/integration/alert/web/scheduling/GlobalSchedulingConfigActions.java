@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
@@ -53,8 +52,8 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
     @Autowired
     public GlobalSchedulingConfigActions(final NotificationAccumulator blackDuckAccumulator, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
-            final ObjectTransformer objectTransformer) {
-        super(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, repository, objectTransformer);
+            final GlobalSchedulingContentConverter contentConverter) {
+        super(repository, contentConverter);
         this.blackDuckAccumulator = blackDuckAccumulator;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
@@ -76,7 +75,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         }
         final GlobalSchedulingConfigRestModel restModel;
         if (databaseEntity != null) {
-            restModel = getObjectTransformer().databaseEntityToConfigRestModel(databaseEntity, getConfigRestModelClass());
+            restModel = (GlobalSchedulingConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
             restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
             restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
         } else {

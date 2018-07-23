@@ -8,6 +8,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
@@ -30,12 +31,12 @@ public class RealTimeListenerTest {
         final NotificationModel model = new NotificationModel(notificationEntity.createEntity(), Collections.emptyList());
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
-        final ContentConverter contentConverter = new ContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
         Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
         final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, eventManager, contentConverter);
 
-        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(Arrays.asList(model)));
+        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(Arrays.asList(model)));
         realTimeListener.handleEvent(realTimeEvent);
     }
 
@@ -48,14 +49,14 @@ public class RealTimeListenerTest {
             final NotificationModels model = new NotificationModels(Arrays.asList(notificationModel));
             final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
             final NotificationEventManager eventManager = Mockito.mock(NotificationEventManager.class);
-            final ContentConverter contentConverter = new ContentConverter(gson);
+            final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
             Mockito.doNothing().when(channelTemplateManager).sendEvents(Mockito.any());
             Mockito.doThrow(new NullPointerException("null error")).when(eventManager).createChannelEvents(Mockito.any(), Mockito.anyList());
 
             final RealTimeListener realTimeListener = new RealTimeListener(gson, channelTemplateManager, eventManager, contentConverter);
 
-            final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(model));
+            final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(model));
             realTimeListener.handleEvent(realTimeEvent);
 
             assertTrue(outputLogger.isLineContainingText("null"));

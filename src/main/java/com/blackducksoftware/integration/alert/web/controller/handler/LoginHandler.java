@@ -36,7 +36,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.LoginActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
@@ -52,8 +52,8 @@ public class LoginHandler extends ControllerHandler {
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public LoginHandler(final ObjectTransformer objectTransformer, final LoginActions loginActions, final HttpSessionCsrfTokenRepository csrfTokenRepository) {
-        super(objectTransformer);
+    public LoginHandler(final ContentConverter contentConverter, final LoginActions loginActions, final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        super(contentConverter);
         this.loginActions = loginActions;
         this.csrfTokenRepository = csrfTokenRepository;
     }
