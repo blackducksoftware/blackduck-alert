@@ -2,6 +2,8 @@ package com.blackducksoftware.integration.alert.web.controller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Optional;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
@@ -28,7 +30,7 @@ public class AboutControllerTest {
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 
-        Mockito.when(aboutActions.getAboutModel()).thenReturn(model);
+        Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
         final AboutController controller = new AboutController(aboutHandler);
         final ResponseEntity<String> response = controller.about();
 

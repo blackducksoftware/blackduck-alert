@@ -11,6 +11,8 @@
  */
 package com.blackducksoftware.integration.alert;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
@@ -58,8 +60,8 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public String getHubApiKey() {
-        return hubApiKey;
+    public Optional<String> getHubApiKey() {
+        return Optional.ofNullable(hubApiKey);
     }
 
     public void setHubApiKey(final String hubApiKey) {
@@ -80,15 +82,15 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
+    public Optional<RestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
         setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         setHubTrustCertificate(true);
         return super.createRestConnection(intLogger);
     }
 
     @Override
-    public GlobalHubConfigEntity getHubConfig() {
-        return new GlobalHubConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
+    public Optional<GlobalHubConfigEntity> getHubConfig() {
+        return Optional.of(new GlobalHubConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY)));
     }
 
     @Override
