@@ -50,6 +50,12 @@ public class AuditEntryController extends BaseController {
         return auditEntryHandler.get(pageNumber, pageSize);
     }
 
+    @GetMapping
+    public AlertPagedRestModel<AuditEntryRestModel> search(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "searchTerm", required = false) final String searchTerm) {
+        return auditEntryHandler.search(pageNumber, pageSize, searchTerm);
+    }
+
     @GetMapping(value = "/{id}")
     public AuditEntryRestModel get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);

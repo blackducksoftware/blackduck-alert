@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.audit;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +120,50 @@ public class AuditEntryActions {
             }
         }
         return null;
+    }
+
+    public AlertPagedRestModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
+        final List<AuditEntryRestModel> auditEntries = new ArrayList<AuditEntryRestModel>();
+        logger.debug("Audit entry search. PageNumber: {} PageSize: {} SearchTerm: {}", pageNumber, pageSize, searchTerm);
+        int totalPages = 1;
+        int responsePageNumber = 0;
+        if (pageSize != null) {
+            int currentPageNumber = 0;
+            Page<AuditEntryEntity> currentPage;
+            boolean mayHaveMoreEntries = true;
+            while (auditEntries.size() < pageSize && mayHaveMoreEntries) {
+                final PageRequest pageRequest = PageRequest.of(currentPageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
+                currentPage = auditEntryRepository.findAll(pageRequest);
+                if (totalPages == 0) {
+                    totalPages = currentPage.getTotalPages();
+                }
+                if (currentPageNumber >= totalPages) {
+                    mayHaveMoreEntries = false;
+                }
+                List<AuditEntryRestModel> currentPageRestModels = createRestModels(currentPage.getContent());
+                addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
+                currentPageNumber++;
+            }
+        } else {
+            final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
+            List<AuditEntryRestModel> currentPageRestModels = createRestModels(contentList);
+            addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
+        }
+        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, responsePageNumber, auditEntries.size(), auditEntries);
+        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
+        return pagedRestModel;
+    }
+
+    private void addMatchingModels(final List<AuditEntryRestModel> listToAddTo, final List<AuditEntryRestModel> modelsToCheck, final String searchTerm) {
+        for (AuditEntryRestModel restModel : modelsToCheck) {
+            if (StringUtils.isBlank(searchTerm)) {
+                listToAddTo.add(restModel);
+            } else if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+                listToAddTo.add(restModel);
+            } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
+                listToAddTo.add(restModel);
+            }
+        }
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException {
