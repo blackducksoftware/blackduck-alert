@@ -47,6 +47,7 @@ import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnectionBuilder;
+import com.blackducksoftware.integration.rest.proxy.ProxyInfoBuilder;
 import com.blackducksoftware.integration.util.ResourceUtil;
 import com.google.gson.Gson;
 
@@ -340,6 +341,23 @@ public class GlobalProperties {
         }
 
         return restConnectionBuilder;
+    }
+
+    public ProxyInfoBuilder createProxyInfoBuilder() {
+        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+        if (getHubProxyHost().isPresent()) {
+            proxyBuilder.setHost(getHubProxyHost().get());
+        }
+        if (getHubProxyPort().isPresent()) {
+            proxyBuilder.setPort(getHubProxyPort().get());
+        }
+        if (getHubProxyUsername().isPresent()) {
+            proxyBuilder.setUsername(getHubProxyUsername().get());
+        }
+        if (getHubProxyPassword().isPresent()) {
+            proxyBuilder.setPassword(getHubProxyPassword().get());
+        }
+        return proxyBuilder;
     }
 
     public Integer getHubTimeout() {

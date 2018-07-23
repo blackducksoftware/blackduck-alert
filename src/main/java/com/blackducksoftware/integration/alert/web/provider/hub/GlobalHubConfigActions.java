@@ -156,7 +156,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
         final HubServerConfigBuilder hubServerConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getHubTimeout()));
         hubServerConfigBuilder.setApiToken(apiToken);
-        
+
         validateHubConfiguration(hubServerConfigBuilder);
         try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
             restConnection.connect();

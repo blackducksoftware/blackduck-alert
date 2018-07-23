@@ -145,19 +145,7 @@ public class StartupManager {
         logger.info("Validating Hub Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-            if (globalProperties.getHubProxyHost().isPresent()) {
-                proxyBuilder.setHost(globalProperties.getHubProxyHost().get());
-            }
-            if (globalProperties.getHubProxyPort().isPresent()) {
-                proxyBuilder.setPort(globalProperties.getHubProxyPort().get());
-            }
-            if (globalProperties.getHubProxyUsername().isPresent()) {
-                proxyBuilder.setUsername(globalProperties.getHubProxyUsername().get());
-            }
-            if (globalProperties.getHubProxyPassword().isPresent()) {
-                proxyBuilder.setPassword(globalProperties.getHubProxyPassword().get());
-            }
+            final ProxyInfoBuilder proxyBuilder = globalProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
             if (globalProperties.getHubUrl() == null) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
