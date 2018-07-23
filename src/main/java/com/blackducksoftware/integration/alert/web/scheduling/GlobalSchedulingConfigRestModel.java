@@ -77,4 +77,12 @@ public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
         this.purgeDataNextRun = purgeDataNextRun;
     }
 
+    public void setDailyDigestHourOfDay(final String dailyDigestHourOfDay) {
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
+    }
+
+    public void setPurgeDataFrequencyDays(final String purgeDataFrequencyDays) {
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
+    }
+
 }

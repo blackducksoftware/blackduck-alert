@@ -1,6 +1,9 @@
 package com.blackducksoftware.integration.alert.provider.hub.accumulator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +13,7 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
@@ -39,7 +43,7 @@ public class AccumulatorProcessorTest {
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @Test
@@ -70,7 +74,7 @@ public class AccumulatorProcessorTest {
         final AlertEvent storeEvent = hubAccumulatorProcessor.process(notificationData);
 
         assertNotNull(storeEvent);
-        final Optional<NotificationModels> optionalModel = contentConverter.getContent(storeEvent.getContent(), NotificationModels.class);
+        final Optional<NotificationModels> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(storeEvent.getContent(), NotificationModels.class));
         final List<NotificationModel> notifications = optionalModel.get().getNotificationModelList();
 
         assertFalse(notifications.isEmpty());
@@ -99,7 +103,7 @@ public class AccumulatorProcessorTest {
 
         final AlertEvent storeEventNull = hubAccumulatorProcessor.process(notificationData);
         assertNotNull(storeEventNull);
-        final Optional<NotificationModels> optionalModel = contentConverter.getContent(storeEventNull.getContent(), NotificationModels.class);
+        final Optional<NotificationModels> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(storeEventNull.getContent(), NotificationModels.class));
         assertTrue(optionalModel.get().getNotificationModelList().isEmpty());
     }
 

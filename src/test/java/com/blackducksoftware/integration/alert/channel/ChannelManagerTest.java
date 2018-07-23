@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
@@ -21,7 +22,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
@@ -49,17 +49,15 @@ import com.google.gson.Gson;
 public abstract class ChannelManagerTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
     protected Gson gson;
     protected ContentConverter contentConverter;
-    protected ObjectTransformer objectTransformer;
     protected DistributionChannelManager channelManager;
     protected TestProperties properties;
 
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
-        objectTransformer = new ObjectTransformer();
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new DistributionChannelManager(objectTransformer, contentConverter);
+        channelManager = new DistributionChannelManager(contentConverter);
         cleanDistributionRepository();
         cleanGlobalRepository();
     }

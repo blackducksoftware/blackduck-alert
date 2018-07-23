@@ -36,8 +36,8 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
+import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
@@ -46,20 +46,16 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
 public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> {
-    private final Class<D> databaseEntityClass;
-    private final Class<R> configRestModelClass;
     private final W repository;
-    private final ObjectTransformer objectTransformer;
+    private final DatabaseContentConverter databaseContentConverter;
 
-    public ConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final W repository, final ObjectTransformer objectTransformer) {
-        this.databaseEntityClass = databaseEntityClass;
-        this.configRestModelClass = configRestModelClass;
+    public ConfigActions(final W repository, final DatabaseContentConverter databaseContentConverter) {
         this.repository = repository;
-        this.objectTransformer = objectTransformer;
+        this.databaseContentConverter = databaseContentConverter;
     }
 
     public boolean doesConfigExist(final String id) {
-        return doesConfigExist(objectTransformer.stringToLong(id));
+        return doesConfigExist(databaseContentConverter.getContentConverter().getLongValue(id));
     }
 
     public boolean doesConfigExist(final Long id) {
@@ -70,7 +66,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         if (id != null) {
             final Optional<D> foundEntity = repository.findById(id);
             if (foundEntity.isPresent()) {
-                final R restModel = objectTransformer.databaseEntityToConfigRestModel(foundEntity.get(), configRestModelClass);
+                final R restModel = (R) databaseContentConverter.populateRestModelFromDatabaseEntity(foundEntity.get());
                 if (restModel != null) {
                     final R maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -79,7 +75,10 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
             return Collections.emptyList();
         }
         final List<D> databaseEntities = repository.findAll();
-        final List<R> restModels = objectTransformer.databaseEntitiesToConfigRestModels(databaseEntities, configRestModelClass);
+        final List<R> restModels = new ArrayList<>(databaseEntities.size());
+        for (final D entity : databaseEntities) {
+            restModels.add((R) databaseContentConverter.populateRestModelFromDatabaseEntity(entity));
+        }
         return maskRestModels(restModels);
     }
 
@@ -123,7 +122,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     }
 
     public void deleteConfig(final String id) {
-        deleteConfig(objectTransformer.stringToLong(id));
+        deleteConfig(databaseContentConverter.getContentConverter().getLongValue(id));
     }
 
     public void deleteConfig(final Long id) {
@@ -134,7 +133,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
-            final Long longId = objectTransformer.stringToLong(id);
+            final Long longId = databaseContentConverter.getContentConverter().getLongValue(id);
             final Optional<D> savedConfig = repository.findById(longId);
             if (savedConfig.isPresent()) {
                 return updateNewConfigWithSavedConfig(newConfig, savedConfig.get());
@@ -178,7 +177,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
-                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
+                D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
@@ -194,7 +193,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
-                D createdEntity = objectTransformer.configRestModelToDatabaseEntity(restModel, databaseEntityClass);
+                D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -217,7 +216,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
-            final Long longId = objectTransformer.stringToLong(id);
+            final Long longId = databaseContentConverter.getContentConverter().getLongValue(id);
             final Optional<D> savedConfig = repository.findById(longId);
             if (savedConfig.isPresent()) {
                 return fillNewConfigWithSavedConfig(newConfig, savedConfig.get());
@@ -273,20 +272,12 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
     }
 
-    public Class<D> getDatabaseEntityClass() {
-        return databaseEntityClass;
-    }
-
-    public Class<R> getConfigRestModelClass() {
-        return configRestModelClass;
-    }
-
     public W getRepository() {
         return repository;
     }
 
-    public ObjectTransformer getObjectTransformer() {
-        return objectTransformer;
+    public DatabaseContentConverter getDatabaseContentConverter() {
+        return databaseContentConverter;
     }
 
 }

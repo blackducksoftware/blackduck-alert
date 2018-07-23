@@ -60,6 +60,6 @@ public class NotificationItemProcessor {
             });
         }
         final NotificationModels notificationModels = new NotificationModels(notificationModelList);
-        return new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
+        return new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.getJsonString(notificationModels));
     }
 }
