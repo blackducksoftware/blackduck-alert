@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.channel.email;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,21 +35,15 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class EmailDistributionContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
 
     @Autowired
     public EmailDistributionContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<EmailGroupDistributionRestModel> restModel = contentConverter.getContent(json, EmailGroupDistributionRestModel.class);
-        if (restModel.isPresent()) {
-            return restModel.get();
-        }
-
-        return null;
+        return getContentConverter().getJsonContent(json, EmailGroupDistributionRestModel.class);
     }
 
     @Override
@@ -66,7 +58,7 @@ public class EmailDistributionContentConverter extends DatabaseContentConverter 
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
         final EmailGroupDistributionRestModel emailRestModel = new EmailGroupDistributionRestModel();
-        final String id = contentConverter.convertToString(emailEntity.getId());
+        final String id = getContentConverter().getStringValue(emailEntity.getId());
         emailRestModel.setDistributionConfigId(id);
         emailRestModel.setGroupName(emailEntity.getGroupName());
         emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());

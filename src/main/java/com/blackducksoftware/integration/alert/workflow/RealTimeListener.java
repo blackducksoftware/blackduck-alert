@@ -62,7 +62,7 @@ public class RealTimeListener extends MessageReceiver<AlertEvent> {
     @Override
     public void handleEvent(final AlertEvent event) {
         try {
-            final Optional<NotificationModels> optionalModel = contentConverter.getContent(event.getContent(), NotificationModels.class);
+            final Optional<NotificationModels> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(event.getContent(), NotificationModels.class));
             if (optionalModel.isPresent()) {
                 final List<NotificationModel> notificationList = optionalModel.get().getNotificationModelList();
                 final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();

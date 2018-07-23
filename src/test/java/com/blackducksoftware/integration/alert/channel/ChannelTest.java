@@ -20,6 +20,7 @@ import java.util.HashMap;
 import org.assertj.core.util.Sets;
 import org.junit.After;
 import org.junit.Before;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestProperties;
@@ -42,7 +43,7 @@ public class ChannelTest {
         gson = new Gson();
         properties = new TestProperties();
         outputLogger = new OutputLogger();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @After
