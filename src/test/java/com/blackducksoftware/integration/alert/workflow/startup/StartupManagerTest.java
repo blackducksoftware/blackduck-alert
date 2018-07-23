@@ -12,12 +12,12 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.alert.provider.hub.accumulator.NotificationAccumulator;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
 
@@ -51,9 +51,9 @@ public class StartupManagerTest {
     public void testInitializeCronJobs() throws IOException {
         final PhoneHomeTask phoneHomeTask = Mockito.mock(PhoneHomeTask.class);
         Mockito.doNothing().when(phoneHomeTask).scheduleExecution(Mockito.anyString());
-        final AccumulatorConfig accumulatorConfig = Mockito.mock(AccumulatorConfig.class);
-        Mockito.doNothing().when(accumulatorConfig).scheduleExecution(Mockito.anyString());
-        Mockito.doReturn(1L).when(accumulatorConfig).getMillisecondsToNextRun();
+        final NotificationAccumulator mockedNotificationAccumulator = Mockito.mock(NotificationAccumulator.class);
+        Mockito.doNothing().when(mockedNotificationAccumulator).scheduleExecution(Mockito.anyString());
+        Mockito.doReturn(1L).when(mockedNotificationAccumulator).getMillisecondsToNextRun();
         final DailyDigestBatchConfig dailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         Mockito.doNothing().when(dailyDigestBatchConfig).scheduleExecution(Mockito.anyString());
         Mockito.doReturn("time").when(dailyDigestBatchConfig).getFormatedNextRunTime();
@@ -64,7 +64,7 @@ public class StartupManagerTest {
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null, null);
 
         startupManager.initializeCronJobs();
 

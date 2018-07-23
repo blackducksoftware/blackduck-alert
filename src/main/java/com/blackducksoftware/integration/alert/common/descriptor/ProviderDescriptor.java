@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
+import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 
 public abstract class ProviderDescriptor extends Descriptor {
@@ -31,4 +32,5 @@ public abstract class ProviderDescriptor extends Descriptor {
         super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
     }
 
+    public abstract Accumulator getAccumulator();
 }
