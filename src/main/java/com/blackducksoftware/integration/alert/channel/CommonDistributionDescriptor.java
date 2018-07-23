@@ -21,33 +21,56 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.hub;
+package com.blackducksoftware.integration.alert.channel;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import javax.jms.MessageListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class HubDescriptor extends ProviderDescriptor {
-    public static final String PROVIDER_NAME = "provider_hub";
-    private final EntityPropertyMapper entityPropertyMapper;
+public class CommonDistributionDescriptor extends ChannelDescriptor {
+    public static final String COMPONENT_NAME = "common";
 
     @Autowired
-    public HubDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
-            final EntityPropertyMapper entityPropertyMapper) {
-        super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor);
-        this.entityPropertyMapper = entityPropertyMapper;
+    public CommonDistributionDescriptor(final CommonDistributionContentConverter contentConverter, final CommonDistributionRepositoryAccessor repositoryAccessor) {
+        super(COMPONENT_NAME, COMPONENT_NAME, null, null, contentConverter, repositoryAccessor);
+    }
+
+    @Override
+    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
+    }
+
+    @Override
+    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+    }
+
+    @Override
+    public MessageListener getChannelListener() {
+        return null;
+    }
+
+    @Override
+    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+        return new HashSet<>();
+    }
+
+    @Override
+    public ConfigRestModel getGlobalRestModelObject() {
+        return null;
     }
 
     @Override
@@ -56,16 +79,6 @@ public class HubDescriptor extends ProviderDescriptor {
 
     @Override
     public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
-    }
-
-    @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
-        return entityPropertyMapper.mapEntityToProperties(getName(), GlobalHubConfigEntity.class);
-    }
-
-    @Override
-    public ConfigRestModel getGlobalRestModelObject() {
-        return new GlobalHubConfigRestModel();
     }
 
 }

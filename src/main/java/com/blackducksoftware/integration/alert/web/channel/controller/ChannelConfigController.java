@@ -41,7 +41,7 @@ public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
 
     @GetMapping
-    public abstract List<ConfigRestModel> getConfig(final Long id, final String descriptorName);
+    public abstract List<? extends ConfigRestModel> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
     public abstract ResponseEntity<String> postConfig(String restModel, final String descriptorName);

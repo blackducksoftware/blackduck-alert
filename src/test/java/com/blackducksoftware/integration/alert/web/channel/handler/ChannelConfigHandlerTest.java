@@ -39,7 +39,7 @@ public class ChannelConfigHandlerTest {
         final List<CommonDistributionConfigRestModel> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
         Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong(), Mockito.any());
 
-        final List<ConfigRestModel> list = handler.getConfig(1L, descriptor);
+        final List<? extends ConfigRestModel> list = handler.getConfig(1L, descriptor);
         assertEquals(restModel, list);
     }
 
@@ -52,7 +52,7 @@ public class ChannelConfigHandlerTest {
         Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException());
 
         Exception thrownException = null;
-        List<ConfigRestModel> list = null;
+        List<? extends ConfigRestModel> list = null;
         try {
             list = handler.getConfig(1L, descriptor);
         } catch (final Exception e) {
