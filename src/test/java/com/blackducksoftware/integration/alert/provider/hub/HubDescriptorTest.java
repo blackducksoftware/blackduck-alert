@@ -38,7 +38,7 @@ public class HubDescriptorTest {
         Mockito.doNothing().when(globalHubRepository).deleteById(Mockito.anyLong());
         final HubRepositoryAccessor hubRepositoryAccessor = new HubRepositoryAccessor(globalHubRepository);
 
-        final HubDescriptor hubDescriptor = new HubDescriptor(null, hubRepositoryAccessor, null);
+        final HubDescriptor hubDescriptor = new HubDescriptor(null, hubRepositoryAccessor, null, null);
 
         final List<? extends DatabaseEntity> entities = hubDescriptor.getGlobalRepositoryAccessor().readEntities();
         final Optional<? extends DatabaseEntity> foundEntity = hubDescriptor.getGlobalRepositoryAccessor().readEntity(1);
@@ -61,7 +61,7 @@ public class HubDescriptorTest {
         final ContentConverter contentConverter = new ContentConverter(gson);
         final HubContentConverter hubContentConverter = new HubContentConverter(contentConverter);
 
-        final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null);
+        final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null, null);
 
         final GlobalHubConfigEntity hubEntity = mockHubEntity.createGlobalEntity();
         final GlobalHubConfigRestModel hubRestModel = mockHubRestModel.createGlobalRestModel();

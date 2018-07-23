@@ -28,7 +28,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
@@ -40,9 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
+import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
@@ -65,26 +65,25 @@ public class StartupManager {
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
     private final GlobalProperties globalProperties;
-    private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
+    private final List<ProviderDescriptor> providerDescriptorList;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig,
-            final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final DailyDigestBatchConfig dailyDigestBatchConfig,
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
-        this.accumulatorConfig = accumulatorConfig;
         this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
+        this.providerDescriptorList = providerDescriptorList;
     }
 
     public void startup() {
@@ -94,6 +93,7 @@ public class StartupManager {
         listProperties();
         validateProviders();
         initializeCronJobs();
+        startAccumulators();
     }
 
     public void logConfiguration() {
@@ -191,10 +191,6 @@ public class StartupManager {
     }
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        accumulatorConfig.scheduleExecution("0 0/1 * 1/1 * *");
-        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
-        logger.info("Accumulator next run: {} seconds", seconds);
-
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
         dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
@@ -233,6 +229,15 @@ public class StartupManager {
         } finally {
             logger.info("Finished startup purge of old data");
         }
+    }
+
+    public void startAccumulators() {
+        logger.info("Starting accumulators...");
+        providerDescriptorList.forEach(providerDescriptor -> {
+            final Accumulator accumulator = providerDescriptor.getAccumulator();
+            logger.info("  Starting accumulator: {}", accumulator.getName());
+            accumulator.start();
+        });
     }
 
 }

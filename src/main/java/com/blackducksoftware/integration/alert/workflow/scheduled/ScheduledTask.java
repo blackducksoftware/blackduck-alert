@@ -38,6 +38,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 public abstract class ScheduledTask implements Runnable {
+    public static final String STOP_SCHEDULE_EXPRESSION = "";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;

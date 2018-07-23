@@ -22,6 +22,7 @@ src/test/resources/application.properties
 src/test/resources/test.properties
 /activemq-data/
 *-lastrun.txt
+*-last-search.txt
 node_modules
 data/
 sonar-project.properties
