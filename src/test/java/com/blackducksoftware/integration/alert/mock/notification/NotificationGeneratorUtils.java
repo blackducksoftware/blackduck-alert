@@ -113,7 +113,7 @@ public class NotificationGeneratorUtils {
         final List<VulnerabilityV2View> vulnerabilityViewList = createVulnerabilityList();
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
 
-        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
+        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);

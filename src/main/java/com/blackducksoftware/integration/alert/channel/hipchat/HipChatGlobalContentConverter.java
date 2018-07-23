@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,20 +36,15 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
 public class HipChatGlobalContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
 
     @Autowired
     public HipChatGlobalContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<HipChatGlobalConfigRestModel> restModel = contentConverter.getContent(json, HipChatGlobalConfigRestModel.class);
-        if (restModel.isPresent()) {
-            return restModel.get();
-        }
-        return null;
+        return getContentConverter().getJsonContent(json, HipChatGlobalConfigRestModel.class);
     }
 
     @Override
@@ -65,7 +58,7 @@ public class HipChatGlobalContentConverter extends DatabaseContentConverter {
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        final String id = contentConverter.convertToString(hipChatEntity.getId());
+        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
         final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
         final HipChatGlobalConfigRestModel hipChatRestModel = new HipChatGlobalConfigRestModel(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
         return hipChatRestModel;

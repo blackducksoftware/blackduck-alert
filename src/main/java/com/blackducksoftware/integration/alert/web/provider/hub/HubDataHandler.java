@@ -32,29 +32,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
-import com.google.gson.Gson;
 
 @Component
 public class HubDataHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(HubDataHandler.class);
-    private final Gson gson;
     private final HubDataActions hubDataActions;
 
     @Autowired
-    public HubDataHandler(final ObjectTransformer objectTransformer, final Gson gson, final HubDataActions hubDataActions) {
-        super(objectTransformer);
-        this.gson = gson;
+    public HubDataHandler(final ContentConverter contentConverter, final HubDataActions hubDataActions) {
+        super(contentConverter);
         this.hubDataActions = hubDataActions;
     }
 
     public ResponseEntity<String> getHubGroups() {
         try {
             final List<HubGroup> groups = hubDataActions.getHubGroups();
-            final String usersJson = gson.toJson(groups);
+            final String usersJson = getContentConverter().getJsonString(groups);
             return createResponse(HttpStatus.OK, usersJson);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
@@ -71,7 +68,7 @@ public class HubDataHandler extends ControllerHandler {
     public ResponseEntity<String> getHubProjects() {
         try {
             final List<HubProject> projects = hubDataActions.getHubProjects();
-            final String usersJson = gson.toJson(projects);
+            final String usersJson = getContentConverter().getJsonString(projects);
             return createResponse(HttpStatus.OK, usersJson);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);

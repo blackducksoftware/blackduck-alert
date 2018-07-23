@@ -68,17 +68,7 @@ public class LoginActions {
 
     @SuppressWarnings("deprecation")
     public boolean authenticateUser(final LoginRestModel loginRestModel, final IntLogger logger) throws IntegrationException {
-        final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
-        serverConfigBuilder.setLogger(logger);
-        serverConfigBuilder.setHubUrl(globalProperties.getHubUrl());
-        serverConfigBuilder.setTimeout(HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
-        if (globalProperties.getHubTrustCertificate() != null) {
-            serverConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
-        }
-        serverConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
-        serverConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
-        serverConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
-        serverConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
+        final HubServerConfigBuilder serverConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 
         serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
         serverConfigBuilder.setUsername(loginRestModel.getHubUsername());

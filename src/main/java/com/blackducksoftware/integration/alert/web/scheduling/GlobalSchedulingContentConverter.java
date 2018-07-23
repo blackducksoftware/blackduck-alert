@@ -21,49 +21,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.slack;
+package com.blackducksoftware.integration.alert.web.scheduling;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
-import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @Component
-public class SlackDistributionContentConverter extends DatabaseContentConverter {
+public class GlobalSchedulingContentConverter extends DatabaseContentConverter {
 
     @Autowired
-    public SlackDistributionContentConverter(final ContentConverter contentConverter) {
+    public GlobalSchedulingContentConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, SlackDistributionRestModel.class);
+        return getContentConverter().getJsonContent(json, GlobalSchedulingConfigRestModel.class);
     }
 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
-        final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
-        addIdToEntityPK(slackRestModel.getId(), slackEntity);
-        return slackEntity;
+        final GlobalSchedulingConfigRestModel schedulingRestModel = (GlobalSchedulingConfigRestModel) restModel;
+        final GlobalSchedulingConfigEntity schedulingEntity = new GlobalSchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
+        addIdToEntityPK(schedulingRestModel.getId(), schedulingEntity);
+        return schedulingEntity;
     }
 
     @Override
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
-        final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
-        final SlackDistributionRestModel slackRestModel = new SlackDistributionRestModel();
-        final String id = getContentConverter().getStringValue(slackEntity.getId());
-        slackRestModel.setDistributionConfigId(id);
-        slackRestModel.setWebhook(slackEntity.getWebhook());
-        slackRestModel.setChannelUsername(slackEntity.getChannelUsername());
-        slackRestModel.setChannelName(slackEntity.getChannelName());
-        return slackRestModel;
+        final GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
+        final GlobalSchedulingConfigRestModel schedulingRestModel = new GlobalSchedulingConfigRestModel();
+        schedulingRestModel.setDailyDigestHourOfDay(schedulingEntity.getDailyDigestHourOfDay());
+        schedulingRestModel.setPurgeDataFrequencyDays(schedulingEntity.getPurgeDataFrequencyDays());
+        final String id = getContentConverter().getStringValue(schedulingEntity.getId());
+        schedulingRestModel.setId(id);
+        return schedulingRestModel;
     }
 
 }

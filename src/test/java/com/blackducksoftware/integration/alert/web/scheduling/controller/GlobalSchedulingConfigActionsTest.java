@@ -20,7 +20,6 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
@@ -30,6 +29,7 @@ import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigActions;
 import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingContentConverter;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 
@@ -37,13 +37,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Override
     public GlobalSchedulingConfigActions getMockedConfigActions() {
-        return createMockedConfigActionsUsingObjectTransformer(new ObjectTransformer());
-    }
-
-    @Override
-    public GlobalSchedulingConfigActions createMockedConfigActionsUsingObjectTransformer(final ObjectTransformer objectTransformer) {
-        final NotificationAccumulator mockedNotificationAccumulator = Mockito.mock(NotificationAccumulator.class);
-        Mockito.when(mockedNotificationAccumulator.getMillisecondsToNextRun()).thenReturn(33000l);
+        final NotificationAccumulator blackduckAccumulator = Mockito.mock(NotificationAccumulator.class);
+        Mockito.when(blackduckAccumulator.getMillisecondsToNextRun()).thenReturn(33000l);
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         Mockito.when(mockedDailyDigestBatchConfig.getFormatedNextRunTime()).thenReturn("01/19/2018 02:00 AM UTC");
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
@@ -51,7 +46,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedNotificationAccumulator, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, objectTransformer);
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(blackduckAccumulator, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, globalSchedulingContentConverter);
         return configActions;
     }
 
@@ -62,25 +58,26 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Override
     public void testConfigurationChangeTriggers() {
-        final NotificationAccumulator mockedNotificationAccumulator = Mockito.mock(NotificationAccumulator.class);
+        final NotificationAccumulator blackduckAccumulator = Mockito.mock(NotificationAccumulator.class);
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         Mockito.when(globalSchedulingRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
 
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(mockedNotificationAccumulator, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, new ObjectTransformer());
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(blackduckAccumulator, mockedDailyDigestBatchConfig, mockedPurgeConfig, globalSchedulingRepository, globalSchedulingContentConverter);
         configActions.configurationChangeTriggers(null);
-        Mockito.verify(mockedNotificationAccumulator, Mockito.times(0)).scheduleExecution(Mockito.any());
+        Mockito.verify(blackduckAccumulator, Mockito.times(0)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedDailyDigestBatchConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedPurgeConfig, Mockito.times(0)).scheduleExecution(Mockito.any());
-        Mockito.reset(mockedNotificationAccumulator);
+        Mockito.reset(blackduckAccumulator);
         Mockito.reset(mockedDailyDigestBatchConfig);
         Mockito.reset(mockedPurgeConfig);
 
         final GlobalSchedulingConfigRestModel restModel = getGlobalRestModelMockUtil().createGlobalRestModel();
         configActions.configurationChangeTriggers(restModel);
-        Mockito.verify(mockedNotificationAccumulator, Mockito.times(0)).scheduleExecution(Mockito.any());
+        Mockito.verify(blackduckAccumulator, Mockito.times(0)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedDailyDigestBatchConfig, Mockito.times(1)).scheduleExecution(Mockito.any());
         Mockito.verify(mockedPurgeConfig, Mockito.times(1)).scheduleExecution(Mockito.any());
     }
@@ -89,7 +86,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Override
     public void testInvalidConfig() {
         final String invalidCron = "invalid";
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer());
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, globalSchedulingContentConverter);
         GlobalSchedulingConfigRestModel restModel = new GlobalSchedulingConfigRestModel("1", invalidCron, invalidCron, invalidCron, invalidCron, invalidCron);
 
         AlertFieldException caughtException = null;
@@ -145,7 +143,8 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Test
     public void validateConfigWithValidArgsTest() {
-        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, new ObjectTransformer());
+        final GlobalSchedulingContentConverter globalSchedulingContentConverter = new GlobalSchedulingContentConverter(getContentConverter());
+        final GlobalSchedulingConfigActions configActions = new GlobalSchedulingConfigActions(null, null, null, null, globalSchedulingContentConverter);
         final GlobalSchedulingConfigRestModel restModel = getGlobalRestModelMockUtil().createGlobalRestModel();
 
         String validationString = null;

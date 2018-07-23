@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,29 +34,23 @@ import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 
 @Component
 public class CommonDistributionContentConverter extends DatabaseContentConverter {
-    private final ContentConverter contentConverter;
 
     @Autowired
     public CommonDistributionContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+        super(contentConverter);
     }
 
     @Override
     public ConfigRestModel getRestModelFromJson(final String json) {
-        final Optional<CommonDistributionConfigRestModel> restModel = contentConverter.getContent(json, CommonDistributionConfigRestModel.class);
-        if (restModel.isPresent()) {
-            return restModel.get();
-        }
-
-        return null;
+        return getContentConverter().getJsonContent(json, CommonDistributionConfigRestModel.class);
     }
 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
         final CommonDistributionConfigRestModel commonRestModel = (CommonDistributionConfigRestModel) restModel;
-        final Long distributionConfigId = contentConverter.getLong(commonRestModel.getDistributionConfigId());
+        final Long distributionConfigId = getContentConverter().getLongValue(commonRestModel.getDistributionConfigId());
         final DigestType digestType = Enum.valueOf(DigestType.class, commonRestModel.getFrequency());
-        final Boolean filterByProject = contentConverter.getBoolean(commonRestModel.getFilterByProject());
+        final Boolean filterByProject = getContentConverter().getBooleanValue(commonRestModel.getFilterByProject());
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonRestModel.getDistributionType(), commonRestModel.getName(), digestType, filterByProject);
         addIdToEntityPK(commonRestModel.getId(), commonEntity);
         return commonEntity;
@@ -68,10 +60,10 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
     public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final CommonDistributionConfigEntity commonEntity = (CommonDistributionConfigEntity) entity;
         final CommonDistributionConfigRestModel commonRestModel = new CommonDistributionConfigRestModel();
-        commonRestModel.setId(contentConverter.convertToString(commonEntity.getId()));
-        commonRestModel.setDistributionConfigId(contentConverter.convertToString(entity.getId()));
+        commonRestModel.setId(getContentConverter().getStringValue(commonEntity.getId()));
+        commonRestModel.setDistributionConfigId(getContentConverter().getStringValue(commonEntity.getDistributionConfigId()));
         commonRestModel.setDistributionType(commonEntity.getDistributionType());
-        commonRestModel.setFilterByProject(contentConverter.convertToString(commonEntity.getFilterByProject()));
+        commonRestModel.setFilterByProject(getContentConverter().getStringValue(commonEntity.getFilterByProject()));
         commonRestModel.setFrequency(commonEntity.getFrequency().name());
         commonRestModel.setName(commonEntity.getName());
         return commonRestModel;

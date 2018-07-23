@@ -7,6 +7,7 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
@@ -30,7 +31,7 @@ public class ChannelTemplateManagerTest {
     @Before
     public void init() {
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @Test
@@ -45,7 +46,7 @@ public class ChannelTemplateManagerTest {
 
         final ProjectData projectData = new ProjectData(DigestType.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
-        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 

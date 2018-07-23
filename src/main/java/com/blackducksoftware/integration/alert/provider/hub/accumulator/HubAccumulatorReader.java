@@ -78,8 +78,9 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
     @Override
     public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
+        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalRestConnection.get()) {
                 logger.info("Accumulator Reader Starting Operation");
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final File lastRunFile = new File(lastRunPath);
@@ -98,12 +99,14 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
                 writeNextStartTime(lastRunFile, notificationResults.getLatestNotificationCreatedAtDate(), endDate);
                 logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
                 return notificationResults;
+            } catch (final Exception ex) {
+                logger.error("Error in Accumulator Reader", ex);
+            } finally {
+                executor.shutdownNow();
+                logger.info("Accumulator Reader Finished Operation");
             }
-        } catch (final Exception ex) {
-            logger.error("Error in Accumulator Reader", ex);
-        } finally {
-            executor.shutdownNow();
-            logger.info("Accumulator Reader Finished Operation");
+        } else {
+            logger.warn("Skipping the Hub accumulation, could not create the connection.");
         }
         return null;
     }

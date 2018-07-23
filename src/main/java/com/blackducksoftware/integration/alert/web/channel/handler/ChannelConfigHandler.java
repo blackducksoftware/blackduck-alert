@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -46,8 +46,8 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelConfigActions<R> configActions;
 
-    public ChannelConfigHandler(final ObjectTransformer objectTransformer, final ChannelConfigActions<R> configActions) {
-        super(objectTransformer);
+    public ChannelConfigHandler(final ContentConverter contentConverter, final ChannelConfigActions<R> configActions) {
+        super(contentConverter);
         this.configActions = configActions;
     }
 
@@ -75,7 +75,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
             } catch (final AlertFieldException e) {
-                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getObjectTransformer().stringToLong(restModel.getId()), "There were errors with the configuration.");
+                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
@@ -98,7 +98,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
             } catch (final AlertFieldException e) {
-                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getObjectTransformer().stringToLong(restModel.getId()), "There were errors with the configuration.");
+                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
@@ -125,7 +125,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
             final String responseMessage = configActions.validateConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
@@ -143,7 +143,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);

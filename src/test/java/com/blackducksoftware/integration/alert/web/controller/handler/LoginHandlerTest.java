@@ -21,25 +21,28 @@ import javax.servlet.http.HttpSession;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.LoginActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
+import com.google.gson.Gson;
 
 public class LoginHandlerTest {
-    private final ObjectTransformer objectTransformer = new ObjectTransformer();
     private final HttpSessionCsrfTokenRepository csrfTokenRepository = new HttpSessionCsrfTokenRepository();
 
     @Test
     public void userLogoutWithValidSessionTest() {
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, null, csrfTokenRepository);
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
         session.setMaxInactiveInterval(30);
@@ -50,7 +53,9 @@ public class LoginHandlerTest {
 
     @Test
     public void userLogoutWithInvalidSessionTest() {
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, null, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, null, csrfTokenRepository);
         final HttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -64,7 +69,9 @@ public class LoginHandlerTest {
     @Test
     public void userLoginWithValidSessionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         final HttpSession session = request.getSession(true);
@@ -79,7 +86,9 @@ public class LoginHandlerTest {
     @Test
     public void userLoginWithInvalidSessionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         final HttpServletRequest request = new MockHttpServletRequest();
         HttpSession session = request.getSession(false);
@@ -96,7 +105,9 @@ public class LoginHandlerTest {
     @Test
     public void authenticateUserWithIntegrationRestExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         final HttpStatus responseCode = HttpStatus.BAD_GATEWAY;
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode.value(), "", ""));
@@ -108,7 +119,9 @@ public class LoginHandlerTest {
     @Test
     public void authenticateUserWithAlertFieldExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
 
@@ -119,7 +132,9 @@ public class LoginHandlerTest {
     @Test
     public void authenticateUserWithExceptionTest() throws IntegrationException {
         final LoginActions loginActions = Mockito.mock(LoginActions.class);
-        final LoginHandler loginHandler = new LoginHandler(objectTransformer, loginActions, csrfTokenRepository);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
 

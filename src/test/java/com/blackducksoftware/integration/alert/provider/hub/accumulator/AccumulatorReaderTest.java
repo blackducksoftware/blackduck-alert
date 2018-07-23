@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.provider.hub.accumulator;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -12,7 +13,6 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
@@ -51,7 +51,7 @@ public class AccumulatorReaderTest {
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
-        Mockito.doReturn(restConnection).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
@@ -91,7 +91,7 @@ public class AccumulatorReaderTest {
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
         Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
-        Mockito.doReturn(restConnection).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());

@@ -27,6 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import javax.transaction.Transactional;
@@ -97,20 +98,21 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final GlobalHubConfigEntity globalHubConfig = globalProperties.getHubConfig();
-        final boolean authenticatedProxy = StringUtils.isNotBlank(globalProperties.getHubProxyPassword());
+        final boolean authenticatedProxy = StringUtils.isNotBlank(globalProperties.getHubProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", loggingLevel);
-        logger.info("Hub URL:                 {}", globalProperties.getHubUrl());
-        logger.info("Hub Proxy Host:          {}", globalProperties.getHubProxyHost());
-        logger.info("Hub Proxy Port:          {}", globalProperties.getHubProxyPort());
+        logger.info("Hub URL:                 {}", globalProperties.getHubUrl().orElse(""));
+        logger.info("Hub Proxy Host:          {}", globalProperties.getHubProxyHost().orElse(""));
+        logger.info("Hub Proxy Port:          {}", globalProperties.getHubProxyPort().orElse(""));
         logger.info("Hub Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Hub Proxy User:          {}", globalProperties.getHubProxyUsername());
+        logger.info("Hub Proxy User:          {}", globalProperties.getHubProxyUsername().orElse(""));
 
-        if (globalHubConfig != null) {
+        final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = globalProperties.getHubConfig();
+        if (optionalGlobalHubConfigEntity.isPresent()) {
+            final GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
             logger.info("Hub API Token:           **********");
-            logger.info("Hub Timeout:             {}", globalHubConfig.getHubTimeout());
+            logger.info("Hub Timeout:             {}", globalHubConfigEntity.getHubTimeout());
         }
         logger.info("----------------------------------------");
     }
@@ -143,27 +145,28 @@ public class StartupManager {
         logger.info("Validating Hub Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-            proxyBuilder.setHost(globalProperties.getHubProxyHost());
-            proxyBuilder.setPort(globalProperties.getHubProxyPort());
-            proxyBuilder.setUsername(globalProperties.getHubProxyUsername());
-            proxyBuilder.setPassword(globalProperties.getHubProxyPassword());
+            final ProxyInfoBuilder proxyBuilder = globalProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
-            if (globalProperties.getHubUrl() == null) {
+            if (!globalProperties.getHubUrl().isPresent()) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
             } else {
-                final URL hubUrl = new URL(globalProperties.getHubUrl());
-                if ("localhost".equals(hubUrl.getHost())) {
-                    logger.warn("  -> Hub Provider Using localhost...");
-                    final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
-                    if (StringUtils.isBlank(hubWebServerEnvValue)) {
-                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
-                    } else {
-                        logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
+                if (globalProperties.getHubUrl().isPresent()) {
+                    final String hubUrlString = globalProperties.getHubUrl().get();
+                    final Boolean trustCertificate = BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate().orElse(false));
+
+                    final URL hubUrl = new URL(hubUrlString);
+                    if ("localhost".equals(hubUrl.getHost())) {
+                        logger.warn("  -> Hub Provider Using localhost...");
+                        final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
+                        if (StringUtils.isBlank(hubWebServerEnvValue)) {
+                            logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
+                        } else {
+                            logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
+                        }
                     }
+                    verifier.verifyIsHubServer(new URL(hubUrlString), proxyInfo, trustCertificate, globalProperties.getHubTimeout());
+                    logger.info("  -> Hub Provider Valid!");
                 }
-                verifier.verifyIsHubServer(new URL(globalProperties.getHubUrl()), proxyInfo, BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate()), globalProperties.getHubTimeout());
-                logger.info("  -> Hub Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {
             logger.error("  -> Hub Provider Invalid; cause: {}", ex.getMessage());

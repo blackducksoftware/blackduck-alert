@@ -124,29 +124,32 @@ public class NotificationAccumulator extends PollingAccumulator {
 
     public Optional<NotificationDetailResults> read(final Pair<Date, Date> dateRange) {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
-                logger.info("Accumulator Reader Starting Operation");
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
-                final Date startDate = dateRange.getLeft();
-                final Date endDate = dateRange.getRight();
-                logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
-                final HubBucket hubBucket = new HubBucket();
-                final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
-                final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
+        final Optional<RestConnection> optionalConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalConnection.get()) {
+                if (restConnection != null) {
+                    logger.info("Accumulator Reader Starting Operation");
+                    final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                    final Date startDate = dateRange.getLeft();
+                    final Date endDate = dateRange.getRight();
+                    logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
+                    final HubBucket hubBucket = new HubBucket();
+                    final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
+                    final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
-                if (notificationResults.isEmpty()) {
-                    logger.debug("Read Notification Count: 0");
-                    return Optional.empty();
+                    if (notificationResults.isEmpty()) {
+                        logger.debug("Read Notification Count: 0");
+                        return Optional.empty();
+                    }
+                    logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
+                    return Optional.of(notificationResults);
                 }
-                logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
-                return Optional.of(notificationResults);
+            } catch (final Exception ex) {
+                logger.error("Error in Accumulator Reader", ex);
+            } finally {
+                executor.shutdownNow();
+                logger.info("Accumulator Reader Finished Operation");
             }
-        } catch (final Exception ex) {
-            logger.error("Error in Accumulator Reader", ex);
-        } finally {
-            executor.shutdownNow();
-            logger.info("Accumulator Reader Finished Operation");
         }
         return Optional.empty();
     }
@@ -172,8 +175,9 @@ public class NotificationAccumulator extends PollingAccumulator {
                 final NotificationModels notificationModels = optionalModel.get();
                 final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
                 final List<NotificationModel> entityList = notificationList.stream().map(notificationManager::saveNotification).collect(Collectors.toList());
-                final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(new NotificationModels(entityList)));
+                final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(new NotificationModels(entityList)));
                 channelTemplateManager.sendEvent(realTimeEvent);
+
             }
         }
     }

@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -55,13 +55,16 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     private final CommonDistributionRepository commonDistributionRepository;
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
+    private final DatabaseContentConverter commonDistributionContentConverter;
 
-    public DistributionConfigActions(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final CommonDistributionRepository commonDistributionRepository, final W channelDistributionRepository,
-            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final ObjectTransformer objectTransformer) {
-        super(databaseEntityClass, configRestModelClass, channelDistributionRepository, objectTransformer);
+    public DistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final W channelDistributionRepository,
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final DatabaseContentConverter databaseContentConverter,
+            final DatabaseContentConverter commonDistributionContentConverter) {
+        super(channelDistributionRepository, databaseContentConverter);
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
+        this.commonDistributionContentConverter = commonDistributionContentConverter;
     }
 
     @Override
@@ -80,8 +83,8 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
     public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
-                D createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
-                CommonDistributionConfigEntity commonEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, CommonDistributionConfigEntity.class);
+                D createdEntity = (D) getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
+                CommonDistributionConfigEntity commonEntity = (CommonDistributionConfigEntity) commonDistributionContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null && commonEntity != null) {
                     createdEntity = getRepository().save(createdEntity);
                     commonEntity.setDistributionConfigId(createdEntity.getId());
@@ -124,7 +127,7 @@ public abstract class DistributionConfigActions<D extends DatabaseEntity, R exte
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getName())) {
             final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(restModel.getName());
-            if (entity != null && (entity.getId() != getObjectTransformer().stringToLong(restModel.getId()))) {
+            if (entity != null && (entity.getId() != commonDistributionContentConverter.getContentConverter().getLongValue(restModel.getId()))) {
                 fieldErrors.put("name", "A distribution configuration with this name already exists.");
             }
         } else {

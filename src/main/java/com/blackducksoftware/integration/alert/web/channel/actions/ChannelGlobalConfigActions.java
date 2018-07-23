@@ -36,8 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
@@ -53,8 +53,8 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
-    public ChannelGlobalConfigActions(final ObjectTransformer objectTransformer, final DistributionChannelManager distributionChannelManager) {
-        super(objectTransformer);
+    public ChannelGlobalConfigActions(final DistributionChannelManager distributionChannelManager, final ContentConverter contentConverter) {
+        super(contentConverter);
         this.distributionChannelManager = distributionChannelManager;
     }
 
@@ -162,7 +162,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
 
     public DatabaseEntity updateNewConfigWithSavedConfig(final DatabaseEntity newConfig, final String id, final ChannelDescriptor descriptor) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
-            final Long longId = getObjectTransformer().stringToLong(id);
+            final Long longId = getContentConverter().getLongValue(id);
             final Optional<? extends DatabaseEntity> savedConfig = descriptor.getGlobalRepositoryAccessor().readEntity(longId);
             if (savedConfig.isPresent()) {
                 return updateNewConfigWithSavedConfig(newConfig, savedConfig.get());
