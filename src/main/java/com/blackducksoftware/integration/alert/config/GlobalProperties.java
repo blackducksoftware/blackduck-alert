@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
@@ -53,7 +54,6 @@ import com.google.gson.Gson;
 public class GlobalProperties {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepository globalHubRepository;
-    private final AlertEnvironment alertEnvironment;
 
     @Value("${blackduck.hub.url:}")
     private String hubUrl;
@@ -102,9 +102,8 @@ public class GlobalProperties {
     private AboutModel aboutModel;
 
     @Autowired
-    public GlobalProperties(final AlertEnvironment alertEnvironment, final GlobalHubRepository globalRepository, final Gson gson) {
+    public GlobalProperties(final GlobalHubRepository globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
-        this.alertEnvironment = alertEnvironment;
         readAboutInformation(gson);
     }
 
@@ -130,8 +129,12 @@ public class GlobalProperties {
         return Optional.ofNullable(aboutModel);
     }
 
+    public String getEnvironmentVariable(final AlertEnvironment alertEnvironment) {
+        return getEnvironmentVariable(alertEnvironment.getVariableName());
+    }
+
     public String getEnvironmentVariable(final String variableName) {
-        return alertEnvironment.getVariable(variableName);
+        return System.getenv(variableName);
     }
 
     public Optional<String> getHubUrl() {
@@ -144,7 +147,7 @@ public class GlobalProperties {
 
     public Optional<Boolean> getHubTrustCertificate() {
         //TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
-        final String alwaysTrust = alertEnvironment.getVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
+        final String alwaysTrust = getEnvironmentVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
         if (StringUtils.isNotBlank(alwaysTrust)) {
             return Optional.of(Boolean.parseBoolean(alwaysTrust));
         }
@@ -156,11 +159,11 @@ public class GlobalProperties {
     }
 
     public Optional<String> getHubProxyHost() {
-        final String proxyHost = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_HOST);
-        if (StringUtils.isNotBlank(proxyHost)) {
-            return Optional.of(proxyHost);
-        } else {
+        final String proxyHost = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_HOST);
+        if (StringUtils.isNotBlank(hubProxyHost)) {
             return Optional.of(hubProxyHost);
+        } else {
+            return Optional.of(proxyHost);
         }
     }
 
@@ -169,11 +172,11 @@ public class GlobalProperties {
     }
 
     public Optional<String> getHubProxyPort() {
-        final String proxyPort = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PORT);
-        if (StringUtils.isNotBlank(proxyPort)) {
-            return Optional.of(proxyPort);
-        } else {
+        final String proxyPort = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PORT);
+        if (StringUtils.isNotBlank(hubProxyPort)) {
             return Optional.of(hubProxyPort);
+        } else {
+            return Optional.of(proxyPort);
         }
     }
 
@@ -182,11 +185,11 @@ public class GlobalProperties {
     }
 
     public Optional<String> getHubProxyUsername() {
-        final String proxyUser = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_USER);
-        if (StringUtils.isNotBlank(proxyUser)) {
-            return Optional.of(proxyUser);
-        } else {
+        final String proxyUser = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_USER);
+        if (StringUtils.isNotBlank(hubProxyUsername)) {
             return Optional.of(hubProxyUsername);
+        } else {
+            return Optional.of(proxyUser);
         }
     }
 
@@ -195,11 +198,11 @@ public class GlobalProperties {
     }
 
     public Optional<String> getHubProxyPassword() {
-        final String proxyPassword = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
-        if (StringUtils.isNotBlank(proxyPassword)) {
-            return Optional.of(proxyPassword);
-        } else {
+        final String proxyPassword = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
+        if (StringUtils.isNotBlank(hubProxyPassword)) {
             return Optional.of(hubProxyPassword);
+        } else {
+            return Optional.of(proxyPassword);
         }
     }
 

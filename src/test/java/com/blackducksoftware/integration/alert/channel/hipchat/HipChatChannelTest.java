@@ -51,7 +51,7 @@ public class HipChatChannelTest extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(alertEnvironment, mockedGlobalRepository, null);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, auditEntryRepository, null, null, null, channelRestConnectionFactory, contentConverter);
 
@@ -179,7 +179,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, null, restFactory, contentConverter);
 
-        try (RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);) {
+        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);) {
             final RestConnection mockRestConnection = Mockito.spy(restConnection);
             Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
             Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);

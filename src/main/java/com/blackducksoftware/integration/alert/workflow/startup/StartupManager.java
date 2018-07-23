@@ -41,9 +41,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
