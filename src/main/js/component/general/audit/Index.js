@@ -259,6 +259,7 @@ class Index extends Component {
         this.setState({
             searchTerm: searchText
         });
+        this.reloadAuditEntries()
     }
 
     render() {
@@ -348,7 +349,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: (pageNumber, pageSize) => dispatch(getAuditData(pageNumber, pageSize)),
+    getAuditData: (pageNumber, pageSize, searchTerm) => dispatch(getAuditData(pageNumber, pageSize, searchTerm)),
     logout: () => dispatch(logout())
 });
 
