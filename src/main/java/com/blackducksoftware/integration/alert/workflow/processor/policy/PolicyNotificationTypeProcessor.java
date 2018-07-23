@@ -95,6 +95,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
         final Optional<UriSingleResponse<ProjectVersionView>> projectVersionResponse = notificationContentDetail.getProjectVersion();
         final Optional<String> componentNameDetail = notificationContentDetail.getComponentName();
         final Optional<String> componentVersionDetail = notificationContentDetail.getComponentVersionName();
+        final Optional<String> policyRuleDetail = notificationContentDetail.getPolicyName();
 
         if (projectVersionResponse.isPresent()) {
             projectVersionUrl = projectVersionResponse.get().uri;
@@ -107,7 +108,10 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
         if (componentVersionDetail.isPresent()) {
             componentVersion = componentVersionDetail.get();
         }
-        final String policyRuleName = notificationContentDetail.getPolicyName().get();
+        String policyRuleName = null;
+        if (policyRuleDetail.isPresent()) {
+            policyRuleName = policyRuleDetail.get();
+        }
         String policyRuleUser = null;
         if (NotificationCategoryEnum.POLICY_VIOLATION_OVERRIDE.equals(notificationCategory)) {
             final PolicyOverrideNotificationContent content = (PolicyOverrideNotificationContent) notificationDetailResult.getNotificationContent();
