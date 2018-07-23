@@ -51,7 +51,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
         this.configActions = configActions;
     }
 
-    public List<ConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) {
+    public List<R> getConfig(final Long id, final ChannelDescriptor descriptor) {
         try {
             return configActions.getConfig(id, descriptor);
         } catch (final AlertException e) {

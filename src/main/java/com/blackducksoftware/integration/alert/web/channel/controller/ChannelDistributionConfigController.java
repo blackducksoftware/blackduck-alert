@@ -53,7 +53,7 @@ public class ChannelDistributionConfigController extends ChannelConfigController
     }
 
     @Override
-    public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
+    public List<? extends ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }
@@ -79,10 +79,11 @@ public class ChannelDistributionConfigController extends ChannelConfigController
         return controllerHandler.validateConfig(parsedRestModel, descriptor);
     }
 
-    // TODO Method not allowed until we are able to move common config controller to this universal controller.
     @Override
     public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        return controllerHandler.doNotAllowHttpMethod();
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
+        final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
+        return controllerHandler.deleteConfig(parsedRestModel, descriptor);
     }
 
     @Override

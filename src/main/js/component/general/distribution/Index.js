@@ -221,7 +221,7 @@ class Index extends Component {
 
             matchingJobs.forEach((job) => {
                 const jsonBody = JSON.stringify(job);
-                fetch('/alert/api/configuration/distribution/common', {
+                fetch('/alert/api/configuration/channel/distribution/common', {
                     method: 'DELETE',
                     credentials: 'same-origin',
                     headers: {
@@ -280,7 +280,7 @@ class Index extends Component {
     }
 
     fetchDistributionJobs() {
-        fetch('/alert/api/configuration/distribution/common', {
+        fetch('/alert/api/configuration/channel/distribution/common', {
             credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'

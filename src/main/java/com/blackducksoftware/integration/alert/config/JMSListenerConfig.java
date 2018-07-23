@@ -25,6 +25,8 @@ package com.blackducksoftware.integration.alert.config;
 
 import java.util.List;
 
+import javax.jms.MessageListener;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +60,16 @@ public class JMSListenerConfig implements JmsListenerConfigurer {
         realTimeEndpoint.setMessageListener(realTimeListener);
         registrar.registerEndpoint(realTimeEndpoint);
         channelDescriptorList.forEach(descriptor -> {
-            final String listenerId = createListenerId(descriptor.getName());
-            logger.info("Registering JMS Listener: {}", listenerId);
-            final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
-            endpoint.setId(listenerId);
-            endpoint.setDestination(descriptor.getDestinationName());
-            endpoint.setMessageListener(descriptor.getChannelListener());
-            registrar.registerEndpoint(endpoint);
+            final MessageListener channelListener = descriptor.getChannelListener();
+            if (channelListener != null) {
+                final String listenerId = createListenerId(descriptor.getName());
+                logger.info("Registering JMS Listener: {}", listenerId);
+                final SimpleJmsListenerEndpoint endpoint = new SimpleJmsListenerEndpoint();
+                endpoint.setId(listenerId);
+                endpoint.setDestination(descriptor.getDestinationName());
+                endpoint.setMessageListener(channelListener);
+                registrar.registerEndpoint(endpoint);
+            }
         });
 
     }
