@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {BootstrapTable, ButtonGroup, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {BootstrapTable, ButtonGroup, TableHeaderColumn} from 'react-bootstrap-table';
 import {getAuditData} from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
