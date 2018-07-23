@@ -25,8 +25,10 @@ package com.blackducksoftware.integration.alert.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +45,7 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnectionBuilder;
 import com.blackducksoftware.integration.util.ResourceUtil;
 import com.google.gson.Gson;
 
@@ -123,40 +126,41 @@ public class GlobalProperties {
         }
     }
 
-    public AboutModel getAboutModel() {
-        return aboutModel;
+    public Optional<AboutModel> getAboutModel() {
+        return Optional.ofNullable(aboutModel);
     }
 
     public String getEnvironmentVariable(final String variableName) {
         return alertEnvironment.getVariable(variableName);
     }
 
-    public String getHubUrl() {
-        return hubUrl;
+    public Optional<String> getHubUrl() {
+        return Optional.ofNullable(StringUtils.trimToNull(hubUrl));
     }
 
     public void setHubUrl(final String hubUrl) {
         this.hubUrl = hubUrl;
     }
 
-    public Boolean getHubTrustCertificate() {
+    public Optional<Boolean> getHubTrustCertificate() {
+        //TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
         final String alwaysTrust = alertEnvironment.getVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
         if (StringUtils.isNotBlank(alwaysTrust)) {
-            return Boolean.parseBoolean(alwaysTrust);
+            return Optional.of(Boolean.parseBoolean(alwaysTrust));
         }
-        return hubTrustCertificate;
+        return Optional.of(hubTrustCertificate);
     }
 
     public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
         this.hubTrustCertificate = hubTrustCertificate;
     }
 
-    public String getHubProxyHost() {
+    public Optional<String> getHubProxyHost() {
         final String proxyHost = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_HOST);
-        if (StringUtils.isEmpty(proxyHost)) {
-            return hubProxyHost;
+        if (StringUtils.isNotBlank(proxyHost)) {
+            return Optional.of(proxyHost);
         } else {
-            return proxyHost;
+            return Optional.of(hubProxyHost);
         }
     }
 
@@ -164,12 +168,12 @@ public class GlobalProperties {
         this.hubProxyHost = hubProxyHost;
     }
 
-    public String getHubProxyPort() {
+    public Optional<String> getHubProxyPort() {
         final String proxyPort = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PORT);
-        if (StringUtils.isEmpty(proxyPort)) {
-            return hubProxyPort;
+        if (StringUtils.isNotBlank(proxyPort)) {
+            return Optional.of(proxyPort);
         } else {
-            return proxyPort;
+            return Optional.of(hubProxyPort);
         }
     }
 
@@ -177,12 +181,12 @@ public class GlobalProperties {
         this.hubProxyPort = hubProxyPort;
     }
 
-    public String getHubProxyUsername() {
+    public Optional<String> getHubProxyUsername() {
         final String proxyUser = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_USER);
-        if (StringUtils.isEmpty(proxyUser)) {
-            return hubProxyUsername;
+        if (StringUtils.isNotBlank(proxyUser)) {
+            return Optional.of(proxyUser);
         } else {
-            return proxyUser;
+            return Optional.of(hubProxyUsername);
         }
     }
 
@@ -190,12 +194,12 @@ public class GlobalProperties {
         this.hubProxyUsername = hubProxyUsername;
     }
 
-    public String getHubProxyPassword() {
+    public Optional<String> getHubProxyPassword() {
         final String proxyPassword = alertEnvironment.getVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
-        if (StringUtils.isEmpty(proxyPassword)) {
-            return hubProxyPassword;
+        if (StringUtils.isNotBlank(proxyPassword)) {
+            return Optional.of(proxyPassword);
         } else {
-            return proxyPassword;
+            return Optional.of(hubProxyPassword);
         }
     }
 
@@ -203,60 +207,59 @@ public class GlobalProperties {
         this.hubProxyPassword = hubProxyPassword;
     }
 
-    public GlobalHubConfigEntity getHubConfig() {
+    public Optional<GlobalHubConfigEntity> getHubConfig() {
         final List<GlobalHubConfigEntity> configs = globalHubRepository.findAll();
         if (configs != null && !configs.isEmpty()) {
-            return configs.get(0);
+            return Optional.of(configs.get(0));
         }
-        return null;
+        return Optional.empty();
     }
 
     public HubServicesFactory createHubServicesFactory(final RestConnection restConnection) {
         return new HubServicesFactory(restConnection);
     }
 
-    public RestConnection createRestConnectionAndLogErrors(final Logger logger) {
+    public Optional<RestConnection> createRestConnectionAndLogErrors(final Logger logger) {
         try {
             return createRestConnection(logger);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
         }
-        return null;
+        return Optional.empty();
     }
 
-    public RestConnection createRestConnection(final Logger logger) throws AlertException {
+    public Optional<RestConnection> createRestConnection(final Logger logger) throws AlertException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         return createRestConnection(intLogger);
     }
 
-    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
-        final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
-        RestConnection restConnection = null;
-        if (hubServerConfig != null) {
-            restConnection = createRestConnection(intLogger, hubServerConfig);
+    public Optional<RestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
+        final Optional<HubServerConfig> hubServerConfig = createHubServerConfig(intLogger);
+        if (hubServerConfig.isPresent()) {
+            return createRestConnection(intLogger, hubServerConfig.get());
         }
-        return restConnection;
+        return Optional.empty();
     }
 
-    public RestConnection createRestConnection(final IntLogger intLogger, final HubServerConfig hubServerConfig) {
-        RestConnection restConnection = null;
+    public Optional<RestConnection> createRestConnection(final IntLogger intLogger, final HubServerConfig hubServerConfig) {
         try {
-            restConnection = hubServerConfig.createRestConnection(intLogger);
+            return Optional.of(hubServerConfig.createRestConnection(intLogger));
         } catch (final EncryptionException e) {
             intLogger.error(e.getMessage(), e);
         }
-        return restConnection;
+        return Optional.empty();
     }
 
-    public HubServerConfig createHubServerConfig(final IntLogger logger) throws AlertException {
-        final GlobalHubConfigEntity globalConfigEntity = getHubConfig();
-        if (globalConfigEntity != null) {
-            if (globalConfigEntity.getHubTimeout() == null || globalConfigEntity.getHubApiKey() == null) {
+    public Optional<HubServerConfig> createHubServerConfig(final IntLogger logger) throws AlertException {
+        final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = getHubConfig();
+        if (optionalGlobalHubConfigEntity.isPresent()) {
+            GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
+            if (globalHubConfigEntity.getHubTimeout() == null || globalHubConfigEntity.getHubApiKey() == null) {
                 throw new AlertException("Global config settings can not be null.");
             }
-            return createHubServerConfig(logger, globalConfigEntity.getHubTimeout(), globalConfigEntity.getHubApiKey());
+            return Optional.of(createHubServerConfig(logger, globalHubConfigEntity.getHubTimeout(), globalHubConfigEntity.getHubApiKey()));
         }
-        return null;
+        return Optional.empty();
     }
 
     public HubServerConfig createHubServerConfig(final IntLogger logger, final int hubTimeout, final String hubApiToken) throws AlertException {
@@ -282,38 +285,74 @@ public class GlobalProperties {
         }
     }
 
-    private HubServerConfigBuilder createHubServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int hubTimeout) {
+    public HubServerConfigBuilder createHubServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int hubTimeout) {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setUrl(getHubUrl());
+        hubServerConfigBuilder.setLogger(logger);
         hubServerConfigBuilder.setTimeout(hubTimeout);
 
-        hubServerConfigBuilder.setProxyHost(getHubProxyHost());
-        hubServerConfigBuilder.setProxyPort(getHubProxyPort());
-        hubServerConfigBuilder.setProxyUsername(getHubProxyUsername());
-        hubServerConfigBuilder.setProxyPassword(getHubProxyPassword());
-
-        if (hubTrustCertificate != null) {
-            hubServerConfigBuilder.setTrustCert(hubTrustCertificate);
+        if (getHubUrl().isPresent()) {
+            hubServerConfigBuilder.setUrl(getHubUrl().get());
         }
-        hubServerConfigBuilder.setLogger(logger);
+        if (getHubProxyHost().isPresent()) {
+            hubServerConfigBuilder.setProxyHost(getHubProxyHost().get());
+        }
+        if (getHubProxyPort().isPresent()) {
+            hubServerConfigBuilder.setProxyPort(getHubProxyPort().get());
+        }
+        if (getHubProxyUsername().isPresent()) {
+            hubServerConfigBuilder.setProxyUsername(getHubProxyUsername().get());
+        }
+        if (getHubProxyPassword().isPresent()) {
+            hubServerConfigBuilder.setProxyPassword(getHubProxyPassword().get());
+        }
+        if (getHubTrustCertificate().isPresent()) {
+            hubServerConfigBuilder.setTrustCert(getHubTrustCertificate().get());
+        }
 
         return hubServerConfigBuilder;
     }
 
+    public UnauthenticatedRestConnectionBuilder createUnauthenticatedRestConnectionBuilder(final IntLogger logger, final int hubTimeout) {
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
+        restConnectionBuilder.setLogger(logger);
+        restConnectionBuilder.setTimeout(hubTimeout);
+
+        if (getHubUrl().isPresent()) {
+            restConnectionBuilder.setBaseUrl(getHubUrl().get());
+        }
+        if (getHubProxyHost().isPresent()) {
+            restConnectionBuilder.setProxyHost(getHubProxyHost().get());
+        }
+        if (getHubProxyPort().isPresent()) {
+            restConnectionBuilder.setProxyPort(NumberUtils.toInt(getHubProxyPort().get()));
+        }
+        if (getHubProxyUsername().isPresent()) {
+            restConnectionBuilder.setProxyUsername(getHubProxyUsername().get());
+        }
+        if (getHubProxyPassword().isPresent()) {
+            restConnectionBuilder.setProxyPassword(getHubProxyPassword().get());
+        }
+        if (getHubTrustCertificate().isPresent()) {
+            restConnectionBuilder.setAlwaysTrustServerCertificate(getHubTrustCertificate().get());
+        }
+
+        return restConnectionBuilder;
+    }
+
     public Integer getHubTimeout() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getHubConfig().getHubTimeout();
+        final Optional<GlobalHubConfigEntity> globalConfig = getHubConfig();
+        if (globalConfig.isPresent()) {
+            return getHubConfig().get().getHubTimeout();
         }
         return 300;
     }
 
-    public String getHubApiKey() {
-        final GlobalHubConfigEntity globalConfig = getHubConfig();
-        if (globalConfig != null) {
-            return getHubConfig().getHubApiKey();
+    public Optional<String> getHubApiKey() {
+        final Optional<GlobalHubConfigEntity> globalConfig = getHubConfig();
+        if (globalConfig.isPresent()) {
+            return Optional.of(globalConfig.get().getHubApiKey());
         }
-        return null;
+        return Optional.empty();
     }
 
     public String getServerPort() {
