@@ -26,12 +26,12 @@ package com.blackducksoftware.integration.alert.provider.hub.accumulator;
 import java.io.File;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -171,12 +171,8 @@ public class NotificationAccumulator extends PollingAccumulator {
             if (optionalModel.isPresent()) {
                 final NotificationModels notificationModels = optionalModel.get();
                 final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
-                final List<NotificationModel> entityList = new ArrayList<>();
-                notificationList.forEach(notification -> {
-                    notificationManager.saveNotification(notification);
-                    entityList.add(notification);
-                });
-                final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(notificationModels));
+                final List<NotificationModel> entityList = notificationList.stream().map(notificationManager::saveNotification).collect(Collectors.toList());
+                final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.convertToString(new NotificationModels(entityList)));
                 channelTemplateManager.sendEvent(realTimeEvent);
             }
         }
