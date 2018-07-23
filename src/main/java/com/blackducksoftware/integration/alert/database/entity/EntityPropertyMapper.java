@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProp
 
 @Component
 public class EntityPropertyMapper {
-    public static String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
+    public static final String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
 
     public Set<AlertStartupProperty> mapEntityToProperties(final String entityName, final Class<?> entityClass) {
         final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + entityName + "_";
