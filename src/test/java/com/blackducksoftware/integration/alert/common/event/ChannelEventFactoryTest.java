@@ -19,6 +19,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
@@ -35,14 +36,14 @@ public class ChannelEventFactoryTest {
     @Test
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
-        final ContentConverter contentConverter = new ContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
         final ChannelEventFactory factory = new ChannelEventFactory(manager);
 
         final Long id = 25L;
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.convertToString(digestModel), id);
+        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.getJsonString(digestModel), id);
         Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 
         final ChannelEvent event = factory.createEvent(id, "TYPE", digestModel);

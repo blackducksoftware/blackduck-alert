@@ -110,7 +110,7 @@ public class StartupManager {
 
         final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = globalProperties.getHubConfig();
         if (optionalGlobalHubConfigEntity.isPresent()) {
-            GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
+            final GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
             logger.info("Hub API Token:           **********");
             logger.info("Hub Timeout:             {}", globalHubConfigEntity.getHubTimeout());
         }
@@ -147,12 +147,12 @@ public class StartupManager {
             final HubServerVerifier verifier = new HubServerVerifier();
             final ProxyInfoBuilder proxyBuilder = globalProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
-            if (globalProperties.getHubUrl() == null) {
+            if (!globalProperties.getHubUrl().isPresent()) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
             } else {
                 if (globalProperties.getHubUrl().isPresent()) {
-                    String hubUrlString = globalProperties.getHubUrl().get();
-                    Boolean trustCertificate = BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate().orElse(false));
+                    final String hubUrlString = globalProperties.getHubUrl().get();
+                    final Boolean trustCertificate = BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate().orElse(false));
 
                     final URL hubUrl = new URL(hubUrlString);
                     if ("localhost".equals(hubUrl.getHost())) {

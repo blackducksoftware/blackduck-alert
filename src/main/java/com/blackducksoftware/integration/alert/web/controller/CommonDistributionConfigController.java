@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.actions.CommonDistributionConfigActions;
@@ -45,8 +45,8 @@ public class CommonDistributionConfigController extends DistributionConfigContro
     private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> commonConfigHandler;
 
     @Autowired
-    public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ObjectTransformer objectTransformer) {
-        commonConfigHandler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionConfigActions, objectTransformer);
+    public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ContentConverter contentConverter) {
+        commonConfigHandler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionConfigActions, contentConverter);
     }
 
     @Override

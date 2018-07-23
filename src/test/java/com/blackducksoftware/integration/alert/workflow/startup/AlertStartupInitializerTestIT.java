@@ -1,6 +1,9 @@
 package com.blackducksoftware.integration.alert.workflow.startup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -12,13 +15,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.Environment;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.email.EmailDescriptor;
 import com.blackducksoftware.integration.alert.channel.email.EmailGlobalContentConverter;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
@@ -34,7 +35,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -63,7 +64,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -91,7 +92,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -119,7 +120,7 @@ public class AlertStartupInitializerTestIT {
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(false);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -148,7 +149,7 @@ public class AlertStartupInitializerTestIT {
         final MockEmailGlobalEntity mockEmailGlobalEntity = new MockEmailGlobalEntity();
         Mockito.when(emailGlobalRepository.save(Mockito.any())).thenReturn(mockEmailGlobalEntity.createGlobalEntity());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -169,7 +170,7 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new SecurityException());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -185,7 +186,7 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new IllegalArgumentException());
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
@@ -199,9 +200,8 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         Mockito.doThrow(new IllegalArgumentException()).when(environment).getProperty(Mockito.anyString());
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
-        throwExceptionTest(environment, conversionService, objectTransformer, emailGlobalRepository);
+        throwExceptionTest(environment, conversionService, emailGlobalRepository);
     }
 
     @Test
@@ -209,24 +209,13 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         Mockito.doThrow(new SecurityException()).when(environment).getProperty(Mockito.anyString());
-        final ObjectTransformer objectTransformer = new ObjectTransformer();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
-        throwExceptionTest(environment, conversionService, objectTransformer, emailGlobalRepository);
+        throwExceptionTest(environment, conversionService, emailGlobalRepository);
     }
 
-    @Test
-    public void testInitializeConfigsThrowsAlertException() throws Exception {
-        final Environment environment = Mockito.mock(Environment.class);
-        final ConversionService conversionService = new DefaultConversionService();
-        final ObjectTransformer objectTransformer = Mockito.mock(ObjectTransformer.class);
-        Mockito.doThrow(new AlertException()).when(objectTransformer).configRestModelToDatabaseEntity(Mockito.any(), Mockito.any());
-        final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
-        throwExceptionTest(environment, conversionService, objectTransformer, emailGlobalRepository);
-    }
-
-    private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final ObjectTransformer objectTransformer, final EmailGlobalRepository emailGlobalRepository) throws Exception {
+    private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final EmailGlobalRepository emailGlobalRepository) throws Exception {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final ContentConverter contentConverter = new ContentConverter(new Gson());
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalContentConverter emailGlobalContentConverter = new EmailGlobalContentConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();

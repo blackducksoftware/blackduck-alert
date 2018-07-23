@@ -32,7 +32,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
@@ -48,8 +48,8 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
     public final Class<R> configRestModelClass;
     public final ConfigActions<D, R, W> configActions;
 
-    public CommonConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ObjectTransformer objectTransformer) {
-        super(objectTransformer);
+    public CommonConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
+        super(contentConverter);
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
         this.configActions = configActions;
@@ -80,7 +80,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
             } catch (final AlertFieldException e) {
-                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), "There were errors with the configuration.");
+                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
@@ -104,7 +104,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
                     return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
                 }
             } catch (final AlertFieldException e) {
-                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), "There were errors with the configuration.");
+                final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), "There were errors with the configuration.");
                 responseBuilder.putErrors(e.getFieldErrors());
                 return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
             }
@@ -131,7 +131,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
             final String responseMessage = configActions.validateConfig(restModel);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
@@ -150,7 +150,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends ConfigRestM
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), restModel.getId(), e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(configActions.getObjectTransformer().stringToLong(restModel.getId()), e.getMessage());
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);

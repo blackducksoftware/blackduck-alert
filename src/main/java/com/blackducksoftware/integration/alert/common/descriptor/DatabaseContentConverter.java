@@ -23,12 +23,16 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 public abstract class DatabaseContentConverter {
+    private final ContentConverter contentConverter;
+
+    public DatabaseContentConverter(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
+    }
 
     public abstract ConfigRestModel getRestModelFromJson(final String json);
 
@@ -36,11 +40,13 @@ public abstract class DatabaseContentConverter {
 
     public abstract ConfigRestModel populateRestModelFromDatabaseEntity(DatabaseEntity entity);
 
+    public ContentConverter getContentConverter() {
+        return contentConverter;
+    }
+
     public void addIdToEntityPK(final String id, final DatabaseEntity entity) {
-        if (StringUtils.isNotBlank(id)) {
-            final long longId = Long.parseLong(id);
-            entity.setId(longId);
-        }
+        final Long longId = contentConverter.getLongValue(id);
+        entity.setId(longId);
     }
 
 }
