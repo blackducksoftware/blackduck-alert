@@ -247,6 +247,7 @@ class Index extends Component {
 
     onSizePerPageListChange(sizePerPage) {
         this.setState({currentPage: 1, currentPageSize: sizePerPage});
+
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
     }
 
