@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -156,9 +155,7 @@ public class AuditEntryActions {
 
     private void addMatchingModels(final List<AuditEntryRestModel> listToAddTo, final List<AuditEntryRestModel> modelsToCheck, final String searchTerm) {
         for (AuditEntryRestModel restModel : modelsToCheck) {
-            if (StringUtils.isBlank(searchTerm)) {
-                listToAddTo.add(restModel);
-            } else if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+            if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
             } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
                 listToAddTo.add(restModel);
