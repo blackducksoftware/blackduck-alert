@@ -35,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,15 +98,15 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     }
 
     public GlobalHubConfigRestModel updateModelFromEnvironment(final GlobalHubConfigRestModel restModel) {
-        restModel.setHubUrl(globalProperties.getHubUrl());
-        if (globalProperties.getHubTrustCertificate() != null) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate()));
+        restModel.setHubUrl(globalProperties.getHubUrl().orElse(null));
+        if (globalProperties.getHubTrustCertificate().isPresent()) {
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().get()));
         }
-        restModel.setHubProxyHost(globalProperties.getHubProxyHost());
-        restModel.setHubProxyPort(globalProperties.getHubProxyPort());
-        restModel.setHubProxyUsername(globalProperties.getHubProxyUsername());
+        restModel.setHubProxyHost(globalProperties.getHubProxyHost().orElse(null));
+        restModel.setHubProxyPort(globalProperties.getHubProxyPort().orElse(null));
+        restModel.setHubProxyUsername(globalProperties.getHubProxyUsername().orElse(null));
         // Do not send passwords going to the UI
-        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(globalProperties.getHubProxyPassword());
+        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(globalProperties.getHubProxyPassword().orElse(null));
         restModel.setHubProxyPasswordIsSet(proxyPasswordIsSet);
         return restModel;
     }
@@ -154,20 +155,9 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
         final String apiToken = restModel.getHubApiKey();
 
-        final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
-        hubServerConfigBuilder.setHubUrl(globalProperties.getHubUrl());
-        hubServerConfigBuilder.setTimeout(restModel.getHubTimeout());
-
-        hubServerConfigBuilder.setProxyHost(globalProperties.getHubProxyHost());
-        hubServerConfigBuilder.setProxyPort(globalProperties.getHubProxyPort());
-        hubServerConfigBuilder.setProxyUsername(globalProperties.getHubProxyUsername());
+        final HubServerConfigBuilder hubServerConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getHubTimeout()));
         hubServerConfigBuilder.setApiToken(apiToken);
-        hubServerConfigBuilder.setProxyPassword(globalProperties.getHubProxyPassword());
 
-        if (globalProperties.getHubTrustCertificate() != null) {
-            hubServerConfigBuilder.setAlwaysTrustServerCertificate(globalProperties.getHubTrustCertificate());
-        }
-        hubServerConfigBuilder.setLogger(intLogger);
         validateHubConfiguration(hubServerConfigBuilder);
         try (final RestConnection restConnection = createRestConnection(hubServerConfigBuilder)) {
             restConnection.connect();

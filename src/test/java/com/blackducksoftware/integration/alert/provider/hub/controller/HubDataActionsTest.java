@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -43,7 +44,7 @@ public class HubDataActionsTest {
     public void testGetHubGroupsNoGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
+        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
         Mockito.when(hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE)).thenReturn(Collections.emptyList());
@@ -58,7 +59,7 @@ public class HubDataActionsTest {
     public void testGetHubGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
+        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
 
@@ -104,7 +105,7 @@ public class HubDataActionsTest {
     public void testGetHubProjectsNoProjects() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
+        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
         final HubService hubService = Mockito.mock(HubService.class);
@@ -121,7 +122,7 @@ public class HubDataActionsTest {
     public void testGetHubProjects() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
+        Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
         final HubService hubService = Mockito.mock(HubService.class);

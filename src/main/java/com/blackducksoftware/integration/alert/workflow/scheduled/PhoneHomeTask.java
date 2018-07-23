@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.alert.workflow.scheduled;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,9 @@ public class PhoneHomeTask extends ScheduledTask {
 
     @Override
     public void run() {
-        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
-            if (restConnection != null) {
+        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final RestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
                 final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, globalProperties.getProductVersion());
@@ -62,12 +64,10 @@ public class PhoneHomeTask extends ScheduledTask {
                     phoneHome.addChannelMetaData(builder);
                     phoneHomeService.phoneHome(builder);
                 }
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
             }
-
-        } catch (final IOException e) {
-            logger.error(e.getMessage(), e);
         }
-
     }
 
 }

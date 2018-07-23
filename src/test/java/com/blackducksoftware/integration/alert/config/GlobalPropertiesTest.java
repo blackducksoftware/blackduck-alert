@@ -41,13 +41,13 @@ public class GlobalPropertiesTest {
         properties.setTrustStorePass(trustStorePass);
         properties.setTrustStoreType(trustStoreType);
 
-        assertEquals(hubTrustCertificate, properties.getHubTrustCertificate());
-        assertEquals(proxyHost, properties.getHubProxyHost());
-        assertEquals(proxyPort, properties.getHubProxyPort());
-        assertEquals(proxyUser, properties.getHubProxyUsername());
-        assertEquals(proxyPassword, properties.getHubProxyPassword());
+        assertEquals(hubTrustCertificate, properties.getHubTrustCertificate().get());
+        assertEquals(proxyHost, properties.getHubProxyHost().get());
+        assertEquals(proxyPort, properties.getHubProxyPort().get());
+        assertEquals(proxyUser, properties.getHubProxyUsername().get());
+        assertEquals(proxyPassword, properties.getHubProxyPassword().get());
 
-        assertEquals(hubUrl, properties.getHubUrl());
+        assertEquals(hubUrl, properties.getHubUrl().get());
         assertEquals(serverPort, properties.getServerPort());
         assertEquals(keyStoreFile, properties.getKeyStoreFile());
         assertEquals(keyStorePass, properties.getKeyStorePass());
