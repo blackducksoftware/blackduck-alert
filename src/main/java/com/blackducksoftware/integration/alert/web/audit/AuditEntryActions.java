@@ -40,7 +40,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
@@ -58,6 +57,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Common
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
 import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
+import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
 import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -71,21 +71,21 @@ public class AuditEntryActions {
     private final AuditNotificationRepository auditNotificationRepository;
     private final NotificationManager notificationManager;
     private final CommonDistributionRepository commonDistributionRepository;
-    private final ObjectTransformer objectTransformer;
+    private final NotificationContentConverter notificationContentConverter;
     private final ChannelEventFactory channelEventFactory;
     private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-            final CommonDistributionRepository commonDistributionRepository, final ObjectTransformer objectTransformer,
+            final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
             final ChannelEventFactory channelEventFactory, final ProjectDataFactory projectDataFactory,
             final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
-        this.objectTransformer = objectTransformer;
+        this.notificationContentConverter = notificationContentConverter;
         this.channelEventFactory = channelEventFactory;
         this.projectDataFactory = projectDataFactory;
         this.channelTemplateManager = channelTemplateManager;
@@ -206,9 +206,9 @@ public class AuditEntryActions {
 
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
 
-        final String id = objectTransformer.objectToString(auditEntryEntity.getId());
-        final String timeCreated = objectTransformer.objectToString(auditEntryEntity.getTimeCreated());
-        final String timeLastSent = objectTransformer.objectToString(auditEntryEntity.getTimeLastSent());
+        final String id = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getId());
+        final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
+        final String timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
 
         String status = null;
         if (auditEntryEntity.getStatus() != null) {
@@ -220,16 +220,12 @@ public class AuditEntryActions {
 
         NotificationRestModel notificationRestModel = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            try {
-                notificationRestModel = objectTransformer.databaseEntityToConfigRestModel(notifications.get(0).getNotificationEntity(), NotificationRestModel.class);
-                final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
-                notificationRestModel.setNotificationTypes(notificationTypes);
-                final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
-                        notification.getPolicyRuleUser())).collect(Collectors.toSet());
-                notificationRestModel.setComponents(components);
-            } catch (final AlertException e) {
-                logger.error("Problem converting audit entry with id {}: {}", auditEntryEntity.getId(), e.getMessage());
-            }
+            notificationRestModel = (NotificationRestModel) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0).getNotificationEntity());
+            final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
+            notificationRestModel.setNotificationTypes(notificationTypes);
+            final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
+                    notification.getPolicyRuleUser())).collect(Collectors.toSet());
+            notificationRestModel.setComponents(components);
         }
 
         String distributionConfigName = null;

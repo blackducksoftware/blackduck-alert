@@ -41,11 +41,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -64,8 +64,8 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     private final GlobalProperties globalProperties;
 
     @Autowired
-    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final ObjectTransformer objectTransformer) {
-        super(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, globalRepository, objectTransformer);
+    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final HubContentConverter hubContentConverter) {
+        super(globalRepository, hubContentConverter);
         this.globalProperties = globalProperties;
     }
 
@@ -74,7 +74,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         if (id != null) {
             final Optional<GlobalHubConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalHubConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(foundEntity.get(), getConfigRestModelClass());
+                GlobalHubConfigRestModel restModel = (GlobalHubConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
                     final GlobalHubConfigRestModel maskedRestModel = maskRestModel(restModel);
@@ -84,11 +84,12 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
             return Collections.emptyList();
         }
         final List<GlobalHubConfigEntity> databaseEntities = getRepository().findAll();
-        List<GlobalHubConfigRestModel> restModels = null;
+        List<GlobalHubConfigRestModel> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
-            restModels = getObjectTransformer().databaseEntitiesToConfigRestModels(databaseEntities, getConfigRestModelClass());
+            for (final GlobalHubConfigEntity entity : databaseEntities) {
+                restModels.add((GlobalHubConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+            }
         } else {
-            restModels = new ArrayList<>();
             restModels.add(new GlobalHubConfigRestModel());
         }
         restModels = updateModelsFromEnvironment(restModels);
@@ -98,8 +99,8 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
     public GlobalHubConfigRestModel updateModelFromEnvironment(final GlobalHubConfigRestModel restModel) {
         restModel.setHubUrl(globalProperties.getHubUrl().orElse(null));
-        if (globalProperties.getHubTrustCertificate() != null) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate()));
+        if (globalProperties.getHubTrustCertificate().isPresent()) {
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().get()));
         }
         restModel.setHubProxyHost(globalProperties.getHubProxyHost().orElse(null));
         restModel.setHubProxyPort(globalProperties.getHubProxyPort().orElse(null));

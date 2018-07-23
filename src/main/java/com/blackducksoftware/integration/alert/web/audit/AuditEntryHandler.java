@@ -28,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
@@ -41,8 +41,8 @@ public class AuditEntryHandler extends ControllerHandler {
     private final AuditEntryActions auditEntryActions;
 
     @Autowired
-    public AuditEntryHandler(final ObjectTransformer objectTransformer, final Gson gson, final AuditEntryActions auditEntryActions) {
-        super(objectTransformer);
+    public AuditEntryHandler(final ContentConverter contentConverter, final Gson gson, final AuditEntryActions auditEntryActions) {
+        super(contentConverter);
         this.gson = gson;
         this.auditEntryActions = auditEntryActions;
     }

@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
@@ -58,7 +59,7 @@ public class HubDescriptorTest {
     @Test
     public void testTransformerCalls() throws AlertException {
         final Gson gson = new Gson();
-        final ContentConverter contentConverter = new ContentConverter(gson);
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final HubContentConverter hubContentConverter = new HubContentConverter(contentConverter);
 
         final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null);

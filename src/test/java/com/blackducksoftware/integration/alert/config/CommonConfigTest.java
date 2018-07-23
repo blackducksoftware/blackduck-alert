@@ -1,6 +1,9 @@
 package com.blackducksoftware.integration.alert.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
@@ -22,6 +25,7 @@ import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -44,7 +48,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger = new OutputLogger();
         globalProperties = new TestGlobalProperties();
         gson = new Gson();
-        contentConverter = new ContentConverter(gson);
+        contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
     @After

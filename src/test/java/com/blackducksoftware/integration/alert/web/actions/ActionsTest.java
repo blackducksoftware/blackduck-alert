@@ -11,7 +11,12 @@
  */
 package com.blackducksoftware.integration.alert.web.actions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -23,7 +28,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -163,17 +167,13 @@ public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E
             assertEquals("test", e.getMessage());
         }
 
-        final ObjectTransformer transformer = Mockito.mock(ObjectTransformer.class);
-        Mockito.when(transformer.configRestModelToDatabaseEntity(Mockito.any(), Mockito.any())).thenReturn(null);
-        configActions = createMockedConfigActionsUsingObjectTransformer(transformer);
+        configActions = getMockedConfigActions();
 
         actualConfigEntity = configActions.saveConfig(getRestMockUtil().createRestModel());
         assertNull(actualConfigEntity);
     }
 
     public abstract Class<E> getConfigEntityClass();
-
-    public abstract DCA createMockedConfigActionsUsingObjectTransformer(ObjectTransformer objectTransformer);
 
     @Test
     public void testIsBoolean() {

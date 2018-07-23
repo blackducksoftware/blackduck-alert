@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
@@ -50,17 +49,15 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Component
 public class DistributionChannelManager {
     private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
-    private final ObjectTransformer objectTransformer;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DistributionChannelManager(final ObjectTransformer objectTransformer, final ContentConverter contentConverter) {
-        this.objectTransformer = objectTransformer;
+    public DistributionChannelManager(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
     }
 
-    public ObjectTransformer getObjectTransformer() {
-        return objectTransformer;
+    public ContentConverter getContentConverter() {
+        return contentConverter;
     }
 
     public String testGlobalConfig(final DatabaseEntity globalConfigEntity, final ChannelDescriptor descriptor) throws IntegrationException {
@@ -94,6 +91,6 @@ public class DistributionChannelManager {
     }
 
     public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
-        return new ChannelEvent(destination, contentConverter.convertToString(content), commonDistributionConfigId);
+        return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
     }
 }

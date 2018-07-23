@@ -30,7 +30,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
@@ -40,6 +39,7 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
@@ -49,9 +49,9 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Autowired
     public CommonDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final AuditEntryRepository auditEntryRepository,
-            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final ObjectTransformer objectTransformer,
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final CommonDistributionContentConverter contentConverter,
             final AuditNotificationRepository auditNotificationRepository) {
-        super(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, objectTransformer);
+        super(commonDistributionRepository, commonDistributionRepository, configuredProjectsActions, notificationTypesActions, contentConverter, contentConverter);
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
@@ -72,10 +72,10 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     private void addAuditEntryInfoToRestModel(final CommonDistributionConfigRestModel restModel) {
         String lastRan = "Unknown";
         String status = "Unknown";
-        final Long id = getObjectTransformer().stringToLong(restModel.getId());
+        final Long id = getDatabaseContentConverter().getContentConverter().getLongValue(restModel.getId());
         final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
         if (lastRanEntry != null) {
-            lastRan = getObjectTransformer().objectToString(lastRanEntry.getTimeLastSent());
+            lastRan = getDatabaseContentConverter().getContentConverter().getStringValue(lastRanEntry.getTimeLastSent());
             status = lastRanEntry.getStatus().getDisplayName();
         }
         restModel.setLastRan(lastRan);
@@ -86,7 +86,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     public CommonDistributionConfigEntity saveConfig(final CommonDistributionConfigRestModel restModel) throws AlertException {
         if (restModel != null) {
             try {
-                CommonDistributionConfigEntity createdEntity = getObjectTransformer().configRestModelToDatabaseEntity(restModel, getDatabaseEntityClass());
+                CommonDistributionConfigEntity createdEntity = (CommonDistributionConfigEntity) getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null) {
                     createdEntity = getCommonDistributionRepository().save(createdEntity);
                     if (Boolean.TRUE.equals(createdEntity.getFilterByProject())) {
@@ -129,7 +129,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
 
     @Override
     public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
-        final CommonDistributionConfigRestModel restModel = getObjectTransformer().databaseEntityToConfigRestModel(commonEntity, CommonDistributionConfigRestModel.class);
+        final CommonDistributionConfigRestModel restModel = (CommonDistributionConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(commonEntity);
         restModel.setConfiguredProjects(getConfiguredProjectsActions().getConfiguredProjects(commonEntity));
         restModel.setNotificationTypes(getNotificationTypesActions().getNotificationTypes(commonEntity));
         return restModel;

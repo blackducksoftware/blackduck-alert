@@ -147,7 +147,10 @@ public class GlobalProperties {
     }
 
     public Optional<Boolean> getHubTrustCertificate() {
-        //TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
+        // TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
+        if (hubTrustCertificate == null) {
+            return Optional.empty();
+        }
         final String alwaysTrust = getEnvironmentVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
         if (hubTrustCertificate) {
             return Optional.ofNullable(hubTrustCertificate);
@@ -260,7 +263,7 @@ public class GlobalProperties {
     public Optional<HubServerConfig> createHubServerConfig(final IntLogger logger) throws AlertException {
         final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = getHubConfig();
         if (optionalGlobalHubConfigEntity.isPresent()) {
-            GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
+            final GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
             if (globalHubConfigEntity.getHubTimeout() == null || globalHubConfigEntity.getHubApiKey() == null) {
                 throw new AlertException("Global config settings can not be null.");
             }

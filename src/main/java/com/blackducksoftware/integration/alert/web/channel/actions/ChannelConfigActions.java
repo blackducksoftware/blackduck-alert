@@ -27,7 +27,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.alert.ObjectTransformer;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -36,14 +36,14 @@ import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class ChannelConfigActions<R extends ConfigRestModel> {
-    private final ObjectTransformer objectTransformer;
+    private final ContentConverter contentConverter;
 
-    public ChannelConfigActions(final ObjectTransformer objectTransformer) {
-        this.objectTransformer = objectTransformer;
+    public ChannelConfigActions(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
     public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
-        return doesConfigExist(getObjectTransformer().stringToLong(id), descriptor);
+        return doesConfigExist(contentConverter.getLongValue(id), descriptor);
     }
 
     public abstract boolean doesConfigExist(final Long id, ChannelDescriptor descriptor);
@@ -51,7 +51,7 @@ public abstract class ChannelConfigActions<R extends ConfigRestModel> {
     public abstract List<ConfigRestModel> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
 
     public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
-        deleteConfig(getObjectTransformer().stringToLong(id), descriptor);
+        deleteConfig(contentConverter.getLongValue(id), descriptor);
     }
 
     public abstract void deleteConfig(final Long id, ChannelDescriptor descriptor);
@@ -72,8 +72,8 @@ public abstract class ChannelConfigActions<R extends ConfigRestModel> {
         return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
     }
 
-    public ObjectTransformer getObjectTransformer() {
-        return objectTransformer;
+    public ContentConverter getContentConverter() {
+        return contentConverter;
     }
 
 }

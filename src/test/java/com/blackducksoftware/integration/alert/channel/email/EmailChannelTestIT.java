@@ -44,7 +44,7 @@ public class EmailChannelTestIT extends ChannelTest {
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -73,7 +73,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
         final DigestModel digestModel = new DigestModel(null);
-        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.convertToString(digestModel), 1L);
+        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
         emailChannel.sendMessage(event, null);
         assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
 
