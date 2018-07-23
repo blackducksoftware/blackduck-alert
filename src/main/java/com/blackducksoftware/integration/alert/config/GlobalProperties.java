@@ -149,10 +149,13 @@ public class GlobalProperties {
     public Optional<Boolean> getHubTrustCertificate() {
         //TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
         final String alwaysTrust = getEnvironmentVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
-        if (StringUtils.isNotBlank(alwaysTrust)) {
-            return Optional.of(Boolean.parseBoolean(alwaysTrust));
+        if (hubTrustCertificate) {
+            return Optional.ofNullable(hubTrustCertificate);
         }
-        return Optional.of(hubTrustCertificate);
+        if (StringUtils.isNotBlank(alwaysTrust)) {
+            return Optional.ofNullable(Boolean.parseBoolean(alwaysTrust));
+        }
+        return Optional.of(false);
     }
 
     public void setHubTrustCertificate(final Boolean hubTrustCertificate) {
@@ -162,9 +165,9 @@ public class GlobalProperties {
     public Optional<String> getHubProxyHost() {
         final String proxyHost = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_HOST);
         if (StringUtils.isNotBlank(hubProxyHost)) {
-            return Optional.of(hubProxyHost);
+            return Optional.ofNullable(hubProxyHost);
         } else {
-            return Optional.of(proxyHost);
+            return Optional.ofNullable(proxyHost);
         }
     }
 
@@ -175,9 +178,9 @@ public class GlobalProperties {
     public Optional<String> getHubProxyPort() {
         final String proxyPort = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PORT);
         if (StringUtils.isNotBlank(hubProxyPort)) {
-            return Optional.of(hubProxyPort);
+            return Optional.ofNullable(hubProxyPort);
         } else {
-            return Optional.of(proxyPort);
+            return Optional.ofNullable(proxyPort);
         }
     }
 
@@ -188,9 +191,9 @@ public class GlobalProperties {
     public Optional<String> getHubProxyUsername() {
         final String proxyUser = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_USER);
         if (StringUtils.isNotBlank(hubProxyUsername)) {
-            return Optional.of(hubProxyUsername);
+            return Optional.ofNullable(hubProxyUsername);
         } else {
-            return Optional.of(proxyUser);
+            return Optional.ofNullable(proxyUser);
         }
     }
 
@@ -201,9 +204,9 @@ public class GlobalProperties {
     public Optional<String> getHubProxyPassword() {
         final String proxyPassword = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
         if (StringUtils.isNotBlank(hubProxyPassword)) {
-            return Optional.of(hubProxyPassword);
+            return Optional.ofNullable(hubProxyPassword);
         } else {
-            return Optional.of(proxyPassword);
+            return Optional.ofNullable(proxyPassword);
         }
     }
 

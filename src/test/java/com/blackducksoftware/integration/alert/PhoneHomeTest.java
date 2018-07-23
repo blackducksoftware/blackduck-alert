@@ -33,7 +33,7 @@ public class PhoneHomeTest {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PhoneHome phoneHome = new PhoneHome(null);
 
-        try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger())) {
+        try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
             final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
             final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
             final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, "test");
