@@ -28,7 +28,6 @@ import com.blackducksoftware.integration.alert.common.digest.model.CategoryData;
 import com.blackducksoftware.integration.alert.common.digest.model.ItemData;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.google.gson.Gson;
 
@@ -37,7 +36,6 @@ public class ChannelTest {
     protected TestProperties properties;
     protected OutputLogger outputLogger;
     protected ContentConverter contentConverter;
-    protected AlertEnvironment alertEnvironment;
 
     @Before
     public void init() throws IOException {
@@ -45,7 +43,6 @@ public class ChannelTest {
         properties = new TestProperties();
         outputLogger = new OutputLogger();
         contentConverter = new ContentConverter(gson);
-        alertEnvironment = new AlertEnvironment();
     }
 
     @After
