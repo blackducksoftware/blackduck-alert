@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { ReactBsTable, BootstrapTable, TableHeaderColumn, ButtonGroup } from 'react-bootstrap-table';
-import { getAuditData } from '../../../store/actions/audit';
+import {connect} from 'react-redux';
+import {BootstrapTable, ButtonGroup, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {getAuditData} from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
 import AuditDetails from './Details';
 import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 
 import '../../../../css/audit.scss';
-import { logout } from '../../../store/actions/session';
+import {logout} from '../../../store/actions/session';
 
 class Index extends Component {
     constructor(props) {
@@ -43,7 +43,7 @@ class Index extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.items !== this.props.items) {
-            this.setState({ message: '', inProgress: false });
+            this.setState({message: '', inProgress: false});
             this.setEntriesFromArray(nextProps.items);
         }
 
@@ -65,7 +65,7 @@ class Index extends Component {
         });
 
         const resendUrl = `/alert/api/audit/${currentEntry.id}/resend`;
-        const { csrfToken } = this.props;
+        const {csrfToken} = this.props;
 
         fetch(resendUrl, {
             method: 'POST',
@@ -75,23 +75,23 @@ class Index extends Component {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then((response) => {
-            this.setState({ 
+            this.setState({
                 message: 'Completed',
                 inProgress: false
-             });
+            });
             if (!response.ok) {
-                switch(response.status) {
+                switch (response.status) {
                     case 401:
                     case 403:
                         this.props.logout();
-                    return response.json().then((json) => {
-                        this.setState({ message: json.message });
-                    });
+                        return response.json().then((json) => {
+                            this.setState({message: json.message});
+                        });
                 }
             }
             return response.json().then((json) => {
-                setTimeout(function() {
-                    this.setState({ message: '' });
+                setTimeout(function () {
+                    this.setState({message: ''});
                 }.bind(this), 3000);
                 this.setEntriesFromArray(JSON.parse(json.message));
             });
@@ -116,7 +116,7 @@ class Index extends Component {
                 errorMessage: entry.errorMessage,
                 errorStackTrace: entry.errorStackTrace
             };
-            const { notification } = entry;
+            const {notification} = entry;
             if (notification) {
                 result.notificationTypes = notification.notificationTypes;
                 result.notificationProjectName = notification.projectName;
@@ -185,7 +185,7 @@ class Index extends Component {
     }
 
     expandComponent(row) {
-        return <AuditDetails currentEntry={row} />;
+        return <AuditDetails currentEntry={row}/>;
     }
 
     trClassFormat(row, rowIndex) {
@@ -211,8 +211,8 @@ class Index extends Component {
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
     }
 
-    handleAutoRefreshChange({ target }) {
-        const { name, checked } = target;
+    handleAutoRefreshChange({target}) {
+        const {name, checked} = target;
         if (checked) {
             this.startAutoReload();
         } else {
@@ -230,27 +230,27 @@ class Index extends Component {
     }
 
     resendButton(cell, row) {
-        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />;
+        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
     }
 
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
                 {!this.state.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
-                    <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
+                    <span className="fa fa-refresh fa-fw" aria-hidden="true"/> Refresh
                 </div>}
             </ButtonGroup>
         );
     }
 
     onSizePerPageListChange(sizePerPage) {
-        this.setState({ currentPage: 1, currentPageSize: sizePerPage});
+        this.setState({currentPage: 1, currentPageSize: sizePerPage});
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize);
     }
 
     onPageChange(page, sizePerPage) {
         this.setState({currentPage: page});
-        this.props.getAuditData(page,this.state.currentPageSize);
+        this.props.getAuditData(page, this.state.currentPageSize);
     }
 
     render() {
@@ -274,26 +274,27 @@ class Index extends Component {
         return (
             <div>
                 <h1>
-                    <span className="fa fa-history" />
+                    <span className="fa fa-history"/>
                     Audit
                     <small className="pull-right">
-                        <AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange} />
+                        <AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange}/>
                     </small>
                 </h1>
                 <div>
-                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" fetchInfo={auditFetchInfo}  options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody" remote pagination>
+                    <BootstrapTable trClassName={this.trClassFormat} condensed data={this.state.entries} expandableRow={() => true} expandComponent={this.expandComponent} containerClass="table" fetchInfo={auditFetchInfo}
+                                    options={auditTableOptions} headerContainerClass="scrollable" bodyContainerClass="tableScrollableBody" remote pagination>
                         <TableHeaderColumn dataField="jobName" columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProjectName" columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationTypes" width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeLastSent" width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="status" width="75" columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
-                        <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton} />
+                        <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
                         <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
                     </BootstrapTable>
 
-                    { this.state.inProgress && <div className="progressIcon">
-                        <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
+                    {this.state.inProgress && <div className="progressIcon">
+                        <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"/>
                     </div>}
 
                     <p name="message">{this.state.message}</p>
