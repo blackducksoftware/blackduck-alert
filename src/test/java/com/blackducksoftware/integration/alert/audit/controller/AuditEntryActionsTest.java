@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.alert.audit.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -97,8 +94,7 @@ public class AuditEntryActionsTest {
         final AuditEntryEntity entity_2 = new AuditEntryEntity();
         entity_2.setId(2L);
         final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2);
-        @SuppressWarnings("unchecked")
-        final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -138,13 +134,12 @@ public class AuditEntryActionsTest {
         final int totalPages = 1;
         final int currentPage = 1;
         final int pageSize = 1;
-        @SuppressWarnings("unchecked")
-        final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(Collections.emptyList());
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
         Mockito.when(pageResponse.getNumber()).thenReturn(currentPage);
-        Mockito.when(pageResponse.getSize()).thenReturn(pageSize);
+        Mockito.when(pageResponse.getSize()).thenReturn(0);
 
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
@@ -165,7 +160,8 @@ public class AuditEntryActionsTest {
         final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
-        assertEquals(pageResponse.getSize(), restModel.getPageSize());
+        //Assert 0 because there aren't any entries in the pageResponse content
+        assertEquals(0, restModel.getPageSize());
         assertTrue(restModel.getContent().isEmpty());
     }
 
