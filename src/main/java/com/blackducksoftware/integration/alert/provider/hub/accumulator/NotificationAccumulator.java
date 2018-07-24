@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.accumulator.PollingAccumulator;
+import com.blackducksoftware.integration.alert.common.accumulator.SearchIntervalAccumulator;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.enumeration.InternalEventTypes;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
@@ -61,7 +61,7 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
-public class NotificationAccumulator extends PollingAccumulator {
+public class NotificationAccumulator extends SearchIntervalAccumulator {
     public static final String DEFAULT_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationAccumulator.class);
@@ -93,7 +93,7 @@ public class NotificationAccumulator extends PollingAccumulator {
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
             if (lastRunFile.exists()) {
-                final String lastRunValue = FileUtils.readFileToString(lastRunFile, PollingAccumulator.ENCODING);
+                final String lastRunValue = FileUtils.readFileToString(lastRunFile, SearchIntervalAccumulator.ENCODING);
                 final Date startTime = RestConnection.parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {

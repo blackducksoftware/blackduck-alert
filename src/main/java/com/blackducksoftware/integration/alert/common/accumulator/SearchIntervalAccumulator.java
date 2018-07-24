@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
-public abstract class PollingAccumulator extends ScheduledTask implements Accumulator {
+public abstract class SearchIntervalAccumulator extends ScheduledTask implements Accumulator {
 
     public static final String ENCODING = "UTF-8";
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -48,7 +48,7 @@ public abstract class PollingAccumulator extends ScheduledTask implements Accumu
     private final String cronExpression;
     private final File searchRangeFilePath;
 
-    public PollingAccumulator(final TaskScheduler taskScheduler, final String name, final String cronExpression, final String searchStartFileDirectory) {
+    public SearchIntervalAccumulator(final TaskScheduler taskScheduler, final String name, final String cronExpression, final String searchStartFileDirectory) {
         super(taskScheduler);
         this.name = name;
         this.cronExpression = cronExpression;
