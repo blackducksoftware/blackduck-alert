@@ -111,15 +111,16 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
 
     @Override
     protected Date accumulate(final Pair<Date, Date> dateRange) throws AlertException {
+        final Date currentStartTime = dateRange.getLeft();
+        Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
+        
         final Optional<NotificationDetailResults> results = read(dateRange);
         if (results.isPresent()) {
             final AlertEvent event = process(results.get());
             write(event);
-            final Optional<Date> latestNotificationCreatedAtDate = results.get().getLatestNotificationCreatedAtDate();
-            return calculateNextStartTime(latestNotificationCreatedAtDate, dateRange.getLeft());
-        } else {
-            return calculateNextStartTime(Optional.empty(), dateRange.getLeft());
+            latestNotificationCreatedAtDate = results.get().getLatestNotificationCreatedAtDate();
         }
+        return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
     public Optional<NotificationDetailResults> read(final Pair<Date, Date> dateRange) {
