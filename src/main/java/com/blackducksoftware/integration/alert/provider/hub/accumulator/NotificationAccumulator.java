@@ -74,7 +74,7 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
 
     public NotificationAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor> notificationProcessors) {
-        super(taskScheduler, "blackduck", DEFAULT_CRON_EXPRESSION, globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME.getVariableName()));
+        super(taskScheduler, "blackduck", DEFAULT_CRON_EXPRESSION, globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME));
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
@@ -113,7 +113,7 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
     protected Date accumulate(final Pair<Date, Date> dateRange) throws AlertException {
         final Date currentStartTime = dateRange.getLeft();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
-        
+
         final Optional<NotificationDetailResults> results = read(dateRange);
         if (results.isPresent()) {
             final AlertEvent event = process(results.get());
