@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
@@ -78,8 +79,11 @@ public abstract class SearchIntervalAccumulator extends ScheduledTask implements
         } catch (final IOException | AlertException ex) {
             logger.error(createLoggerMessage("Error occurred accumulating data! "), ex);
         } finally {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(getMillisecondsToNextRun());
-            logger.debug(createLoggerMessage("Accumulator next run: {} seconds"), seconds);
+            final Optional<Long> nextRun = getMillisecondsToNextRun();
+            if (nextRun.isPresent()) {
+                final Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
+                logger.debug(createLoggerMessage("Accumulator next run: {} seconds"), seconds);
+            }
             logger.info(createLoggerMessage("### Accumulator Finished Operation."));
         }
     }

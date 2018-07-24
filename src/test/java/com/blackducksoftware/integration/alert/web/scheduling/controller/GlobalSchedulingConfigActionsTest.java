@@ -38,7 +38,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Override
     public GlobalSchedulingConfigActions getMockedConfigActions() {
         final NotificationAccumulator blackduckAccumulator = Mockito.mock(NotificationAccumulator.class);
-        Mockito.when(blackduckAccumulator.getMillisecondsToNextRun()).thenReturn(33000l);
+        Mockito.when(blackduckAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(33000l));
         final DailyDigestBatchConfig mockedDailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         Mockito.when(mockedDailyDigestBatchConfig.getFormatedNextRunTime()).thenReturn("01/19/2018 02:00 AM UTC");
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);

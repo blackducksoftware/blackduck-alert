@@ -54,7 +54,7 @@ public class StartupManagerTest {
         Mockito.doNothing().when(phoneHomeTask).scheduleExecution(Mockito.anyString());
         final NotificationAccumulator mockedNotificationAccumulator = Mockito.mock(NotificationAccumulator.class);
         Mockito.doNothing().when(mockedNotificationAccumulator).scheduleExecution(Mockito.anyString());
-        Mockito.doReturn(1L).when(mockedNotificationAccumulator).getMillisecondsToNextRun();
+        Mockito.doReturn(Optional.of(1L)).when(mockedNotificationAccumulator).getMillisecondsToNextRun();
         final DailyDigestBatchConfig dailyDigestBatchConfig = Mockito.mock(DailyDigestBatchConfig.class);
         Mockito.doNothing().when(dailyDigestBatchConfig).scheduleExecution(Mockito.anyString());
         Mockito.doReturn("time").when(dailyDigestBatchConfig).getFormatedNextRunTime();

@@ -81,9 +81,9 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         } else {
             restModel = new GlobalSchedulingConfigRestModel();
         }
-        final Long accumulatorNextRun = blackDuckAccumulator.getMillisecondsToNextRun();
-        if (accumulatorNextRun != null) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(blackDuckAccumulator.getMillisecondsToNextRun());
+        final Optional<Long> accumulatorNextRun = blackDuckAccumulator.getMillisecondsToNextRun();
+        if (accumulatorNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorNextRun.get());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
         final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
