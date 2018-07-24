@@ -1,10 +1,6 @@
-import {
-    AUDIT_FETCHING,
-    AUDIT_FETCHED,
-    AUDIT_FETCH_ERROR
-} from './types';
+import {AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING} from './types';
 
-import { verifyLoginByStatus } from './session';
+import {verifyLoginByStatus} from './session';
 
 const FETCH_URL = '/alert/api/audit';
 
@@ -44,7 +40,7 @@ function createPagedQueryURL(pageNumber, pageSize) {
     const pageNumberParameter = pageNumber - 1;
     return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}`;
 }
-
+ 
 /**
  * Fetching Audit Data
  * @returns {function(*)}
@@ -52,7 +48,7 @@ function createPagedQueryURL(pageNumber, pageSize) {
 export function getAuditData(pageNumber, pageSize) {
     return (dispatch, getState) => {
         dispatch(fetchingAuditData());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const fetchUrl = createPagedQueryURL(pageNumber, pageSize);
         fetch(fetchUrl, {
             credentials: 'same-origin',
@@ -60,7 +56,7 @@ export function getAuditData(pageNumber, pageSize) {
                 'X-CSRF-TOKEN': csrfToken
             }
         }).then((response) => {
-            if(response.ok) {
+            if (response.ok) {
                 response.json().then((body) => {
                     dispatch(auditDataFetched(body.totalPages, body.content));
                 });
