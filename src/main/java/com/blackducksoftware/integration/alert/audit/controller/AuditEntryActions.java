@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.audit.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -117,6 +118,41 @@ public class AuditEntryActions {
             }
         }
         return null;
+    }
+
+    public AlertPagedRestModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
+        final List<AuditEntryRestModel> auditEntries = new ArrayList<AuditEntryRestModel>();
+        logger.debug("Audit entry search. PageNumber: {} PageSize: {} SearchTerm: {}", pageNumber, pageSize, searchTerm);
+        final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
+        List<AuditEntryRestModel> currentPageRestModels = createRestModels(contentList);
+        addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
+
+        List<AuditEntryRestModel> pagedAuditEntries = auditEntries;
+        int totalPages = 1;
+        if (null != pageSize) {
+            pagedAuditEntries = new ArrayList<AuditEntryRestModel>();
+            totalPages = auditEntries.size() % pageSize;
+            int pageStart = pageNumber * pageSize;
+            int pageEnd = pageStart + pageSize;
+            for (int i = 0; i < auditEntries.size(); i++) {
+                if (i >= pageStart && i < pageEnd) {
+                    pagedAuditEntries.add(auditEntries.get(i));
+                }
+            }
+        }
+        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, pageNumber, auditEntries.size(), pagedAuditEntries);
+        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
+        return pagedRestModel;
+    }
+
+    private void addMatchingModels(final List<AuditEntryRestModel> listToAddTo, final List<AuditEntryRestModel> modelsToCheck, final String searchTerm) {
+        for (AuditEntryRestModel restModel : modelsToCheck) {
+            if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+                listToAddTo.add(restModel);
+            } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
+                listToAddTo.add(restModel);
+            }
+        }
     }
 
     public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException, IllegalArgumentException {
