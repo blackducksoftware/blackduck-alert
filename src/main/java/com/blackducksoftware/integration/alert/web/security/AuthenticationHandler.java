@@ -67,6 +67,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/",
                 "/#",
                 "/favicon.ico",
+                "/h2/**",
                 "/fonts/**",
                 "/js/bundle.js",
                 "/js/bundle.js.map",
