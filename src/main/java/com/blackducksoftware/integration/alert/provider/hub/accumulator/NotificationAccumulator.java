@@ -102,7 +102,7 @@ public class NotificationAccumulator extends PollingAccumulator {
             startDate = Date.from(zonedStartDate.toInstant());
 
         } catch (final Exception e) {
-            logger.error("Error creating date range", e);
+            logger.error(createLoggerMessage("Error creating date range"), e);
         }
 
         final Pair<Date, Date> dateRange = new ImmutablePair<>(startDate, endDate);
@@ -110,15 +110,15 @@ public class NotificationAccumulator extends PollingAccumulator {
     }
 
     @Override
-    protected String accumulate(final Pair<Date, Date> dateRange) throws AlertException {
+    protected Date accumulate(final Pair<Date, Date> dateRange) throws AlertException {
         final Optional<NotificationDetailResults> results = read(dateRange);
-        final Optional<AlertEvent> event = process(results);
-        write(event);
         if (results.isPresent()) {
+            final AlertEvent event = process(results.get());
+            write(event);
             final Optional<Date> latestNotificationCreatedAtDate = results.get().getLatestNotificationCreatedAtDate();
-            return calculateNextStartTime(getSearchRangeFilePath(), latestNotificationCreatedAtDate, dateRange.getRight());
+            return calculateNextStartTime(latestNotificationCreatedAtDate, dateRange.getLeft());
         } else {
-            return calculateNextStartTime(getSearchRangeFilePath(), Optional.empty(), dateRange.getRight());
+            return calculateNextStartTime(Optional.empty(), dateRange.getLeft());
         }
     }
 
@@ -128,76 +128,59 @@ public class NotificationAccumulator extends PollingAccumulator {
         if (optionalConnection.isPresent()) {
             try (final RestConnection restConnection = optionalConnection.get()) {
                 if (restConnection != null) {
-                    logger.info("Accumulator Reader Starting Operation");
                     final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
                     final Date startDate = dateRange.getLeft();
                     final Date endDate = dateRange.getRight();
-                    logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
+                    logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                     final HubBucket hubBucket = new HubBucket();
                     final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
                     final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
 
                     if (notificationResults.isEmpty()) {
-                        logger.debug("Read Notification Count: 0");
+                        logger.debug(createLoggerMessage("Read Notification Count: 0"));
                         return Optional.empty();
                     }
-                    logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
+                    logger.debug(createLoggerMessage("Read Notification Count: {}"), notificationResults.getResults().size());
                     return Optional.of(notificationResults);
                 }
             } catch (final Exception ex) {
-                logger.error("Error in Accumulator Reader", ex);
+                logger.error(createLoggerMessage("Error Reading notifications"), ex);
             } finally {
                 executor.shutdownNow();
-                logger.info("Accumulator Reader Finished Operation");
             }
         }
         return Optional.empty();
     }
 
-    public Optional<AlertEvent> process(final Optional<NotificationDetailResults> optionalData) {
-        if (optionalData.isPresent()) {
-            final NotificationDetailResults notificationData = optionalData.get();
-            logger.info("Processing accumulated notifications");
-            final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
-            final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
-            return Optional.of(storeEvent);
-        } else {
-            logger.info("No notifications to process");
-            return Optional.empty();
-        }
+    public AlertEvent process(final NotificationDetailResults notificationData) {
+        logger.info(createLoggerMessage("Processing accumulated notifications"));
+        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
+        final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+        return storeEvent;
     }
 
-    public void write(final Optional<AlertEvent> optionalEvent) {
-        if (optionalEvent.isPresent()) {
-            final AlertEvent event = optionalEvent.get();
-            final Optional<NotificationModels> optionalModel = contentConverter.getContent(event.getContent(), NotificationModels.class);
-            if (optionalModel.isPresent()) {
-                final NotificationModels notificationModels = optionalModel.get();
-                final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
-                final List<NotificationModel> entityList = notificationList.stream().map(notificationManager::saveNotification).collect(Collectors.toList());
-                final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(new NotificationModels(entityList)));
-                channelTemplateManager.sendEvent(realTimeEvent);
-
-            }
-        }
+    public void write(final AlertEvent event) {
+        final NotificationModels notificationModels = contentConverter.getJsonContent(event.getContent(), NotificationModels.class);
+        logger.info(createLoggerMessage("Writing Notifications..."));
+        final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
+        final List<NotificationModel> entityList = notificationList.stream().map(notificationManager::saveNotification).collect(Collectors.toList());
+        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(new NotificationModels(entityList)));
+        channelTemplateManager.sendEvent(realTimeEvent);
     }
 
-    private String calculateNextStartTime(final File lastRunFile, final Optional<Date> latestNotificationCreatedAt, final Date searchEndDate) {
-        final String startString;
+    private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {
+        Date newStartDate = currentStartDate;
         if (latestNotificationCreatedAt.isPresent()) {
             final Date latestNotification = latestNotificationCreatedAt.get();
             ZonedDateTime newSearchStart = ZonedDateTime.ofInstant(latestNotification.toInstant(), ZoneOffset.UTC);
             // increment 1 millisecond
             newSearchStart = newSearchStart.plusNanos(1000000);
-            final Date newSearchStartDate = Date.from(newSearchStart.toInstant());
-            startString = RestConnection.formatDate(newSearchStartDate);
-            logger.debug("Last Notification Read Timestamp Found");
+            newStartDate = Date.from(newSearchStart.toInstant());
+            logger.info(createLoggerMessage("Notifications found; updating to latest notification found"));
         } else {
-            startString = RestConnection.formatDate(searchEndDate);
-            logger.debug("Last Notification Read Timestamp Not Found");
+            logger.info(createLoggerMessage("No notifications found; using current search time"));
         }
-        logger.info("Accumulator Next Range Start Time: {} ", startString);
-        return startString;
+        return newStartDate;
     }
 }
 
