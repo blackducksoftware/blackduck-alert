@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.audit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,13 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public AlertPagedRestModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize) {
-        return auditEntryHandler.get(pageNumber, pageSize);
+    public AlertPagedRestModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "searchTerm", required = false) final String searchTerm) {
+        if (StringUtils.isNotBlank(searchTerm)) {
+            return auditEntryHandler.search(pageNumber, pageSize, searchTerm);
+        } else {
+            return auditEntryHandler.get(pageNumber, pageSize);
+        }
     }
 
     @GetMapping(value = "/{id}")
