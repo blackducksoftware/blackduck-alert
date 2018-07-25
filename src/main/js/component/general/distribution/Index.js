@@ -63,6 +63,25 @@ function typeColumnDataFormat(cell) {
     );
 }
 
+/**
+ * Return type column data
+ * @param cell
+ * @returns {*}
+ */
+function frequencyColumnDataFormat(cell) {
+    let cellText = '';
+    if (cell === 'REAL_TIME') {
+        cellText = 'Real Time';
+    } else if (cell === 'DAILY') {
+        cellText = 'Daily';
+    }
+
+    return (
+        <div title={cellText}>
+            {cellText}
+        </div>
+    );
+}
 
 class Index extends Component {
     constructor(props) {
@@ -415,6 +434,9 @@ class Index extends Component {
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={typeColumnDataFormat}>
                         Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>
+                        Digest Type
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
                         Last Run
