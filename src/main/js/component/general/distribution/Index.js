@@ -239,16 +239,14 @@ class Index extends Component {
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
 
             matchingJobs.forEach((job) => {
-                const jsonBody = JSON.stringify(job);
-                const descriptorName = job.distributionType;
-                fetch('/alert/api/configuration/channel/distribution/' + descriptorName, {
+                const deleteUrl = `/alert/api/configuration/channel/distribution/${job.distributionType}?id=${job.id}`;
+                fetch(deleteUrl, {
                     method: 'DELETE',
                     credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': this.props.csrfToken
-                    },
-                    body: jsonBody
+                    }
                 }).then((response) => {
                     if (!response.ok) {
                         response.json().then((json) => {

@@ -101,10 +101,9 @@ public class ChannelDistributionConfigController extends ChannelConfigController
 
     @Override
     @DeleteMapping("/{descriptorName}")
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
-        return controllerHandler.deleteConfig(parsedRestModel, descriptor);
+        return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override

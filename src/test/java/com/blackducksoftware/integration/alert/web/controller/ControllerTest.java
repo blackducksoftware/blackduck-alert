@@ -115,11 +115,8 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         entityRepository.findAll().forEach(item -> {
             System.out.println("Entity id: " + item.getId());
         });
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(restUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
-        restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
-        restModel.setId(String.valueOf(commonEntity.getId()));
-        request.content(gson.toJson(restModel));
-        request.contentType(contentType);
+        final String getUrl = restUrl + "?id=" + commonEntity.getId();
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -159,14 +156,12 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testDeleteConfig() throws Exception {
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+        distributionMockUtil.setDistributionConfigId(savedEntity.getId());
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
+        final String deleteUrl = restUrl + "?id=" + commonEntity.getId();
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(deleteUrl)
                 .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                 .with(SecurityMockMvcRequestPostProcessors.csrf());
-        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
-        restModel.setId(String.valueOf(commonEntity.getId()));
-        restModel.setDistributionConfigId(String.valueOf(savedEntity.getId()));
-        request.content(gson.toJson(restModel));
-        request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
 

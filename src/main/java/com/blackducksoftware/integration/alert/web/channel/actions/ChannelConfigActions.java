@@ -50,11 +50,11 @@ public abstract class ChannelConfigActions<R extends ConfigRestModel> {
 
     public abstract List<R> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
 
-    // public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
-    // deleteConfig(contentConverter.getLongValue(id), descriptor);
-    // }
+    public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
+        deleteConfig(contentConverter.getLongValue(id), descriptor);
+    }
 
-    public abstract void deleteConfig(final R restModel, ChannelDescriptor descriptor);
+    public abstract void deleteConfig(final Long id, ChannelDescriptor descriptor);
 
     public abstract DatabaseEntity saveConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
 

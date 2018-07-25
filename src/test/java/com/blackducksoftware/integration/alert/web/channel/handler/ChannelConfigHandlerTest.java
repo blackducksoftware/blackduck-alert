@@ -204,11 +204,11 @@ public class ChannelConfigHandlerTest {
 
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
 
-        Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
-        Mockito.doNothing().when(configActions).deleteConfig(Mockito.any(), Mockito.any());
+        Mockito.when(configActions.doesConfigExist(Mockito.anyLong(), Mockito.any())).thenReturn(true);
+        Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong(), Mockito.any());
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
-        final ResponseEntity<String> response = handler.deleteConfig(restModel, descriptor);
+        final ResponseEntity<String> response = handler.deleteConfig(contentConverter.getLongValue(restModel.getId()), descriptor);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
@@ -232,7 +232,7 @@ public class ChannelConfigHandlerTest {
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
-        final ResponseEntity<String> response = handler.deleteConfig(restModel, descriptor);
+        final ResponseEntity<String> response = handler.deleteConfig(contentConverter.getLongValue(restModel.getId()), descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
