@@ -110,7 +110,7 @@ public class AuditEntryActions {
             final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
             auditEntries = contentList;
         }
-        List<AuditEntryRestModel> auditEntryRestModels = createRestModels(auditEntries);
+        final List<AuditEntryRestModel> auditEntryRestModels = createRestModels(auditEntries);
         final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel(totalPages, pageNumberResponse, auditEntryRestModels.size(), auditEntryRestModels);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
@@ -130,29 +130,31 @@ public class AuditEntryActions {
         final List<AuditEntryRestModel> auditEntries = new ArrayList<AuditEntryRestModel>();
         logger.debug("Audit entry search. PageNumber: {} PageSize: {} SearchTerm: {}", pageNumber, pageSize, searchTerm);
         final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-        List<AuditEntryRestModel> currentPageRestModels = createRestModels(contentList);
+        final List<AuditEntryRestModel> currentPageRestModels = createRestModels(contentList);
         addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
 
         List<AuditEntryRestModel> pagedAuditEntries = auditEntries;
         int totalPages = 1;
+        int pageNumberResponse = 0;
         if (null != pageSize) {
             pagedAuditEntries = new ArrayList<AuditEntryRestModel>();
-            totalPages = auditEntries.size() % pageSize;
-            int pageStart = pageNumber * pageSize;
-            int pageEnd = pageStart + pageSize;
+            final int pageStart = pageNumber * pageSize;
+            final int pageEnd = pageStart + pageSize;
             for (int i = 0; i < auditEntries.size(); i++) {
                 if (i >= pageStart && i < pageEnd) {
+                    pageNumberResponse = pageNumber;
                     pagedAuditEntries.add(auditEntries.get(i));
                 }
             }
+            totalPages = pagedAuditEntries.size() % pageSize;
         }
-        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, pageNumber, auditEntries.size(), pagedAuditEntries);
+        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, pageNumberResponse, pagedAuditEntries.size(), pagedAuditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
     }
 
     private void addMatchingModels(final List<AuditEntryRestModel> listToAddTo, final List<AuditEntryRestModel> modelsToCheck, final String searchTerm) {
-        for (AuditEntryRestModel restModel : modelsToCheck) {
+        for (final AuditEntryRestModel restModel : modelsToCheck) {
             if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
             } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
