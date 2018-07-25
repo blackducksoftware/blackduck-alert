@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
