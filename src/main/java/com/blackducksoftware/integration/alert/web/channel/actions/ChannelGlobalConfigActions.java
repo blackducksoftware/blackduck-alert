@@ -90,8 +90,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public void deleteConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) {
-        final Long id = getContentConverter().getLongValue(restModel.getId());
+    public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
             descriptor.getGlobalRepositoryAccessor().deleteEntity(id);
         }

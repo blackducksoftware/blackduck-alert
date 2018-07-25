@@ -106,15 +106,12 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> deleteConfig(final R restModel, final ChannelDescriptor descriptor) {
-        if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
+    public ResponseEntity<String> deleteConfig(final Long id, final ChannelDescriptor descriptor) {
+        if (id != null && configActions.doesConfigExist(id, descriptor)) {
+            configActions.deleteConfig(id, descriptor);
+            return createResponse(HttpStatus.ACCEPTED, id, "Deleted");
         }
-        if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
-            configActions.deleteConfig(restModel, descriptor);
-            return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");
-        }
-        return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
+        return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
     public ResponseEntity<String> validateConfig(final R restModel, final ChannelDescriptor descriptor) {

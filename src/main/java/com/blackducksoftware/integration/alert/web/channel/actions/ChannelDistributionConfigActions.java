@@ -188,15 +188,17 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     }
 
     @Override
-    public void deleteConfig(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) {
-        final Long id = getContentConverter().getLongValue(restModel.getId());
+    public void deleteConfig(final Long id, final ChannelDescriptor descriptor) {
         if (id != null) {
-            final Long configId = getContentConverter().getLongValue(restModel.getDistributionConfigId());
-            deleteAuditEntries(id);
-            commonDistributionRepository.deleteById(id);
-            configuredProjectsActions.cleanUpConfiguredProjects();
-            notificationTypesActions.removeOldNotificationTypes(id);
-            descriptor.getDistributionRepositoryAccessor().deleteEntity(configId);
+            final Optional<CommonDistributionConfigEntity> commonEntity = commonDistributionRepository.findById(id);
+            if (commonEntity.isPresent()) {
+                final Long configId = commonEntity.get().getDistributionConfigId();
+                deleteAuditEntries(id);
+                commonDistributionRepository.deleteById(id);
+                configuredProjectsActions.cleanUpConfiguredProjects();
+                notificationTypesActions.removeOldNotificationTypes(id);
+                descriptor.getDistributionRepositoryAccessor().deleteEntity(configId);
+            }
         }
     }
 
