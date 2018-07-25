@@ -87,7 +87,7 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoRefresh: this.props.autoRefresh,
+            autoRefresh: true,
             jobs: [],
             groups: [],
             waitingForGroups: true
