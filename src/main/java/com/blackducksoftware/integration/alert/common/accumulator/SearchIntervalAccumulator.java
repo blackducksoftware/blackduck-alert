@@ -55,8 +55,6 @@ public abstract class SearchIntervalAccumulator extends ScheduledTask implements
         this.cronExpression = cronExpression;
         final String accumulatorFileName = String.format("%s-last-search.txt", name);
         this.searchRangeFilePath = new File(searchStartFileDirectory, accumulatorFileName);
-        ;
-
     }
 
     @Override
