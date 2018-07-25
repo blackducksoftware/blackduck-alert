@@ -205,7 +205,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
-        Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong(), Mockito.any());
+        Mockito.doNothing().when(configActions).deleteConfig(Mockito.any(), Mockito.any());
 
         final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.deleteConfig(restModel, descriptor);

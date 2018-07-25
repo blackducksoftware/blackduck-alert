@@ -55,8 +55,7 @@ public class DistributionChannelManagerTestIT<G extends GlobalChannelConfigEntit
     public void assertManagerHasBeenCreatedForChannel() {
         // DO NOT DELETE THIS TEST
         // This test exists to ensure that when a new channel is created, its necessary pieces are created as well.
-        // Since Common channel is a special case, we minus 1 from the DistributionChannel list
-        assertEquals(channelList.size() + 1, channelDescriptorList.size());
+        assertEquals(channelList.size(), channelDescriptorList.size());
     }
 
 }

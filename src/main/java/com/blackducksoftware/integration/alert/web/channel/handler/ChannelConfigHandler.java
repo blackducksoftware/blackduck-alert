@@ -111,7 +111,7 @@ public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerH
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
         }
         if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
-            configActions.deleteConfig(restModel.getId(), descriptor);
+            configActions.deleteConfig(restModel, descriptor);
             return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");

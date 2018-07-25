@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -188,7 +187,7 @@ public class CommonConfigHandlerTest {
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
+        final HubContentConverter commonDistributionContentConverter = new HubContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
         final GlobalHubConfigRestModel restModel = mockGlobalHubRestModel.createGlobalRestModel();
@@ -274,7 +273,7 @@ public class CommonConfigHandlerTest {
                 GlobalHubConfigRestModel.class, configActions, contentConverter);
 
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
+        final HubContentConverter commonDistributionContentConverter = new HubContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
         final GlobalHubConfigRestModel restModel = mockGlobalHubRestModel.createGlobalRestModel();
