@@ -140,7 +140,7 @@ public class AuditEntryActions {
                     pagedAuditEntries.add(auditEntries.get(i));
                 }
             }
-            totalPages = pagedAuditEntries.size() % pageSize;
+            totalPages = (int) Math.ceil(pagedAuditEntries.size() / pageSize);
         }
         final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, pageNumberResponse, pagedAuditEntries.size(), pagedAuditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
