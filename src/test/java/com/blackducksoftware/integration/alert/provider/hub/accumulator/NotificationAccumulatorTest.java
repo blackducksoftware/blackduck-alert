@@ -35,18 +35,24 @@ import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.policy.PolicyNotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
+import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
+import com.blackducksoftware.integration.hub.api.generated.view.VulnerabilityV2View;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
+import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucketService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
@@ -57,6 +63,11 @@ public class NotificationAccumulatorTest {
 
     private File testAccumulatorParent;
 
+    private GlobalProperties mockedGlobalProperties;
+    private NotificationManager notificationManager;
+    private ChannelTemplateManager channelTemplateManager;
+    private TaskScheduler taskScheduler;
+
     @Before
     public void init() throws Exception {
         gson = new Gson();
@@ -64,6 +75,12 @@ public class NotificationAccumulatorTest {
         testAccumulatorParent = new File("testAccumulatorDirectory");
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
+        mockedGlobalProperties = Mockito.mock(GlobalProperties.class);
+        Mockito.when(mockedGlobalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
+
+        notificationManager = Mockito.mock(NotificationManager.class);
+        channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
+        taskScheduler = Mockito.mock(TaskScheduler.class);
     }
 
     @After
@@ -76,25 +93,19 @@ public class NotificationAccumulatorTest {
     }
 
     private NotificationAccumulator createAccumulator(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> processorList) {
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         return new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
     }
 
     @Test
     public void testFormatDate() {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Date date = new Date();
         assertEquals(RestConnection.formatDate(date), notificationAccumulator.formatDate(date));
     }
 
     @Test
     public void testCreateDateRange() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        Mockito.when(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         assertNotNull(dateRange);
         final ZonedDateTime startTime = ZonedDateTime.ofInstant(dateRange.getLeft().toInstant(), ZoneOffset.UTC);
@@ -106,9 +117,7 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testCreateDateRangeWithExistingFile() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        Mockito.when(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         ZonedDateTime startDateTime = ZonedDateTime.now();
         startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
         startDateTime = startDateTime.withSecond(0).withNano(0);
@@ -125,66 +134,58 @@ public class NotificationAccumulatorTest {
     }
 
     @Test
-    public void testAccumulate() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final NotificationService notificationService = Mockito.mock(NotificationService.class);
+    public void testRun() throws Exception {
+        final List<NotificationTypeProcessor> processorList = Collections.emptyList();
 
-        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
-        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
-        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
-        final ComponentVersionView versionView = new ComponentVersionView();
-
-        final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
-        content.newVulnerabilityCount = 4;
-        content.updatedVulnerabilityCount = 3;
-        content.deletedVulnerabilityCount = 4;
-        content.newVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("1", "2", "3", "10");
-        content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
-        content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
-
-        final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
-        resultList.addAll(vulnerabilityResults.getResults());
-        resultList.addAll(createPolicyViolationNotification());
-
-        final NotificationDetailResults notificationResults = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
-                vulnerabilityResults.getHubBucket());
-
-        Mockito.when(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
-        Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
-
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
-        notificationAccumulator.accumulate(dateRange);
-        assertTrue(notificationAccumulator.getSearchRangeFilePath().exists());
-        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
+        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        spiedAccumulator.run();
+        Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
 
     @Test
-    public void testRun() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
-        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
+    public void testStart() {
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        spiedAccumulator.start();
+        Mockito.verify(spiedAccumulator).scheduleExecution(NotificationAccumulator.DEFAULT_CRON_EXPRESSION);
+        spiedAccumulator.stop(); // stop execution of the scheduled task
+    }
+
+    @Test
+    public void testStop() {
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        spiedAccumulator.stop();
+        Mockito.verify(spiedAccumulator).scheduleExecution(ScheduledTask.STOP_SCHEDULE_EXPRESSION);
+    }
+
+    @Test
+    public void testAccumulate() throws Exception {
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        spiedAccumulator.accumulate();
+        assertTrue(spiedAccumulator.getSearchRangeFilePath().exists());
+        Mockito.verify(spiedAccumulator, Mockito.times(2)).formatDate(Mockito.any());
+        Mockito.verify(spiedAccumulator).initializeSearchRangeFile();
+        Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
+        Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
+    }
+
+    @Test
+    public void testAccumulateWithDateRange() throws Exception {
+        // this is the most comprehensive test as it mocks all services in use and completes the full process
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
+        final HubService hubService = Mockito.mock(HubService.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
+        final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
 
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-
         final ComponentVersionView versionView = new ComponentVersionView();
+        final List<VulnerabilityV2View> vulnerabilityViewList = NotificationGeneratorUtils.createVulnerabilityList();
 
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
         content.newVulnerabilityCount = 4;
@@ -194,26 +195,41 @@ public class NotificationAccumulatorTest {
         content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
+        Mockito.doReturn(Optional.of(restConnection)).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(hubServicesFactory).when(mockedGlobalProperties).createHubServicesFactory(Mockito.any());
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
+        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
+        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
+        Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);
+        Mockito.when(hubService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
+        Mockito.when(hubService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
+
+        final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
+
+        NotificationGeneratorUtils.createCommonContentData(content);
+
+        final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
+        final HubBucket bucket = vulnerabilityResults.getHubBucket();
+        // need to map the component version uri to a view in order for the processing rule to work
+        // otherwise the rule will always have an empty list
+        bucket.addValid(content.componentVersion, versionView);
+
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
         resultList.addAll(vulnerabilityResults.getResults());
         resultList.addAll(createPolicyViolationNotification());
 
         final NotificationDetailResults notificationResults = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
                 vulnerabilityResults.getHubBucket());
 
-        Mockito.when(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        spiedAccumulator.run();
-        //Mockito.verify(spiedAccumulator).formatDate(Mockito.any());
+        final Pair<Date, Date> dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFilePath());
+        spiedAccumulator.accumulate(dateRange);
+        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
         Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
         Mockito.verify(spiedAccumulator).read(Mockito.any());
         Mockito.verify(spiedAccumulator).process(Mockito.any());
@@ -222,8 +238,6 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testRead() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
@@ -247,14 +261,14 @@ public class NotificationAccumulatorTest {
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(hubServicesFactory).when(mockedGlobalProperties).createHubServicesFactory(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertTrue(actualNotificationResults.isPresent());
@@ -262,19 +276,18 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testReadNoNotifications() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createEmptyNotificationResults();
 
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(hubServicesFactory).when(mockedGlobalProperties).createHubServicesFactory(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
@@ -282,21 +295,32 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testReadMissingRestConnection() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        Mockito.doReturn(Optional.empty()).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(globalProperties);
+        Mockito.doReturn(Optional.empty()).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
     }
 
     @Test
+    public void testReadException() throws Exception {
+        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        Mockito.doReturn(Optional.of(restConnection)).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doThrow(RuntimeException.class).when(mockedGlobalProperties).createHubServicesFactory(Mockito.any());
+
+        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
+        assertFalse(actualNotificationResults.isPresent());
+
+    }
+
+    @Test
     public void testProcess() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final NotificationAccumulator notificationAccumulator = createAccumulator(globalProperties, processorList);
+        final NotificationAccumulator notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
         final ComponentVersionView versionView = new ComponentVersionView();
 
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
@@ -308,7 +332,7 @@ public class NotificationAccumulatorTest {
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(mockedGlobalProperties, versionView, content);
         resultList.addAll(vulnerabilityResults.getResults());
         resultList.addAll(createPolicyViolationNotification());
 
@@ -325,23 +349,16 @@ public class NotificationAccumulatorTest {
     }
 
     @Test
-    public void testProcessorListNull() throws Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+    public void testProcessorResultListEmpty() throws Exception {
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final NotificationAccumulator notificationAccumulator = createAccumulator(globalProperties, processorList);
+        final NotificationAccumulator notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
         final ComponentVersionView versionView = new ComponentVersionView();
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
-        content.newVulnerabilityCount = 4;
-        content.updatedVulnerabilityCount = 3;
-        content.deletedVulnerabilityCount = 4;
-        content.newVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("1", "2", "3", "10");
-        content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
-        content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(mockedGlobalProperties, versionView, content);
         final NotificationDetailResults notificationData = new NotificationDetailResults(resultList, vulnerabilityResults.getLatestNotificationCreatedAtDate(), vulnerabilityResults.getLatestNotificationCreatedAtString(),
                 vulnerabilityResults.getHubBucket());
 
@@ -353,13 +370,9 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testWrite() {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
-        final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));
