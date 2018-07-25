@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 
 public abstract class ScheduledTask implements Runnable {
+    public static final String STOP_SCHEDULE_EXPRESSION = "";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
@@ -67,21 +69,21 @@ public abstract class ScheduledTask implements Runnable {
         }
     }
 
-    public Long getMillisecondsToNextRun() {
+    public Optional<Long> getMillisecondsToNextRun() {
         if (future == null || future.isCancelled() || future.isDone()) {
-            return null;
+            return Optional.empty();
         } else {
-            return future.getDelay(TimeUnit.MILLISECONDS);
+            return Optional.of(future.getDelay(TimeUnit.MILLISECONDS));
         }
     }
 
     public String getFormatedNextRunTime() {
-        final Long msToNextRun = getMillisecondsToNextRun();
-        if (msToNextRun == null) {
+        final Optional<Long> msToNextRun = getMillisecondsToNextRun();
+        if (!msToNextRun.isPresent()) {
             return null;
         } else {
             final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
-            ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun, ChronoUnit.MILLIS);
+            ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun.get(), ChronoUnit.MILLIS);
             nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
             final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern("MM/dd/yyy hh:mm a"));
             return formattedString + " UTC";

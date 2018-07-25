@@ -21,16 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.common.accumulator;
 
-import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
-import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
+public interface Accumulator {
 
-public abstract class ProviderDescriptor extends Descriptor {
+    void accumulate();
 
-    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
-        super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
-    }
+    String getName();
 
-    public abstract Accumulator getAccumulator();
+    void start();
+
+    void stop();
 }
