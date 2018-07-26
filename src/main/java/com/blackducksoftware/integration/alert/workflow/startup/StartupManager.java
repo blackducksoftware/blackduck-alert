@@ -44,7 +44,6 @@ import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
 import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
@@ -54,6 +53,8 @@ import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.service.model.HubServerVerifier;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
@@ -66,7 +67,8 @@ public class StartupManager {
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
     private final GlobalProperties globalProperties;
-    private final DailyDigestBatchConfig dailyDigestBatchConfig;
+    private final DailyTask dailyTask;
+    private final OnDemandTask onDemandTask;
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
@@ -76,11 +78,13 @@ public class StartupManager {
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final DailyDigestBatchConfig dailyDigestBatchConfig,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties,
+            final DailyTask dailyTask, final OnDemandTask onDemandTask,
             final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
-        this.dailyDigestBatchConfig = dailyDigestBatchConfig;
+        this.dailyTask = dailyTask;
+        this.onDemandTask = onDemandTask;
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
@@ -196,11 +200,13 @@ public class StartupManager {
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-        dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
+        dailyTask.scheduleExecution(dailyDigestCron);
+        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_SECONDS);
         purgeConfig.scheduleExecution(purgeDataCron);
 
-        logger.info("Daily Digest next run:     {}", dailyDigestBatchConfig.getFormatedNextRunTime());
-        logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime());
+        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
+        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
+        logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime().orElse(""));
 
         phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
         logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());

@@ -56,14 +56,10 @@ public class HubDescriptor extends ProviderDescriptor {
 
     @Override
     public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

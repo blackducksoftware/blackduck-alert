@@ -126,9 +126,9 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
 
         assertFalse(nullResult.isPresent());
 
-        final String nullStringResult = config.getFormatedNextRunTime();
+        final Optional<String> nullStringResult = config.getFormatedNextRunTime();
 
-        assertNull(nullStringResult);
+        assertFalse(nullStringResult.isPresent());
     }
 
     @Test
