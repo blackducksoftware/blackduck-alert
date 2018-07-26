@@ -41,13 +41,13 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, CommonDistributionConfigRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, CommonDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final CommonDistributionConfigRestModel commonRestModel = (CommonDistributionConfigRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final CommonDistributionConfig commonRestModel = (CommonDistributionConfig) restModel;
         final Long distributionConfigId = getContentConverter().getLongValue(commonRestModel.getDistributionConfigId());
         final DigestType digestType = Enum.valueOf(DigestType.class, commonRestModel.getFrequency());
         final Boolean filterByProject = getContentConverter().getBooleanValue(commonRestModel.getFilterByProject());
@@ -57,9 +57,9 @@ public class CommonDistributionContentConverter extends DatabaseContentConverter
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final CommonDistributionConfigEntity commonEntity = (CommonDistributionConfigEntity) entity;
-        final CommonDistributionConfigRestModel commonRestModel = new CommonDistributionConfigRestModel();
+        final CommonDistributionConfig commonRestModel = new CommonDistributionConfig();
         commonRestModel.setId(getContentConverter().getStringValue(commonEntity.getId()));
         commonRestModel.setDistributionConfigId(getContentConverter().getStringValue(commonEntity.getDistributionConfigId()));
         commonRestModel.setDistributionType(commonEntity.getDistributionType());

@@ -34,14 +34,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.alert.web.controller.ConfigController;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH)
 public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
 
     @GetMapping
-    public abstract List<ConfigRestModel> getConfig(final Long id, final String descriptorName);
+    public abstract List<Config> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
     public abstract ResponseEntity<String> postConfig(String restModel, final String descriptorName);

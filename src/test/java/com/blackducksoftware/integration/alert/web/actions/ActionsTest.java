@@ -36,9 +36,9 @@ import com.blackducksoftware.integration.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public abstract class ActionsTest<R extends CommonDistributionConfigRestModel, E extends DistributionChannelConfigEntity, W extends JpaRepository<E, Long>, DCA extends DistributionConfigActions<E, R, W>> {
+public abstract class ActionsTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, W extends JpaRepository<E, Long>, DCA extends DistributionConfigActions<E, R, W>> {
     private final ProjectMockUtils projectMockUtils;
     private final NotificationTypeMockUtils notificationMockUtil;
     private final MockCommonDistributionEntity distributionMockUtils;

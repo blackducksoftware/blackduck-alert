@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.model;
+package com.blackducksoftware.integration.alert.web.model;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;

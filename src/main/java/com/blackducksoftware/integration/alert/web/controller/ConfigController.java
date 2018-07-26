@@ -32,11 +32,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 // This must be an abstract class for the security to work
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
-public abstract class ConfigController<R extends ConfigRestModel> extends BaseController {
+public abstract class ConfigController<R extends Config> extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
 
     @GetMapping

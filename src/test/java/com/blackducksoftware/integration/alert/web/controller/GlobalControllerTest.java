@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -48,7 +48,7 @@ import com.google.gson.Gson;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends ConfigRestModel, CR extends JpaRepository<GE, Long>> {
+public abstract class GlobalControllerTest<GE extends DatabaseEntity, GR extends Config, CR extends JpaRepository<GE, Long>> {
 
     protected final TestProperties testProperties = new TestProperties();
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));

@@ -42,28 +42,28 @@ public class NotificationContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, NotificationRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, NotificationConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final NotificationRestModel notificationRestModel = (NotificationRestModel) restModel;
-        final Date createdAt = getContentConverter().getValue(notificationRestModel.getCreatedAt(), Date.class);
-        final NotificationEntity notificationEntity = new NotificationEntity(notificationRestModel.getEventKey(), createdAt, null, notificationRestModel.getProjectName(), notificationRestModel.getProjectUrl(),
-                notificationRestModel.getProjectVersion(), notificationRestModel.getProjectVersionUrl(), null, null, null, null);
-        addIdToEntityPK(notificationRestModel.getId(), notificationEntity);
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final NotificationConfig notificationConfig = (NotificationConfig) restModel;
+        final Date createdAt = getContentConverter().getValue(notificationConfig.getCreatedAt(), Date.class);
+        final NotificationEntity notificationEntity = new NotificationEntity(notificationConfig.getEventKey(), createdAt, null, notificationConfig.getProjectName(), notificationConfig.getProjectUrl(),
+                notificationConfig.getProjectVersion(), notificationConfig.getProjectVersionUrl(), null, null, null, null);
+        addIdToEntityPK(notificationConfig.getId(), notificationEntity);
         return notificationEntity;
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final NotificationEntity notificationEntity = (NotificationEntity) entity;
         final String id = getContentConverter().getStringValue(notificationEntity.getId());
         final String createdAt = getContentConverter().getStringValue(notificationEntity.getCreatedAt());
-        final NotificationRestModel notificationRestModel = new NotificationRestModel(id, notificationEntity.getEventKey(), createdAt, null, notificationEntity.getProjectName(), notificationEntity.getProjectVersion(), null,
+        final NotificationConfig notificationConfig = new NotificationConfig(id, notificationEntity.getEventKey(), createdAt, null, notificationEntity.getProjectName(), notificationEntity.getProjectVersion(), null,
                 notificationEntity.getProjectUrl(), notificationEntity.getProjectVersionUrl());
-        return notificationRestModel;
+        return notificationConfig;
     }
 
 }

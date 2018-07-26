@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class SlackDistributionContentConverter extends DatabaseContentConverter {
@@ -42,22 +42,22 @@ public class SlackDistributionContentConverter extends DatabaseContentConverter 
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, SlackDistributionRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, SlackDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
         final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
         addIdToEntityPK(slackRestModel.getId(), slackEntity);
         return slackEntity;
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
-        final SlackDistributionRestModel slackRestModel = new SlackDistributionRestModel();
+        final SlackDistributionConfig slackRestModel = new SlackDistributionConfig();
         final String id = getContentConverter().getStringValue(slackEntity.getId());
         slackRestModel.setDistributionConfigId(id);
         slackRestModel.setWebhook(slackEntity.getWebhook());

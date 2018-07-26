@@ -43,7 +43,7 @@ import com.blackducksoftware.integration.alert.database.audit.AuditEntryReposito
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -92,13 +92,13 @@ public class CommonDistributionConfigActionsTestIT {
 
         auditEntryRepository.save(new AuditEntryEntity(new Long(-1), lastRan, lastRan, status, "", ""));
 
-        final CommonDistributionConfigRestModel commonDistributionConfigRestModel = new CommonDistributionConfigRestModel(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
+        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(null, null, distributionType, name, frequency, filterByProject, projectList, notificationTypeList);
         final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
         final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(commonDistributionRepository, auditEntryRepository, configuredProjectsActions, notificationTypesActions,
                 commonDistributionContentConverter,
                 auditNotificationRepository);
 
-        final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfigRestModel);
+        final CommonDistributionConfigEntity savedEntity = commonDistributionConfigActions.saveConfig(commonDistributionConfig);
         assertEquals(distributionType, savedEntity.getDistributionType());
         assertEquals(name, savedEntity.getName());
         assertEquals(frequency, savedEntity.getFrequency().name());
@@ -108,16 +108,16 @@ public class CommonDistributionConfigActionsTestIT {
         assertEquals(notificationTypeList.size(), notificationTypesActions.getDistributionNotificationTypeRepository().count());
         assertEquals(notificationTypeList.size(), notificationTypesActions.getNotificationTypeRepository().count());
 
-        final CommonDistributionConfigRestModel updatedRestModel = (CommonDistributionConfigRestModel) commonDistributionContentConverter.populateRestModelFromDatabaseEntity(savedEntity);
+        final CommonDistributionConfig updatedRestModel = (CommonDistributionConfig) commonDistributionContentConverter.populateRestModelFromDatabaseEntity(savedEntity);
         commonDistributionConfigActions.saveConfig(updatedRestModel);
         assertEquals(projectList.size(), configuredProjectsActions.getDistributionProjectRepository().count());
         assertEquals(projectList.size(), configuredProjectsActions.getConfiguredProjectsRepository().count());
         assertEquals(notificationTypeList.size(), notificationTypesActions.getDistributionNotificationTypeRepository().count());
         assertEquals(notificationTypeList.size(), notificationTypesActions.getNotificationTypeRepository().count());
 
-        final List<CommonDistributionConfigRestModel> foundRestModels = commonDistributionConfigActions.getConfig(savedEntity.getId());
+        final List<CommonDistributionConfig> foundRestModels = commonDistributionConfigActions.getConfig(savedEntity.getId());
         assertEquals(1, foundRestModels.size());
-        final CommonDistributionConfigRestModel foundRestModel = foundRestModels.get(0);
+        final CommonDistributionConfig foundRestModel = foundRestModels.get(0);
 
         assertEquals(savedEntity.getId(), contentConverter.getLongValue(foundRestModel.getId()));
         assertEquals(savedEntity.getDistributionConfigId(), contentConverter.getLongValue(foundRestModel.getDistributionConfigId()));

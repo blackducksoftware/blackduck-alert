@@ -36,46 +36,46 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.actions.CommonDistributionConfigActions;
 import com.blackducksoftware.integration.alert.web.controller.handler.CommonConfigHandler;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
 // TODO convert this over to the universal controller. Functionality SHOULD already be in.
 @RestController
 @RequestMapping(DistributionConfigController.DISTRIBUTION_PATH + "/common")
-public class CommonDistributionConfigController extends DistributionConfigController<CommonDistributionConfigRestModel> {
-    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> commonConfigHandler;
+public class CommonDistributionConfigController extends DistributionConfigController<CommonDistributionConfig> {
+    private final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> commonConfigHandler;
 
     @Autowired
     public CommonDistributionConfigController(final CommonDistributionConfigActions commonDistributionConfigActions, final ContentConverter contentConverter) {
-        commonConfigHandler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class, CommonDistributionConfigRestModel.class, commonDistributionConfigActions, contentConverter);
+        commonConfigHandler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class, CommonDistributionConfig.class, commonDistributionConfigActions, contentConverter);
     }
 
     @Override
-    public List<CommonDistributionConfigRestModel> getConfig(final Long id) {
+    public List<CommonDistributionConfig> getConfig(final Long id) {
         return commonConfigHandler.getConfig(id);
     }
 
     @Override
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) final CommonDistributionConfig restModel) {
         return commonConfigHandler.doNotAllowHttpMethod();
     }
 
     @Override
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = true) final CommonDistributionConfig restModel) {
         return commonConfigHandler.putConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final CommonDistributionConfig restModel) {
         return commonConfigHandler.validateConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = true) final CommonDistributionConfig restModel) {
         return commonConfigHandler.deleteConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = true) final CommonDistributionConfigRestModel restModel) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = true) final CommonDistributionConfig restModel) {
         return commonConfigHandler.testConfig(restModel);
     }
 

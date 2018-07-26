@@ -20,12 +20,12 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.alert.mock.ProjectMockUtils;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfigRestModel> {
+public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfig> {
     protected static final ProjectMockUtils projectMock = new ProjectMockUtils();
     protected static final NotificationTypeMockUtils notificationTypeMock = new NotificationTypeMockUtils();
     private String id;
@@ -148,13 +148,13 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     @Override
-    public CommonDistributionConfigRestModel createEmptyRestModel() {
-        return new CommonDistributionConfigRestModel();
+    public CommonDistributionConfig createEmptyRestModel() {
+        return new CommonDistributionConfig();
     }
 
     @Override
-    public CommonDistributionConfigRestModel createRestModel() {
-        return new CommonDistributionConfigRestModel(id, distributionConfigId, distributionType, name, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings());
+    public CommonDistributionConfig createRestModel() {
+        return new CommonDistributionConfig(id, distributionConfigId, distributionType, name, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings());
     }
 
     @Override

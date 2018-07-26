@@ -12,10 +12,10 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGloba
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 
-public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<EmailGlobalConfigEntity, EmailGlobalConfigRestModel, EmailGlobalRepository> {
+public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<EmailGlobalConfigEntity, EmailGlobalConfig, EmailGlobalRepository> {
 
     @Autowired
     private EmailGlobalRepository emailGlobalRepository;
@@ -31,7 +31,7 @@ public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<Ema
     }
 
     @Override
-    public MockGlobalRestModelUtil<EmailGlobalConfigRestModel> getGlobalRestModelMockUtil() {
+    public MockGlobalRestModelUtil<EmailGlobalConfig> getGlobalRestModelMockUtil() {
         return new MockEmailGlobalRestModel();
     }
 

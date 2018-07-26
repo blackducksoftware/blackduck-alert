@@ -23,15 +23,13 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
-
-public abstract class ConfigRestModel extends Model {
+public abstract class Config extends Model {
     private String id;
 
-    public ConfigRestModel() {
+    public Config() {
     }
 
-    public ConfigRestModel(final String id) {
+    public Config(final String id) {
         this.id = id;
     }
 

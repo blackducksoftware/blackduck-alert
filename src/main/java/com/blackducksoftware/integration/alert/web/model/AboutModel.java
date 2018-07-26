@@ -23,37 +23,30 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-public class ComponentRestModel extends ConfigRestModel {
+public class AboutModel extends Model {
+    private String version;
+    private String description;
+    private String projectUrl;
 
-    private String componentName;
-    private String componentVersion;
-    private String policyRuleName;
-    private String policyRuleUser;
+    protected AboutModel() {
 
-    public ComponentRestModel() {
     }
 
-    public ComponentRestModel(final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
-        this.componentName = componentName;
-        this.componentVersion = componentVersion;
-        this.policyRuleName = policyRuleName;
-        this.policyRuleUser = policyRuleUser;
+    public AboutModel(final String version, final String description, final String projectUrl) {
+        this.version = version;
+        this.description = description;
+        this.projectUrl = projectUrl;
     }
 
-    public String getComponentName() {
-        return componentName;
+    public String getVersion() {
+        return version;
     }
 
-    public String getComponentVersion() {
-        return componentVersion;
+    public String getDescription() {
+        return description;
     }
 
-    public String getPolicyRuleName() {
-        return policyRuleName;
+    public String getProjectUrl() {
+        return projectUrl;
     }
-
-    public String getPolicyRuleUser() {
-        return policyRuleUser;
-    }
-
 }

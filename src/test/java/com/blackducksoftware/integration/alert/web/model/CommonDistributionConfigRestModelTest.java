@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public class CommonDistributionConfigRestModelTest extends CommonDistributionRestModelTest<CommonDistributionConfigRestModel> {
+public class CommonDistributionConfigRestModelTest extends CommonDistributionRestModelTest<CommonDistributionConfig> {
 
     @Override
     public MockCommonDistributionRestModel getMockUtil() {
@@ -16,12 +16,12 @@ public class CommonDistributionConfigRestModelTest extends CommonDistributionRes
     }
 
     @Override
-    public Class<CommonDistributionConfigRestModel> getRestModelClass() {
-        return CommonDistributionConfigRestModel.class;
+    public Class<CommonDistributionConfig> getRestModelClass() {
+        return CommonDistributionConfig.class;
     }
 
     @Override
-    public void assertRestModelFieldsNull(final CommonDistributionConfigRestModel restModel) {
+    public void assertRestModelFieldsNull(final CommonDistributionConfig restModel) {
         assertNull(restModel.getDistributionConfigId());
         assertNull(restModel.getDistributionType());
         assertNull(restModel.getFilterByProject());
@@ -34,7 +34,7 @@ public class CommonDistributionConfigRestModelTest extends CommonDistributionRes
     }
 
     @Override
-    public void assertRestModelFieldsFull(final CommonDistributionConfigRestModel restModel) {
+    public void assertRestModelFieldsFull(final CommonDistributionConfig restModel) {
         assertEquals(getMockUtil().getDistributionConfigId(), restModel.getDistributionConfigId());
         assertEquals(getMockUtil().getDistributionType(), restModel.getDistributionType());
         assertEquals(getMockUtil().getFilterByProject(), restModel.getFilterByProject());

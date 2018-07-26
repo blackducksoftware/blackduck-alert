@@ -48,9 +48,9 @@ import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributio
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryHandler;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
-import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
+import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -92,7 +92,7 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null);
+        final AlertPagedModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryRestModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
@@ -103,7 +103,7 @@ public class AuditEntryHandlerTestIT {
         assertEquals(savedConfigEntity.getDistributionType(), auditEntry.getEventType());
         assertEquals(savedConfigEntity.getName(), auditEntry.getName());
 
-        final NotificationRestModel notification = auditEntry.getNotification();
+        final NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getEventKey(), notification.getEventKey());
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType().name(), notification.getNotificationTypes().iterator().next());
@@ -113,7 +113,7 @@ public class AuditEntryHandlerTestIT {
         assertEquals(savedNotificationEntity.getProjectVersionUrl(), notification.getProjectVersionUrl());
         assertNotNull(notification.getComponents());
         assertTrue(!notification.getComponents().isEmpty());
-        final ComponentRestModel component = notification.getComponents().iterator().next();
+        final ComponentConfig component = notification.getComponents().iterator().next();
         assertEquals(savedNotificationEntity.getComponentName(), component.getComponentName());
         assertEquals(savedNotificationEntity.getComponentVersion(), component.getComponentVersion());
         assertEquals(savedNotificationEntity.getPolicyRuleName(), component.getPolicyRuleName());

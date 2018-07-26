@@ -18,7 +18,7 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.google.gson.Gson;
 
@@ -67,9 +67,9 @@ public class HubDescriptorTest {
         final GlobalHubConfigEntity hubEntity = mockHubEntity.createGlobalEntity();
         final GlobalHubConfigRestModel hubRestModel = mockHubRestModel.createGlobalRestModel();
 
-        final ConfigRestModel restModel = hubDescriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
+        final Config restModel = hubDescriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
         final DatabaseEntity entity = hubDescriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(hubRestModel);
-        final ConfigRestModel jsonRestModel = hubDescriptor.getGlobalContentConverter().getRestModelFromJson(gson.toJson(hubEntity));
+        final Config jsonRestModel = hubDescriptor.getGlobalContentConverter().getRestModelFromJson(gson.toJson(hubEntity));
 
         assertEquals(String.valueOf(hubEntity.getId()), restModel.getId());
         assertEquals(hubRestModel.getId(), String.valueOf(entity.getId()));

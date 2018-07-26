@@ -25,17 +25,17 @@ package com.blackducksoftware.integration.alert.web.channel.model;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public class EmailGroupDistributionRestModel extends CommonDistributionConfigRestModel {
+public class EmailDistributionConfig extends CommonDistributionConfig {
     private String groupName;
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
 
-    public EmailGroupDistributionRestModel() {
+    public EmailDistributionConfig() {
     }
 
-    public EmailGroupDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
+    public EmailDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final String groupName,
             final String emailTemplateLogoImage, final String emailSubjectLine, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.groupName = groupName;

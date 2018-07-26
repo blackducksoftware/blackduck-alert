@@ -55,10 +55,10 @@ import com.blackducksoftware.integration.alert.database.audit.relation.AuditNoti
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
-import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
+import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
+import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -91,11 +91,11 @@ public class AuditEntryActions {
         this.channelTemplateManager = channelTemplateManager;
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> get() {
+    public AlertPagedModel<AuditEntryRestModel> get() {
         return get(null, null);
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
+    public AlertPagedModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
         final List<AuditEntryEntity> auditEntries;
         logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
         int totalPages = 1;
@@ -111,7 +111,7 @@ public class AuditEntryActions {
             auditEntries = contentList;
         }
         final List<AuditEntryRestModel> auditEntryRestModels = createRestModels(auditEntries);
-        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel(totalPages, pageNumberResponse, auditEntryRestModels.size(), auditEntryRestModels);
+        final AlertPagedModel<AuditEntryRestModel> pagedRestModel = new AlertPagedModel(totalPages, pageNumberResponse, auditEntryRestModels.size(), auditEntryRestModels);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
     }
@@ -126,7 +126,7 @@ public class AuditEntryActions {
         return null;
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
+    public AlertPagedModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
         final List<AuditEntryRestModel> auditEntries = new ArrayList<AuditEntryRestModel>();
         logger.debug("Audit entry search. PageNumber: {} PageSize: {} SearchTerm: {}", pageNumber, pageSize, searchTerm);
         final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
@@ -151,7 +151,7 @@ public class AuditEntryActions {
             final double ceiling = Math.ceil(division);
             totalPages = (int) Math.round(ceiling);
         }
-        final AlertPagedRestModel<AuditEntryRestModel> pagedRestModel = new AlertPagedRestModel<AuditEntryRestModel>(totalPages, pageNumberResponse, pagedAuditEntries.size(), pagedAuditEntries);
+        final AlertPagedModel<AuditEntryRestModel> pagedRestModel = new AlertPagedModel<AuditEntryRestModel>(totalPages, pageNumberResponse, pagedAuditEntries.size(), pagedAuditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
     }
@@ -166,7 +166,7 @@ public class AuditEntryActions {
         }
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException {
+    public AlertPagedModel<AuditEntryRestModel> resendNotification(final Long id) throws IntegrationException {
         final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
         if (!auditEntryEntityOptional.isPresent()) {
             throw new AlertException("No audit entry with the provided id exists.");
@@ -217,14 +217,14 @@ public class AuditEntryActions {
         final String errorMessage = auditEntryEntity.getErrorMessage();
         final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-        NotificationRestModel notificationRestModel = null;
+        NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationRestModel = (NotificationRestModel) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0).getNotificationEntity());
+            notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0).getNotificationEntity());
             final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
-            notificationRestModel.setNotificationTypes(notificationTypes);
-            final Set<ComponentRestModel> components = notifications.stream().map(notification -> new ComponentRestModel(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
+            notificationConfig.setNotificationTypes(notificationTypes);
+            final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
                     notification.getPolicyRuleUser())).collect(Collectors.toSet());
-            notificationRestModel.setComponents(components);
+            notificationConfig.setComponents(components);
         }
 
         String distributionConfigName = null;
@@ -234,7 +234,7 @@ public class AuditEntryActions {
             eventType = commonConfigEntity.get().getDistributionType();
         }
 
-        return new AuditEntryRestModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notificationRestModel);
+        return new AuditEntryRestModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notificationConfig);
     }
 
 }
