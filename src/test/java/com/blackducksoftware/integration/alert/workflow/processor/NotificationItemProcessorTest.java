@@ -11,32 +11,51 @@
  */
 package com.blackducksoftware.integration.alert.workflow.processor;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.Optional;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
+
+import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
+import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
+import com.google.gson.Gson;
 
 public class NotificationItemProcessorTest {
 
     @Test
-    public void testInit() {
-        // final GlobalProperties globalProperties = new TestGlobalProperties();
-        // final List<NotificationTypeProcessor> processorList = null;
-        // final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(processorList);
-    }
+    public void testProcess() throws HubIntegrationException {
+        final NotificationModel notificationModel = new NotificationModel(null, null);
+        final NotificationTypeProcessor notificationTypeProcessor = Mockito.mock(NotificationTypeProcessor.class);
+        Mockito.when(notificationTypeProcessor.isApplicable(Mockito.any())).thenReturn(true);
+        Mockito.when(notificationTypeProcessor.process(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(Arrays.asList(notificationModel));
 
-    @Test
-    public void testProcessEvents() throws HubIntegrationException {
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
+        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(Arrays.asList(notificationTypeProcessor), contentConverter);
 
-        // TODO fix Test
-        // final NotificationResults results = new NotificationResults(Collections.emptyList(), null);
-        // final NotificationEvent event1 = new NotificationEvent("event 1", NotificationCategoryEnum.HIGH_VULNERABILITY, null);
-        // final NotificationEvent event2 = new NotificationEvent("event 2", NotificationCategoryEnum.LOW_VULNERABILITY, null);
-        // final List<NotificationEvent> eventList = Arrays.asList(event1, event2);
+        final TestGlobalProperties globalProperties = new TestGlobalProperties();
 
-        // final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(globalProperties, new TestLogger(), Collections.emptyList());
-        // final AlertEvent storeEvent = notificationItemProcessor.process(results);
+        final HubBucket hubBucket = new HubBucket();
+        final NotificationDetailResult notificationResult = Mockito.mock(NotificationDetailResult.class);
 
-        // assertEquals("DB_STORE_EVENT", storeEvent.getTopic());
-        // assertTrue(storeEvent.getNotificationList().size() == 2);
+        final NotificationDetailResults notificationData = new NotificationDetailResults(Arrays.asList(notificationResult), Optional.empty(), Optional.empty(), hubBucket);
+        final AlertEvent alertEvent = notificationItemProcessor.process(globalProperties, notificationData);
+
+        assertEquals("DB_STORE_EVENT", alertEvent.getDestination());
+
+        final String content = alertEvent.getContent();
+        final NotificationModels models = contentConverter.getJsonContent(content, NotificationModels.class);
+        assertTrue(models.getNotificationModelList().size() == 1);
     }
 }
