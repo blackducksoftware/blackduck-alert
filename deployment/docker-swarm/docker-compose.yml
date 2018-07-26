@@ -29,7 +29,7 @@ services:
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data', 'alert-volume:/opt/blackduck/alert/alert-config/security']
     deploy:
       mode: replicated
-      restart_policy: {condition: on-failure, delay: 15s, window:60s}
+      restart_policy: {condition: on-failure, delay: 15s, window: 60s}
       resources:
         limits: {memory: 512M}
         reservations: {memory: 512M}
