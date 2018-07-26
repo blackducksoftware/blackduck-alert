@@ -306,7 +306,7 @@ public class GlobalProperties {
         final Optional<String> hubProxyPassword = getHubProxyPassword();
         final Optional<Boolean> trustCertificate = getHubTrustCertificate();
         if (hubUrl.isPresent()) {
-            hubServerConfigBuilder.setUrl(getHubUrl().get());
+            hubServerConfigBuilder.setUrl(hubUrl.get());
         }
         if (hubProxyHost.isPresent()) {
             hubServerConfigBuilder.setProxyHost(hubProxyHost.get());

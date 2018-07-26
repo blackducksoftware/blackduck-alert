@@ -100,7 +100,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public GlobalHubConfigRestModel updateModelFromEnvironment(final GlobalHubConfigRestModel restModel) {
         restModel.setHubUrl(globalProperties.getHubUrl().orElse(null));
         if (globalProperties.getHubTrustCertificate().isPresent()) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().get()));
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().orElse(Boolean.FALSE.booleanValue())));
         }
         restModel.setHubProxyHost(globalProperties.getHubProxyHost().orElse(null));
         restModel.setHubProxyPort(globalProperties.getHubProxyPort().orElse(null));
