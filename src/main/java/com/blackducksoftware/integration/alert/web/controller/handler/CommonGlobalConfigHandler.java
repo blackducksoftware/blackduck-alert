@@ -32,7 +32,6 @@ import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
-// TODO verify if this class is still necessary with our universal controllers
 public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 

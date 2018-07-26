@@ -32,7 +32,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContent
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 
 @Component
 public class HubContentConverter extends DatabaseContentConverter {
@@ -44,12 +44,12 @@ public class HubContentConverter extends DatabaseContentConverter {
 
     @Override
     public Config getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, GlobalHubConfigRestModel.class);
+        return getContentConverter().getJsonContent(json, GlobalHubConfig.class);
     }
 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
-        final GlobalHubConfigRestModel hubRestModel = (GlobalHubConfigRestModel) restModel;
+        final GlobalHubConfig hubRestModel = (GlobalHubConfig) restModel;
         final Integer hubTimeout = getContentConverter().getIntegerValue(hubRestModel.getHubTimeout());
         final GlobalHubConfigEntity hubEntity = new GlobalHubConfigEntity(hubTimeout, hubRestModel.getHubApiKey());
         addIdToEntityPK(hubRestModel.getId(), hubEntity);
@@ -59,7 +59,7 @@ public class HubContentConverter extends DatabaseContentConverter {
     @Override
     public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final GlobalHubConfigEntity hubEntity = (GlobalHubConfigEntity) entity;
-        final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel();
+        final GlobalHubConfig hubRestModel = new GlobalHubConfig();
         final String id = getContentConverter().getStringValue(hubEntity.getId());
         final String hubTimeout = getContentConverter().getStringValue(hubEntity.getHubTimeout());
         hubRestModel.setId(id);

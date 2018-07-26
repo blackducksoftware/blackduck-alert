@@ -20,9 +20,9 @@ import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEn
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 
-public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
+public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> {
 
     @Autowired
     GlobalHubRepository globalHubRepository;
@@ -44,13 +44,28 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     }
 
     @Override
-    public MockGlobalRestModelUtil<GlobalHubConfigRestModel> getGlobalRestModelMockUtil() {
+    public MockGlobalRestModelUtil<GlobalHubConfig> getGlobalRestModelMockUtil() {
         return new MockGlobalHubRestModel();
     }
 
     @Override
     public String getRestControllerUrl() {
         return "/configuration/provider/hub";
+    }
+
+    @Test
+    @Override
+    @WithMockUser(roles = "ADMIN")
+    public void testDeleteConfig() throws Exception {
+        globalEntityRepository.deleteAll();
+        final GlobalHubConfigEntity savedEntity = globalEntityRepository.save(entity);
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
+        restModel.setId(String.valueOf(savedEntity.getId()));
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
 
     @Test
@@ -66,9 +81,9 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         globalProperties.setHubUrl(hubUrl);
         globalProperties.setHubTrustCertificate(Boolean.valueOf(alwaysTrust));
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
-        final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel(null, hubUrl, String.valueOf(timeout), apiKey, false, null, null, null, null, false, "true");
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
+        final GlobalHubConfig hubRestModel = new GlobalHubConfig(null, hubUrl, String.valueOf(timeout), apiKey, false, null, null, null, null, false, "true");
         request.content(gson.toJson(hubRestModel));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());

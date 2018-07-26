@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.alert.web.exception.AlertFieldException
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
+public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
     private final AccumulatorConfig accumulatorConfig;
     private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
@@ -60,7 +60,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     }
 
     @Override
-    public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
+    public List<GlobalSchedulingConfig> getConfig(final Long id) throws AlertException {
         GlobalSchedulingConfigEntity databaseEntity = null;
         if (id != null) {
             final Optional<GlobalSchedulingConfigEntity> repositoryResult = getRepository().findById(id);
@@ -73,26 +73,26 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
                 databaseEntity = databaseEntities.get(0);
             }
         }
-        final GlobalSchedulingConfigRestModel restModel;
+        final GlobalSchedulingConfig restModel;
         if (databaseEntity != null) {
-            restModel = (GlobalSchedulingConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
+            restModel = (GlobalSchedulingConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
             restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
             restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
         } else {
-            restModel = new GlobalSchedulingConfigRestModel();
+            restModel = new GlobalSchedulingConfig();
         }
         final Long accumulatorNextRun = accumulatorConfig.getMillisecondsToNextRun();
         if (accumulatorNextRun != null) {
             final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
-        final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
+        final List<GlobalSchedulingConfig> restModels = new ArrayList<>();
         restModels.add(restModel);
         return restModels;
     }
 
     @Override
-    public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalSchedulingConfig restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getDailyDigestHourOfDay())) {
             if (!StringUtils.isNumeric(restModel.getDailyDigestHourOfDay())) {
@@ -127,12 +127,12 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     }
 
     @Override
-    public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalSchedulingConfig restModel) throws IntegrationException {
         return null;
     }
 
     @Override
-    public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
+    public void configurationChangeTriggers(final GlobalSchedulingConfig restModel) {
         if (restModel != null) {
             final String dailyDigestHourOfDay = restModel.getDailyDigestHourOfDay();
             final String purgeDataFrequencyDays = restModel.getPurgeDataFrequencyDays();

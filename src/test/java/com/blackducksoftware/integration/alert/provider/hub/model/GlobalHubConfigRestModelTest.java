@@ -18,12 +18,12 @@ import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.model.GlobalRestModelTest;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 
-public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfigRestModel> {
+public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubConfig> {
 
     @Override
-    public void assertGlobalRestModelFieldsNull(final GlobalHubConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsNull(final GlobalHubConfig restModel) {
         assertNull(restModel.getHubAlwaysTrustCertificate());
         assertNull(restModel.getHubApiKey());
         assertNull(restModel.getHubProxyHost());
@@ -35,7 +35,7 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     }
 
     @Override
-    public void assertGlobalRestModelFieldsFull(final GlobalHubConfigRestModel restModel) {
+    public void assertGlobalRestModelFieldsFull(final GlobalHubConfig restModel) {
         assertEquals(getMockUtil().getHubAlwaysTrustCertificate(), restModel.getHubAlwaysTrustCertificate());
         assertEquals(getMockUtil().getHubProxyHost(), restModel.getHubProxyHost());
         assertEquals(getMockUtil().getHubProxyPassword(), restModel.getHubProxyPassword());
@@ -46,8 +46,8 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
     }
 
     @Override
-    public Class<GlobalHubConfigRestModel> getGlobalRestModelClass() {
-        return GlobalHubConfigRestModel.class;
+    public Class<GlobalHubConfig> getGlobalRestModelClass() {
+        return GlobalHubConfig.class;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalHubC
 
     @Test
     public void testSetHubProxyPassword() {
-        final GlobalHubConfigRestModel model = getMockUtil().createEmptyGlobalRestModel();
+        final GlobalHubConfig model = getMockUtil().createEmptyGlobalRestModel();
 
         final String expectedPassword = "expected";
         model.setHubProxyPassword(expectedPassword);

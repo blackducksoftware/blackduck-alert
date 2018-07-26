@@ -12,11 +12,11 @@ import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedul
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigActions;
-import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfig;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 
-public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
+public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
 
     @Autowired
     GlobalSchedulingRepository globalSchedulingRepository;
@@ -47,13 +47,28 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
     @Test
     @Override
     @WithMockUser(roles = "ADMIN")
+    public void testDeleteConfig() throws Exception {
+        globalEntityRepository.deleteAll();
+        final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
+        restModel.setId(String.valueOf(savedEntity.getId()));
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+    }
+
+    @Test
+    @Override
+    @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
         globalEntityRepository.deleteAll();
         final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
