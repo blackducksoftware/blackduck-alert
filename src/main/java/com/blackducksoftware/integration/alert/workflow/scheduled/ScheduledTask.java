@@ -51,9 +51,7 @@ public abstract class ScheduledTask implements Runnable {
         if (StringUtils.isNotBlank(cron)) {
             try {
                 final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
-                if (future != null) {
-                    future.cancel(false);
-                }
+                unscheduleTask();
                 logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
                 future = taskScheduler.schedule(this, cronTrigger);
             } catch (final IllegalArgumentException e) {
@@ -62,8 +60,31 @@ public abstract class ScheduledTask implements Runnable {
         } else {
             if (future != null) {
                 logger.info("Un-Scheduling " + this.getClass().getSimpleName());
-                future.cancel(false);
+                unscheduleTask();
             }
+        }
+    }
+
+    public void scheduleExecutionAtFixedRate(final long period) {
+        if (period > 0) {
+            try {
+                unscheduleTask();
+                logger.info("Scheduling " + this.getClass().getSimpleName() + " with fixed rate : " + period);
+                future = taskScheduler.scheduleAtFixedRate(this, period);
+            } catch (final IllegalArgumentException e) {
+                logger.error(e.getMessage(), e);
+            }
+        } else {
+            if (future != null) {
+                logger.info("Un-Scheduling " + this.getClass().getSimpleName());
+                unscheduleTask();
+            }
+        }
+    }
+
+    private void unscheduleTask() {
+        if (future != null) {
+            future.cancel(false);
         }
     }
 
