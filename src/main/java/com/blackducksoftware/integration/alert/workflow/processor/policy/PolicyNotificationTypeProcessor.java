@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.workflow.processor.policy;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -85,8 +87,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
     }
 
     private NotificationEntity createNotificationEntity(final NotificationDetailResult notificationDetailResult, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationCategory) {
-        final Date createdAt = notificationDetailResult.getCreatedAt();
-
+        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
         final String contentKey = notificationContentDetail.getContentDetailKey();
         final String projectName = notificationContentDetail.getProjectName().orElse(null);
         final String projectUrl = null;
