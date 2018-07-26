@@ -23,11 +23,17 @@
  */
 package com.blackducksoftware.integration.alert.web.channel.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +47,7 @@ import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfi
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 
 @RestController
-@RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/distribution/{descriptorName}")
+@RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/distribution")
 public class ChannelDistributionConfigController extends ChannelConfigController {
     private final ChannelConfigHandler<CommonDistributionConfigRestModel> controllerHandler;
     private final DescriptorMap descriptorMap;
@@ -52,13 +58,25 @@ public class ChannelDistributionConfigController extends ChannelConfigController
         this.controllerHandler = new ChannelConfigHandler<>(contentConverter, channelDistributionConfigActions);
     }
 
+    @GetMapping()
+    public List<? extends ConfigRestModel> getConfig() {
+        final List<ConfigRestModel> configs = new ArrayList<>();
+        final Set<String> descriptorNames = descriptorMap.getChannelDescriptorMap().keySet();
+        for (final String descriptorName : descriptorNames) {
+            configs.addAll(getConfig(null, descriptorName));
+        }
+        return configs;
+    }
+
     @Override
-    public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
+    @GetMapping("/{descriptorName}")
+    public List<? extends ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
+    @PostMapping("/{descriptorName}")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
@@ -66,6 +84,7 @@ public class ChannelDistributionConfigController extends ChannelConfigController
     }
 
     @Override
+    @PutMapping("/{descriptorName}")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
@@ -73,19 +92,22 @@ public class ChannelDistributionConfigController extends ChannelConfigController
     }
 
     @Override
+    @PostMapping("/{descriptorName}/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
         return controllerHandler.validateConfig(parsedRestModel, descriptor);
     }
 
-    // TODO Method not allowed until we are able to move common config controller to this universal controller.
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        return controllerHandler.doNotAllowHttpMethod();
+    @DeleteMapping("/{descriptorName}")
+    public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
+        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
+        return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override
+    @PostMapping("/{descriptorName}/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         final CommonDistributionConfigRestModel parsedRestModel = (CommonDistributionConfigRestModel) descriptor.getDistributionContentConverter().getRestModelFromJson(restModel);
