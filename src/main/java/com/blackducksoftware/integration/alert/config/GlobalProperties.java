@@ -384,7 +384,7 @@ public class GlobalProperties {
     public Integer getHubTimeout() {
         final Optional<GlobalHubConfigEntity> globalConfig = getHubConfig();
         if (globalConfig.isPresent()) {
-            return getHubConfig().get().getHubTimeout();
+            return globalConfig.get().getHubTimeout();
         }
         return 300;
     }
