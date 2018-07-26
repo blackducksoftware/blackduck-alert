@@ -56,6 +56,21 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     @Test
     @Override
     @WithMockUser(roles = "ADMIN")
+    public void testDeleteConfig() throws Exception {
+        globalEntityRepository.deleteAll();
+        final GlobalHubConfigEntity savedEntity = globalEntityRepository.save(entity);
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
+        restModel.setId(String.valueOf(savedEntity.getId()));
+        request.content(gson.toJson(restModel));
+        request.contentType(contentType);
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+    }
+
+    @Test
+    @Override
+    @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
 
         final String hubUrl = testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL);
@@ -66,8 +81,8 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         globalProperties.setHubUrl(hubUrl);
         globalProperties.setHubTrustCertificate(Boolean.valueOf(alwaysTrust));
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
         final GlobalHubConfigRestModel hubRestModel = new GlobalHubConfigRestModel(null, hubUrl, String.valueOf(timeout), apiKey, false, null, null, null, null, false, "true");
         request.content(gson.toJson(hubRestModel));
         request.contentType(contentType);
