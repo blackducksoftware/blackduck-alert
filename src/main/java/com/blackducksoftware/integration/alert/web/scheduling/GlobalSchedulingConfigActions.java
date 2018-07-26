@@ -77,14 +77,14 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         final GlobalSchedulingConfigRestModel restModel;
         if (databaseEntity != null) {
             restModel = (GlobalSchedulingConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
-            restModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime());
-            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
+            restModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
+            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime().orElse(null));
         } else {
             restModel = new GlobalSchedulingConfigRestModel();
         }
-        final Long onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
-        if (onDemandNextRun != null) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandTask.getMillisecondsToNextRun());
+        final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
+        if (onDemandNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandTask.getMillisecondsToNextRun().get());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
         final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();

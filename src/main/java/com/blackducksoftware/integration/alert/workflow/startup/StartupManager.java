@@ -198,7 +198,7 @@ public class StartupManager {
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
         accumulatorConfig.scheduleExecution("0 0/1 * 1/1 * *");
-        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun().orElse(null));
         logger.info("Accumulator next run: {} seconds", seconds);
 
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);

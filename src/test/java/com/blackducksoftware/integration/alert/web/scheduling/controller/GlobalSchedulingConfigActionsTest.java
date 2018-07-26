@@ -39,13 +39,13 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
     @Override
     public GlobalSchedulingConfigActions getMockedConfigActions() {
         final AccumulatorConfig mockedAccumulatorConfig = Mockito.mock(AccumulatorConfig.class);
-        Mockito.when(mockedAccumulatorConfig.getMillisecondsToNextRun()).thenReturn(33000l);
+        Mockito.when(mockedAccumulatorConfig.getMillisecondsToNextRun()).thenReturn(Optional.of(33000l));
         final DailyTask mockedDailyTask = Mockito.mock(DailyTask.class);
         final OnDemandTask mockedOnDemandTask = Mockito.mock(OnDemandTask.class);
-        Mockito.when(mockedDailyTask.getFormatedNextRunTime()).thenReturn("01/19/2018 02:00 AM UTC");
-        Mockito.when(mockedOnDemandTask.getMillisecondsToNextRun()).thenReturn(33000l);
+        Mockito.when(mockedDailyTask.getFormatedNextRunTime()).thenReturn(Optional.of("01/19/2018 02:00 AM UTC"));
+        Mockito.when(mockedOnDemandTask.getMillisecondsToNextRun()).thenReturn(Optional.of(33000l));
         final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
-        Mockito.when(mockedPurgeConfig.getFormatedNextRunTime()).thenReturn("01/21/2018 12:00 AM UTC");
+        Mockito.when(mockedPurgeConfig.getFormatedNextRunTime()).thenReturn(Optional.of("01/21/2018 12:00 AM UTC"));
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
 
