@@ -70,7 +70,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         channelTemplateManager.sendEvents(eventList);
     }
 
-    private List<NotificationModel> read(final DateRange dateRange) {
+    public List<NotificationModel> read(final DateRange dateRange) {
 
         final String taskName = getTaskName();
         try {
@@ -94,18 +94,13 @@ public abstract class ProcessingTask extends ScheduledTask {
         return Collections.emptyList();
     }
 
-    private List<ChannelEvent> process(final List<NotificationModel> modelList) {
-        try {
-            logger.info("Notification Entity Count: {}", modelList.size());
-            final List<ChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), modelList);
-            if (events.isEmpty()) {
-                return Collections.emptyList();
-            } else {
-                return events;
-            }
-        } catch (final Exception ex) {
-            logger.error("Error processing digest notifications", ex);
+    public List<ChannelEvent> process(final List<NotificationModel> modelList) {
+        logger.info("Notification Entity Count: {}", modelList.size());
+        final List<ChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), modelList);
+        if (events.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return events;
         }
-        return Collections.emptyList();
     }
 }
