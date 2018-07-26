@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -41,11 +40,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.accumulator.SearchIntervalAccumulator;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.common.enumeration.InternalEventTypes;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
@@ -70,16 +67,14 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
     private final List<NotificationTypeProcessor> notificationProcessors;
     private final ContentConverter contentConverter;
     private final NotificationManager notificationManager;
-    private final ChannelTemplateManager channelTemplateManager;
 
     public NotificationAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
-            final NotificationManager notificationManager, final ChannelTemplateManager channelTemplateManager, final List<NotificationTypeProcessor> notificationProcessors) {
+            final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
         super(taskScheduler, "blackduck", DEFAULT_CRON_EXPRESSION, globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME));
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
         this.notificationManager = notificationManager;
-        this.channelTemplateManager = channelTemplateManager;
     }
 
     @Override
@@ -164,9 +159,7 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
         final NotificationModels notificationModels = contentConverter.getJsonContent(event.getContent(), NotificationModels.class);
         logger.info(createLoggerMessage("Writing Notifications..."));
         final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
-        final List<NotificationModel> entityList = notificationList.stream().map(notificationManager::saveNotification).collect(Collectors.toList());
-        final AlertEvent realTimeEvent = new AlertEvent(InternalEventTypes.REAL_TIME_EVENT.getDestination(), contentConverter.getJsonString(new NotificationModels(entityList)));
-        channelTemplateManager.sendEvent(realTimeEvent);
+        notificationList.forEach(notificationManager::saveNotification);
     }
 
     private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {
