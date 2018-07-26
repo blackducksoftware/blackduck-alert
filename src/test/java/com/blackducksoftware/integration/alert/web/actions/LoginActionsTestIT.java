@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.mock.model.MockLoginRestModel;
-import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
@@ -90,15 +90,15 @@ public class LoginActionsTestIT {
 
     @Test
     public void testIsUserValidFailIT() throws IntegrationException, IOException {
-        final LoginRestModel loginRestModel = mockLoginRestModel.createRestModel();
+        final LoginConfig loginConfig = mockLoginRestModel.createRestModel();
         final GlobalProperties globalProperties = new TestGlobalProperties();
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(new Slf4jIntLogger(logger));
         serverConfigBuilder.setUrl(globalProperties.getHubUrl().orElse(null));
         serverConfigBuilder.setTrustCert(globalProperties.getHubTrustCertificate().orElse(null));
         serverConfigBuilder.setTimeout(globalProperties.getHubTimeout());
-        serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
-        serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
+        serverConfigBuilder.setPassword(loginConfig.getHubPassword());
+        serverConfigBuilder.setUsername(loginConfig.getHubUsername());
 
         final LoginActions loginActions = new LoginActions(globalProperties);
 

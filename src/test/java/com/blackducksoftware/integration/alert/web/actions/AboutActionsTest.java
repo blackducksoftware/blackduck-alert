@@ -7,8 +7,8 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 public class AboutActionsTest {
 

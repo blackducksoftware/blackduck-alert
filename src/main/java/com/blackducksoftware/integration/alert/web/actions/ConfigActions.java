@@ -41,11 +41,11 @@ import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContent
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
-public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> {
+public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {
     private final W repository;
     private final DatabaseContentConverter databaseContentConverter;
 
@@ -84,7 +84,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public R maskRestModel(final R restModel) throws AlertException {
         try {
-            final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
+            final Class<? extends Config> restModelClass = restModel.getClass();
             final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
 
             for (final Field sensitiveField : sensitiveFields) {

@@ -5,7 +5,7 @@ import java.util.Date;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -15,16 +15,16 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryRestMod
     private final String timeCreated;
     private final String timeLastSent;
     private final String status;
-    private final NotificationRestModel notification;
+    private final NotificationConfig notification;
     private final String errorMessage;
     private final String errorStackTrace;
     private final String id;
 
     public MockAuditEntryRestModel() {
-        this("name", "eventType", new Date(400).toString(), new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationRestModel(), "errorMessage", "errorStackTrace", "1");
+        this("name", "eventType", new Date(400).toString(), new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), "errorMessage", "errorStackTrace", "1");
     }
 
-    private MockAuditEntryRestModel(final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationRestModel notification, final String errorMessage,
+    private MockAuditEntryRestModel(final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationConfig notification, final String errorMessage,
             final String errorStackTrace, final String id) {
         super();
         this.name = name;
@@ -58,7 +58,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryRestMod
         return status;
     }
 
-    public NotificationRestModel getNotification() {
+    public NotificationConfig getNotification() {
         return notification;
     }
 

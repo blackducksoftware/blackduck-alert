@@ -24,9 +24,9 @@
 package com.blackducksoftware.integration.alert.web.provider.hub;
 
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
-public class GlobalHubConfigRestModel extends ConfigRestModel {
+public class GlobalHubConfigRestModel extends Config {
     private String hubUrl;
     private String hubTimeout;
 

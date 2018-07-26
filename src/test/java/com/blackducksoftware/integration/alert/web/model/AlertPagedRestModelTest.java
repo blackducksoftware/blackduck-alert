@@ -20,7 +20,7 @@ public class AlertPagedRestModelTest {
         final int pageSize = 0;
         final List<AuditEntryRestModel> contentList = null;
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = new AlertPagedRestModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryRestModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
@@ -38,7 +38,7 @@ public class AlertPagedRestModelTest {
         contentList.add(item);
         contentList.add(item);
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = new AlertPagedRestModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryRestModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());

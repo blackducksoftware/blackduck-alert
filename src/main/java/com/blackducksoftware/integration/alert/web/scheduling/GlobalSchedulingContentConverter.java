@@ -30,7 +30,7 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class GlobalSchedulingContentConverter extends DatabaseContentConverter {
@@ -41,12 +41,12 @@ public class GlobalSchedulingContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
+    public Config getRestModelFromJson(final String json) {
         return getContentConverter().getJsonContent(json, GlobalSchedulingConfigRestModel.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
         final GlobalSchedulingConfigRestModel schedulingRestModel = (GlobalSchedulingConfigRestModel) restModel;
         final GlobalSchedulingConfigEntity schedulingEntity = new GlobalSchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
         addIdToEntityPK(schedulingRestModel.getId(), schedulingEntity);
@@ -54,7 +54,7 @@ public class GlobalSchedulingContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
         final GlobalSchedulingConfigRestModel schedulingRestModel = new GlobalSchedulingConfigRestModel();
         schedulingRestModel.setDailyDigestHourOfDay(schedulingEntity.getDailyDigestHourOfDay());

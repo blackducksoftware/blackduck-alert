@@ -38,12 +38,12 @@ import com.blackducksoftware.integration.alert.database.audit.relation.AuditNoti
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> {
+public class CommonDistributionConfigActions extends DistributionConfigActions<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
@@ -57,19 +57,19 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public List<CommonDistributionConfigRestModel> getConfig(final Long id) throws AlertException {
-        final List<CommonDistributionConfigRestModel> restModels = super.getConfig(id);
+    public List<CommonDistributionConfig> getConfig(final Long id) throws AlertException {
+        final List<CommonDistributionConfig> restModels = super.getConfig(id);
         addAuditEntryInfoToRestModels(restModels);
         return restModels;
     }
 
-    private void addAuditEntryInfoToRestModels(final List<CommonDistributionConfigRestModel> restModels) {
-        for (final CommonDistributionConfigRestModel restModel : restModels) {
+    private void addAuditEntryInfoToRestModels(final List<CommonDistributionConfig> restModels) {
+        for (final CommonDistributionConfig restModel : restModels) {
             addAuditEntryInfoToRestModel(restModel);
         }
     }
 
-    private void addAuditEntryInfoToRestModel(final CommonDistributionConfigRestModel restModel) {
+    private void addAuditEntryInfoToRestModel(final CommonDistributionConfig restModel) {
         String lastRan = "Unknown";
         String status = "Unknown";
         final Long id = getDatabaseContentConverter().getContentConverter().getLongValue(restModel.getId());
@@ -83,7 +83,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public CommonDistributionConfigEntity saveConfig(final CommonDistributionConfigRestModel restModel) throws AlertException {
+    public CommonDistributionConfigEntity saveConfig(final CommonDistributionConfig restModel) throws AlertException {
         if (restModel != null) {
             try {
                 CommonDistributionConfigEntity createdEntity = (CommonDistributionConfigEntity) getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
@@ -113,13 +113,13 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public String channelTestConfig(final CommonDistributionConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final CommonDistributionConfig restModel) throws IntegrationException {
         // Should not be tested
         return "Configuration should not be tested at this level.";
     }
 
     @Override
-    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
+    public CommonDistributionConfig constructRestModel(final CommonDistributionConfigEntity entity) throws AlertException {
         final Optional<CommonDistributionConfigEntity> foundEntity = getCommonDistributionRepository().findById(entity.getId());
         if (foundEntity.isPresent()) {
             return constructRestModel(foundEntity.get(), null);
@@ -128,8 +128,8 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public CommonDistributionConfigRestModel constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
-        final CommonDistributionConfigRestModel restModel = (CommonDistributionConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(commonEntity);
+    public CommonDistributionConfig constructRestModel(final CommonDistributionConfigEntity commonEntity, final CommonDistributionConfigEntity distributionEntity) throws AlertException {
+        final CommonDistributionConfig restModel = (CommonDistributionConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(commonEntity);
         restModel.setConfiguredProjects(getConfiguredProjectsActions().getConfiguredProjects(commonEntity));
         restModel.setNotificationTypes(getNotificationTypesActions().getNotificationTypes(commonEntity));
         return restModel;
@@ -151,7 +151,7 @@ public class CommonDistributionConfigActions extends DistributionConfigActions<C
     }
 
     @Override
-    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+    public void validateDistributionConfig(final CommonDistributionConfig restModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         // This does not validate anything
     }
 }

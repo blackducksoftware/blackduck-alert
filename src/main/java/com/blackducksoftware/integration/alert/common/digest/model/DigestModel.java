@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.common.digest.model;
 
 import java.util.Collection;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+import com.blackducksoftware.integration.alert.web.model.Model;
 
 public class DigestModel extends Model {
     private Collection<ProjectData> projectDataCollection;

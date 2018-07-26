@@ -23,29 +23,35 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
+import java.util.List;
 
-public class LoginRestModel extends ConfigRestModel {
-    private String hubUsername;
+public class AlertPagedModel<M extends Model> extends Model {
 
-    @SensitiveField
-    private String hubPassword;
+    private final int totalPages;
+    private final int currentPage;
+    private final int pageSize;
+    private final List<M> content;
 
-    public LoginRestModel() {
+    public AlertPagedModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
+        this.totalPages = totalPages;
+        this.currentPage = currentPage;
+        this.pageSize = pageSize;
+        this.content = content;
     }
 
-    public LoginRestModel(final String hubUsername, final String hubPassword) {
-        super("1L");
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+    public int getTotalPages() {
+        return totalPages;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public String getHubPassword() {
-        return hubPassword;
+    public int getPageSize() {
+        return pageSize;
     }
 
+    public List<M> getContent() {
+        return content;
+    }
 }

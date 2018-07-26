@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributio
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryActions;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
 import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -73,7 +73,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
                 auditNotificationRepository, commonDistributionRepository, null, null, null, null);
 
-        AlertPagedRestModel<AuditEntryRestModel> restModel = null;
+        AlertPagedModel<AuditEntryRestModel> restModel = null;
         try {
             restModel = auditEntryActions.resendNotification(1L);
             fail();
@@ -117,7 +117,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
                 auditNotificationRepository, commonDistributionRepository, notificationContentConverter, null, null, null);
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize);
+        final AlertPagedModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
@@ -157,7 +157,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
                 auditNotificationRepository, commonDistributionRepository, notificationContentConverter, null, null, null);
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize);
+        final AlertPagedModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content

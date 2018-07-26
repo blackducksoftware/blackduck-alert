@@ -23,9 +23,9 @@
  */
 package com.blackducksoftware.integration.alert.web.scheduling;
 
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
-public class GlobalSchedulingConfigRestModel extends ConfigRestModel {
+public class GlobalSchedulingConfigRestModel extends Config {
     private String accumulatorNextRun;
     private String dailyDigestHourOfDay;
     private String dailyDigestNextRun;

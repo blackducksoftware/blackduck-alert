@@ -31,8 +31,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class EmailGlobalContentConverter extends DatabaseContentConverter {
@@ -43,13 +43,13 @@ public class EmailGlobalContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, EmailGlobalConfigRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, EmailGlobalConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final EmailGlobalConfig emailRestModel = (EmailGlobalConfig) restModel;
         final Integer smtpPort = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpPort());
         final Integer smtpConnectionTimeout = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpConnectionTimeout());
         final Integer smtpTimeout = getContentConverter().getIntegerValue(emailRestModel.getMailSmtpTimeout());
@@ -73,7 +73,7 @@ public class EmailGlobalContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
         final String id = getContentConverter().getStringValue(emailEntity.getId());
         final String smtpPort = getContentConverter().getStringValue(emailEntity.getMailSmtpPort());
@@ -84,7 +84,7 @@ public class EmailGlobalContentConverter extends DatabaseContentConverter {
         final String smtpAuthNtlmFlags = getContentConverter().getStringValue(emailEntity.getMailSmtpAuthNtlmFlags());
         final String smtpProxyPort = getContentConverter().getStringValue(emailEntity.getMailSmtpProxyPort());
         final String smtpSocksPort = getContentConverter().getStringValue(emailEntity.getMailSmtpSocksPort());
-        return new EmailGlobalConfigRestModel(id, emailEntity.getMailSmtpHost(), emailEntity.getMailSmtpUser(), emailEntity.getMailSmtpPassword(), StringUtils.isNotBlank(emailEntity.getMailSmtpPassword()), smtpPort,
+        return new EmailGlobalConfig(id, emailEntity.getMailSmtpHost(), emailEntity.getMailSmtpUser(), emailEntity.getMailSmtpPassword(), StringUtils.isNotBlank(emailEntity.getMailSmtpPassword()), smtpPort,
                 smtpConnectionTimeout, smtpTimeout, smtpWriteTimeout, emailEntity.getMailSmtpFrom(), emailEntity.getMailSmtpLocalhost(), emailEntity.getMailSmtpLocalAddress(), smtpLocalPort, emailEntity.getMailSmtpEhlo(),
                 emailEntity.getMailSmtpAuth(), emailEntity.getMailSmtpAuthMechanisms(),
                 emailEntity.getMailSmtpAuthLoginDisable(), emailEntity.getMailSmtpAuthPlainDisable(), emailEntity.getMailSmtpAuthDigestMd5Disable(), emailEntity.getMailSmtpAuthNtlmDisable(),

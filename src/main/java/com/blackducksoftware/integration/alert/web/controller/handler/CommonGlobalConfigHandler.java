@@ -30,10 +30,10 @@ import org.springframework.http.ResponseEntity;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 // TODO verify if this class is still necessary with our universal controllers
-public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
+public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 
     public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {

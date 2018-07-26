@@ -44,11 +44,11 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
 // TODO this class is only used by CommonDistributionConfigActions now and can probably be merged together (If we don't find a way to use the channel config actions)
 @Transactional
-public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfigRestModel, W extends JpaRepository<D, Long>> extends ConfigActions<D, R, W> {
+public abstract class DistributionConfigActions<D extends DatabaseEntity, R extends CommonDistributionConfig, W extends JpaRepository<D, Long>> extends ConfigActions<D, R, W> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

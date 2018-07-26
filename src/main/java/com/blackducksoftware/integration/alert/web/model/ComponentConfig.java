@@ -23,37 +23,37 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import java.util.List;
+public class ComponentConfig extends Config {
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+    private String componentName;
+    private String componentVersion;
+    private String policyRuleName;
+    private String policyRuleUser;
 
-public class AlertPagedRestModel<M extends Model> extends Model {
-
-    private final int totalPages;
-    private final int currentPage;
-    private final int pageSize;
-    private final List<M> content;
-
-    public AlertPagedRestModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.content = content;
+    public ComponentConfig() {
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public ComponentConfig(final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
+        this.componentName = componentName;
+        this.componentVersion = componentVersion;
+        this.policyRuleName = policyRuleName;
+        this.policyRuleUser = policyRuleUser;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public String getComponentName() {
+        return componentName;
     }
 
-    public int getPageSize() {
-        return pageSize;
+    public String getComponentVersion() {
+        return componentVersion;
     }
 
-    public List<M> getContent() {
-        return content;
+    public String getPolicyRuleName() {
+        return policyRuleName;
     }
+
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
+    }
+
 }

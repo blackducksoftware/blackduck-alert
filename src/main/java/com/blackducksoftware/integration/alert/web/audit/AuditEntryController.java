@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
 
 @RestController
 @RequestMapping(BaseController.BASE_PATH + "/audit")
@@ -47,7 +47,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public AlertPagedRestModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+    public AlertPagedModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
             @RequestParam(value = "searchTerm", required = false) final String searchTerm) {
         if (StringUtils.isNotBlank(searchTerm)) {
             return auditEntryHandler.search(pageNumber, pageSize, searchTerm);

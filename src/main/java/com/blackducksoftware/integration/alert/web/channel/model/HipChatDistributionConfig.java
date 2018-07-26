@@ -25,18 +25,18 @@ package com.blackducksoftware.integration.alert.web.channel.model;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public class HipChatDistributionRestModel extends CommonDistributionConfigRestModel {
+public class HipChatDistributionConfig extends CommonDistributionConfig {
     private String roomId;
     private boolean notify;
     private String color;
 
-    public HipChatDistributionRestModel() {
+    public HipChatDistributionConfig() {
 
     }
 
-    public HipChatDistributionRestModel(final String id, final String roomId, final boolean notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String frequency,
+    public HipChatDistributionConfig(final String id, final String roomId, final boolean notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String frequency,
             final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.roomId = roomId;

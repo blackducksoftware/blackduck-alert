@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.database.entity;
 
 import javax.persistence.MappedSuperclass;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+import com.blackducksoftware.integration.alert.web.model.Model;
 
 @MappedSuperclass
 public abstract class BaseEntity extends Model {

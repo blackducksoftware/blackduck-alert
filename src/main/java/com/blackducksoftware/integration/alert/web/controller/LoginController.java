@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.alert.web.controller.handler.LoginHandler;
-import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 
 @RestController
 public class LoginController extends BaseController {
@@ -50,7 +50,7 @@ public class LoginController extends BaseController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginRestModel loginRestModel) {
-        return loginHandler.userLogin(request, response, loginRestModel);
+    public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginConfig loginConfig) {
+        return loginHandler.userLogin(request, response, loginConfig);
     }
 }

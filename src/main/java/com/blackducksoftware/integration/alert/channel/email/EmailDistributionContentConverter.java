@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class EmailDistributionContentConverter extends DatabaseContentConverter {
@@ -42,22 +42,22 @@ public class EmailDistributionContentConverter extends DatabaseContentConverter 
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, EmailGroupDistributionRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, EmailDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final EmailGroupDistributionRestModel emailRestModel = (EmailGroupDistributionRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
         addIdToEntityPK(emailRestModel.getId(), emailEntity);
         return emailEntity;
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
-        final EmailGroupDistributionRestModel emailRestModel = new EmailGroupDistributionRestModel();
+        final EmailDistributionConfig emailRestModel = new EmailDistributionConfig();
         final String id = getContentConverter().getStringValue(emailEntity.getId());
         emailRestModel.setDistributionConfigId(id);
         emailRestModel.setGroupName(emailEntity.getGroupName());

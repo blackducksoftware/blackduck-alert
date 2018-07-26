@@ -21,34 +21,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.web.model;
+package com.blackducksoftware.integration.alert.web.channel.model;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
-public class AboutRestModel extends Model {
-    private String version;
-    private String description;
-    private String projectUrl;
+public class HipChatGlobalConfig extends Config {
+    @SensitiveField
+    private String apiKey;
+    private boolean apiKeyIsSet;
+    private String hostServer;
 
-    protected AboutRestModel() {
-
+    public HipChatGlobalConfig() {
     }
 
-    public AboutRestModel(final String version, final String description, final String projectUrl) {
-        this.version = version;
-        this.description = description;
-        this.projectUrl = projectUrl;
+    public HipChatGlobalConfig(final String id, final String apiKey, final boolean apiKeyIsSet, final String hostServer) {
+        super(id);
+        this.apiKey = apiKey;
+        this.apiKeyIsSet = apiKeyIsSet;
+        this.hostServer = hostServer;
     }
 
-    public String getVersion() {
-        return version;
+    public String getApiKey() {
+        return apiKey;
     }
 
-    public String getDescription() {
-        return description;
+    public boolean isApiKeyIsSet() {
+        return apiKeyIsSet;
     }
 
-    public String getProjectUrl() {
-        return projectUrl;
+    public String getHostServer() {
+        return hostServer;
     }
+
 }

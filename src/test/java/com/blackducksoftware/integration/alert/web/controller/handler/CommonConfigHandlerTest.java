@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Common
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.web.actions.CommonDistributionConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionContentConverter;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.gson.Gson;
@@ -44,26 +44,26 @@ public class CommonConfigHandlerTest {
     @Test
     public void getConfigTest() throws AlertException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
-        final List<CommonDistributionConfigRestModel> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
+        final List<CommonDistributionConfig> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
         Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong());
 
-        final List<CommonDistributionConfigRestModel> list = handler.getConfig(1L);
+        final List<CommonDistributionConfig> list = handler.getConfig(1L);
         assertEquals(restModel, list);
     }
 
     @Test
     public void getConfigHandleExceptionTest() throws AlertException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.getConfig(Mockito.anyLong())).thenThrow(new AlertException());
 
         Exception thrownException = null;
-        List<CommonDistributionConfigRestModel> list = null;
+        List<CommonDistributionConfig> list = null;
         try {
             list = handler.getConfig(1L);
         } catch (final Exception e) {
@@ -76,21 +76,21 @@ public class CommonConfigHandlerTest {
     @Test
     public void postConfigTest() throws AlertException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
         Mockito.when(configActions.saveConfig(Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
     @Test
     public void postNullConfigTest() {
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, null, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, null, contentConverter);
 
         final ResponseEntity<String> response = handler.postConfig(null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -99,12 +99,12 @@ public class CommonConfigHandlerTest {
     @Test
     public void postConfigWithConflictTest() {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
@@ -113,14 +113,14 @@ public class CommonConfigHandlerTest {
     public void postWithInvalidConfigTest() throws AlertFieldException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
         final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -128,14 +128,14 @@ public class CommonConfigHandlerTest {
     @Test
     public void postWithInternalServerErrorTest() throws IntegrationException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
         Mockito.doNothing().when(configActions).configurationChangeTriggers(Mockito.any());
         Mockito.when(configActions.saveConfig(Mockito.any())).thenThrow(new AlertException());
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -143,22 +143,22 @@ public class CommonConfigHandlerTest {
     @Test
     public void putConfigTest() throws IntegrationException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenReturn("");
         Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
     @Test
     public void putNullConfigTest() {
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, null, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, null, contentConverter);
 
         final ResponseEntity<String> response = handler.putConfig(null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -167,12 +167,12 @@ public class CommonConfigHandlerTest {
     @Test
     public void putConfigWithInvalidIdTest() {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -180,15 +180,15 @@ public class CommonConfigHandlerTest {
     @Test
     public void putWithInvalidConfigTest() throws AlertFieldException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -196,14 +196,14 @@ public class CommonConfigHandlerTest {
     @Test
     public void putWithInternalServerErrorTest() throws IntegrationException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.doNothing().when(configActions).configurationChangeTriggers(Mockito.any());
         Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any())).thenThrow(new AlertException());
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
@@ -211,21 +211,21 @@ public class CommonConfigHandlerTest {
     @Test
     public void deleteConfigTest() throws AlertException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong());
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.deleteConfig(restModel);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
 
     @Test
     public void deleteNullConfigTest() {
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, null, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, null, contentConverter);
 
         final ResponseEntity<String> response = handler.deleteConfig(null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -234,12 +234,12 @@ public class CommonConfigHandlerTest {
     @Test
     public void deleteConfigWithInvalidIdTest() {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.deleteConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -247,18 +247,18 @@ public class CommonConfigHandlerTest {
     @Test
     public void validateConfigTest() {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     public void validateConfigNullTest() {
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, null, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, null, contentConverter);
 
         final ResponseEntity<String> response = handler.validateConfig(null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -267,14 +267,14 @@ public class CommonConfigHandlerTest {
     @Test
     public void validateConfigWithInvalidConfigTest() throws AlertFieldException {
         final CommonDistributionConfigActions configActions = Mockito.mock(CommonDistributionConfigActions.class);
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, configActions, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         final CommonDistributionContentConverter commonDistributionContentConverter = new CommonDistributionContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final CommonDistributionConfigRestModel restModel = mockCommonDistributionRestModel.createRestModel();
+        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -292,8 +292,8 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void testNullConfigTest() {
-        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfigRestModel, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
-                CommonDistributionConfigRestModel.class, null, contentConverter);
+        final CommonConfigHandler<CommonDistributionConfigEntity, CommonDistributionConfig, CommonDistributionRepository> handler = new CommonConfigHandler<>(CommonDistributionConfigEntity.class,
+                CommonDistributionConfig.class, null, contentConverter);
 
         final ResponseEntity<String> response = handler.testConfig(null);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

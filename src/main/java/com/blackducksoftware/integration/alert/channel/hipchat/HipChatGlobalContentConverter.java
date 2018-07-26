@@ -31,8 +31,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class HipChatGlobalContentConverter extends DatabaseContentConverter {
@@ -43,24 +43,24 @@ public class HipChatGlobalContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, HipChatGlobalConfigRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, HipChatGlobalConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
         final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
         addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
         return hipChatEntity;
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
         final String id = getContentConverter().getStringValue(hipChatEntity.getId());
         final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
-        final HipChatGlobalConfigRestModel hipChatRestModel = new HipChatGlobalConfigRestModel(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
+        final HipChatGlobalConfig hipChatRestModel = new HipChatGlobalConfig(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
         return hipChatRestModel;
     }
 

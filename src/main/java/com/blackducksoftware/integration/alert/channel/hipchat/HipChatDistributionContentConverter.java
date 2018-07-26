@@ -30,8 +30,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class HipChatDistributionContentConverter extends DatabaseContentConverter {
@@ -41,13 +41,13 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     }
 
     @Override
-    public ConfigRestModel getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, HipChatDistributionRestModel.class);
+    public Config getRestModelFromJson(final String json) {
+        return getContentConverter().getJsonContent(json, HipChatDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final ConfigRestModel restModel) {
-        final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
+    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
         final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
         final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
         addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
@@ -55,9 +55,9 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     }
 
     @Override
-    public ConfigRestModel populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
-        final HipChatDistributionRestModel hipChatRestModel = new HipChatDistributionRestModel();
+        final HipChatDistributionConfig hipChatRestModel = new HipChatDistributionConfig();
         final String id = getContentConverter().getStringValue(hipChatEntity.getId());
         final String roomId = getContentConverter().getStringValue(hipChatEntity.getRoomId());
         hipChatRestModel.setDistributionConfigId(id);

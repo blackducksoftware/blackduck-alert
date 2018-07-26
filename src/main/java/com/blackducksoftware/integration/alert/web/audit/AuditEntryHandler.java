@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
-import com.blackducksoftware.integration.alert.web.model.AlertPagedRestModel;
+import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.gson.Gson;
 
@@ -47,11 +47,11 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
+    public AlertPagedModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize) {
         return auditEntryActions.get(pageNumber, pageSize);
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
+    public AlertPagedModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
         return auditEntryActions.search(pageNumber, pageSize, searchTerm);
     }
 
@@ -60,7 +60,7 @@ public class AuditEntryHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> resendNotification(final Long id) {
-        AlertPagedRestModel<AuditEntryRestModel> auditEntries = null;
+        AlertPagedModel<AuditEntryRestModel> auditEntries = null;
         try {
             auditEntries = auditEntryActions.resendNotification(id);
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));

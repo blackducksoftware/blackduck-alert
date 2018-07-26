@@ -29,7 +29,7 @@ import javax.jms.MessageListener;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class ChannelDescriptor extends Descriptor {
@@ -61,9 +61,9 @@ public abstract class ChannelDescriptor extends Descriptor {
         return contentConverter;
     }
 
-    public abstract void validateDistributionConfig(CommonDistributionConfigRestModel restModel, Map<String, String> fieldErrors);
+    public abstract void validateDistributionConfig(CommonDistributionConfig restModel, Map<String, String> fieldErrors);
 
-    public abstract void testDistributionConfig(CommonDistributionConfigRestModel restModel, ChannelEvent event) throws IntegrationException;
+    public abstract void testDistributionConfig(CommonDistributionConfig restModel, ChannelEvent event) throws IntegrationException;
 
     public abstract MessageListener getChannelListener();
 }
