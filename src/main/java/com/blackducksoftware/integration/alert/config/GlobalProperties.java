@@ -299,24 +299,29 @@ public class GlobalProperties {
         final HubServerConfigBuilder hubServerConfigBuilder = new HubServerConfigBuilder();
         hubServerConfigBuilder.setLogger(logger);
         hubServerConfigBuilder.setTimeout(hubTimeout);
-
-        if (getHubUrl().isPresent()) {
+        final Optional<String> hubUrl = getHubUrl();
+        final Optional<String> hubProxyHost = getHubProxyHost();
+        final Optional<String> hubProxyPort = getHubProxyPort();
+        final Optional<String> hubProxyUsername = getHubProxyUsername();
+        final Optional<String> hubProxyPassword = getHubProxyPassword();
+        final Optional<Boolean> trustCertificate = getHubTrustCertificate();
+        if (hubUrl.isPresent()) {
             hubServerConfigBuilder.setUrl(getHubUrl().get());
         }
-        if (getHubProxyHost().isPresent()) {
-            hubServerConfigBuilder.setProxyHost(getHubProxyHost().get());
+        if (hubProxyHost.isPresent()) {
+            hubServerConfigBuilder.setProxyHost(hubProxyHost.get());
         }
-        if (getHubProxyPort().isPresent()) {
-            hubServerConfigBuilder.setProxyPort(getHubProxyPort().get());
+        if (hubProxyPort.isPresent()) {
+            hubServerConfigBuilder.setProxyPort(hubProxyPort.get());
         }
-        if (getHubProxyUsername().isPresent()) {
-            hubServerConfigBuilder.setProxyUsername(getHubProxyUsername().get());
+        if (hubProxyUsername.isPresent()) {
+            hubServerConfigBuilder.setProxyUsername(hubProxyUsername.get());
         }
-        if (getHubProxyPassword().isPresent()) {
-            hubServerConfigBuilder.setProxyPassword(getHubProxyPassword().get());
+        if (hubProxyPassword.isPresent()) {
+            hubServerConfigBuilder.setProxyPassword(hubProxyPassword.get());
         }
-        if (getHubTrustCertificate().isPresent()) {
-            hubServerConfigBuilder.setTrustCert(getHubTrustCertificate().get());
+        if (trustCertificate.isPresent()) {
+            hubServerConfigBuilder.setTrustCert(trustCertificate.get());
         }
 
         return hubServerConfigBuilder;
@@ -327,23 +332,29 @@ public class GlobalProperties {
         restConnectionBuilder.setLogger(logger);
         restConnectionBuilder.setTimeout(hubTimeout);
 
-        if (getHubUrl().isPresent()) {
-            restConnectionBuilder.setBaseUrl(getHubUrl().get());
+        final Optional<String> hubUrl = getHubUrl();
+        final Optional<String> hubProxyHost = getHubProxyHost();
+        final Optional<String> hubProxyPort = getHubProxyPort();
+        final Optional<String> hubProxyUsername = getHubProxyUsername();
+        final Optional<String> hubProxyPassword = getHubProxyPassword();
+        final Optional<Boolean> trustCertificate = getHubTrustCertificate();
+        if (hubUrl.isPresent()) {
+            restConnectionBuilder.setBaseUrl(hubUrl.get());
         }
-        if (getHubProxyHost().isPresent()) {
-            restConnectionBuilder.setProxyHost(getHubProxyHost().get());
+        if (hubProxyHost.isPresent()) {
+            restConnectionBuilder.setProxyHost(hubProxyHost.get());
         }
-        if (getHubProxyPort().isPresent()) {
-            restConnectionBuilder.setProxyPort(NumberUtils.toInt(getHubProxyPort().get()));
+        if (hubProxyPort.isPresent()) {
+            restConnectionBuilder.setProxyPort(NumberUtils.toInt(hubProxyPort.get()));
         }
-        if (getHubProxyUsername().isPresent()) {
-            restConnectionBuilder.setProxyUsername(getHubProxyUsername().get());
+        if (hubProxyUsername.isPresent()) {
+            restConnectionBuilder.setProxyUsername(hubProxyUsername.get());
         }
-        if (getHubProxyPassword().isPresent()) {
-            restConnectionBuilder.setProxyPassword(getHubProxyPassword().get());
+        if (hubProxyPassword.isPresent()) {
+            restConnectionBuilder.setProxyPassword(hubProxyPassword.get());
         }
-        if (getHubTrustCertificate().isPresent()) {
-            restConnectionBuilder.setAlwaysTrustServerCertificate(getHubTrustCertificate().get());
+        if (trustCertificate.isPresent()) {
+            restConnectionBuilder.setAlwaysTrustServerCertificate(trustCertificate.get());
         }
 
         return restConnectionBuilder;
@@ -351,17 +362,21 @@ public class GlobalProperties {
 
     public ProxyInfoBuilder createProxyInfoBuilder() {
         final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        if (getHubProxyHost().isPresent()) {
-            proxyBuilder.setHost(getHubProxyHost().get());
+        final Optional<String> hubProxyHost = getHubProxyHost();
+        final Optional<String> hubProxyPort = getHubProxyPort();
+        final Optional<String> hubProxyUsername = getHubProxyUsername();
+        final Optional<String> hubProxyPassword = getHubProxyPassword();
+        if (hubProxyHost.isPresent()) {
+            proxyBuilder.setHost(hubProxyHost.get());
         }
-        if (getHubProxyPort().isPresent()) {
-            proxyBuilder.setPort(getHubProxyPort().get());
+        if (hubProxyPort.isPresent()) {
+            proxyBuilder.setPort(hubProxyPort.get());
         }
-        if (getHubProxyUsername().isPresent()) {
-            proxyBuilder.setUsername(getHubProxyUsername().get());
+        if (hubProxyUsername.isPresent()) {
+            proxyBuilder.setUsername(hubProxyUsername.get());
         }
-        if (getHubProxyPassword().isPresent()) {
-            proxyBuilder.setPassword(getHubProxyPassword().get());
+        if (hubProxyPassword.isPresent()) {
+            proxyBuilder.setPassword(hubProxyPassword.get());
         }
         return proxyBuilder;
     }
