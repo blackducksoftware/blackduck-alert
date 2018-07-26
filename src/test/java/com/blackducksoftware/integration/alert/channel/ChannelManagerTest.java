@@ -29,7 +29,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
@@ -41,7 +41,7 @@ import com.google.gson.Gson;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @WebAppConfiguration

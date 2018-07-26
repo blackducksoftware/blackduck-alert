@@ -27,18 +27,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.config.PurgeConfig;
+import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @WebAppConfiguration
@@ -46,7 +46,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class PurgeJobIT {
 
     @Autowired
-    private PurgeConfig purgeConfig;
+    private PurgeTask purgeTask;
     @Autowired
     private NotificationRepository notificationRepository;
 
@@ -57,37 +57,37 @@ public class PurgeJobIT {
 
     @Test
     public void testGetJobName() {
-        assertEquals(PurgeConfig.PURGE_JOB_NAME, purgeConfig.getJobName());
+        assertEquals(PurgeTask.PURGE_JOB_NAME, purgeTask.getJobName());
     }
 
     @Test
     public void testGetStepName() {
-        assertEquals(PurgeConfig.PURGE_STEP_NAME, purgeConfig.getStepName());
+        assertEquals(PurgeTask.PURGE_STEP_NAME, purgeTask.getStepName());
     }
 
     @Test
     public void testCreateReader() {
-        assertNotNull(purgeConfig.reader());
+        assertNotNull(purgeTask.reader());
     }
 
     @Test
     public void testCreateWriter() {
-        assertNotNull(purgeConfig.writer());
+        assertNotNull(purgeTask.writer());
     }
 
     @Test
     public void testCreateProcessor() {
-        assertNotNull(purgeConfig.processor());
+        assertNotNull(purgeTask.processor());
     }
 
     @Test
     public void testCreateStep() {
-        assertNotNull(purgeConfig.createStep(purgeConfig.reader(), purgeConfig.processor(), purgeConfig.writer()));
+        assertNotNull(purgeTask.createStep(purgeTask.reader(), purgeTask.processor(), purgeTask.writer()));
     }
 
     @Test
     public void testReaderNoData() throws Exception {
-        final PurgeReader reader = purgeConfig.reader();
+        final PurgeReader reader = purgeTask.reader();
         final List<NotificationModel> entityList = reader.read();
         assertNull(entityList);
     }
@@ -129,7 +129,7 @@ public class PurgeJobIT {
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
         notificationRepository.saveAll(entityList);
 
-        PurgeReader reader = purgeConfig.reader();
+        PurgeReader reader = purgeTask.reader();
         List<NotificationModel> resultList = reader.read();
 
         assertEquals(2, resultList.size());
@@ -142,7 +142,7 @@ public class PurgeJobIT {
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
         notificationRepository.saveAll(entityList);
 
-        reader = purgeConfig.reader();
+        reader = purgeTask.reader();
         resultList = reader.read();
 
         assertNull(resultList);
@@ -180,7 +180,7 @@ public class PurgeJobIT {
         entityList.add(new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person));
         notificationRepository.saveAll(entityList);
 
-        final PurgeReader reader = purgeConfig.createReaderWithDayOffset(2);
+        final PurgeReader reader = purgeTask.createReaderWithDayOffset(2);
         final List<NotificationModel> resultList = reader.read();
 
         assertEquals(1, resultList.size());
@@ -189,7 +189,7 @@ public class PurgeJobIT {
     @Test
     public void testProcessorNoData() throws Exception {
         final List<NotificationModel> entityList = null;
-        final PurgeProcessor processor = purgeConfig.processor();
+        final PurgeProcessor processor = purgeTask.processor();
         final List<NotificationModel> resultList = processor.process(entityList);
         assertEquals(entityList, resultList);
     }
@@ -202,7 +202,7 @@ public class PurgeJobIT {
         entityList.add(new NotificationModel(null, null));
         entityList.add(new NotificationModel(null, null));
         entityList.add(new NotificationModel(null, null));
-        final PurgeProcessor processor = purgeConfig.processor();
+        final PurgeProcessor processor = purgeTask.processor();
         final List<NotificationModel> resultList = processor.process(entityList);
         assertEquals(entityList, resultList);
     }
@@ -210,7 +210,7 @@ public class PurgeJobIT {
     @Test
     public void testWriterNoData() throws Exception {
         final List<List<NotificationModel>> itemList = Collections.emptyList();
-        final PurgeWriter writer = purgeConfig.writer();
+        final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
     }
@@ -218,7 +218,7 @@ public class PurgeJobIT {
     @Test
     public void testWriterNullData() throws Exception {
         final List<List<NotificationModel>> itemList = null;
-        final PurgeWriter writer = purgeConfig.writer();
+        final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
     }
@@ -262,7 +262,7 @@ public class PurgeJobIT {
         assertEquals(3, notificationRepository.count());
         final List<List<NotificationModel>> itemList = new ArrayList<>();
         itemList.add(entityList);
-        final PurgeWriter writer = purgeConfig.writer();
+        final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
     }

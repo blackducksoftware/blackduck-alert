@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.config;
+package com.blackducksoftware.integration.alert.workflow.scheduled;
 
 import java.util.List;
 
@@ -40,16 +40,15 @@ import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
-import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 
 @Component
-public class PurgeConfig extends JobScheduledTask<PurgeReader, PurgeProcessor, PurgeWriter> {
+public class PurgeTask extends JobScheduledTask<PurgeReader, PurgeProcessor, PurgeWriter> {
 
     public static final String PURGE_STEP_NAME = "PurgeStep";
     public static final String PURGE_JOB_NAME = "PurgeJob";
 
     @Autowired
-    public PurgeConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
+    public PurgeTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
             final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
     }

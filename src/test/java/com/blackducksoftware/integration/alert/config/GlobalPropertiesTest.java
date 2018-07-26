@@ -4,13 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.google.gson.Gson;
 
 public class GlobalPropertiesTest {
 
     @Test
     public void testGetSetMethods() {
-        final GlobalProperties properties = new GlobalProperties(null, new Gson());
+        final HubProperties properties = new HubProperties(null, new Gson());
         final String hubUrl = "hubUrl";
         final Boolean hubTrustCertificate = Boolean.TRUE;
         final String proxyHost = "proxyHost";
@@ -56,13 +57,13 @@ public class GlobalPropertiesTest {
         assertEquals(trustStoreFile, properties.getTrustStoreFile());
         assertEquals(trustStorePass, properties.getTrustStorePass());
         assertEquals(trustStoreType, properties.getTrustStoreType());
-        assertNotEquals(GlobalProperties.PRODUCT_VERSION_UNKNOWN, properties.getProductVersion());
+        assertNotEquals(HubProperties.PRODUCT_VERSION_UNKNOWN, properties.getProductVersion());
     }
 
     @Test
     public void testAboutReadException() {
         try {
-            new GlobalProperties(null, null);
+            new HubProperties(null, null);
             fail();
         } catch (final RuntimeException ex) {
 
@@ -71,12 +72,12 @@ public class GlobalPropertiesTest {
 
     @Test
     public void testGetVersionReturnUnknown() {
-        final GlobalProperties globalProperties = new GlobalProperties(null, new Gson());
+        final HubProperties hubProperties = new HubProperties(null, new Gson());
         try {
-            globalProperties.readAboutInformation(null);
+            hubProperties.readAboutInformation(null);
         } catch (final RuntimeException ex) {
             ex.printStackTrace();
         }
-        assertEquals(GlobalProperties.PRODUCT_VERSION_UNKNOWN, globalProperties.getProductVersion());
+        assertEquals(HubProperties.PRODUCT_VERSION_UNKNOWN, hubProperties.getProductVersion());
     }
 }
