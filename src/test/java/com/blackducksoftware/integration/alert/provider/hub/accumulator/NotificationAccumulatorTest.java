@@ -21,7 +21,6 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.accumulator.SearchIntervalAccumulator;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
@@ -65,7 +64,6 @@ public class NotificationAccumulatorTest {
 
     private GlobalProperties mockedGlobalProperties;
     private NotificationManager notificationManager;
-    private ChannelTemplateManager channelTemplateManager;
     private TaskScheduler taskScheduler;
 
     @Before
@@ -79,7 +77,6 @@ public class NotificationAccumulatorTest {
         Mockito.when(mockedGlobalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
 
         notificationManager = Mockito.mock(NotificationManager.class);
-        channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
     }
 
@@ -93,7 +90,7 @@ public class NotificationAccumulatorTest {
     }
 
     private NotificationAccumulator createAccumulator(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> processorList) {
-        return new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
+        return new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, processorList);
     }
 
     @Test
@@ -137,7 +134,7 @@ public class NotificationAccumulatorTest {
     public void testRun() throws Exception {
         final List<NotificationTypeProcessor> processorList = Collections.emptyList();
 
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
@@ -145,7 +142,7 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testStart() {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.start();
         Mockito.verify(spiedAccumulator).scheduleExecution(NotificationAccumulator.DEFAULT_CRON_EXPRESSION);
@@ -154,7 +151,7 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testStop() {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.stop();
         Mockito.verify(spiedAccumulator).scheduleExecution(ScheduledTask.STOP_SCHEDULE_EXPRESSION);
@@ -162,7 +159,7 @@ public class NotificationAccumulatorTest {
 
     @Test
     public void testAccumulate() throws Exception {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         assertTrue(spiedAccumulator.getSearchRangeFilePath().exists());
@@ -225,11 +222,10 @@ public class NotificationAccumulatorTest {
 
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, processorList);
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
         final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         final Pair<Date, Date> dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFilePath());
         spiedAccumulator.accumulate(dateRange);
-        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
         Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
         Mockito.verify(spiedAccumulator).read(Mockito.any());
         Mockito.verify(spiedAccumulator).process(Mockito.any());
@@ -372,14 +368,14 @@ public class NotificationAccumulatorTest {
     public void testWrite() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, channelTemplateManager, Collections.emptyList());
+        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));
         final AlertEvent storeEvent = new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.getJsonString(models));
         notificationAccumulator.write(storeEvent);
 
-        Mockito.verify(channelTemplateManager).sendEvent(Mockito.any());
+        Mockito.verify(notificationManager, Mockito.times(models.getNotificationModelList().size())).saveNotification(Mockito.any());
     }
 
     private List<NotificationDetailResult> createPolicyViolationNotification() {
