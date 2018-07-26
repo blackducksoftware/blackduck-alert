@@ -12,10 +12,10 @@
 package com.blackducksoftware.integration.alert.provider.hub.mock;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 import com.google.gson.JsonObject;
 
-public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubConfigRestModel> {
+public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubConfig> {
     private String hubUrl;
     private String hubTimeout;
     private String hubUsername;
@@ -157,15 +157,15 @@ public class MockGlobalHubRestModel extends MockGlobalRestModelUtil<GlobalHubCon
     }
 
     @Override
-    public GlobalHubConfigRestModel createGlobalRestModel() {
-        final GlobalHubConfigRestModel restModel = new GlobalHubConfigRestModel(id, hubUrl, hubTimeout, hubApiKey, hubApiKeyIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
+    public GlobalHubConfig createGlobalRestModel() {
+        final GlobalHubConfig restModel = new GlobalHubConfig(id, hubUrl, hubTimeout, hubApiKey, hubApiKeyIsSet, hubProxyHost, hubProxyPort, hubProxyUsername, hubProxyPassword, hubProxyPasswordIsSet,
                 hubAlwaysTrustCertificate);
         return restModel;
     }
 
     @Override
-    public GlobalHubConfigRestModel createEmptyGlobalRestModel() {
-        return new GlobalHubConfigRestModel();
+    public GlobalHubConfig createEmptyGlobalRestModel() {
+        return new GlobalHubConfig();
     }
 
     @Override

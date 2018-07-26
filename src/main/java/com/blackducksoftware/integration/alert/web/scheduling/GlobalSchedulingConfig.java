@@ -25,18 +25,18 @@ package com.blackducksoftware.integration.alert.web.scheduling;
 
 import com.blackducksoftware.integration.alert.web.model.Config;
 
-public class GlobalSchedulingConfigRestModel extends Config {
+public class GlobalSchedulingConfig extends Config {
     private String accumulatorNextRun;
     private String dailyDigestHourOfDay;
     private String dailyDigestNextRun;
     private String purgeDataFrequencyDays;
     private String purgeDataNextRun;
 
-    public GlobalSchedulingConfigRestModel() {
+    public GlobalSchedulingConfig() {
 
     }
 
-    public GlobalSchedulingConfigRestModel(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
+    public GlobalSchedulingConfig(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
         super(id);
         this.accumulatorNextRun = accumulatorNextRun;
         this.dailyDigestHourOfDay = dailyDigestHourOfDay;

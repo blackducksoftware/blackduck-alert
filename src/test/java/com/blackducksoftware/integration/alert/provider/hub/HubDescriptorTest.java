@@ -19,7 +19,7 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 import com.google.gson.Gson;
 
 // TODO Make these tests more useful once provider descriptors are fully implemented
@@ -65,7 +65,7 @@ public class HubDescriptorTest {
         final HubDescriptor hubDescriptor = new HubDescriptor(hubContentConverter, null, null);
 
         final GlobalHubConfigEntity hubEntity = mockHubEntity.createGlobalEntity();
-        final GlobalHubConfigRestModel hubRestModel = mockHubRestModel.createGlobalRestModel();
+        final GlobalHubConfig hubRestModel = mockHubRestModel.createGlobalRestModel();
 
         final Config restModel = hubDescriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
         final DatabaseEntity entity = hubDescriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(hubRestModel);

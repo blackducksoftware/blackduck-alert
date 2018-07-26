@@ -59,7 +59,7 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
-public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> {
+public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalHubConfigActions.class);
     private final GlobalProperties globalProperties;
 
@@ -70,34 +70,34 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     }
 
     @Override
-    public List<GlobalHubConfigRestModel> getConfig(final Long id) throws AlertException {
+    public List<GlobalHubConfig> getConfig(final Long id) throws AlertException {
         if (id != null) {
             final Optional<GlobalHubConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalHubConfigRestModel restModel = (GlobalHubConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
+                GlobalHubConfig restModel = (GlobalHubConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
-                    final GlobalHubConfigRestModel maskedRestModel = maskRestModel(restModel);
+                    final GlobalHubConfig maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
                 }
             }
             return Collections.emptyList();
         }
         final List<GlobalHubConfigEntity> databaseEntities = getRepository().findAll();
-        List<GlobalHubConfigRestModel> restModels = new ArrayList<>(databaseEntities.size());
+        List<GlobalHubConfig> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             for (final GlobalHubConfigEntity entity : databaseEntities) {
-                restModels.add((GlobalHubConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+                restModels.add((GlobalHubConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
             }
         } else {
-            restModels.add(new GlobalHubConfigRestModel());
+            restModels.add(new GlobalHubConfig());
         }
         restModels = updateModelsFromEnvironment(restModels);
         restModels = maskRestModels(restModels);
         return restModels;
     }
 
-    public GlobalHubConfigRestModel updateModelFromEnvironment(final GlobalHubConfigRestModel restModel) {
+    public GlobalHubConfig updateModelFromEnvironment(final GlobalHubConfig restModel) {
         restModel.setHubUrl(globalProperties.getHubUrl().orElse(null));
         if (globalProperties.getHubTrustCertificate().isPresent()) {
             restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().get()));
@@ -111,9 +111,9 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return restModel;
     }
 
-    public List<GlobalHubConfigRestModel> updateModelsFromEnvironment(final List<GlobalHubConfigRestModel> restModels) {
-        final List<GlobalHubConfigRestModel> updatedRestModels = new ArrayList<>();
-        for (final GlobalHubConfigRestModel restModel : restModels) {
+    public List<GlobalHubConfig> updateModelsFromEnvironment(final List<GlobalHubConfig> restModels) {
+        final List<GlobalHubConfig> updatedRestModels = new ArrayList<>();
+        for (final GlobalHubConfig restModel : restModels) {
             updatedRestModels.add(updateModelFromEnvironment(restModel));
         }
         return restModels;
@@ -123,14 +123,14 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     @Override
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalHubConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
-        if (updatedConfig instanceof GlobalHubConfigRestModel) {
-            updatedConfig = (T) updateModelFromEnvironment((GlobalHubConfigRestModel) updatedConfig);
+        if (updatedConfig instanceof GlobalHubConfig) {
+            updatedConfig = (T) updateModelFromEnvironment((GlobalHubConfig) updatedConfig);
         }
         return updatedConfig;
     }
 
     @Override
-    public String validateConfig(final GlobalHubConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalHubConfig restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getHubTimeout()) && !StringUtils.isNumeric(restModel.getHubTimeout())) {
             fieldErrors.put("hubTimeout", "Not an Integer.");
@@ -150,7 +150,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
     @SuppressWarnings("deprecation")
     @Override
-    public String channelTestConfig(final GlobalHubConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalHubConfig restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final String apiToken = restModel.getHubApiKey();

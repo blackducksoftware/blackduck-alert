@@ -41,41 +41,41 @@ import com.blackducksoftware.integration.alert.web.controller.handler.CommonGlob
 
 @RestController
 @RequestMapping(GlobalConfigController.PROVIDER_PATH + "/hub")
-public class GlobalHubConfigController extends GlobalConfigController<GlobalHubConfigRestModel> {
-    private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfigRestModel, GlobalHubRepository> commonConfigHandler;
+public class GlobalHubConfigController extends GlobalConfigController<GlobalHubConfig> {
+    private final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> commonConfigHandler;
 
     @Autowired
     public GlobalHubConfigController(final GlobalHubConfigActions configActions, final ContentConverter contentConverter) {
-        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfigRestModel.class, configActions, contentConverter);
+        commonConfigHandler = new CommonGlobalConfigHandler<>(GlobalHubConfigEntity.class, GlobalHubConfig.class, configActions, contentConverter);
     }
 
     @Override
-    public List<GlobalHubConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<GlobalHubConfig> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return commonConfigHandler.getConfig(id);
     }
 
     @Override
-    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalHubConfig globalConfig) {
         return commonConfigHandler.postConfig(globalConfig);
     }
 
     @Override
-    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalHubConfig globalConfig) {
         return commonConfigHandler.putConfig(globalConfig);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(final GlobalHubConfigRestModel globalConfig) {
+    public ResponseEntity<String> validateConfig(final GlobalHubConfig globalConfig) {
         return commonConfigHandler.validateConfig(globalConfig);
     }
 
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalHubConfig globalConfig) {
         return commonConfigHandler.deleteConfig(globalConfig);
     }
 
     @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHubConfigRestModel globalConfig) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalHubConfig globalConfig) {
         return commonConfigHandler.testConfig(globalConfig);
     }
 }

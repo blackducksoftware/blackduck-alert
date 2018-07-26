@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -52,14 +52,10 @@ public class HubDescriptor extends ProviderDescriptor {
 
     @Override
     public void validateGlobalConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -69,7 +65,7 @@ public class HubDescriptor extends ProviderDescriptor {
 
     @Override
     public Config getGlobalRestModelObject() {
-        return new GlobalHubConfigRestModel();
+        return new GlobalHubConfig();
     }
 
 }

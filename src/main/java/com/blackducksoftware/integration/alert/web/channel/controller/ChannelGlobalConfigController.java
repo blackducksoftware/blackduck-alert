@@ -76,9 +76,9 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     }
 
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.deleteConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
+        return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override
