@@ -35,7 +35,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
@@ -51,18 +50,16 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
-    private final ChannelTemplateManager channelTemplateManager;
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> processorList;
     private final ContentConverter contentConverter;
 
     @Autowired
     public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
-            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler, final ChannelTemplateManager channelTemplateManager,
+            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
             final List<NotificationTypeProcessor> processorList, final ContentConverter contentConverter) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
         this.globalProperties = globalProperties;
-        this.channelTemplateManager = channelTemplateManager;
         this.processorList = processorList;
         this.contentConverter = contentConverter;
     }
@@ -70,7 +67,7 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
     @Override
     public Step createStep(final HubAccumulatorReader reader, final HubAccumulatorProcessor processor, final HubAccumulatorWriter writer) {
         return stepBuilderFactory.get(ACCUMULATOR_STEP_NAME).<NotificationDetailResults, AlertEvent>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                .build();
+                       .build();
     }
 
     @Override
@@ -80,7 +77,7 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
 
     @Override
     public HubAccumulatorWriter writer() {
-        return new HubAccumulatorWriter(notificationManager, channelTemplateManager, contentConverter);
+        return new HubAccumulatorWriter(notificationManager, contentConverter);
     }
 
     @Override
