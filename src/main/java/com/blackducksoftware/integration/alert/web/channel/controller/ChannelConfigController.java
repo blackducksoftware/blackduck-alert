@@ -41,7 +41,7 @@ public abstract class ChannelConfigController extends BaseController {
     public static final String UNIVERSAL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
 
     @GetMapping
-    public abstract List<ConfigRestModel> getConfig(final Long id, final String descriptorName);
+    public abstract List<? extends ConfigRestModel> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
     public abstract ResponseEntity<String> postConfig(String restModel, final String descriptorName);
@@ -53,7 +53,7 @@ public abstract class ChannelConfigController extends BaseController {
     public abstract ResponseEntity<String> validateConfig(String restModel, final String descriptorName);
 
     @DeleteMapping
-    public abstract ResponseEntity<String> deleteConfig(String restModel, final String descriptorName);
+    public abstract ResponseEntity<String> deleteConfig(Long id, final String descriptorName);
 
     @PostMapping(value = "/test")
     public abstract ResponseEntity<String> testConfig(String restModel, final String descriptorName);

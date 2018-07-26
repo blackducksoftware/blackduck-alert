@@ -48,7 +48,7 @@ public abstract class ChannelConfigActions<R extends ConfigRestModel> {
 
     public abstract boolean doesConfigExist(final Long id, ChannelDescriptor descriptor);
 
-    public abstract List<ConfigRestModel> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
+    public abstract List<R> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
 
     public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
         deleteConfig(contentConverter.getLongValue(id), descriptor);
