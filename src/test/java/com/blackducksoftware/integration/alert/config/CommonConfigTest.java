@@ -1,11 +1,9 @@
 package com.blackducksoftware.integration.alert.config;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
 import org.junit.After;
@@ -124,13 +122,13 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
     @Test
     public void testTimeNull() {
         final C config = getConfigWithNullParams();
-        final Long nullResult = config.getMillisecondsToNextRun();
+        final Optional<Long> nullResult = config.getMillisecondsToNextRun();
 
-        assertNull(nullResult);
+        assertFalse(nullResult.isPresent());
 
-        final String nullStringResult = config.getFormatedNextRunTime();
+        final Optional<String> nullStringResult = config.getFormatedNextRunTime();
 
-        assertNull(nullStringResult);
+        assertFalse(nullStringResult.isPresent());
     }
 
     @Test

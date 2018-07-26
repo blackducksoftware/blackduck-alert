@@ -35,28 +35,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
-    private final AccumulatorConfig accumulatorConfig;
-    private final DailyDigestBatchConfig dailyDigestBatchConfig;
     private final PurgeConfig purgeConfig;
 
+    private final DailyTask dailyTask;
+    private final OnDemandTask onDemandTask;
+
     @Autowired
-    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
+    public GlobalSchedulingConfigActions(final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
             final GlobalSchedulingContentConverter contentConverter) {
         super(repository, contentConverter);
-        this.accumulatorConfig = accumulatorConfig;
-        this.dailyDigestBatchConfig = dailyDigestBatchConfig;
         this.purgeConfig = purgeConfig;
+        this.dailyTask = dailyTask;
+        this.onDemandTask = onDemandTask;
     }
 
     @Override
@@ -76,14 +77,14 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         final GlobalSchedulingConfig restModel;
         if (databaseEntity != null) {
             restModel = (GlobalSchedulingConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
-            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
-            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
+            restModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
+            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime().orElse(null));
         } else {
             restModel = new GlobalSchedulingConfig();
         }
-        final Long accumulatorNextRun = accumulatorConfig.getMillisecondsToNextRun();
-        if (accumulatorNextRun != null) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+        final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
+        if (onDemandNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandTask.getMillisecondsToNextRun().get());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
         final List<GlobalSchedulingConfig> restModels = new ArrayList<>();
@@ -139,7 +140,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
 
             final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
             final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-            dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
+            dailyTask.scheduleExecution(dailyDigestCron);
             purgeConfig.scheduleExecution(purgeDataCron);
         }
     }
