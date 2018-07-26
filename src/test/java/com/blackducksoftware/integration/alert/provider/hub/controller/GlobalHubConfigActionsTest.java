@@ -29,9 +29,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
@@ -51,9 +51,9 @@ public class GlobalHubConfigActionsTest extends GlobalActionsTest<GlobalHubConfi
     @Override
     public GlobalHubConfigActions getMockedConfigActions() {
         final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository);
+        final HubProperties hubProperties = new TestGlobalProperties(mockedGlobalRepository);
 
-        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, globalProperties, new HubContentConverter(getContentConverter()));
+        final GlobalHubConfigActions configActions = new GlobalHubConfigActions(mockedGlobalRepository, hubProperties, new HubContentConverter(getContentConverter()));
         return configActions;
     }
 

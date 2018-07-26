@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.config;
+package com.blackducksoftware.integration.alert.provider.hub;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -52,7 +52,7 @@ import com.blackducksoftware.integration.util.ResourceUtil;
 import com.google.gson.Gson;
 
 @Component
-public class GlobalProperties {
+public class HubProperties {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final GlobalHubRepository globalHubRepository;
 
@@ -103,12 +103,12 @@ public class GlobalProperties {
     private AboutModel aboutModel;
 
     @Autowired
-    public GlobalProperties(final GlobalHubRepository globalRepository, final Gson gson) {
+    public HubProperties(final GlobalHubRepository globalRepository, final Gson gson) {
         this.globalHubRepository = globalRepository;
         readAboutInformation(gson);
     }
 
-    protected void readAboutInformation(final Gson gson) {
+    public void readAboutInformation(final Gson gson) {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             aboutModel = gson.fromJson(aboutJson, AboutModel.class);

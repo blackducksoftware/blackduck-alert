@@ -20,8 +20,6 @@ import java.util.Optional;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.actions.GlobalActionsTest;
@@ -31,6 +29,8 @@ import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingCo
 import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingContentConverter;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
+import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
@@ -38,13 +38,13 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
 
     @Override
     public GlobalSchedulingConfigActions getMockedConfigActions() {
-        final AccumulatorConfig mockedAccumulatorConfig = Mockito.mock(AccumulatorConfig.class);
+        final AccumulatorTask mockedAccumulatorConfig = Mockito.mock(AccumulatorTask.class);
         Mockito.when(mockedAccumulatorConfig.getMillisecondsToNextRun()).thenReturn(Optional.of(33000l));
         final DailyTask mockedDailyTask = Mockito.mock(DailyTask.class);
         final OnDemandTask mockedOnDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.when(mockedDailyTask.getFormatedNextRunTime()).thenReturn(Optional.of("01/19/2018 02:00 AM UTC"));
         Mockito.when(mockedOnDemandTask.getMillisecondsToNextRun()).thenReturn(Optional.of(33000l));
-        final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
+        final PurgeTask mockedPurgeConfig = Mockito.mock(PurgeTask.class);
         Mockito.when(mockedPurgeConfig.getFormatedNextRunTime()).thenReturn(Optional.of("01/21/2018 12:00 AM UTC"));
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
@@ -64,7 +64,7 @@ public class GlobalSchedulingConfigActionsTest extends GlobalActionsTest<GlobalS
         final DailyTask mockedDailyTask = Mockito.mock(DailyTask.class);
         final OnDemandTask mockedOnDemandTask = Mockito.mock(OnDemandTask.class);
 
-        final PurgeConfig mockedPurgeConfig = Mockito.mock(PurgeConfig.class);
+        final PurgeTask mockedPurgeConfig = Mockito.mock(PurgeTask.class);
 
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         Mockito.when(globalSchedulingRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));

@@ -42,9 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
@@ -61,12 +61,12 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalHubConfigActions.class);
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
 
     @Autowired
-    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final GlobalProperties globalProperties, final HubContentConverter hubContentConverter) {
+    public GlobalHubConfigActions(final GlobalHubRepository globalRepository, final HubProperties hubProperties, final HubContentConverter hubContentConverter) {
         super(globalRepository, hubContentConverter);
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
     }
 
     @Override
@@ -98,15 +98,15 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     }
 
     public GlobalHubConfig updateModelFromEnvironment(final GlobalHubConfig restModel) {
-        restModel.setHubUrl(globalProperties.getHubUrl().orElse(null));
-        if (globalProperties.getHubTrustCertificate().isPresent()) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(globalProperties.getHubTrustCertificate().get()));
+        restModel.setHubUrl(hubProperties.getHubUrl().orElse(null));
+        if (hubProperties.getHubTrustCertificate().isPresent()) {
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(hubProperties.getHubTrustCertificate().get()));
         }
-        restModel.setHubProxyHost(globalProperties.getHubProxyHost().orElse(null));
-        restModel.setHubProxyPort(globalProperties.getHubProxyPort().orElse(null));
-        restModel.setHubProxyUsername(globalProperties.getHubProxyUsername().orElse(null));
+        restModel.setHubProxyHost(hubProperties.getHubProxyHost().orElse(null));
+        restModel.setHubProxyPort(hubProperties.getHubProxyPort().orElse(null));
+        restModel.setHubProxyUsername(hubProperties.getHubProxyUsername().orElse(null));
         // Do not send passwords going to the UI
-        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(globalProperties.getHubProxyPassword().orElse(null));
+        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(hubProperties.getHubProxyPassword().orElse(null));
         restModel.setHubProxyPasswordIsSet(proxyPasswordIsSet);
         return restModel;
     }
@@ -155,7 +155,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
 
         final String apiToken = restModel.getHubApiKey();
 
-        final HubServerConfigBuilder hubServerConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getHubTimeout()));
+        final HubServerConfigBuilder hubServerConfigBuilder = hubProperties.createHubServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getHubTimeout()));
         hubServerConfigBuilder.setApiToken(apiToken);
 
         validateHubConfiguration(hubServerConfigBuilder);

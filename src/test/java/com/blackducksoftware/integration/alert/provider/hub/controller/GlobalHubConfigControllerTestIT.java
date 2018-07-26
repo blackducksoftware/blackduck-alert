@@ -11,11 +11,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubEntity;
 import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
@@ -31,7 +31,7 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
     GlobalHubConfigActions globalHubConfigActions;
 
     @Autowired
-    GlobalProperties globalProperties;
+    HubProperties hubProperties;
 
     @Override
     public GlobalHubRepository getGlobalEntityRepository() {
@@ -78,8 +78,8 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         final String apiKey = testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY);
         final String alwaysTrust = testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         final String testRestUrl = restUrl + "/test";
-        globalProperties.setHubUrl(hubUrl);
-        globalProperties.setHubTrustCertificate(Boolean.valueOf(alwaysTrust));
+        hubProperties.setHubUrl(hubUrl);
+        hubProperties.setHubTrustCertificate(Boolean.valueOf(alwaysTrust));
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
                 .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                 .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -88,7 +88,7 @@ public class GlobalHubConfigControllerTestIT extends GlobalControllerTest<Global
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         assertTrue(true);
-        globalProperties.setHubUrl(null);
-        globalProperties.setHubTrustCertificate(Boolean.FALSE);
+        hubProperties.setHubUrl(null);
+        hubProperties.setHubTrustCertificate(Boolean.FALSE);
     }
 }

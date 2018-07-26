@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.config;
+package com.blackducksoftware.integration.alert.channel;
 
 import java.util.List;
 
@@ -39,14 +39,14 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.workflow.RealTimeListener;
 
 @Configuration
-public class JMSListenerConfig implements JmsListenerConfigurer {
-    private final Logger logger = LoggerFactory.getLogger(JMSListenerConfig.class);
+public class ChannelListener implements JmsListenerConfigurer {
+    private final Logger logger = LoggerFactory.getLogger(ChannelListener.class);
 
     private final List<ChannelDescriptor> channelDescriptorList;
     private final RealTimeListener realTimeListener;
 
     @Autowired
-    public JMSListenerConfig(final List<ChannelDescriptor> channelDescriptorList, final RealTimeListener realTimeListener) {
+    public ChannelListener(final List<ChannelDescriptor> channelDescriptorList, final RealTimeListener realTimeListener) {
         this.channelDescriptorList = channelDescriptorList;
         this.realTimeListener = realTimeListener;
     }

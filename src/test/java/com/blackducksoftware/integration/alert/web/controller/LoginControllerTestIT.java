@@ -29,16 +29,16 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
-import com.blackducksoftware.integration.alert.config.DataSourceConfig;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.mock.model.MockLoginRestModel;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(ExternalConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @WebAppConfiguration
@@ -48,7 +48,7 @@ public class LoginControllerTestIT {
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
-    protected GlobalProperties globalProperties;
+    protected HubProperties hubProperties;
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
@@ -74,8 +74,8 @@ public class LoginControllerTestIT {
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
         mockLoginRestModel.setHubUsername(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
         mockLoginRestModel.setHubPassword(testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
-        globalProperties.setHubTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
-        globalProperties.setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        hubProperties.setHubTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+        hubProperties.setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         final String restModel = mockLoginRestModel.getRestModelJson();
         request.content(restModel);
         request.contentType(contentType);

@@ -40,7 +40,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -59,16 +59,16 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class LoginActions {
 
-    final GlobalProperties globalProperties;
+    final HubProperties hubProperties;
 
     @Autowired
-    public LoginActions(final GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
+    public LoginActions(final HubProperties hubProperties) {
+        this.hubProperties = hubProperties;
     }
 
     @SuppressWarnings("deprecation")
     public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) throws IntegrationException {
-        final HubServerConfigBuilder serverConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
+        final HubServerConfigBuilder serverConfigBuilder = hubProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 
         serverConfigBuilder.setPassword(loginConfig.getHubPassword());
         serverConfigBuilder.setUsername(loginConfig.getHubUsername());

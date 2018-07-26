@@ -38,13 +38,13 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.MessageReceiver;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
@@ -59,12 +59,12 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ContentConverter contentExtractor;
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
 
-    public DistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+    public DistributionChannel(final Gson gson, final HubProperties hubProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
@@ -80,8 +80,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         return commonDistributionRepository;
     }
 
-    public GlobalProperties getGlobalProperties() {
-        return globalProperties;
+    public HubProperties getGlobalProperties() {
+        return hubProperties;
     }
 
     public G getGlobalConfigEntity() {

@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
@@ -45,7 +45,7 @@ import com.google.gson.Gson;
 
 @Category({ DatabaseConnectionTest.class, ExternalConnectionTest.class })
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional
 @WebAppConfiguration
