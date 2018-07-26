@@ -21,18 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.digest;
+package com.blackducksoftware.integration.alert.workflow.scheduled.frequency;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.common.digest.DateRange;
+import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
-public class DailyItemReader extends DigestItemReader {
+@Component
+public class DailyTask extends ProcessingTask {
 
-    public DailyItemReader(final NotificationManager notificationManager) {
-        super(DailyItemReader.class.getName(), notificationManager);
+    @Autowired
+    public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
+        super(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager);
     }
 
     @Override
@@ -43,5 +53,10 @@ public class DailyItemReader extends DigestItemReader {
         final Date startDate = Date.from(zonedStartDate.toInstant());
         final Date endDate = Date.from(currentTime.toInstant());
         return new DateRange(startDate, endDate);
+    }
+
+    @Override
+    public DigestType getDigestType() {
+        return DigestType.DAILY;
     }
 }
