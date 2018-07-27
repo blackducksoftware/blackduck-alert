@@ -81,7 +81,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         final List<ChannelEvent> eventList = process(modelList);
         channelTemplateManager.sendEvents(eventList);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        logger.info("{} Finished Operation", taskName);
+        logger.info("{} Task Finished", taskName);
     }
 
     public List<NotificationModel> read(final DateRange dateRange) {
