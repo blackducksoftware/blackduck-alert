@@ -25,7 +25,9 @@ package com.blackducksoftware.integration.alert.web.model;
 
 import java.util.List;
 
-public class AlertPagedModel<M extends Model> extends Model {
+import com.blackducksoftware.integration.util.Stringable;
+
+public class AlertPagedModel<M extends Config> extends Stringable {
 
     private final int totalPages;
     private final int currentPage;

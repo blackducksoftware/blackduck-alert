@@ -9,7 +9,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryConfig;
 
 public class AlertPagedRestModelTest {
 
@@ -18,9 +18,9 @@ public class AlertPagedRestModelTest {
         final int totalPages = 0;
         final int currentPage = 0;
         final int pageSize = 0;
-        final List<AuditEntryRestModel> contentList = null;
+        final List<AuditEntryConfig> contentList = null;
 
-        final AlertPagedModel<AuditEntryRestModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryConfig> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
@@ -33,12 +33,12 @@ public class AlertPagedRestModelTest {
         final int totalPages = 2;
         final int currentPage = 1;
         final int pageSize = 2;
-        final List<AuditEntryRestModel> contentList = new ArrayList<>();
-        final AuditEntryRestModel item = new AuditEntryRestModel();
+        final List<AuditEntryConfig> contentList = new ArrayList<>();
+        final AuditEntryConfig item = new AuditEntryConfig();
         contentList.add(item);
         contentList.add(item);
 
-        final AlertPagedModel<AuditEntryRestModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryConfig> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());

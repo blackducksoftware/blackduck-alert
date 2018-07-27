@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-public abstract class Config extends Model {
+public abstract class Config extends MaskedModel {
     private String id;
 
     public Config() {

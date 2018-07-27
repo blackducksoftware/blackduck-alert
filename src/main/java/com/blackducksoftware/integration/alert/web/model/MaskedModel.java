@@ -34,7 +34,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public abstract class Model extends Stringable {
+public abstract class MaskedModel extends Stringable {
     @Override
     public String toString() {
         final Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {

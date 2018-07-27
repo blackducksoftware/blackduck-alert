@@ -47,7 +47,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Notifi
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
 import com.blackducksoftware.integration.alert.web.audit.AuditEntryHandler;
-import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryConfig;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
 import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
@@ -92,10 +92,10 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null);
+        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
-        final AuditEntryRestModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
+        final AuditEntryConfig auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
         assertNotNull(auditEntry);
         assertEquals(auditEntry, auditEntries.getContent().get(0));
 

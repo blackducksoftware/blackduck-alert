@@ -47,7 +47,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryRestModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+    public AlertPagedModel<AuditEntryConfig> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
             @RequestParam(value = "searchTerm", required = false) final String searchTerm) {
         if (StringUtils.isNotBlank(searchTerm)) {
             return auditEntryHandler.search(pageNumber, pageSize, searchTerm);
@@ -57,7 +57,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    public AuditEntryRestModel get(@PathVariable(value = "id") final Long id) {
+    public AuditEntryConfig get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 

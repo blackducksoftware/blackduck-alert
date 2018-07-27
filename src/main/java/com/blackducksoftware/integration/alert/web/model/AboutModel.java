@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-public class AboutModel extends Model {
+import com.blackducksoftware.integration.util.Stringable;
+
+public class AboutModel extends Stringable {
     private String version;
     private String description;
     private String projectUrl;

@@ -25,10 +25,10 @@ package com.blackducksoftware.integration.alert.database.entity;
 
 import javax.persistence.MappedSuperclass;
 
-import com.blackducksoftware.integration.alert.web.model.Model;
+import com.blackducksoftware.integration.util.Stringable;
 
 @MappedSuperclass
-public abstract class BaseEntity extends Model {
+public abstract class BaseEntity extends Stringable {
     public BaseEntity() {
         // JPA requires default constructor definitions
     }

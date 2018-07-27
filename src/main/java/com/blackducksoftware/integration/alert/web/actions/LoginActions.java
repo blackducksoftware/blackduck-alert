@@ -66,7 +66,6 @@ public class LoginActions {
         this.hubProperties = hubProperties;
     }
 
-    @SuppressWarnings("deprecation")
     public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) throws IntegrationException {
         final HubServerConfigBuilder serverConfigBuilder = hubProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 

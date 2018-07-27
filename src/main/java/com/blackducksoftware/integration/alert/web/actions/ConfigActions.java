@@ -62,6 +62,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         return id != null && repository.existsById(id);
     }
 
+    @SuppressWarnings("unchecked")
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
             final Optional<D> foundEntity = repository.findById(id);
@@ -177,6 +178,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
     public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
+                @SuppressWarnings("unchecked")
                 D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
@@ -193,6 +195,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
     public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
+                @SuppressWarnings("unchecked")
                 D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
@@ -260,7 +263,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
+    public void configurationChangeTriggers(final R restModel) {
 
     }
 

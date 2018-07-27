@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryRestModel;
-import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryConfig;
 import com.blackducksoftware.integration.alert.web.model.RestModelTest;
 
-public class AuditEntryRestModelTest extends RestModelTest<AuditEntryRestModel> {
+public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
 
     @Override
     public MockAuditEntryRestModel getMockUtil() {
@@ -15,12 +15,12 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryRestModel> 
     }
 
     @Override
-    public Class<AuditEntryRestModel> getRestModelClass() {
-        return AuditEntryRestModel.class;
+    public Class<AuditEntryConfig> getRestModelClass() {
+        return AuditEntryConfig.class;
     }
 
     @Override
-    public void assertRestModelFieldsNull(final AuditEntryRestModel restModel) {
+    public void assertRestModelFieldsNull(final AuditEntryConfig restModel) {
         assertNull(restModel.getErrorMessage());
         assertNull(restModel.getErrorStackTrace());
         assertNull(restModel.getEventType());
@@ -32,7 +32,7 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryRestModel> 
     }
 
     @Override
-    public void assertRestModelFieldsFull(final AuditEntryRestModel restModel) {
+    public void assertRestModelFieldsFull(final AuditEntryConfig restModel) {
         assertEquals(getMockUtil().getErrorMessage(), restModel.getErrorMessage());
         assertEquals(getMockUtil().getErrorStackTrace(), restModel.getErrorStackTrace());
         assertEquals(getMockUtil().getEventType(), restModel.getEventType());
