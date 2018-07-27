@@ -49,7 +49,7 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Autowired
     public SlackDescriptor(final SlackChannel slackChannel, final SlackDistributionContentConverter slackDistributionContentConverter, final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, null, null, slackDistributionContentConverter, slackDistributionRepositoryAccessor);
+        super(SlackChannel.COMPONENT_NAME, "Slack", SlackChannel.COMPONENT_NAME, null, null, slackDistributionContentConverter, slackDistributionRepositoryAccessor);
         this.slackChannel = slackChannel;
     }
 

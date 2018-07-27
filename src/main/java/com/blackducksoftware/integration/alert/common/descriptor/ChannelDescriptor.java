@@ -37,9 +37,10 @@ public abstract class ChannelDescriptor extends Descriptor {
     private final DatabaseContentConverter contentConverter;
     private final RepositoryAccessor repositoryAccessor;
 
-    public ChannelDescriptor(final String name, final String destinationName, final DatabaseContentConverter globalContentConverter, final RepositoryAccessor globalRepositoryAccessor, final DatabaseContentConverter contentConverter,
+    public ChannelDescriptor(final String name, final String label, final String destinationName, final DatabaseContentConverter globalContentConverter, final RepositoryAccessor globalRepositoryAccessor,
+            final DatabaseContentConverter contentConverter,
             final RepositoryAccessor repositoryAccessor) {
-        super(name, DescriptorType.CHANNEL, globalContentConverter, globalRepositoryAccessor);
+        super(name, label, DescriptorType.CHANNEL, globalContentConverter, globalRepositoryAccessor);
         this.destinationName = destinationName;
         this.contentConverter = contentConverter;
         this.repositoryAccessor = repositoryAccessor;

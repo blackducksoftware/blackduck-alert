@@ -27,8 +27,8 @@ import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 
 public abstract class ProviderDescriptor extends Descriptor {
 
-    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
-        super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
+    public ProviderDescriptor(final String name, final String label, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
+        super(name, label, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
     }
 
 }

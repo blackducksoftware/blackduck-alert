@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.web.controller;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 
 @RestController
-@RequestMapping(DescriptorController.DESCRIPTOR_PATH + "/{descriptorType}")
+@RequestMapping(DescriptorController.DESCRIPTOR_PATH)
 public class DescriptorController extends BaseController {
     public static final String DESCRIPTOR_PATH = BaseController.BASE_PATH + "/descriptors";
 
@@ -51,14 +52,19 @@ public class DescriptorController extends BaseController {
     }
 
     @GetMapping
-    public List<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @PathVariable final String descriptorType) {
+    public List<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName) {
         if (StringUtils.isNotBlank(descriptorName)) {
             return Arrays.asList(descriptorMap.getDescriptor(descriptorName));
         }
 
+        return new ArrayList<>(descriptorMap.getDescriptorMap().values());
+    }
+
+    @GetMapping("/{descriptorType}")
+    public List<Descriptor> getDescriptorsOfType(@PathVariable final String descriptorType) {
         return descriptorMap.getDescriptorMap().values()
                 .stream()
-                .filter(descriptorVals -> descriptorVals.getType().name().equalsIgnoreCase(descriptorType))
+                .filter(descriptor -> descriptor.getType().name().equalsIgnoreCase(descriptorType))
                 .collect(Collectors.toList());
     }
 }
