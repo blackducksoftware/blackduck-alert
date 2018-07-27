@@ -202,7 +202,7 @@ public class StartupManager {
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
         dailyTask.scheduleExecution(dailyDigestCron);
-        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_SECONDS);
+        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
         purgeConfig.scheduleExecution(purgeDataCron);
 
         logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));

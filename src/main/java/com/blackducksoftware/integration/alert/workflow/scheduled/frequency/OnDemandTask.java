@@ -23,48 +23,24 @@
  */
 package com.blackducksoftware.integration.alert.workflow.scheduled.frequency;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Component
 public class OnDemandTask extends ProcessingTask {
-    public static final long DEFAULT_INTERVAL_SECONDS = 10;
+    public static final long DEFAULT_INTERVAL_MILLISECONDS = 10000;
     public static final String TASK_NAME = "ondemand-frequency";
-    private long secondInterval = 0;
 
     @Autowired
     public OnDemandTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager,
             final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
-    }
-
-    @Override
-    public void scheduleExecutionAtFixedRate(final long secondInterval) {
-        this.secondInterval = secondInterval;
-        final long milliseconds = TimeUnit.SECONDS.toMillis(secondInterval);
-        super.scheduleExecutionAtFixedRate(milliseconds);
-    }
-
-    @Override
-    public DateRange getDateRange() {
-        ZonedDateTime currentTime = ZonedDateTime.now();
-        currentTime = currentTime.withZoneSameInstant(ZoneOffset.UTC);
-        final ZonedDateTime zonedStartDate = currentTime.minusSeconds(secondInterval);
-        final Date startDate = Date.from(zonedStartDate.toInstant());
-        final Date endDate = Date.from(currentTime.toInstant());
-        return new DateRange(startDate, endDate);
     }
 
     @Override

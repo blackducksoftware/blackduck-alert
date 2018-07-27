@@ -23,16 +23,11 @@
  */
 package com.blackducksoftware.integration.alert.workflow.scheduled.frequency;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
@@ -44,16 +39,6 @@ public class DailyTask extends ProcessingTask {
     @Autowired
     public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
-    }
-
-    @Override
-    public DateRange getDateRange() {
-        ZonedDateTime currentTime = ZonedDateTime.now();
-        currentTime = currentTime.withZoneSameInstant(ZoneOffset.UTC);
-        final ZonedDateTime zonedStartDate = currentTime.minusDays(1);
-        final Date startDate = Date.from(zonedStartDate.toInstant());
-        final Date endDate = Date.from(currentTime.toInstant());
-        return new DateRange(startDate, endDate);
     }
 
     @Override
