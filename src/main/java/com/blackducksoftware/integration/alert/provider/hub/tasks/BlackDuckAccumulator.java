@@ -43,7 +43,6 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
@@ -61,7 +60,7 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
-public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
+public class BlackDuckAccumulator extends ScheduledTask {
     public static final String DEFAULT_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
     public static final String ENCODING = "UTF-8";
 
@@ -76,7 +75,7 @@ public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
-        super(taskScheduler, "blackduck-tasks");
+        super(taskScheduler, "blackduck-accumulator-task");
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
@@ -95,22 +94,7 @@ public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
     }
 
     public String createLoggerMessage(final String messageFormat) {
-        return String.format("[ %s ] %s", getName(), messageFormat);
-    }
-
-    @Override
-    public void start() {
-        this.scheduleExecution(DEFAULT_CRON_EXPRESSION);
-    }
-
-    @Override
-    public void stop() {
-        this.scheduleExecution(STOP_SCHEDULE_EXPRESSION);
-    }
-
-    @Override
-    public String getName() {
-        return getTaskName();
+        return String.format("[ %s ] %s", getTaskName(), messageFormat);
     }
 
     @Override
@@ -118,7 +102,6 @@ public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
         accumulate();
     }
 
-    @Override
     public void accumulate() {
         logger.info(createLoggerMessage("### Accumulator Starting Operation..."));
         try {
@@ -257,4 +240,3 @@ public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
         return newStartDate;
     }
 }
-

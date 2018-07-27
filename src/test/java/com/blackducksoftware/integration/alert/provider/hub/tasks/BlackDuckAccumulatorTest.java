@@ -35,7 +35,6 @@ import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.policy.PolicyNotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
 import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
@@ -173,23 +172,6 @@ public class BlackDuckAccumulatorTest {
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
-    }
-
-    @Test
-    public void testStart() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
-        final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        spiedAccumulator.start();
-        Mockito.verify(spiedAccumulator).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
-        spiedAccumulator.stop(); // stop execution of the scheduled task
-    }
-
-    @Test
-    public void testStop() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
-        final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        spiedAccumulator.stop();
-        Mockito.verify(spiedAccumulator).scheduleExecution(ScheduledTask.STOP_SCHEDULE_EXPRESSION);
     }
 
     @Test
