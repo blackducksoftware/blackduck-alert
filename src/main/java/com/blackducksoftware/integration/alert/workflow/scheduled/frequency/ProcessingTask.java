@@ -85,9 +85,8 @@ public abstract class ProcessingTask extends ScheduledTask {
     }
 
     public List<NotificationModel> read(final DateRange dateRange) {
-
-        final String taskName = getTaskName();
         try {
+            final String taskName = getTaskName();
             final Date startDate = dateRange.getStart();
             final Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
