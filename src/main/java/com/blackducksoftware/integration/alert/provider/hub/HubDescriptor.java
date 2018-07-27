@@ -46,7 +46,7 @@ public class HubDescriptor extends ProviderDescriptor {
     @Autowired
     public HubDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
             final EntityPropertyMapper entityPropertyMapper) {
-        super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor);
+        super(PROVIDER_NAME, "Blackduck Hub", hubContentConverter, hubRepositoryAccessor);
         this.entityPropertyMapper = entityPropertyMapper;
     }
 

@@ -34,12 +34,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class Descriptor {
     private final String name;
+    private final String label;
     private final DescriptorType type;
     private final DatabaseContentConverter contentConverter;
     private final RepositoryAccessor repositoryAccessor;
 
-    public Descriptor(final String name, final DescriptorType type, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
+    public Descriptor(final String name, final String label, final DescriptorType type, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
         this.name = name;
+        this.label = label;
         this.type = type;
         this.contentConverter = contentConverter;
         this.repositoryAccessor = repositoryAccessor;
@@ -47,6 +49,10 @@ public abstract class Descriptor {
 
     public String getName() {
         return name;
+    }
+
+    public String getLabel() {
+        return label;
     }
 
     public DescriptorType getType() {

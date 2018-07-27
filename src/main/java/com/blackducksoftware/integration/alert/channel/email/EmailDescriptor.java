@@ -56,7 +56,7 @@ public class EmailDescriptor extends ChannelDescriptor {
     @Autowired
     public EmailDescriptor(final EmailGroupChannel emailGroupChannel, final EmailGlobalContentConverter emailGlobalContentConverter, final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor,
             final EmailDistributionContentConverter emailDistributionContentConverter, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor, final EntityPropertyMapper entityPropertyMapper) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, emailGlobalContentConverter, emailGlobalRepositoryAccessor, emailDistributionContentConverter, emailDistributionRepositoryAccessor);
+        super(EmailGroupChannel.COMPONENT_NAME, "Email", EmailGroupChannel.COMPONENT_NAME, emailGlobalContentConverter, emailGlobalRepositoryAccessor, emailDistributionContentConverter, emailDistributionRepositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
         this.entityPropertyMapper = entityPropertyMapper;
     }

@@ -55,7 +55,7 @@ public class HipChatDescriptor extends ChannelDescriptor {
     @Autowired
     public HipChatDescriptor(final HipChatChannel hipChatChannel, final HipChatDistributionContentConverter hipChatDistributionContentConverter, final HipChatGlobalContentConverter hipChatGlobalContentConverter,
             final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor, final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor, final EntityPropertyMapper entityPropertyMapper) {
-        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, hipChatGlobalContentConverter, hipChatGlobalRepositoryAccessor, hipChatDistributionContentConverter, hipChatDistributionRepositoryAccessor);
+        super(HipChatChannel.COMPONENT_NAME, "HipChat", HipChatChannel.COMPONENT_NAME, hipChatGlobalContentConverter, hipChatGlobalRepositoryAccessor, hipChatDistributionContentConverter, hipChatDistributionRepositoryAccessor);
         this.hipChatChannel = hipChatChannel;
         this.entityPropertyMapper = entityPropertyMapper;
     }
