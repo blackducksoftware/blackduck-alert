@@ -44,8 +44,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.provider.hub.HubContentConverter;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -100,7 +100,7 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
     public GlobalHubConfig updateModelFromEnvironment(final GlobalHubConfig restModel) {
         restModel.setHubUrl(hubProperties.getHubUrl().orElse(null));
         if (hubProperties.getHubTrustCertificate().isPresent()) {
-            restModel.setHubAlwaysTrustCertificate(String.valueOf(hubProperties.getHubTrustCertificate().get()));
+            restModel.setHubAlwaysTrustCertificate(String.valueOf(hubProperties.getHubTrustCertificate().orElse(false)));
         }
         restModel.setHubProxyHost(hubProperties.getHubProxyHost().orElse(null));
         restModel.setHubProxyPort(hubProperties.getHubProxyPort().orElse(null));

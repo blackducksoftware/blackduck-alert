@@ -84,7 +84,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         }
         final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
         if (onDemandNextRun.isPresent()) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandTask.getMillisecondsToNextRun().get());
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandNextRun.get());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
         final List<GlobalSchedulingConfig> restModels = new ArrayList<>();
