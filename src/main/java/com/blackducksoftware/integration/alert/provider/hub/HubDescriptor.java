@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
-import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class HubDescriptor extends ProviderDescriptor {
@@ -55,7 +54,7 @@ public class HubDescriptor extends ProviderDescriptor {
     }
 
     @Override
-    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testGlobalConfig(final DatabaseEntity entity) {
     }
 
     @Override
