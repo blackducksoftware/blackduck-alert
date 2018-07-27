@@ -150,11 +150,12 @@ public class StartupManager {
             final HubServerVerifier verifier = new HubServerVerifier();
             final ProxyInfoBuilder proxyBuilder = hubProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
-            if (!hubProperties.getHubUrl().isPresent()) {
+            final Optional<String> hubUrlOptional = hubProperties.getHubUrl();
+            if (!hubUrlOptional.isPresent()) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
             } else {
-                if (hubProperties.getHubUrl().isPresent()) {
-                    final String hubUrlString = hubProperties.getHubUrl().get();
+                if (hubUrlOptional.isPresent()) {
+                    final String hubUrlString = hubUrlOptional.get();
                     final Boolean trustCertificate = BooleanUtils.toBoolean(hubProperties.getHubTrustCertificate().orElse(false));
 
                     final URL hubUrl = new URL(hubUrlString);
