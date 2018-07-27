@@ -23,14 +23,19 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
-import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 
 public abstract class ProviderDescriptor extends Descriptor {
 
-    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
+    private final Provider provider;
+
+    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor, final Provider provider) {
         super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
+        this.provider = provider;
     }
 
-    public abstract Accumulator getAccumulator();
+    public Provider getProvider() {
+        return provider;
+    }
 }
