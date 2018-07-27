@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.alert.provider.hub.accumulator;
+package com.blackducksoftware.integration.alert.provider.hub.tasks;
 
 import static org.junit.Assert.*;
 
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +21,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.accumulator.SearchIntervalAccumulator;
+import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.enumeration.InternalEventTypes;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
@@ -55,7 +54,7 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucketService;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
-public class NotificationAccumulatorTest {
+public class BlackDuckAccumulatorTest {
 
     private Gson gson;
     private ContentConverter contentConverter;
@@ -85,47 +84,47 @@ public class NotificationAccumulatorTest {
         FileUtils.deleteDirectory(testAccumulatorParent);
     }
 
-    private NotificationAccumulator createNonProcessingAccumulator(final GlobalProperties globalProperties) {
+    private BlackDuckAccumulatorTask createNonProcessingAccumulator(final GlobalProperties globalProperties) {
         return createAccumulator(globalProperties, Collections.emptyList());
     }
 
-    private NotificationAccumulator createAccumulator(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> processorList) {
-        return new NotificationAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, processorList);
+    private BlackDuckAccumulatorTask createAccumulator(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> processorList) {
+        return new BlackDuckAccumulatorTask(taskScheduler, globalProperties, contentConverter, notificationManager, processorList);
     }
 
     @Test
     public void testFormatDate() {
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         final Date date = new Date();
         assertEquals(RestConnection.formatDate(date), notificationAccumulator.formatDate(date));
     }
 
     @Test
     public void testCreateDateRange() throws Exception {
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         assertNotNull(dateRange);
-        final ZonedDateTime startTime = ZonedDateTime.ofInstant(dateRange.getLeft().toInstant(), ZoneOffset.UTC);
-        final ZonedDateTime endTime = ZonedDateTime.ofInstant(dateRange.getRight().toInstant(), ZoneOffset.UTC);
-        assertNotEquals(dateRange.getLeft(), dateRange.getRight());
+        final ZonedDateTime startTime = ZonedDateTime.ofInstant(dateRange.getStart().toInstant(), ZoneOffset.UTC);
+        final ZonedDateTime endTime = ZonedDateTime.ofInstant(dateRange.getEnd().toInstant(), ZoneOffset.UTC);
+        assertNotEquals(dateRange.getStart(), dateRange.getEnd());
         final ZonedDateTime expectedStartTime = endTime.minusMinutes(1);
         assertEquals(expectedStartTime, startTime);
     }
 
     @Test
     public void testCreateDateRangeWithExistingFile() throws Exception {
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
         ZonedDateTime startDateTime = ZonedDateTime.now();
         startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
         startDateTime = startDateTime.withSecond(0).withNano(0);
         startDateTime = startDateTime.minusMinutes(5);
         final Date expectedStartDate = Date.from(startDateTime.toInstant());
         final String startString = notificationAccumulator.formatDate(expectedStartDate);
-        FileUtils.write(notificationAccumulator.getSearchRangeFilePath(), startString, SearchIntervalAccumulator.ENCODING);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        FileUtils.write(notificationAccumulator.getSearchRangeFilePath(), startString, BlackDuckAccumulatorTask.ENCODING);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         assertNotNull(dateRange);
-        final Date actualStartDate = dateRange.getLeft();
-        final Date actualEndDate = dateRange.getRight();
+        final Date actualStartDate = dateRange.getStart();
+        final Date actualEndDate = dateRange.getEnd();
         assertEquals(expectedStartDate, actualStartDate);
         assertNotEquals(actualStartDate, actualEndDate);
     }
@@ -134,33 +133,33 @@ public class NotificationAccumulatorTest {
     public void testRun() throws Exception {
         final List<NotificationTypeProcessor> processorList = Collections.emptyList();
 
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
-        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
+        final BlackDuckAccumulatorTask spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
     }
 
     @Test
     public void testStart() {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
-        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulatorTask spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.start();
-        Mockito.verify(spiedAccumulator).scheduleExecution(NotificationAccumulator.DEFAULT_CRON_EXPRESSION);
+        Mockito.verify(spiedAccumulator).scheduleExecution(BlackDuckAccumulatorTask.DEFAULT_CRON_EXPRESSION);
         spiedAccumulator.stop(); // stop execution of the scheduled task
     }
 
     @Test
     public void testStop() {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
-        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulatorTask spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.stop();
         Mockito.verify(spiedAccumulator).scheduleExecution(ScheduledTask.STOP_SCHEDULE_EXPRESSION);
     }
 
     @Test
     public void testAccumulate() throws Exception {
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
-        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulatorTask spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         assertTrue(spiedAccumulator.getSearchRangeFilePath().exists());
         Mockito.verify(spiedAccumulator, Mockito.times(2)).formatDate(Mockito.any());
@@ -222,9 +221,9 @@ public class NotificationAccumulatorTest {
 
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
-        final NotificationAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        final Pair<Date, Date> dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, processorList);
+        final BlackDuckAccumulatorTask spiedAccumulator = Mockito.spy(notificationAccumulator);
+        final DateRange dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFilePath());
         spiedAccumulator.accumulate(dateRange);
         Mockito.verify(spiedAccumulator).createDateRange(Mockito.any());
         Mockito.verify(spiedAccumulator).read(Mockito.any());
@@ -264,8 +263,8 @@ public class NotificationAccumulatorTest {
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertTrue(actualNotificationResults.isPresent());
     }
@@ -283,8 +282,8 @@ public class NotificationAccumulatorTest {
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
     }
@@ -292,8 +291,8 @@ public class NotificationAccumulatorTest {
     @Test
     public void testReadMissingRestConnection() throws Exception {
         Mockito.doReturn(Optional.empty()).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
     }
@@ -304,8 +303,8 @@ public class NotificationAccumulatorTest {
         Mockito.doReturn(Optional.of(restConnection)).when(mockedGlobalProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doThrow(RuntimeException.class).when(mockedGlobalProperties).createHubServicesFactory(Mockito.any());
 
-        final NotificationAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
-        final Pair<Date, Date> dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
+        final BlackDuckAccumulatorTask notificationAccumulator = createNonProcessingAccumulator(mockedGlobalProperties);
+        final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
 
@@ -316,7 +315,7 @@ public class NotificationAccumulatorTest {
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final NotificationAccumulator notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
+        final BlackDuckAccumulatorTask notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
         final ComponentVersionView versionView = new ComponentVersionView();
 
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
@@ -349,7 +348,7 @@ public class NotificationAccumulatorTest {
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final NotificationAccumulator notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
+        final BlackDuckAccumulatorTask notificationAccumulator = createAccumulator(mockedGlobalProperties, processorList);
         final ComponentVersionView versionView = new ComponentVersionView();
         final VulnerabilityNotificationContent content = new VulnerabilityNotificationContent();
 
@@ -368,7 +367,7 @@ public class NotificationAccumulatorTest {
     public void testWrite() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final NotificationAccumulator notificationAccumulator = new NotificationAccumulator(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulatorTask notificationAccumulator = new BlackDuckAccumulatorTask(taskScheduler, mockedGlobalProperties, contentConverter, notificationManager, Collections.emptyList());
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));

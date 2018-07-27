@@ -22,17 +22,23 @@ public class ScheduledTaskTest {
     private ScheduledTask task;
 
     private final String validCronExpression = "0 0/1 * 1/1 * *";
+    private final String taskName = "scheduledTaskTest";
 
     @Before
     public void initializeTest() {
         taskScheduler = Mockito.mock(TaskScheduler.class);
         future = Mockito.mock(ScheduledFuture.class);
-        task = new ScheduledTask(taskScheduler) {
+        task = new ScheduledTask(taskScheduler, taskName) {
             @Override
             public void run() {
 
             }
         };
+    }
+
+    @Test
+    public void testGetTaskName() {
+        assertEquals(taskName, task.getTaskName());
     }
 
     @Test

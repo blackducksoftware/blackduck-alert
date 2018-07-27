@@ -34,7 +34,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescrip
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.NotificationAccumulator;
+import com.blackducksoftware.integration.alert.provider.hub.tasks.BlackDuckAccumulatorTask;
 import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigRestModel;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
@@ -44,11 +44,11 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public class HubDescriptor extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
     private final EntityPropertyMapper entityPropertyMapper;
-    private final NotificationAccumulator accumulator;
+    private final BlackDuckAccumulatorTask accumulator;
 
     @Autowired
     public HubDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
-            final EntityPropertyMapper entityPropertyMapper, final NotificationAccumulator accumulator) {
+            final EntityPropertyMapper entityPropertyMapper, final BlackDuckAccumulatorTask accumulator) {
         super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor);
         this.entityPropertyMapper = entityPropertyMapper;
         this.accumulator = accumulator;

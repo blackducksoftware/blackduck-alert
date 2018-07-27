@@ -46,8 +46,15 @@ public abstract class ScheduledTask implements Runnable {
     private final TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
 
-    public ScheduledTask(final TaskScheduler taskScheduler) {
+    private final String taskName;
+
+    public ScheduledTask(final TaskScheduler taskScheduler, final String taskName) {
         this.taskScheduler = taskScheduler;
+        this.taskName = taskName;
+    }
+
+    public String getTaskName() {
+        return taskName;
     }
 
     public void scheduleExecution(final String cron) {

@@ -47,8 +47,9 @@ public abstract class ProcessingTask extends ScheduledTask {
     private final DigestNotificationProcessor notificationProcessor;
     private final ChannelTemplateManager channelTemplateManager;
 
-    public ProcessingTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-        super(taskScheduler);
+    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor,
+            final ChannelTemplateManager channelTemplateManager) {
+        super(taskScheduler, taskName);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;
         this.channelTemplateManager = channelTemplateManager;
@@ -57,10 +58,6 @@ public abstract class ProcessingTask extends ScheduledTask {
     public abstract DateRange getDateRange();
 
     public abstract DigestType getDigestType();
-
-    public String getTaskName() {
-        return getClass().getName();
-    }
 
     @Override
     public void run() {

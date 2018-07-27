@@ -17,12 +17,6 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 public class OnDemandTaskTest {
 
     @Test
-    public void testGetTaskName() {
-        final OnDemandTask task = new OnDemandTask(null, null, null, null);
-        assertEquals(OnDemandTask.class.getName(), task.getTaskName());
-    }
-
-    @Test
     public void testDateRange() {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         final OnDemandTask task = new OnDemandTask(taskScheduler, null, null, null);
@@ -43,6 +37,12 @@ public class OnDemandTaskTest {
     public void testDigestType() {
         final OnDemandTask task = new OnDemandTask(null, null, null, null);
         assertEquals(DigestType.REAL_TIME, task.getDigestType());
+    }
+
+    @Test
+    public void testGetTaskName() {
+        final OnDemandTask task = new OnDemandTask(null, null, null, null);
+        assertEquals(OnDemandTask.TASK_NAME, task.getTaskName());
     }
 
     private void assertDateIsEqual(final ZonedDateTime expected, final ZonedDateTime actual) {

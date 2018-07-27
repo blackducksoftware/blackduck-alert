@@ -245,7 +245,7 @@ public class StartupManager {
         logger.info("Starting accumulators...");
         providerDescriptorList.forEach(providerDescriptor -> {
             final Accumulator accumulator = providerDescriptor.getAccumulator();
-            logger.info("  Starting accumulator: {}", accumulator.getName());
+            logger.info("  Starting tasks: {}", accumulator.getName());
             accumulator.start();
         });
     }

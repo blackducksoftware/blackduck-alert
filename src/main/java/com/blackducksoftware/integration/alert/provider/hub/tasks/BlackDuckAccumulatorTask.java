@@ -21,9 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.hub.accumulator;
+package com.blackducksoftware.integration.alert.provider.hub.tasks;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -31,17 +32,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.accumulator.SearchIntervalAccumulator;
+import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
+import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
@@ -51,6 +52,7 @@ import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
+import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
@@ -58,27 +60,94 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
-public class NotificationAccumulator extends SearchIntervalAccumulator {
+public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulator {
     public static final String DEFAULT_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
+    public static final String ENCODING = "UTF-8";
 
-    private static final Logger logger = LoggerFactory.getLogger(NotificationAccumulator.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulatorTask.class);
 
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
     private final ContentConverter contentConverter;
     private final NotificationManager notificationManager;
+    private final File searchRangeFilePath;
 
-    public NotificationAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
+    public BlackDuckAccumulatorTask(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
-        super(taskScheduler, "blackduck", DEFAULT_CRON_EXPRESSION, globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME));
+        super(taskScheduler, "blackduck-tasks");
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
         this.notificationManager = notificationManager;
+        final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
+        this.searchRangeFilePath = new File(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME), accumulatorFileName);
+    }
+
+    public File getSearchRangeFilePath() {
+        return searchRangeFilePath;
+    }
+
+    public String formatDate(final Date date) {
+        return RestConnection.formatDate(date);
+    }
+
+    public String createLoggerMessage(final String messageFormat) {
+        return String.format("[ %s ] %s", getName(), messageFormat);
     }
 
     @Override
-    protected Pair<Date, Date> createDateRange(final File lastRunFile) throws AlertException {
+    public void start() {
+        this.scheduleExecution(DEFAULT_CRON_EXPRESSION);
+    }
+
+    @Override
+    public void stop() {
+        this.scheduleExecution(STOP_SCHEDULE_EXPRESSION);
+    }
+
+    @Override
+    public String getName() {
+        return getTaskName();
+    }
+
+    @Override
+    public void run() {
+        accumulate();
+    }
+
+    @Override
+    public void accumulate() {
+        logger.info(createLoggerMessage("### Accumulator Starting Operation..."));
+        try {
+            if (!getSearchRangeFilePath().exists()) {
+                initializeSearchRangeFile();
+            }
+            final DateRange dateRange = createDateRange(getSearchRangeFilePath());
+            final Date nextSearchStartTime = accumulate(dateRange);
+            final String nextSearchStartString = formatDate(nextSearchStartTime);
+            logger.info(createLoggerMessage("Accumulator Next Range Start Time: {} "), nextSearchStartString);
+            FileUtils.write(getSearchRangeFilePath(), nextSearchStartString, ENCODING);
+        } catch (final IOException | AlertException ex) {
+            logger.error(createLoggerMessage("Error occurred accumulating data! "), ex);
+        } finally {
+            final Optional<Long> nextRun = getMillisecondsToNextRun();
+            if (nextRun.isPresent()) {
+                final Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
+                logger.debug(createLoggerMessage("Accumulator next run: {} seconds"), seconds);
+            }
+            logger.info(createLoggerMessage("### Accumulator Finished Operation."));
+        }
+    }
+
+    public void initializeSearchRangeFile() throws IOException {
+        ZonedDateTime zonedDate = ZonedDateTime.now();
+        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedDate = zonedDate.withSecond(0).withNano(0);
+        final Date date = Date.from(zonedDate.toInstant());
+        FileUtils.write(getSearchRangeFilePath(), formatDate(date), ENCODING);
+    }
+
+    protected DateRange createDateRange(final File lastRunFile) throws AlertException {
         ZonedDateTime zonedEndDate = ZonedDateTime.now();
         zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
@@ -88,7 +157,7 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
             if (lastRunFile.exists()) {
-                final String lastRunValue = FileUtils.readFileToString(lastRunFile, SearchIntervalAccumulator.ENCODING);
+                final String lastRunValue = FileUtils.readFileToString(lastRunFile, ENCODING);
                 final Date startTime = RestConnection.parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
@@ -100,13 +169,11 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
             logger.error(createLoggerMessage("Error creating date range"), e);
         }
 
-        final Pair<Date, Date> dateRange = new ImmutablePair<>(startDate, endDate);
-        return dateRange;
+        return new DateRange(startDate, endDate);
     }
 
-    @Override
-    protected Date accumulate(final Pair<Date, Date> dateRange) throws AlertException {
-        final Date currentStartTime = dateRange.getLeft();
+    protected Date accumulate(final DateRange dateRange) {
+        final Date currentStartTime = dateRange.getStart();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
 
         final Optional<NotificationDetailResults> results = read(dateRange);
@@ -118,15 +185,15 @@ public class NotificationAccumulator extends SearchIntervalAccumulator {
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
-    public Optional<NotificationDetailResults> read(final Pair<Date, Date> dateRange) {
+    public Optional<NotificationDetailResults> read(final DateRange dateRange) {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         final Optional<RestConnection> optionalConnection = globalProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
             try (final RestConnection restConnection = optionalConnection.get()) {
                 if (restConnection != null) {
                     final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
-                    final Date startDate = dateRange.getLeft();
-                    final Date endDate = dateRange.getRight();
+                    final Date startDate = dateRange.getStart();
+                    final Date endDate = dateRange.getEnd();
                     logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                     final HubBucket hubBucket = new HubBucket();
                     final NotificationService notificationService = hubServicesFactory.createNotificationService(true);

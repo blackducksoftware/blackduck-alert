@@ -39,10 +39,11 @@ import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Component
 public class DailyTask extends ProcessingTask {
+    public static final String TASK_NAME = "daily-frequency";
 
     @Autowired
     public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-        super(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager);
+        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
     }
 
     @Override
