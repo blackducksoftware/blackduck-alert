@@ -41,12 +41,13 @@ import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 @Component
 public class OnDemandTask extends ProcessingTask {
     public static final long DEFAULT_INTERVAL_SECONDS = 10;
+    public static final String TASK_NAME = "ondemand-frequency";
     private long secondInterval = 0;
 
     @Autowired
     public OnDemandTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager,
             final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-        super(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager);
+        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
     }
 
     @Override

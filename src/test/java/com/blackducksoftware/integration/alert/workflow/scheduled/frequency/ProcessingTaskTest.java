@@ -26,10 +26,10 @@ import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 public class ProcessingTaskTest {
 
-    private ProcessingTask task;
     private DateRange dateRange;
     private List<NotificationModel> modelList;
     private List<ChannelEvent> eventList;
+    private final String taskName = "processing-test-task";
 
     @Before
     public void initTest() {
@@ -42,8 +42,7 @@ public class ProcessingTaskTest {
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor digestNotificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-
-        task = new ProcessingTask(taskScheduler, notificationManager, digestNotificationProcessor, channelTemplateManager) {
+        return new ProcessingTask(taskScheduler, taskName, notificationManager, digestNotificationProcessor, channelTemplateManager) {
             @Override
             public DateRange getDateRange() {
                 return dateRange;
@@ -54,7 +53,12 @@ public class ProcessingTaskTest {
                 return DigestType.DAILY;
             }
         };
-        return task;
+    }
+
+    @Test
+    public void testGetTaskName() {
+        final ProcessingTask task = createTask(null, null, null, null);
+        assertEquals(taskName, task.getTaskName());
     }
 
     @Test

@@ -54,8 +54,8 @@ public abstract class JobScheduledTask<R extends ItemReader<?>, P extends ItemPr
     private final Logger logger = LoggerFactory.getLogger(JobScheduledTask.class);
 
     public JobScheduledTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor,
-            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
-        super(taskScheduler);
+            final NotificationManager notificationManager, final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler, final String taskName) {
+        super(taskScheduler, taskName);
         this.jobLauncher = jobLauncher;
         this.jobBuilderFactory = jobBuilderFactory;
         this.stepBuilderFactory = stepBuilderFactory;

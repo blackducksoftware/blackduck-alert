@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.alert.provider.hub.accumulator;
+package com.blackducksoftware.integration.alert.provider.hub.tasks;
 
 import static org.junit.Assert.assertTrue;
 

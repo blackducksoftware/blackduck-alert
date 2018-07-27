@@ -14,12 +14,6 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 public class DailyTaskTest {
 
     @Test
-    public void testGetTaskName() {
-        final DailyTask task = new DailyTask(null, null, null, null);
-        assertEquals(DailyTask.class.getName(), task.getTaskName());
-    }
-
-    @Test
     public void testDateRange() {
         final DailyTask task = new DailyTask(null, null, null, null);
         final DateRange dateRange = task.getDateRange();
@@ -36,6 +30,12 @@ public class DailyTaskTest {
     public void testDigestType() {
         final DailyTask task = new DailyTask(null, null, null, null);
         assertEquals(DigestType.DAILY, task.getDigestType());
+    }
+
+    @Test
+    public void testGetTaskName() {
+        final DailyTask task = new DailyTask(null, null, null, null);
+        assertEquals(DailyTask.TASK_NAME, task.getTaskName());
     }
 
     private void assertDateIsEqual(final ZonedDateTime expected, final ZonedDateTime actual) {
