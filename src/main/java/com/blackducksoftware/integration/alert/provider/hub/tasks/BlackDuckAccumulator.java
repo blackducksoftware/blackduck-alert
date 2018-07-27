@@ -25,6 +25,7 @@ package com.blackducksoftware.integration.alert.provider.hub.tasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
@@ -45,7 +47,6 @@ import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.model.NotificationModels;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
@@ -60,11 +61,11 @@ import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
-public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulator {
+public class BlackDuckAccumulator extends ScheduledTask implements Accumulator {
     public static final String DEFAULT_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
     public static final String ENCODING = "UTF-8";
 
-    private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulatorTask.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
     private final GlobalProperties globalProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
@@ -72,13 +73,15 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
     private final NotificationManager notificationManager;
     private final File searchRangeFilePath;
 
-    public BlackDuckAccumulatorTask(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
+    @Autowired
+    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
         super(taskScheduler, "blackduck-tasks");
         this.globalProperties = globalProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
         this.notificationManager = notificationManager;
+        //TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
         this.searchRangeFilePath = new File(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME), accumulatorFileName);
     }
@@ -126,8 +129,8 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
             final Date nextSearchStartTime = accumulate(dateRange);
             final String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info(createLoggerMessage("Accumulator Next Range Start Time: {} "), nextSearchStartString);
-            FileUtils.write(getSearchRangeFilePath(), nextSearchStartString, ENCODING);
-        } catch (final IOException | AlertException ex) {
+            saveNextSearchStart(nextSearchStartString);
+        } catch (final IOException ex) {
             logger.error(createLoggerMessage("Error occurred accumulating data! "), ex);
         } finally {
             final Optional<Long> nextRun = getMillisecondsToNextRun();
@@ -139,7 +142,11 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
         }
     }
 
-    public void initializeSearchRangeFile() throws IOException {
+    protected void saveNextSearchStart(final String nextSearchStart) throws IOException {
+        FileUtils.write(getSearchRangeFilePath(), nextSearchStart, ENCODING);
+    }
+
+    protected void initializeSearchRangeFile() throws IOException {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withSecond(0).withNano(0);
@@ -147,7 +154,7 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
         FileUtils.write(getSearchRangeFilePath(), formatDate(date), ENCODING);
     }
 
-    protected DateRange createDateRange(final File lastRunFile) throws AlertException {
+    protected DateRange createDateRange(final File lastSearchFile) {
         ZonedDateTime zonedEndDate = ZonedDateTime.now();
         zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
@@ -156,20 +163,26 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
 
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
-            if (lastRunFile.exists()) {
-                final String lastRunValue = FileUtils.readFileToString(lastRunFile, ENCODING);
-                final Date startTime = RestConnection.parseDateString(lastRunValue);
+            if (lastSearchFile.exists()) {
+                final String lastRunValue = readSearchStartTime(lastSearchFile);
+                final Date startTime = parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
                 zonedStartDate = zonedEndDate.minusMinutes(1);
             }
             startDate = Date.from(zonedStartDate.toInstant());
-
-        } catch (final Exception e) {
+        } catch (final IOException | ParseException e) {
             logger.error(createLoggerMessage("Error creating date range"), e);
         }
-
         return new DateRange(startDate, endDate);
+    }
+
+    protected String readSearchStartTime(final File lastSearchFile) throws IOException {
+        return FileUtils.readFileToString(lastSearchFile, ENCODING);
+    }
+
+    protected Date parseDateString(final String date) throws ParseException {
+        return RestConnection.parseDateString(date);
     }
 
     protected Date accumulate(final DateRange dateRange) {
@@ -185,7 +198,7 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
-    public Optional<NotificationDetailResults> read(final DateRange dateRange) {
+    protected Optional<NotificationDetailResults> read(final DateRange dateRange) {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         final Optional<RestConnection> optionalConnection = globalProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
@@ -215,14 +228,14 @@ public class BlackDuckAccumulatorTask extends ScheduledTask implements Accumulat
         return Optional.empty();
     }
 
-    public AlertEvent process(final NotificationDetailResults notificationData) {
+    protected AlertEvent process(final NotificationDetailResults notificationData) {
         logger.info(createLoggerMessage("Processing accumulated notifications"));
         final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
         final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
         return storeEvent;
     }
 
-    public void write(final AlertEvent event) {
+    protected void write(final AlertEvent event) {
         final NotificationModels notificationModels = contentConverter.getJsonContent(event.getContent(), NotificationModels.class);
         logger.info(createLoggerMessage("Writing Notifications..."));
         final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();

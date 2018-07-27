@@ -40,10 +40,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.accumulator.Accumulator;
 import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
@@ -98,7 +98,7 @@ public class StartupManager {
         listProperties();
         validateProviders();
         initializeCronJobs();
-        startAccumulators();
+        initializeProviders();
     }
 
     public void logConfiguration() {
@@ -241,13 +241,9 @@ public class StartupManager {
         }
     }
 
-    public void startAccumulators() {
-        logger.info("Starting accumulators...");
-        providerDescriptorList.forEach(providerDescriptor -> {
-            final Accumulator accumulator = providerDescriptor.getAccumulator();
-            logger.info("  Starting tasks: {}", accumulator.getName());
-            accumulator.start();
-        });
+    public void initializeProviders() {
+        logger.info("Initializing providers...");
+        providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
 
 }
