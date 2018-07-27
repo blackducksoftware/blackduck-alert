@@ -4,12 +4,12 @@ import java.util.Date;
 
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.audit.AuditEntryRestModel;
+import com.blackducksoftware.integration.alert.web.audit.AuditEntryConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryRestModel> {
+public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryConfig> {
     private final String name;
     private final String eventType;
     private final String timeCreated;
@@ -76,13 +76,13 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryRestMod
     }
 
     @Override
-    public AuditEntryRestModel createRestModel() {
-        return new AuditEntryRestModel(id, name, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notification);
+    public AuditEntryConfig createRestModel() {
+        return new AuditEntryConfig(id, name, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notification);
     }
 
     @Override
-    public AuditEntryRestModel createEmptyRestModel() {
-        return new AuditEntryRestModel();
+    public AuditEntryConfig createEmptyRestModel() {
+        return new AuditEntryConfig();
     }
 
     @Override

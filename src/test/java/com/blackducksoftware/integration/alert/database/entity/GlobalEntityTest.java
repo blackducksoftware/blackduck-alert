@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNull;
 
 import org.json.JSONException;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 
@@ -30,9 +29,6 @@ public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
 
         assertGlobalEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
-
-        final String expectedString = getMockUtil().getEmptyGlobalEntityJson();
-        assertEquals(expectedString, configEntity.toString());
 
         final GE configEntityNew = getMockUtil().createEmptyGlobalEntity();
         assertEquals(configEntity, configEntityNew);
@@ -48,9 +44,6 @@ public abstract class GlobalEntityTest<GE extends DatabaseEntity> {
 
         assertGlobalEntityFieldsFull(configEntity);
         assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
-
-        final String expectedString = getMockUtil().getGlobalEntityJson();
-        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
         final GE configEntityNew = getMockUtil().createGlobalEntity();
         assertEquals(configEntity, configEntityNew);

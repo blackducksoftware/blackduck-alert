@@ -148,7 +148,6 @@ public class GlobalHubConfigActions extends ConfigActions<GlobalHubConfigEntity,
         return "Valid";
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public String channelTestConfig(final GlobalHubConfig restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
