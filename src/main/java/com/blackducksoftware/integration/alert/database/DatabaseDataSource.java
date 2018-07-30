@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.config;
+package com.blackducksoftware.integration.alert.database;
 
 import javax.sql.DataSource;
 
@@ -35,7 +35,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-public class DataSourceConfig {
+public class DatabaseDataSource {
     // USING SPRING BATCH HERE. For JPA to work need to configure the JPATransactionManager bean.
     // SEE SPRING ISSUE: https://jira.spring.io/browse/BATCH-2642
     // Stack Overflow: https://stackoverflow.com/questions/38287298/persist-issue-with-a-spring-batch-itemwriter-using-a-jpa-repository

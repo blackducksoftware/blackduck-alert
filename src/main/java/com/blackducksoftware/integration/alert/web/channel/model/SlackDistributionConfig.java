@@ -25,18 +25,18 @@ package com.blackducksoftware.integration.alert.web.channel.model;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public class SlackDistributionRestModel extends CommonDistributionConfigRestModel {
+public class SlackDistributionConfig extends CommonDistributionConfig {
     private String webhook;
     private String channelUsername;
     private String channelName;
 
-    public SlackDistributionRestModel() {
+    public SlackDistributionConfig() {
 
     }
 
-    public SlackDistributionRestModel(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
+    public SlackDistributionConfig(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
             final String frequency, final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id, distributionConfigId, distributionType, name, frequency, filterByProject, configuredProjects, notificationTypes);
         this.webhook = webhook;

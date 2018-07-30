@@ -42,7 +42,7 @@ import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
@@ -65,7 +65,7 @@ public class DistributionChannelManager {
         return "Successfully sent test message";
     }
 
-    public String sendTestMessage(final CommonDistributionConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+    public String sendTestMessage(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws AlertException {
         final String destinationName = descriptor.getDestinationName();
         if (descriptor.hasGlobalConfiguration()) {
             if (descriptor.getGlobalRepositoryAccessor().readEntities().isEmpty()) {

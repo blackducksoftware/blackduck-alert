@@ -28,7 +28,7 @@ import java.util.Set;
 
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -63,9 +63,9 @@ public abstract class Descriptor {
 
     public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
 
-    public abstract ConfigRestModel getGlobalRestModelObject();
+    public abstract Config getGlobalRestModelObject();
 
-    public abstract void validateGlobalConfig(ConfigRestModel restModel, Map<String, String> fieldErrors);
+    public abstract void validateGlobalConfig(Config restModel, Map<String, String> fieldErrors);
 
     public abstract void testGlobalConfig(DatabaseEntity entity) throws IntegrationException;
 

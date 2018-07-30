@@ -8,10 +8,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.google.gson.Gson;
 
-public abstract class RestModelTest<R extends ConfigRestModel> {
+public abstract class RestModelTest<R extends Config> {
     private final Gson gson = new Gson();
 
     public abstract MockRestModelUtil<R> getMockUtil();

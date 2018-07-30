@@ -1,9 +1,9 @@
 package com.blackducksoftware.integration.alert.mock.model;
 
-import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.google.gson.JsonObject;
 
-public class MockLoginRestModel extends MockRestModelUtil<LoginRestModel> {
+public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
     private String hubUsername;
     private String hubPassword;
     private String id;
@@ -45,13 +45,13 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginRestModel> {
     }
 
     @Override
-    public LoginRestModel createRestModel() {
-        return new LoginRestModel(hubUsername, hubPassword);
+    public LoginConfig createRestModel() {
+        return new LoginConfig(hubUsername, hubPassword);
     }
 
     @Override
-    public LoginRestModel createEmptyRestModel() {
-        return new LoginRestModel();
+    public LoginConfig createEmptyRestModel() {
+        return new LoginConfig();
     }
 
     @Override

@@ -35,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
@@ -46,18 +46,18 @@ import com.blackducksoftware.integration.rest.connection.RestConnection;
 @Component
 public class HubDataActions {
     private final Logger logger = LoggerFactory.getLogger(HubDataActions.class);
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
 
     @Autowired
-    public HubDataActions(final GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
+    public HubDataActions(final HubProperties hubProperties) {
+        this.hubProperties = hubProperties;
     }
 
     public List<HubGroup> getHubGroups() throws IntegrationException {
-        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
                 final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
                 final List<HubGroup> groups = new ArrayList<>();
@@ -76,10 +76,10 @@ public class HubDataActions {
     }
 
     public List<HubProject> getHubProjects() throws IntegrationException {
-        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
                 final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
 
                 final List<HubProject> projects = new ArrayList<>();

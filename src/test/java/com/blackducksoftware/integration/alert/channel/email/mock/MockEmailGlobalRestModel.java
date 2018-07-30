@@ -12,10 +12,10 @@
 package com.blackducksoftware.integration.alert.channel.email.mock;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.google.gson.JsonObject;
 
-public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<EmailGlobalConfigRestModel> {
+public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<EmailGlobalConfig> {
     private String mailSmtpHost;
     private String mailSmtpUser;
     private String mailSmtpPassword;
@@ -528,8 +528,8 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<EmailGloba
     }
 
     @Override
-    public EmailGlobalConfigRestModel createGlobalRestModel() {
-        final EmailGlobalConfigRestModel restModel = new EmailGlobalConfigRestModel(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort,
+    public EmailGlobalConfig createGlobalRestModel() {
+        final EmailGlobalConfig restModel = new EmailGlobalConfig(id, mailSmtpHost, mailSmtpUser, mailSmtpPassword, mailSmtpPasswordIsSet, mailSmtpPort,
                 mailSmtpConnectionTimeout, mailSmtpTimeout,
                 mailSmtpWriteTimeout, mailSmtpFrom, mailSmtpLocalhost, mailSmtpLocalAddress, mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuth,
                 mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable,
@@ -542,8 +542,8 @@ public class MockEmailGlobalRestModel extends MockGlobalRestModelUtil<EmailGloba
     }
 
     @Override
-    public EmailGlobalConfigRestModel createEmptyGlobalRestModel() {
-        return new EmailGlobalConfigRestModel();
+    public EmailGlobalConfig createEmptyGlobalRestModel() {
+        return new EmailGlobalConfig();
     }
 
     @Override

@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.mock.model.MockNotificationRestModel;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 
-public class NotificationRestModelTest extends RestModelTest<NotificationRestModel> {
+public class NotificationRestModelTest extends RestModelTest<NotificationConfig> {
 
     @Override
     public MockNotificationRestModel getMockUtil() {
@@ -14,12 +14,12 @@ public class NotificationRestModelTest extends RestModelTest<NotificationRestMod
     }
 
     @Override
-    public Class<NotificationRestModel> getRestModelClass() {
-        return NotificationRestModel.class;
+    public Class<NotificationConfig> getRestModelClass() {
+        return NotificationConfig.class;
     }
 
     @Override
-    public void assertRestModelFieldsNull(final NotificationRestModel restModel) {
+    public void assertRestModelFieldsNull(final NotificationConfig restModel) {
         assertNull(restModel.getComponents());
         assertNull(restModel.getCreatedAt());
         assertNull(restModel.getEventKey());
@@ -31,7 +31,7 @@ public class NotificationRestModelTest extends RestModelTest<NotificationRestMod
     }
 
     @Override
-    public void assertRestModelFieldsFull(final NotificationRestModel restModel) {
+    public void assertRestModelFieldsFull(final NotificationConfig restModel) {
         assertEquals(getMockUtil().getComponents(), restModel.getComponents());
         assertEquals(getMockUtil().getCreatedAt(), restModel.getCreatedAt());
         assertEquals(getMockUtil().getEventKey(), restModel.getEventKey());

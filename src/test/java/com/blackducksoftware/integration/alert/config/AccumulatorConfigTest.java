@@ -10,8 +10,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorWriter;
+import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
 
-public class AccumulatorConfigTest extends CommonConfigTest<HubAccumulatorReader, HubAccumulatorWriter, HubAccumulatorProcessor, AccumulatorConfig> {
+public class AccumulatorConfigTest extends CommonConfigTest<HubAccumulatorReader, HubAccumulatorWriter, HubAccumulatorProcessor, AccumulatorTask> {
 
     @Override
     public String getJobName() {
@@ -24,23 +25,23 @@ public class AccumulatorConfigTest extends CommonConfigTest<HubAccumulatorReader
     }
 
     @Override
-    public AccumulatorConfig getConfigWithNullParams() {
-        return new AccumulatorConfig(null, null, null, null, null, null, getGlobalProperties(), null, null, contentConverter);
+    public AccumulatorTask getConfigWithNullParams() {
+        return new AccumulatorTask(null, null, null, null, null, null, getGlobalProperties(), null, null, contentConverter);
     }
 
     @Override
-    public AccumulatorConfig getConfigWithSimpleJobLauncher(final SimpleJobLauncher simpleJobLauncher) {
-        return new AccumulatorConfig(simpleJobLauncher, null, null, null, null, null, getGlobalProperties(), null, null, contentConverter);
+    public AccumulatorTask getConfigWithSimpleJobLauncher(final SimpleJobLauncher simpleJobLauncher) {
+        return new AccumulatorTask(simpleJobLauncher, null, null, null, null, null, getGlobalProperties(), null, null, contentConverter);
     }
 
     @Override
-    public AccumulatorConfig getConfigWithTaskScheduler(final TaskScheduler taskScheduler) {
-        return new AccumulatorConfig(null, null, null, null, null, null, getGlobalProperties(), taskScheduler, null, contentConverter);
+    public AccumulatorTask getConfigWithTaskScheduler(final TaskScheduler taskScheduler) {
+        return new AccumulatorTask(null, null, null, null, null, null, getGlobalProperties(), taskScheduler, null, contentConverter);
     }
 
     @Override
-    public AccumulatorConfig getConfigWithParams(final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final PlatformTransactionManager platformTransactionManager) {
-        return new AccumulatorConfig(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, getGlobalProperties(), null, null, contentConverter);
+    public AccumulatorTask getConfigWithParams(final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final PlatformTransactionManager platformTransactionManager) {
+        return new AccumulatorTask(null, null, stepBuilderFactory, taskExecutor, null, platformTransactionManager, getGlobalProperties(), null, null, contentConverter);
     }
 
     @Override

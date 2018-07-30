@@ -23,24 +23,37 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+public class ComponentConfig extends Config {
 
-public abstract class ConfigRestModel extends Model {
-    private String id;
+    private String componentName;
+    private String componentVersion;
+    private String policyRuleName;
+    private String policyRuleUser;
 
-    public ConfigRestModel() {
+    public ComponentConfig() {
     }
 
-    public ConfigRestModel(final String id) {
-        this.id = id;
+    public ComponentConfig(final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
+        this.componentName = componentName;
+        this.componentVersion = componentVersion;
+        this.policyRuleName = policyRuleName;
+        this.policyRuleUser = policyRuleUser;
     }
 
-    public String getId() {
-        return id;
+    public String getComponentName() {
+        return componentName;
     }
 
-    public void setId(final String id) {
-        this.id = id;
+    public String getComponentVersion() {
+        return componentVersion;
+    }
+
+    public String getPolicyRuleName() {
+        return policyRuleName;
+    }
+
+    public String getPolicyRuleUser() {
+        return policyRuleUser;
     }
 
 }

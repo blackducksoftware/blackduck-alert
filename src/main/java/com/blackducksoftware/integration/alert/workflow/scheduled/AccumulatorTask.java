@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.config;
+package com.blackducksoftware.integration.alert.workflow.scheduled;
 
 import java.util.List;
 
@@ -37,29 +37,29 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
 import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorWriter;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
-import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 @Component
-public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, HubAccumulatorProcessor, HubAccumulatorWriter> {
+public class AccumulatorTask extends JobScheduledTask<HubAccumulatorReader, HubAccumulatorProcessor, HubAccumulatorWriter> {
     private static final String ACCUMULATOR_STEP_NAME = "AccumulatorStep";
     private static final String ACCUMULATOR_JOB_NAME = "AccumulatorJob";
 
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final List<NotificationTypeProcessor> processorList;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public AccumulatorConfig(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
-            final PlatformTransactionManager transactionManager, final GlobalProperties globalProperties, final TaskScheduler taskScheduler,
+    public AccumulatorTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
+            final PlatformTransactionManager transactionManager, final HubProperties hubProperties, final TaskScheduler taskScheduler,
             final List<NotificationTypeProcessor> processorList, final ContentConverter contentConverter) {
         super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
         this.processorList = processorList;
         this.contentConverter = contentConverter;
     }
@@ -72,7 +72,7 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
 
     @Override
     public HubAccumulatorReader reader() {
-        return new HubAccumulatorReader(globalProperties);
+        return new HubAccumulatorReader(hubProperties);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class AccumulatorConfig extends JobScheduledTask<HubAccumulatorReader, Hu
 
     @Override
     public HubAccumulatorProcessor processor() {
-        return new HubAccumulatorProcessor(globalProperties, processorList, contentConverter);
+        return new HubAccumulatorProcessor(hubProperties, processorList, contentConverter);
     }
 
     @Override

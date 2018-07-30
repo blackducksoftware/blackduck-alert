@@ -23,25 +23,25 @@
  */
 package com.blackducksoftware.integration.alert.web.audit;
 
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 
-public class AuditEntryRestModel extends ConfigRestModel {
+public class AuditEntryConfig extends Config {
 
     private String name;
     private String eventType;
     private String timeCreated;
     private String timeLastSent;
     private String status;
-    private NotificationRestModel notification;
+    private NotificationConfig notification;
     private String errorMessage;
     private String errorStackTrace;
 
-    public AuditEntryRestModel() {
+    public AuditEntryConfig() {
     }
 
-    public AuditEntryRestModel(final String id, final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace,
-            final NotificationRestModel notification) {
+    public AuditEntryConfig(final String id, final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace,
+            final NotificationConfig notification) {
         super(id);
         this.name = name;
         this.eventType = eventType;
@@ -73,7 +73,7 @@ public class AuditEntryRestModel extends ConfigRestModel {
         return status;
     }
 
-    public NotificationRestModel getNotification() {
+    public NotificationConfig getNotification() {
         return notification;
     }
 

@@ -12,10 +12,10 @@
 package com.blackducksoftware.integration.alert.web.scheduling.model;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfig;
 import com.google.gson.JsonObject;
 
-public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<GlobalSchedulingConfigRestModel> {
+public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<GlobalSchedulingConfig> {
     private final String accumulatorNextRun;
     private final String dailyDigestHourOfDay;
     private final String dailyDigestNextRun;
@@ -62,13 +62,13 @@ public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<Globa
     }
 
     @Override
-    public GlobalSchedulingConfigRestModel createGlobalRestModel() {
-        return new GlobalSchedulingConfigRestModel(id, accumulatorNextRun, dailyDigestHourOfDay, dailyDigestNextRun, purgeDataFrequencyDays, purgeDataNextRun);
+    public GlobalSchedulingConfig createGlobalRestModel() {
+        return new GlobalSchedulingConfig(id, accumulatorNextRun, dailyDigestHourOfDay, dailyDigestNextRun, purgeDataFrequencyDays, purgeDataNextRun);
     }
 
     @Override
-    public GlobalSchedulingConfigRestModel createEmptyGlobalRestModel() {
-        return new GlobalSchedulingConfigRestModel();
+    public GlobalSchedulingConfig createEmptyGlobalRestModel() {
+        return new GlobalSchedulingConfig();
     }
 
     @Override

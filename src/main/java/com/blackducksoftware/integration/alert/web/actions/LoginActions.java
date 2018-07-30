@@ -40,9 +40,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.RoleAssignmentView;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
@@ -59,28 +59,27 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class LoginActions {
 
-    final GlobalProperties globalProperties;
+    final HubProperties hubProperties;
 
     @Autowired
-    public LoginActions(final GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
+    public LoginActions(final HubProperties hubProperties) {
+        this.hubProperties = hubProperties;
     }
 
-    @SuppressWarnings("deprecation")
-    public boolean authenticateUser(final LoginRestModel loginRestModel, final IntLogger logger) throws IntegrationException {
-        final HubServerConfigBuilder serverConfigBuilder = globalProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
+    public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) throws IntegrationException {
+        final HubServerConfigBuilder serverConfigBuilder = hubProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 
-        serverConfigBuilder.setPassword(loginRestModel.getHubPassword());
-        serverConfigBuilder.setUsername(loginRestModel.getHubUsername());
+        serverConfigBuilder.setPassword(loginConfig.getHubPassword());
+        serverConfigBuilder.setUsername(loginConfig.getHubUsername());
 
         try {
             validateHubConfiguration(serverConfigBuilder);
             try (final RestConnection restConnection = createRestConnection(serverConfigBuilder)) {
                 restConnection.connect();
                 logger.info("Connected");
-                final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
+                final boolean isValidLoginUser = isUserRoleValid(loginConfig.getHubUsername(), restConnection);
                 if (isValidLoginUser) {
-                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginRestModel.getHubUsername(), loginRestModel.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginConfig.getHubUsername(), loginConfig.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     return authentication.isAuthenticated();
                 }
