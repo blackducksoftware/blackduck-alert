@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.common.descriptor;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 public abstract class DatabaseContentConverter {
     private final ContentConverter contentConverter;
@@ -34,11 +34,11 @@ public abstract class DatabaseContentConverter {
         this.contentConverter = contentConverter;
     }
 
-    public abstract ConfigRestModel getRestModelFromJson(final String json);
+    public abstract Config getRestModelFromJson(final String json);
 
-    public abstract DatabaseEntity populateDatabaseEntityFromRestModel(ConfigRestModel restModel);
+    public abstract DatabaseEntity populateDatabaseEntityFromRestModel(Config restModel);
 
-    public abstract ConfigRestModel populateRestModelFromDatabaseEntity(DatabaseEntity entity);
+    public abstract Config populateRestModelFromDatabaseEntity(DatabaseEntity entity);
 
     public ContentConverter getContentConverter() {
         return contentConverter;

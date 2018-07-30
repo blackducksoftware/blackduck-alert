@@ -31,7 +31,7 @@ import com.blackducksoftware.integration.alert.common.enumeration.InternalEventT
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.model.NotificationModels;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
@@ -45,7 +45,7 @@ public class NotificationItemProcessor {
         this.contentConverter = contentConverter;
     }
 
-    public AlertEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
+    public AlertEvent process(final HubProperties hubProperties, final NotificationDetailResults notificationData) {
         final List<NotificationDetailResult> resultList = notificationData.getResults();
         final HubBucket bucket = notificationData.getHubBucket();
         final int size = resultList.size();
@@ -54,7 +54,7 @@ public class NotificationItemProcessor {
             resultList.forEach(notificationDetailResult -> {
                 processorList.forEach(processor -> {
                     if (processor.isApplicable(notificationDetailResult)) {
-                        notificationModelList.addAll(processor.process(globalProperties, notificationDetailResult, bucket));
+                        notificationModelList.addAll(processor.process(hubProperties, notificationDetailResult, bucket));
                     }
                 });
             });

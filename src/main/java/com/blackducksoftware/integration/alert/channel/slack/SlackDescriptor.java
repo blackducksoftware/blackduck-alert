@@ -37,9 +37,9 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -54,8 +54,8 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        final SlackDistributionRestModel slackRestModel = (SlackDistributionRestModel) restModel;
+    public void validateDistributionConfig(final CommonDistributionConfig restModel, final Map<String, String> fieldErrors) {
+        final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
 
         if (StringUtils.isBlank(slackRestModel.getWebhook())) {
             fieldErrors.put("webhook", "A webhook is required.");
@@ -71,13 +71,13 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+    public void testDistributionConfig(final CommonDistributionConfig restModel, final ChannelEvent event) throws IntegrationException {
         final SlackDistributionConfigEntity config = (SlackDistributionConfigEntity) getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
         slackChannel.sendAuditedMessage(event, config);
     }
 
     @Override
-    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
+    public void validateGlobalConfig(final Config restModel, final Map<String, String> fieldErrors) {
     }
 
     @Override
@@ -90,7 +90,7 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public ConfigRestModel getGlobalRestModelObject() {
+    public Config getGlobalRestModelObject() {
         return null;
     }
 

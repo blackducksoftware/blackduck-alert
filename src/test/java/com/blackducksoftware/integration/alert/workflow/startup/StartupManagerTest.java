@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.workflow.startup;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.After;
@@ -13,12 +14,12 @@ import org.mockito.Mockito;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
@@ -58,14 +59,15 @@ public class StartupManagerTest {
         final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final PurgeConfig purgeConfig = Mockito.mock(PurgeConfig.class);
-        Mockito.doNothing().when(purgeConfig).scheduleExecution(Mockito.anyString());
-        Mockito.doReturn(Optional.of("time")).when(purgeConfig).getFormatedNextRunTime();
+        final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
+        Mockito.doNothing().when(purgeTask).scheduleExecution(Mockito.anyString());
+        Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, dailyTask, onDemandTask, purgeConfig, phoneHomeTask, null, null);
+
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList());
 
         startupManager.initializeCronJobs();
 

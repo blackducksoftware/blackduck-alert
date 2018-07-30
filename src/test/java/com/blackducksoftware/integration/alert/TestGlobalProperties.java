@@ -17,16 +17,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
-public class TestGlobalProperties extends GlobalProperties {
+public class TestGlobalProperties extends HubProperties {
     private final TestProperties testProperties;
     private Integer hubTimeout;
     private String hubApiKey;

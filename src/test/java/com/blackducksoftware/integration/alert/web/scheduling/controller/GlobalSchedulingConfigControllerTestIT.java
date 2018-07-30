@@ -12,11 +12,11 @@ import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedul
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.controller.GlobalControllerTest;
 import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigActions;
-import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfigRestModel;
+import com.blackducksoftware.integration.alert.web.scheduling.GlobalSchedulingConfig;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 
-public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
+public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
 
     @Autowired
     GlobalSchedulingRepository globalSchedulingRepository;

@@ -15,28 +15,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionRestModelTest;
 
-public class SlackConfigRestModelTest extends CommonDistributionRestModelTest<SlackDistributionRestModel> {
+public class SlackConfigRestModelTest extends CommonDistributionRestModelTest<SlackDistributionConfig> {
 
     @Override
-    public void assertRestModelFieldsNull(final SlackDistributionRestModel restModel) {
+    public void assertRestModelFieldsNull(final SlackDistributionConfig restModel) {
         assertNull(restModel.getChannelName());
         assertNull(restModel.getChannelUsername());
         assertNull(restModel.getWebhook());
     }
 
     @Override
-    public void assertRestModelFieldsFull(final SlackDistributionRestModel restModel) {
+    public void assertRestModelFieldsFull(final SlackDistributionConfig restModel) {
         assertEquals(getMockUtil().getWebhook(), restModel.getWebhook());
         assertEquals(getMockUtil().getChannelName(), restModel.getChannelName());
         assertEquals(getMockUtil().getChannelUsername(), restModel.getChannelUsername());
     }
 
     @Override
-    public Class<SlackDistributionRestModel> getRestModelClass() {
-        return SlackDistributionRestModel.class;
+    public Class<SlackDistributionConfig> getRestModelClass() {
+        return SlackDistributionConfig.class;
     }
 
     @Override

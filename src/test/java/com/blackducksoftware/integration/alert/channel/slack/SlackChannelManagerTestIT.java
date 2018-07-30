@@ -9,9 +9,9 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 
-public class SlackChannelManagerTestIT extends ChannelManagerTest<SlackDistributionRestModel, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
+public class SlackChannelManagerTestIT extends ChannelManagerTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
 
     @Autowired
     private SlackDistributionRepository distributionRepository;

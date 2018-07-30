@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.PhoneHome;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
@@ -44,23 +44,24 @@ public class PhoneHomeTask extends ScheduledTask {
     public static final String TASK_NAME = "phonehome";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final GlobalProperties globalProperties) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final HubProperties hubProperties) {
         super(taskScheduler, TASK_NAME);
         this.phoneHome = phoneHome;
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
     }
 
     @Override
     public void run() {
-        final Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
+
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
-                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, globalProperties.getProductVersion());
+                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, hubProperties.getProductVersion());
                 if (builder != null) {
                     phoneHome.addChannelMetaData(builder);
                     phoneHomeService.phoneHome(builder);

@@ -38,11 +38,11 @@ import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelConfigActions;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-public class ChannelConfigHandler<R extends ConfigRestModel> extends ControllerHandler {
+public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelConfigActions<R> configActions;
 

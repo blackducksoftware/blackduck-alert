@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.alert.web.exception;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 
 public class AlertNotificationPurgedException extends AlertException {
+    private static final long serialVersionUID = -1163748183484212814L;
 
     public AlertNotificationPurgedException() {
         super();

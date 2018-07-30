@@ -25,10 +25,10 @@ package com.blackducksoftware.integration.alert.web.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RequestMapping(GlobalConfigController.GLOBAL_PATH)
-public abstract class GlobalConfigController<R extends ConfigRestModel> extends ConfigController<R> {
+public abstract class GlobalConfigController<R extends Config> extends ConfigController<R> {
     public static final String GLOBAL_PATH = ConfigController.CONFIGURATION_PATH + "/global";
     public static final String CHANNEL_PATH = ConfigController.CONFIGURATION_PATH + "/channel";
     public static final String PROVIDER_PATH = ConfigController.CONFIGURATION_PATH + "/provider";

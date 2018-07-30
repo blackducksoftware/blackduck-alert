@@ -27,7 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.blackducksoftware.integration.alert.config.DataSourceConfig;
+import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
@@ -44,7 +44,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DataSourceConfig.class })
+@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @Transactional
 @WebAppConfiguration
 @TestPropertySource(locations = "classpath:spring-test.properties")
