@@ -1,38 +1,39 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Redirect, Route, Link, NavLink, withRouter } from 'react-router-dom';
+import {connect} from 'react-redux';
+import {Redirect, Route, withRouter} from 'react-router-dom';
 
 import Navigation from './Navigation';
 import Audit from './component/general/audit/Index';
 import DistributionConfiguration from './component/general/distribution/Index';
 import SchedulingConfiguration from './component/general/SchedulingConfiguration';
-import EmailConfiguration from './component/channels/EmailConfiguration';
 import SlackConfiguration from './component/channels/SlackConfiguration';
-import HubConfiguration from './component/providers/HubConfiguration';
+import EmailConfiguration from './component/channels/EmailConfiguration';
 import HipChatConfiguration from './component/channels/HipChatConfiguration';
 import LogoutConfirmation from './component/common/LogoutConfirmation';
+import BlackDuckConfiguration from "./component/providers/BlackDuckConfiguration";
+
 
 const MainPage = () => (
     <div>
-        <Navigation />
+        <Navigation/>
         <div className="contentArea">
             <Route
                 exact
                 path="/alert/"
                 render={() => (
-                    <Redirect to="/alert/providers/hub" />
+                    <Redirect to="/alert/providers/blackduck"/>
                 )}
             />
-            <Route path="/alert/providers/hub" component={HubConfiguration} />
-            <Route path="/alert/channels/email" component={EmailConfiguration} />
-            <Route path="/alert/channels/hipchat" component={HipChatConfiguration} />
-            <Route path="/alert/channels/slack" component={SlackConfiguration} />
-            <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />
-            <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
-            <Route path="/alert/general/audit" component={Audit} />
+            <Route path="/alert/providers/blackduck" component={BlackDuckConfiguration}/>
+            <Route path="/alert/channels/email" component={EmailConfiguration}/>
+            <Route path="/alert/channels/hipchat" component={HipChatConfiguration}/>
+            <Route path="/alert/channels/slack" component={SlackConfiguration}/>
+            <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration}/>
+            <Route path="/alert/jobs/distribution" component={DistributionConfiguration}/>
+            <Route path="/alert/general/audit" component={Audit}/>
         </div>
         <div className="modalsArea">
-            <LogoutConfirmation />
+            <LogoutConfirmation/>
         </div>
     </div>
 );

@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
@@ -60,7 +60,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
     }
 
     @Override
-    public List<NotificationModel> process(final HubProperties hubProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
+    public List<NotificationModel> process(final BlackDuckProperties blackDuckProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
         final List<NotificationContentDetail> detailList = notificationDetailResult.getNotificationContentDetails();
         final List<NotificationModel> modelList = new ArrayList<>(detailList.size());
         try {

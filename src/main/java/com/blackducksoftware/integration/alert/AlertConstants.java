@@ -26,11 +26,7 @@ package com.blackducksoftware.integration.alert;
 public class AlertConstants {
     public static final String SYSTEM_PROPERTY_KEY_APP_HOME = "APP_HOME";
 
-    public static final String CONTEXT_ATTRIBUTE_KEY_EMAIL_TEST_NOTIFIER = "blackduck-test-email-notifier";
-
-    public static final String ALERT_APPLICATION_NAME = "Hub Alert";
-
-    public static final String DATASET_KEY_HUB_USER = "hub_user";
+    public static final String ALERT_APPLICATION_NAME = "Alert";
 
     private AlertConstants() throws InstantiationException {
         throw new InstantiationException("Cannot instantiate instance of utility class '" + getClass().getName() + "'");

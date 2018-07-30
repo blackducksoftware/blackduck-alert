@@ -1,30 +1,21 @@
-import {
-    CONFIG_FETCHING,
-    CONFIG_FETCHED,
-    CONFIG_UPDATE_ERROR,
-    CONFIG_UPDATING,
-    CONFIG_UPDATED,
-    CONFIG_TESTING,
-    CONFIG_TEST_SUCCESS,
-    CONFIG_TEST_FAILED
-} from './types';
+import {CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING} from './types';
 
-import { verifyLoginByStatus } from './session';
+import {verifyLoginByStatus} from './session';
 
-const CONFIG_URL = '/alert/api/configuration/provider/hub';
-const TEST_URL = '/alert/api/configuration/provider/hub/test';
+const CONFIG_URL = '/alert/api/configuration/provider/blackduck';
+const TEST_URL = '/alert/api/configuration/provider/blackduck/test';
 
 function scrubConfig(config) {
     return {
-        hubApiKey: config.hubApiKey,
-        hubApiKeyIsSet: config.hubApiKeyIsSet,
-        hubProxyHost: config.hubProxyHost,
-        hubProxyPassword: config.hubProxyPassword,
-        hubProxyPasswordIsSet: config.hubProxyPasswordIsSet,
-        hubProxyPort: config.hubProxyPort,
-        hubProxyUsername: config.hubProxyUsername,
-        hubTimeout: config.hubTimeout,
-        hubUrl: config.hubUrl,
+        blackDuckApiKey: config.blackDuckApiKey,
+        blackDuckApiKeyIsSet: config.blackDuckApiKeyIsSet,
+        blackDuckProxyHost: config.blackDuckProxyHost,
+        blackDuckProxyPassword: config.blackDuckProxyPassword,
+        blackDuckProxyPasswordIsSet: config.blackDuckProxyPasswordIsSet,
+        blackDuckProxyPort: config.blackDuckProxyPort,
+        blackDuckProxyUsername: config.blackDuckProxyUsername,
+        blackDuckTimeout: config.blackDuckTimeout,
+        blackDuckUrl: config.blackDuckUrl,
         id: (config.id ? `${config.id}` : '')
     };
 }
@@ -103,34 +94,34 @@ function testFailed(message, errors) {
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             headers: {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => {
-                    if (body.length > 0) {
-                        dispatch(configFetched(body[0]));
-                    } else {
-                        dispatch(configFetched({}));
-                    }
-                })
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
-            }
-        })
-        .catch(console.error);
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((body) => {
+                        if (body.length > 0) {
+                            dispatch(configFetched(body[0]));
+                        } else {
+                            dispatch(configFetched({}));
+                        }
+                    })
+                } else {
+                    dispatch(verifyLoginByStatus(response.status));
+                }
+            })
+            .catch(console.error);
     };
 }
 
 export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
@@ -146,7 +137,7 @@ export function updateConfig(config) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        dispatch(configUpdated({ ...config, id: data.id }));
+                        dispatch(configUpdated({...config, id: data.id}));
                     }).then(() => dispatch(getConfig()));
                 } else {
                     response.json().then((data) => {
@@ -171,7 +162,7 @@ export function updateConfig(config) {
 export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch(TEST_URL, {
             credentials: 'same-origin',
             method: 'POST',

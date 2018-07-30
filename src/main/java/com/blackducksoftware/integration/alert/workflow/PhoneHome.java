@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
@@ -49,7 +49,7 @@ public class PhoneHome {
     }
 
     public PhoneHomeRequestBody.Builder createPhoneHomeBuilder(final PhoneHomeService phoneHomeService, final String productVersion) {
-        if (HubProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
+        if (BlackDuckProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
             logger.debug("Unknown version for phone home");
             return null;
         }

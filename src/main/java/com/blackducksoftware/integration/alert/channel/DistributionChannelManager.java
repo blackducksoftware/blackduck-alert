@@ -85,7 +85,7 @@ public class DistributionChannelManager {
     }
 
     public DigestModel getTestMessageModel() {
-        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Hub Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectDataCollection);
         return digestModel;
     }
