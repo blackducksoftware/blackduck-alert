@@ -28,20 +28,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 @Component
 public class AboutActions {
-    private final HubProperties hubProperties;
+    private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public AboutActions(final HubProperties hubProperties) {
-        this.hubProperties = hubProperties;
+    public AboutActions(final BlackDuckProperties blackDuckProperties) {
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     public Optional<AboutModel> getAboutModel() {
-        return hubProperties.getAboutModel();
+        return blackDuckProperties.getAboutModel();
     }
 
 }

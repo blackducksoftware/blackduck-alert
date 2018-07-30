@@ -1,0 +1,8 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="renameHubTable">
+        <renameTable newTableName="GLOBAL_BLACKDUCK_CONFIG" oldTableName="GLOBAL_HUB_CONFIG" schemaName="ALERT"/>
+        <renameColumn newColumnName="BLACKDUCK_TIMEOUT" oldColumnName="HUB_TIMEOUT" tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnDataType="INT(10)"/>
+        <renameColumn newColumnName="BLACKDUCK_API_KEY" oldColumnName="HUB_API_KEY" tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnDataType="VARCHAR(255)"/>
+    </changeSet>
+</databaseChangeLog>

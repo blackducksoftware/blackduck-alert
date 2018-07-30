@@ -1,14 +1,7 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import {
-    ReactBsTable,
-    BootstrapTable,
-    TableHeaderColumn,
-    InsertButton,
-    DeleteButton,
-    ButtonGroup
-} from 'react-bootstrap-table';
+import {connect} from 'react-redux';
+import {BootstrapTable, DeleteButton, InsertButton, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
@@ -17,7 +10,7 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
-import { logout } from '../../../store/actions/session';
+import {logout} from '../../../store/actions/session';
 
 /**
  * Selects className based on field value
@@ -57,7 +50,7 @@ function typeColumnDataFormat(cell) {
 
     return (
         <div title={cellText}>
-            <span key="icon" className={fontAwesomeClass} aria-hidden="true" />
+            <span key="icon" className={fontAwesomeClass} aria-hidden="true"/>
             {cellText}
         </div>
     );
@@ -180,13 +173,13 @@ class Index extends Component {
         this.reloadJobs();
     }
 
-    handleAutoRefreshChange({ target }) {
+    handleAutoRefreshChange({target}) {
         if (target.checked) {
             this.startAutoReload();
         } else {
             this.cancelAutoReload();
         }
-        this.setState({ [target.name]: target.checked });
+        this.setState({[target.name]: target.checked});
     }
 
     reloadJobs() {
@@ -235,7 +228,7 @@ class Index extends Component {
             console.log('Deleting the Job configs');
             // TODO delete the Job configs from the backend
             // dropRowKeys are the Id's of the Job configs
-            const { jobs } = this.state;
+            const {jobs} = this.state;
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
 
             matchingJobs.forEach((job) => {
@@ -273,20 +266,20 @@ class Index extends Component {
     }
 
     retrieveGroups() {
-        fetch('/alert/api/hub/groups', {
+        fetch('/alert/api/blackduck/groups', {
             credentials: 'same-origin'
         }).then((response) => {
-            this.setState({ waitingForGroups: false });
+            this.setState({waitingForGroups: false});
             if (!response.ok) {
                 return response.json().then((json) => {
-                    this.setState({ groupError: json.message });
+                    this.setState({groupError: json.message});
                 });
             }
             return response.json().then((json) => {
-                this.setState({ groupError: '' });
+                this.setState({groupError: ''});
                 const jsonArray = JSON.parse(json.message);
                 if (jsonArray != null && jsonArray.length > 0) {
-                    const groups = jsonArray.map(({ name, active, url }) => ({ name, active, url }));
+                    const groups = jsonArray.map(({name, active, url}) => ({name, active, url}));
                     this.setState({
                         groups
                     });
@@ -304,10 +297,10 @@ class Index extends Component {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            this.setState({ inProgress: false });
+            this.setState({inProgress: false});
             this.startAutoReload();
             if (response.ok) {
-                this.setState({ jobConfigTableMessage: '' });
+                this.setState({jobConfigTableMessage: ''});
                 response.json().then((jsonArray) => {
                     const newJobs = [];
                     if (jsonArray != null && jsonArray.length > 0) {
@@ -332,13 +325,13 @@ class Index extends Component {
                     });
                 });
             } else {
-                switch(response.status) {
+                switch (response.status) {
                     case 401:
                     case 403:
                         this.props.logout();
                     default:
                         response.json().then((json) => {
-                            this.setState({ jobConfigTableMessage: json.message });
+                            this.setState({jobConfigTableMessage: json.message});
                         });
                 }
             }
@@ -349,11 +342,11 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
-        this.setState({ currentRowSelected });
+        this.setState({currentRowSelected});
     }
 
     editButtonClick(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} />;
+        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row}/>;
     }
 
 
@@ -367,18 +360,18 @@ class Index extends Component {
         if (!this.state.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
-                    <span className={fontAwesomeIcon} aria-hidden="true" />Refresh
+                    <span className={fontAwesomeIcon} aria-hidden="true"/>Refresh
                 </button>
             );
         }
         return (
             <div>
                 <InsertButton className="addJobButton btn-sm" onClick={insertOnClick}>
-                    <span className="fa fa-plus" />
+                    <span className="fa fa-plus"/>
                     New
                 </InsertButton>
                 <DeleteButton className="deleteJobButton btn-sm" onClick={deleteOnClick}>
-                    <span className="fa fa-trash" />
+                    <span className="fa fa-trash"/>
                     Delete
                 </DeleteButton>
                 {refreshButton}
@@ -443,13 +436,13 @@ class Index extends Component {
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>
                         Status
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick}/>
                 </BootstrapTable>
 
                 {this.state.inProgress &&
-                    <div className="progressIcon">
-                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
-                    </div>
+                <div className="progressIcon">
+                    <span className="fa fa-spinner fa-pulse" aria-hidden="true"/>
+                </div>
                 }
 
                 <p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
@@ -463,7 +456,7 @@ class Index extends Component {
         return (
             <div>
                 <h1>
-                    <span className="fa fa-truck" />
+                    <span className="fa fa-truck"/>
                     Distribution
                     <small className="pull-right">
                         <AutoRefresh

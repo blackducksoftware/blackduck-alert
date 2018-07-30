@@ -10,7 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
-import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailEntity;
@@ -19,8 +19,8 @@ import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class EmailChannelTestIT extends ChannelTest {
@@ -29,16 +29,16 @@ public class EmailChannelTestIT extends ChannelTest {
     @Category(ExternalConnectionTest.class)
     public void sendEmailTest() throws Exception {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final GlobalHubRepository globalRepository = Mockito.mock(GlobalHubRepository.class);
-        final GlobalHubConfigEntity globalConfig = new GlobalHubConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
+        final GlobalBlackDuckRepository globalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        final GlobalBlackDuckConfigEntity globalConfig = new GlobalBlackDuckConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(globalRepository);
-        globalProperties.setHubUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(globalRepository);
+        globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         if (trustCert != null) {
-            globalProperties.setHubTrustCertificate(Boolean.valueOf(trustCert));
+            globalProperties.setBlackDuckTrustCertificate(Boolean.valueOf(trustCert));
         }
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);

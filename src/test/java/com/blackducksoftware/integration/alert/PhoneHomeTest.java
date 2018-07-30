@@ -30,11 +30,11 @@ public class PhoneHomeTest {
     @Test
     @Category(HubConnectionTest.class)
     public void testProductVersion() throws AlertException, IOException {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties();
         final PhoneHome phoneHome = new PhoneHome(null);
 
         try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+            final HubServicesFactory hubServicesFactory = globalProperties.createBlackDuckServicesFactory(restConnection);
             final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
             final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, "test");
 

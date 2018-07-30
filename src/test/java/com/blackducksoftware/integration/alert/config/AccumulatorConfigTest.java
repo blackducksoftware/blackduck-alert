@@ -7,12 +7,12 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorProcessor;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorReader;
-import com.blackducksoftware.integration.alert.provider.hub.accumulator.HubAccumulatorWriter;
+import com.blackducksoftware.integration.alert.provider.blackduck.accumulator.BlackDuckAccumulatorProcessor;
+import com.blackducksoftware.integration.alert.provider.blackduck.accumulator.BlackDuckAccumulatorReader;
+import com.blackducksoftware.integration.alert.provider.blackduck.accumulator.BlackDuckAccumulatorWriter;
 import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
 
-public class AccumulatorConfigTest extends CommonConfigTest<HubAccumulatorReader, HubAccumulatorWriter, HubAccumulatorProcessor, AccumulatorTask> {
+public class AccumulatorConfigTest extends CommonConfigTest<BlackDuckAccumulatorReader, BlackDuckAccumulatorWriter, BlackDuckAccumulatorProcessor, AccumulatorTask> {
 
     @Override
     public String getJobName() {
@@ -45,18 +45,18 @@ public class AccumulatorConfigTest extends CommonConfigTest<HubAccumulatorReader
     }
 
     @Override
-    public HubAccumulatorReader getMockReader() {
-        return Mockito.mock(HubAccumulatorReader.class);
+    public BlackDuckAccumulatorReader getMockReader() {
+        return Mockito.mock(BlackDuckAccumulatorReader.class);
     }
 
     @Override
-    public HubAccumulatorProcessor getMockProcessor() {
-        return Mockito.mock(HubAccumulatorProcessor.class);
+    public BlackDuckAccumulatorProcessor getMockProcessor() {
+        return Mockito.mock(BlackDuckAccumulatorProcessor.class);
     }
 
     @Override
-    public HubAccumulatorWriter getMockWriter() {
-        return Mockito.mock(HubAccumulatorWriter.class);
+    public BlackDuckAccumulatorWriter getMockWriter() {
+        return Mockito.mock(BlackDuckAccumulatorWriter.class);
     }
 
 }
