@@ -40,10 +40,10 @@ import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatG
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -61,8 +61,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        final HipChatDistributionRestModel hipChatRestModel = (HipChatDistributionRestModel) restModel;
+    public void validateDistributionConfig(final CommonDistributionConfig restModel, final Map<String, String> fieldErrors) {
+        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
         if (StringUtils.isBlank(hipChatRestModel.getRoomId())) {
             fieldErrors.put("roomId", "A Room Id is required.");
         } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
@@ -71,7 +71,7 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+    public void testDistributionConfig(final CommonDistributionConfig restModel, final ChannelEvent event) throws IntegrationException {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
         hipChatChannel.sendAuditedMessage(event, hipChatEntity);
     }
@@ -82,8 +82,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        final HipChatGlobalConfigRestModel hipChatRestModel = (HipChatGlobalConfigRestModel) restModel;
+    public void validateGlobalConfig(final Config restModel, final Map<String, String> fieldErrors) {
+        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
         if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
             fieldErrors.put("apiKey", "ApiKey can't be blank");
         }
@@ -101,8 +101,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public ConfigRestModel getGlobalRestModelObject() {
-        return new HipChatGlobalConfigRestModel();
+    public Config getGlobalRestModelObject() {
+        return new HipChatGlobalConfig();
     }
 
 }

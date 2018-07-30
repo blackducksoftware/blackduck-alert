@@ -40,10 +40,10 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGloba
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfig;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -62,15 +62,15 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void validateDistributionConfig(final CommonDistributionConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        final EmailGroupDistributionRestModel emailRestModel = (EmailGroupDistributionRestModel) restModel;
+    public void validateDistributionConfig(final CommonDistributionConfig restModel, final Map<String, String> fieldErrors) {
+        final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         if (StringUtils.isBlank(emailRestModel.getGroupName())) {
             fieldErrors.put("groupName", "A group must be specified.");
         }
     }
 
     @Override
-    public void testDistributionConfig(final CommonDistributionConfigRestModel restModel, final ChannelEvent event) throws IntegrationException {
+    public void testDistributionConfig(final CommonDistributionConfig restModel, final ChannelEvent event) throws IntegrationException {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) super.getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
         emailGroupChannel.sendAuditedMessage(event, emailEntity);
     }
@@ -81,8 +81,8 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public void validateGlobalConfig(final ConfigRestModel restModel, final Map<String, String> fieldErrors) {
-        final EmailGlobalConfigRestModel emailRestModel = (EmailGlobalConfigRestModel) restModel;
+    public void validateGlobalConfig(final Config restModel, final Map<String, String> fieldErrors) {
+        final EmailGlobalConfig emailRestModel = (EmailGlobalConfig) restModel;
 
         if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
             fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
@@ -106,8 +106,8 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public ConfigRestModel getGlobalRestModelObject() {
-        return new EmailGlobalConfigRestModel();
+    public Config getGlobalRestModelObject() {
+        return new EmailGlobalConfig();
     }
 
 }

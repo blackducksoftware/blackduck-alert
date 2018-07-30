@@ -35,32 +35,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.AccumulatorConfig;
-import com.blackducksoftware.integration.alert.config.DailyDigestBatchConfig;
-import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
+import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
-    private final AccumulatorConfig accumulatorConfig;
-    private final DailyDigestBatchConfig dailyDigestBatchConfig;
-    private final PurgeConfig purgeConfig;
+public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
+    private final PurgeTask purgeTask;
+
+    private final DailyTask dailyTask;
+    private final OnDemandTask onDemandTask;
 
     @Autowired
-    public GlobalSchedulingConfigActions(final AccumulatorConfig accumulatorConfig, final DailyDigestBatchConfig dailyDigestBatchConfig, final PurgeConfig purgeConfig, final GlobalSchedulingRepository repository,
+    public GlobalSchedulingConfigActions(final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final GlobalSchedulingRepository repository,
             final GlobalSchedulingContentConverter contentConverter) {
         super(repository, contentConverter);
-        this.accumulatorConfig = accumulatorConfig;
-        this.dailyDigestBatchConfig = dailyDigestBatchConfig;
-        this.purgeConfig = purgeConfig;
+        this.purgeTask = purgeTask;
+        this.dailyTask = dailyTask;
+        this.onDemandTask = onDemandTask;
     }
 
     @Override
-    public List<GlobalSchedulingConfigRestModel> getConfig(final Long id) throws AlertException {
+    public List<GlobalSchedulingConfig> getConfig(final Long id) throws AlertException {
         GlobalSchedulingConfigEntity databaseEntity = null;
         if (id != null) {
             final Optional<GlobalSchedulingConfigEntity> repositoryResult = getRepository().findById(id);
@@ -73,26 +74,26 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
                 databaseEntity = databaseEntities.get(0);
             }
         }
-        final GlobalSchedulingConfigRestModel restModel;
+        final GlobalSchedulingConfig restModel;
         if (databaseEntity != null) {
-            restModel = (GlobalSchedulingConfigRestModel) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
-            restModel.setDailyDigestNextRun(dailyDigestBatchConfig.getFormatedNextRunTime());
-            restModel.setPurgeDataNextRun(purgeConfig.getFormatedNextRunTime());
+            restModel = (GlobalSchedulingConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
+            restModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
+            restModel.setPurgeDataNextRun(purgeTask.getFormatedNextRunTime().orElse(null));
         } else {
-            restModel = new GlobalSchedulingConfigRestModel();
+            restModel = new GlobalSchedulingConfig();
         }
-        final Long accumulatorNextRun = accumulatorConfig.getMillisecondsToNextRun();
-        if (accumulatorNextRun != null) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorConfig.getMillisecondsToNextRun());
+        final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
+        if (onDemandNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandNextRun.get());
             restModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
-        final List<GlobalSchedulingConfigRestModel> restModels = new ArrayList<>();
+        final List<GlobalSchedulingConfig> restModels = new ArrayList<>();
         restModels.add(restModel);
         return restModels;
     }
 
     @Override
-    public String validateConfig(final GlobalSchedulingConfigRestModel restModel) throws AlertFieldException {
+    public String validateConfig(final GlobalSchedulingConfig restModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         if (StringUtils.isNotBlank(restModel.getDailyDigestHourOfDay())) {
             if (!StringUtils.isNumeric(restModel.getDailyDigestHourOfDay())) {
@@ -127,20 +128,20 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
     }
 
     @Override
-    public String channelTestConfig(final GlobalSchedulingConfigRestModel restModel) throws IntegrationException {
+    public String channelTestConfig(final GlobalSchedulingConfig restModel) throws IntegrationException {
         return null;
     }
 
     @Override
-    public void configurationChangeTriggers(final GlobalSchedulingConfigRestModel restModel) {
+    public void configurationChangeTriggers(final GlobalSchedulingConfig restModel) {
         if (restModel != null) {
             final String dailyDigestHourOfDay = restModel.getDailyDigestHourOfDay();
             final String purgeDataFrequencyDays = restModel.getPurgeDataFrequencyDays();
 
             final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
             final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-            dailyDigestBatchConfig.scheduleExecution(dailyDigestCron);
-            purgeConfig.scheduleExecution(purgeDataCron);
+            dailyTask.scheduleExecution(dailyDigestCron);
+            purgeTask.scheduleExecution(purgeDataCron);
         }
     }
 }

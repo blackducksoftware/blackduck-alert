@@ -23,9 +23,9 @@
  */
 package com.blackducksoftware.integration.alert.web.provider.hub;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+import com.blackducksoftware.integration.util.Stringable;
 
-public class HubGroup extends Model {
+public class HubGroup extends Stringable {
     private final String name;
     private final Boolean active;
     private final String url;

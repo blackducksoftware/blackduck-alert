@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
@@ -42,11 +42,11 @@ import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConn
 public class ChannelRestConnectionFactory {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
 
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
 
     @Autowired
-    public ChannelRestConnectionFactory(final GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
+    public ChannelRestConnectionFactory(final HubProperties hubProperties) {
+        this.hubProperties = hubProperties;
     }
 
     public RestConnection createUnauthenticatedRestConnection(final String stringUrl) {
@@ -56,8 +56,8 @@ public class ChannelRestConnectionFactory {
 
     public RestConnection createUnauthenticatedRestConnection(final URL url) {
         int timeout = 5 * 60;
-        if (globalProperties.getHubTimeout() != null) {
-            timeout = globalProperties.getHubTimeout();
+        if (hubProperties.getHubTimeout() != null) {
+            timeout = hubProperties.getHubTimeout();
         }
 
         return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), timeout * 1000);
@@ -68,7 +68,7 @@ public class ChannelRestConnectionFactory {
             logger.error("URL WAS NULL");
             return null;
         }
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = globalProperties.createUnauthenticatedRestConnectionBuilder(intLogger, timeout);
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = hubProperties.createUnauthenticatedRestConnectionBuilder(intLogger, timeout);
         restConnectionBuilder.setBaseUrl(url.toString());
 
         final RestConnection connection = restConnectionBuilder.build();

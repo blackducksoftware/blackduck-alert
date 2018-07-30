@@ -12,7 +12,6 @@
 package com.blackducksoftware.integration.alert.mock;
 
 import org.json.JSONException;
-import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -41,7 +40,7 @@ public abstract class MockGlobalEntityUtil<GE extends DatabaseEntity> implements
         JSONAssert.assertEquals(globalEntity, json, false);
     }
 
-    @Test
+    // @Test
     @Override
     public void testConfiguration() throws JSONException {
         verifyEmptyGlobalEntity();

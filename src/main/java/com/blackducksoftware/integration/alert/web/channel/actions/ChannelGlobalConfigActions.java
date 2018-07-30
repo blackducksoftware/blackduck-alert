@@ -44,12 +44,12 @@ import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.common.collect.Maps;
 
 @Component
-public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestModel> {
+public class ChannelGlobalConfigActions extends ChannelConfigActions<Config> {
     private final DistributionChannelManager distributionChannelManager;
 
     @Autowired
@@ -64,25 +64,25 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public List<ConfigRestModel> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
+    public List<Config> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
         if (id != null) {
             final Optional<? extends DatabaseEntity> foundEntity = descriptor.getGlobalRepositoryAccessor().readEntity(id);
             if (foundEntity.isPresent()) {
-                final ConfigRestModel restModel = descriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
+                final Config restModel = descriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
                 if (restModel != null) {
-                    final ConfigRestModel maskedRestModel = maskRestModel(restModel);
+                    final Config maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
                 }
             }
             return Collections.emptyList();
         }
         final List<? extends DatabaseEntity> databaseEntities = descriptor.getGlobalRepositoryAccessor().readEntities();
-        final List<ConfigRestModel> restModels = getConvertedRestModels(databaseEntities, descriptor);
+        final List<Config> restModels = getConvertedRestModels(databaseEntities, descriptor);
         return maskRestModels(restModels);
     }
 
-    private List<ConfigRestModel> getConvertedRestModels(final List<? extends DatabaseEntity> entities, final Descriptor descriptor) throws AlertException {
-        final List<ConfigRestModel> restModels = new ArrayList<>(entities.size());
+    private List<Config> getConvertedRestModels(final List<? extends DatabaseEntity> entities, final Descriptor descriptor) throws AlertException {
+        final List<Config> restModels = new ArrayList<>(entities.size());
         for (final DatabaseEntity entity : entities) {
             restModels.add(descriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(entity));
         }
@@ -97,7 +97,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public DatabaseEntity saveConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+    public DatabaseEntity saveConfig(final Config restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null) {
             try {
                 final DatabaseEntity createdEntity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
@@ -113,7 +113,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public String validateConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
+    public String validateConfig(Config restModel, final ChannelDescriptor descriptor) throws AlertFieldException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.getGlobalRepositoryAccessor().readEntities();
         if (globalConfigs.size() == 1) {
             try {
@@ -133,7 +133,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public String testConfig(ConfigRestModel restModel, final ChannelDescriptor descriptor) throws IntegrationException {
+    public String testConfig(Config restModel, final ChannelDescriptor descriptor) throws IntegrationException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.getGlobalRepositoryAccessor().readEntities();
         if (globalConfigs.size() == 1) {
             restModel = updateNewConfigWithSavedConfig(restModel, globalConfigs.get(0));
@@ -144,7 +144,7 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
     }
 
     @Override
-    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final ConfigRestModel restModel, final ChannelDescriptor descriptor) throws AlertException {
+    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final Config restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
                 DatabaseEntity createdEntity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
@@ -201,8 +201,8 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
         return newConfig;
     }
 
-    public ConfigRestModel maskRestModel(final ConfigRestModel restModel) throws AlertException {
-        final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
+    public Config maskRestModel(final Config restModel) throws AlertException {
+        final Class<? extends Config> restModelClass = restModel.getClass();
         try {
             final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
 
@@ -232,9 +232,9 @@ public class ChannelGlobalConfigActions extends ChannelConfigActions<ConfigRestM
         return restModel;
     }
 
-    public List<ConfigRestModel> maskRestModels(final List<ConfigRestModel> restModels) throws AlertException {
-        final List<ConfigRestModel> maskedRestModels = new ArrayList<>();
-        for (final ConfigRestModel restModel : restModels) {
+    public List<Config> maskRestModels(final List<Config> restModels) throws AlertException {
+        final List<Config> maskedRestModels = new ArrayList<>();
+        for (final Config restModel : restModels) {
             maskedRestModels.add(maskRestModel(restModel));
         }
         return maskedRestModels;

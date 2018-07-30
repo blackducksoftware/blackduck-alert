@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.LoginActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
+import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.LogLevel;
@@ -71,15 +71,15 @@ public class LoginHandler extends ControllerHandler {
         return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
     }
 
-    public ResponseEntity<String> userLogin(final HttpServletRequest request, final HttpServletResponse response, final LoginRestModel loginRestModel) {
-        return authenticateUser(request, response, loginRestModel);
+    public ResponseEntity<String> userLogin(final HttpServletRequest request, final HttpServletResponse response, final LoginConfig loginConfig) {
+        return authenticateUser(request, response, loginConfig);
     }
 
-    public ResponseEntity<String> authenticateUser(final HttpServletRequest request, final HttpServletResponse response, final LoginRestModel loginRestModel) {
+    public ResponseEntity<String> authenticateUser(final HttpServletRequest request, final HttpServletResponse response, final LoginConfig loginConfig) {
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
 
         try {
-            if (loginActions.authenticateUser(loginRestModel, logger)) {
+            if (loginActions.authenticateUser(loginConfig, logger)) {
                 final CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());

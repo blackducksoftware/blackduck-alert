@@ -13,10 +13,10 @@ package com.blackducksoftware.integration.alert.channel.email.mock;
 
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.google.gson.JsonObject;
 
-public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistributionRestModel> {
+public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfig> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private final String groupName;
@@ -53,16 +53,16 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailGroupDistribution
     }
 
     @Override
-    public EmailGroupDistributionRestModel createRestModel() {
-        final EmailGroupDistributionRestModel restModel = new EmailGroupDistributionRestModel(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
+    public EmailDistributionConfig createRestModel() {
+        final EmailDistributionConfig restModel = new EmailDistributionConfig(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
                 distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, emailTemplateLogoImage, emailSubjectLine, distributionMockUtil.getProjects(),
                 distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }
 
     @Override
-    public EmailGroupDistributionRestModel createEmptyRestModel() {
-        return new EmailGroupDistributionRestModel();
+    public EmailDistributionConfig createEmptyRestModel() {
+        return new EmailDistributionConfig();
     }
 
     @Override
