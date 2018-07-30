@@ -37,12 +37,12 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
 import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfigHandler;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/global/{descriptorName}")
 public class ChannelGlobalConfigController extends ChannelConfigController {
-    private final ChannelConfigHandler<ConfigRestModel> controllerHandler;
+    private final ChannelConfigHandler<Config> controllerHandler;
     private final DescriptorMap descriptorMap;
 
     @Autowired
@@ -52,7 +52,7 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     }
 
     @Override
-    public List<ConfigRestModel> getConfig(final Long id, @PathVariable final String descriptorName) {
+    public List<Config> getConfig(final Long id, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
         return controllerHandler.getConfig(id, descriptor);
     }

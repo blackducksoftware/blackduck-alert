@@ -13,9 +13,9 @@ package com.blackducksoftware.integration.alert.web.model;
 
 import static org.junit.Assert.assertEquals;
 
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 
-public abstract class CommonDistributionRestModelTest<R extends CommonDistributionConfigRestModel> extends RestModelTest<R> {
+public abstract class CommonDistributionRestModelTest<R extends CommonDistributionConfig> extends RestModelTest<R> {
 
     @Override
     public void testId(final R restModel) {

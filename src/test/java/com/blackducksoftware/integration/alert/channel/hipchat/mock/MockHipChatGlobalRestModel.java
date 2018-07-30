@@ -12,10 +12,10 @@
 package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.google.gson.JsonObject;
 
-public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatGlobalConfigRestModel> {
+public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatGlobalConfig> {
     private final String apiKey;
     private final boolean apiKeyIsSet;
     private final String id;
@@ -46,14 +46,14 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatG
     }
 
     @Override
-    public HipChatGlobalConfigRestModel createGlobalRestModel() {
-        final HipChatGlobalConfigRestModel restModel = new HipChatGlobalConfigRestModel(id, apiKey, apiKeyIsSet, hostServer);
+    public HipChatGlobalConfig createGlobalRestModel() {
+        final HipChatGlobalConfig restModel = new HipChatGlobalConfig(id, apiKey, apiKeyIsSet, hostServer);
         return restModel;
     }
 
     @Override
-    public HipChatGlobalConfigRestModel createEmptyGlobalRestModel() {
-        return new HipChatGlobalConfigRestModel();
+    public HipChatGlobalConfig createEmptyGlobalRestModel() {
+        return new HipChatGlobalConfig();
     }
 
     @Override

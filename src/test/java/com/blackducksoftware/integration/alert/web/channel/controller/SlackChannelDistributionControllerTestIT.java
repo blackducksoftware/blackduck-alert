@@ -9,10 +9,10 @@ import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistr
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.blackducksoftware.integration.alert.web.controller.ControllerTest;
 
-public class SlackChannelDistributionControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionRestModel, SlackDistributionRepository> {
+public class SlackChannelDistributionControllerTestIT extends ControllerTest<SlackDistributionConfigEntity, SlackDistributionConfig, SlackDistributionRepository> {
 
     @Autowired
     private SlackDistributionRepository slackDistributionRepository;
@@ -28,7 +28,7 @@ public class SlackChannelDistributionControllerTestIT extends ControllerTest<Sla
     }
 
     @Override
-    public MockRestModelUtil<SlackDistributionRestModel> getRestModelMockUtil() {
+    public MockRestModelUtil<SlackDistributionConfig> getRestModelMockUtil() {
         return new MockSlackRestModel();
     }
 

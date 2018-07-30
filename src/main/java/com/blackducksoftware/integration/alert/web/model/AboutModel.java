@@ -23,37 +23,32 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import java.util.List;
+import com.blackducksoftware.integration.util.Stringable;
 
-import com.blackducksoftware.integration.alert.common.model.Model;
+public class AboutModel extends Stringable {
+    private String version;
+    private String description;
+    private String projectUrl;
 
-public class AlertPagedRestModel<M extends Model> extends Model {
+    protected AboutModel() {
 
-    private final int totalPages;
-    private final int currentPage;
-    private final int pageSize;
-    private final List<M> content;
-
-    public AlertPagedRestModel(final int totalPages, final int currentPage, final int pageSize, final List<M> content) {
-        this.totalPages = totalPages;
-        this.currentPage = currentPage;
-        this.pageSize = pageSize;
-        this.content = content;
     }
 
-    public int getTotalPages() {
-        return totalPages;
+    public AboutModel(final String version, final String description, final String projectUrl) {
+        this.version = version;
+        this.description = description;
+        this.projectUrl = projectUrl;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
+    public String getVersion() {
+        return version;
     }
 
-    public int getPageSize() {
-        return pageSize;
+    public String getDescription() {
+        return description;
     }
 
-    public List<M> getContent() {
-        return content;
+    public String getProjectUrl() {
+        return projectUrl;
     }
 }

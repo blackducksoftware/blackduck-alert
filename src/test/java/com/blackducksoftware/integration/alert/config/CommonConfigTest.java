@@ -32,19 +32,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.blackducksoftware.integration.alert.OutputLogger;
 import com.blackducksoftware.integration.alert.TestGlobalProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 import com.google.gson.Gson;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
     protected ContentConverter contentConverter;
     private OutputLogger outputLogger;
-    private GlobalProperties globalProperties;
+    private HubProperties hubProperties;
     private Gson gson;
 
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
-        globalProperties = new TestGlobalProperties();
+        hubProperties = new TestGlobalProperties();
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
@@ -54,8 +55,8 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger.cleanup();
     }
 
-    public GlobalProperties getGlobalProperties() {
-        return globalProperties;
+    public HubProperties getGlobalProperties() {
+        return hubProperties;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

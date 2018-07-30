@@ -25,20 +25,20 @@ package com.blackducksoftware.integration.alert.web.model;
 
 import java.util.Set;
 
-public class NotificationRestModel extends ConfigRestModel {
+public class NotificationConfig extends Config {
     private String eventKey;
     private String createdAt;
     private Set<String> notificationTypes;
     private String projectName;
     private String projectVersion;
-    private Set<ComponentRestModel> components;
+    private Set<ComponentConfig> components;
     private String projectUrl;
     private String projectVersionUrl;
 
-    public NotificationRestModel() {
+    public NotificationConfig() {
     }
 
-    public NotificationRestModel(final String id, final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentRestModel> components,
+    public NotificationConfig(final String id, final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentConfig> components,
             final String projectUrl, final String projectVersionUrl) {
         super(id);
         this.eventKey = eventKey;
@@ -75,11 +75,11 @@ public class NotificationRestModel extends ConfigRestModel {
         return projectVersion;
     }
 
-    public Set<ComponentRestModel> getComponents() {
+    public Set<ComponentConfig> getComponents() {
         return components;
     }
 
-    public void setComponents(final Set<ComponentRestModel> components) {
+    public void setComponents(final Set<ComponentConfig> components) {
         this.components = components;
     }
 

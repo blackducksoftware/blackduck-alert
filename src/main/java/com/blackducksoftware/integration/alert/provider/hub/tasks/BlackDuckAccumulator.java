@@ -48,7 +48,7 @@ import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironme
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.model.NotificationModels;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
@@ -66,23 +66,23 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
     private final ContentConverter contentConverter;
     private final NotificationManager notificationManager;
     private final File searchRangeFilePath;
 
     @Autowired
-    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final GlobalProperties globalProperties, final ContentConverter contentConverter,
+    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final HubProperties hubProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
         super(taskScheduler, "blackduck-accumulator-task");
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
         this.notificationManager = notificationManager;
         //TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
-        this.searchRangeFilePath = new File(globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME), accumulatorFileName);
+        this.searchRangeFilePath = new File(hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME), accumulatorFileName);
     }
 
     public File getSearchRangeFilePath() {
@@ -183,11 +183,11 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     protected Optional<NotificationDetailResults> read(final DateRange dateRange) {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        final Optional<RestConnection> optionalConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<RestConnection> optionalConnection = hubProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
             try (final RestConnection restConnection = optionalConnection.get()) {
                 if (restConnection != null) {
-                    final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                    final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
                     final Date startDate = dateRange.getStart();
                     final Date endDate = dateRange.getEnd();
                     logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
@@ -214,7 +214,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     protected AlertEvent process(final NotificationDetailResults notificationData) {
         logger.info(createLoggerMessage("Processing accumulated notifications"));
         final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
-        final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+        final AlertEvent storeEvent = notificationItemProcessor.process(hubProperties, notificationData);
         return storeEvent;
     }
 

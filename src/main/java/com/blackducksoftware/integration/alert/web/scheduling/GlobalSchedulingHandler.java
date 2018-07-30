@@ -28,9 +28,9 @@ import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedul
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.controller.handler.CommonConfigHandler;
 
-public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfigRestModel, GlobalSchedulingRepository> {
+public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
 
-    public GlobalSchedulingHandler(final Class<GlobalSchedulingConfigEntity> databaseEntityClass, final Class<GlobalSchedulingConfigRestModel> configRestModelClass, final GlobalSchedulingConfigActions configActions,
+    public GlobalSchedulingHandler(final Class<GlobalSchedulingConfigEntity> databaseEntityClass, final Class<GlobalSchedulingConfig> configRestModelClass, final GlobalSchedulingConfigActions configActions,
             final ContentConverter contentConverter) {
         super(databaseEntityClass, configRestModelClass, configActions, contentConverter);
     }

@@ -7,6 +7,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -82,11 +83,12 @@ public class ProcessingTaskTest {
         final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
         final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
         final DigestNotificationProcessor notificationProcessor = Mockito.mock(DigestNotificationProcessor.class);
-        Mockito.when(notificationProcessor.processNotifications(DigestType.DAILY, modelList)).thenReturn(eventList);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
+        Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(Date.class), Mockito.any(Date.class))).thenReturn(modelList);
+        Mockito.when(notificationProcessor.processNotifications(DigestType.DAILY, modelList)).thenReturn(eventList);
         final ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager);
         final DateRange dateRange = task.getDateRange();
-        Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(modelList);
+
         final ProcessingTask processingTask = Mockito.spy(task);
         processingTask.run();
         Mockito.verify(processingTask).getDateRange();

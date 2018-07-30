@@ -41,11 +41,11 @@ import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContent
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
-public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRestModel, W extends JpaRepository<D, Long>> {
+public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {
     private final W repository;
     private final DatabaseContentConverter databaseContentConverter;
 
@@ -62,6 +62,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
         return id != null && repository.existsById(id);
     }
 
+    @SuppressWarnings("unchecked")
     public List<R> getConfig(final Long id) throws AlertException {
         if (id != null) {
             final Optional<D> foundEntity = repository.findById(id);
@@ -84,7 +85,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
 
     public R maskRestModel(final R restModel) throws AlertException {
         try {
-            final Class<? extends ConfigRestModel> restModelClass = restModel.getClass();
+            final Class<? extends Config> restModelClass = restModel.getClass();
             final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
 
             for (final Field sensitiveField : sensitiveFields) {
@@ -177,6 +178,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public D saveNewConfigUpdateFromSavedConfig(final R restModel) throws AlertException {
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
+                @SuppressWarnings("unchecked")
                 D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
@@ -193,6 +195,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     public D saveConfig(final R restModel) throws AlertException {
         if (restModel != null) {
             try {
+                @SuppressWarnings("unchecked")
                 D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
@@ -260,7 +263,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends ConfigRe
     /**
      * If something needs to be triggered when the configuration is changed, this method should be overriden
      */
-    public void configurationChangeTriggers(@SuppressWarnings("unused") final R restModel) {
+    public void configurationChangeTriggers(final R restModel) {
 
     }
 

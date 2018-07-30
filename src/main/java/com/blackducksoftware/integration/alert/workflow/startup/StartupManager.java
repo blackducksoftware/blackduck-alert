@@ -44,15 +44,15 @@ import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescrip
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
-import com.blackducksoftware.integration.alert.config.PurgeConfig;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
+import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -66,10 +66,10 @@ public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
-    private final PurgeConfig purgeConfig;
+    private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
     private final List<ProviderDescriptor> providerDescriptorList;
@@ -78,14 +78,14 @@ public class StartupManager {
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final HubProperties hubProperties,
             final DailyTask dailyTask, final OnDemandTask onDemandTask,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<ProviderDescriptor> providerDescriptorList) {
+            final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
-        this.globalProperties = globalProperties;
+        this.hubProperties = hubProperties;
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
-        this.purgeConfig = purgeConfig;
+        this.purgeTask = purgeTask;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
@@ -102,17 +102,17 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(globalProperties.getHubProxyPassword().orElse(null));
+        final boolean authenticatedProxy = StringUtils.isNotBlank(hubProperties.getHubProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", loggingLevel);
-        logger.info("Hub URL:                 {}", globalProperties.getHubUrl().orElse(""));
-        logger.info("Hub Proxy Host:          {}", globalProperties.getHubProxyHost().orElse(""));
-        logger.info("Hub Proxy Port:          {}", globalProperties.getHubProxyPort().orElse(""));
+        logger.info("Hub URL:                 {}", hubProperties.getHubUrl().orElse(""));
+        logger.info("Hub Proxy Host:          {}", hubProperties.getHubProxyHost().orElse(""));
+        logger.info("Hub Proxy Port:          {}", hubProperties.getHubProxyPort().orElse(""));
         logger.info("Hub Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Hub Proxy User:          {}", globalProperties.getHubProxyUsername().orElse(""));
+        logger.info("Hub Proxy User:          {}", hubProperties.getHubProxyUsername().orElse(""));
 
-        final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = globalProperties.getHubConfig();
+        final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = hubProperties.getHubConfig();
         if (optionalGlobalHubConfigEntity.isPresent()) {
             final GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
             logger.info("Hub API Token:           **********");
@@ -149,27 +149,27 @@ public class StartupManager {
         logger.info("Validating Hub Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = globalProperties.createProxyInfoBuilder();
+            final ProxyInfoBuilder proxyBuilder = hubProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
-            final Optional<String> hubUrlOptional = globalProperties.getHubUrl();
+            final Optional<String> hubUrlOptional = hubProperties.getHubUrl();
             if (!hubUrlOptional.isPresent()) {
                 logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
             } else {
                 if (hubUrlOptional.isPresent()) {
                     final String hubUrlString = hubUrlOptional.get();
-                    final Boolean trustCertificate = BooleanUtils.toBoolean(globalProperties.getHubTrustCertificate().orElse(false));
+                    final Boolean trustCertificate = BooleanUtils.toBoolean(hubProperties.getHubTrustCertificate().orElse(false));
 
                     final URL hubUrl = new URL(hubUrlString);
                     if ("localhost".equals(hubUrl.getHost())) {
                         logger.warn("  -> Hub Provider Using localhost...");
-                        final String hubWebServerEnvValue = globalProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
+                        final String hubWebServerEnvValue = hubProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
                         if (StringUtils.isBlank(hubWebServerEnvValue)) {
                             logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
                         } else {
                             logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
                         }
                     }
-                    verifier.verifyIsHubServer(new URL(hubUrlString), proxyInfo, trustCertificate, globalProperties.getHubTimeout());
+                    verifier.verifyIsHubServer(new URL(hubUrlString), proxyInfo, trustCertificate, hubProperties.getHubTimeout());
                     logger.info("  -> Hub Provider Valid!");
                 }
             }
@@ -203,11 +203,11 @@ public class StartupManager {
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
         dailyTask.scheduleExecution(dailyDigestCron);
         onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
-        purgeConfig.scheduleExecution(purgeDataCron);
+        purgeTask.scheduleExecution(purgeDataCron);
 
         logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
         logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
-        logger.info("Purge Old Data next run:   {}", purgeConfig.getFormatedNextRunTime().orElse(""));
+        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime().orElse(""));
 
         phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
         logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
@@ -220,9 +220,9 @@ public class StartupManager {
             if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
                 final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
                 final String purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
-                final PurgeReader reader = purgeConfig.createReaderWithDayOffset(Integer.valueOf(purgeDataFrequencyDays));
-                final PurgeProcessor processor = purgeConfig.processor();
-                final PurgeWriter writer = purgeConfig.writer();
+                final PurgeReader reader = purgeTask.createReaderWithDayOffset(Integer.valueOf(purgeDataFrequencyDays));
+                final PurgeProcessor processor = purgeTask.processor();
+                final PurgeWriter writer = purgeTask.writer();
 
                 final List<NotificationModel> purgeData = reader.read();
                 final List<NotificationModel> processedData = processor.process(purgeData);

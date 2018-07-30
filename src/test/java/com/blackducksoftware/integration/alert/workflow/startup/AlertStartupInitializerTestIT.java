@@ -23,7 +23,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfigRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.blackducksoftware.integration.alert.workflow.PropertyInitializer;
 import com.google.gson.Gson;
 
@@ -73,7 +73,7 @@ public class AlertStartupInitializerTestIT {
         initializer.initializeConfigs();
         final String value = "newValue";
 
-        final EmailGlobalConfigRestModel globalRestModel = new EmailGlobalConfigRestModel();
+        final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
         final AlertStartupProperty property = initializer.getAlertProperties().get(0);
         initializer.setRestModelValue(value, globalRestModel, property);
 
@@ -100,7 +100,7 @@ public class AlertStartupInitializerTestIT {
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
 
-        final EmailGlobalConfigRestModel globalRestModel = new EmailGlobalConfigRestModel();
+        final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
         final AlertStartupProperty property = initializer.getAlertProperties().get(0);
         initializer.setRestModelValue(null, globalRestModel, property);
 
@@ -127,7 +127,7 @@ public class AlertStartupInitializerTestIT {
         final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, emailGlobalContentConverter, emailGlobalRepositoryAccessor, null, null, entityPropertyMapper));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
-        final EmailGlobalConfigRestModel globalRestModel = new EmailGlobalConfigRestModel();
+        final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
         final AlertStartupProperty property = initializer.getAlertProperties().get(0);
         initializer.setRestModelValue("a value that can't be converted", globalRestModel, property);
 

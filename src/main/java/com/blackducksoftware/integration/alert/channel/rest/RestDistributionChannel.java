@@ -35,11 +35,11 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -49,10 +49,10 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public RestDistributionChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
+    public RestDistributionChannel(final Gson gson, final HubProperties hubProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
             final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, globalProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
+        super(gson, hubProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 

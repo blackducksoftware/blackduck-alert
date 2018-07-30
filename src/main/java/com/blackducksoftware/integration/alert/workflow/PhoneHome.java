@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
 
@@ -49,7 +49,7 @@ public class PhoneHome {
     }
 
     public PhoneHomeRequestBody.Builder createPhoneHomeBuilder(final PhoneHomeService phoneHomeService, final String productVersion) {
-        if (GlobalProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
+        if (HubProperties.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
             logger.debug("Unknown version for phone home");
             return null;
         }

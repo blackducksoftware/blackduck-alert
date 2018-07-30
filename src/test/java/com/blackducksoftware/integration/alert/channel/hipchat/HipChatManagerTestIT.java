@@ -10,9 +10,9 @@ import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatD
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 
-public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionRestModel, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
+public class HipChatManagerTestIT extends ChannelManagerTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
 
     @Autowired
     private HipChatGlobalRepository hipChatRepository;
