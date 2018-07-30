@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.alert.web.model;
 
 import java.util.List;
 
-public class CommonDistributionConfigRestModel extends ConfigRestModel {
+public class CommonDistributionConfig extends Config {
     private String distributionConfigId;
     private String distributionType;
     private String name;
@@ -36,10 +36,10 @@ public class CommonDistributionConfigRestModel extends ConfigRestModel {
     private String lastRan;
     private String status;
 
-    public CommonDistributionConfigRestModel() {
+    public CommonDistributionConfig() {
     }
 
-    public CommonDistributionConfigRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
+    public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
             final List<String> notificationTypes) {
         super(id);
         this.distributionConfigId = distributionConfigId;

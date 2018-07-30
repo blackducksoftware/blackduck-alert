@@ -42,13 +42,13 @@ import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ItemData;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
@@ -62,10 +62,10 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     public static final String SLACK_API = "https://hooks.slack.com";
 
     @Autowired
-    public SlackChannel(final Gson gson, final GlobalProperties globalProperties, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository,
+    public SlackChannel(final Gson gson, final HubProperties hubProperties, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository,
             final CommonDistributionRepository commonDistributionRepository,
             final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, globalProperties, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+        super(gson, hubProperties, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
     }
 
     @Override

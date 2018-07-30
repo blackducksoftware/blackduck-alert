@@ -35,10 +35,10 @@ import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.google.gson.Gson;
 
-public abstract class GlobalActionsTest<GR extends ConfigRestModel, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
+public abstract class GlobalActionsTest<GR extends Config, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
     protected GCA configActions;
     protected ContentConverter contentConverter;
 

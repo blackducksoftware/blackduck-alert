@@ -24,9 +24,9 @@
 package com.blackducksoftware.integration.alert.web.provider.hub;
 
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 
-public class GlobalHubConfigRestModel extends ConfigRestModel {
+public class GlobalHubConfig extends Config {
     private String hubUrl;
     private String hubTimeout;
 
@@ -44,10 +44,10 @@ public class GlobalHubConfigRestModel extends ConfigRestModel {
 
     private String hubAlwaysTrustCertificate;
 
-    public GlobalHubConfigRestModel() {
+    public GlobalHubConfig() {
     }
 
-    public GlobalHubConfigRestModel(final String id, final String hubUrl, final String hubTimeout, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
+    public GlobalHubConfig(final String id, final String hubUrl, final String hubTimeout, final String hubApiKey, final boolean hubApiKeyIsSet, final String hubProxyHost, final String hubProxyPort, final String hubProxyUsername,
             final String hubProxyPassword, final boolean hubProxyPasswordIsSet, final String hubAlwaysTrustCertificate) {
         super(id);
         this.hubUrl = hubUrl;

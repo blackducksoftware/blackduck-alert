@@ -43,7 +43,7 @@ import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
@@ -55,18 +55,18 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
 
     private final static Logger logger = LoggerFactory.getLogger(HubAccumulatorReader.class);
 
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final String lastRunPath;
 
-    public HubAccumulatorReader(final GlobalProperties globalProperties) {
-        this.globalProperties = globalProperties;
+    public HubAccumulatorReader(final HubProperties hubProperties) {
+        this.hubProperties = hubProperties;
         lastRunPath = findLastRunFilePath();
     }
 
     private String findLastRunFilePath() {
         String path = "";
         try {
-            final String configLocation = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME.getVariableName());
+            final String configLocation = hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME.getVariableName());
             final File file = new File(configLocation, "accumulator-lastrun.txt");
             path = file.getCanonicalPath();
         } catch (final IOException ex) {
@@ -78,11 +78,11 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
     @Override
     public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        Optional<RestConnection> optionalRestConnection = globalProperties.createRestConnectionAndLogErrors(logger);
+        Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
                 logger.info("Accumulator Reader Starting Operation");
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
                 final File lastRunFile = new File(lastRunPath);
                 final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
                 final Date startDate = dateRange.getLeft();

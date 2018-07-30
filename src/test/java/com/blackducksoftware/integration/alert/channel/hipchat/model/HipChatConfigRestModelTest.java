@@ -14,28 +14,28 @@ package com.blackducksoftware.integration.alert.channel.hipchat.model;
 import static org.junit.Assert.*;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionRestModelTest;
 
-public class HipChatConfigRestModelTest extends CommonDistributionRestModelTest<HipChatDistributionRestModel> {
+public class HipChatConfigRestModelTest extends CommonDistributionRestModelTest<HipChatDistributionConfig> {
 
     @Override
-    public void assertRestModelFieldsNull(final HipChatDistributionRestModel restModel) {
+    public void assertRestModelFieldsNull(final HipChatDistributionConfig restModel) {
         assertNull(restModel.getRoomId());
         assertFalse(restModel.getNotify());
         assertNull(restModel.getColor());
     }
 
     @Override
-    public void assertRestModelFieldsFull(final HipChatDistributionRestModel restModel) {
+    public void assertRestModelFieldsFull(final HipChatDistributionConfig restModel) {
         assertEquals(getMockUtil().getRoomId(), restModel.getRoomId());
         assertEquals(getMockUtil().getNotify(), restModel.getNotify());
         assertEquals(getMockUtil().getColor(), restModel.getColor());
     }
 
     @Override
-    public Class<HipChatDistributionRestModel> getRestModelClass() {
-        return HipChatDistributionRestModel.class;
+    public Class<HipChatDistributionConfig> getRestModelClass() {
+        return HipChatDistributionConfig.class;
     }
 
     @Override

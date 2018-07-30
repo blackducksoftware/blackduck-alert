@@ -11,9 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.web.actions.AboutActions;
 import com.blackducksoftware.integration.alert.web.controller.handler.AboutHandler;
+import com.blackducksoftware.integration.alert.web.model.AboutModel;
 import com.google.gson.Gson;
 
 public class AboutControllerTest {

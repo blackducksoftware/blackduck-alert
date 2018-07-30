@@ -13,10 +13,10 @@ package com.blackducksoftware.integration.alert.channel.slack.mock;
 
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.google.gson.JsonObject;
 
-public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestModel> {
+public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionConfig> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private String webhook;
@@ -69,16 +69,16 @@ public class MockSlackRestModel extends MockRestModelUtil<SlackDistributionRestM
     }
 
     @Override
-    public SlackDistributionRestModel createRestModel() {
-        final SlackDistributionRestModel restModel = new SlackDistributionRestModel(String.valueOf(distributionMockUtil.getId()), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
+    public SlackDistributionConfig createRestModel() {
+        final SlackDistributionConfig restModel = new SlackDistributionConfig(String.valueOf(distributionMockUtil.getId()), webhook, channelUsername, channelName, distributionMockUtil.getDistributionConfigId(),
                 distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
                 distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }
 
     @Override
-    public SlackDistributionRestModel createEmptyRestModel() {
-        return new SlackDistributionRestModel();
+    public SlackDistributionConfig createEmptyRestModel() {
+        return new SlackDistributionConfig();
     }
 
     @Override

@@ -29,7 +29,6 @@ import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;
@@ -39,21 +38,22 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGroup
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public class DistributionChannelTest extends ChannelTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, null, contentConverter);
+        final HubProperties hubProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, null, null, null, null, contentConverter);
         channel.setAuditEntrySuccess(1L);
     }
 
     @Test
     public void setAuditEntrySuccessTest() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final GlobalProperties globalProperties = new TestGlobalProperties();
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
+        final HubProperties hubProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, auditEntryRepository, null, null, null, contentConverter);
 
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null);
         entity.setId(1L);
@@ -66,16 +66,16 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, null, contentConverter);
+        final HubProperties hubProperties = new TestGlobalProperties();
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, null, null, null, null, contentConverter);
         channel.setAuditEntryFailure(1L, null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final HubProperties hubProperties = new TestGlobalProperties();
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, auditEntryRepository, null, null, null, contentConverter);
         final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
@@ -87,9 +87,9 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void getGlobalConfigEntityTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final HubProperties hubProperties = new TestGlobalProperties();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, emailGlobalRepository, null, null, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, null, emailGlobalRepository, null, null, contentConverter);
 
         final MockEmailGlobalEntity mockEntity = new MockEmailGlobalEntity();
         final EmailGlobalConfigEntity entity = mockEntity.createGlobalEntity();
@@ -101,13 +101,13 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void receiveMessageTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final HubProperties hubProperties = new TestGlobalProperties();
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final EmailGroupDistributionRepository emailGroupRepository = Mockito.mock(EmailGroupDistributionRepository.class);
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, emailGlobalRepository, emailGroupRepository, commonRepository, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, auditEntryRepository, emailGlobalRepository, emailGroupRepository, commonRepository, contentConverter);
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
@@ -131,10 +131,10 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void handleEventWrongTypeTest() {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final HubProperties hubProperties = new TestGlobalProperties();
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, globalProperties, null, null, null, commonRepository, contentConverter);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, hubProperties, null, null, null, commonRepository, contentConverter);
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
@@ -148,9 +148,9 @@ public class DistributionChannelTest extends ChannelTest {
 
     @Test
     public void testGlobalConfigTest() throws IntegrationException {
-        final GlobalProperties globalProperties = new TestGlobalProperties();
+        final HubProperties hubProperties = new TestGlobalProperties();
         // Slack has no global config, so we use it to test the default method.
-        final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, hubProperties, null, null, null, null, contentConverter);
         final GlobalChannelConfigEntity globalChannelConfigEntity = Mockito.mock(GlobalChannelConfigEntity.class);
 
         final String nullMessage = slackChannel.testGlobalConfig(null);

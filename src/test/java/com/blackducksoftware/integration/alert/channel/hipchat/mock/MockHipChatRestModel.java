@@ -13,10 +13,10 @@ package com.blackducksoftware.integration.alert.channel.hipchat.mock;
 
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.google.gson.JsonObject;
 
-public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionRestModel> {
+public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionConfig> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
     private String roomId;
@@ -72,8 +72,8 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
     }
 
     @Override
-    public HipChatDistributionRestModel createRestModel() {
-        final HipChatDistributionRestModel restModel = new HipChatDistributionRestModel(String.valueOf(distributionMockUtil.getId()), roomId, notify, color, distributionMockUtil.getDistributionConfigId(),
+    public HipChatDistributionConfig createRestModel() {
+        final HipChatDistributionConfig restModel = new HipChatDistributionConfig(String.valueOf(distributionMockUtil.getId()), roomId, notify, color, distributionMockUtil.getDistributionConfigId(),
                 distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), distributionMockUtil.getProjects(),
                 distributionMockUtil.getNotificationsAsStrings());
         return restModel;
@@ -97,7 +97,7 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionR
     }
 
     @Override
-    public HipChatDistributionRestModel createEmptyRestModel() {
-        return new HipChatDistributionRestModel();
+    public HipChatDistributionConfig createEmptyRestModel() {
+        return new HipChatDistributionConfig();
     }
 }

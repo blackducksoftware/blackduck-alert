@@ -19,10 +19,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.google.gson.Gson;
 
-public abstract class GlobalRestModelTest<GR extends ConfigRestModel> {
+public abstract class GlobalRestModelTest<GR extends Config> {
     private final Gson gson = new Gson();
 
     public abstract MockGlobalRestModelUtil<GR> getMockUtil();

@@ -9,10 +9,10 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGroup
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.blackducksoftware.integration.alert.web.controller.ControllerTest;
 
-public class EmailChannelDistributionControllerTestIT extends ControllerTest<EmailGroupDistributionConfigEntity, EmailGroupDistributionRestModel, EmailGroupDistributionRepository> {
+public class EmailChannelDistributionControllerTestIT extends ControllerTest<EmailGroupDistributionConfigEntity, EmailDistributionConfig, EmailGroupDistributionRepository> {
 
     @Autowired
     private EmailGroupDistributionRepository emailGroupDistributionRepository;
@@ -28,7 +28,7 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest<Ema
     }
 
     @Override
-    public MockRestModelUtil<EmailGroupDistributionRestModel> getRestModelMockUtil() {
+    public MockRestModelUtil<EmailDistributionConfig> getRestModelMockUtil() {
         return new MockEmailRestModel();
     }
 

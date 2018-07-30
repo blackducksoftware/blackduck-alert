@@ -52,21 +52,21 @@ import com.blackducksoftware.integration.alert.channel.email.template.MimeMultip
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final GlobalProperties globalProperties, final EmailProperties emailProperties) throws IOException {
-        this.globalProperties = globalProperties;
+    public EmailMessagingService(final HubProperties hubProperties, final EmailProperties emailProperties) throws IOException {
+        this.hubProperties = hubProperties;
         this.emailProperties = emailProperties;
-        final String templatesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+        final String templatesDirectory = hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -88,7 +88,7 @@ public class EmailMessagingService {
 
             final Session session = createMailSession(emailProperties);
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = globalProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
+            final String imagesDirectory = hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
             final String imageDirectoryPath;
             if (StringUtils.isNotBlank(imagesDirectory)) {
                 imageDirectoryPath = imagesDirectory + "/Ducky-80.png";

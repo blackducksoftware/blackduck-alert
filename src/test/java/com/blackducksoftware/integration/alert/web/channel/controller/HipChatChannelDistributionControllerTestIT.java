@@ -9,10 +9,10 @@ import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatD
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.blackducksoftware.integration.alert.web.controller.ControllerTest;
 
-public class HipChatChannelDistributionControllerTestIT extends ControllerTest<HipChatDistributionConfigEntity, HipChatDistributionRestModel, HipChatDistributionRepository> {
+public class HipChatChannelDistributionControllerTestIT extends ControllerTest<HipChatDistributionConfigEntity, HipChatDistributionConfig, HipChatDistributionRepository> {
 
     @Autowired
     HipChatDistributionRepository hipChatDistributionRepository;
@@ -28,7 +28,7 @@ public class HipChatChannelDistributionControllerTestIT extends ControllerTest<H
     }
 
     @Override
-    public MockRestModelUtil<HipChatDistributionRestModel> getRestModelMockUtil() {
+    public MockRestModelUtil<HipChatDistributionConfig> getRestModelMockUtil() {
         return new MockHipChatRestModel();
     }
 

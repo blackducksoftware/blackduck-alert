@@ -32,10 +32,10 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
-public abstract class ChannelConfigActions<R extends ConfigRestModel> {
+public abstract class ChannelConfigActions<R extends Config> {
     private final ContentConverter contentConverter;
 
     public ChannelConfigActions(final ContentConverter contentConverter) {
