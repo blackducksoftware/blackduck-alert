@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.workflow.processor.policy;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,9 +39,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
@@ -58,7 +60,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
     }
 
     @Override
-    public List<NotificationModel> process(final GlobalProperties globalProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
+    public List<NotificationModel> process(final HubProperties hubProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket) {
         final List<NotificationContentDetail> detailList = notificationDetailResult.getNotificationContentDetails();
         final List<NotificationModel> modelList = new ArrayList<>(detailList.size());
         try {
@@ -85,8 +87,7 @@ public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {
     }
 
     private NotificationEntity createNotificationEntity(final NotificationDetailResult notificationDetailResult, final NotificationContentDetail notificationContentDetail, final NotificationCategoryEnum notificationCategory) {
-        final Date createdAt = notificationDetailResult.getCreatedAt();
-
+        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
         final String contentKey = notificationContentDetail.getContentDetailKey();
         final String projectName = notificationContentDetail.getProjectName().orElse(null);
         final String projectUrl = null;

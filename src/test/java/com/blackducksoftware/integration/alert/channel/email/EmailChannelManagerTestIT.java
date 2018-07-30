@@ -10,9 +10,9 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGloba
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionRepository;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailGroupDistributionRestModel;
+import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
 
-public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailGroupDistributionRestModel, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
+public class EmailChannelManagerTestIT extends ChannelManagerTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
 
     @Autowired
     private EmailGlobalRepository emailGlobalRepository;

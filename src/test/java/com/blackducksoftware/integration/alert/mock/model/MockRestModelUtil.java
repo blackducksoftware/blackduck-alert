@@ -16,10 +16,10 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.mock.MockUtils;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.google.gson.Gson;
 
-public abstract class MockRestModelUtil<R extends ConfigRestModel> implements MockUtils {
+public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
 
     private final Gson gson = new Gson();
 

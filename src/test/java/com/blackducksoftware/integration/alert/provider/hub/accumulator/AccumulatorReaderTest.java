@@ -11,8 +11,8 @@ import org.springframework.batch.item.NonTransientResourceException;
 import org.springframework.batch.item.ParseException;
 import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
@@ -27,7 +27,7 @@ public class AccumulatorReaderTest {
 
     @Test
     public void testRead() throws UnexpectedInputException, ParseException, NonTransientResourceException, Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+        final HubProperties hubProperties = Mockito.mock(HubProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
@@ -51,14 +51,14 @@ public class AccumulatorReaderTest {
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(hubProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(hubServicesFactory).when(hubProperties).createHubServicesFactory(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final HubAccumulatorReader hubAccumulatorReader = new HubAccumulatorReader(globalProperties);
+        final HubAccumulatorReader hubAccumulatorReader = new HubAccumulatorReader(hubProperties);
 
         final NotificationDetailResults actualNotificationResults = hubAccumulatorReader.read();
         assertNotNull(actualNotificationResults);
@@ -66,7 +66,7 @@ public class AccumulatorReaderTest {
 
     @Test
     public void testReadWithNullCreatedAtDate() throws UnexpectedInputException, ParseException, NonTransientResourceException, Exception {
-        final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
+        final HubProperties hubProperties = Mockito.mock(HubProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
@@ -90,14 +90,14 @@ public class AccumulatorReaderTest {
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
-        Mockito.doReturn(hubServicesFactory).when(globalProperties).createHubServicesFactory(Mockito.any());
-        Mockito.doReturn(Optional.of(restConnection)).when(globalProperties).createRestConnectionAndLogErrors(Mockito.any());
+        Mockito.doReturn(hubServicesFactory).when(hubProperties).createHubServicesFactory(Mockito.any());
+        Mockito.doReturn(Optional.of(restConnection)).when(hubProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
         Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final HubAccumulatorReader hubAccumulatorReader = new HubAccumulatorReader(globalProperties);
+        final HubAccumulatorReader hubAccumulatorReader = new HubAccumulatorReader(hubProperties);
 
         final NotificationDetailResults actualNotificationResults = hubAccumulatorReader.read();
         assertNotNull(actualNotificationResults);

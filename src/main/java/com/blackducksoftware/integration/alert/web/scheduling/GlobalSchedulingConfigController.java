@@ -38,41 +38,41 @@ import com.blackducksoftware.integration.alert.web.controller.GlobalConfigContro
 
 @RestController
 @RequestMapping(GlobalConfigController.GLOBAL_PATH + "/scheduling")
-public class GlobalSchedulingConfigController extends GlobalConfigController<GlobalSchedulingConfigRestModel> {
+public class GlobalSchedulingConfigController extends GlobalConfigController<GlobalSchedulingConfig> {
     private final GlobalSchedulingHandler globalSchedulingHandler;
 
     @Autowired
     public GlobalSchedulingConfigController(final GlobalSchedulingConfigActions configActions, final ContentConverter contentConverter) {
-        globalSchedulingHandler = new GlobalSchedulingHandler(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfigRestModel.class, configActions, contentConverter);
+        globalSchedulingHandler = new GlobalSchedulingHandler(GlobalSchedulingConfigEntity.class, GlobalSchedulingConfig.class, configActions, contentConverter);
     }
 
     @Override
-    public List<GlobalSchedulingConfigRestModel> getConfig(@RequestParam(value = "id", required = false) final Long id) {
+    public List<GlobalSchedulingConfig> getConfig(@RequestParam(value = "id", required = false) final Long id) {
         return globalSchedulingHandler.getConfig(id);
     }
 
     @Override
-    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final GlobalSchedulingConfig restModel) {
         return globalSchedulingHandler.postConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final GlobalSchedulingConfig restModel) {
         return globalSchedulingHandler.putConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final GlobalSchedulingConfig restModel) {
         return globalSchedulingHandler.validateConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+    public ResponseEntity<String> deleteConfig(@RequestBody(required = false) final GlobalSchedulingConfig restModel) {
         return globalSchedulingHandler.deleteConfig(restModel);
     }
 
     @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSchedulingConfigRestModel restModel) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final GlobalSchedulingConfig restModel) {
         return globalSchedulingHandler.doNotAllowHttpMethod();
     }
 

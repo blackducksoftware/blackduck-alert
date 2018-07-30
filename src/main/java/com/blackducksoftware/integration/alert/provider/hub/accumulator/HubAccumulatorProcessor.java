@@ -31,19 +31,19 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
-import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 
 public class HubAccumulatorProcessor implements ItemProcessor<NotificationDetailResults, AlertEvent> {
     private final Logger logger = LoggerFactory.getLogger(HubAccumulatorProcessor.class);
-    private final GlobalProperties globalProperties;
+    private final HubProperties hubProperties;
     private final List<NotificationTypeProcessor> notificationProcessors;
     private final ContentConverter contentConverter;
 
-    public HubAccumulatorProcessor(final GlobalProperties globalProperties, final List<NotificationTypeProcessor> notificationProcessors, final ContentConverter contentConverter) {
-        this.globalProperties = globalProperties;
+    public HubAccumulatorProcessor(final HubProperties hubProperties, final List<NotificationTypeProcessor> notificationProcessors, final ContentConverter contentConverter) {
+        this.hubProperties = hubProperties;
         this.notificationProcessors = notificationProcessors;
         this.contentConverter = contentConverter;
     }
@@ -54,7 +54,7 @@ public class HubAccumulatorProcessor implements ItemProcessor<NotificationDetail
             try {
                 logger.info("Processing accumulated notifications");
                 final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
-                final AlertEvent storeEvent = notificationItemProcessor.process(globalProperties, notificationData);
+                final AlertEvent storeEvent = notificationItemProcessor.process(hubProperties, notificationData);
                 return storeEvent;
             } catch (final Exception ex) {
                 logger.error("Error occurred durring processing of accumulated notifications", ex);

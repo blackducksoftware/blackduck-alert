@@ -6,19 +6,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.web.model.ComponentRestModel;
-import com.blackducksoftware.integration.alert.web.model.NotificationRestModel;
+import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
+import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class MockNotificationRestModel extends MockRestModelUtil<NotificationRestModel> {
+public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private String eventKey;
     private String createdAt;
     private Set<String> notificationTypes;
     private String projectName;
     private String projectVersion;
-    private Set<ComponentRestModel> components;
+    private Set<ComponentConfig> components;
     private String projectUrl;
     private String projectVersionUrl;
     private String id;
@@ -26,10 +26,10 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationRes
     @SuppressWarnings("deprecation")
     public MockNotificationRestModel() {
         this("_eventKey_", new Date(400).toLocaleString(), Stream.of(NotificationCategoryEnum.POLICY_VIOLATION.name()).collect(Collectors.toSet()), "projectName", "projectVersion",
-                Stream.of(new ComponentRestModel(), new ComponentRestModel()).collect(Collectors.toSet()), "projectUrl", "projectVersionUrl", "1");
+                Stream.of(new ComponentConfig(), new ComponentConfig()).collect(Collectors.toSet()), "projectUrl", "projectVersionUrl", "1");
     }
 
-    private MockNotificationRestModel(final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentRestModel> components,
+    private MockNotificationRestModel(final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentConfig> components,
             final String projectUrl, final String projectVersionUrl, final String id) {
         super();
         this.eventKey = eventKey;
@@ -83,11 +83,11 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationRes
         this.projectVersion = projectVersion;
     }
 
-    public Set<ComponentRestModel> getComponents() {
+    public Set<ComponentConfig> getComponents() {
         return components;
     }
 
-    public void setComponents(final Set<ComponentRestModel> components) {
+    public void setComponents(final Set<ComponentConfig> components) {
         this.components = components;
     }
 
@@ -117,13 +117,13 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationRes
     }
 
     @Override
-    public NotificationRestModel createRestModel() {
-        return new NotificationRestModel(id, eventKey, createdAt, notificationTypes, projectName, projectVersion, components, projectUrl, projectVersionUrl);
+    public NotificationConfig createRestModel() {
+        return new NotificationConfig(id, eventKey, createdAt, notificationTypes, projectName, projectVersion, components, projectUrl, projectVersionUrl);
     }
 
     @Override
-    public NotificationRestModel createEmptyRestModel() {
-        return new NotificationRestModel();
+    public NotificationConfig createEmptyRestModel() {
+        return new NotificationConfig();
     }
 
     @Override

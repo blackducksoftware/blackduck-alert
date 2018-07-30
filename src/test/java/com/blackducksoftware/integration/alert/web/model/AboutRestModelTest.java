@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.web.model.AboutRestModel;
+import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 public class AboutRestModelTest {
 
@@ -14,7 +14,7 @@ public class AboutRestModelTest {
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
 
-        final AboutRestModel model = new AboutRestModel(version, description, gitHubUrl);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl);
 
         assertEquals(version, model.getVersion());
         assertEquals(description, model.getDescription());

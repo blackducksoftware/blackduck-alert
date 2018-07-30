@@ -16,7 +16,6 @@ import static org.junit.Assert.assertNull;
 
 import org.json.JSONException;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 
@@ -31,9 +30,6 @@ public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntity
         assertEntityFieldsNull(configEntity);
         assertNull(configEntity.getId());
 
-        final String expectedString = getMockUtil().getEmptyEntityJson();
-        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
-
         final E configEntityNew = getMockUtil().createEmptyEntity();
         assertEquals(configEntity, configEntityNew);
     }
@@ -45,9 +41,6 @@ public abstract class EntityTest<E extends DatabaseEntity> implements BaseEntity
 
         assertEntityFieldsFull(configEntity);
         assertEquals(Long.valueOf(getMockUtil().getId()), configEntity.getId());
-
-        final String expectedString = getMockUtil().getEntityJson();
-        JSONAssert.assertEquals(expectedString, configEntity.toString(), false);
 
         final E configEntityNew = getMockUtil().createEntity();
         assertEquals(configEntity, configEntityNew);

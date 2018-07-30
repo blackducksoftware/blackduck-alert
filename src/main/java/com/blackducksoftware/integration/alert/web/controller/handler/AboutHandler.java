@@ -31,9 +31,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.model.AboutModel;
 import com.blackducksoftware.integration.alert.web.actions.AboutActions;
-import com.blackducksoftware.integration.alert.web.model.AboutRestModel;
+import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 @Component
 public class AboutHandler extends ControllerHandler {
@@ -49,8 +48,7 @@ public class AboutHandler extends ControllerHandler {
         final Optional<AboutModel> optionalModel = aboutActions.getAboutModel();
         if (optionalModel.isPresent()) {
             final AboutModel model = optionalModel.get();
-            final AboutRestModel restModel = new AboutRestModel(model.getVersion(), model.getDescription(), model.getProjectUrl());
-            return new ResponseEntity<>(getContentConverter().getJsonString(restModel), HttpStatus.OK);
+            return new ResponseEntity<>(getContentConverter().getJsonString(model), HttpStatus.OK);
         }
         return new ResponseEntity<>("Could not find the About model.", HttpStatus.NOT_FOUND);
     }

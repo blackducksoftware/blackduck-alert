@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.ConfigRestModel;
+import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.workflow.PropertyInitializer;
 
 @Component
@@ -70,7 +70,7 @@ public class AlertStartupInitializer {
             final Set<AlertStartupProperty> startupProperties = descriptor.getGlobalEntityPropertyMapping();
             if (startupProperties != null && !startupProperties.isEmpty()) {
                 try {
-                    final ConfigRestModel restModel = descriptor.getGlobalRestModelObject();
+                    final Config restModel = descriptor.getGlobalRestModelObject();
                     final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
                         final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
@@ -84,7 +84,7 @@ public class AlertStartupInitializer {
         });
     }
 
-    private boolean initializeConfig(final ConfigRestModel globalRestModel, final Set<AlertStartupProperty> configProperties) {
+    private boolean initializeConfig(final Config globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
             alertProperties.add(property);
@@ -104,7 +104,7 @@ public class AlertStartupInitializer {
         return propertySet;
     }
 
-    public boolean setRestModelValue(final String value, final ConfigRestModel globalRestModel, final AlertStartupProperty property)
+    public boolean setRestModelValue(final String value, final Config globalRestModel, final AlertStartupProperty property)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
