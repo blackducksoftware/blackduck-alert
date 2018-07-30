@@ -125,16 +125,16 @@ public class BlackDuckAccumulator extends ScheduledTask {
         }
     }
 
-    protected void saveNextSearchStart(final String nextSearchStart) throws IOException {
-        FileUtils.write(getSearchRangeFilePath(), nextSearchStart, ENCODING);
-    }
-
     protected void initializeSearchRangeFile() throws IOException {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withSecond(0).withNano(0);
         final Date date = Date.from(zonedDate.toInstant());
         FileUtils.write(getSearchRangeFilePath(), formatDate(date), ENCODING);
+    }
+
+    protected void saveNextSearchStart(final String nextSearchStart) throws IOException {
+        FileUtils.write(getSearchRangeFilePath(), nextSearchStart, ENCODING);
     }
 
     protected DateRange createDateRange(final File lastSearchFile) {
