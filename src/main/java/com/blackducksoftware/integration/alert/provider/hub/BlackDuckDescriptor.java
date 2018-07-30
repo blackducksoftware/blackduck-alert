@@ -38,12 +38,12 @@ import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
-public class HubDescriptor extends ProviderDescriptor {
+public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
     private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
-    public HubDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
+    public BlackDuckDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
             final EntityPropertyMapper entityPropertyMapper, final BlackDuckProvider provider) {
         super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor, provider);
         this.entityPropertyMapper = entityPropertyMapper;
