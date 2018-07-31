@@ -30,23 +30,23 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.StartupComponent;
 import com.blackducksoftware.integration.alert.database.entity.EntityPropertyMapper;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
-public class HubProviderStartupComponent extends StartupComponent {
+public class ProviderStartupComponent extends StartupComponent {
     private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
     public HubProviderStartupComponent(final EntityPropertyMapper entityPropertyMapper) {
-        super(new GlobalHubConfig());
+        super(new GlobalBlackDuckConfig());
         this.entityPropertyMapper = entityPropertyMapper;
     }
 
     @Override
     public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
-        return entityPropertyMapper.mapEntityToProperties(HubDescriptor.PROVIDER_NAME, GlobalHubConfigEntity.class);
+        return entityPropertyMapper.mapEntityToProperties(BlackDuckDescriptor.PROVIDER_NAME, GlobalBlackDuckConfigEntity.class);
     }
 
 }

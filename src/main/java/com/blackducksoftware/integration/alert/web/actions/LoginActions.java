@@ -40,7 +40,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -59,27 +59,27 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 @Component
 public class LoginActions {
 
-    final HubProperties hubProperties;
+    private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public LoginActions(final HubProperties hubProperties) {
-        this.hubProperties = hubProperties;
+    public LoginActions(final BlackDuckProperties blackDuckProperties) {
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) throws IntegrationException {
-        final HubServerConfigBuilder serverConfigBuilder = hubProperties.createHubServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
+        final HubServerConfigBuilder serverConfigBuilder = blackDuckProperties.createBlackDuckServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 
-        serverConfigBuilder.setPassword(loginConfig.getHubPassword());
-        serverConfigBuilder.setUsername(loginConfig.getHubUsername());
+        serverConfigBuilder.setPassword(loginConfig.getBlackDuckPassword());
+        serverConfigBuilder.setUsername(loginConfig.getBlackDuckUsername());
 
         try {
-            validateHubConfiguration(serverConfigBuilder);
+            validateBlackDuckConfiguration(serverConfigBuilder);
             try (final RestConnection restConnection = createRestConnection(serverConfigBuilder)) {
                 restConnection.connect();
                 logger.info("Connected");
-                final boolean isValidLoginUser = isUserRoleValid(loginConfig.getHubUsername(), restConnection);
+                final boolean isValidLoginUser = isUserRoleValid(loginConfig.getBlackDuckUsername(), restConnection);
                 if (isValidLoginUser) {
-                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginConfig.getHubUsername(), loginConfig.getHubPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                    final Authentication authentication = new UsernamePasswordAuthenticationToken(loginConfig.getBlackDuckUsername(), loginConfig.getBlackDuckPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN")));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     return authentication.isAuthenticated();
                 }
@@ -107,8 +107,8 @@ public class LoginActions {
     }
 
     public boolean isUserRoleValid(final String userName, final RestConnection restConnection) {
-        final HubServicesFactory hubServicesFactory = new HubServicesFactory(restConnection);
-        final UserGroupService userGroupService = hubServicesFactory.createUserGroupService();
+        final HubServicesFactory blackDuckServicesFactory = new HubServicesFactory(restConnection);
+        final UserGroupService userGroupService = blackDuckServicesFactory.createUserGroupService();
 
         try {
             final List<RoleAssignmentView> userRoles = userGroupService.getRolesForUser(userName);
@@ -124,8 +124,8 @@ public class LoginActions {
         return false;
     }
 
-    public void validateHubConfiguration(final HubServerConfigBuilder hubServerConfigBuilder) throws AlertFieldException {
-        final AbstractValidator validator = hubServerConfigBuilder.createValidator();
+    public void validateBlackDuckConfiguration(final HubServerConfigBuilder blackDuckServerConfigBuilder) throws AlertFieldException {
+        final AbstractValidator validator = blackDuckServerConfigBuilder.createValidator();
         final ValidationResults results = validator.assertValid();
         if (!results.getResultMap().isEmpty()) {
             final Map<String, String> fieldErrors = new HashMap<>();
@@ -144,8 +144,8 @@ public class LoginActions {
         }
     }
 
-    public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
-        final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
-        return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
+    public RestConnection createRestConnection(final HubServerConfigBuilder blackDuckServerConfigBuilder) throws IntegrationException {
+        final HubServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
+        return blackDuckServerConfig.createCredentialsRestConnection(blackDuckServerConfigBuilder.getLogger());
     }
 }

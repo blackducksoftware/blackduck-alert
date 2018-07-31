@@ -2,13 +2,14 @@ package com.blackducksoftware.integration.alert.mock.notification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.UriSingleResponse;
 import com.blackducksoftware.integration.hub.api.component.AffectedProjectVersion;
@@ -105,8 +106,12 @@ public class NotificationGeneratorUtils {
         return results;
     }
 
+    public static NotificationDetailResults createEmptyNotificationResults() {
+        return new NotificationDetailResults(Collections.emptyList(), Optional.empty(), Optional.empty(), new HubBucket());
+    }
+
     @SuppressWarnings("unchecked")
-    public static NotificationDetailResults initializeTestData(final HubProperties hubProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
+    public static NotificationDetailResults initializeTestData(final BlackDuckProperties hubProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
         final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
@@ -114,7 +119,7 @@ public class NotificationGeneratorUtils {
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
 
         Mockito.when(hubProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
-        Mockito.when(hubProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(hubProperties.createBlackDuckServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);
         Mockito.when(hubService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);

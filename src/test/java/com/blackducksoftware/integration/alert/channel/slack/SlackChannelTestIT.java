@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +24,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
@@ -42,7 +40,7 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
@@ -53,8 +51,8 @@ public class SlackChannelTestIT extends ChannelTest {
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final GlobalHubRepository mockedGlobalRepository = Mockito.mock(GlobalHubRepository.class);
-        final TestGlobalProperties globalProperties = new TestGlobalProperties(mockedGlobalRepository, null);
+        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);

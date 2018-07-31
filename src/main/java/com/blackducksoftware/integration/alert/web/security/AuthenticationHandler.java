@@ -58,7 +58,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
                 "/js/bundle.js.map",
                 "/css/style.css",
                 "index.html",
-                BaseController.BASE_PATH + "/configuration/provider/hub",
+                BaseController.BASE_PATH + "/configuration/provider/blackduck",
                 BaseController.BASE_PATH + "/login",
                 BaseController.BASE_PATH + "/logout",
                 BaseController.BASE_PATH + "/about" };

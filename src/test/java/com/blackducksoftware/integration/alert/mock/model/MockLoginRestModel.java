@@ -4,35 +4,35 @@ import com.blackducksoftware.integration.alert.web.model.LoginConfig;
 import com.google.gson.JsonObject;
 
 public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
-    private String hubUsername;
-    private String hubPassword;
+    private String blackDuckUsername;
+    private String blackDuckPassword;
     private String id;
 
     public MockLoginRestModel() {
-        this("hubUsername", "hubPassword");
+        this("blackDuckUsername", "blackDuckPassword");
     }
 
-    private MockLoginRestModel(final String hubUsername, final String hubPassword) {
+    private MockLoginRestModel(final String blackDuckUsername, final String blackDuckPassword) {
         super();
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+        this.blackDuckUsername = blackDuckUsername;
+        this.blackDuckPassword = blackDuckPassword;
         this.id = "1L";
     }
 
-    public String getHubPassword() {
-        return hubPassword;
+    public String getBlackDuckPassword() {
+        return blackDuckPassword;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
+    public String getBlackDuckUsername() {
+        return blackDuckUsername;
     }
 
-    public void setHubUsername(final String hubUsername) {
-        this.hubUsername = hubUsername;
+    public void setBlackDuckUsername(final String blackDuckUsername) {
+        this.blackDuckUsername = blackDuckUsername;
     }
 
-    public void setHubPassword(final String hubPassword) {
-        this.hubPassword = hubPassword;
+    public void setBlackDuckPassword(final String blackDuckPassword) {
+        this.blackDuckPassword = blackDuckPassword;
     }
 
     public void setId(final String id) {
@@ -46,7 +46,7 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
 
     @Override
     public LoginConfig createRestModel() {
-        return new LoginConfig(hubUsername, hubPassword);
+        return new LoginConfig(blackDuckUsername, blackDuckPassword);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("id", id);
-        json.addProperty("hubUsername", hubUsername);
-        json.addProperty("hubPassword", hubPassword);
+        json.addProperty("blackDuckUsername", blackDuckUsername);
+        json.addProperty("blackDuckPassword", blackDuckPassword);
         return json.toString();
     }
 

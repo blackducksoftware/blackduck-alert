@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Link, NavLink, Route, withRouter } from 'react-router-dom';
+import {connect} from 'react-redux';
+import {NavLink, withRouter} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
-import { confirmLogout } from './store/actions/session';
+import {confirmLogout} from './store/actions/session';
 
 class Navigation extends Component {
     constructor(props) {

@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.PhoneHome;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
@@ -41,25 +41,26 @@ import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
+    public static final String TASK_NAME = "phonehome";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
-    private final HubProperties hubProperties;
+    private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final HubProperties hubProperties) {
-        super(taskScheduler);
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final BlackDuckProperties blackDuckProperties) {
+        super(taskScheduler, TASK_NAME);
         this.phoneHome = phoneHome;
-        this.hubProperties = hubProperties;
+        this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
     public void run() {
-        Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<RestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection);
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
-                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, hubProperties.getProductVersion());
+                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, blackDuckProperties.getProductVersion());
                 if (builder != null) {
                     phoneHome.addChannelMetaData(builder);
                     phoneHomeService.phoneHome(builder);

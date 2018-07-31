@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.alert.channel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -12,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
-import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -38,12 +35,12 @@ public class ChannelRestConnectionFactoryTest {
         final int port = 1;
         final Credentials credentials = new Credentials("username", "password");
 
-        final TestGlobalProperties globalProperties = new TestGlobalProperties();
-        globalProperties.setHubProxyHost(host);
-        globalProperties.setHubProxyUsername(credentials.getUsername());
-        globalProperties.setHubProxyPassword(credentials.getDecryptedPassword());
-        globalProperties.setHubProxyPort(String.valueOf(port));
-        globalProperties.setHubTrustCertificate(true);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties();
+        globalProperties.setBlackDuckProxyHost(host);
+        globalProperties.setBlackDuckProxyUsername(credentials.getUsername());
+        globalProperties.setBlackDuckProxyPassword(credentials.getDecryptedPassword());
+        globalProperties.setBlackDuckProxyPort(String.valueOf(port));
+        globalProperties.setBlackDuckTrustCertificate(true);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
 
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection("https:url");
@@ -56,7 +53,7 @@ public class ChannelRestConnectionFactoryTest {
 
     @Test
     public void testNullUrl() throws IOException {
-        final TestGlobalProperties globalProperties = new TestGlobalProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
         final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection("bad");
 

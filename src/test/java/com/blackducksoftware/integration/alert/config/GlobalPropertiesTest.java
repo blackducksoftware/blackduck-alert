@@ -4,14 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.google.gson.Gson;
 
 public class GlobalPropertiesTest {
 
     @Test
     public void testGetSetMethods() {
-        final HubProperties properties = new HubProperties(null, new Gson());
+        final BlackDuckProperties properties = new BlackDuckProperties(null, new Gson());
         final String hubUrl = "hubUrl";
         final Boolean hubTrustCertificate = Boolean.TRUE;
         final String proxyHost = "proxyHost";
@@ -27,12 +27,12 @@ public class GlobalPropertiesTest {
         final String trustStorePass = "trustStorePass";
         final String trustStoreType = "trustStoreType";
 
-        properties.setHubUrl(hubUrl);
-        properties.setHubTrustCertificate(hubTrustCertificate);
-        properties.setHubProxyHost(proxyHost);
-        properties.setHubProxyPort(proxyPort);
-        properties.setHubProxyUsername(proxyUser);
-        properties.setHubProxyPassword(proxyPassword);
+        properties.setBlackDuckUrl(hubUrl);
+        properties.setBlackDuckTrustCertificate(hubTrustCertificate);
+        properties.setBlackDuckProxyHost(proxyHost);
+        properties.setBlackDuckProxyPort(proxyPort);
+        properties.setBlackDuckProxyUsername(proxyUser);
+        properties.setBlackDuckProxyPassword(proxyPassword);
         properties.setServerPort(serverPort);
         properties.setKeyStoreFile(keyStoreFile);
         properties.setKeyStorePass(keyStorePass);
@@ -42,13 +42,13 @@ public class GlobalPropertiesTest {
         properties.setTrustStorePass(trustStorePass);
         properties.setTrustStoreType(trustStoreType);
 
-        assertEquals(hubTrustCertificate, properties.getHubTrustCertificate().get());
-        assertEquals(proxyHost, properties.getHubProxyHost().get());
-        assertEquals(proxyPort, properties.getHubProxyPort().get());
-        assertEquals(proxyUser, properties.getHubProxyUsername().get());
-        assertEquals(proxyPassword, properties.getHubProxyPassword().get());
+        assertEquals(hubTrustCertificate, properties.getBlackDuckTrustCertificate().get());
+        assertEquals(proxyHost, properties.getBlackDuckProxyHost().get());
+        assertEquals(proxyPort, properties.getBlackDuckProxyPort().get());
+        assertEquals(proxyUser, properties.getBlackDuckProxyUsername().get());
+        assertEquals(proxyPassword, properties.getBlackDuckProxyPassword().get());
 
-        assertEquals(hubUrl, properties.getHubUrl().get());
+        assertEquals(hubUrl, properties.getBlackDuckUrl().get());
         assertEquals(serverPort, properties.getServerPort());
         assertEquals(keyStoreFile, properties.getKeyStoreFile());
         assertEquals(keyStorePass, properties.getKeyStorePass());
@@ -57,13 +57,13 @@ public class GlobalPropertiesTest {
         assertEquals(trustStoreFile, properties.getTrustStoreFile());
         assertEquals(trustStorePass, properties.getTrustStorePass());
         assertEquals(trustStoreType, properties.getTrustStoreType());
-        assertNotEquals(HubProperties.PRODUCT_VERSION_UNKNOWN, properties.getProductVersion());
+        assertNotEquals(BlackDuckProperties.PRODUCT_VERSION_UNKNOWN, properties.getProductVersion());
     }
 
     @Test
     public void testAboutReadException() {
         try {
-            new HubProperties(null, null);
+            new BlackDuckProperties(null, null);
             fail();
         } catch (final RuntimeException ex) {
 
@@ -72,12 +72,12 @@ public class GlobalPropertiesTest {
 
     @Test
     public void testGetVersionReturnUnknown() {
-        final HubProperties hubProperties = new HubProperties(null, new Gson());
+        final BlackDuckProperties hubProperties = new BlackDuckProperties(null, new Gson());
         try {
             hubProperties.readAboutInformation(null);
         } catch (final RuntimeException ex) {
             ex.printStackTrace();
         }
-        assertEquals(HubProperties.PRODUCT_VERSION_UNKNOWN, hubProperties.getProductVersion());
+        assertEquals(BlackDuckProperties.PRODUCT_VERSION_UNKNOWN, hubProperties.getProductVersion());
     }
 }

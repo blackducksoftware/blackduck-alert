@@ -10,7 +10,7 @@ public enum TestPropertyKey {
     TEST_HUB_TIMEOUT("blackduck.hub.timeout"),
     TEST_ACTIVE_USER("blackduck.hub.active.user"),
     TEST_INACTIVE_USER("blackduck.hub.inactive.user"),
-    TEST_CRON("alert.accumulator.cron"),
+    TEST_CRON("alert.tasks.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
     TEST_HIPCHAT_ROOM_ID("hipchat.room.id"),

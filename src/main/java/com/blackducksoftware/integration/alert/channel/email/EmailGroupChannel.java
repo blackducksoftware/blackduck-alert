@@ -53,7 +53,7 @@ import com.blackducksoftware.integration.alert.database.channel.email.EmailGloba
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserView;
@@ -69,24 +69,24 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final HubProperties hubProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
+    public EmailGroupChannel(final Gson gson, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
-        super(gson, hubProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
+        super(gson, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
     }
 
     @Override
     public void sendMessage(final ChannelEvent event, final EmailGroupDistributionConfigEntity emailConfigEntity) throws IntegrationException {
         if (emailConfigEntity != null) {
-            final String hubGroupName = emailConfigEntity.getGroupName();
+            final String blackDuckGroupName = emailConfigEntity.getGroupName();
             final String subjectLine = emailConfigEntity.getEmailSubjectLine();
-            final List<String> emailAddresses = getEmailAddressesForGroup(hubGroupName);
-            sendMessage(emailAddresses, event, subjectLine, hubGroupName);
+            final List<String> emailAddresses = getEmailAddressesForGroup(blackDuckGroupName);
+            sendMessage(emailAddresses, event, subjectLine, blackDuckGroupName);
         } else {
             logger.warn("No configuration found with id {}.", event.getCommonDistributionConfigId());
         }
     }
 
-    public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String hubGroupName) throws IntegrationException {
+    public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String blackDuckGroupName) throws IntegrationException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getGlobalProperties(), emailProperties);
@@ -102,11 +102,11 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_EMAIL_CATEGORY.getPropertyKey(), data.iterator().next().getDigestType().getDisplayName());
-            Optional<String> optionalHubUrl = getGlobalProperties().getHubUrl();
-            if (optionalHubUrl.isPresent()) {
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalHubUrl.get()));
+            final Optional<String> optionalBlackDuckUrl = getGlobalProperties().getBlackDuckUrl();
+            if (optionalBlackDuckUrl.isPresent()) {
+                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.get()));
             }
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_HUB_GROUP_NAME.getPropertyKey(), hubGroupName);
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_GROUP_NAME.getPropertyKey(), blackDuckGroupName);
 
             model.put(EmailPropertyKeys.TEMPLATE_KEY_TOPIC.getPropertyKey(), data);
 
@@ -124,22 +124,22 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         }
     }
 
-    private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
-        Optional<RestConnection> optionalRestConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger);
+    private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {
+        final Optional<RestConnection> optionalRestConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
                 if (restConnection != null) {
-                    final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection);
-                    final UserGroupService groupService = hubServicesFactory.createUserGroupService();
-                    final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
+                    final HubServicesFactory blackDuckServicesFactory = getGlobalProperties().createBlackDuckServicesFactory(restConnection);
+                    final UserGroupService groupService = blackDuckServicesFactory.createUserGroupService();
+                    final UserGroupView userGroupView = groupService.getGroupByName(blackDuckGroup);
 
                     if (userGroupView == null) {
-                        throw new IntegrationException("Could not find the Hub group: " + hubGroup);
+                        throw new IntegrationException("Could not find the Black Duck group: " + blackDuckGroup);
                     }
 
                     logger.debug("Current user groups {}", userGroupView.toString());
 
-                    final List<UserView> users = hubServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
+                    final List<UserView> users = blackDuckServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
                     return users.stream().map(user -> user.email).collect(Collectors.toList());
                 }
             } catch (final IOException e) {

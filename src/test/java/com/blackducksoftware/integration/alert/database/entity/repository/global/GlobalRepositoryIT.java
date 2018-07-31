@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -34,19 +34,19 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class GlobalRepositoryIT {
     @Autowired
-    private GlobalHubRepository repository;
+    private GlobalBlackDuckRepository repository;
 
     @Test
     public void testSaveEntity() {
         repository.deleteAll();
         final Integer hubTimeout = 300;
         final String hubApiKey = "hub_api_key";
-        final GlobalHubConfigEntity entity = new GlobalHubConfigEntity(hubTimeout, hubApiKey);
-        final GlobalHubConfigEntity savedEntity = repository.save(entity);
+        final GlobalBlackDuckConfigEntity entity = new GlobalBlackDuckConfigEntity(hubTimeout, hubApiKey);
+        final GlobalBlackDuckConfigEntity savedEntity = repository.save(entity);
         final long count = repository.count();
         assertEquals(1, count);
-        final Optional<GlobalHubConfigEntity> foundEntity = repository.findById(savedEntity.getId());
-        assertEquals(hubTimeout, foundEntity.get().getHubTimeout());
-        assertEquals(hubApiKey, foundEntity.get().getHubApiKey());
+        final Optional<GlobalBlackDuckConfigEntity> foundEntity = repository.findById(savedEntity.getId());
+        assertEquals(hubTimeout, foundEntity.get().getBlackDuckTimeout());
+        assertEquals(hubApiKey, foundEntity.get().getBlackDuckApiKey());
     }
 }

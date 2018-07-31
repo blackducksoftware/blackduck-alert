@@ -28,45 +28,45 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubRepository;
-import com.blackducksoftware.integration.alert.provider.hub.descriptor.HubContentConverter;
-import com.blackducksoftware.integration.alert.provider.hub.mock.MockGlobalHubRestModel;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckContentConverter;
+import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfigActions;
-import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
+import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfigActions;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.gson.Gson;
 
 public class CommonConfigHandlerTest {
-    private final MockGlobalHubRestModel mockGlobalHubRestModel = new MockGlobalHubRestModel();
+    private final MockGlobalBlackDuckRestModel mockGlobalBlackDuckRestModel = new MockGlobalBlackDuckRestModel();
     final Gson gson = new Gson();
     final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
     @Test
     public void getConfigTest() throws AlertException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
-        final List<GlobalHubConfig> restModel = Arrays.asList(mockGlobalHubRestModel.createEmptyGlobalRestModel());
+        final List<GlobalBlackDuckConfig> restModel = Arrays.asList(mockGlobalBlackDuckRestModel.createEmptyGlobalRestModel());
         Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong());
 
-        final List<GlobalHubConfig> list = handler.getConfig(1L);
+        final List<GlobalBlackDuckConfig> list = handler.getConfig(1L);
         assertEquals(restModel, list);
     }
 
     @Test
     public void getConfigHandleExceptionTest() throws AlertException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.getConfig(Mockito.anyLong())).thenThrow(new AlertException());
 
         Exception thrownException = null;
-        List<GlobalHubConfig> list = null;
+        List<GlobalBlackDuckConfig> list = null;
         try {
             list = handler.getConfig(1L);
         } catch (final Exception e) {
@@ -78,14 +78,14 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void postConfigTest() throws AlertException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
-        Mockito.when(configActions.saveConfig(Mockito.any())).thenReturn(new GlobalHubConfigEntity());
+        Mockito.when(configActions.saveConfig(Mockito.any())).thenReturn(new GlobalBlackDuckConfigEntity());
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
@@ -101,58 +101,58 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void postConfigWithConflictTest() {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
     @Test
     public void postWithInvalidConfigTest() throws AlertFieldException {
-        final HubContentConverter commonDistributionContentConverter = new HubContentConverter(contentConverter);
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void postWithInternalServerErrorTest() throws IntegrationException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
         Mockito.doNothing().when(configActions).configurationChangeTriggers(Mockito.any());
         Mockito.when(configActions.saveConfig(Mockito.any())).thenThrow(new AlertException());
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.postConfig(restModel);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     public void putConfigTest() throws IntegrationException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenReturn("");
-        Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any())).thenReturn(new GlobalHubConfigEntity());
+        Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any())).thenReturn(new GlobalBlackDuckConfigEntity());
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
@@ -168,58 +168,58 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void putConfigWithInvalidIdTest() {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void putWithInvalidConfigTest() throws AlertFieldException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final HubContentConverter commonDistributionContentConverter = new HubContentConverter(contentConverter);
+        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void putWithInternalServerErrorTest() throws IntegrationException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.doNothing().when(configActions).configurationChangeTriggers(Mockito.any());
         Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any())).thenThrow(new AlertException());
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 
     @Test
     public void deleteConfigTest() throws AlertException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong());
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.deleteConfig(restModel);
         assertEquals(HttpStatus.ACCEPTED, response.getStatusCode());
     }
@@ -235,24 +235,24 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void deleteConfigWithInvalidIdTest() {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(false);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.deleteConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void validateConfigTest() {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
@@ -268,15 +268,15 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void validateConfigWithInvalidConfigTest() throws AlertFieldException {
-        final GlobalHubConfigActions configActions = Mockito.mock(GlobalHubConfigActions.class);
-        final CommonConfigHandler<GlobalHubConfigEntity, GlobalHubConfig, GlobalHubRepository> handler = new CommonConfigHandler<>(GlobalHubConfigEntity.class,
-                GlobalHubConfig.class, configActions, contentConverter);
+        final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
+        final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
+                GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final HubContentConverter commonDistributionContentConverter = new HubContentConverter(contentConverter);
+        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
-        final GlobalHubConfig restModel = mockGlobalHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }

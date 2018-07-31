@@ -24,12 +24,18 @@
 package com.blackducksoftware.integration.alert.common.descriptor;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
 
 public abstract class ProviderDescriptor extends Descriptor {
+    private final Provider provider;
 
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig) {
+    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig, final Provider provider) {
         super(name, DescriptorType.PROVIDER);
+        this.provider = provider;
         addProviderConfig(providerDescriptorConfig);
     }
 
+    public Provider getProvider() {
+        return provider;
+    }
 }

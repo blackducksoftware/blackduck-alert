@@ -52,21 +52,21 @@ import com.blackducksoftware.integration.alert.channel.email.template.MimeMultip
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final HubProperties hubProperties;
+    private final BlackDuckProperties blackDuckProperties;
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final HubProperties hubProperties, final EmailProperties emailProperties) throws IOException {
-        this.hubProperties = hubProperties;
+    public EmailMessagingService(final BlackDuckProperties blackDuckProperties, final EmailProperties emailProperties) throws IOException {
+        this.blackDuckProperties = blackDuckProperties;
         this.emailProperties = emailProperties;
-        final String templatesDirectory = hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+        final String templatesDirectory = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -88,7 +88,7 @@ public class EmailMessagingService {
 
             final Session session = createMailSession(emailProperties);
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = hubProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
+            final String imagesDirectory = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
             final String imageDirectoryPath;
             if (StringUtils.isNotBlank(imagesDirectory)) {
                 imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
