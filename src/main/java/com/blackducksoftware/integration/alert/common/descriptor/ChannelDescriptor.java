@@ -23,48 +23,27 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
-import java.util.Map;
-
 import javax.jms.MessageListener;
 
-import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 
 public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;
-    private final DatabaseContentConverter contentConverter;
-    private final RepositoryAccessor repositoryAccessor;
+    private final MessageListener channelListener;
 
-    public ChannelDescriptor(final String name, final String label, final String destinationName, final DatabaseContentConverter globalContentConverter, final RepositoryAccessor globalRepositoryAccessor,
-            final DatabaseContentConverter contentConverter,
-            final RepositoryAccessor repositoryAccessor) {
-        super(name, label, DescriptorType.CHANNEL, globalContentConverter, globalRepositoryAccessor);
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorConfig distributionDescriptorConfig) {
+        super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
-        this.contentConverter = contentConverter;
-        this.repositoryAccessor = repositoryAccessor;
+        this.channelListener = channelListener;
+
+        addDistributionConfig(distributionDescriptorConfig);
     }
 
     public String getDestinationName() {
         return destinationName;
     }
 
-    public boolean hasGlobalConfiguration() {
-        return getGlobalRepositoryAccessor() != null && getGlobalContentConverter() != null;
+    public MessageListener getChannelListener() {
+        return channelListener;
     }
-
-    public RepositoryAccessor getDistributionRepositoryAccessor() {
-        return repositoryAccessor;
-    }
-
-    public DatabaseContentConverter getDistributionContentConverter() {
-        return contentConverter;
-    }
-
-    public abstract void validateDistributionConfig(CommonDistributionConfig restModel, Map<String, String> fieldErrors);
-
-    public abstract void testDistributionConfig(CommonDistributionConfig restModel, ChannelEvent event) throws IntegrationException;
-
-    public abstract MessageListener getChannelListener();
 }

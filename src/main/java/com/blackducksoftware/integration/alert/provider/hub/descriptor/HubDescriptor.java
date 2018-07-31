@@ -21,15 +21,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.provider.hub.descriptor;
 
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import org.springframework.stereotype.Component;
 
-public abstract class ProviderDescriptor extends Descriptor {
+import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig) {
-        super(name, DescriptorType.PROVIDER);
-        addProviderConfig(providerDescriptorConfig);
+@Component
+public class HubDescriptor extends ProviderDescriptor {
+    public static final String PROVIDER_NAME = "provider_hub";
+
+    public HubDescriptor(final HubProviderDescriptorConfig providerDescriptorConfig) {
+        super(PROVIDER_NAME, providerDescriptorConfig);
     }
 
 }

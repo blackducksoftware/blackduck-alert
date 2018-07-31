@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
+import com.blackducksoftware.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGlobalConfigEntity;

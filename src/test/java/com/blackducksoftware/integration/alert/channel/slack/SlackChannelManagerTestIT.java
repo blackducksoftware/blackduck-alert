@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
+import com.blackducksoftware.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;

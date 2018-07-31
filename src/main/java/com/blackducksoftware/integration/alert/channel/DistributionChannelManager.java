@@ -29,59 +29,23 @@ import java.util.Collections;
 
 import javax.transaction.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
-import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
 @Component
 public class DistributionChannelManager {
-    private final Logger logger = LoggerFactory.getLogger(DistributionChannelManager.class);
     private final ContentConverter contentConverter;
 
     @Autowired
     public DistributionChannelManager(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
-    }
-
-    public ContentConverter getContentConverter() {
-        return contentConverter;
-    }
-
-    public String testGlobalConfig(final DatabaseEntity globalConfigEntity, final ChannelDescriptor descriptor) throws IntegrationException {
-        descriptor.testGlobalConfig(globalConfigEntity);
-        return "Successfully sent test message";
-    }
-
-    public String sendTestMessage(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws AlertException {
-        final String destinationName = descriptor.getDestinationName();
-        if (descriptor.hasGlobalConfiguration()) {
-            if (descriptor.getGlobalRepositoryAccessor().readEntities().isEmpty()) {
-                logger.error("Sending test message for destination {} failed. Missing global configuration for channel", destinationName);
-                return "ERROR: Missing global configuration!";
-            }
-        }
-        final ChannelEvent event = createChannelEvent(destinationName, getTestMessageModel(), null);
-        try {
-            descriptor.testDistributionConfig(restModel, event);
-        } catch (final IntegrationException ex) {
-            logger.error("Error sending test message for destination {} ", destinationName, ex);
-            return ex.getMessage();
-        }
-        logger.info("Successfully sent test message for destination {} ", destinationName);
-        return "Successfully sent test message";
     }
 
     public DigestModel getTestMessageModel() {
@@ -92,5 +56,9 @@ public class DistributionChannelManager {
 
     public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
         return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
+    }
+
+    public ChannelEvent createChannelEvent(final String destination) {
+        return createChannelEvent(destination, getTestMessageModel(), null);
     }
 }

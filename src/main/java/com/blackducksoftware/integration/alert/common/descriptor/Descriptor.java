@@ -23,56 +23,51 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
-import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
 
 public abstract class Descriptor {
     private final String name;
-    private final String label;
     private final DescriptorType type;
-    private final DatabaseContentConverter contentConverter;
-    private final RepositoryAccessor repositoryAccessor;
+    private final Map<DescriptorConfigType, DescriptorConfig> descriptorConfigs;
 
-    public Descriptor(final String name, final String label, final DescriptorType type, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor) {
+    public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
-        this.label = label;
         this.type = type;
-        this.contentConverter = contentConverter;
-        this.repositoryAccessor = repositoryAccessor;
+        descriptorConfigs = new HashMap<>(3);
     }
 
     public String getName() {
         return name;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
     public DescriptorType getType() {
         return type;
     }
 
-    public RepositoryAccessor getGlobalRepositoryAccessor() {
-        return repositoryAccessor;
+    public void addProviderConfig(final DescriptorConfig descriptorConfig) {
+        descriptorConfigs.put(DescriptorConfigType.PROVIDER_CONFIG, descriptorConfig);
     }
 
-    public DatabaseContentConverter getGlobalContentConverter() {
-        return contentConverter;
+    public void addGlobalConfig(final DescriptorConfig descriptorConfig) {
+        descriptorConfigs.put(DescriptorConfigType.GLOBAL_CONFIG, descriptorConfig);
     }
 
-    public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
+    public void addDistributionConfig(final DescriptorConfig descriptorConfig) {
+        descriptorConfigs.put(DescriptorConfigType.DISTRIBUTION_CONFIG, descriptorConfig);
+    }
 
-    public abstract Config getGlobalRestModelObject();
+    public DescriptorConfig getConfig(final DescriptorConfigType descriptorConfigType) {
+        return descriptorConfigs.get(descriptorConfigType);
+    }
 
-    public abstract void validateGlobalConfig(Config restModel, Map<String, String> fieldErrors);
-
-    public abstract void testGlobalConfig(DatabaseEntity entity) throws IntegrationException;
+    public Set<DescriptorConfig> getAllConfigs() {
+        return descriptorConfigs.values().stream().collect(Collectors.toSet());
+    }
 
 }

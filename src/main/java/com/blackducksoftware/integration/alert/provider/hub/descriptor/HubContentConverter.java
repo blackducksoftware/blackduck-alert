@@ -21,47 +21,52 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.hipchat;
+package com.blackducksoftware.integration.alert.provider.hub.descriptor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
-import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DatabaseContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 
 @Component
-public class HipChatGlobalContentConverter extends DatabaseContentConverter {
+public class HubContentConverter extends DatabaseContentConverter {
 
     @Autowired
-    public HipChatGlobalContentConverter(final ContentConverter contentConverter) {
+    public HubContentConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
     public Config getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, HipChatGlobalConfig.class);
+        return getContentConverter().getJsonContent(json, GlobalHubConfig.class);
     }
 
     @Override
     public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
-        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
-        final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
-        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
-        return hipChatEntity;
+        final GlobalHubConfig hubRestModel = (GlobalHubConfig) restModel;
+        final Integer hubTimeout = getContentConverter().getIntegerValue(hubRestModel.getHubTimeout());
+        final GlobalHubConfigEntity hubEntity = new GlobalHubConfigEntity(hubTimeout, hubRestModel.getHubApiKey());
+        addIdToEntityPK(hubRestModel.getId(), hubEntity);
+        return hubEntity;
     }
 
     @Override
     public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
-        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
-        final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
-        final HipChatGlobalConfig hipChatRestModel = new HipChatGlobalConfig(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
-        return hipChatRestModel;
+        final GlobalHubConfigEntity hubEntity = (GlobalHubConfigEntity) entity;
+        final GlobalHubConfig hubRestModel = new GlobalHubConfig();
+        final String id = getContentConverter().getStringValue(hubEntity.getId());
+        final String hubTimeout = getContentConverter().getStringValue(hubEntity.getHubTimeout());
+        hubRestModel.setId(id);
+        hubRestModel.setHubTimeout(hubTimeout);
+        hubRestModel.setHubApiKeyIsSet(StringUtils.isNotBlank(hubEntity.getHubApiKey()));
+        hubRestModel.setHubApiKey(hubEntity.getHubApiKey());
+        return hubRestModel;
     }
 
 }
