@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import Select from 'react-select-2';
 
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import { frequencyOptions, notificationOptions } from '../../../../util/distribution-data';
+import {frequencyOptions, notificationOptions} from '../../../../util/distribution-data';
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -27,13 +27,13 @@ class BaseJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { distributionConfigId } = this.props;
+        const {distributionConfigId} = this.props;
         this.readDistributionJobConfiguration(distributionConfigId);
     }
 
     async onSubmit(event) {
         event.preventDefault();
-        const { handleSaveBtnClick, handleCancel } = this.props;
+        const {handleSaveBtnClick, handleCancel} = this.props;
         await this.handleSubmit();
         if (handleSaveBtnClick && this.state.success) {
             handleSaveBtnClick(this.state.values);
@@ -47,7 +47,7 @@ class BaseJobConfiguration extends Component {
             id, distributionConfigId, name, distributionType, frequency, notificationTypes, includeAllProjects, filterByProject, configuredProjects
         } = data;
 
-        const { values } = this.state;
+        const {values} = this.state;
         values.id = id;
         values.distributionConfigId = distributionConfigId;
         values.name = name;
@@ -68,7 +68,7 @@ class BaseJobConfiguration extends Component {
 
         values.configuredProjects = configuredProjects;
 
-        this.setState({ values });
+        this.setState({values});
     }
 
     async handleSubmit(event) {
@@ -198,14 +198,14 @@ class BaseJobConfiguration extends Component {
             });
     }
 
-    handleChange({ target }) {
+    handleChange({target}) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
+        const {name} = target;
         this.handleStateValues(name, value);
     }
 
     handleStateValues(name, value) {
-        const { values } = this.state;
+        const {values} = this.state;
         values[name] = value;
         this.setState({
             values
@@ -213,7 +213,7 @@ class BaseJobConfiguration extends Component {
     }
 
     handleErrorValues(name, value) {
-        const { errors } = this.state;
+        const {errors} = this.state;
         errors[name] = value;
         this.setState({
             errors
@@ -282,7 +282,7 @@ class BaseJobConfiguration extends Component {
     render(content) {
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="jobName" label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError} />
+                <TextInput id="jobName" label="Job Name" name="name" value={this.state.values.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}/>
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
@@ -295,9 +295,9 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the frequency"
                             value={this.state.values.frequency}
                         />
-                        { this.state.errors.frequencyError && <label className="fieldError" name="frequencyError">
-                            { this.state.errors.frequencyError }
-                        </label> }
+                        {this.state.errors.frequencyError && <label className="fieldError" name="frequencyError">
+                            {this.state.errors.frequencyError}
+                        </label>}
                     </div>
                 </div>
                 <div className="form-group">
@@ -314,14 +314,15 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the notification types"
                             value={this.state.values.notificationTypes}
                         />
-                        { this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                            { this.state.errors.notificationTypesError }
-                        </label> }
+                        {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                            {this.state.errors.notificationTypesError}
+                        </label>}
                     </div>
                 </div>
                 {content}
-                <ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects} configuredProjects={this.state.values.configuredProjects} projectTableMessage={this.props.projectTableMessage} />
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
+                <ProjectConfiguration includeAllProjects={this.state.values.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
+                                      configuredProjects={this.state.values.configuredProjects}/>
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
             </form>
         );
