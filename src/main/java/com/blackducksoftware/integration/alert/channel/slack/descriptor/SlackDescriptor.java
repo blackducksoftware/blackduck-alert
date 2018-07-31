@@ -21,15 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
+import javax.jms.MessageListener;
+
+import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 
-public abstract class ProviderDescriptor extends Descriptor {
+@Component
+public class SlackDescriptor extends ChannelDescriptor {
 
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig) {
-        super(name, DescriptorType.PROVIDER);
-        addProviderConfig(providerDescriptorConfig);
+    public SlackDescriptor(final MessageListener channelListener, final DescriptorConfig distributionDescriptorConfig) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
     }
 
 }

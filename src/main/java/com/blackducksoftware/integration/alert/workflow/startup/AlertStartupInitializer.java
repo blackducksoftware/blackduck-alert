@@ -38,7 +38,7 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -51,15 +51,14 @@ public class AlertStartupInitializer {
     private final ConversionService conversionService;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
-    private final List<Descriptor> configDescriptors;
-
+    private final DescriptorMap descriptorMap;
     private final List<AlertStartupProperty> alertProperties;
 
     @Autowired
-    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
+    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
             final ConversionService conversionService) {
         this.propertyInitializer = propertyInitializer;
-        this.configDescriptors = configDescriptors;
+        this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.conversionService = conversionService;
         alertProperties = new ArrayList<>(50);

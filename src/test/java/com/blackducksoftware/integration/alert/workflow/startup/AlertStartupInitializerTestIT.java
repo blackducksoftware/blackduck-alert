@@ -15,8 +15,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.Environment;
 
-import com.blackducksoftware.integration.alert.channel.email.EmailDescriptor;
-import com.blackducksoftware.integration.alert.channel.email.EmailGlobalContentConverter;
+import com.blackducksoftware.integration.alert.channel.email.descriptor.EmailDescriptor;
+import com.blackducksoftware.integration.alert.channel.email.descriptor.EmailGlobalContentConverter;
 import com.blackducksoftware.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;

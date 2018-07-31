@@ -26,10 +26,14 @@ package com.blackducksoftware.integration.alert.common.descriptor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 
 @Component
@@ -56,6 +60,37 @@ public class DescriptorMap {
             descriptorMapping.put(descriptorName, descriptor);
         }
         return descriptorMapping;
+    }
+
+    public List<DescriptorConfig> getStartupDescriptorConfigs() {
+//        for (final Descriptor descriptor : descriptorMap.values()) {
+//            final Set<DescriptorConfig> descriptorConfigs = descriptor.getAllConfigs();
+//        }
+        descriptorMap.values()
+            .stream()
+            .filter(descriptor -> descriptor.getAllConfigs()
+                    .stream()
+                    .fl)
+    }
+
+    public List<DescriptorConfig> getDistributionDescriptorConfigs() {
+        return getDescriptorConfigs(DescriptorConfigType.DISTRIBUTION_CONFIG);
+    }
+
+    public List<DescriptorConfig> getGlobalDescriptorConfigs() {
+        return getDescriptorConfigs(DescriptorConfigType.GLOBAL_CONFIG);
+    }
+
+    public List<DescriptorConfig> getProviderDescriptorConfigs() {
+        return getDescriptorConfigs(DescriptorConfigType.PROVIDER_CONFIG);
+    }
+
+    public List<DescriptorConfig> getDescriptorConfigs(final DescriptorConfigType configType) {
+        return descriptorMap.values()
+                .stream()
+                .filter(descriptor -> descriptor.getConfig(configType) != null)
+                .map(descriptor -> descriptor.getConfig(configType))
+                .collect(Collectors.toList());
     }
 
     public Descriptor getDescriptor(final String name) {
