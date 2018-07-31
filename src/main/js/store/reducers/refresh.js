@@ -1,7 +1,7 @@
 import {REFRESH_DISABLE, REFRESH_ENABLE, SERIALIZE} from '../actions/types';
 
 const initialState = {
-    autoRefresh: false
+    autoRefresh: true
 };
 
 const refresh = (state = initialState, action) => {

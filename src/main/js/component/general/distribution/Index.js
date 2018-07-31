@@ -343,7 +343,6 @@ class Index extends Component {
         const deleteOnClick = buttons.deleteBtn.props.onClick;
         const reloadEntries = () => this.reloadJobs();
         let refreshButton = null;
-        console.log("Auto refresh : " + this.props.autoRefresh)
         if (!this.props.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
