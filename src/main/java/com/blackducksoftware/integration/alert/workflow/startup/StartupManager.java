@@ -42,8 +42,8 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
@@ -224,9 +224,9 @@ public class StartupManager {
                 final PurgeProcessor processor = purgeTask.processor();
                 final PurgeWriter writer = purgeTask.writer();
 
-                final List<NotificationModel> purgeData = reader.read();
-                final List<NotificationModel> processedData = processor.process(purgeData);
-                final List<List<NotificationModel>> dataToDelete = new ArrayList<>();
+                final List<NotificationContent> purgeData = reader.read();
+                final List<NotificationContent> processedData = processor.process(purgeData);
+                final List<List<NotificationContent>> dataToDelete = new ArrayList<>();
                 dataToDelete.add(processedData);
                 writer.write(dataToDelete);
                 return Boolean.TRUE;
