@@ -1,13 +1,45 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {updateRefresh} from '../../store/actions/refresh';
+import {connect} from "react-redux";
 
-const AutoRefresh = ({ autoRefresh, handleAutoRefreshChange }) => (
-    <label className="refreshCheckbox"><input name="autoRefresh" type="checkbox" checked={autoRefresh} onChange={handleAutoRefreshChange} /> Enable Auto-Refresh</label>
-);
+class AutoRefresh extends Component {
+    constructor(props) {
+        super(props);
+        this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
+    }
+
+    handleAutoRefreshChange({target}) {
+        const {name, checked} = target;
+        if (checked) {
+            this.props.startAutoReload();
+        } else {
+            this.props.cancelAutoReload();
+        }
+        this.props.updateRefresh(checked);
+    }
+
+
+    render() {
+        return (
+            <label className="refreshCheckbox"><input name="autoRefresh" type="checkbox" checked={this.props.autoRefresh} onChange={this.handleAutoRefreshChange}/> Enable Auto-Refresh</label>
+        );
+    }
+}
 
 AutoRefresh.propTypes = {
     autoRefresh: PropTypes.bool.isRequired,
-    handleAutoRefreshChange: PropTypes.func.isRequired
+    startAutoReload: PropTypes.func.isRequired,
+    cancelAutoReload: PropTypes.func.isRequired,
+    updateRefresh: PropTypes.func.isRequired
 };
 
-export default AutoRefresh;
+const mapStateToProps = state => ({
+    autoRefresh: state.refresh.autoRefresh
+});
+
+const mapDispatchToProps = dispatch => ({
+    updateRefresh: (checked) => dispatch(updateRefresh(checked))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AutoRefresh);

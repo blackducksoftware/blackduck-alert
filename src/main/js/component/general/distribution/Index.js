@@ -80,14 +80,12 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoRefresh: true,
             jobs: [],
             groups: [],
             waitingForGroups: true
         };
         this.startAutoReload = this.startAutoReload.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
-        this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
         this.createCustomModal = this.createCustomModal.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -168,15 +166,6 @@ class Index extends Component {
     saveBtn() {
         this.cancelRowSelect();
         this.reloadJobs();
-    }
-
-    handleAutoRefreshChange({target}) {
-        if (target.checked) {
-            this.startAutoReload();
-        } else {
-            this.cancelAutoReload();
-        }
-        this.setState({[target.name]: target.checked});
     }
 
     reloadJobs() {
@@ -354,7 +343,7 @@ class Index extends Component {
         const deleteOnClick = buttons.deleteBtn.props.onClick;
         const reloadEntries = () => this.reloadJobs();
         let refreshButton = null;
-        if (!this.state.autoRefresh) {
+        if (!this.props.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
                     <span className={fontAwesomeIcon} aria-hidden="true"/>Refresh
@@ -456,10 +445,7 @@ class Index extends Component {
                     <span className="fa fa-truck"/>
                     Distribution
                     <small className="pull-right">
-                        <AutoRefresh
-                            autoRefresh={this.state.autoRefresh}
-                            handleAutoRefreshChange={this.handleAutoRefreshChange}
-                        />
+                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
                     </small>
                 </h1>
                 {content}
@@ -469,6 +455,7 @@ class Index extends Component {
 }
 
 Index.propTypes = {
+    autoRefresh: PropTypes.bool,
     csrfToken: PropTypes.string
 };
 
@@ -477,7 +464,8 @@ Index.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = dispatch => ({
