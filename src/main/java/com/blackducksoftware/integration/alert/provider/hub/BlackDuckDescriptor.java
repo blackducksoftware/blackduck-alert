@@ -36,17 +36,16 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.hub.GlobalHubConfig;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
-import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class HubDescriptor extends ProviderDescriptor {
+public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_hub";
     private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
-    public HubDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
-            final EntityPropertyMapper entityPropertyMapper) {
-        super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor);
+    public BlackDuckDescriptor(final HubContentConverter hubContentConverter, final HubRepositoryAccessor hubRepositoryAccessor,
+            final EntityPropertyMapper entityPropertyMapper, final BlackDuckProvider provider) {
+        super(PROVIDER_NAME, hubContentConverter, hubRepositoryAccessor, provider);
         this.entityPropertyMapper = entityPropertyMapper;
     }
 
@@ -55,7 +54,7 @@ public class HubDescriptor extends ProviderDescriptor {
     }
 
     @Override
-    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testGlobalConfig(final DatabaseEntity entity) {
     }
 
     @Override
@@ -67,5 +66,4 @@ public class HubDescriptor extends ProviderDescriptor {
     public Config getGlobalRestModelObject() {
         return new GlobalHubConfig();
     }
-
 }

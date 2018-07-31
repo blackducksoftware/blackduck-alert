@@ -3,6 +3,7 @@ package com.blackducksoftware.integration.alert.workflow.startup;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.After;
@@ -17,7 +18,6 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
-import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -53,9 +53,6 @@ public class StartupManagerTest {
     public void testInitializeCronJobs() throws IOException {
         final PhoneHomeTask phoneHomeTask = Mockito.mock(PhoneHomeTask.class);
         Mockito.doNothing().when(phoneHomeTask).scheduleExecution(Mockito.anyString());
-        final AccumulatorTask accumulatorTask = Mockito.mock(AccumulatorTask.class);
-        Mockito.doNothing().when(accumulatorTask).scheduleExecution(Mockito.anyString());
-        Mockito.doReturn(Optional.of(1L)).when(accumulatorTask).getMillisecondsToNextRun();
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
@@ -69,7 +66,8 @@ public class StartupManagerTest {
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, accumulatorTask, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null);
+
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList());
 
         startupManager.initializeCronJobs();
 
