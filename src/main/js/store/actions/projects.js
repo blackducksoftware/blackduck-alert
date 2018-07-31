@@ -1,12 +1,8 @@
-import {
-    PROJECTS_FETCHING,
-    PROJECTS_FETCHED,
-    PROJECTS_FETCH_ERROR
-} from './types';
+import {PROJECTS_FETCH_ERROR, PROJECTS_FETCHED, PROJECTS_FETCHING} from './types';
 
-import { verifyLoginByStatus } from './session';
+import {verifyLoginByStatus} from './session';
 
-const PROJECTS_URL = '/alert/api/hub/projects';
+const PROJECTS_URL = '/alert/api/blackduck/projects';
 
 /**
  * Triggers Config Fetching reducer
@@ -52,7 +48,7 @@ export function getProjects() {
                     dispatch(verifyLoginByStatus(response.status));
                 } else {
                     const jsonArray = JSON.parse(json.message) || [];
-                    const projects = jsonArray.map(({ name, description, url }) => ({ name, description, url }));
+                    const projects = jsonArray.map(({name, description, url}) => ({name, description, url}));
                     dispatch(projectsFetched(projects));
                 }
             });

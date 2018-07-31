@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
@@ -44,5 +44,5 @@ public abstract class NotificationTypeProcessor {
         return isApplicable;
     }
 
-    public abstract List<NotificationModel> process(final HubProperties hubProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket);
+    public abstract List<NotificationModel> process(final BlackDuckProperties blackDuckProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket);
 }

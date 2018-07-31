@@ -1,10 +1,8 @@
 @import 'variables.scss';
-
-// Hub alert specific
+// Alert specific
 @import 'app';
 @import 'field';
 @import 'table';
-
 // Third-party
 @import '~bootstrap/dist/css/bootstrap.css';
 @import '~react-bootstrap-table/dist/react-bootstrap-table-all.min.css';

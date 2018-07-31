@@ -1,13 +1,5 @@
-import { push } from 'react-router-redux';
-import {
-    SESSION_INITIALIZING,
-    SESSION_LOGGING_IN,
-    SESSION_LOGGED_IN,
-    SESSION_LOGGED_OUT,
-    SESSION_LOGIN_ERROR,
-    SESSION_CONFIRM_LOGOUT,
-    SESSION_CANCEL_LOGOUT
-} from './types';
+import {push} from 'react-router-redux';
+import {SESSION_CANCEL_LOGOUT, SESSION_CONFIRM_LOGOUT, SESSION_INITIALIZING, SESSION_LOGGED_IN, SESSION_LOGGED_OUT, SESSION_LOGGING_IN, SESSION_LOGIN_ERROR} from './types';
 
 /**
  * Triggers Logging In Reducer
@@ -64,7 +56,7 @@ export function verifyLogin() {
                 dispatch(loggedOut());
             } else {
                 const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({ csrfToken: token }));
+                dispatch(loggedIn({csrfToken: token}));
             }
         }).catch((error) => {
             // TODO: Dispatch Error
@@ -78,8 +70,8 @@ export function login(username, password) {
         dispatch(loggingIn());
 
         const body = {
-            hubUsername: username,
-            hubPassword: password
+            blackDuckUsername: username,
+            blackDuckPassword: password
         };
 
         fetch('/alert/api/login', {
@@ -92,7 +84,7 @@ export function login(username, password) {
         }).then((response) => {
             if (response.ok) {
                 const token = response.headers.get('X-CSRF-TOKEN');
-                dispatch(loggedIn({ csrfToken: token }));
+                dispatch(loggedIn({csrfToken: token}));
             } else {
                 dispatch(loginError('Login Failed.', []));
             }
@@ -119,7 +111,7 @@ export function cancelLogout() {
 export function logout() {
     return (dispatch, getState) => {
         // dispatch(loggingOut());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch('/alert/api/logout', {
             method: 'POST',
             credentials: 'same-origin',
@@ -138,7 +130,7 @@ export function logout() {
 
 export function verifyLoginByStatus(status) {
     return (dispatch) => {
-        switch(status) {
+        switch (status) {
             case 401:
             case 403:
                 return dispatch(loggedOut());

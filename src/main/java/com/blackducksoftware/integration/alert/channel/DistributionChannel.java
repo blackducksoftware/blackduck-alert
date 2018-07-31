@@ -44,7 +44,7 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.MessageReceiver;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
@@ -59,12 +59,13 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ContentConverter contentExtractor;
-    private final HubProperties hubProperties;
+    private final BlackDuckProperties blackDuckProperties;
 
-    public DistributionChannel(final Gson gson, final HubProperties hubProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository, final JpaRepository<C, Long> distributionRepository,
+    public DistributionChannel(final Gson gson, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
+            final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
-        this.hubProperties = hubProperties;
+        this.blackDuckProperties = blackDuckProperties;
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
@@ -80,8 +81,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         return commonDistributionRepository;
     }
 
-    public HubProperties getGlobalProperties() {
-        return hubProperties;
+    public BlackDuckProperties getGlobalProperties() {
+        return blackDuckProperties;
     }
 
     public G getGlobalConfigEntity() {

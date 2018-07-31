@@ -26,26 +26,26 @@ package com.blackducksoftware.integration.alert.web.model;
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveField;
 
 public class LoginConfig extends Config {
-    private String hubUsername;
+    private String blackDuckUsername;
 
     @SensitiveField
-    private String hubPassword;
+    private String blackDuckPassword;
 
     public LoginConfig() {
     }
 
-    public LoginConfig(final String hubUsername, final String hubPassword) {
+    public LoginConfig(final String blackDuckUsername, final String blackDuckPassword) {
         super("1L");
-        this.hubUsername = hubUsername;
-        this.hubPassword = hubPassword;
+        this.blackDuckUsername = blackDuckUsername;
+        this.blackDuckPassword = blackDuckPassword;
     }
 
-    public String getHubUsername() {
-        return hubUsername;
+    public String getBlackDuckUsername() {
+        return blackDuckUsername;
     }
 
-    public String getHubPassword() {
-        return hubPassword;
+    public String getBlackDuckPassword() {
+        return blackDuckPassword;
     }
 
 }
