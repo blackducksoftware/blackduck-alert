@@ -23,18 +23,15 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
-import javax.jms.MessageListener;
-
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
 
-    public SlackDescriptor(final MessageListener channelListener, final DescriptorConfig distributionDescriptorConfig) {
+    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
         super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
     }
 

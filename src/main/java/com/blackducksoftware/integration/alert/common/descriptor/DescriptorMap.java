@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.alert.common.descriptor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,11 @@ public class DescriptorMap {
     private final Map<String, Descriptor> descriptorMap;
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
+    private final List<DescriptorConfig> descriptorConfigs;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors) throws AlertException {
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<DescriptorConfig> descriptorConfigs) throws AlertException {
+        this.descriptorConfigs = descriptorConfigs;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
         channelDescriptorMap = initMap(channelDescriptors);
         providerDescriptorMap = initMap(providerDescriptors);
@@ -63,14 +64,10 @@ public class DescriptorMap {
     }
 
     public List<DescriptorConfig> getStartupDescriptorConfigs() {
-//        for (final Descriptor descriptor : descriptorMap.values()) {
-//            final Set<DescriptorConfig> descriptorConfigs = descriptor.getAllConfigs();
-//        }
-        descriptorMap.values()
-            .stream()
-            .filter(descriptor -> descriptor.getAllConfigs()
-                    .stream()
-                    .fl)
+        return descriptorConfigs
+                .stream()
+                .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
+                .collect(Collectors.toList());
     }
 
     public List<DescriptorConfig> getDistributionDescriptorConfigs() {
@@ -91,6 +88,10 @@ public class DescriptorMap {
                 .filter(descriptor -> descriptor.getConfig(configType) != null)
                 .map(descriptor -> descriptor.getConfig(configType))
                 .collect(Collectors.toList());
+    }
+
+    public List<DescriptorConfig> getAllDescriptorConfigs() {
+        return descriptorConfigs;
     }
 
     public Descriptor getDescriptor(final String name) {

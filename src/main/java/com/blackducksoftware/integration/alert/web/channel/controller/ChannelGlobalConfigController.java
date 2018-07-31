@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
 import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -60,19 +62,22 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.postConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
+        final DatabaseContentConverter databaseContentConverter = descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getDatabaseContentConverter();
+        return controllerHandler.postConfig(databaseContentConverter.getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.putConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
+        final DatabaseContentConverter databaseContentConverter = descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getDatabaseContentConverter();
+        return controllerHandler.putConfig(databaseContentConverter.getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.validateConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
+        final DatabaseContentConverter databaseContentConverter = descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getDatabaseContentConverter();
+        return controllerHandler.validateConfig(databaseContentConverter.getRestModelFromJson(restModel), descriptor);
     }
 
     @Override
@@ -84,7 +89,8 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.testConfig(descriptor.getGlobalContentConverter().getRestModelFromJson(restModel), descriptor);
+        final DatabaseContentConverter databaseContentConverter = descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getDatabaseContentConverter();
+        return controllerHandler.testConfig(databaseContentConverter.getRestModelFromJson(restModel), descriptor);
     }
 
 }

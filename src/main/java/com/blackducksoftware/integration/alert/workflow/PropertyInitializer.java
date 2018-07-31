@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
+import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 
 @Component
@@ -41,17 +41,17 @@ public class PropertyInitializer {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    public void save(final DatabaseEntity entity, final Descriptor descriptor) {
+    public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor) {
         logger.info("Saving global properties {}", entity);
-        final List<? extends DatabaseEntity> savedEntityList = descriptor.getGlobalRepositoryAccessor().readEntities();
+        final List<? extends DatabaseEntity> savedEntityList = repositoryAccessor.readEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
             logger.debug("No global entities found, saving new values.");
-            descriptor.getGlobalRepositoryAccessor().saveEntity(entity);
+            repositoryAccessor.saveEntity(entity);
         } else {
             logger.debug("Found existing properties, inserting new data.");
             savedEntityList.forEach(savedEntity -> {
                 updateEntityWithDefaults(savedEntity, entity);
-                descriptor.getGlobalRepositoryAccessor().saveEntity(savedEntity);
+                repositoryAccessor.saveEntity(savedEntity);
             });
 
         }

@@ -120,11 +120,11 @@ Navigation.propTypes = {
 };
 
 // Redux mappings to be used later....
-mapStateToProps = state => ({
+const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
 
-mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = dispatch => ({
     confirmLogout: () => dispatch(confirmLogout())
 });
 

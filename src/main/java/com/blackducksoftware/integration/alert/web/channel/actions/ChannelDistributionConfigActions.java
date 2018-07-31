@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
@@ -61,20 +61,17 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     private final CommonDistributionRepository commonDistributionRepository;
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
-    private final DistributionChannelManager distributionChannelManager;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository,
-            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions,
-            final DistributionChannelManager distributionChannelManager, final ContentConverter contentConverter,
+            final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final ContentConverter contentConverter,
             final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
         super(contentConverter);
         this.commonDistributionRepository = commonDistributionRepository;
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
-        this.distributionChannelManager = distributionChannelManager;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
@@ -88,7 +85,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public List<CommonDistributionConfig> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
         cleanUpStaleChannelConfigurations(descriptor);
         if (id != null) {
-            final Optional<? extends DatabaseEntity> foundEntity = descriptor.getDistributionRepositoryAccessor().readEntity(id);
+            final Optional<? extends DatabaseEntity> foundEntity = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().readEntity(id);
             if (foundEntity.isPresent()) {
                 return Arrays.asList(constructRestModel(foundEntity.get(), descriptor));
             }
@@ -100,7 +97,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     }
 
     public List<CommonDistributionConfig> constructRestModels(final ChannelDescriptor descriptor) {
-        final List<? extends DatabaseEntity> allEntities = descriptor.getDistributionRepositoryAccessor().readEntities();
+        final List<? extends DatabaseEntity> allEntities = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().readEntities();
         final List<CommonDistributionConfig> constructedRestModels = new ArrayList<>();
         for (final DatabaseEntity entity : allEntities) {
             try {
@@ -120,7 +117,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public CommonDistributionConfig constructRestModel(final DatabaseEntity entity, final ChannelDescriptor descriptor) throws AlertException {
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
         if (commonEntity != null) {
-            final CommonDistributionConfig restModel = (CommonDistributionConfig) descriptor.getDistributionContentConverter().populateRestModelFromDatabaseEntity(entity);
+            final CommonDistributionConfig restModel = (CommonDistributionConfig) descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity);
             restModel.setId(getContentConverter().getStringValue(commonEntity.getId()));
             restModel.setDistributionConfigId(getContentConverter().getStringValue(entity.getId()));
             restModel.setDistributionType(commonEntity.getDistributionType());
@@ -131,7 +128,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
             return restModel;
         }
-        return (CommonDistributionConfig) descriptor.getDistributionContentConverter().populateRestModelFromDatabaseEntity(entity);
+        return (CommonDistributionConfig) descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity);
     }
 
     private void addAuditEntryInfoToRestModels(final List<CommonDistributionConfig> restModels) {
@@ -157,10 +154,10 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public DatabaseEntity saveConfig(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null) {
             try {
-                final DatabaseEntity createdEntity = descriptor.getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
+                final DatabaseEntity createdEntity = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
                 CommonDistributionConfigEntity commonEntity = createCommonEntity(restModel);
                 if (createdEntity != null && commonEntity != null) {
-                    final DatabaseEntity savedEntity = descriptor.getDistributionRepositoryAccessor().saveEntity(createdEntity);
+                    final DatabaseEntity savedEntity = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().saveEntity(createdEntity);
                     commonEntity.setDistributionConfigId(savedEntity.getId());
                     commonEntity = commonDistributionRepository.save(commonEntity);
                     if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
@@ -197,7 +194,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
                 commonDistributionRepository.deleteById(id);
                 configuredProjectsActions.cleanUpConfiguredProjects();
                 notificationTypesActions.removeOldNotificationTypes(id);
-                descriptor.getDistributionRepositoryAccessor().deleteEntity(configId);
+                descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().deleteEntity(configId);
             }
         }
     }
@@ -242,7 +239,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
         if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
             fieldErrors.put("notificationTypes", "Must have at least one notification type.");
         }
-        descriptor.validateDistributionConfig(restModel, fieldErrors);
+        descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).validateConfig(restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -251,18 +248,20 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
 
     @Override
     public String testConfig(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        return distributionChannelManager.sendTestMessage(restModel, descriptor);
+        final DatabaseEntity entity = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
+        descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).testConfig(entity);
+        return "Succesfully sent test message.";
     }
 
     // TODO remove this in the future as we will want to clean up stale channels for a version before removing this method
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
         final String distributionName = descriptor.getName();
         if (distributionName != null) {
-            final List<? extends DatabaseEntity> channelDistributionConfigEntities = descriptor.getDistributionRepositoryAccessor().readEntities();
+            final List<? extends DatabaseEntity> channelDistributionConfigEntities = descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().readEntities();
             channelDistributionConfigEntities.forEach(entity -> {
                 final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
                 if (commonEntity == null) {
-                    descriptor.getDistributionRepositoryAccessor().deleteEntity(entity.getId());
+                    descriptor.getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG).getRepositoryAccessor().deleteEntity(entity.getId());
                 }
             });
         }

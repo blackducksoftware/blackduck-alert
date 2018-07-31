@@ -39,6 +39,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.descriptor.config.StartupComponent;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -65,15 +66,16 @@ public class AlertStartupInitializer {
     }
 
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
-        this.configDescriptors.forEach(descriptor -> {
-            final Set<AlertStartupProperty> startupProperties = descriptor.getGlobalEntityPropertyMapping();
+        descriptorMap.getStartupDescriptorConfigs().forEach(descriptor -> {
+            final StartupComponent startupComponent = descriptor.getStartupComponent();
+            final Set<AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
             if (startupProperties != null && !startupProperties.isEmpty()) {
                 try {
-                    final Config restModel = descriptor.getGlobalRestModelObject();
+                    final Config restModel = startupComponent.getEmptyConfigObject();
                     final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
-                        final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
-                        propertyInitializer.save(entity, descriptor);
+                        final DatabaseEntity entity = descriptor.getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
+                        propertyInitializer.save(entity, descriptor.getRepositoryAccessor());
                     }
                 } catch (IllegalArgumentException | SecurityException ex) {
                     logger.error("Error initializing property manager", ex);
