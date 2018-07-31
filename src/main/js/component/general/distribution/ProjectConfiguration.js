@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import {connect} from 'react-redux';
+import {BootstrapTable, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 
 import CheckboxInput from '../../../field/input/CheckboxInput';
-import { getProjects } from '../../../store/actions/projects';
+import {getProjects} from '../../../store/actions/projects';
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
@@ -12,7 +12,7 @@ function assignClassName(row, rowIdx) {
 
 function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
-        <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{ cell }</span> :
+        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true"/>{cell}</span> :
         cell;
     return <div title={cell}> {cellContent} </div>;
 }
@@ -43,7 +43,7 @@ class ProjectConfiguration extends Component {
     }
 
     onRowSelectedAll(isSelected, rows) {
-        if(rows) {
+        if (rows) {
             const selected = Object.assign([], this.props.configuredProjects);
             rows.forEach(row => {
                 this.createSelectedArray(selected, row, isSelected);
@@ -61,8 +61,8 @@ class ProjectConfiguration extends Component {
     }
 
     createProjectList() {
-        const { projects, configuredProjects } = this.props;
-        const projectData = projects.map(({ name, description }) => ({ name, description: description || '', missing: false }));
+        const {projects, configuredProjects} = this.props;
+        const projectData = projects.map(({name, description}) => ({name, description: description || '', missing: false}));
 
         configuredProjects.forEach((project) => {
             const projectFound = projectData.find(p => project === p.name);
@@ -99,15 +99,16 @@ class ProjectConfiguration extends Component {
         let projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = (<div>
-                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable" bodyContainerClass="projectTableScrollableBody">
+                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable"
+                                bodyContainerClass="projectTableScrollableBody">
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
-                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" /></div>}
+                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"/></div>}
 
-                {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p> }
+                {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
             </div>);
         }
 

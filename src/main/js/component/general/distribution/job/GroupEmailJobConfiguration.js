@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import Select from 'react-select-2';
 import TextInput from '../../../../field/input/TextInput';
 import BaseJobConfiguration from './BaseJobConfiguration';
@@ -54,7 +53,7 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     renderOption(option) {
         if (option.missing) {
             return (
-                <span className="missingHubData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{option.label} (Group not found on Hub)</span>
+                <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true"/>{option.label} (Group not found on Black Duck server)</span>
             );
         }
 
@@ -64,12 +63,13 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
     }
 
     render() {
-        const { groupOptions } = this.state;
-        const { groupName } = this.state.values;
+        const {groupOptions} = this.state;
+        const {groupName} = this.state.values;
         const options = groupOptions || [];
         const content =
             (<div>
-                <TextInput id="jobEmailSubject" label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError" errorValue={this.props.emailSubjectLineError} />
+                <TextInput id="jobEmailSubject" label="Subject Line" name="emailSubjectLine" value={this.state.values.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError"
+                           errorValue={this.props.emailSubjectLineError}/>
 
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Group</label>
@@ -81,20 +81,20 @@ class GroupEmailJobConfiguration extends BaseJobConfiguration {
                             clearable
                             options={options}
                             optionRenderer={this.renderOption}
-                            placeholder="Choose the Hub user group"
+                            placeholder="Choose the Black Duck user group"
                             value={groupName}
                             valueRenderer={this.renderOption}
                             searchable
                         />
 
-                        { this.state.errors.groupNameError && <label className="fieldError" name="groupError">
-                            { this.state.errors.groupNameError }
-                        </label> }
+                        {this.state.errors.groupNameError && <label className="fieldError" name="groupError">
+                            {this.state.errors.groupNameError}
+                        </label>}
                     </div>
                 </div>
-                { this.props.waitingForGroups && <div className="inline">
-                    <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden />
-                </div> }
+                {this.props.waitingForGroups && <div className="inline">
+                    <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden/>
+                </div>}
             </div>);
         return super.render(content);
     }

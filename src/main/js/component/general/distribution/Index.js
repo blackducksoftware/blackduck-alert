@@ -262,7 +262,7 @@ class Index extends Component {
     }
 
     retrieveGroups() {
-        fetch('/alert/api/hub/groups', {
+        fetch('/alert/api/blackduck/groups', {
             credentials: 'same-origin'
         }).then((response) => {
             this.setState({waitingForGroups: false});

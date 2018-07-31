@@ -1,6 +1,6 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <changeSet author="psantos" id="-1">
+    <changeSet author="psantos" id="1533054185-1">
         <createTable tableName="RAW_NOTIFICATION_CONTENT" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="RAW_NOTIFICATION_CONTENT_KEY"/>
@@ -10,5 +10,10 @@
             <column name="NOTIFICATION_TYPE" type="VARCHAR(255)"/>
             <column name="CONTENT" type="CLOB"/>
         </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-2">
+        <renameTable newTableName="GLOBAL_BLACKDUCK_CONFIG" oldTableName="GLOBAL_HUB_CONFIG" schemaName="ALERT"/>
+        <renameColumn newColumnName="BLACKDUCK_TIMEOUT" oldColumnName="HUB_TIMEOUT" tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnDataType="INT(10)"/>
+        <renameColumn newColumnName="BLACKDUCK_API_KEY" oldColumnName="HUB_API_KEY" tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnDataType="VARCHAR(255)"/>
     </changeSet>
 </databaseChangeLog>
