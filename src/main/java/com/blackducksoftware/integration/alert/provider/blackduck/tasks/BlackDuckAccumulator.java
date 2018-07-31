@@ -46,8 +46,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.common.model.NotificationModels;
+import com.blackducksoftware.integration.alert.common.model.NotificationContentList;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
@@ -219,9 +219,9 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected void write(final AlertEvent event) {
-        final NotificationModels notificationModels = contentConverter.getJsonContent(event.getContent(), NotificationModels.class);
+        final NotificationContentList notificationContentList = contentConverter.getJsonContent(event.getContent(), NotificationContentList.class);
         logger.info(createLoggerMessage("Writing Notifications..."));
-        final List<NotificationModel> notificationList = notificationModels.getNotificationModelList();
+        final List<NotificationContent> notificationList = notificationContentList.getNotificationContentList();
         notificationList.forEach(notificationManager::saveNotification);
     }
 

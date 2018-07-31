@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
@@ -77,20 +77,20 @@ public abstract class ProcessingTask extends ScheduledTask {
         final String taskName = getTaskName();
         logger.info("{} Task Started...", taskName);
         final DateRange dateRange = getDateRange();
-        final List<NotificationModel> modelList = read(dateRange);
+        final List<NotificationContent> modelList = read(dateRange);
         final List<ChannelEvent> eventList = process(modelList);
         channelTemplateManager.sendEvents(eventList);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         logger.info("{} Task Finished", taskName);
     }
 
-    public List<NotificationModel> read(final DateRange dateRange) {
+    public List<NotificationContent> read(final DateRange dateRange) {
         try {
             final String taskName = getTaskName();
             final Date startDate = dateRange.getStart();
             final Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
-            final List<NotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+            final List<NotificationContent> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
                 return Collections.emptyList();
@@ -104,9 +104,9 @@ public abstract class ProcessingTask extends ScheduledTask {
         return Collections.emptyList();
     }
 
-    public List<ChannelEvent> process(final List<NotificationModel> modelList) {
-        logger.info("Notifications to Process: {}", modelList.size());
-        final List<ChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), modelList);
+    public List<ChannelEvent> process(final List<NotificationContent> notificationList) {
+        logger.info("Notifications to Process: {}", notificationList.size());
+        final List<ChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationList);
         if (events.isEmpty()) {
             return Collections.emptyList();
         } else {

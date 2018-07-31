@@ -47,12 +47,12 @@ import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
@@ -175,7 +175,7 @@ public class AuditEntryActions {
         final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
+        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
@@ -201,7 +201,7 @@ public class AuditEntryActions {
 
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
+        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
 
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
 
