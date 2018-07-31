@@ -75,7 +75,32 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
-    String loggingLevel;
+    private String loggingLevel;
+
+    // SSL properties
+    @Value("${server.port:")
+    private String serverPort;
+
+    @Value("${server.ssl.key-store:}")
+    private String keyStoreFile;
+
+    @Value("${server.ssl.key-store-password:}")
+    private String keyStorePass;
+
+    @Value("${server.ssl.keyStoreType:}")
+    private String keyStoreType;
+
+    @Value("${server.ssl.keyAlias:}")
+    private String keyAlias;
+
+    @Value("${server.ssl.trust-store:}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:}")
+    private String trustStorePass;
+
+    @Value("${server.ssl.trustStoreType:}")
+    private String trustStoreType;
 
     @Autowired
     public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final BlackDuckProperties blackDuckProperties,
@@ -105,7 +130,7 @@ public class StartupManager {
         final boolean authenticatedProxy = StringUtils.isNotBlank(blackDuckProperties.getBlackDuckProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level:           {}", loggingLevel);
+        logger.info("Logging level:           {}", getLoggingLevel());
         logger.info("Black Duck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("Black Duck Proxy Host:          {}", blackDuckProperties.getBlackDuckProxyHost().orElse(""));
         logger.info("Black Duck Proxy Port:          {}", blackDuckProperties.getBlackDuckProxyPort().orElse(""));
@@ -246,4 +271,39 @@ public class StartupManager {
         providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
 
+    public String getLoggingLevel() {
+        return loggingLevel;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public String getKeyStoreFile() {
+        return keyStoreFile;
+    }
+
+    public String getKeyStorePass() {
+        return keyStorePass;
+    }
+
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+
+    public String getTrustStoreFile() {
+        return trustStoreFile;
+    }
+
+    public String getTrustStorePass() {
+        return trustStorePass;
+    }
+
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
 }
