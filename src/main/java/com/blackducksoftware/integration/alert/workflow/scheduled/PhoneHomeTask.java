@@ -41,20 +41,22 @@ import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
+    public static final String TASK_NAME = "phonehome";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
     private final HubProperties hubProperties;
 
     @Autowired
     public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final HubProperties hubProperties) {
-        super(taskScheduler);
+        super(taskScheduler, TASK_NAME);
         this.phoneHome = phoneHome;
         this.hubProperties = hubProperties;
     }
 
     @Override
     public void run() {
-        Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<RestConnection> optionalRestConnection = hubProperties.createRestConnectionAndLogErrors(logger);
+
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = hubProperties.createHubServicesFactory(restConnection);

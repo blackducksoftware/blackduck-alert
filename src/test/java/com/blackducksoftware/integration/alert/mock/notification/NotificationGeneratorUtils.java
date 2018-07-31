@@ -2,6 +2,7 @@ package com.blackducksoftware.integration.alert.mock.notification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -103,6 +104,10 @@ public class NotificationGeneratorUtils {
         final Date createdAt = detailList.get(detailList.size() - 1).getCreatedAt();
         final NotificationDetailResults results = new NotificationDetailResults(detailList, Optional.of(createdAt), Optional.of(RestConnection.formatDate(createdAt)), new HubBucket());
         return results;
+    }
+
+    public static NotificationDetailResults createEmptyNotificationResults() {
+        return new NotificationDetailResults(Collections.emptyList(), Optional.empty(), Optional.empty(), new HubBucket());
     }
 
     @SuppressWarnings("unchecked")

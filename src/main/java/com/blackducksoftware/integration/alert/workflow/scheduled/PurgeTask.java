@@ -46,17 +46,18 @@ public class PurgeTask extends JobScheduledTask<PurgeReader, PurgeProcessor, Pur
 
     public static final String PURGE_STEP_NAME = "PurgeStep";
     public static final String PURGE_JOB_NAME = "PurgeJob";
+    public static final String TASK_NAME = "purge-db";
 
     @Autowired
     public PurgeTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
             final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler);
+        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler, TASK_NAME);
     }
 
     @Override
     public Step createStep(final PurgeReader reader, final PurgeProcessor processor, final PurgeWriter writer) {
         return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationModel>, List<NotificationModel>>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                .build();
+                       .build();
     }
 
     @Override

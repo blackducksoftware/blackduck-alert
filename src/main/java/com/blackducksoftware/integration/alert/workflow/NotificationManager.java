@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -47,6 +49,7 @@ import com.blackducksoftware.integration.alert.database.entity.repository.Notifi
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 
 @Component
+@Transactional
 public class NotificationManager {
     private final NotificationRepository notificationRepository;
     private final VulnerabilityRepository vulnerabilityRepository;
@@ -68,8 +71,8 @@ public class NotificationManager {
         if (notification.getVulnerabilityList() != null) {
             final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
             final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
-                    .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
-                    .collect(Collectors.toList());
+                                                                            .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
+                                                                            .collect(Collectors.toList());
             vulnerabilities = vulnerabilityRepository.saveAll(vulnerabilitiesToSave);
         }
 

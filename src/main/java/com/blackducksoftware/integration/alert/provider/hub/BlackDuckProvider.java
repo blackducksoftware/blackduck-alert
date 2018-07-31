@@ -21,30 +21,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.workflow.scheduled.frequency;
+package com.blackducksoftware.integration.alert.provider.hub;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
-import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.workflow.NotificationManager;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
+import com.blackducksoftware.integration.alert.provider.hub.tasks.BlackDuckAccumulator;
 
 @Component
-public class OnDemandTask extends ProcessingTask {
-    public static final long DEFAULT_INTERVAL_MILLISECONDS = 10000;
-    public static final String TASK_NAME = "ondemand-frequency";
+public class BlackDuckProvider extends Provider {
+    private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
+
+    private final BlackDuckAccumulator accumulatorTask;
 
     @Autowired
-    public OnDemandTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager,
-            final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
-        super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask) {
+        this.accumulatorTask = accumulatorTask;
     }
 
     @Override
-    public DigestType getDigestType() {
-        return DigestType.REAL_TIME;
+    public void initialize() {
+        logger.info("Initializing provider...");
+        accumulatorTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+    }
+
+    @Override
+    public void destroy() {
+        logger.info("Destroying provider...");
+        accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
     }
 }
