@@ -40,10 +40,10 @@ import com.blackducksoftware.integration.rest.request.Response;
 
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);
-    private final HubServicesFactory hubServicesFactory;
+    private final HubServicesFactory blackDuckServicesFactory;
 
     public ChannelRequestHelper(final RestConnection restConnection) {
-        hubServicesFactory = new HubServicesFactory(restConnection);
+        blackDuckServicesFactory = new HubServicesFactory(restConnection);
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
@@ -73,7 +73,7 @@ public class ChannelRequestHelper {
     public Response sendGenericRequest(final Request request) throws IntegrationException {
         Response response = null;
         try {
-            final HubService service = hubServicesFactory.createHubService();
+            final HubService service = blackDuckServicesFactory.createHubService();
             response = service.executeRequest(request);
             logger.trace("Response: " + response.toString());
             return response;

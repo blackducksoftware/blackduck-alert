@@ -22,17 +22,23 @@ public class ScheduledTaskTest {
     private ScheduledTask task;
 
     private final String validCronExpression = "0 0/1 * 1/1 * *";
+    private final String taskName = "scheduledTaskTest";
 
     @Before
     public void initializeTest() {
         taskScheduler = Mockito.mock(TaskScheduler.class);
         future = Mockito.mock(ScheduledFuture.class);
-        task = new ScheduledTask(taskScheduler) {
+        task = new ScheduledTask(taskScheduler, taskName) {
             @Override
             public void run() {
 
             }
         };
+    }
+
+    @Test
+    public void testGetTaskName() {
+        assertEquals(taskName, task.getTaskName());
     }
 
     @Test
@@ -131,6 +137,15 @@ public class ScheduledTaskTest {
         Mockito.doThrow(new IllegalArgumentException("Argument exception")).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
         task.scheduleExecution(validCronExpression);
         assertFalse(task.getMillisecondsToNextRun().isPresent());
+    }
+
+    @Test
+    public void testScheduleCronExecutionUnschedule() {
+        Mockito.doReturn(future).when(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
+        task.scheduleExecution(validCronExpression);
+        Mockito.verify(taskScheduler).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
+        task.scheduleExecution(ScheduledTask.STOP_SCHEDULE_EXPRESSION);
+        Mockito.verify(taskScheduler, Mockito.times(1)).schedule(Mockito.any(), Mockito.any(CronTrigger.class));
     }
 
     @Test

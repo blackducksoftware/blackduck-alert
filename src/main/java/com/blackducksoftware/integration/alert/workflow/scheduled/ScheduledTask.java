@@ -40,13 +40,21 @@ import org.springframework.scheduling.support.CronTrigger;
 
 public abstract class ScheduledTask implements Runnable {
     public static final String FORMAT_PATTERN = "MM/dd/yyy hh:mm a";
+    public static final String STOP_SCHEDULE_EXPRESSION = "";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final TaskScheduler taskScheduler;
     private ScheduledFuture<?> future;
 
-    public ScheduledTask(final TaskScheduler taskScheduler) {
+    private final String taskName;
+
+    public ScheduledTask(final TaskScheduler taskScheduler, final String taskName) {
         this.taskScheduler = taskScheduler;
+        this.taskName = taskName;
+    }
+
+    public String getTaskName() {
+        return taskName;
     }
 
     public void scheduleExecution(final String cron) {

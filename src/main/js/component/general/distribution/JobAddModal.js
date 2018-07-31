@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'react-bootstrap';
+import {Modal} from 'react-bootstrap';
 import Select from 'react-select-2';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 
-import { jobTypes } from '../../../util/distribution-data';
+import {jobTypes} from '../../../util/distribution-data';
 
 function renderOption(option) {
     let fontAwesomeIcon;
@@ -20,7 +20,7 @@ function renderOption(option) {
     }
     return (
         <div>
-            <span key="icon" className={fontAwesomeIcon} aria-hidden="true" />
+            <span key="icon" className={fontAwesomeIcon} aria-hidden="true"/>
             <span key="name">{option.label}</span>
         </div>
     );
@@ -52,8 +52,6 @@ class JobAddModal extends Component {
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                     groupError={this.props.groupError}
-                    projectTableMessage={this.props.projectTableMessage}
-                    updateJobsTable={this.props.updateJobsTable}
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
@@ -62,8 +60,6 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
-                    projectTableMessage={this.props.projectTableMessage}
-                    updateJobsTable={this.props.updateJobsTable}
                 />);
             case 'channel_slack':
                 return (<SlackJobConfiguration
@@ -72,8 +68,6 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
-                    projectTableMessage={this.props.projectTableMessage}
-                    updateJobsTable={this.props.updateJobsTable}
                 />);
             default:
                 return null;
@@ -81,18 +75,18 @@ class JobAddModal extends Component {
     }
 
     handleSaveBtnClick(values) {
-        const { onModalClose } = this.props;
+        const {onModalClose} = this.props;
         // You should call onSave function and give the new row
         //  onSave(values);
         onModalClose();
     }
 
 
-    handleChange({ target }) {
-        const { name, type, checked } = target;
+    handleChange({target}) {
+        const {name, type, checked} = target;
         const value = type === 'checkbox' ? checked : target.value;
 
-        const { values } = this.state;
+        const {values} = this.state;
         values[name] = value;
         this.setState({
             values
@@ -100,7 +94,7 @@ class JobAddModal extends Component {
     }
 
     handleTypeChanged(option) {
-        const { values } = this.state;
+        const {values} = this.state;
         if (option) {
             values.typeValue = option.value;
             this.setState({
@@ -111,7 +105,7 @@ class JobAddModal extends Component {
 
 
     handleClose() {
-        this.setState({ show: false });
+        this.setState({show: false});
         this.props.onModalClose();
     }
 
@@ -142,7 +136,7 @@ class JobAddModal extends Component {
                             </div>
                         </div>
                     </form>
-                    { this.getCurrentJobConfig() }
+                    {this.getCurrentJobConfig()}
                 </Modal.Body>
 
             </Modal>

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
@@ -41,16 +40,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalHubConfigEntity;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
-import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -66,56 +66,57 @@ public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
-    private final HubProperties hubProperties;
-    private final AccumulatorTask accumulatorTask;
+    private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
     private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
+    private final List<ProviderDescriptor> providerDescriptorList;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final HubProperties hubProperties, final AccumulatorTask accumulatorTask,
-            final DailyTask dailyTask, final OnDemandTask onDemandTask,
-            final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final BlackDuckProperties blackDuckProperties,
+            final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+            final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
-        this.hubProperties = hubProperties;
-        this.accumulatorTask = accumulatorTask;
+        this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
         this.purgeTask = purgeTask;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
+        this.providerDescriptorList = providerDescriptorList;
     }
 
     public void startup() {
-        logger.info("Hub Alert Starting...");
+        logger.info("Alert Starting...");
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
         validateProviders();
         initializeCronJobs();
+        initializeProviders();
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(hubProperties.getHubProxyPassword().orElse(null));
+        final boolean authenticatedProxy = StringUtils.isNotBlank(blackDuckProperties.getBlackDuckProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", loggingLevel);
-        logger.info("Hub URL:                 {}", hubProperties.getHubUrl().orElse(""));
-        logger.info("Hub Proxy Host:          {}", hubProperties.getHubProxyHost().orElse(""));
-        logger.info("Hub Proxy Port:          {}", hubProperties.getHubProxyPort().orElse(""));
-        logger.info("Hub Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Hub Proxy User:          {}", hubProperties.getHubProxyUsername().orElse(""));
+        logger.info("Black Duck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
+        logger.info("Black Duck Proxy Host:          {}", blackDuckProperties.getBlackDuckProxyHost().orElse(""));
+        logger.info("Black Duck Proxy Port:          {}", blackDuckProperties.getBlackDuckProxyPort().orElse(""));
+        logger.info("Black Duck Proxy Authenticated: {}", authenticatedProxy);
+        logger.info("Black Duck Proxy User:          {}", blackDuckProperties.getBlackDuckProxyUsername().orElse(""));
 
-        final Optional<GlobalHubConfigEntity> optionalGlobalHubConfigEntity = hubProperties.getHubConfig();
-        if (optionalGlobalHubConfigEntity.isPresent()) {
-            final GlobalHubConfigEntity globalHubConfigEntity = optionalGlobalHubConfigEntity.get();
-            logger.info("Hub API Token:           **********");
-            logger.info("Hub Timeout:             {}", globalHubConfigEntity.getHubTimeout());
+        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
+        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
+            final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            logger.info("Black Duck API Token:           **********");
+            logger.info("Black Duck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
         }
         logger.info("----------------------------------------");
     }
@@ -140,41 +141,41 @@ public class StartupManager {
     public void validateProviders() {
         logger.info("Validating configured providers: ");
         logger.info("----------------------------------------");
-        validateHubProvider();
+        validateBlackDuckProvider();
         logger.info("----------------------------------------");
     }
 
-    public void validateHubProvider() {
-        logger.info("Validating Hub Provider...");
+    public void validateBlackDuckProvider() {
+        logger.info("Validating Black Duck Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = hubProperties.createProxyInfoBuilder();
+            final ProxyInfoBuilder proxyBuilder = blackDuckProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
-            final Optional<String> hubUrlOptional = hubProperties.getHubUrl();
-            if (!hubUrlOptional.isPresent()) {
-                logger.error("  -> Hub Provider Invalid; cause: Hub URL missing...");
+            final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
+            if (!blackDuckUrlOptional.isPresent()) {
+                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
             } else {
-                if (hubUrlOptional.isPresent()) {
-                    final String hubUrlString = hubUrlOptional.get();
-                    final Boolean trustCertificate = BooleanUtils.toBoolean(hubProperties.getHubTrustCertificate().orElse(false));
+                if (blackDuckUrlOptional.isPresent()) {
+                    final String blackDuckUrlString = blackDuckUrlOptional.get();
+                    final Boolean trustCertificate = BooleanUtils.toBoolean(blackDuckProperties.getBlackDuckTrustCertificate().orElse(false));
 
-                    final URL hubUrl = new URL(hubUrlString);
-                    if ("localhost".equals(hubUrl.getHost())) {
-                        logger.warn("  -> Hub Provider Using localhost...");
-                        final String hubWebServerEnvValue = hubProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
-                        if (StringUtils.isBlank(hubWebServerEnvValue)) {
-                            logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
+                    final URL blackDuckUrl = new URL(blackDuckUrlString);
+                    if ("localhost".equals(blackDuckUrl.getHost())) {
+                        logger.warn("  -> Black Duck Provider Using localhost...");
+                        final String blackDuckWebServerEnvValue = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
+                        if (StringUtils.isBlank(blackDuckWebServerEnvValue)) {
+                            logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
                         } else {
-                            logger.warn("  -> Hub Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
+                            logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
                         }
                     }
-                    verifier.verifyIsHubServer(new URL(hubUrlString), proxyInfo, trustCertificate, hubProperties.getHubTimeout());
-                    logger.info("  -> Hub Provider Valid!");
+                    verifier.verifyIsHubServer(new URL(blackDuckUrlString), proxyInfo, trustCertificate, blackDuckProperties.getBlackDuckTimeout());
+                    logger.info("  -> Black Duck Provider Valid!");
                 }
             }
         } catch (final MalformedURLException | IntegrationException ex) {
-            logger.error("  -> Hub Provider Invalid; cause: {}", ex.getMessage());
-            logger.debug("  -> Hub Provider Stack Trace: ", ex);
+            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
         }
     }
 
@@ -198,19 +199,15 @@ public class StartupManager {
     }
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        accumulatorTask.scheduleExecution("0 0/1 * 1/1 * *");
-        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorTask.getMillisecondsToNextRun().orElse(null));
-        logger.info("Accumulator next run: {} seconds", seconds);
-
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
         dailyTask.scheduleExecution(dailyDigestCron);
-        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_SECONDS);
+        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
         purgeTask.scheduleExecution(purgeDataCron);
 
-        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime());
-        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime());
-        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime());
+        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
+        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
+        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime().orElse(""));
 
         phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
         logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
@@ -242,6 +239,11 @@ public class StartupManager {
         } finally {
             logger.info("Finished startup purge of old data");
         }
+    }
+
+    public void initializeProviders() {
+        logger.info("Initializing providers...");
+        providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
 
 }

@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.alert.database.entity.channel.Distribut
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
-import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
@@ -83,22 +82,22 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
         assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
     }
 
-    @Test
-    public void testSendTestMessage() throws IntegrationException {
-        saveGlobalConfiguration();
-        final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
-        final String expected = "Successfully sent test message";
-
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void testSendTestMessageMissingGlobalConfiguration() throws IntegrationException {
-        if (getDescriptor().hasGlobalConfiguration()) {
-            final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
-            final String expected = "ERROR: Missing global configuration!";
-
-            assertEquals(expected, actual);
-        }
-    }
+    // @Test
+    // public void testSendTestMessage() throws IntegrationException {
+    // saveGlobalConfiguration();
+    // final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
+    // final String expected = "Successfully sent test message";
+    //
+    // assertEquals(expected, actual);
+    // }
+    //
+    // @Test
+    // public void testSendTestMessageMissingGlobalConfiguration() throws IntegrationException {
+    // if (getDescriptor().hasGlobalConfiguration()) {
+    // final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
+    // final String expected = "ERROR: Missing global configuration!";
+    //
+    // assertEquals(expected, actual);
+    // }
+    // }
 }

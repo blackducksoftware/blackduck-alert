@@ -1,14 +1,4 @@
-import {
-    CONFIG_FETCHING,
-    CONFIG_FETCHED,
-    CONFIG_UPDATE_ERROR,
-    CONFIG_UPDATING,
-    CONFIG_UPDATED,
-    CONFIG_TESTING,
-    CONFIG_TEST_SUCCESS,
-    CONFIG_TEST_FAILED,
-    SERIALIZE
-} from '../actions/types';
+import {CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING, SERIALIZE} from '../actions/types';
 
 const initialState = {
     fetching: false,
@@ -19,15 +9,15 @@ const initialState = {
         message: '',
         fieldErrors: []
     },
-    hubApiKey: '',
-    hubApiKeyIsSet: false,
-    hubProxyHost: '',
-    hubProxyPassword: '',
-    hubProxyPasswordIsSet: false,
-    hubProxyPort: '',
-    hubProxyUsername: '',
-    hubTimeout: 300,
-    hubUrl: '',
+    blackDuckApiKey: '',
+    blackDuckApiKeyIsSet: false,
+    blackDuckProxyHost: '',
+    blackDuckProxyPassword: '',
+    blackDuckProxyPasswordIsSet: false,
+    blackDuckProxyPort: '',
+    blackDuckProxyUsername: '',
+    blackDuckTimeout: 300,
+    blackDuckUrl: '',
     id: null
 };
 
@@ -47,15 +37,15 @@ const config = (state = initialState, action) => {
                 updateStatus: 'FETCHED',
                 testing: false,
                 testStatus: '',
-                hubApiKey: action.hubApiKey || '',
-                hubApiKeyIsSet: action.hubApiKeyIsSet,
-                hubProxyHost: action.hubProxyHost,
-                hubProxyPassword: action.hubProxyPassword,
-                hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
-                hubProxyPort: action.hubProxyPort,
-                hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 300,
-                hubUrl: action.hubUrl,
+                blackDuckApiKey: action.blackDuckApiKey || '',
+                blackDuckApiKeyIsSet: action.blackDuckApiKeyIsSet,
+                blackDuckProxyHost: action.blackDuckProxyHost,
+                blackDuckProxyPassword: action.blackDuckProxyPassword,
+                blackDuckProxyPasswordIsSet: action.blackDuckProxyPasswordIsSet,
+                blackDuckProxyPort: action.blackDuckProxyPort,
+                blackDuckProxyUsername: action.blackDuckProxyUsername,
+                blackDuckTimeout: Number.parseInt(action.blackDuckTimeout, 10) || 300,
+                blackDuckUrl: action.blackDuckUrl,
                 id: action.id
             });
 
@@ -89,15 +79,15 @@ const config = (state = initialState, action) => {
                     message: '',
                     fieldErrors: []
                 },
-                hubApiKey: action.hubApiKey || '',
-                hubApiKeyIsSet: action.hubApiKeyIsSet,
-                hubProxyHost: action.hubProxyHost,
-                hubProxyPassword: action.hubProxyPassword,
-                hubProxyPasswordIsSet: action.hubProxyPasswordIsSet,
-                hubProxyPort: action.hubProxyPort,
-                hubProxyUsername: action.hubProxyUsername,
-                hubTimeout: Number.parseInt(action.hubTimeout, 10) || 300,
-                hubUrl: action.hubUrl
+                blackDuckApiKey: action.blackDuckApiKey || '',
+                blackDuckApiKeyIsSet: action.blackDuckApiKeyIsSet,
+                blackDuckProxyHost: action.blackDuckProxyHost,
+                blackDuckProxyPassword: action.blackDuckProxyPassword,
+                blackDuckProxyPasswordIsSet: action.blackDuckProxyPasswordIsSet,
+                blackDuckProxyPort: action.blackDuckProxyPort,
+                blackDuckProxyUsername: action.blackDuckProxyUsername,
+                blackDuckTimeout: Number.parseInt(action.blackDuckTimeout, 10) || 300,
+                blackDuckUrl: action.blackDuckUrl
             });
 
         case CONFIG_TESTING:

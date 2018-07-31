@@ -30,22 +30,22 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
-import com.blackducksoftware.integration.alert.TestGlobalProperties;
+import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.provider.hub.HubProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.scheduled.JobScheduledTask;
 import com.google.gson.Gson;
 
 public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWriter<?>, P extends ItemProcessor<?, ?>, C extends JobScheduledTask<R, P, W>> {
     protected ContentConverter contentConverter;
     private OutputLogger outputLogger;
-    private HubProperties hubProperties;
+    private BlackDuckProperties hubProperties;
     private Gson gson;
 
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
-        hubProperties = new TestGlobalProperties();
+        hubProperties = new TestBlackDuckProperties();
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
@@ -55,7 +55,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
         outputLogger.cleanup();
     }
 
-    public HubProperties getGlobalProperties() {
+    public BlackDuckProperties getGlobalProperties() {
         return hubProperties;
     }
 
