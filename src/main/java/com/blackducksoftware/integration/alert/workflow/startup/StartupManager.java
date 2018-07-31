@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
@@ -41,8 +40,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
@@ -50,7 +51,6 @@ import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackducksoftware.integration.alert.workflow.scheduled.AccumulatorTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -67,28 +67,28 @@ public class StartupManager {
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
     private final BlackDuckProperties blackDuckProperties;
-    private final AccumulatorTask accumulatorTask;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
     private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
+    private final List<ProviderDescriptor> providerDescriptorList;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final BlackDuckProperties blackDuckProperties, final AccumulatorTask accumulatorTask,
-            final DailyTask dailyTask, final OnDemandTask onDemandTask,
-            final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final BlackDuckProperties blackDuckProperties,
+            final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+            final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.blackDuckProperties = blackDuckProperties;
-        this.accumulatorTask = accumulatorTask;
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
         this.purgeTask = purgeTask;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
+        this.providerDescriptorList = providerDescriptorList;
     }
 
     public void startup() {
@@ -98,6 +98,7 @@ public class StartupManager {
         listProperties();
         validateProviders();
         initializeCronJobs();
+        initializeProviders();
     }
 
     public void logConfiguration() {
@@ -198,19 +199,15 @@ public class StartupManager {
     }
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        accumulatorTask.scheduleExecution("0 0/1 * 1/1 * *");
-        final Long seconds = TimeUnit.MILLISECONDS.toSeconds(accumulatorTask.getMillisecondsToNextRun().orElse(null));
-        logger.info("Accumulator next run: {} seconds", seconds);
-
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
         dailyTask.scheduleExecution(dailyDigestCron);
-        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_SECONDS);
+        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
         purgeTask.scheduleExecution(purgeDataCron);
 
-        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime());
-        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime());
-        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime());
+        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
+        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
+        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime().orElse(""));
 
         phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
         logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
@@ -242,6 +239,11 @@ public class StartupManager {
         } finally {
             logger.info("Finished startup purge of old data");
         }
+    }
+
+    public void initializeProviders() {
+        logger.info("Initializing providers...");
+        providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
 
 }

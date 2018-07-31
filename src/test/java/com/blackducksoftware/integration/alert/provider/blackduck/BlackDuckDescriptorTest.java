@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -12,7 +13,6 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
@@ -25,21 +25,21 @@ import com.google.gson.Gson;
 // TODO Make these tests more useful once provider descriptors are fully implemented
 public class BlackDuckDescriptorTest {
 
-    private final MockGlobalBlackDuckEntity mockHubEntity = new MockGlobalBlackDuckEntity();
-    private final MockGlobalBlackDuckRestModel mockHubRestModel = new MockGlobalBlackDuckRestModel();
+    private final MockGlobalBlackDuckEntity mockBlackDuckEntity = new MockGlobalBlackDuckEntity();
+    private final MockGlobalBlackDuckRestModel mockBlackDuckRestModel = new MockGlobalBlackDuckRestModel();
 
     @Test
     public void testRepositoryCalls() {
-        final GlobalBlackDuckConfigEntity entity = mockHubEntity.createGlobalEntity();
+        final GlobalBlackDuckConfigEntity entity = mockBlackDuckEntity.createGlobalEntity();
 
-        final GlobalBlackDuckRepository globalHubRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        Mockito.when(globalHubRepository.findAll()).thenReturn(Arrays.asList(entity));
-        Mockito.when(globalHubRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
-        Mockito.when(globalHubRepository.save(Mockito.any())).thenReturn(entity);
-        Mockito.doNothing().when(globalHubRepository).deleteById(Mockito.anyLong());
-        final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor = new BlackDuckRepositoryAccessor(globalHubRepository);
+        final GlobalBlackDuckRepository globalBlackDuckRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        Mockito.when(globalBlackDuckRepository.findAll()).thenReturn(Arrays.asList(entity));
+        Mockito.when(globalBlackDuckRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
+        Mockito.when(globalBlackDuckRepository.save(Mockito.any())).thenReturn(entity);
+        Mockito.doNothing().when(globalBlackDuckRepository).deleteById(Mockito.anyLong());
+        final BlackDuckRepositoryAccessor hubRepositoryAccessor = new BlackDuckRepositoryAccessor(globalBlackDuckRepository);
 
-        final BlackDuckDescriptor hubDescriptor = new BlackDuckDescriptor(null, blackDuckRepositoryAccessor, null);
+        final BlackDuckDescriptor hubDescriptor = new BlackDuckDescriptor(null, hubRepositoryAccessor, null, null);
 
         final List<? extends DatabaseEntity> entities = hubDescriptor.getGlobalRepositoryAccessor().readEntities();
         final Optional<? extends DatabaseEntity> foundEntity = hubDescriptor.getGlobalRepositoryAccessor().readEntity(1);
@@ -57,15 +57,15 @@ public class BlackDuckDescriptorTest {
     }
 
     @Test
-    public void testTransformerCalls() throws AlertException {
+    public void testTransformerCalls() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
         final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(contentConverter);
 
-        final BlackDuckDescriptor hubDescriptor = new BlackDuckDescriptor(hubContentConverter, null, null);
+        final BlackDuckDescriptor hubDescriptor = new BlackDuckDescriptor(hubContentConverter, null, null, null);
 
-        final GlobalBlackDuckConfigEntity hubEntity = mockHubEntity.createGlobalEntity();
-        final GlobalBlackDuckConfig hubRestModel = mockHubRestModel.createGlobalRestModel();
+        final GlobalBlackDuckConfigEntity hubEntity = mockBlackDuckEntity.createGlobalEntity();
+        final GlobalBlackDuckConfig hubRestModel = mockBlackDuckRestModel.createGlobalRestModel();
 
         final Config restModel = hubDescriptor.getGlobalContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
         final DatabaseEntity entity = hubDescriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(hubRestModel);
@@ -75,4 +75,33 @@ public class BlackDuckDescriptorTest {
         assertEquals(hubRestModel.getId(), String.valueOf(entity.getId()));
         assertEquals(hubRestModel.getId(), jsonRestModel.getId());
     }
+
+    @Test
+    public void testGetProvider() {
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(contentConverter);
+        final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(hubContentConverter, null, null, provider);
+        assertEquals(provider, descriptor.getProvider());
+    }
+
+    @Test
+    public void testValidateGlobalConfig() {
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null);
+        final BlackDuckDescriptor spiedDescriptor = Mockito.spy(descriptor);
+        final Config model = Mockito.mock(Config.class);
+        final Map<String, String> fieldErrors = Mockito.mock(Map.class);
+        spiedDescriptor.validateGlobalConfig(model, fieldErrors);
+        Mockito.verify(spiedDescriptor).validateGlobalConfig(Mockito.any(Config.class), Mockito.anyMap());
+    }
+
+    @Test
+    public void testTestGlobalConfigMethod() {
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null);
+        final BlackDuckDescriptor spiedDescriptor = Mockito.spy(descriptor);
+        spiedDescriptor.testGlobalConfig(null);
+        Mockito.verify(spiedDescriptor).testGlobalConfig(Mockito.any());
+    }
+
 }

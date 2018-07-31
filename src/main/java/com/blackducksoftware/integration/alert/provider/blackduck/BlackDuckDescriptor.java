@@ -36,7 +36,6 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
-import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {
@@ -45,8 +44,8 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
 
     @Autowired
     public BlackDuckDescriptor(final BlackDuckContentConverter blackDuckContentConverter, final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor,
-            final EntityPropertyMapper entityPropertyMapper) {
-        super(PROVIDER_NAME, blackDuckContentConverter, blackDuckRepositoryAccessor);
+            final EntityPropertyMapper entityPropertyMapper, final BlackDuckProvider provider) {
+        super(PROVIDER_NAME, blackDuckContentConverter, blackDuckRepositoryAccessor, provider);
         this.entityPropertyMapper = entityPropertyMapper;
     }
 
@@ -55,7 +54,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     }
 
     @Override
-    public void testGlobalConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testGlobalConfig(final DatabaseEntity entity) {
     }
 
     @Override
