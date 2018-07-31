@@ -1,4 +1,4 @@
-package com.blackducksoftware.integration.alert.provider.blackduck.accumulator;
+package com.blackducksoftware.integration.alert.provider.blackduck.tasks;
 
 import static org.junit.Assert.assertTrue;
 
@@ -61,5 +61,6 @@ public class RealTimeListenerTest {
 
             assertTrue(outputLogger.isLineContainingText("null"));
         }
+
     }
 }

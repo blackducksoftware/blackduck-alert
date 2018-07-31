@@ -41,13 +41,14 @@ import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
+    public static final String TASK_NAME = "phonehome";
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
     public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final BlackDuckProperties blackDuckProperties) {
-        super(taskScheduler);
+        super(taskScheduler, TASK_NAME);
         this.phoneHome = phoneHome;
         this.blackDuckProperties = blackDuckProperties;
     }
