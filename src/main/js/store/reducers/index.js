@@ -1,5 +1,5 @@
-import { routerReducer as routing } from 'react-router-redux';
-import { combineReducers } from 'redux';
+import {routerReducer as routing} from 'react-router-redux';
+import {combineReducers} from 'redux';
 
 import about from './about';
 import audit from './audit';
@@ -9,6 +9,8 @@ import hipChatConfig from './hipChatConfig';
 import projects from './projects';
 import schedulingConfig from './schedulingConfig';
 import session from './session';
+import refresh from './refresh';
+
 
 const rootReducer = combineReducers({
     about,
@@ -19,6 +21,7 @@ const rootReducer = combineReducers({
     projects,
     schedulingConfig,
     session,
+    refresh,
     routing
 });
 

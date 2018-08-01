@@ -15,7 +15,6 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoRefresh: true,
             message: '',
             entries: [],
             currentPage: 1,
@@ -25,7 +24,6 @@ class Index extends Component {
         // this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
         this.startAutoReload = this.startAutoReload.bind(this);
-        this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
@@ -213,18 +211,6 @@ class Index extends Component {
         this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
     }
 
-    handleAutoRefreshChange({target}) {
-        const {name, checked} = target;
-        if (checked) {
-            this.startAutoReload();
-        } else {
-            this.cancelAutoReload();
-        }
-        this.setState({
-            [name]: checked
-        });
-    }
-
     cancelRowSelect() {
         this.setState({
             currentRowSelected: null
@@ -238,7 +224,7 @@ class Index extends Component {
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
-                {!this.state.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
+                {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
                     <span className="fa fa-refresh fa-fw" aria-hidden="true"/> Refresh
                 </div>}
             </ButtonGroup>
@@ -289,7 +275,7 @@ class Index extends Component {
                     <span className="fa fa-history"/>
                     Audit
                     <small className="pull-right">
-                        <AutoRefresh autoRefresh={this.state.autoRefresh} handleAutoRefreshChange={this.handleAutoRefreshChange}/>
+                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
                     </small>
                 </h1>
                 <div>
@@ -335,6 +321,7 @@ Index.defaultProps = {
 };
 
 Index.propTypes = {
+    autoRefresh: PropTypes.bool,
     csrfToken: PropTypes.string,
     fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
@@ -346,7 +333,8 @@ const mapStateToProps = state => ({
     totalDataCount: state.audit.totalDataCount,
     items: state.audit.items,
     csrfToken: state.session.csrfToken,
-    fetching: state.audit.fetching
+    fetching: state.audit.fetching,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = dispatch => ({
