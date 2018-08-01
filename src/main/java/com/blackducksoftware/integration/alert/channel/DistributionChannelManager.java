@@ -40,6 +40,7 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 
 @Transactional
 @Component
+// TODO rename this class to something more reasonable
 public class DistributionChannelManager {
     private final ContentConverter contentConverter;
 

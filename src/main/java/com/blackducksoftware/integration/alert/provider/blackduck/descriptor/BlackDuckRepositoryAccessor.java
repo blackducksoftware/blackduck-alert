@@ -21,21 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.hub.descriptor;
+package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 
 @Component
-public class BlackDuckDescriptor extends ProviderDescriptor {
-    public static final String PROVIDER_NAME = "provider_hub";
+public class BlackDuckRepositoryAccessor extends RepositoryAccessor {
+    private final GlobalBlackDuckRepository repository;
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
-        super(PROVIDER_NAME, providerDescriptorConfig, provider);
+    public BlackDuckRepositoryAccessor(final GlobalBlackDuckRepository repository) {
+        super(repository);
+        this.repository = repository;
+    }
+
+    @Override
+    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
+        final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
+        return repository.save(blackDuckEntity);
     }
 
 }

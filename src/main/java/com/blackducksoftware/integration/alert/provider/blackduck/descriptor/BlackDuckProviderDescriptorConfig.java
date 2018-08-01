@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.hub.descriptor;
+package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
 
 import java.util.Map;
 
@@ -45,7 +45,7 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Hub", "laptop", "HubConfiguration");
+        return new UIComponent("Black Duck", "laptop", "BlackDuckConfiguration");
     }
 
     @Override

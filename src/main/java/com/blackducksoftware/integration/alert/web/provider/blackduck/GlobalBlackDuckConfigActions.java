@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.blackducksoftware.integration.alert.provider.hub.descriptor.BlackDuckContentConverter;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckContentConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
