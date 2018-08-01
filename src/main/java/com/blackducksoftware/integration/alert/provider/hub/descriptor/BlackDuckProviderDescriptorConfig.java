@@ -31,8 +31,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckContentConverter;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckRepositoryAccessor;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
@@ -40,7 +38,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public BlackDuckProviderDescriptorConfig(final BlackDuckContentConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final HubProviderStartupComponent startupComponent) {
+    public BlackDuckProviderDescriptorConfig(final BlackDuckContentConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent) {
         super(databaseContentConverter, repositoryAccessor);
         setStartupComponent(startupComponent);
     }

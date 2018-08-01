@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.web.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,11 +35,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
+import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 
 @RestController
-@RequestMapping(DescriptorController.DESCRIPTOR_PATH)
+@RequestMapping(DescriptorController.DESCRIPTOR_PATH + "/{descriptorConfigType}")
 public class DescriptorController extends BaseController {
     public static final String DESCRIPTOR_PATH = BaseController.BASE_PATH + "/descriptors";
 
@@ -52,19 +52,16 @@ public class DescriptorController extends BaseController {
     }
 
     @GetMapping
-    public List<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName) {
+    public List<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @PathVariable final String descriptorConfigType) {
+        final DescriptorConfigType descriptorConfigTypeEnum = Enum.valueOf(DescriptorConfigType.class, descriptorConfigType);
         if (StringUtils.isNotBlank(descriptorName)) {
-            return Arrays.asList(descriptorMap.getDescriptor(descriptorName));
+            return Arrays.asList(descriptorMap.getDescriptor(descriptorName).getConfig(descriptorConfigTypeEnum).getUiComponent());
         }
 
-        return new ArrayList<>(descriptorMap.getDescriptorMap().values());
-    }
-
-    @GetMapping("/{descriptorType}")
-    public List<Descriptor> getDescriptorsOfType(@PathVariable final String descriptorType) {
-        return descriptorMap.getDescriptorMap().values()
+        return descriptorMap.getDescriptorConfigs(descriptorConfigTypeEnum)
                 .stream()
-                .filter(descriptor -> descriptor.getType().name().equalsIgnoreCase(descriptorType))
+                .map(descriptorConfig -> descriptorConfig.getUiComponent())
                 .collect(Collectors.toList());
     }
+
 }
