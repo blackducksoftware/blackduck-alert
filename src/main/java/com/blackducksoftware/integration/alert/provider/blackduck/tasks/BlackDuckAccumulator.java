@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -45,15 +46,13 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
-import com.blackducksoftware.integration.alert.common.event.AlertEvent;
-import com.blackducksoftware.integration.alert.common.model.NotificationContentList;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
-import com.blackducksoftware.integration.alert.workflow.processor.NotificationItemProcessor;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
-import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
+import com.blackducksoftware.integration.hub.notification.CommonNotificationView;
+import com.blackducksoftware.integration.hub.notification.CommonNotificationViewResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
@@ -172,16 +171,16 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final Date currentStartTime = dateRange.getStart();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
 
-        final Optional<NotificationDetailResults> results = read(dateRange);
+        final Optional<CommonNotificationViewResults> results = read(dateRange);
         if (results.isPresent()) {
-            final AlertEvent event = process(results.get());
-            write(event);
+            final List<NotificationContent> contentList = process(results.get());
+            write(contentList);
             latestNotificationCreatedAtDate = results.get().getLatestNotificationCreatedAtDate();
         }
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
-    protected Optional<NotificationDetailResults> read(final DateRange dateRange) {
+    protected Optional<CommonNotificationViewResults> read(final DateRange dateRange) {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         final Optional<RestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
@@ -193,7 +192,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
                     final HubBucket hubBucket = new HubBucket();
                     final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
-                    final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
+                    final CommonNotificationViewResults notificationResults = notificationService.getAllCommonNotificationViewResults(startDate, endDate);
 
                     if (notificationResults.isEmpty()) {
                         logger.debug(createLoggerMessage("Read Notification Count: 0"));
@@ -211,18 +210,24 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return Optional.empty();
     }
 
-    protected AlertEvent process(final NotificationDetailResults notificationData) {
+    protected List<NotificationContent> process(final CommonNotificationViewResults notificationData) {
         logger.info(createLoggerMessage("Processing accumulated notifications"));
-        final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(notificationProcessors, contentConverter);
-        final AlertEvent storeEvent = notificationItemProcessor.process(blackDuckProperties, notificationData);
-        return storeEvent;
+        return notificationData.getResults().stream().map(this::createContent).collect(Collectors.toList());
     }
 
-    protected void write(final AlertEvent event) {
-        final NotificationContentList notificationContentList = contentConverter.getJsonContent(event.getContent(), NotificationContentList.class);
+    protected NotificationContent createContent(final CommonNotificationView commonNotificationView) {
+
+        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+        final String provider = "";
+        final String notificationType = commonNotificationView.getType().name();
+        final String jsonContent = commonNotificationView.json;
+        final NotificationContent content = new NotificationContent(createdAt, provider, notificationType, jsonContent);
+        return content;
+    }
+
+    protected void write(final List<NotificationContent> contentList) {
         logger.info(createLoggerMessage("Writing Notifications..."));
-        final List<NotificationContent> notificationList = notificationContentList.getNotificationContentList();
-        notificationList.forEach(notificationManager::saveNotification);
+        contentList.forEach(notificationManager::saveNotification);
     }
 
     private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {

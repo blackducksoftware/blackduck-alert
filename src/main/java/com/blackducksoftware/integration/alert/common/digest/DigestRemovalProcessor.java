@@ -34,6 +34,7 @@ import java.util.Set;
 import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityOperation;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 
 public class DigestRemovalProcessor {
@@ -45,28 +46,29 @@ public class DigestRemovalProcessor {
         vulnerabilityCache = new HashMap<>();
     }
 
-    public List<NotificationModel> process(final List<NotificationModel> notificationList) {
+    public List<NotificationModel> process(final List<NotificationContent> notificationList) {
         final List<NotificationModel> resultList = new ArrayList<>();
 
-        notificationList.stream().forEachOrdered(entity -> {
-            final Map<NotificationCategoryEnum, NotificationModel> categoryMap;
-            final String cacheKey = createCacheKey(entity);
-            if (entityCache.containsKey(cacheKey)) {
-                categoryMap = entityCache.get(cacheKey);
-            } else {
-                categoryMap = new HashMap<>();
-                entityCache.put(cacheKey, categoryMap);
-            }
-
-            final boolean processed = processPolicyNotifications(categoryMap, entity);
-            if (!processed) {
-                processVulnerabilityNotifications(cacheKey, categoryMap, entity);
-            }
-        });
-
-        entityCache.values().forEach(categoryMap -> {
-            resultList.addAll(categoryMap.values());
-        });
+        // TODO fix the collapsing of the notifications
+        //        notificationList.stream().forEachOrdered(entity -> {
+        //            final Map<NotificationCategoryEnum, NotificationModel> categoryMap;
+        //            final String cacheKey = createCacheKey(entity);
+        //            if (entityCache.containsKey(cacheKey)) {
+        //                categoryMap = entityCache.get(cacheKey);
+        //            } else {
+        //                categoryMap = new HashMap<>();
+        //                entityCache.put(cacheKey, categoryMap);
+        //            }
+        //
+        //            final boolean processed = processPolicyNotifications(categoryMap, entity);
+        //            if (!processed) {
+        //                processVulnerabilityNotifications(cacheKey, categoryMap, entity);
+        //            }
+        //        });
+        //
+        //        entityCache.values().forEach(categoryMap -> {
+        //            resultList.addAll(categoryMap.values());
+        //        });
         return resultList;
     }
 

@@ -23,6 +23,7 @@ import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
@@ -104,7 +105,7 @@ public class AuditEntryActionsTest {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
 
-        final NotificationRepository notificationRepository = Mockito.mock(NotificationRepository.class);
+        final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);

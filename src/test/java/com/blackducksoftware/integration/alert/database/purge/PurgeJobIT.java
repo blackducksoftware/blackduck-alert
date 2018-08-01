@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
@@ -88,14 +89,14 @@ public class PurgeJobIT {
     @Test
     public void testReaderNoData() throws Exception {
         final PurgeReader reader = purgeTask.reader();
-        final List<NotificationModel> entityList = reader.read();
+        final List<NotificationContent> entityList = reader.read();
         assertNull(entityList);
     }
 
     @Test
     public void testReaderWithNullRepository() throws Exception {
         final PurgeReader reader = new PurgeReader(null, 1);
-        final List<NotificationModel> entityList = reader.read();
+        final List<NotificationContent> entityList = reader.read();
         assertNull(entityList);
     }
 
@@ -181,7 +182,7 @@ public class PurgeJobIT {
         notificationRepository.saveAll(entityList);
 
         final PurgeReader reader = purgeTask.createReaderWithDayOffset(2);
-        final List<NotificationModel> resultList = reader.read();
+        final List<NotificationContent> resultList = reader.read();
 
         assertEquals(1, resultList.size());
     }
@@ -203,13 +204,13 @@ public class PurgeJobIT {
         entityList.add(new NotificationModel(null, null));
         entityList.add(new NotificationModel(null, null));
         final PurgeProcessor processor = purgeTask.processor();
-        final List<NotificationModel> resultList = processor.process(entityList);
+        final List<NotificationContent> resultList = processor.process(entityList);
         assertEquals(entityList, resultList);
     }
 
     @Test
     public void testWriterNoData() throws Exception {
-        final List<List<NotificationModel>> itemList = Collections.emptyList();
+        final List<List<NotificationContent>> itemList = Collections.emptyList();
         final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
@@ -217,7 +218,7 @@ public class PurgeJobIT {
 
     @Test
     public void testWriterNullData() throws Exception {
-        final List<List<NotificationModel>> itemList = null;
+        final List<List<NotificationContent>> itemList = null;
         final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);
         assertEquals(0, notificationRepository.count());
@@ -260,7 +261,7 @@ public class PurgeJobIT {
         entityList.add(new NotificationModel(notification, vulnerabilityList));
 
         assertEquals(3, notificationRepository.count());
-        final List<List<NotificationModel>> itemList = new ArrayList<>();
+        final List<List<NotificationContent>> itemList = new ArrayList<>();
         itemList.add(entityList);
         final PurgeWriter writer = purgeTask.writer();
         writer.write(itemList);

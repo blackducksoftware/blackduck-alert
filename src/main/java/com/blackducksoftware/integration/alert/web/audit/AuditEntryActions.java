@@ -24,7 +24,6 @@
 package com.blackducksoftware.integration.alert.web.audit;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -41,10 +40,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
-import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
@@ -56,7 +52,6 @@ import com.blackducksoftware.integration.alert.database.entity.NotificationConte
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
-import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
@@ -184,11 +179,12 @@ public class AuditEntryActions {
         if (!commonConfigEntity.isPresent()) {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
-        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
-        final DigestModel digestModel = new DigestModel(projectDataCollection);
-        final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), digestModel);
-        event.setAuditEntryId(auditEntryEntity.getId());
-        channelTemplateManager.sendEvent(event);
+        // TODO fix the resend
+        //        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
+        //        final DigestModel digestModel = new DigestModel(projectDataCollection);
+        //        final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), digestModel);
+        //        event.setAuditEntryId(auditEntryEntity.getId());
+        //        channelTemplateManager.sendEvent(event);
         return get();
     }
 
@@ -219,12 +215,13 @@ public class AuditEntryActions {
 
         NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0).getNotificationEntity());
-            final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
+            notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0));
+            final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType()).collect(Collectors.toSet());
             notificationConfig.setNotificationTypes(notificationTypes);
-            final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
-                    notification.getPolicyRuleUser())).collect(Collectors.toSet());
-            notificationConfig.setComponents(components);
+            // TODO fix the contents of the notification
+            //            final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
+            //                    notification.getPolicyRuleUser())).collect(Collectors.toSet());
+            //            notificationConfig.setComponents(components);
         }
 
         String distributionConfigName = null;

@@ -41,6 +41,7 @@ import com.blackducksoftware.integration.hub.api.generated.enumeration.Notificat
 import com.blackducksoftware.integration.hub.api.generated.view.ComponentVersionView;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.api.generated.view.VulnerabilityV2View;
+import com.blackducksoftware.integration.hub.notification.CommonNotificationViewResults;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.notification.content.ComponentVersionStatus;
@@ -315,7 +316,7 @@ public class BlackDuckAccumulatorTest {
 
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
-        final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
+        final Optional<CommonNotificationViewResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertTrue(actualNotificationResults.isPresent());
     }
 
@@ -334,7 +335,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
-        final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
+        final Optional<CommonNotificationViewResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
     }
 
@@ -343,7 +344,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(Optional.empty()).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
-        final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
+        final Optional<CommonNotificationViewResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
     }
 
@@ -355,7 +356,7 @@ public class BlackDuckAccumulatorTest {
 
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
-        final Optional<NotificationDetailResults> actualNotificationResults = notificationAccumulator.read(dateRange);
+        final Optional<CommonNotificationViewResults> actualNotificationResults = notificationAccumulator.read(dateRange);
         assertFalse(actualNotificationResults.isPresent());
 
     }
