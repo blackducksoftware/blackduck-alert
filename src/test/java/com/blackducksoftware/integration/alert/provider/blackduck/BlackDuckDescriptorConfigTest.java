@@ -18,7 +18,9 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
+import com.blackducksoftware.integration.alert.provider.hub.descriptor.BlackDuckContentConverter;
 import com.blackducksoftware.integration.alert.provider.hub.descriptor.BlackDuckProviderDescriptorConfig;
+import com.blackducksoftware.integration.alert.provider.hub.descriptor.BlackDuckRepositoryAccessor;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;

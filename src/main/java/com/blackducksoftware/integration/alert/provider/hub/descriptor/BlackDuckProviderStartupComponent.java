@@ -35,11 +35,11 @@ import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlac
 import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
-public class ProviderStartupComponent extends StartupComponent {
+public class BlackDuckProviderStartupComponent extends StartupComponent {
     private final EntityPropertyMapper entityPropertyMapper;
 
     @Autowired
-    public HubProviderStartupComponent(final EntityPropertyMapper entityPropertyMapper) {
+    public BlackDuckProviderStartupComponent(final EntityPropertyMapper entityPropertyMapper) {
         super(new GlobalBlackDuckConfig());
         this.entityPropertyMapper = entityPropertyMapper;
     }
