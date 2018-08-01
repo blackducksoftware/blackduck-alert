@@ -35,9 +35,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
@@ -63,12 +63,12 @@ public class NotificationPostProcessor {
         this.notificationTypeRepository = notificationTypeRepository;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationModel notificationModel, final DigestType digestTypeEnum) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurations(final Collection<CommonDistributionConfigEntity> distributionConfigurations, final NotificationContent notificationContent, final DigestType digestTypeEnum) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         distributionConfigurations.forEach(distributionConfig -> {
             if (doFrequenciesMatch(distributionConfig, digestTypeEnum)) {
                 if (distributionConfig.getFilterByProject()) {
-                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, notificationModel);
+                    final Set<CommonDistributionConfigEntity> filteredConfigurations = getApplicableConfigurationsFilteredByProject(distributionConfig, notificationContent);
                     applicableConfigurations.addAll(filteredConfigurations);
                 } else {
                     applicableConfigurations.add(distributionConfig);
@@ -78,12 +78,12 @@ public class NotificationPostProcessor {
         return applicableConfigurations;
     }
 
-    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
+    public Set<CommonDistributionConfigEntity> getApplicableConfigurationsFilteredByProject(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationContent notificationContent) {
         final Set<CommonDistributionConfigEntity> applicableConfigurations = new HashSet<>();
         final List<DistributionProjectRelation> foundRelations = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         foundRelations.forEach(relation -> {
             final Optional<ConfiguredProjectEntity> foundEntity = configuredProjectsRepository.findById(relation.getProjectId());
-            if (foundEntity.isPresent() && foundEntity.get().getProjectName().equals(notificationModel.getProjectName())) {
+            if (foundEntity.isPresent() && notificationContent.getContent().contains(foundEntity.get().getProjectName())) {
                 applicableConfigurations.add(commonDistributionConfigEntity);
             }
         });
@@ -97,12 +97,12 @@ public class NotificationPostProcessor {
         return false;
     }
 
-    public Optional<NotificationModel> filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationModel notificationModel) {
+    public Optional<NotificationContent> filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationContent notificationContent) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
-            if (foundEntity.isPresent() && foundEntity.get().getType().equals(notificationModel.getNotificationType())) {
-                return Optional.of(notificationModel);
+            if (foundEntity.isPresent() && foundEntity.get().getType().equals(notificationContent.getNotificationType())) {
+                return Optional.of(notificationContent);
             }
         }
 

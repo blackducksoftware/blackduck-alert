@@ -46,8 +46,8 @@ public class DigestRemovalProcessor {
         vulnerabilityCache = new HashMap<>();
     }
 
-    public List<NotificationModel> process(final List<NotificationContent> notificationList) {
-        final List<NotificationModel> resultList = new ArrayList<>();
+    public List<NotificationContent> process(final List<NotificationContent> notificationList) {
+        final List<NotificationContent> resultList = new ArrayList<>();
 
         // TODO fix the collapsing of the notifications
         //        notificationList.stream().forEachOrdered(entity -> {

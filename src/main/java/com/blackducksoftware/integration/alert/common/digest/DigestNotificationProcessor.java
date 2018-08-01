@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.digest.filter.NotificationEventManager;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 
 @Component
@@ -46,7 +45,7 @@ public class DigestNotificationProcessor {
 
     public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationContent> notificationList) {
         final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
-        final List<NotificationModel> processedNotificationList = removalProcessor.process(notificationList);
+        final List<NotificationContent> processedNotificationList = removalProcessor.process(notificationList);
         if (processedNotificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
