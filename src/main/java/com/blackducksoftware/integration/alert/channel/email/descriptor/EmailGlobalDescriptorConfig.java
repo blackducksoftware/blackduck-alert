@@ -76,7 +76,7 @@ public class EmailGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Email", "envelope", "EmailConfiguration");
+        return new UIComponent("Email", "email", "envelope", "EmailConfiguration");
     }
 
 }

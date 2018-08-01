@@ -29,7 +29,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class Descriptor {
     private final String name;

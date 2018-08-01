@@ -53,7 +53,7 @@ public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("HipChat", "comments", "HipChatConfiguration");
+        return new UIComponent("HipChat", "hipchat", "comments", "HipChatConfiguration");
     }
 
     @Override

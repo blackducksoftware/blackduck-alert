@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.alert.common.descriptor;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
 
 public abstract class ProviderDescriptor extends Descriptor {

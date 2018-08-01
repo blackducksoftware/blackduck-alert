@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
 
 @RestController
 @RequestMapping(DescriptorController.DESCRIPTOR_PATH + "/{descriptorConfigType}")

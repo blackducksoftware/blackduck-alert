@@ -56,7 +56,7 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("HipChat", "comments", "HipChatJobConfiguration");
+        return new UIComponent("HipChat", "hipchat", "comments", "HipChatJobConfiguration");
     }
 
     @Override
