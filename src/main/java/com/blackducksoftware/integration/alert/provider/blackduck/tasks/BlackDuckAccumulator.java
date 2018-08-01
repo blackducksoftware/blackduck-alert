@@ -55,7 +55,6 @@ import com.blackducksoftware.integration.hub.notification.CommonNotificationView
 import com.blackducksoftware.integration.hub.notification.CommonNotificationViewResults;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
-import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
@@ -190,7 +189,6 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final Date startDate = dateRange.getStart();
                     final Date endDate = dateRange.getEnd();
                     logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
-                    final HubBucket hubBucket = new HubBucket();
                     final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
                     final CommonNotificationViewResults notificationResults = notificationService.getAllCommonNotificationViewResults(startDate, endDate);
 
