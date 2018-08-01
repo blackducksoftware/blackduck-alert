@@ -45,7 +45,7 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Black Duck", "laptop", "BlackDuckConfiguration");
+        return new UIComponent("Black Duck", "blackduck", "laptop", "BlackDuckConfiguration");
     }
 
     @Override

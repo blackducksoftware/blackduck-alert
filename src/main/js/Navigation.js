@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {NavLink, withRouter} from 'react-router-dom';
@@ -6,8 +6,52 @@ import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 import {confirmLogout} from './store/actions/session';
 
-const Navigation = props => (
-    <div className="navigation">
+class Navigation extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            globalComponent: [],
+            providerComponent: []
+        }
+        this.retrieveComponentData = this.retrieveComponentData.bind(this);
+    }
+
+    componentDidMount() {
+        this.setState({
+            globalComponent: this.retrieveComponentData('GLOBAL_CONFIG'),
+            providerComponent: this.retrieveComponentData('PROVIDER_CONFIG')
+        });
+    }
+
+    retrieveComponentData(distributionConfigType) {
+        const getUrl = `/alert/api/descriptors/${distributionConfigType}`;
+        fetch(getUrl, {
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            return response.json();
+        }).catch(console.error);
+    }
+
+    render() {
+        const globals = this.state.globalComponent.map((component) =>
+        <li>
+            <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
+                <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                {component.label}
+            </NavLink>
+        </li>);
+        const providers = this.state.providerComponent.map((component) =>
+        <li>
+            <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
+                <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                {component.label}
+            </NavLink>
+        </li>);
+    return (
+        <div className="navigation">
         <div className="navigationLogo">
             <Logo/>
         </div>
@@ -16,29 +60,11 @@ const Navigation = props => (
                 <li className="navHeader">
                     Providers
                 </li>
-                <li>
-                    <NavLink to="/alert/providers/blackduck" activeClassName="activeNav">
-                        <FontAwesome name="laptop" fixedWidth/> Black Duck
-                    </NavLink>
-                </li>
+                {providers}
                 <li className="navHeader">
                     Channels
                 </li>
-                <li>
-                    <NavLink to="/alert/channels/email" activeClassName="activeNav">
-                        <FontAwesome name="envelope" fixedWidth/> Email
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/alert/channels/hipchat" activeClassName="activeNav">
-                        <FontAwesome name="comments" fixedWidth/> HipChat
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/alert/channels/slack" activeClassName="activeNav">
-                        <FontAwesome name="slack" fixedWidth/> Slack
-                    </NavLink>
-                </li>
+                {globals}
                 <li className="navHeader">
                     Jobs
                 </li>
@@ -72,8 +98,9 @@ const Navigation = props => (
                 </li>
             </ul>
         </div>
-    </div>
-);
+    </div>);
+    }
+}
 
 Navigation.propTypes = {
     confirmLogout: PropTypes.func.isRequired

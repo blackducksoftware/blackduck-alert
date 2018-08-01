@@ -56,7 +56,7 @@ public class SlackDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Slack", "slack", "SlackJobConfiguration");
+        return new UIComponent("Slack", "slack", "slack", "SlackJobConfiguration");
     }
 
     @Override

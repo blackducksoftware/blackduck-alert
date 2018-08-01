@@ -25,11 +25,13 @@ package com.blackducksoftware.integration.alert.common.descriptor.config;
 
 public class UIComponent {
     private String label;
+    private String urlName;
     private String fontAwesomeIcon;
     private String reactComponentName;
 
-    public UIComponent(final String label, final String fontAwesomeIcon, final String reactComponentName) {
+    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final String reactComponentName) {
         this.label = label;
+        this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.reactComponentName = reactComponentName;
     }
@@ -40,6 +42,14 @@ public class UIComponent {
 
     public void setLabel(final String label) {
         this.label = label;
+    }
+
+    public String getUrlName() {
+        return urlName;
+    }
+
+    public void setUrlName(final String urlName) {
+        this.urlName = urlName;
     }
 
     public String getFontAwesomeIcon() {

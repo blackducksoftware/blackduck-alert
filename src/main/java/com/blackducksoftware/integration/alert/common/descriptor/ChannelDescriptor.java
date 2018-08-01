@@ -26,6 +26,7 @@ package com.blackducksoftware.integration.alert.common.descriptor;
 import javax.jms.MessageListener;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;

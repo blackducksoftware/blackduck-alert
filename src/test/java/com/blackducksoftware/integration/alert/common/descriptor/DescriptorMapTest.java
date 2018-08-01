@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 
 public class DescriptorMapTest {

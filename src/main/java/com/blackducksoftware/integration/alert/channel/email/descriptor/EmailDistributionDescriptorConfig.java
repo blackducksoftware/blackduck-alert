@@ -72,7 +72,7 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Email", "envelope", "GroupEmailJobConfiguration");
+        return new UIComponent("Email", "email", "envelope", "GroupEmailJobConfiguration");
     }
 
 }

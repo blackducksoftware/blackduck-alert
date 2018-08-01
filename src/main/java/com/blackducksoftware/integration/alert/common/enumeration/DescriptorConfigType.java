@@ -21,8 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.common.enumeration;
 
-public enum DescriptorType {
-    CHANNEL, PROVIDER;
+public enum DescriptorConfigType {
+    GLOBAL_CONFIG,
+    DISTRIBUTION_CONFIG,
+    PROVIDER_CONFIG
 }
