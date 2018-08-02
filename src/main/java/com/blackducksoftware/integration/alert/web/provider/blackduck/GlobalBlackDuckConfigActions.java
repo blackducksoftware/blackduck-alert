@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
@@ -62,11 +63,14 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalBlackDuckConfigActions.class);
     private final BlackDuckProperties blackDuckProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
-    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckProperties blackDuckProperties, final BlackDuckContentConverter blackDuckContentConverter) {
+    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckContentConverter blackDuckContentConverter, final BlackDuckProperties blackDuckProperties,
+            final AlertProperties alertProperties) {
         super(globalRepository, blackDuckContentConverter);
         this.blackDuckProperties = blackDuckProperties;
+        this.alertProperties = alertProperties;
     }
 
     @Override
@@ -99,14 +103,15 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
 
     public GlobalBlackDuckConfig updateModelFromEnvironment(final GlobalBlackDuckConfig restModel) {
         restModel.setBlackDuckUrl(blackDuckProperties.getBlackDuckUrl().orElse(null));
-        if (blackDuckProperties.getBlackDuckTrustCertificate().isPresent()) {
-            restModel.setBlackDuckAlwaysTrustCertificate(String.valueOf(blackDuckProperties.getBlackDuckTrustCertificate().orElse(false)));
+        final Boolean trustCertificate = alertProperties.getAlertTrustCertificate().orElse(null);
+        if (null != trustCertificate) {
+            restModel.setBlackDuckAlwaysTrustCertificate(String.valueOf(trustCertificate));
         }
-        restModel.setBlackDuckProxyHost(blackDuckProperties.getBlackDuckProxyHost().orElse(null));
-        restModel.setBlackDuckProxyPort(blackDuckProperties.getBlackDuckProxyPort().orElse(null));
-        restModel.setBlackDuckProxyUsername(blackDuckProperties.getBlackDuckProxyUsername().orElse(null));
+        restModel.setBlackDuckProxyHost(alertProperties.getAlertProxyHost().orElse(null));
+        restModel.setBlackDuckProxyPort(alertProperties.getAlertProxyPort().orElse(null));
+        restModel.setBlackDuckProxyUsername(alertProperties.getAlertProxyUsername().orElse(null));
         // Do not send passwords going to the UI
-        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(blackDuckProperties.getBlackDuckProxyPassword().orElse(null));
+        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(alertProperties.getAlertProxyPassword().orElse(null));
         restModel.setBlackDuckProxyPasswordIsSet(proxyPasswordIsSet);
         return restModel;
     }
@@ -154,7 +159,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
 
         final String apiToken = restModel.getBlackDuckApiKey();
 
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createBlackDuckServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getBlackDuckTimeout()));
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getBlackDuckTimeout()));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
 
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);

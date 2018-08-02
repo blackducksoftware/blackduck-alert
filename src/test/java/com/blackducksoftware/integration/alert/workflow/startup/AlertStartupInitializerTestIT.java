@@ -1,9 +1,6 @@
 package com.blackducksoftware.integration.alert.workflow.startup;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -42,7 +39,7 @@ public class AlertStartupInitializerTestIT {
         final List<Descriptor> descriptors = Arrays.asList(new EmailDescriptor(null, emailGlobalContentConverter, emailGlobalRepositoryAccessor, null, null, entityPropertyMapper));
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
-        assertFalse(initializer.getAlertProperties().isEmpty());
+        assertFalse(initializer.getAlertStartupProperties().isEmpty());
         assertFalse(initializer.getAlertPropertyNameSet().isEmpty());
     }
 
@@ -54,7 +51,7 @@ public class AlertStartupInitializerTestIT {
         final List<Descriptor> descriptors = Arrays.asList();
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
-        assertTrue(initializer.getAlertProperties().isEmpty());
+        assertTrue(initializer.getAlertStartupProperties().isEmpty());
         assertTrue(initializer.getAlertPropertyNameSet().isEmpty());
     }
 
@@ -74,7 +71,7 @@ public class AlertStartupInitializerTestIT {
         final String value = "newValue";
 
         final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
-        final AlertStartupProperty property = initializer.getAlertProperties().get(0);
+        final AlertStartupProperty property = initializer.getAlertStartupProperties().get(0);
         initializer.setRestModelValue(value, globalRestModel, property);
 
         final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
@@ -101,7 +98,7 @@ public class AlertStartupInitializerTestIT {
         initializer.initializeConfigs();
 
         final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
-        final AlertStartupProperty property = initializer.getAlertProperties().get(0);
+        final AlertStartupProperty property = initializer.getAlertStartupProperties().get(0);
         initializer.setRestModelValue(null, globalRestModel, property);
 
         final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
@@ -128,7 +125,7 @@ public class AlertStartupInitializerTestIT {
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
         initializer.initializeConfigs();
         final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
-        final AlertStartupProperty property = initializer.getAlertProperties().get(0);
+        final AlertStartupProperty property = initializer.getAlertStartupProperties().get(0);
         initializer.setRestModelValue("a value that can't be converted", globalRestModel, property);
 
         final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
@@ -157,7 +154,7 @@ public class AlertStartupInitializerTestIT {
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptors, environment, conversionService);
 
         initializer.initializeConfigs();
-        final AlertStartupProperty property = initializer.getAlertProperties().get(0);
+        final AlertStartupProperty property = initializer.getAlertStartupProperties().get(0);
         final String value = "a system property value";
         System.setProperty(property.getPropertyKey(), value);
         initializer.initializeConfigs();

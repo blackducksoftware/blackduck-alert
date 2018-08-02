@@ -30,6 +30,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -45,7 +46,7 @@ public abstract class CommonConfigTest<R extends ItemReader<?>, W extends ItemWr
     @Before
     public void init() throws IOException {
         outputLogger = new OutputLogger();
-        hubProperties = new TestBlackDuckProperties();
+        hubProperties = new TestBlackDuckProperties(new TestAlertProperties());
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }

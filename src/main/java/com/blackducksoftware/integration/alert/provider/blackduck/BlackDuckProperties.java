@@ -27,13 +27,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
@@ -44,121 +43,54 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnectionBuilder;
-import com.blackducksoftware.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class BlackDuckProperties {
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
+    private final AlertProperties alertProperties;
 
-    @Value("${blackduck.hub.url:}")
+    @Value("${blackduck.url:}")
     private String blackDuckUrl;
 
-    @Value("${blackduck.hub.trust.cert:}")
-    private Boolean blackDuckTrustCertificate;
+    @Value("${public.blackduck.webserver.host:}")
+    private String publicBlackDuckWebserverHost;
 
-    @Value("${blackduck.hub.proxy.host:}")
-    private String blackDuckProxyHost;
-
-    @Value("${blackduck.hub.proxy.port:}")
-    private String blackDuckProxyPort;
-
-    @Value("${blackduck.hub.proxy.username:}")
-    private String blackDuckProxyUsername;
-
-    @Value("${blackduck.hub.proxy.password:}")
-    private String blackDuckProxyPassword;
+    @Value("${public.blackduck.webserver.port:}")
+    private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final GlobalBlackDuckRepository globalBlackDuckRepository) {
+    public BlackDuckProperties(final GlobalBlackDuckRepository globalBlackDuckRepository, final AlertProperties alertProperties) {
         this.globalBlackDuckRepository = globalBlackDuckRepository;
-    }
-
-    public String getEnvironmentVariable(final AlertEnvironment alertEnvironment) {
-        return getEnvironmentVariable(alertEnvironment.getVariableName());
-    }
-
-    public String getEnvironmentVariable(final String variableName) {
-        return System.getenv(variableName);
+        this.alertProperties = alertProperties;
     }
 
     public Optional<String> getBlackDuckUrl() {
-        return Optional.ofNullable(StringUtils.trimToNull(blackDuckUrl));
-    }
-
-    public void setBlackDuckUrl(final String blackDuckUrl) {
-        this.blackDuckUrl = blackDuckUrl;
-    }
-
-    public Optional<Boolean> getBlackDuckTrustCertificate() {
-        // TODO in 3.0.0 we should consider changing the @Value annotations with the new branding names AND @Value will check the environment variables for us, so we wont need to do these extra checks
-        if (blackDuckTrustCertificate == null) {
-            return Optional.empty();
+        if (StringUtils.isNotBlank(blackDuckUrl)) {
+            return Optional.of(blackDuckUrl);
         }
-        final String alwaysTrust = getEnvironmentVariable(AlertEnvironment.HUB_ALWAYS_TRUST_SERVER_CERTIFICATE);
-        if (blackDuckTrustCertificate) {
-            return Optional.ofNullable(blackDuckTrustCertificate);
+        return Optional.empty();
+    }
+
+    public Optional<String> getPublicBlackDuckWebserverHost() {
+        if (StringUtils.isNotBlank(publicBlackDuckWebserverHost)) {
+            return Optional.of(publicBlackDuckWebserverHost);
         }
-        if (StringUtils.isNotBlank(alwaysTrust)) {
-            return Optional.ofNullable(Boolean.parseBoolean(alwaysTrust));
+        return Optional.empty();
+    }
+
+    public Optional<String> getPublicBlackDuckWebserverPort() {
+        if (StringUtils.isNotBlank(publicBlackDuckWebserverPort)) {
+            return Optional.of(publicBlackDuckWebserverPort);
         }
-        return Optional.of(false);
+        return Optional.empty();
     }
 
-    public void setBlackDuckTrustCertificate(final Boolean blackDuckTrustCertificate) {
-        this.blackDuckTrustCertificate = blackDuckTrustCertificate;
-    }
-
-    public Optional<String> getBlackDuckProxyHost() {
-        final String proxyHost = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_HOST);
-        if (StringUtils.isNotBlank(blackDuckProxyHost)) {
-            return Optional.ofNullable(blackDuckProxyHost);
-        } else {
-            return Optional.ofNullable(proxyHost);
+    public Integer getBlackDuckTimeout() {
+        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
+        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
+            return optionalGlobalBlackDuckConfigEntity.get().getBlackDuckTimeout();
         }
-    }
-
-    public void setBlackDuckProxyHost(final String blackDuckProxyHost) {
-        this.blackDuckProxyHost = blackDuckProxyHost;
-    }
-
-    public Optional<String> getBlackDuckProxyPort() {
-        final String proxyPort = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PORT);
-        if (StringUtils.isNotBlank(blackDuckProxyPort)) {
-            return Optional.ofNullable(blackDuckProxyPort);
-        } else {
-            return Optional.ofNullable(proxyPort);
-        }
-    }
-
-    public void setBlackDuckProxyPort(final String blackDuckProxyPort) {
-        this.blackDuckProxyPort = blackDuckProxyPort;
-    }
-
-    public Optional<String> getBlackDuckProxyUsername() {
-        final String proxyUser = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_USER);
-        if (StringUtils.isNotBlank(blackDuckProxyUsername)) {
-            return Optional.ofNullable(blackDuckProxyUsername);
-        } else {
-            return Optional.ofNullable(proxyUser);
-        }
-    }
-
-    public void setBlackDuckProxyUsername(final String blackDuckProxyUsername) {
-        this.blackDuckProxyUsername = blackDuckProxyUsername;
-    }
-
-    public Optional<String> getBlackDuckProxyPassword() {
-        final String proxyPassword = getEnvironmentVariable(AlertEnvironment.HUB_PROXY_PASSWORD);
-        if (StringUtils.isNotBlank(blackDuckProxyPassword)) {
-            return Optional.ofNullable(blackDuckProxyPassword);
-        } else {
-            return Optional.ofNullable(proxyPassword);
-        }
-    }
-
-    public void setBlackDuckProxyPassword(final String blackDuckProxyPassword) {
-        this.blackDuckProxyPassword = blackDuckProxyPassword;
+        return 300;
     }
 
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
@@ -217,7 +149,7 @@ public class BlackDuckProperties {
     }
 
     public HubServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckApiToken) throws AlertException {
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = createBlackDuckServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setApiToken(blackDuckApiToken);
 
         try {
@@ -228,7 +160,7 @@ public class BlackDuckProperties {
     }
 
     public HubServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = createBlackDuckServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setUsername(blackDuckUsername);
         blackDuckServerConfigBuilder.setPassword(blackDuckPassword);
 
@@ -239,98 +171,14 @@ public class BlackDuckProperties {
         }
     }
 
-    public HubServerConfigBuilder createBlackDuckServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
+    public HubServerConfigBuilder createServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
         final HubServerConfigBuilder blackDuckServerConfigBuilder = new HubServerConfigBuilder();
+        blackDuckServerConfigBuilder.setFromProperties(alertProperties.getBlackDuckProperties());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeout(blackDuckTimeout);
-        final Optional<String> blackDuckUrl = getBlackDuckUrl();
-        final Optional<String> blackDuckProxyHost = getBlackDuckProxyHost();
-        final Optional<String> blackDuckProxyPort = getBlackDuckProxyPort();
-        final Optional<String> blackDuckProxyUsername = getBlackDuckProxyUsername();
-        final Optional<String> blackDuckProxyPassword = getBlackDuckProxyPassword();
-        final Optional<Boolean> trustCertificate = getBlackDuckTrustCertificate();
-        if (blackDuckUrl.isPresent()) {
-            blackDuckServerConfigBuilder.setUrl(blackDuckUrl.get());
-        }
-        if (blackDuckProxyHost.isPresent()) {
-            blackDuckServerConfigBuilder.setProxyHost(blackDuckProxyHost.get());
-        }
-        if (blackDuckProxyPort.isPresent()) {
-            blackDuckServerConfigBuilder.setProxyPort(blackDuckProxyPort.get());
-        }
-        if (blackDuckProxyUsername.isPresent()) {
-            blackDuckServerConfigBuilder.setProxyUsername(blackDuckProxyUsername.get());
-        }
-        if (blackDuckProxyPassword.isPresent()) {
-            blackDuckServerConfigBuilder.setProxyPassword(blackDuckProxyPassword.get());
-        }
-        if (trustCertificate.isPresent()) {
-            blackDuckServerConfigBuilder.setTrustCert(trustCertificate.get());
-        }
+        blackDuckServerConfigBuilder.setUrl(getBlackDuckUrl().orElse(""));
 
         return blackDuckServerConfigBuilder;
-    }
-
-    public UnauthenticatedRestConnectionBuilder createUnauthenticatedRestConnectionBuilder(final IntLogger logger, final int blackDuckTimeout) {
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
-        restConnectionBuilder.setLogger(logger);
-        restConnectionBuilder.setTimeout(blackDuckTimeout);
-
-        final Optional<String> blackDuckUrl = getBlackDuckUrl();
-        final Optional<String> blackDuckProxyHost = getBlackDuckProxyHost();
-        final Optional<String> blackDuckProxyPort = getBlackDuckProxyPort();
-        final Optional<String> blackDuckProxyUsername = getBlackDuckProxyUsername();
-        final Optional<String> blackDuckProxyPassword = getBlackDuckProxyPassword();
-        final Optional<Boolean> trustCertificate = getBlackDuckTrustCertificate();
-        if (blackDuckUrl.isPresent()) {
-            restConnectionBuilder.setBaseUrl(blackDuckUrl.get());
-        }
-        if (blackDuckProxyHost.isPresent()) {
-            restConnectionBuilder.setProxyHost(blackDuckProxyHost.get());
-        }
-        if (blackDuckProxyPort.isPresent()) {
-            restConnectionBuilder.setProxyPort(NumberUtils.toInt(blackDuckProxyPort.get()));
-        }
-        if (blackDuckProxyUsername.isPresent()) {
-            restConnectionBuilder.setProxyUsername(blackDuckProxyUsername.get());
-        }
-        if (blackDuckProxyPassword.isPresent()) {
-            restConnectionBuilder.setProxyPassword(blackDuckProxyPassword.get());
-        }
-        if (trustCertificate.isPresent()) {
-            restConnectionBuilder.setAlwaysTrustServerCertificate(trustCertificate.get());
-        }
-
-        return restConnectionBuilder;
-    }
-
-    public ProxyInfoBuilder createProxyInfoBuilder() {
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        final Optional<String> blackDuckProxyHost = getBlackDuckProxyHost();
-        final Optional<String> blackDuckProxyPort = getBlackDuckProxyPort();
-        final Optional<String> blackDuckProxyUsername = getBlackDuckProxyUsername();
-        final Optional<String> blackDuckProxyPassword = getBlackDuckProxyPassword();
-        if (blackDuckProxyHost.isPresent()) {
-            proxyBuilder.setHost(blackDuckProxyHost.get());
-        }
-        if (blackDuckProxyPort.isPresent()) {
-            proxyBuilder.setPort(blackDuckProxyPort.get());
-        }
-        if (blackDuckProxyUsername.isPresent()) {
-            proxyBuilder.setUsername(blackDuckProxyUsername.get());
-        }
-        if (blackDuckProxyPassword.isPresent()) {
-            proxyBuilder.setPassword(blackDuckProxyPassword.get());
-        }
-        return proxyBuilder;
-    }
-
-    public Integer getBlackDuckTimeout() {
-        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            return optionalGlobalBlackDuckConfigEntity.get().getBlackDuckTimeout();
-        }
-        return 300;
     }
 
 }
