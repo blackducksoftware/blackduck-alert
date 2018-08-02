@@ -65,7 +65,7 @@ public class EmailMessagingService {
     public EmailMessagingService(final AlertProperties alertProperties, final EmailProperties emailProperties) throws IOException {
         this.alertProperties = alertProperties;
         this.emailProperties = emailProperties;
-        final String templatesDirectory = alertProperties.getAlertTemplatesDir().orElse("");
+        final String templatesDirectory = alertProperties.getAlertTemplatesDir();
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -87,7 +87,7 @@ public class EmailMessagingService {
 
             final Session session = createMailSession(emailProperties);
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = alertProperties.getAlertImagesDir().orElse("");
+            final String imagesDirectory = alertProperties.getAlertImagesDir();
             final String imageDirectoryPath;
             if (StringUtils.isNotBlank(imagesDirectory)) {
                 imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
