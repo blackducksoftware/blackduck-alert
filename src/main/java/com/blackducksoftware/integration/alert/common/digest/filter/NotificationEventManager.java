@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
@@ -88,17 +87,17 @@ public class NotificationEventManager {
             final CommonDistributionConfigEntity distributionConfig = entry.getKey();
             final List<NotificationContent> notificationList = entry.getValue();
             if (!notificationList.isEmpty()) {
-                //TODO create he project data object from the content.
-                //final Collection<ProjectData> projectData = projectDataFactory.createProjectDataCollection(notificationList, digestType);
-                //channelEvents.add(createChannelEvent(distributionConfig, new DigestModel(projectData)));
+                notificationList.forEach(notificationContent -> {
+                    channelEvents.add(createChannelEvent(distributionConfig, notificationContent));
+                });
             }
         });
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final DigestModel digestModel) {
-        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), digestModel);
+    private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final NotificationContent notificationContent) {
+        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), notificationContent);
     }
 
 }

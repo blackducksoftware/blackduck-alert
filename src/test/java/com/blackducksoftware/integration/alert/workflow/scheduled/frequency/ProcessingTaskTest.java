@@ -21,7 +21,9 @@ import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.digest.DigestNotificationProcessor;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class ProcessingTaskTest {
 
@@ -31,9 +33,9 @@ public class ProcessingTaskTest {
 
     @Before
     public void initTest() {
-        final NotificationContent model = new NotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}");
+        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new ChannelEvent("destination", "content", 1L));
+        eventList = Arrays.asList(new ChannelEvent("destination", RestConnection.formatDate(new Date()), "provider", "notificationType", "content", 1L, null));
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor digestNotificationProcessor, final ChannelTemplateManager channelTemplateManager) {

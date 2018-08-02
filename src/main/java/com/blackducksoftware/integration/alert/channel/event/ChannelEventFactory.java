@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 
 @Component
 public class ChannelEventFactory {
@@ -38,8 +38,8 @@ public class ChannelEventFactory {
         this.distributionChannelManager = distributionChannelManager;
     }
 
-    public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final DigestModel digestModel) {
-        return distributionChannelManager.createChannelEvent(distributionType, digestModel, commonDistributionConfigId);
+    public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final NotificationContent notificationContent) {
+        return distributionChannelManager.createChannelEvent(distributionType, notificationContent, commonDistributionConfigId);
     }
 
 }

@@ -23,9 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -37,13 +35,12 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Transactional
 @Component
@@ -84,13 +81,12 @@ public class DistributionChannelManager {
         return "Successfully sent test message";
     }
 
-    public DigestModel getTestMessageModel() {
-        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
-        final DigestModel digestModel = new DigestModel(projectDataCollection);
-        return digestModel;
+    public NotificationContent getTestMessageModel() {
+        return new NotificationContent(new Date(), "", "testMessage", "{message: \"Test Message\"}");
     }
 
-    public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
-        return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final String destination, final NotificationContent notificationContent, final Long commonDistributionConfigId) {
+        return new ChannelEvent(destination, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(), notificationContent.getContent(),
+                commonDistributionConfigId, notificationContent.getId());
     }
 }

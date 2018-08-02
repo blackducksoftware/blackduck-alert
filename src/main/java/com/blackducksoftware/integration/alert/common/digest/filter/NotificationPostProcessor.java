@@ -101,7 +101,7 @@ public class NotificationPostProcessor {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
         for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
             final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
-            if (foundEntity.isPresent() && foundEntity.get().getType().equals(notificationContent.getNotificationType())) {
+            if (foundEntity.isPresent() && foundEntity.get().getType().name().equals(notificationContent.getNotificationType())) {
                 return Optional.of(notificationContent);
             }
         }

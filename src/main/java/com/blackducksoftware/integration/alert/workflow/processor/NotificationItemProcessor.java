@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.alert.workflow.processor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
@@ -35,6 +36,7 @@ import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckPrope
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class NotificationItemProcessor {
     private final List<NotificationTypeProcessor> processorList;
@@ -60,6 +62,7 @@ public class NotificationItemProcessor {
             });
         }
         final NotificationModels notificationModels = new NotificationModels(notificationModelList);
-        return new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), contentConverter.getJsonString(notificationModels));
+        //TODO processor needs to be refactored
+        return new AlertEvent(InternalEventTypes.DB_STORE_EVENT.getDestination(), RestConnection.formatDate(new Date()), "", "", contentConverter.getJsonString(notificationModels), 0L);
     }
 }

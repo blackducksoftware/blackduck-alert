@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,6 +29,8 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
 public class ChannelEventFactoryTest {
@@ -41,12 +44,16 @@ public class ChannelEventFactoryTest {
         final ChannelEventFactory factory = new ChannelEventFactory(manager);
 
         final Long id = 25L;
+
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.getJsonString(digestModel), id);
+
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), id, 1L);
         Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 
-        final ChannelEvent event = factory.createEvent(id, "TYPE", digestModel);
+        final ChannelEvent event = factory.createEvent(id, "TYPE", notificationContent);
         assertEquals(mockEvent, event);
     }
 

@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,13 +29,11 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
-import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
@@ -102,42 +98,32 @@ public class NotificationEventManagerTest {
 
     @Test
     public void createInvalidDigestTypeTest() {
-        final NotificationModel notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
-        final List<NotificationModel> notificationModels = Arrays.asList(notificationModel);
+        final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
+        final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
         final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.DAILY, notificationModels);
         assertTrue(channelEvents.isEmpty());
     }
 
     @Test
-    public void createChannelEventTest() throws Exception {
+    public void createChannelEventTest() {
         final List<CommonDistributionConfigEntity> configEntityList = commonDistributionRepository.findAll();
 
-        final NotificationModel notification_1 = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
-        final NotificationModel notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
-        final NotificationModel notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
-        final List<NotificationModel> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
+        final NotificationContent notification_1 = createNotificationModel("Project_1", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
+        final NotificationContent notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
+        final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationCategoryEnum.POLICY_VIOLATION);
+        final List<NotificationContent> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
         final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.REAL_TIME, notificationModelList);
-        assertEquals(configEntityList.size(), channelEvents.size());
+        assertEquals(configEntityList.size() * notificationModelList.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
             assertNotNull(event.getContent());
         });
     }
 
-    private NotificationModel createNotificationModel(final String projectName, final String projectVersion, final NotificationCategoryEnum notificationType) {
-        final String eventKey = "event key";
+    private NotificationContent createNotificationModel(final String projectName, final String projectVersion, final NotificationCategoryEnum notificationType) {
         final Date createdAt = Date.from(ZonedDateTime.now().toInstant());
-        final String projectUrl = "project url";
-        final String projectVersionUrl = "project version url";
-        final String componentName = "component name";
-        final String componentVersion = "component version";
-        final String policyRuleName = "policy rule";
-        final String policyRuleUser = "policy user";
-        final NotificationEntity notification = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl,
-                componentName, componentVersion, policyRuleName, policyRuleUser);
 
-        final Collection<VulnerabilityEntity> vulnerabilities = Collections.emptyList();
-        final NotificationModel model = new NotificationModel(notification, vulnerabilities);
+        final NotificationContent model = new NotificationContent(createdAt, "provider", notificationType.name(), projectName + projectVersion);
         return model;
     }
 }

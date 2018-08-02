@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,24 +32,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.CategoryData;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ItemData;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -74,7 +67,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {
@@ -82,8 +75,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
         } else {
 
             final String slackUrl = config.getWebhook();
-            final Collection<ProjectData> projectDataCollection = digestModel.getProjectDataCollection();
-            final String htmlMessage = createHtmlMessage(projectDataCollection);
+            final String htmlMessage = createHtmlMessage(event);
             final String jsonString = getJsonString(htmlMessage, config.getChannelName(), config.getChannelUsername());
 
             final Map<String, String> requestHeaders = new HashMap<>();
@@ -93,64 +85,20 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
         }
     }
 
-    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) {
+    private String createHtmlMessage(final ChannelEvent event) {
         final StringBuilder messageBuilder = new StringBuilder();
-        projectDataCollection.forEach(projectData -> {
+        if (StringUtils.isNotBlank(event.getContent())) {
             messageBuilder.append(System.lineSeparator());
-            messageBuilder.append(projectData.getProjectName());
+            messageBuilder.append(event.getProvider());
             messageBuilder.append(" > ");
-            messageBuilder.append(projectData.getProjectVersion());
+            messageBuilder.append(event.getNotificationType());
             messageBuilder.append(System.lineSeparator());
-
-            final Map<NotificationCategoryEnum, CategoryData> categoryMap = projectData.getCategoryMap();
-            if (categoryMap != null) {
-                for (final NotificationCategoryEnum category : NotificationCategoryEnum.values()) {
-                    final CategoryData data = categoryMap.get(category);
-                    if (data != null) {
-                        messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
-                        messageBuilder.append(System.lineSeparator());
-                        messageBuilder.append("Type: ");
-                        messageBuilder.append(data.getCategoryKey());
-                        messageBuilder.append(System.lineSeparator());
-                        messageBuilder.append("Number of Changes: ");
-                        messageBuilder.append(data.getItemCount());
-                        for (final ItemData item : data.getItems()) {
-                            messageBuilder.append(System.lineSeparator());
-                            final Map<String, Object> dataSet = item.getDataSet();
-                            final String ruleKey = ItemTypeEnum.RULE.toString();
-                            if (dataSet.containsKey(ruleKey) && StringUtils.isNotBlank(dataSet.get(ruleKey).toString())) {
-                                messageBuilder.append("Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
-                                messageBuilder.append(System.lineSeparator());
-                            }
-
-                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED)) {
-                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_ADDED);
-                                messageBuilder.append("Vulnerability Count Added: " + numericValue.intValue());
-                                messageBuilder.append(System.lineSeparator());
-                            }
-
-                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED)) {
-                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_UPDATED);
-                                messageBuilder.append("Vulnerability Count Updated: " + numericValue.intValue());
-                                messageBuilder.append(System.lineSeparator());
-                            }
-
-                            if (dataSet.containsKey(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED)) {
-                                final Number numericValue = (Number) dataSet.get(ProjectDataFactory.VULNERABILITY_COUNT_KEY_DELETED);
-                                messageBuilder.append("Vulnerability Count Deleted: " + numericValue.intValue());
-                                messageBuilder.append(System.lineSeparator());
-                            }
-
-                            messageBuilder.append("Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                            messageBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
-                        }
-                        messageBuilder.append(System.lineSeparator());
-                    }
-                }
-            } else {
-                messageBuilder.append(" A notification was received, but it was empty.");
-            }
-        });
+            messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+            messageBuilder.append(System.lineSeparator());
+            messageBuilder.append(event.getContent());
+        } else {
+            messageBuilder.append(" A notification was received, but it was empty.");
+        }
         return messageBuilder.toString();
     }
 

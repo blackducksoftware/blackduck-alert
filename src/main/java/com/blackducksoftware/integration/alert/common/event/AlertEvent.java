@@ -29,12 +29,20 @@ public class AlertEvent {
 
     private final String eventId;
     private final String destination;
+    private final String createdAt;
+    private final String provider;
+    private final String notificationType;
     private final String content;
+    private final Long notificationId;
 
-    public AlertEvent(final String destination, final String content) {
+    public AlertEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId) {
         this.eventId = UUID.randomUUID().toString();
         this.destination = destination;
+        this.createdAt = createdAt;
+        this.provider = provider;
+        this.notificationType = notificationType;
         this.content = content;
+        this.notificationId = notificationId;
     }
 
     public String getEventId() {
@@ -45,7 +53,21 @@ public class AlertEvent {
         return destination;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
     public String getContent() {
         return content;
     }
+
+    public Long getNotificationId() { return notificationId;}
 }
