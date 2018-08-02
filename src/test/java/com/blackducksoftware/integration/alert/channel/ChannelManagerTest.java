@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.junit.Before;
@@ -30,6 +31,7 @@ import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
@@ -76,7 +78,8 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
     public void testCreateChannelEvent() {
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent channelEvent = channelManager.createChannelEvent(getDescriptor().getDestinationName(), digestModel, 1L);
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final ChannelEvent channelEvent = channelManager.createChannelEvent(getDescriptor().getDestinationName(), notificationContent, 1L);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());

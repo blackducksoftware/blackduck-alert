@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -53,7 +54,7 @@ public class PurgeJobIT {
     }
 
     private NotificationContent createNotificationContent(final Date createdAt) {
-        return new NotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}");
+        return new MockNotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}", null).createEntity();
     }
 
     @Test

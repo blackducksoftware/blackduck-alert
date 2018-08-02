@@ -24,7 +24,6 @@
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,12 +35,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
@@ -126,12 +124,14 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
+    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
+            throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
-            final Collection<ProjectData> projectDataCollection = digestModel.getProjectDataCollection();
-            final String htmlMessage = createHtmlMessage(projectDataCollection);
+            final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
+            final String content = event.getContent();
+            final String htmlMessage = createHtmlMessage(contentTitle, content);
             final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
 
             final String url = getApiUrl(globalConfig) + "/v2/room/" + config.getRoomId().toString() + "/notification";
@@ -144,7 +144,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         }
     }
 
-    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
+    private String createHtmlMessage(final String contentTitle, final String content) throws AlertException {
         try {
             final String templatesDirectory = getGlobalProperties().getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
             final String templateDirectoryPath;
@@ -157,9 +157,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put("projectDataCollection", projectDataCollection);
+            model.put("content", content);
+            model.put("contentTitle", contentTitle);
 
-            return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
+            return freemarkerTemplatingService.getResolvedTemplate(model, "audit.ftl");
         } catch (final IOException | TemplateException e) {
             throw new AlertException(e);
         }

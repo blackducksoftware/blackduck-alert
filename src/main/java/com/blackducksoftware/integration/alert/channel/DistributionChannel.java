@@ -190,7 +190,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         }
     }
 
-    public <CC> Optional<CC> extractContentFromEvent(final ChannelEvent event, final Class<CC> contentClass) throws AlertException {
+    public <C> Optional<C> extractContentFromEvent(final ChannelEvent event, final Class<C> contentClass) {
         return Optional.ofNullable(contentExtractor.getJsonContent(event.getContent(), contentClass));
     }
 

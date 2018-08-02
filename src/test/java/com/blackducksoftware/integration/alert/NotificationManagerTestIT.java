@@ -27,8 +27,8 @@ import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityO
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -43,16 +43,14 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class NotificationManagerTestIT {
 
     @Autowired
-    private NotificationRepository notificationRepository;
-
-    @Autowired
-    private VulnerabilityRepository vulnerabilityRepository;
+    private NotificationContentRepository notificationContentRepository;
 
     @Autowired
     private NotificationManager notificationManager;
 
     private NotificationContent createNotificationContent(final Date createdAt) {
-        return new NotificationContent(new Date(), "provider", "notificationType", "{content: \"content is here...\"}");
+        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}", null);
+        return mockedNotificationContent.createEntity();
     }
 
     private NotificationContent createNotificationContent() {
@@ -73,7 +71,7 @@ public class NotificationManagerTestIT {
 
     @Before
     public void cleanUpDB() {
-        notificationRepository.deleteAll();
+        notificationContentRepository.deleteAll();
     }
 
     @Test
@@ -206,13 +204,11 @@ public class NotificationManagerTestIT {
         notificationManager.saveNotification(entityToFind2);
 
         final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
-        assertEquals(4, notificationRepository.count());
-        assertEquals(4, vulnerabilityRepository.count());
+        assertEquals(4, notificationContentRepository.count());
 
         notificationManager.deleteNotificationList(foundList);
 
-        assertEquals(2, notificationRepository.count());
-        assertEquals(2, vulnerabilityRepository.count());
+        assertEquals(2, notificationContentRepository.count());
     }
 
     @Test
@@ -220,12 +216,10 @@ public class NotificationManagerTestIT {
         final NotificationContent notificationEntity = createNotificationContent();
         final NotificationContent savedModel = notificationManager.saveNotification(notificationEntity);
 
-        assertEquals(1, notificationRepository.count());
-        assertEquals(1, vulnerabilityRepository.count());
+        assertEquals(1, notificationContentRepository.count());
 
         notificationManager.deleteNotification(savedModel);
 
-        assertEquals(0, notificationRepository.count());
-        assertEquals(0, vulnerabilityRepository.count());
+        assertEquals(0, notificationContentRepository.count());
     }
 }

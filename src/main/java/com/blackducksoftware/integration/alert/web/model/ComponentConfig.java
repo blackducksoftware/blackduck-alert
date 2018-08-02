@@ -25,35 +25,17 @@ package com.blackducksoftware.integration.alert.web.model;
 
 public class ComponentConfig extends Config {
 
-    private String componentName;
-    private String componentVersion;
-    private String policyRuleName;
-    private String policyRuleUser;
+    private String content;
 
     public ComponentConfig() {
     }
 
-    public ComponentConfig(final String componentName, final String componentVersion, final String policyRuleName, final String policyRuleUser) {
-        this.componentName = componentName;
-        this.componentVersion = componentVersion;
-        this.policyRuleName = policyRuleName;
-        this.policyRuleUser = policyRuleUser;
+    public ComponentConfig(final String content) {
+        this.content = content;
     }
 
-    public String getComponentName() {
-        return componentName;
-    }
-
-    public String getComponentVersion() {
-        return componentVersion;
-    }
-
-    public String getPolicyRuleName() {
-        return policyRuleName;
-    }
-
-    public String getPolicyRuleUser() {
-        return policyRuleUser;
+    public String getContent() {
+        return content;
     }
 
 }

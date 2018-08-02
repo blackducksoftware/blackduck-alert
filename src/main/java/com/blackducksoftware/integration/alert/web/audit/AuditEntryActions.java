@@ -26,7 +26,6 @@ package com.blackducksoftware.integration.alert.web.audit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -40,6 +39,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
@@ -155,7 +155,7 @@ public class AuditEntryActions {
         for (final AuditEntryConfig restModel : modelsToCheck) {
             if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
-            } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
+            } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
             }
         }
@@ -179,12 +179,11 @@ public class AuditEntryActions {
         if (!commonConfigEntity.isPresent()) {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
-        // TODO fix the resend
-        //        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
-        //        final DigestModel digestModel = new DigestModel(projectDataCollection);
-        //        final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), digestModel);
-        //        event.setAuditEntryId(auditEntryEntity.getId());
-        //        channelTemplateManager.sendEvent(event);
+        notifications.forEach(notificationContent -> {
+            final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), notificationContent);
+            event.setAuditEntryId(auditEntryEntity.getId());
+            channelTemplateManager.sendEvent(event);
+        });
         return get();
     }
 
@@ -216,12 +215,6 @@ public class AuditEntryActions {
         NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
             notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0));
-            final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType()).collect(Collectors.toSet());
-            notificationConfig.setNotificationTypes(notificationTypes);
-            // TODO fix the contents of the notification
-            //            final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
-            //                    notification.getPolicyRuleUser())).collect(Collectors.toSet());
-            //            notificationConfig.setComponents(components);
         }
 
         String distributionConfigName = null;
