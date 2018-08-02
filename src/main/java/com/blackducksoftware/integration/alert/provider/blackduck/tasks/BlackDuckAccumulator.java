@@ -47,6 +47,7 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
 import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
@@ -216,7 +217,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     protected NotificationContent createContent(final CommonNotificationView commonNotificationView) {
 
         final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-        final String provider = "";
+        final String provider = BlackDuckDescriptor.PROVIDER_NAME;
         final String notificationType = commonNotificationView.getType().name();
         final String jsonContent = commonNotificationView.json;
         final NotificationContent content = new NotificationContent(createdAt, provider, notificationType, jsonContent);
