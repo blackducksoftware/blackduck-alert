@@ -65,22 +65,20 @@ public class BlackDuckProperties {
     }
 
     public Optional<String> getBlackDuckUrl() {
-        if (StringUtils.isNotBlank(blackDuckUrl)) {
-            return Optional.of(blackDuckUrl);
-        }
-        return Optional.empty();
+        return getOptionalString(blackDuckUrl);
     }
 
     public Optional<String> getPublicBlackDuckWebserverHost() {
-        if (StringUtils.isNotBlank(publicBlackDuckWebserverHost)) {
-            return Optional.of(publicBlackDuckWebserverHost);
-        }
-        return Optional.empty();
+        return getOptionalString(publicBlackDuckWebserverHost);
     }
 
     public Optional<String> getPublicBlackDuckWebserverPort() {
-        if (StringUtils.isNotBlank(publicBlackDuckWebserverPort)) {
-            return Optional.of(publicBlackDuckWebserverPort);
+        return getOptionalString(publicBlackDuckWebserverPort);
+    }
+
+    private Optional<String> getOptionalString(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            return Optional.of(value);
         }
         return Optional.empty();
     }

@@ -46,15 +46,13 @@ public class AboutReader {
     }
 
     public AboutModel getAboutModel() {
-        AboutModel aboutModel;
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
-            aboutModel = gson.fromJson(aboutJson, AboutModel.class);
+            return gson.fromJson(aboutJson, AboutModel.class);
         } catch (final Exception e) {
-            aboutModel = null;
             logger.error(e.getMessage(), e);
+            return null;
         }
-        return aboutModel;
     }
 
     public String getProductVersion() {

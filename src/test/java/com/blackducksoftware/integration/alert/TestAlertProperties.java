@@ -20,11 +20,8 @@ public class TestAlertProperties extends AlertProperties {
     }
 
     @Override
-    public Optional<String> getAlertConfigHome() {
-        if (StringUtils.isNotBlank(alertConfigHome)) {
-            return Optional.of(alertConfigHome);
-        }
-        return Optional.empty();
+    public String getAlertConfigHome() {
+        return alertConfigHome;
     }
 
     public void setAlertConfigHome(final String alertConfigHome) {
@@ -32,11 +29,8 @@ public class TestAlertProperties extends AlertProperties {
     }
 
     @Override
-    public Optional<String> getAlertTemplatesDir() {
-        if (StringUtils.isNotBlank(alertTemplatesDir)) {
-            return Optional.of(alertTemplatesDir);
-        }
-        return Optional.empty();
+    public String getAlertTemplatesDir() {
+        return alertTemplatesDir;
     }
 
     public void setAlertTemplatesDir(final String alertTemplatesDir) {
@@ -44,11 +38,8 @@ public class TestAlertProperties extends AlertProperties {
     }
 
     @Override
-    public Optional<String> getAlertImagesDir() {
-        if (StringUtils.isNotBlank(alertImagesDir)) {
-            return Optional.of(alertImagesDir);
-        }
-        return Optional.empty();
+    public String getAlertImagesDir() {
+        return alertImagesDir;
     }
 
     public void setAlertImagesDir(final String alertImagesDir) {

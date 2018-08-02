@@ -62,25 +62,16 @@ public class AlertProperties {
     @Value("${alert.proxy.password:}")
     private String alertProxyPassword;
 
-    public Optional<String> getAlertConfigHome() {
-        if (StringUtils.isNotBlank(alertConfigHome)) {
-            return Optional.of(alertConfigHome);
-        }
-        return Optional.empty();
+    public String getAlertConfigHome() {
+        return alertConfigHome;
     }
 
-    public Optional<String> getAlertTemplatesDir() {
-        if (StringUtils.isNotBlank(alertTemplatesDir)) {
-            return Optional.of(alertTemplatesDir);
-        }
-        return Optional.empty();
+    public String getAlertTemplatesDir() {
+        return alertTemplatesDir;
     }
 
-    public Optional<String> getAlertImagesDir() {
-        if (StringUtils.isNotBlank(alertImagesDir)) {
-            return Optional.of(alertImagesDir);
-        }
-        return Optional.empty();
+    public String getAlertImagesDir() {
+        return alertImagesDir;
     }
 
     public Optional<Boolean> getAlertTrustCertificate() {
@@ -88,29 +79,24 @@ public class AlertProperties {
     }
 
     public Optional<String> getAlertProxyHost() {
-        if (StringUtils.isNotBlank(alertProxyHost)) {
-            return Optional.of(alertProxyHost);
-        }
-        return Optional.empty();
+        return getOptionalString(alertProxyHost);
     }
 
     public Optional<String> getAlertProxyPort() {
-        if (StringUtils.isNotBlank(alertProxyPort)) {
-            return Optional.of(alertProxyPort);
-        }
-        return Optional.empty();
+        return getOptionalString(alertProxyPort);
     }
 
     public Optional<String> getAlertProxyUsername() {
-        if (StringUtils.isNotBlank(alertProxyUsername)) {
-            return Optional.of(alertProxyUsername);
-        }
-        return Optional.empty();
+        return getOptionalString(alertProxyUsername);
     }
 
     public Optional<String> getAlertProxyPassword() {
-        if (StringUtils.isNotBlank(alertProxyPassword)) {
-            return Optional.of(alertProxyPassword);
+        return getOptionalString(alertProxyPassword);
+    }
+
+    private Optional<String> getOptionalString(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            return Optional.of(value);
         }
         return Optional.empty();
     }

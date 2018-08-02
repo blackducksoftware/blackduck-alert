@@ -146,7 +146,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
         try {
-            final String templatesDirectory = getAlertProperties().getAlertTemplatesDir().orElse("");
+            final String templatesDirectory = getAlertProperties().getAlertTemplatesDir();
             final String templateDirectoryPath;
             if (StringUtils.isNotBlank(templatesDirectory)) {
                 templateDirectoryPath = templatesDirectory + "/hipchat";
