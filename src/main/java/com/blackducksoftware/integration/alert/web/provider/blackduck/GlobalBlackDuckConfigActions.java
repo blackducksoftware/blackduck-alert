@@ -79,7 +79,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
             final Optional<GlobalBlackDuckConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
                 GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
-                restModel = updateModelFromEnvironment(restModel);
+                restModel = updateModelFromProperties(restModel);
                 if (restModel != null) {
                     final GlobalBlackDuckConfig maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -96,12 +96,12 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         } else {
             restModels.add(new GlobalBlackDuckConfig());
         }
-        restModels = updateModelsFromEnvironment(restModels);
+        restModels = updateModelsFromProperties(restModels);
         restModels = maskRestModels(restModels);
         return restModels;
     }
 
-    public GlobalBlackDuckConfig updateModelFromEnvironment(final GlobalBlackDuckConfig restModel) {
+    public GlobalBlackDuckConfig updateModelFromProperties(final GlobalBlackDuckConfig restModel) {
         restModel.setBlackDuckUrl(blackDuckProperties.getBlackDuckUrl().orElse(null));
         final Boolean trustCertificate = alertProperties.getAlertTrustCertificate().orElse(null);
         if (null != trustCertificate) {
@@ -116,10 +116,10 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         return restModel;
     }
 
-    public List<GlobalBlackDuckConfig> updateModelsFromEnvironment(final List<GlobalBlackDuckConfig> restModels) {
+    public List<GlobalBlackDuckConfig> updateModelsFromProperties(final List<GlobalBlackDuckConfig> restModels) {
         final List<GlobalBlackDuckConfig> updatedRestModels = new ArrayList<>();
         for (final GlobalBlackDuckConfig restModel : restModels) {
-            updatedRestModels.add(updateModelFromEnvironment(restModel));
+            updatedRestModels.add(updateModelFromProperties(restModel));
         }
         return restModels;
     }
@@ -129,7 +129,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalBlackDuckConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
         if (updatedConfig instanceof GlobalBlackDuckConfig) {
-            updatedConfig = (T) updateModelFromEnvironment((GlobalBlackDuckConfig) updatedConfig);
+            updatedConfig = (T) updateModelFromProperties((GlobalBlackDuckConfig) updatedConfig);
         }
         return updatedConfig;
     }
