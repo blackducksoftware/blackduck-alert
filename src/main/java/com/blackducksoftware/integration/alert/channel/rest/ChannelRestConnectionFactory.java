@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
@@ -42,11 +42,11 @@ import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConn
 public class ChannelRestConnectionFactory {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRestConnectionFactory.class);
 
-    private final BlackDuckProperties blackDuckProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
-    public ChannelRestConnectionFactory(final BlackDuckProperties blackDuckProperties) {
-        this.blackDuckProperties = blackDuckProperties;
+    public ChannelRestConnectionFactory(final AlertProperties alertProperties) {
+        this.alertProperties = alertProperties;
     }
 
     public RestConnection createUnauthenticatedRestConnection(final String stringUrl) {
@@ -55,12 +55,7 @@ public class ChannelRestConnectionFactory {
     }
 
     public RestConnection createUnauthenticatedRestConnection(final URL url) {
-        int timeout = 5 * 60;
-        if (blackDuckProperties.getBlackDuckTimeout() != null) {
-            timeout = blackDuckProperties.getBlackDuckTimeout();
-        }
-
-        return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), timeout * 1000);
+        return createUnauthenticatedRestConnection(url, new Slf4jIntLogger(logger), 5 * 60 * 1000);
     }
 
     public RestConnection createUnauthenticatedRestConnection(final URL url, final IntLogger intLogger, final int timeout) {
@@ -68,8 +63,7 @@ public class ChannelRestConnectionFactory {
             logger.error("URL WAS NULL");
             return null;
         }
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = blackDuckProperties.createUnauthenticatedRestConnectionBuilder(intLogger, timeout);
-        restConnectionBuilder.setBaseUrl(url.toString());
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = alertProperties.createUnauthenticatedRestConnectionBuilder(intLogger, url.toString(), timeout);
 
         final RestConnection connection = restConnectionBuilder.build();
         try {

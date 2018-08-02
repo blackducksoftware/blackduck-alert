@@ -10,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
@@ -33,15 +34,16 @@ public class EmailChannelTestIT extends ChannelTest {
         final GlobalBlackDuckConfigEntity globalConfig = new GlobalBlackDuckConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_HUB_API_KEY));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(globalRepository);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(globalRepository, testAlertProperties);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         if (trustCert != null) {
-            globalProperties.setBlackDuckTrustCertificate(Boolean.valueOf(trustCert));
+            testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, globalProperties, auditEntryRepository, null, null, null, contentConverter);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null, contentConverter);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final DigestModel digestModel = new DigestModel(projectData);
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
@@ -71,7 +73,7 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailNullGlobalTest() throws Exception {
         final OutputLogger outputLogger = new OutputLogger();
 
-        final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, contentConverter);
+        final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null, contentConverter);
         final DigestModel digestModel = new DigestModel(null);
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
         emailChannel.sendMessage(event, null);

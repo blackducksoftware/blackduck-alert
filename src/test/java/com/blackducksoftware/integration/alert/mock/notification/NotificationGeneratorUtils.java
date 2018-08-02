@@ -111,19 +111,19 @@ public class NotificationGeneratorUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static NotificationDetailResults initializeTestData(final BlackDuckProperties hubProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final HubService hubService = Mockito.mock(HubService.class);
+    public static NotificationDetailResults initializeTestData(final BlackDuckProperties blackDuckProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
+        final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
+        final HubService blackDuckService = Mockito.mock(HubService.class);
         final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
         final List<VulnerabilityV2View> vulnerabilityViewList = createVulnerabilityList();
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
 
-        Mockito.when(hubProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
-        Mockito.when(hubProperties.createBlackDuckServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
-        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);
-        Mockito.when(hubService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
-        Mockito.when(hubService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
+        Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
+        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any())).thenReturn(blackDuckServicesFactory);
+        Mockito.when(blackDuckServicesFactory.createHubService()).thenReturn(blackDuckService);
+        Mockito.when(blackDuckServicesFactory.createHubBucketService()).thenReturn(bucketService);
+        Mockito.when(blackDuckService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
+        Mockito.when(blackDuckService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
         createCommonContentData(content);

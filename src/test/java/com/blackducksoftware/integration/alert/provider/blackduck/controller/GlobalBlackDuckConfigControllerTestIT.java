@@ -6,11 +6,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.alert.mock.MockGlobalEntityUtil;
@@ -25,17 +27,20 @@ import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlac
 public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {
 
     @Autowired
-    GlobalBlackDuckRepository globalHubRepository;
+    GlobalBlackDuckRepository globalBlackDuckRepository;
 
     @Autowired
-    GlobalBlackDuckConfigActions globalHubConfigActions;
+    GlobalBlackDuckConfigActions globalBlackDuckConfigActions;
 
     @Autowired
-    BlackDuckProperties hubProperties;
+    BlackDuckProperties blackDuckProperties;
+
+    @Autowired
+    AlertProperties alertProperties;
 
     @Override
     public GlobalBlackDuckRepository getGlobalEntityRepository() {
-        return globalHubRepository;
+        return globalBlackDuckRepository;
     }
 
     @Override
@@ -78,8 +83,8 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest<
         final String apiKey = testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY);
         final String alwaysTrust = testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
         final String testRestUrl = restUrl + "/test";
-        hubProperties.setBlackDuckUrl(hubUrl);
-        hubProperties.setBlackDuckTrustCertificate(Boolean.valueOf(alwaysTrust));
+        ReflectionTestUtils.setField(blackDuckProperties, "blackDuckUrl", hubUrl);
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(alwaysTrust));
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
                 .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                 .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -88,7 +93,7 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest<
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
         assertTrue(true);
-        hubProperties.setBlackDuckUrl(null);
-        hubProperties.setBlackDuckTrustCertificate(Boolean.FALSE);
+        ReflectionTestUtils.setField(blackDuckProperties, "blackDuckUrl", null);
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", false);
     }
 }

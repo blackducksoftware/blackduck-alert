@@ -41,7 +41,7 @@ public class AboutActions {
     }
 
     public Optional<AboutModel> getAboutModel() {
-        return Optional.ofNullable(aboutReader.readAboutInformation());
+        return Optional.ofNullable(aboutReader.getAboutModel());
     }
 
 }

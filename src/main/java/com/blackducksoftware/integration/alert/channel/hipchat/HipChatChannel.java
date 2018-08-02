@@ -39,10 +39,10 @@ import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplati
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -67,10 +67,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
     @Autowired
-    public HipChatChannel(final Gson gson, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
             final CommonDistributionRepository commonDistributionRepository,
             final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
         try {
-            final String templatesDirectory = getGlobalProperties().getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+            final String templatesDirectory = getAlertProperties().getAlertTemplatesDir().orElse("");
             final String templateDirectoryPath;
             if (StringUtils.isNotBlank(templatesDirectory)) {
                 templateDirectoryPath = templatesDirectory + "/hipchat";

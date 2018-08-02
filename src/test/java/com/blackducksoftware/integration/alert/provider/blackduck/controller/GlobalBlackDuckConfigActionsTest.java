@@ -24,6 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
@@ -47,9 +48,10 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
     @Override
     public GlobalBlackDuckConfigActions getMockedConfigActions() {
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(mockedGlobalRepository);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties);
 
-        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, hubProperties, new BlackDuckContentConverter(getContentConverter()));
+        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, new BlackDuckContentConverter(getContentConverter()), hubProperties, testAlertProperties);
         return configActions;
     }
 
@@ -65,11 +67,12 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
         Mockito.when(mockedGlobalRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(getGlobalEntityMockUtil().createGlobalEntity()));
         Mockito.when(mockedGlobalRepository.findAll()).thenReturn(Arrays.asList(getGlobalEntityMockUtil().createGlobalEntity()));
         final GlobalBlackDuckConfigEntity databaseEntity = getGlobalEntityMockUtil().createGlobalEntity();
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository);
-        globalProperties.setBlackDuckTrustCertificate(null);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties);
+        testAlertProperties.setAlertTrustCertificate(null);
         globalProperties.setBlackDuckUrl(null);
         final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(getContentConverter());
-        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, globalProperties, hubContentConverter);
+        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, hubContentConverter, globalProperties, testAlertProperties);
         final GlobalBlackDuckConfig defaultRestModel = (GlobalBlackDuckConfig) hubContentConverter.populateRestModelFromDatabaseEntity(databaseEntity);
         final GlobalBlackDuckConfig maskedRestModel = configActions.maskRestModel(defaultRestModel);
         List<GlobalBlackDuckConfig> globalConfigsById = configActions.getConfig(1L);
@@ -114,8 +117,9 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
     public void testTestConfig() throws Exception {
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository);
-        GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, globalProperties, new BlackDuckContentConverter(getContentConverter()));
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties);
+        GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, new BlackDuckContentConverter(getContentConverter()), globalProperties, testAlertProperties);
 
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
@@ -157,8 +161,9 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
         final MockGlobalBlackDuckRestModel mockUtils = new MockGlobalBlackDuckRestModel();
         final RestConnection mockedRestConnection = Mockito.mock(RestConnection.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository);
-        GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, globalProperties, new BlackDuckContentConverter(getContentConverter()));
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties);
+        GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, new BlackDuckContentConverter(getContentConverter()), globalProperties, testAlertProperties);
         configActions = Mockito.spy(configActions);
         Mockito.doAnswer(new Answer<RestConnection>() {
             @Override
@@ -212,7 +217,7 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
     @Test
     @Override
     public void testValidConfig() throws Exception {
-        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(null, null, null);
+        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(null, null, null, null);
 
         final String url = "https://www.google.com/";
         final String user = "User";
@@ -244,7 +249,7 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
 
     @Test
     public void testCreateRestConnection() throws Exception {
-        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(null, null, null);
+        final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(null, null, null, null);
 
         final String url = "https://www.google.com/";
         final String apiToken = "User";
