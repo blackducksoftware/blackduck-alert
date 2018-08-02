@@ -63,15 +63,15 @@ public class AlertProperties {
     private String alertProxyPassword;
 
     public String getAlertConfigHome() {
-        return alertConfigHome;
+        return StringUtils.trimToNull(alertConfigHome);
     }
 
     public String getAlertTemplatesDir() {
-        return alertTemplatesDir;
+        return StringUtils.trimToNull(alertTemplatesDir);
     }
 
     public String getAlertImagesDir() {
-        return alertImagesDir;
+        return StringUtils.trimToNull(alertImagesDir);
     }
 
     public Optional<Boolean> getAlertTrustCertificate() {
