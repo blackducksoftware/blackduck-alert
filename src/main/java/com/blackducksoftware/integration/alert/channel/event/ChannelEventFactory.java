@@ -26,20 +26,20 @@ package com.blackducksoftware.integration.alert.channel.event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 
 @Component
 public class ChannelEventFactory {
-    private final DistributionChannelManager distributionChannelManager;
+    private final ChannelTestEventFactory channelTestEventFactory;
 
     @Autowired
-    public ChannelEventFactory(final DistributionChannelManager distributionChannelManager) {
-        this.distributionChannelManager = distributionChannelManager;
+    public ChannelEventFactory(final ChannelTestEventFactory channelTestEventFactory) {
+        this.channelTestEventFactory = channelTestEventFactory;
     }
 
     public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final DigestModel digestModel) {
-        return distributionChannelManager.createChannelEvent(distributionType, digestModel, commonDistributionConfigId);
+        return channelTestEventFactory.createChannelEvent(distributionType, digestModel, commonDistributionConfigId);
     }
 
 }

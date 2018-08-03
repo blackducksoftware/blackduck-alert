@@ -219,7 +219,7 @@ public class AuditEntryActions {
 
         NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0).getNotificationEntity());
+            notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notifications.get(0).getNotificationEntity());
             final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
             notificationConfig.setNotificationTypes(notificationTypes);
             final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),

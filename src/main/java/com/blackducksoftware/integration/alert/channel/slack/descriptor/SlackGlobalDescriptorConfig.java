@@ -23,16 +23,35 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.exception.IntegrationException;
 
+//TODO This class only exists to make Slack appear in the global UI for now. Delete this config once we no longer need slack to appear.
 @Component
-public class SlackDescriptor extends ChannelDescriptor {
+public class SlackGlobalDescriptorConfig extends DescriptorConfig {
 
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig, final SlackGlobalDescriptorConfig globalDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, globalDescriptorConfig);
+    public SlackGlobalDescriptorConfig() {
+        super(null, null);
+    }
+
+    @Override
+    public UIComponent getUiComponent() {
+        return new UIComponent("Slack", "slack", "slack", "SlackConfiguartion");
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+    }
+
+    @Override
+    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
     }
 
 }

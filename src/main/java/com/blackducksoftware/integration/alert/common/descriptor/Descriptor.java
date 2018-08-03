@@ -24,13 +24,18 @@
 package com.blackducksoftware.integration.alert.common.descriptor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
+import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class Descriptor {
     private final String name;
@@ -69,6 +74,42 @@ public abstract class Descriptor {
 
     public Set<DescriptorConfig> getAllConfigs() {
         return descriptorConfigs.values().stream().collect(Collectors.toSet());
+    }
+
+    public Optional<? extends DatabaseEntity> readEntity(final DescriptorConfigType descriptorConfigType, final long id) {
+        return getConfig(descriptorConfigType).getRepositoryAccessor().readEntity(id);
+    }
+
+    public List<? extends DatabaseEntity> readEntities(final DescriptorConfigType descriptorConfigType) {
+        return getConfig(descriptorConfigType).getRepositoryAccessor().readEntities();
+    }
+
+    public DatabaseEntity saveEntity(final DescriptorConfigType descriptorConfigType, final DatabaseEntity entity) {
+        return getConfig(descriptorConfigType).getRepositoryAccessor().saveEntity(entity);
+    }
+
+    public void deleteEntity(final DescriptorConfigType descriptorConfigType, final long id) {
+        getConfig(descriptorConfigType).getRepositoryAccessor().deleteEntity(id);
+    }
+
+    public DatabaseEntity populateEntityFromConfig(final DescriptorConfigType descriptorConfigType, final Config config) {
+        return getConfig(descriptorConfigType).getTypeConverter().populateEntityFromConfig(config);
+    }
+
+    public Config populateConfigFromEntity(final DescriptorConfigType descriptorConfigType, final DatabaseEntity entity) {
+        return getConfig(descriptorConfigType).getTypeConverter().populateConfigFromEntity(entity);
+    }
+
+    public Config getConfigFromJson(final DescriptorConfigType descriptorConfigType, final String json) {
+        return getConfig(descriptorConfigType).getTypeConverter().getConfigFromJson(json);
+    }
+
+    public void validateConfig(final DescriptorConfigType descriptorConfigType, final Config config, final Map<String, String> fieldErrors) {
+        getConfig(descriptorConfigType).validateConfig(config, fieldErrors);
+    }
+
+    public void testConfig(final DescriptorConfigType descriptorConfigType, final DatabaseEntity entity) throws IntegrationException {
+        getConfig(descriptorConfigType).testConfig(entity);
     }
 
 }

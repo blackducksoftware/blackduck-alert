@@ -31,18 +31,18 @@ import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 public abstract class DescriptorConfig {
-    private final DatabaseContentConverter databaseContentConverter;
+    private final TypeConverter typeConverter;
     private final RepositoryAccessor repositoryAccessor;
     private StartupComponent startupComponent;
 
-    public DescriptorConfig(final DatabaseContentConverter databaseContentConverter, final RepositoryAccessor repositoryAccessor) {
-        this.databaseContentConverter = databaseContentConverter;
+    public DescriptorConfig(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
+        this.typeConverter = typeConverter;
         this.repositoryAccessor = repositoryAccessor;
         this.startupComponent = null;
     }
 
-    public DatabaseContentConverter getDatabaseContentConverter() {
-        return databaseContentConverter;
+    public TypeConverter getTypeConverter() {
+        return typeConverter;
     }
 
     public RepositoryAccessor getRepositoryAccessor() {

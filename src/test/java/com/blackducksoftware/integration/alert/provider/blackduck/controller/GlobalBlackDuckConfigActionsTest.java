@@ -74,7 +74,7 @@ public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBl
         globalProperties.setBlackDuckUrl(null);
         final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(getContentConverter());
         final GlobalBlackDuckConfigActions configActions = new GlobalBlackDuckConfigActions(mockedGlobalRepository, globalProperties, hubContentConverter);
-        final GlobalBlackDuckConfig defaultRestModel = (GlobalBlackDuckConfig) hubContentConverter.populateRestModelFromDatabaseEntity(databaseEntity);
+        final GlobalBlackDuckConfig defaultRestModel = (GlobalBlackDuckConfig) hubContentConverter.populateConfigFromEntity(databaseEntity);
         final GlobalBlackDuckConfig maskedRestModel = configActions.maskRestModel(defaultRestModel);
         List<GlobalBlackDuckConfig> globalConfigsById = configActions.getConfig(1L);
         List<GlobalBlackDuckConfig> allGlobalConfigs = configActions.getConfig(null);

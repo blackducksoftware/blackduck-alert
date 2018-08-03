@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel;
+package com.blackducksoftware.integration.alert.common.event;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,12 +40,11 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 
 @Transactional
 @Component
-// TODO rename this class to something more reasonable
-public class DistributionChannelManager {
+public class ChannelTestEventFactory {
     private final ContentConverter contentConverter;
 
     @Autowired
-    public DistributionChannelManager(final ContentConverter contentConverter) {
+    public ChannelTestEventFactory(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
     }
 

@@ -71,9 +71,9 @@ public class BlackDuckDescriptorConfigTest {
         final GlobalBlackDuckConfigEntity hubEntity = mockBlackDuckEntity.createGlobalEntity();
         final GlobalBlackDuckConfig hubRestModel = mockBlackDuckRestModel.createGlobalRestModel();
 
-        final Config restModel = hubDescriptor.getDatabaseContentConverter().populateRestModelFromDatabaseEntity(hubEntity);
-        final DatabaseEntity entity = hubDescriptor.getDatabaseContentConverter().populateDatabaseEntityFromRestModel(hubRestModel);
-        final Config jsonRestModel = hubDescriptor.getDatabaseContentConverter().getRestModelFromJson(gson.toJson(hubEntity));
+        final Config restModel = hubDescriptor.getTypeConverter().populateConfigFromEntity(hubEntity);
+        final DatabaseEntity entity = hubDescriptor.getTypeConverter().populateEntityFromConfig(hubRestModel);
+        final Config jsonRestModel = hubDescriptor.getTypeConverter().getConfigFromJson(gson.toJson(hubEntity));
 
         assertEquals(String.valueOf(hubEntity.getId()), restModel.getId());
         assertEquals(hubRestModel.getId(), String.valueOf(entity.getId()));

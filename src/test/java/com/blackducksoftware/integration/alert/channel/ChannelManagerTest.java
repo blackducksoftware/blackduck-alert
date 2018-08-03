@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescript
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
@@ -48,7 +49,7 @@ import com.google.gson.Gson;
 public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
     protected Gson gson;
     protected ContentConverter contentConverter;
-    protected DistributionChannelManager channelManager;
+    protected ChannelTestEventFactory channelManager;
     protected TestProperties properties;
 
     @Before
@@ -56,7 +57,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new DistributionChannelManager(contentConverter);
+        channelManager = new ChannelTestEventFactory(contentConverter);
         cleanDistributionRepository();
         cleanGlobalRepository();
     }
