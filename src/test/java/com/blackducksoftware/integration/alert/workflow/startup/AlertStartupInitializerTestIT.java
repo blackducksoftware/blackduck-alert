@@ -1,5 +1,6 @@
 package com.blackducksoftware.integration.alert.workflow.startup;
 
+// TODO Once StartupComponents are updated, fix this test
 public class AlertStartupInitializerTestIT {
 
     // @Test

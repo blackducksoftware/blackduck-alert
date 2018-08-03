@@ -30,7 +30,7 @@ import com.blackducksoftware.integration.alert.database.entity.CommonDistributio
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckContentConverter;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
@@ -113,7 +113,7 @@ public class CommonConfigHandlerTest {
 
     @Test
     public void postWithInvalidConfigTest() throws AlertFieldException {
-        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
+        final BlackDuckTypeConverter commonDistributionContentConverter = new BlackDuckTypeConverter(contentConverter);
         final GlobalBlackDuckConfigActions configActions = Mockito.mock(GlobalBlackDuckConfigActions.class);
         final CommonConfigHandler<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> handler = new CommonConfigHandler<>(GlobalBlackDuckConfigEntity.class,
                 GlobalBlackDuckConfig.class, configActions, contentConverter);
@@ -187,7 +187,7 @@ public class CommonConfigHandlerTest {
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
+        final BlackDuckTypeConverter commonDistributionContentConverter = new BlackDuckTypeConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
         final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();
@@ -273,7 +273,7 @@ public class CommonConfigHandlerTest {
                 GlobalBlackDuckConfig.class, configActions, contentConverter);
 
         Mockito.when(configActions.validateConfig(Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
-        final BlackDuckContentConverter commonDistributionContentConverter = new BlackDuckContentConverter(contentConverter);
+        final BlackDuckTypeConverter commonDistributionContentConverter = new BlackDuckTypeConverter(contentConverter);
         Mockito.when(configActions.getDatabaseContentConverter()).thenReturn(commonDistributionContentConverter);
 
         final GlobalBlackDuckConfig restModel = mockGlobalBlackDuckRestModel.createGlobalRestModel();

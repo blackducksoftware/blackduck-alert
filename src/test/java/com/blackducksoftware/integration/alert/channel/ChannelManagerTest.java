@@ -24,12 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
 public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
     protected Gson gson;
     protected ContentConverter contentConverter;
-    protected ChannelTestEventFactory channelManager;
+    protected ChannelEventFactory channelManager;
     protected TestProperties properties;
 
     @Before
@@ -57,7 +57,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new ChannelTestEventFactory(contentConverter);
+        channelManager = new ChannelEventFactory(contentConverter);
         cleanDistributionRepository();
         cleanGlobalRepository();
     }

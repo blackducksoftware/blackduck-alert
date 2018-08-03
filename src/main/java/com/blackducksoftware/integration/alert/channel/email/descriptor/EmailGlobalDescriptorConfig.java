@@ -46,11 +46,10 @@ public class EmailGlobalDescriptorConfig extends DescriptorConfig {
     private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
-    public EmailGlobalDescriptorConfig(final EmailGlobalContentConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
+    public EmailGlobalDescriptorConfig(final EmailGlobalTypeConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
             final EmailGroupChannel emailGroupChannel) {
-        super(databaseContentConverter, repositoryAccessor);
+        super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.emailGroupChannel = emailGroupChannel;
-        setStartupComponent(startupComponent);
     }
 
     @Override

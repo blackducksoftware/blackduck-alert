@@ -23,47 +23,44 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
-import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class HipChatDistributionContentConverter extends TypeConverter {
+public class HipChatGlobalTypeConverter extends TypeConverter {
+
     @Autowired
-    public HipChatDistributionContentConverter(final ContentConverter contentConverter) {
+    public HipChatGlobalTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
     public Config getConfigFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, HipChatDistributionConfig.class);
+        return getContentConverter().getJsonContent(json, HipChatGlobalConfig.class);
     }
 
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
-        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
-        final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
-        final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
+        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
+        final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
         addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
         return hipChatEntity;
     }
 
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
-        final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
-        final HipChatDistributionConfig hipChatRestModel = new HipChatDistributionConfig();
+        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
         final String id = getContentConverter().getStringValue(hipChatEntity.getId());
-        final String roomId = getContentConverter().getStringValue(hipChatEntity.getRoomId());
-        hipChatRestModel.setDistributionConfigId(id);
-        hipChatRestModel.setRoomId(roomId);
-        hipChatRestModel.setNotify(hipChatEntity.getNotify());
-        hipChatRestModel.setColor(hipChatEntity.getColor());
+        final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
+        final HipChatGlobalConfig hipChatRestModel = new HipChatGlobalConfig(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
         return hipChatRestModel;
     }
 

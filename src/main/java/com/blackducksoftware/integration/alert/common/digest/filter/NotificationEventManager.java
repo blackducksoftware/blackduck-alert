@@ -99,7 +99,7 @@ public class NotificationEventManager {
     }
 
     private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final DigestModel digestModel) {
-        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), digestModel);
+        return channelEventFactory.createChannelEvent(commonEntity.getDistributionType(), digestModel, commonEntity.getId());
     }
 
 }
