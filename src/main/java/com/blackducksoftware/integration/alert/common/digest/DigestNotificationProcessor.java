@@ -23,7 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.common.digest;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,12 +43,6 @@ public class DigestNotificationProcessor {
     }
 
     public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationContent> notificationList) {
-        final DigestRemovalProcessor removalProcessor = new DigestRemovalProcessor();
-        final List<NotificationContent> processedNotificationList = removalProcessor.process(notificationList);
-        if (processedNotificationList.isEmpty()) {
-            return Collections.emptyList();
-        } else {
-            return eventManager.createChannelEvents(digestType, processedNotificationList);
-        }
+        return eventManager.createChannelEvents(digestType, notificationList);
     }
 }

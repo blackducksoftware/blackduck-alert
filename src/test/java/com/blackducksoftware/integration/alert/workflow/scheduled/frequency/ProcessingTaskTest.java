@@ -88,7 +88,6 @@ public class ProcessingTaskTest {
         Mockito.when(notificationManager.findByCreatedAtBetween(Mockito.any(Date.class), Mockito.any(Date.class))).thenReturn(modelList);
         Mockito.when(notificationProcessor.processNotifications(DigestType.DAILY, modelList)).thenReturn(eventList);
         final ProcessingTask task = createTask(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager);
-        final DateRange dateRange = task.getDateRange();
 
         final ProcessingTask processingTask = Mockito.spy(task);
         processingTask.run();

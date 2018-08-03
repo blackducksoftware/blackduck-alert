@@ -106,11 +106,10 @@ public abstract class ProcessingTask extends ScheduledTask {
 
     public List<ChannelEvent> process(final List<NotificationContent> notificationList) {
         logger.info("Notifications to Process: {}", notificationList.size());
-        final List<ChannelEvent> events = notificationProcessor.processNotifications(getDigestType(), notificationList);
-        if (events.isEmpty()) {
+        if (notificationList.isEmpty()) {
             return Collections.emptyList();
         } else {
-            return events;
+            return notificationProcessor.processNotifications(getDigestType(), notificationList);
         }
     }
 }
