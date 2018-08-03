@@ -2,6 +2,7 @@
 	<br/>
 	<strong> ${contentTitle} </strong>
 	<br/>- - - - - - - - - - - - - - - - - - - -
+	<br/>
     ${content}
 	<br/>
 <#else>

@@ -82,7 +82,7 @@ public class DistributionChannelManager {
     }
 
     public NotificationContent getTestMessageModel() {
-        return new NotificationContent(new Date(), "", "testMessage", "{message: \"Test Message\"}");
+        return new NotificationContent(new Date(), "Alert", "Test Message", "Alert has sent this test message");
     }
 
     public ChannelEvent createChannelEvent(final String destination, final NotificationContent notificationContent, final Long commonDistributionConfigId) {
