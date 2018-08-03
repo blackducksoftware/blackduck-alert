@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
@@ -47,15 +47,15 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Transactional
 public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {
     private final W repository;
-    private final DatabaseContentConverter databaseContentConverter;
+    private final TypeConverter typeConverter;
 
-    public ConfigActions(final W repository, final DatabaseContentConverter databaseContentConverter) {
+    public ConfigActions(final W repository, final TypeConverter typeConverter) {
         this.repository = repository;
-        this.databaseContentConverter = databaseContentConverter;
+        this.typeConverter = typeConverter;
     }
 
     public boolean doesConfigExist(final String id) {
-        return doesConfigExist(databaseContentConverter.getContentConverter().getLongValue(id));
+        return doesConfigExist(typeConverter.getContentConverter().getLongValue(id));
     }
 
     public boolean doesConfigExist(final Long id) {
@@ -67,7 +67,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         if (id != null) {
             final Optional<D> foundEntity = repository.findById(id);
             if (foundEntity.isPresent()) {
-                final R restModel = (R) databaseContentConverter.populateRestModelFromDatabaseEntity(foundEntity.get());
+                final R restModel = (R) typeConverter.populateConfigFromEntity(foundEntity.get());
                 if (restModel != null) {
                     final R maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -78,7 +78,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         final List<D> databaseEntities = repository.findAll();
         final List<R> restModels = new ArrayList<>(databaseEntities.size());
         for (final D entity : databaseEntities) {
-            restModels.add((R) databaseContentConverter.populateRestModelFromDatabaseEntity(entity));
+            restModels.add((R) typeConverter.populateConfigFromEntity(entity));
         }
         return maskRestModels(restModels);
     }
@@ -123,7 +123,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
     }
 
     public void deleteConfig(final String id) {
-        deleteConfig(databaseContentConverter.getContentConverter().getLongValue(id));
+        deleteConfig(typeConverter.getContentConverter().getLongValue(id));
     }
 
     public void deleteConfig(final Long id) {
@@ -134,7 +134,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
 
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
-            final Long longId = databaseContentConverter.getContentConverter().getLongValue(id);
+            final Long longId = typeConverter.getContentConverter().getLongValue(id);
             final Optional<D> savedConfig = repository.findById(longId);
             if (savedConfig.isPresent()) {
                 return updateNewConfigWithSavedConfig(newConfig, savedConfig.get());
@@ -179,7 +179,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         if (restModel != null && StringUtils.isNotBlank(restModel.getId())) {
             try {
                 @SuppressWarnings("unchecked")
-                D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
+                D createdEntity = (D) typeConverter.populateEntityFromConfig(restModel);
                 createdEntity = updateNewConfigWithSavedConfig(createdEntity, restModel.getId());
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
@@ -196,7 +196,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         if (restModel != null) {
             try {
                 @SuppressWarnings("unchecked")
-                D createdEntity = (D) databaseContentConverter.populateDatabaseEntityFromRestModel(restModel);
+                D createdEntity = (D) typeConverter.populateEntityFromConfig(restModel);
                 if (createdEntity != null) {
                     createdEntity = repository.save(createdEntity);
                     return createdEntity;
@@ -219,7 +219,7 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
 
     public <T> T fillNewConfigWithSavedConfig(final T newConfig, final String id) throws AlertException {
         if (StringUtils.isNotBlank(id)) {
-            final Long longId = databaseContentConverter.getContentConverter().getLongValue(id);
+            final Long longId = typeConverter.getContentConverter().getLongValue(id);
             final Optional<D> savedConfig = repository.findById(longId);
             if (savedConfig.isPresent()) {
                 return fillNewConfigWithSavedConfig(newConfig, savedConfig.get());
@@ -279,8 +279,8 @@ public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, 
         return repository;
     }
 
-    public DatabaseContentConverter getDatabaseContentConverter() {
-        return databaseContentConverter;
+    public TypeConverter getDatabaseContentConverter() {
+        return typeConverter;
     }
 
 }

@@ -76,7 +76,7 @@ public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulin
         }
         final GlobalSchedulingConfig restModel;
         if (databaseEntity != null) {
-            restModel = (GlobalSchedulingConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(databaseEntity);
+            restModel = (GlobalSchedulingConfig) getDatabaseContentConverter().populateConfigFromEntity(databaseEntity);
             restModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
             restModel.setPurgeDataNextRun(purgeTask.getFormatedNextRunTime().orElse(null));
         } else {

@@ -41,6 +41,7 @@ public class PropertyInitializer {
         logger = LoggerFactory.getLogger(getClass());
     }
 
+    // TODO verify what this actually does on each startup
     public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor) {
         logger.info("Saving global properties {}", entity);
         final List<? extends DatabaseEntity> savedEntityList = repositoryAccessor.readEntities();

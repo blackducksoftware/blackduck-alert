@@ -10,17 +10,15 @@ class Navigation extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            globalComponent: [],
-            providerComponent: []
+            GLOBAL_CONFIG: [],
+            PROVIDER_CONFIG: []
         }
         this.retrieveComponentData = this.retrieveComponentData.bind(this);
     }
 
     componentDidMount() {
-        this.setState({
-            globalComponent: this.retrieveComponentData('GLOBAL_CONFIG'),
-            providerComponent: this.retrieveComponentData('PROVIDER_CONFIG')
-        });
+        this.retrieveComponentData('GLOBAL_CONFIG'),
+        this.retrieveComponentData('PROVIDER_CONFIG')
     }
 
     retrieveComponentData(distributionConfigType) {
@@ -31,25 +29,30 @@ class Navigation extends Component {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            return response.json();
+            return response.json().then((json) => {
+                this.setState ({
+                    [distributionConfigType]: json
+                });
+            });
         }).catch(console.error);
     }
 
     render() {
-        const globals = this.state.globalComponent.map((component) =>
+        const globals = this.state.GLOBAL_CONFIG.map((component) =>
         <li>
             <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
                 <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
                 {component.label}
             </NavLink>
         </li>);
-        const providers = this.state.providerComponent.map((component) =>
+        const providers = this.state.PROVIDER_CONFIG.map((component) =>
         <li>
             <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
                 <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
                 {component.label}
             </NavLink>
         </li>);
+        
     return (
         <div className="navigation">
         <div className="navigationLogo">

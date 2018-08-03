@@ -74,7 +74,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         if (id != null) {
             final Optional<GlobalBlackDuckConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
+                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(foundEntity.get());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
                     final GlobalBlackDuckConfig maskedRestModel = maskRestModel(restModel);
@@ -87,7 +87,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         List<GlobalBlackDuckConfig> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             for (final GlobalBlackDuckConfigEntity entity : databaseEntities) {
-                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(entity));
             }
         } else {
             restModels.add(new GlobalBlackDuckConfig());

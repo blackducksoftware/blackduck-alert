@@ -40,6 +40,11 @@ public abstract class ChannelDescriptor extends Descriptor {
         addDistributionConfig(distributionDescriptorConfig);
     }
 
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorConfig distributionDescriptorConfig, final DescriptorConfig globalDescriptorConfig) {
+        this(name, destinationName, channelListener, distributionDescriptorConfig);
+        addGlobalConfig(globalDescriptorConfig);
+    }
+
     public String getDestinationName() {
         return destinationName;
     }

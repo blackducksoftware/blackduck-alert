@@ -27,26 +27,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class HipChatDistributionContentConverter extends DatabaseContentConverter {
+public class HipChatDistributionContentConverter extends TypeConverter {
     @Autowired
     public HipChatDistributionContentConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
+    public Config getConfigFromJson(final String json) {
         return getContentConverter().getJsonContent(json, HipChatDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
         final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
         final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
@@ -55,7 +55,7 @@ public class HipChatDistributionContentConverter extends DatabaseContentConverte
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
         final HipChatDistributionConfig hipChatRestModel = new HipChatDistributionConfig();
         final String id = getContentConverter().getStringValue(hipChatEntity.getId());

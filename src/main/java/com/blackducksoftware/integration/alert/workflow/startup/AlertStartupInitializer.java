@@ -65,6 +65,7 @@ public class AlertStartupInitializer {
         alertProperties = new ArrayList<>(50);
     }
 
+    // TODO try and move this functionality to startup component
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
         descriptorMap.getStartupDescriptorConfigs().forEach(descriptor -> {
             final StartupComponent startupComponent = descriptor.getStartupComponent();
@@ -74,7 +75,7 @@ public class AlertStartupInitializer {
                     final Config restModel = startupComponent.getEmptyConfigObject();
                     final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
-                        final DatabaseEntity entity = descriptor.getDatabaseContentConverter().populateDatabaseEntityFromRestModel(restModel);
+                        final DatabaseEntity entity = descriptor.getTypeConverter().populateEntityFromConfig(restModel);
                         propertyInitializer.save(entity, descriptor.getRepositoryAccessor());
                     }
                 } catch (IllegalArgumentException | SecurityException ex) {
