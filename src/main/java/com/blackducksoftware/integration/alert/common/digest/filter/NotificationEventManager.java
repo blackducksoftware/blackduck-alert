@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
@@ -52,15 +51,13 @@ public class NotificationEventManager {
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ChannelEventFactory channelEventFactory;
-    private final ProjectDataFactory projectDataFactory;
 
     @Autowired
     public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory,
-            final CommonDistributionRepository commonDistributionRepository, final ProjectDataFactory projectDataFactory) {
+            final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionRepository = commonDistributionRepository;
-        this.projectDataFactory = projectDataFactory;
     }
 
     public List<ChannelEvent> createChannelEvents(final DigestType digestType, final List<NotificationContent> notificationContentList) {

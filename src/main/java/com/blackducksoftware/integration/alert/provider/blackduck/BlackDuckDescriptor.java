@@ -67,4 +67,8 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
         return new GlobalBlackDuckConfig();
     }
 
+    @Override
+    public Set<String> getNotificationTypes() {
+        return getProvider().getNotificationTypes();
+    }
 }

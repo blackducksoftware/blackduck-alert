@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
+import java.util.Set;
+
 import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 
@@ -38,4 +40,6 @@ public abstract class ProviderDescriptor extends Descriptor {
     public Provider getProvider() {
         return provider;
     }
+
+    public abstract Set<String> getNotificationTypes();
 }
