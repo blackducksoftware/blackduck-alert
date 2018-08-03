@@ -44,11 +44,10 @@ public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalDescriptorConfig(final HipChatGlobalContentConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
+    public HipChatGlobalDescriptorConfig(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
             final HipChatStartupComponent hipChatStartupComponent) {
-        super(databaseContentConverter, repositoryAccessor);
+        super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
-        setStartupComponent(hipChatStartupComponent);
     }
 
     @Override

@@ -186,7 +186,8 @@ public class AuditEntryActions {
         }
         final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
         final DigestModel digestModel = new DigestModel(projectDataCollection);
-        final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), digestModel);
+        // TODO Look to see if we can require only the ID instead of the model as well.
+        final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigEntity.get().getDistributionType(), digestModel, commonConfigId);
         event.setAuditEntryId(auditEntryEntity.getId());
         channelTemplateManager.sendEvent(event);
         return get();

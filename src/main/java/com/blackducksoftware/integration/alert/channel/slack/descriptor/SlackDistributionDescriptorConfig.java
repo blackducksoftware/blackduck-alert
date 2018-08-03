@@ -30,10 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
-import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -43,14 +43,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class SlackDistributionDescriptorConfig extends DescriptorConfig {
-    private final ChannelTestEventFactory channelTestEventFactory;
+    private final ChannelEventFactory channelEventFactory;
     private final SlackChannel slackChannel;
 
     @Autowired
-    public SlackDistributionDescriptorConfig(final SlackDistributionContentConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelTestEventFactory channelTestEventFactory,
+    public SlackDistributionDescriptorConfig(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
             final SlackChannel slackChannel) {
         super(databaseContentConverter, repositoryAccessor);
-        this.channelTestEventFactory = channelTestEventFactory;
+        this.channelEventFactory = channelEventFactory;
         this.slackChannel = slackChannel;
     }
 
@@ -74,7 +74,7 @@ public class SlackDistributionDescriptorConfig extends DescriptorConfig {
     @Override
     public void testConfig(final DatabaseEntity entity) throws IntegrationException {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
-        final ChannelEvent event = channelTestEventFactory.createChannelEvent(SlackChannel.COMPONENT_NAME);
+        final ChannelEvent event = channelEventFactory.createChannelTestEvent(SlackChannel.COMPONENT_NAME);
         slackChannel.sendAuditedMessage(event, slackEntity);
     }
 

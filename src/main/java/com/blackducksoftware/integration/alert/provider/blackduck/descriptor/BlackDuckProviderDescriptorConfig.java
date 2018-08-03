@@ -38,9 +38,8 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public BlackDuckProviderDescriptorConfig(final BlackDuckContentConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent) {
-        super(databaseContentConverter, repositoryAccessor);
-        setStartupComponent(startupComponent);
+    public BlackDuckProviderDescriptorConfig(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent) {
+        super(databaseContentConverter, repositoryAccessor, startupComponent);
     }
 
     @Override

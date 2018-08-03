@@ -35,10 +35,10 @@ import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 
 @Component
-public class BlackDuckContentConverter extends TypeConverter {
+public class BlackDuckTypeConverter extends TypeConverter {
 
     @Autowired
-    public BlackDuckContentConverter(final ContentConverter contentConverter) {
+    public BlackDuckTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 

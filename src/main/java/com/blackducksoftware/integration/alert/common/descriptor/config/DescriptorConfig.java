@@ -33,12 +33,16 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 public abstract class DescriptorConfig {
     private final TypeConverter typeConverter;
     private final RepositoryAccessor repositoryAccessor;
-    private StartupComponent startupComponent;
+    private final StartupComponent startupComponent;
 
     public DescriptorConfig(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
+        this(typeConverter, repositoryAccessor, null);
+    }
+
+    public DescriptorConfig(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final StartupComponent startupComponent) {
         this.typeConverter = typeConverter;
         this.repositoryAccessor = repositoryAccessor;
-        this.startupComponent = null;
+        this.startupComponent = startupComponent;
     }
 
     public TypeConverter getTypeConverter() {
@@ -47,10 +51,6 @@ public abstract class DescriptorConfig {
 
     public RepositoryAccessor getRepositoryAccessor() {
         return repositoryAccessor;
-    }
-
-    public void setStartupComponent(final StartupComponent startupComponent) {
-        this.startupComponent = startupComponent;
     }
 
     public StartupComponent getStartupComponent() {

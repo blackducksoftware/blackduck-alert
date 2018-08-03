@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
@@ -36,17 +35,17 @@ public class ChannelEventFactoryTest {
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final ChannelTestEventFactory manager = Mockito.mock(ChannelTestEventFactory.class);
-        final ChannelEventFactory factory = new ChannelEventFactory(manager);
+        final ChannelEventFactory factory = new ChannelEventFactory(contentConverter);
 
         final Long id = 25L;
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.getJsonString(digestModel), id);
-        Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
+        final ChannelEvent expected = new ChannelEvent(DISTRIBUTION_TYPE, contentConverter.getJsonString(digestModel), id);
 
-        final ChannelEvent event = factory.createEvent(id, "TYPE", digestModel);
-        assertEquals(mockEvent, event);
+        final ChannelEvent event = factory.createChannelEvent("TYPE", digestModel, id);
+        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getDestination(), event.getDestination());
+        assertEquals(expected.getContent(), event.getContent());
     }
 
 }

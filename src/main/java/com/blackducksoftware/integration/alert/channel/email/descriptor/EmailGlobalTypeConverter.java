@@ -35,10 +35,10 @@ import com.blackducksoftware.integration.alert.web.channel.model.EmailGlobalConf
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class EmailGlobalContentConverter extends TypeConverter {
+public class EmailGlobalTypeConverter extends TypeConverter {
 
     @Autowired
-    public EmailGlobalContentConverter(final ContentConverter contentConverter) {
+    public EmailGlobalTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 

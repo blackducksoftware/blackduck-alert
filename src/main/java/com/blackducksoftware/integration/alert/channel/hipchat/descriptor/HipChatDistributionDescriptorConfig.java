@@ -30,10 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
-import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -43,14 +43,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
 public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
-    private final ChannelTestEventFactory channelTestEventFactory;
+    private final ChannelEventFactory channelEventFactory;
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatDistributionDescriptorConfig(final HipChatDistributionContentConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-            final ChannelTestEventFactory channelTestEventFactory, final HipChatChannel hipChatChannel) {
+    public HipChatDistributionDescriptorConfig(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
+            final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
         super(databaseContentConverter, repositoryAccessor);
-        this.channelTestEventFactory = channelTestEventFactory;
+        this.channelEventFactory = channelEventFactory;
         this.hipChatChannel = hipChatChannel;
     }
 
@@ -72,7 +72,7 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
     @Override
     public void testConfig(final DatabaseEntity entity) throws IntegrationException {
         final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
-        final ChannelEvent event = channelTestEventFactory.createChannelEvent(HipChatChannel.COMPONENT_NAME);
+        final ChannelEvent event = channelEventFactory.createChannelTestEvent(HipChatChannel.COMPONENT_NAME);
         hipChatChannel.sendAuditedMessage(event, hipChatEntity);
     }
 

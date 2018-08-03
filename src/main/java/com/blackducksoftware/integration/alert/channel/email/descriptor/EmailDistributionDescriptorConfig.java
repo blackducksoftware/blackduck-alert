@@ -31,9 +31,9 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
-import com.blackducksoftware.integration.alert.common.event.ChannelTestEventFactory;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -44,14 +44,14 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 @Component
 public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     private final EmailGroupChannel emailGroupChannel;
-    private final ChannelTestEventFactory channelTestEventFactory;
+    private final ChannelEventFactory channelEventFactory;
 
     @Autowired
-    public EmailDistributionDescriptorConfig(final EmailDistributionContentConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final ChannelTestEventFactory channelTestEventFactory) {
+    public EmailDistributionDescriptorConfig(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
+            final ChannelEventFactory channelEventFactory) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
-        this.channelTestEventFactory = channelTestEventFactory;
+        this.channelEventFactory = channelEventFactory;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     @Override
     public void testConfig(final DatabaseEntity entity) throws IntegrationException {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
-        final ChannelEvent event = channelTestEventFactory.createChannelEvent(EmailGroupChannel.COMPONENT_NAME);
+        final ChannelEvent event = channelEventFactory.createChannelTestEvent(EmailGroupChannel.COMPONENT_NAME);
         emailGroupChannel.sendAuditedMessage(event, emailEntity);
     }
 

@@ -16,9 +16,10 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckContentConverter;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckProviderDescriptorConfig;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -64,7 +65,7 @@ public class BlackDuckDescriptorConfigTest {
     public void testTransformerCalls() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(contentConverter);
+        final BlackDuckTypeConverter hubContentConverter = new BlackDuckTypeConverter(contentConverter);
 
         final BlackDuckProviderDescriptorConfig hubDescriptor = new BlackDuckProviderDescriptorConfig(hubContentConverter, null, null);
 
@@ -80,15 +81,12 @@ public class BlackDuckDescriptorConfigTest {
         assertEquals(hubRestModel.getId(), jsonRestModel.getId());
     }
 
-    // @Test
-    // public void testGetProvider() {
-    // final Gson gson = new Gson();
-    // final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-    // final BlackDuckContentConverter hubContentConverter = new BlackDuckContentConverter(contentConverter);
-    // final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-    // final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(hubContentConverter, null, null, provider);
-    // assertEquals(provider, descriptor.getProvider());
-    // }
+    @Test
+    public void testGetProvider() {
+        final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, provider);
+        assertEquals(provider, descriptor.getProvider());
+    }
 
     @Test
     public void testValidateGlobalConfig() {

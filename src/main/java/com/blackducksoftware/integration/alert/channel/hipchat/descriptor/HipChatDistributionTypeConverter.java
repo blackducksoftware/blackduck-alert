@@ -21,49 +21,50 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.email.descriptor;
+package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
-import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class EmailDistributionContentConverter extends TypeConverter {
-
+public class HipChatDistributionTypeConverter extends TypeConverter {
     @Autowired
-    public EmailDistributionContentConverter(final ContentConverter contentConverter) {
+    public HipChatDistributionTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
     public Config getConfigFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, EmailDistributionConfig.class);
+        return getContentConverter().getJsonContent(json, HipChatDistributionConfig.class);
     }
 
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
-        final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
-        final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
-        addIdToEntityPK(emailRestModel.getId(), emailEntity);
-        return emailEntity;
+        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
+        final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
+        final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
+        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
+        return hipChatEntity;
     }
 
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
-        final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
-        final EmailDistributionConfig emailRestModel = new EmailDistributionConfig();
-        final String id = getContentConverter().getStringValue(emailEntity.getId());
-        emailRestModel.setDistributionConfigId(id);
-        emailRestModel.setGroupName(emailEntity.getGroupName());
-        emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
-        emailRestModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());
-        return emailRestModel;
+        final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
+        final HipChatDistributionConfig hipChatRestModel = new HipChatDistributionConfig();
+        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
+        final String roomId = getContentConverter().getStringValue(hipChatEntity.getRoomId());
+        hipChatRestModel.setDistributionConfigId(id);
+        hipChatRestModel.setRoomId(roomId);
+        hipChatRestModel.setNotify(hipChatEntity.getNotify());
+        hipChatRestModel.setColor(hipChatEntity.getColor());
+        return hipChatRestModel;
     }
 
 }
