@@ -27,10 +27,10 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 
 @Transactional
 public interface NotificationTypeRepository extends JpaRepository<NotificationTypeEntity, Long> {
-    public NotificationTypeEntity findByType(final NotificationCategoryEnum type);
+    public NotificationTypeEntity findByType(final NotificationType type);
 }

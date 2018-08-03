@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -18,8 +20,10 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.blackducksoftware.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
+import com.blackducksoftware.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.google.gson.Gson;
 
 // TODO Make these tests more useful once provider descriptors are fully implemented
@@ -104,4 +108,13 @@ public class BlackDuckDescriptorTest {
         Mockito.verify(spiedDescriptor).testGlobalConfig(Mockito.any());
     }
 
+    @Test
+    public void testGetNotificationTypes() {
+        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, provider);
+        final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+        final Set<String> providerNotificationTypes = descriptor.getNotificationTypes();
+        assertEquals(expectedNotificationTypes, providerNotificationTypes);
+    }
 }

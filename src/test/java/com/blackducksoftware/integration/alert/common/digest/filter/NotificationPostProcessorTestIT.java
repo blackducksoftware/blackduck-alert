@@ -40,7 +40,6 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.ConfiguredProjectEntity;
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
@@ -49,6 +48,7 @@ import com.blackducksoftware.integration.alert.database.relation.DistributionNot
 import com.blackducksoftware.integration.alert.database.relation.DistributionProjectRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionProjectRepository;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -90,7 +90,7 @@ public class NotificationPostProcessorTestIT {
 
         config2.setId(config2Id);
 
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION));
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION));
         final Long notificationTypeId = notificationTypeRepository.findAll().get(0).getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config2.getId(), notificationTypeId));
@@ -130,7 +130,7 @@ public class NotificationPostProcessorTestIT {
 
         config1.setId(config1Id);
 
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION));
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION));
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
         final Long notificationTypeId = notificationType.getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
@@ -156,7 +156,7 @@ public class NotificationPostProcessorTestIT {
         final Long config1Id = 13L;
         final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.REAL_TIME, true);
         config1.setId(config1Id);
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationCategoryEnum.POLICY_VIOLATION_CLEARED));
+        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION_CLEARED));
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
         final Long notificationTypeId = notificationType.getId();
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
@@ -174,7 +174,7 @@ public class NotificationPostProcessorTestIT {
         final String projectName = PROJECT_NAME;
         final String projectVersion = "Project Version";
         final Date createdAt = Date.from(ZonedDateTime.now().toInstant());
-        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.POLICY_VIOLATION;
+        final NotificationType notificationType = NotificationType.RULE_VIOLATION;
 
         return new NotificationContent(createdAt, "provider", notificationType.name(), projectName + projectVersion);
     }
