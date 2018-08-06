@@ -249,7 +249,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
 
     @Override
     public String testConfig(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws IntegrationException {
-        // TODO first expression is a current workaround to allow Slack to have a global config to display in UI and still let tests work properly.
+        // TODO second expression is a current workaround to allow Slack to have a global config to display in UI and still let tests work properly.
         if (descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG) != null && (descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getRepositoryAccessor() != null)) {
             if (descriptor.readEntities(DescriptorConfigType.GLOBAL_CONFIG).isEmpty()) {
                 return "ERROR: Missing global configuration!";
