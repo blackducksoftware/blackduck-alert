@@ -85,6 +85,7 @@ class Index extends Component {
             waitingForGroups: true
         };
         this.startAutoReload = this.startAutoReload.bind(this);
+        this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
         this.createCustomModal = this.createCustomModal.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
@@ -186,6 +187,12 @@ class Index extends Component {
         this.timeout = setTimeout(() => this.reloadJobs(), 10000);
     }
 
+    startAutoReloadIfConfigured() {
+        if (this.props.autoRefresh) {
+            this.startAutoReload();
+        }
+    }
+
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
@@ -283,7 +290,7 @@ class Index extends Component {
             }
         }).then((response) => {
             this.setState({inProgress: false});
-            this.startAutoReload();
+            this.startAutoReloadIfConfigured();
             if (response.ok) {
                 this.setState({jobConfigTableMessage: ''});
                 response.json().then((jsonArray) => {
@@ -321,7 +328,7 @@ class Index extends Component {
                 }
             }
         }).catch((error) => {
-            this.startAutoReload();
+            this.startAutoReloadIfConfigured();
             console.log(error);
         });
     }
