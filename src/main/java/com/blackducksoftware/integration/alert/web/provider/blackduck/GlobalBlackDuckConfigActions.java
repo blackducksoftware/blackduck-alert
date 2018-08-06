@@ -45,8 +45,8 @@ import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckContentConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -66,9 +66,10 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
     private final AlertProperties alertProperties;
 
     @Autowired
-    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckContentConverter blackDuckContentConverter, final BlackDuckProperties blackDuckProperties,
+
+    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckTypeConverter blackDuckTypeConverter, final BlackDuckProperties blackDuckProperties,
             final AlertProperties alertProperties) {
-        super(globalRepository, blackDuckContentConverter);
+        super(globalRepository, blackDuckTypeConverter);
         this.blackDuckProperties = blackDuckProperties;
         this.alertProperties = alertProperties;
     }
@@ -78,8 +79,10 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         if (id != null) {
             final Optional<GlobalBlackDuckConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
+
+                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(foundEntity.get());
                 restModel = updateModelFromProperties(restModel);
+                
                 if (restModel != null) {
                     final GlobalBlackDuckConfig maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -91,7 +94,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         List<GlobalBlackDuckConfig> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             for (final GlobalBlackDuckConfigEntity entity : databaseEntities) {
-                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(entity));
             }
         } else {
             restModels.add(new GlobalBlackDuckConfig());

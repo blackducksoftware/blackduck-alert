@@ -21,22 +21,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.common.enumeration;
 
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
-import com.blackducksoftware.integration.alert.common.provider.Provider;
-
-public abstract class ProviderDescriptor extends Descriptor {
-    private final Provider provider;
-
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig, final Provider provider) {
-        super(name, DescriptorType.PROVIDER);
-        this.provider = provider;
-        addProviderConfig(providerDescriptorConfig);
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
+public enum DescriptorType {
+    CHANNEL, PROVIDER;
 }
