@@ -170,7 +170,7 @@ public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonD
         restModel.setId(String.valueOf(commonEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().is5xxServerError());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test

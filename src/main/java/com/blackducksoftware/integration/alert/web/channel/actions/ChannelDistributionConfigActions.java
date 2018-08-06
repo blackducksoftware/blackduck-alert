@@ -85,7 +85,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public List<CommonDistributionConfig> getConfig(final Long id, final ChannelDescriptor descriptor) throws AlertException {
         cleanUpStaleChannelConfigurations(descriptor);
         if (id != null) {
-            final Optional<? extends DatabaseEntity> foundEntity = descriptor.readEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, id);
+            final Optional<? extends DatabaseEntity> foundEntity = descriptor.readEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, id);
             if (foundEntity.isPresent()) {
                 return Arrays.asList(constructRestModel(foundEntity.get(), descriptor));
             }
@@ -97,7 +97,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     }
 
     public List<CommonDistributionConfig> constructRestModels(final ChannelDescriptor descriptor) {
-        final List<? extends DatabaseEntity> allEntities = descriptor.readEntities(DescriptorConfigType.DISTRIBUTION_CONFIG);
+        final List<? extends DatabaseEntity> allEntities = descriptor.readEntities(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
         final List<CommonDistributionConfig> constructedRestModels = new ArrayList<>();
         for (final DatabaseEntity entity : allEntities) {
             try {
@@ -117,7 +117,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public CommonDistributionConfig constructRestModel(final DatabaseEntity entity, final ChannelDescriptor descriptor) throws AlertException {
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), descriptor.getName());
         if (commonEntity != null) {
-            final CommonDistributionConfig restModel = (CommonDistributionConfig) descriptor.populateConfigFromEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, entity);
+            final CommonDistributionConfig restModel = (CommonDistributionConfig) descriptor.populateConfigFromEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, entity);
             restModel.setId(getContentConverter().getStringValue(commonEntity.getId()));
             restModel.setDistributionConfigId(getContentConverter().getStringValue(entity.getId()));
             restModel.setDistributionType(commonEntity.getDistributionType());
@@ -128,7 +128,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
             return restModel;
         }
-        return (CommonDistributionConfig) descriptor.populateConfigFromEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, entity);
+        return (CommonDistributionConfig) descriptor.populateConfigFromEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, entity);
     }
 
     private void addAuditEntryInfoToRestModels(final List<CommonDistributionConfig> restModels) {
@@ -155,10 +155,10 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     public DatabaseEntity saveConfig(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws AlertException {
         if (restModel != null) {
             try {
-                final DatabaseEntity createdEntity = descriptor.populateEntityFromConfig(DescriptorConfigType.DISTRIBUTION_CONFIG, restModel);
+                final DatabaseEntity createdEntity = descriptor.populateEntityFromConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, restModel);
                 CommonDistributionConfigEntity commonEntity = createCommonEntity(restModel);
                 if (createdEntity != null && commonEntity != null) {
-                    final DatabaseEntity savedEntity = descriptor.saveEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, createdEntity);
+                    final DatabaseEntity savedEntity = descriptor.saveEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, createdEntity);
                     commonEntity.setDistributionConfigId(savedEntity.getId());
                     commonEntity = commonDistributionRepository.save(commonEntity);
                     if (Boolean.TRUE.equals(commonEntity.getFilterByProject())) {
@@ -195,7 +195,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
                 commonDistributionRepository.deleteById(id);
                 configuredProjectsActions.cleanUpConfiguredProjects();
                 notificationTypesActions.removeOldNotificationTypes(id);
-                descriptor.deleteEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, configId);
+                descriptor.deleteEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, configId);
             }
         }
     }
@@ -240,7 +240,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
         if (restModel.getNotificationTypes() == null || restModel.getNotificationTypes().size() <= 0) {
             fieldErrors.put("notificationTypes", "Must have at least one notification type.");
         }
-        descriptor.validateConfig(DescriptorConfigType.DISTRIBUTION_CONFIG, restModel, fieldErrors);
+        descriptor.validateConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, restModel, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -250,14 +250,14 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     @Override
     public String testConfig(final CommonDistributionConfig restModel, final ChannelDescriptor descriptor) throws IntegrationException {
         // TODO second expression is a current workaround to allow Slack to have a global config to display in UI and still let tests work properly.
-        if (descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG) != null && (descriptor.getConfig(DescriptorConfigType.GLOBAL_CONFIG).getRepositoryAccessor() != null)) {
-            if (descriptor.readEntities(DescriptorConfigType.GLOBAL_CONFIG).isEmpty()) {
+        if (descriptor.getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG) != null && (descriptor.getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG).getRepositoryAccessor() != null)) {
+            if (descriptor.readEntities(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG).isEmpty()) {
                 return "ERROR: Missing global configuration!";
             }
         }
 
-        final DatabaseEntity entity = descriptor.populateEntityFromConfig(DescriptorConfigType.DISTRIBUTION_CONFIG, restModel);
-        descriptor.testConfig(DescriptorConfigType.DISTRIBUTION_CONFIG, entity);
+        final DatabaseEntity entity = descriptor.populateEntityFromConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, restModel);
+        descriptor.testConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, entity);
         return "Succesfully sent test message.";
     }
 
@@ -265,11 +265,11 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
     private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
         final String distributionName = descriptor.getName();
         if (distributionName != null) {
-            final List<? extends DatabaseEntity> channelDistributionConfigEntities = descriptor.readEntities(DescriptorConfigType.DISTRIBUTION_CONFIG);
+            final List<? extends DatabaseEntity> channelDistributionConfigEntities = descriptor.readEntities(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
             channelDistributionConfigEntities.forEach(entity -> {
                 final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
                 if (commonEntity == null) {
-                    descriptor.deleteEntity(DescriptorConfigType.DISTRIBUTION_CONFIG, entity.getId());
+                    descriptor.deleteEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, entity.getId());
                 }
             });
         }
