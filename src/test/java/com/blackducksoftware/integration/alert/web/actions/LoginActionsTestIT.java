@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.alert.OutputLogger;
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
@@ -59,7 +60,7 @@ public class LoginActionsTestIT {
 
     @Test
     public void authenticateUserTestIT() throws IntegrationException {
-        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties());
+        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
 
         Assert.assertTrue(userAuthenticated);
@@ -68,7 +69,7 @@ public class LoginActionsTestIT {
     @Test
     public void testAuthenticateUserFailIT() throws IntegrationException, IOException {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties());
+        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
         final boolean userAuthenticated = loginActions.authenticateUser(badRestModel.createRestModel(), new Slf4jIntLogger(logger));
@@ -80,7 +81,7 @@ public class LoginActionsTestIT {
     @Test
     public void testAuthenticateUserRoleFailIT() throws IntegrationException, IOException {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties());
+        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
 
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
 
@@ -91,16 +92,17 @@ public class LoginActionsTestIT {
     @Test
     public void testIsUserValidFailIT() throws IntegrationException, IOException {
         final LoginConfig loginConfig = mockLoginRestModel.createRestModel();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties();
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
         serverConfigBuilder.setLogger(new Slf4jIntLogger(logger));
-        serverConfigBuilder.setUrl(hubProperties.getBlackDuckUrl().orElse(null));
-        serverConfigBuilder.setTrustCert(hubProperties.getBlackDuckTrustCertificate().orElse(null));
-        serverConfigBuilder.setTimeout(hubProperties.getBlackDuckTimeout());
+        serverConfigBuilder.setUrl(blackDuckProperties.getBlackDuckUrl().orElse(null));
+        serverConfigBuilder.setTrustCert(testAlertProperties.getAlertTrustCertificate().orElse(false));
+        serverConfigBuilder.setTimeout(blackDuckProperties.getBlackDuckTimeout());
         serverConfigBuilder.setPassword(loginConfig.getBlackDuckPassword());
         serverConfigBuilder.setUsername(loginConfig.getBlackDuckUsername());
 
-        final LoginActions loginActions = new LoginActions(hubProperties);
+        final LoginActions loginActions = new LoginActions(blackDuckProperties);
 
         final RestConnection restConnection = loginActions.createRestConnection(serverConfigBuilder);
 
@@ -112,7 +114,7 @@ public class LoginActionsTestIT {
     @Test
     public void testValidateHubConfigurationException() {
         mockLoginRestModel.setBlackDuckUsername(null);
-        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties());
+        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
 
         try {
             final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));

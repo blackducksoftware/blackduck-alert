@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
@@ -52,9 +53,10 @@ public class SlackChannelTestIT extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, null);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(globalProperties);
-        final SlackChannel slackChannel = new SlackChannel(gson, globalProperties, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties, null);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
+        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, channelRestConnectionFactory, contentConverter);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
@@ -72,7 +74,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void testCreateRequestExceptions() {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         Request request = null;
 
@@ -94,7 +96,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
         final DigestModel digestModel = new DigestModel(projectData);
@@ -120,7 +122,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
+        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestType.DAILY, "Slack", "1", null, null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));

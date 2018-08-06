@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
@@ -69,9 +70,9 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
+    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
             final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
-        super(gson, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String blackDuckGroupName) throws IntegrationException {
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
-            final EmailMessagingService emailService = new EmailMessagingService(getGlobalProperties(), emailProperties);
+            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
             final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
             final Collection<ProjectData> data;
             if (optionalModel.isPresent()) {
@@ -102,7 +103,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_EMAIL_CATEGORY.getPropertyKey(), data.iterator().next().getDigestType().getDisplayName());
-            final Optional<String> optionalBlackDuckUrl = getGlobalProperties().getBlackDuckUrl();
+            final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
             if (optionalBlackDuckUrl.isPresent()) {
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.get()));
             }
@@ -125,11 +126,11 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {
-        final Optional<RestConnection> optionalRestConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger);
+        final Optional<RestConnection> optionalRestConnection = getBlackDuckProperties().createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
                 if (restConnection != null) {
-                    final HubServicesFactory blackDuckServicesFactory = getGlobalProperties().createBlackDuckServicesFactory(restConnection);
+                    final HubServicesFactory blackDuckServicesFactory = getBlackDuckProperties().createBlackDuckServicesFactory(restConnection);
                     final UserGroupService groupService = blackDuckServicesFactory.createUserGroupService();
                     final UserGroupView userGroupView = groupService.getGroupByName(blackDuckGroup);
 

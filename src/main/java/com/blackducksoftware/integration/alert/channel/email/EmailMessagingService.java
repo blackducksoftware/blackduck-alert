@@ -49,24 +49,23 @@ import org.slf4j.LoggerFactory;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.blackducksoftware.integration.alert.channel.email.template.EmailTarget;
 import com.blackducksoftware.integration.alert.channel.email.template.MimeMultipartBuilder;
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final BlackDuckProperties blackDuckProperties;
+    private final AlertProperties alertProperties;
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final BlackDuckProperties blackDuckProperties, final EmailProperties emailProperties) throws IOException {
-        this.blackDuckProperties = blackDuckProperties;
+    public EmailMessagingService(final AlertProperties alertProperties, final EmailProperties emailProperties) throws IOException {
+        this.alertProperties = alertProperties;
         this.emailProperties = emailProperties;
-        final String templatesDirectory = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_TEMPLATES_DIR);
+        final String templatesDirectory = alertProperties.getAlertTemplatesDir();
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -88,7 +87,7 @@ public class EmailMessagingService {
 
             final Session session = createMailSession(emailProperties);
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_IMAGES_DIR);
+            final String imagesDirectory = alertProperties.getAlertImagesDir();
             final String imageDirectoryPath;
             if (StringUtils.isNotBlank(imagesDirectory)) {
                 imageDirectoryPath = imagesDirectory + "/Ducky-80.png";

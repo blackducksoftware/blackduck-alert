@@ -13,7 +13,6 @@ package com.blackducksoftware.integration.alert;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
@@ -24,29 +23,42 @@ import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
-import com.google.gson.Gson;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
+    private final TestAlertProperties testAlertProperties;
     private final TestProperties testProperties;
     private Integer blackDuckTimeout;
-    private String productVersionOverride;
+    private String blackDuckUrl;
+    private boolean urlSet;
 
-    public TestBlackDuckProperties() {
-        this(Mockito.mock(GlobalBlackDuckRepository.class));
+    public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
+        this(Mockito.mock(GlobalBlackDuckRepository.class), alertProperties);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository) {
-        this(globalHubRepository, 400);
+    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties) {
+        this(globalHubRepository, alertProperties, 400);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final Integer blackDuckTimeout) {
-        super(globalHubRepository, new Gson());
+    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties, final Integer blackDuckTimeout) {
+        super(globalHubRepository, alertProperties);
         this.blackDuckTimeout = blackDuckTimeout;
-
+        this.testAlertProperties = alertProperties;
         testProperties = new TestProperties();
         setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)));
-        setBlackDuckTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
-        setBlackDuckUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+    }
+
+    public void setBlackDuckUrl(final String blackDuckUrl) {
+        this.blackDuckUrl = blackDuckUrl;
+        urlSet = true;
+    }
+
+    @Override
+    public Optional<String> getBlackDuckUrl() {
+        if (urlSet) {
+            return Optional.ofNullable(blackDuckUrl);
+        }
+        return Optional.of(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
     }
 
     @Override
@@ -58,23 +70,9 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         this.blackDuckTimeout = blackDuckTimeout;
     }
 
-    public void setProductVersionOverride(final String productVersionOverride) {
-        this.productVersionOverride = productVersionOverride;
-    }
-
-    @Override
-    public String getProductVersion() {
-        if (StringUtils.isNotBlank(productVersionOverride)) {
-            return productVersionOverride;
-        } else {
-            return super.getProductVersion();
-        }
-    }
-
     @Override
     public Optional<RestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
-        setBlackDuckUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
-        setBlackDuckTrustCertificate(true);
+        testAlertProperties.setAlertTrustCertificate(true);
         return super.createRestConnection(intLogger);
     }
 
@@ -94,8 +92,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public HubServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {
-        setBlackDuckUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
-        setBlackDuckTrustCertificate(true);
+        testAlertProperties.setAlertTrustCertificate(true);
         final HubServerConfig blackDuckServerConfig = createHubServerConfigWithCredentials(logger);
         final RestConnection restConnection = blackDuckServerConfig.createCredentialsRestConnection(logger);
         return new HubServicesFactory(restConnection);

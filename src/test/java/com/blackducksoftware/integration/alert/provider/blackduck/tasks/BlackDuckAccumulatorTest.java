@@ -22,9 +22,10 @@ import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.blackducksoftware.integration.alert.TestAlertProperties;
+import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.enumeration.InternalEventTypes;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
@@ -62,7 +63,8 @@ public class BlackDuckAccumulatorTest {
 
     private File testAccumulatorParent;
 
-    private BlackDuckProperties mockedBlackDuckProperties;
+    private TestAlertProperties testAlertProperties;
+    private TestBlackDuckProperties testBlackDuckProperties;
     private NotificationManager notificationManager;
     private TaskScheduler taskScheduler;
 
@@ -73,8 +75,10 @@ public class BlackDuckAccumulatorTest {
         testAccumulatorParent = new File("testAccumulatorDirectory");
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
-        mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        Mockito.when(mockedBlackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME)).thenReturn(testAccumulatorParent.getCanonicalPath());
+
+        testAlertProperties = new TestAlertProperties();
+        testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
+        testBlackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
 
         notificationManager = Mockito.mock(NotificationManager.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
@@ -85,24 +89,24 @@ public class BlackDuckAccumulatorTest {
         FileUtils.deleteDirectory(testAccumulatorParent);
     }
 
-    private BlackDuckAccumulator createNonProcessingAccumulator(final BlackDuckProperties globalProperties) {
-        return createAccumulator(globalProperties, Collections.emptyList());
+    private BlackDuckAccumulator createNonProcessingAccumulator(final BlackDuckProperties blackDuckProperties) {
+        return createAccumulator(blackDuckProperties, Collections.emptyList());
     }
 
-    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties globalProperties, final List<NotificationTypeProcessor> processorList) {
-        return new BlackDuckAccumulator(taskScheduler, globalProperties, contentConverter, notificationManager, processorList);
+    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties, final List<NotificationTypeProcessor> processorList) {
+        return new BlackDuckAccumulator(taskScheduler, testAlertProperties, blackDuckProperties, contentConverter, notificationManager, processorList);
     }
 
     @Test
     public void testFormatDate() {
-        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
+        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         final Date date = new Date();
         assertEquals(RestConnection.formatDate(date), notificationAccumulator.formatDate(date));
     }
 
     @Test
     public void testCreateDateRange() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
+        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
         assertNotNull(dateRange);
         final ZonedDateTime startTime = ZonedDateTime.ofInstant(dateRange.getStart().toInstant(), ZoneOffset.UTC);
@@ -114,7 +118,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testCreateDateRangeIOException() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
+        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         ZonedDateTime startDateTime = ZonedDateTime.now();
         startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
         startDateTime = startDateTime.withSecond(0).withNano(0);
@@ -131,7 +135,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testCreateDateRangeParseException() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
+        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         ZonedDateTime startDateTime = ZonedDateTime.now();
         startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
         startDateTime = startDateTime.withSecond(0).withNano(0);
@@ -148,7 +152,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testCreateDateRangeWithExistingFile() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
+        final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(testBlackDuckProperties);
         ZonedDateTime startDateTime = ZonedDateTime.now();
         startDateTime = startDateTime.withZoneSameInstant(ZoneOffset.UTC);
         startDateTime = startDateTime.withSecond(0).withNano(0);
@@ -168,7 +172,7 @@ public class BlackDuckAccumulatorTest {
     public void testRun() throws Exception {
         final List<NotificationTypeProcessor> processorList = Collections.emptyList();
 
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, processorList);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, processorList);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
@@ -176,7 +180,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulate() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         assertTrue(spiedAccumulator.getSearchRangeFilePath().exists());
@@ -188,7 +192,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateException() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.doThrow(new IOException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
         spiedAccumulator.accumulate();
@@ -200,7 +204,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateGetNextRunHasValue() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
         spiedAccumulator.accumulate();
@@ -214,8 +218,8 @@ public class BlackDuckAccumulatorTest {
     public void testAccumulateWithDateRange() throws Exception {
         // this is the most comprehensive test as it mocks all services in use and completes the full process
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final HubService hubService = Mockito.mock(HubService.class);
+        final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
+        final HubService blackDuckService = Mockito.mock(HubService.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
 
@@ -233,15 +237,17 @@ public class BlackDuckAccumulatorTest {
         content.updatedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("2", "4", "11");
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+
         Mockito.doReturn(Optional.of(restConnection)).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
-        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);
-        Mockito.when(hubService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
-        Mockito.when(hubService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
+        Mockito.doReturn(blackDuckServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.anyBoolean());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
+        Mockito.when(blackDuckServicesFactory.createHubService()).thenReturn(blackDuckService);
+        Mockito.when(blackDuckServicesFactory.createHubBucketService()).thenReturn(bucketService);
+        Mockito.when(blackDuckService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
+        Mockito.when(blackDuckService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
 
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
 
@@ -263,7 +269,7 @@ public class BlackDuckAccumulatorTest {
 
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, processorList);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, mockedBlackDuckProperties, contentConverter, notificationManager, processorList);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         final DateRange dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFilePath());
         spiedAccumulator.accumulate(dateRange);
@@ -275,7 +281,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateNextRunEmpty() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         Mockito.verify(spiedAccumulator).getMillisecondsToNextRun();
@@ -284,7 +290,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testRead() throws Exception {
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
+        final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
         final String componentName = "notification test";
@@ -306,11 +312,13 @@ public class BlackDuckAccumulatorTest {
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
 
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+
         Mockito.doReturn(Optional.of(restConnection)).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
+        Mockito.doReturn(blackDuckServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.anyBoolean());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
 
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
@@ -322,15 +330,17 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testReadNoNotifications() throws Exception {
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
+        final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createEmptyNotificationResults();
 
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+
         Mockito.doReturn(Optional.of(restConnection)).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
-        Mockito.doReturn(hubServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService();
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.anyBoolean());
-        Mockito.doReturn(notificationService).when(hubServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
+        Mockito.doReturn(blackDuckServicesFactory).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService();
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.anyBoolean());
+        Mockito.doReturn(notificationService).when(blackDuckServicesFactory).createNotificationService(Mockito.any(), Mockito.anyBoolean());
         Mockito.doReturn(notificationResults).when(notificationService).getAllNotificationDetailResultsPopulated(Mockito.any(), Mockito.any(), Mockito.any());
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
@@ -340,6 +350,8 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testReadMissingRestConnection() throws Exception {
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
+
         Mockito.doReturn(Optional.empty()).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
         final BlackDuckAccumulator notificationAccumulator = createNonProcessingAccumulator(mockedBlackDuckProperties);
         final DateRange dateRange = notificationAccumulator.createDateRange(notificationAccumulator.getSearchRangeFilePath());
@@ -349,6 +361,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testReadException() throws Exception {
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         Mockito.doReturn(Optional.of(restConnection)).when(mockedBlackDuckProperties).createRestConnectionAndLogErrors(Mockito.any());
         Mockito.doThrow(RuntimeException.class).when(mockedBlackDuckProperties).createBlackDuckServicesFactory(Mockito.any());
@@ -362,6 +375,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testProcess() throws Exception {
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
@@ -395,6 +409,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testProcessorResultListEmpty() throws Exception {
+        final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
         final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
         final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
@@ -417,7 +432,7 @@ public class BlackDuckAccumulatorTest {
     public void testWrite() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, contentConverter, notificationManager, Collections.emptyList());
 
         final NotificationModel model = new NotificationModel(null, null);
         final NotificationModels models = new NotificationModels(Arrays.asList(model));

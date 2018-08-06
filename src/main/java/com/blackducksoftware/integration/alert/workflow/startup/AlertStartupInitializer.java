@@ -53,7 +53,7 @@ public class AlertStartupInitializer {
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
     private final DescriptorMap descriptorMap;
-    private final List<AlertStartupProperty> alertProperties;
+    private final List<AlertStartupProperty> alertStartupProperties;
 
     @Autowired
     public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
@@ -62,7 +62,7 @@ public class AlertStartupInitializer {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.conversionService = conversionService;
-        alertProperties = new ArrayList<>(50);
+        alertStartupProperties = new ArrayList<>(50);
     }
 
     // TODO try and move this functionality to startup component and eliminate this class
@@ -89,7 +89,7 @@ public class AlertStartupInitializer {
     private boolean initializeConfig(final Config globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
-            alertProperties.add(property);
+            alertStartupProperties.add(property);
             final String propertyKey = property.getPropertyKey();
             logger.debug("Checking property key {}", propertyKey);
             String value = System.getProperty(propertyKey);
@@ -123,11 +123,11 @@ public class AlertStartupInitializer {
         return false;
     }
 
-    public List<AlertStartupProperty> getAlertProperties() {
-        return alertProperties;
+    public List<AlertStartupProperty> getAlertStartupProperties() {
+        return alertStartupProperties;
     }
 
     public Set<String> getAlertPropertyNameSet() {
-        return alertProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
+        return alertStartupProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
