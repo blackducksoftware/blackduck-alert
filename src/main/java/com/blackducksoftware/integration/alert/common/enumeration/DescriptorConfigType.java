@@ -24,7 +24,7 @@
 package com.blackducksoftware.integration.alert.common.enumeration;
 
 public enum DescriptorConfigType {
-    GLOBAL_CONFIG,
-    DISTRIBUTION_CONFIG,
+    CHANNEL_GLOBAL_CONFIG,
+    CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG
 }

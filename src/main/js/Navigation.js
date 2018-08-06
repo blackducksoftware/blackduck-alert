@@ -17,7 +17,7 @@ class Navigation extends Component {
     }
 
     componentDidMount() {
-        this.retrieveComponentData('GLOBAL_CONFIG'),
+        this.retrieveComponentData('CHANNEL_GLOBAL_CONFIG'),
         this.retrieveComponentData('PROVIDER_CONFIG')
     }
 
@@ -109,7 +109,7 @@ Navigation.propTypes = {
     confirmLogout: PropTypes.func.isRequired
 };
 
-// Redux mappings to be used later....
+// TODO Add Redux to this page
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken
 });
